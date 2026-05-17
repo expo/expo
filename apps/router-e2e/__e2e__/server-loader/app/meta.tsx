@@ -1,18 +1,30 @@
 import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
+import type { Metadata } from 'expo-router/server';
 import { Suspense } from 'react';
 
-import { Container } from '../components/Container';
 import { Loading } from '../components/Loading';
 import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
+
+// Tests metadata when using streaming SSR
+export function generateMetadata() {
+  return {
+    title: 'Meta page',
+    description: 'Meta tag testing',
+    keywords: 'expo-router,loaders,meta',
+    authors: {
+      name: 'Expo',
+    },
+  } satisfies Metadata;
+}
 
 export async function loader() {
   return {
     title: 'Meta page',
     description: 'Meta tag testing',
     keywords: 'expo-router,loaders,meta',
-    author: 'Expo'
+    author: 'Expo',
   };
 }
 
@@ -31,6 +43,7 @@ const MetaScreen = () => {
 
   return (
     <>
+      {/* Tests metadata when using SSG */}
       <Head>
         <title>{data.title}</title>
         <meta name="description" content={data.description} />
@@ -50,4 +63,4 @@ const MetaScreen = () => {
       </SiteLinks>
     </>
   );
-}
+};

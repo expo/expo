@@ -1,10 +1,10 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "JNIUtils.h"
 #include "EventEmitter.h"
 #include "JSIUtils.h"
 #include "types/JNIToJSIConverter.h"
-#include <jsi/JSIDynamic.h>
 #include "JSIContext.h"
 #include "Exceptions.h"
 

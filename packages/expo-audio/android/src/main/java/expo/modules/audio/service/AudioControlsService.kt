@@ -42,6 +42,7 @@ class AudioControlsService : MediaSessionService() {
   private lateinit var audioManager: AudioManager
   private val binder = AudioPlaybackServiceBinder(this)
   private var mediaSession: MediaSession? = null
+  private var sessionMetadataPlayer: MetadataInjectingPlayer? = null
   private var currentMetadata: Metadata? = null
   private var currentPlayer: AudioPlayer? = null
   private var currentOptions: AudioLockScreenOptions? = null
@@ -323,10 +324,13 @@ class AudioControlsService : MediaSessionService() {
 
     if (player != null) {
       mediaSession?.release()
+      sessionMetadataPlayer = null
 
       appContext?.mainQueue?.launch {
         val context = appContext?.reactContext ?: return@launch
-        val sessionPlayer = resolveSessionPlayer(player, options)
+        val sessionPlayer = MetadataInjectingPlayer(resolveSessionPlayer(player, options)).apply {
+          updateMetadata(metadata)
+        }
         val session = MediaSession.Builder(context, sessionPlayer)
           .setCallback(AudioMediaSessionCallback())
           .build()
@@ -337,6 +341,7 @@ class AudioControlsService : MediaSessionService() {
 
         addSession(session)
         mediaSession = session
+        sessionMetadataPlayer = sessionPlayer
 
         updateSessionCustomLayout(player.ref.isPlaying)
 
@@ -357,6 +362,7 @@ class AudioControlsService : MediaSessionService() {
       return
     }
     currentMetadata = metadata
+    sessionMetadataPlayer?.updateMetadata(metadata)
     currentMetadata?.artworkUrl?.let {
       loadArtworkFromUrl(it) { bitmap ->
         currentArtwork = bitmap
@@ -372,6 +378,7 @@ class AudioControlsService : MediaSessionService() {
     currentMetadata = null
     mediaSession?.release()
     mediaSession = null
+    sessionMetadataPlayer = null
     currentPlayer?.assignBasicMediaSession()
     stopForeground(STOP_FOREGROUND_REMOVE)
   }
@@ -399,9 +406,12 @@ class AudioControlsService : MediaSessionService() {
       currentOptions = options
 
       mediaSession?.release()
+      sessionMetadataPlayer = null
       appContext?.mainQueue?.launch {
         val context = appContext?.reactContext ?: return@launch
-        val sessionPlayer = resolveSessionPlayer(player, options)
+        val sessionPlayer = MetadataInjectingPlayer(resolveSessionPlayer(player, options)).apply {
+          updateMetadata(metadata)
+        }
         val session = MediaSession.Builder(context, sessionPlayer)
           .setCallback(AudioMediaSessionCallback())
           .build()
@@ -411,6 +421,7 @@ class AudioControlsService : MediaSessionService() {
 
         addSession(session)
         mediaSession = session
+        sessionMetadataPlayer = sessionPlayer
 
         updateSessionCustomLayout(player.ref.isPlaying)
         postOrStartForegroundNotification(startInForeground = false)
@@ -468,6 +479,7 @@ class AudioControlsService : MediaSessionService() {
     scope.cancel()
     mediaSession?.release()
     mediaSession = null
+    sessionMetadataPlayer = null
     currentPlayer = null
     currentMetadata = null
     currentOptions = null

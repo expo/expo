@@ -1,4 +1,5 @@
-import { PermissionStatus, UnavailabilityError } from 'expo-modules-core';
+import { PermissionStatus } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { LocationAccuracy } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 class GeocoderError extends Error {
@@ -150,6 +151,25 @@ export default {
             }, undefined, options);
             resolve(watchId);
         });
+    },
+    async watchMotionActivityImplAsync(_watchId) {
+        console.warn('Location.watchMotionActivityAsync: is not supported on web');
+    },
+    async getMotionActivityPermissionsAsync() {
+        return {
+            status: PermissionStatus.UNDETERMINED,
+            granted: false,
+            canAskAgain: false,
+            expires: 'never',
+        };
+    },
+    async requestMotionActivityPermissionsAsync() {
+        return {
+            status: PermissionStatus.UNDETERMINED,
+            granted: false,
+            canAskAgain: false,
+            expires: 'never',
+        };
     },
     async requestForegroundPermissionsAsync() {
         return getPermissionsAsync(true);

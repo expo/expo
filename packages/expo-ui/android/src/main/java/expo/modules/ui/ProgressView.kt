@@ -26,7 +26,9 @@ import expo.modules.kotlin.views.OptimizedComposeProps
 @OptimizedRecord
 class DrawStopIndicatorConfig : Record {
   @Field val color: Color? = null
+
   @Field val strokeCap: String? = null
+
   @Field val stopSize: Float? = null
 }
 

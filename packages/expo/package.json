@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "55.0.2",
+  "version": "56.0.0-preview.12",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -75,28 +75,28 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "workspace:55.0.12",
-    "@expo/config": "workspace:~55.0.8",
-    "@expo/config-plugins": "workspace:~55.0.6",
-    "@expo/devtools": "workspace:55.0.2",
-    "@expo/fingerprint": "workspace:0.16.5",
-    "@expo/local-build-cache-provider": "workspace:55.0.6",
-    "@expo/log-box": "workspace:55.0.7",
-    "@expo/metro": "56.0.0-rc.1",
-    "@expo/metro-config": "workspace:55.0.9",
-    "@expo/vector-icons": "^15.0.2",
+    "@expo/cli": "workspace:^56.1.5",
+    "@expo/config": "workspace:~56.0.6",
+    "@expo/config-plugins": "workspace:~56.0.5",
+    "@expo/devtools": "workspace:~56.0.2",
+    "@expo/dom-webview": "workspace:~56.0.5",
+    "@expo/fingerprint": "workspace:^0.18.2",
+    "@expo/local-build-cache-provider": "workspace:^56.0.5",
+    "@expo/log-box": "workspace:^56.0.10",
+    "@expo/metro": "~56.0.0",
+    "@expo/metro-config": "workspace:~56.0.9",
     "@ungap/structured-clone": "^1.3.0",
-    "babel-preset-expo": "workspace:~55.0.8",
-    "expo-asset": "workspace:~55.0.7",
-    "expo-constants": "workspace:~55.0.7",
-    "expo-file-system": "workspace:~55.0.9",
-    "expo-font": "workspace:~55.0.4",
-    "expo-keep-awake": "workspace:~55.0.4",
-    "expo-modules-autolinking": "workspace:55.0.8",
-    "expo-modules-core": "workspace:55.0.12",
+    "babel-preset-expo": "workspace:~56.0.8",
+    "expo-asset": "workspace:~56.0.10",
+    "expo-constants": "workspace:~56.0.11",
+    "expo-file-system": "workspace:~56.0.5",
+    "expo-font": "workspace:~56.0.4",
+    "expo-keep-awake": "workspace:~56.0.3",
+    "expo-modules-autolinking": "workspace:~56.0.7",
+    "expo-modules-core": "workspace:~56.0.9",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
-    "whatwg-url-minimum": "^0.1.1"
+    "whatwg-url-minimum": "^0.1.2"
   },
   "devDependencies": {
     "@expo/dom-webview": "workspace:*",
@@ -107,13 +107,13 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.2",
+    "react-native": "0.85.3",
     "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {
-    "@expo/dom-webview": "workspace:*",
-    "@expo/metro-runtime": "workspace:*",
+    "@expo/dom-webview": "*",
+    "@expo/metro-runtime": "*",
     "react": "*",
     "react-native": "*",
     "react-dom": "*",
@@ -136,5 +136,14 @@
     "react-native-webview": {
       "optional": true
     }
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/node-binary.sh",
+      "./scripts/react-native-xcode.sh",
+      "./scripts/xcode/with-environment.sh",
+      "./scripts/compose-source-maps.js",
+      "scripts/resolveAppEntry.js"
+    ]
   }
 }

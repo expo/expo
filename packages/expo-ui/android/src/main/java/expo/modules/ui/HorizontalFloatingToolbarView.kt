@@ -24,8 +24,11 @@ enum class HorizontalFloatingToolbarVariant(val value: String) : Enumerable {
 @OptimizedRecord
 class HorizontalFloatingToolbarColors : Record {
   @Field val toolbarContainerColor: Color? = null
+
   @Field val toolbarContentColor: Color? = null
+
   @Field val fabContainerColor: Color? = null
+
   @Field val fabContentColor: Color? = null
 }
 
@@ -89,7 +92,7 @@ fun FunctionalComposableScope.HorizontalFloatingToolbarContent(props: Horizontal
       floatingActionButton = floatingActionButton,
       colors = colors,
       scrollBehavior = scrollBehavior,
-      modifier = modifier,
+      modifier = modifier
     ) {
       Children(UIComposableScope(), filter = { !isSlotView(it) })
     }
@@ -98,7 +101,7 @@ fun FunctionalComposableScope.HorizontalFloatingToolbarContent(props: Horizontal
       expanded = true,
       colors = colors,
       scrollBehavior = scrollBehavior,
-      modifier = modifier,
+      modifier = modifier
     ) {
       Children(UIComposableScope(), filter = { !isSlotView(it) })
     }

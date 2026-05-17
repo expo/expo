@@ -45,6 +45,12 @@ struct ColorConvertiblesTests {
   }
 
   @Test
+  func `converts from ARGB double`() throws {
+    let color = try CGColor.convert(from: 4283143818.0, appContext: appContext)
+    testColorComponents(color, 0x4B, 0x96, 0x8A, 0xFF)
+  }
+
+  @Test
   func `converts from RGBA hex string`() throws {
     let color = try CGColor.convert(from: "47AC7F51", appContext: appContext)
     testColorComponents(color, 0x47, 0xAC, 0x7F, 0x51)

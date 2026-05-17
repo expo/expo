@@ -119,19 +119,50 @@ All of these must be true:
 
 **Our recommendation:** under 3s including the cold launch time.
 
-#### Extra params
+#### Automatic event params
 
 Each TTI event includes extra params to help triage issues:
 
 - **`expo.frameRate.slowFrames`** (count): Frames that took 17ms or longer to render. If this is high relative to the startup duration, the main thread was consistently busy during launch. Points to heavy layout work, synchronous bridge calls, or too many components rendering at once.
 - **`expo.frameRate.frozenFrames`** (count): Frames that took 700ms or longer to render. These are hard freezes where the app visibly hung. Even one during startup is a serious issue. Usually caused by synchronous I/O, large JSON parsing, or blocking network calls on the main thread.
 - **`expo.frameRate.totalDelay`** (seconds): Total accumulated time all frames exceeded their target duration. This is the single best "smoothness" number. Compare it to TTI: if TTI is 2.5s and `totalDelay` is 0.1s, startup was slow but smooth (the time was spent on legitimate work). If `totalDelay` is 1.5s, the app was janky for most of the startup, and the user was staring at a stuttering screen.
+- **`expo.device.lowPowerMode`** (boolean): Whether the OS power-saver mode (Low Power Mode on iOS, Battery Saver on Android) was active when TTI was reported. Power-saver mode throttles CPU, GPU, and background activity, so a TTI regression that disappears once this flag is filtered out is environmental rather than a code change.
+- **`expo.device.batteryLevel`** (number, 0–1): Fractional battery charge at TTI. Useful for ruling out thermal/throttling effects on devices that aggressively manage performance at low charge. Omitted when the OS does not report a value.
+- **`expo.device.batteryCharging`** (boolean): Whether the device was plugged in or wirelessly charging. Charging tends to raise sustained CPU performance ceilings on iOS and some Android OEMs, so non-charging samples are the more conservative population to compare against.
+- **`expo.device.thermalState`** (string): One of `nominal`, `fair`, `serious`, `critical`, `unknown`. Sustained `serious`/`critical` states cause the OS to throttle the CPU/GPU and can dramatically slow startup independent of any app change.
+- **`expo.network.connected`** (boolean): Whether the device had an internet-capable network at TTI. If TTI degrades only when this is `true`, the cause is likely a network-bound startup path; if it degrades when `false`, the app is doing more work than it should before showing cached content.
+- **`expo.network.type`** (string): One of `wifi`, `cellular`, `ethernet`, `none`, `other`, `unknown`. Use to compare cellular versus Wi-Fi populations &mdash; large gaps usually point to network-bound startup work. VPN traffic is reported as the underlying transport (typically `wifi` or `cellular`) since the VPN tunnels over it. The value set is intentionally the same on Android and iOS so dashboards don't need per-platform branching.
 
 **How to interpret them:**
 
 - **High TTI + low total delay:** startup is slow but smooth. Optimize what's blocking the launch sequence (bundle size, data fetching, initialization chains).
 - **High TTI + high total delay + many slow frames:** main thread contention. Offload work and simplify the initial render tree.
 - **High TTI + high delay + frozen frames:** something is blocking hard. Look for synchronous I/O, large JSON parsing, or blocking API calls.
+
+#### Custom event params
+
+You can attach your own params to the TTI event by passing them to `markInteractive()`. This is useful for slicing TTI by app-specific dimensions such as user cohort, tenant, feature flag variant, or the type of content the screen loaded.
+
+```tsx
+AppMetrics.markInteractive({
+  params: {
+    tenant: 'acme',
+    cohort: 'beta',
+    cacheHit: true,
+  },
+});
+```
+
+You can also override the route name attached to the event, which is otherwise populated from the initial route detected by [Expo Router](/router/introduction/). This useful when the screen's logical name differs from the router path, is a dynamic route, or when not using Expo Router:
+
+```tsx
+AppMetrics.markInteractive({
+  routeName: '/feed',
+  params: { cacheHit: true },
+});
+```
+
+Param values can be strings, numbers, booleans, or other JSON-serializable values.
 
 ## Data handling
 
@@ -145,8 +176,16 @@ Metric data is retained for a minimum of 60 days.
 
 ### Sampling
 
-All sessions are tracked. There is no sampling applied to the data collection.
+By default, all installations dispatch their metrics. To dispatch from a fraction of installations instead, set [`sampleRate`](/eas/observe/configuration/#sampling) when calling `configure()`. The decision is deterministic per installation, so an installation is consistently in-sample or out-of-sample across app launches.
 
 ### Environment
 
-All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default, or can be overridden via [`configure({ environment })`](/eas/observe/configuration/#configure). Metrics with the `development` environment are filtered out before dispatching unless `enableInDebug` is set to `true` in your app config (for information, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development)). You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset), or can be overridden via [`configure({ environment })`](/eas/observe/configuration/#configure). The environment is a metadata tag attached to each metric and does not affect whether metrics are dispatched.
+
+### Debug builds
+
+Metrics collected from debug builds are dropped before dispatching unless `dispatchInDebug` is set to `true` via [`configure()`](/eas/observe/configuration/#configure) (for information, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development)). A build is treated as a debug build if either the native app is a debug build or the JS bundle is a development bundle (`__DEV__` is `true`). This detection is independent of the `environment` value.
+
+### Disabling dispatching
+
+You can disable all dispatching globally using `configure({ dispatchingEnabled: false })`. While disabled, any pending metrics are dropped without being dispatched and no further metrics are dispatched until it is set back to `true`.

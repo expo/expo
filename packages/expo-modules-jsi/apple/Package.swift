@@ -4,21 +4,22 @@
 import PackageDescription
 import Foundation
 
-// Resolve PODS_ROOT from the environment. The build is driven from a CocoaPods
-// build phase that always sets PODS_ROOT before invoking xcodebuild. If it's
-// missing, fall back to a placeholder so `swift package describe` and IDE
-// indexing don't crash — actual compilation will fail loudly.
-let podsRoot = ProcessInfo.processInfo.environment["PODS_ROOT"] ?? "PODS_ROOT_NOT_SET"
+let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
+let podsRoot = resolvePodsRoot()
 
-// Header roots needed by ExpoModulesJSI and ExpoModulesJSI-Cxx. The same paths
-// exist in both prebuilt and source-built React Native layouts, so we don't
-// need to detect the mode.
+// Header roots for ExpoModulesJSI and ExpoModulesJSI-Cxx. The
+// Pods/Headers/Public paths cover no-frameworks and prebuilt-RN; the trailing
+// entries fall back to canonical sources for the static + source-built RN
+// combo, where each React-X / third-party-deps pod compiles as a static
+// framework and its headers don't get mirrored to Pods/Headers/Public. Clang
+// ignores missing `-I` paths, so they're no-ops elsewhere. `RN_ROOT` is
+// forwarded from build-xcframework.sh (Node-resolved for hoisted monorepos).
+// `REACT_NATIVE_PATH` is exported by Xcode for hosts that build RN from a
+// non-npm location, e.g. Expo Go.
 let publicHeaders = "\(podsRoot)/Headers/Public"
-// In source-built RN, third-party deps (folly, boost, etc.) live under
-// per-pod dirs like RCT-Folly/folly/. In prebuilt RN they're bundled into
-// ReactNativeDependencies. Some pods nest their headers (e.g. RCT-Folly/folly/),
-// others place them directly (e.g. boost/preprocessor/), so we include both
-// the Headers/Public root and the per-pod dirs for the nested ones.
+let reactNative = ProcessInfo.processInfo.environment["RN_ROOT"]
+  ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
+  ?? "\(podsRoot)/../../node_modules/react-native"
 let headerSearchPaths = [
   publicHeaders,
   "\(publicHeaders)/React-jsi",
@@ -36,18 +37,28 @@ let headerSearchPaths = [
   "\(publicHeaders)/DoubleConversion",
   "\(publicHeaders)/fmt",
   "\(publicHeaders)/fast_float",
+  "\(reactNative)/ReactCommon",
+  "\(reactNative)/ReactCommon/jsi",
+  "\(reactNative)/ReactCommon/runtimeexecutor",
+  "\(reactNative)/ReactCommon/callinvoker",
+  "\(podsRoot)/RCT-Folly",
+  "\(podsRoot)/fmt/include",
+  "\(podsRoot)/glog/src",
+  "\(podsRoot)/DoubleConversion",
 ]
 
-// Path to the generated module map for the `jsi` Clang module. The build
-// script writes this file at build time so the absolute header path can be
-// resolved against the runtime PODS_ROOT. Lives outside `.build/` so the
-// build script can wipe SwiftPM state without losing the modulemap.
-let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
+// Path to the generated module map for the `jsi` Clang module. The
+// `scripts/generate-modulemap.sh` script writes this file at build time so
+// the absolute header path can be resolved against the runtime PODS_ROOT.
+// Lives outside `.build/` so SwiftPM state can be wiped without losing this
+// file.
 let generatedModuleMap = "\(packageDir)/.generated/module.modulemap"
 let apiNotesPath = "\(packageDir)/APINotes"
 
 let cxxIncludeFlags = headerSearchPaths.map({ "-I\($0)" })
 let swiftIncludeFlags = headerSearchPaths.flatMap({ ["-Xcc", "-I\($0)"] })
+
+let testFrameworks = resolveTestFrameworks()
 
 let package = Package(
   name: "ExpoModulesJSI",
@@ -120,9 +131,47 @@ let package = Package(
     // Tests
     .testTarget(
       name: "Tests",
-      dependencies: ["ExpoModulesJSI"],
+      dependencies: testFrameworks.dependencies,
     ),
-  ],
+  ] + testFrameworks.binaryTargets,
   swiftLanguageModes: [.v6],
   cxxLanguageStandard: .cxx20
 )
+
+// Resolve PODS_ROOT from the environment. CocoaPods build phases always set
+// it; otherwise fall back to bare-expo's Pods so headers resolve for
+// indexing and direct script invocations. The manifest sandbox blocks
+// `fileExists` outside the package — fail loudly later if Pods aren't there.
+func resolvePodsRoot() -> String {
+  let env = ProcessInfo.processInfo.environment
+  if let explicit = env["PODS_ROOT"] {
+    return explicit
+  }
+  let repoRoot = env["EXPO_ROOT_DIR"] ?? URL(fileURLWithPath: packageDir)
+    .deletingLastPathComponent() // expo-modules-jsi
+    .deletingLastPathComponent() // packages
+    .deletingLastPathComponent() // repo root
+    .path
+  return "\(repoRoot)/apps/bare-expo/ios/Pods"
+}
+
+// Prebuilt xcframeworks the test bundle links against so JSI, Hermes, and
+// React symbols resolve at load time. The production xcframework build leaves
+// these unresolved (`-undefined dynamic_lookup`) because the host app provides
+// them — but a unit-test bundle has no such host.
+//
+// SwiftPM requires `binaryTarget` paths to be relative to the package root,
+// so the test wrapper script (`scripts/test.sh`) symlinks each xcframework
+// from $PODS_ROOT into `.test-frameworks/` before invoking xcodebuild.
+func resolveTestFrameworks() -> (binaryTargets: [Target], dependencies: [Target.Dependency]) {
+  let names = ["React", "hermesvm", "ReactNativeDependencies"]
+  let available = names.filter({
+    FileManager.default.fileExists(atPath: "\(packageDir)/.test-frameworks/\($0).xcframework")
+  })
+  let binaryTargets: [Target] = available.map({
+    .binaryTarget(name: $0, path: ".test-frameworks/\($0).xcframework")
+  })
+  let dependencies: [Target.Dependency] = ["ExpoModulesJSI"]
+    + available.map({ .target(name: $0) })
+  return (binaryTargets, dependencies)
+}

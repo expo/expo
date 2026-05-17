@@ -3,8 +3,8 @@ import type { UniversalBaseProps } from '../types';
 /**
  * Props for the [`Spacer`](#spacer) component.
  *
- * A Spacer produces empty space between siblings in a [`Row`](#row) or
- * [`Column`](#column). Use `size` for a fixed amount of space, or `flexible`
+ * A Spacer produces empty space between siblings in a `Row` or
+ * `Column`. Use `size` for a fixed amount of space, or `flexible`
  * to fill the remaining space along the parent's main axis.
  */
 export interface SpacerProps extends UniversalBaseProps {

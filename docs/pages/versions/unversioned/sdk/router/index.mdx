@@ -14,7 +14,7 @@ import APISection from '~/components/plugins/APISection';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
-`expo-router` is a routing library for React Native and web apps. It enables navigation management using a file-based routing system and provides native navigation components and is built on top of [React Navigation](https://reactnavigation.org/).
+`expo-router` is a routing library for React Native and web apps. It enables navigation management using a file-based routing system and provides native navigation components.
 
 <BoxLink
   title="Expo Router guides"
@@ -22,6 +22,8 @@ import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/Con
   href="/router/introduction/"
   Icon={BookOpen02Icon}
 />
+
+> **Important** In **SDK 56 and later**, Expo Router no longer supports importing from external `@react-navigation/*` packages in application code. Repoint those imports to the matching `expo-router` entry points. Run the [codemod](/router/migrate/sdk-55-to-56#automated-migration) or follow the [SDK 55 to 56 migration guide](/router/migrate/sdk-55-to-56) to update your project.
 
 ## Installation
 

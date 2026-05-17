@@ -71,14 +71,14 @@ export function ContentSpotlight({
           src={src}
           alt={alt}
           className={mergeClasses(
-            'duration-default inline rounded-md transition-opacity ease-in-out hover:opacity-80',
+            'inline rounded-md transition-opacity duration-default ease-in-out hover:opacity-80',
             className
           )}
         />
       ) : isVideo ? (
         <div
           className={mergeClasses(
-            'bg-palette-black relative overflow-hidden rounded-lg',
+            'relative overflow-hidden rounded-lg bg-palette-black',
             hasCustomPlayerSize ? 'mx-auto' : 'aspect-video'
           )}
           ref={playerRef}
@@ -103,7 +103,7 @@ export function ContentSpotlight({
           />
           <div
             className={mergeClasses(
-              'max-md-gutters:hidden pointer-events-none absolute inset-0 transition-opacity duration-500',
+              'pointer-events-none absolute inset-0 transition-opacity duration-500 max-md:hidden',
               isInView ? 'opacity-0' : 'opacity-70'
             )}
           />
@@ -112,7 +112,7 @@ export function ContentSpotlight({
       {caption && (
         <figcaption
           className={mergeClasses(
-            'text-secondary mt-3.5 cursor-text px-8 py-2 text-center text-sm',
+            'mt-3.5 cursor-text px-8 py-2 text-center text-sm text-secondary',
             isVideo && 'bg-transparent'
           )}>
           {caption}

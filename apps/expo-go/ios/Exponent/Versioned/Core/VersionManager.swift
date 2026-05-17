@@ -62,6 +62,10 @@ final class VersionManager: EXVersionManagerObjC {
     self.appContext = appContext
     self.legacyModuleRegistry = legacyModuleRegistry
 
+    // The default ConstantsProvider returns "bare" for `executionEnvironment`, Expo Go
+    // needs "storeClient" and the loaded app's manifest, which EXConstantsBinding provides.
+    appContext.constants = EXConstantsBinding(params: params)
+
     registerExpoModules(appContext)
     hasRegisteredExpoModules = true
 
@@ -111,6 +115,7 @@ final class VersionManager: EXVersionManagerObjC {
       return
     }
     appContext.moduleRegistry.register(module: ExpoGoModule(appContext: appContext, manifest: manifest), name: nil)
+    appContext.moduleRegistry.register(module: SnackDirectTransport(appContext: appContext), name: nil)
 
     guard let updatesKernelService = kernelServices["EXUpdatesManager"] as? UpdatesBindingDelegate else {
       log.error("Unable to register Expo modules, the app context or kernel services is unavailable")

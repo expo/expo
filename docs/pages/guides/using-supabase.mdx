@@ -50,8 +50,8 @@ Create a helper file to initialize the Supabase client (`@supabase/supabase-js`)
 import 'expo-sqlite/localStorage/install';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = YOUR_REACT_NATIVE_SUPABASE_URL;
-const supabasePublishableKey = YOUR_REACT_NATIVE_SUPABASE_PUBLISHABLE_KEY;
+const supabaseUrl = YOUR_REACT_NATIVE_SUPABASE_URL!;
+const supabasePublishableKey = YOUR_REACT_NATIVE_SUPABASE_PUBLISHABLE_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {

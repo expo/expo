@@ -45,21 +45,33 @@ export function BenchmarkTable(props: { group: Group; state: State; onRun: () =>
       ]}>
       <View
         style={[
-          styles.headerRow,
+          styles.header,
           {
             backgroundColor: theme.background.subtle,
             borderBottomColor: theme.border.default,
           },
         ]}>
-        <View style={styles.headerTitleColumn}>
+        <View style={styles.headerRow}>
           <Code style={[styles.headerTitle, { color: theme.text.default }]}>{group.title}</Code>
-          <Text style={[styles.headerIterations, { color: theme.text.quaternary }]}>
-            {iterationsOf(group).toLocaleString()}× per benchmark
-          </Text>
+          <View style={styles.headerRightColumn}>
+            <Text style={[styles.headerIterations, { color: theme.text.quaternary }]}>
+              {iterationsOf(group).toLocaleString()}×
+            </Text>
+            <Pressable
+              onPress={onRun}
+              style={({ pressed }) => [
+                styles.runButton,
+                pressed && { backgroundColor: theme.background.element },
+              ]}>
+              <Text style={[styles.runButtonText, { color: theme.text.link }]}>Run</Text>
+            </Pressable>
+          </View>
         </View>
-        <Pressable onPress={onRun} style={styles.runButton}>
-          <Text style={[styles.runButtonText, { color: theme.text.link }]}>Run</Text>
-        </Pressable>
+        {group.description && (
+          <Text style={[styles.headerDescription, { color: theme.text.secondary }]}>
+            {group.description}
+          </Text>
+        )}
       </View>
       {group.benchmarks.map((benchmark, index) => {
         const cell = state[benchmarkIdOf(group, benchmark)];
@@ -233,30 +245,42 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     overflow: 'hidden',
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  header: {
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  headerTitleColumn: {
-    flex: 1,
-    paddingRight: 12,
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  headerRightColumn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   headerTitle: {
+    flex: 1,
     fontSize: 16,
     fontWeight: '600',
   },
   headerIterations: {
     fontSize: 12,
-    marginTop: 2,
     fontVariant: ['tabular-nums'],
   },
+  headerDescription: {
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: 6,
+  },
   runButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginTop: -10,
+    marginRight: -12,
+    marginBottom: -10,
   },
   runButtonText: {
     fontSize: 15,

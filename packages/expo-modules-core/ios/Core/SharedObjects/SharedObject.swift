@@ -66,52 +66,87 @@ open class SharedObject: AnySharedObject {
   public func getJavaScriptObject() -> JavaScriptObject? {
     return appContext?.sharedObjectRegistry.toJavaScriptObject(self)
   }
-}
 
-// Unfortunately the `emit` function needs to be defined in the extension.
-// When put in the class, pack expansion is crashing with `EXC_BAD_ACCESS` code.
-// See https://github.com/apple/swift/issues/72381 for more details.
-public extension SharedObject { // swiftlint:disable:this no_grouping_extension
-  // Parameter packs feature requires Swift 5.9 (Xcode 15.0), but some CIs and EAS images may still use older versions.
-  // As of April 29, all submissions must be made with Xcode 15, so hopefully we can remove this condition soon.
-  // No one should use <15.0 these days.
-  #if swift(>=5.9)
   /**
-   Schedules an event with the given name and arguments to be emitted to the associated JavaScript object.
+   Schedules an event with the given name and a pre-converted JavaScript payload to be emitted
+   to the associated JavaScript object. This is the lowest-level emit overload — use it when the
+   value is already a `JavaScriptValue` to skip the native-to-JS conversion step.
    */
-  func emit<each A: AnyArgument>(event: String, arguments: repeat each A) {
+  public func emit(event: String, payload: JavaScriptValue) {
     guard let appContext, let runtime = try? appContext.runtime else {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
+    guard let jsValue = getJavaScriptValue() else {
+      log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+      return
+    }
+    runtime.schedule {
+      dispatch(event: event, payload: payload, to: jsValue, in: runtime)
+    }
+  }
 
-    // Collect arguments and their dynamic types from parameter pack
-    var argumentPairs: [(AnyArgument, AnyDynamicType)] = []
-    repeat argumentPairs.append((each arguments, ~(each A).self))
+  /**
+   Schedules an event with the given name to be emitted to the associated JavaScript object.
+   */
+  public func emit(event: String) {
+    emit(event: event, payload: .undefined)
+  }
 
-    // Schedule the event to be asynchronously emitted from the runtime's thread
-    runtime.schedule { [weak self, weak appContext] in
-      guard let appContext, let runtime = try? appContext.runtime, let jsValue = self?.getJavaScriptValue() else {
-        log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS object is no longer associated with the native instance")
+  /**
+   Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
+   */
+  public func emit<P: AnyArgument>(event: String, payload: sending P) {
+    guard let appContext, let runtime = try? appContext.runtime else {
+      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
+      return
+    }
+    guard let jsValue = getJavaScriptValue() else {
+      log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+      return
+    }
+    runtime.schedule { [weak appContext] in
+      guard let appContext else {
         return
       }
-
-      // Convert native arguments to JS, just like function results
-      let arguments = argumentPairs.map { argument, dynamicType in
-        return Conversions.convertFunctionResult(argument, appContext: appContext, dynamicType: dynamicType)
-      }
-
-      runtime.withUnsafePointee { runtimePtr in
-        jsValue.withUnsafePointee { objectPtr in
-          JSUtils.emitEvent(event, runtimePointer: runtimePtr, objectPointer: objectPtr, withArguments: arguments)
-        }
+      do {
+        let jsPayload = try (~P.self).castToJS(payload, appContext: appContext, in: runtime)
+        dispatch(event: event, payload: jsPayload, to: jsValue, in: runtime)
+      } catch {
+        log.warn("Failed to convert payload for event '\(event)' on \(P.self); the event will not be emitted: \(error)")
+        return
       }
     }
   }
-  #else // swift(>=5.9)
-  @available(*, unavailable, message: "Unavailable in Xcode <15.0")
-  public func emit(event: String, arguments: AnyArgument...) {
-    fatalError("Emitting events to JS requires at least Xcode 15.0")
+
+  /**
+   Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
+   call sites keep working unchanged; the parameter has been renamed to `payload` to make the
+   single-payload semantics explicit, so callers should migrate the label.
+   */
+  @available(*, deprecated, renamed: "emit(event:payload:)", message: "Use `emit(event:payload:)` and pass a single value (typically a dictionary). Multi-argument event emission is no longer supported.")
+  public func emit<P: AnyArgument>(event: String, arguments: sending P) {
+    emit(event: event, payload: arguments)
   }
-  #endif // swift(<5.9)
+}
+
+/**
+ Sends a pre-converted event payload to the given JavaScript object via the JSI emitter helper.
+ Must run on the JS thread; the public `emit` overloads schedule onto the runtime before calling in.
+ */
+@JavaScriptActor
+private func dispatch(event: String, payload: JavaScriptValue, to value: JavaScriptValue, in runtime: JavaScriptRuntime) {
+  runtime.withUnsafePointee { runtimePtr in
+    value.withUnsafePointee { objectPtr in
+      payload.withUnsafePointee { payloadPtr in
+        JSUtils.emitEvent(
+          event,
+          runtimePointer: runtimePtr,
+          objectPointer: objectPtr,
+          argumentsPointer: payloadPtr,
+          argumentCount: 1
+        )
+      }
+    }
+  }
 }

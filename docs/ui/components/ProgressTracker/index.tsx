@@ -91,7 +91,7 @@ export function ProgressTracker({
 
   return (
     <>
-      <div className="border-palette-gray4 mx-auto flex w-full flex-col gap-4 rounded-lg border-2 px-4 py-5">
+      <div className="mx-auto flex w-full flex-col gap-4 rounded-lg border-2 border-palette-gray4 px-4 py-5">
         <SuccessCheckmark
           size="sm"
           className={mergeClasses(
@@ -100,11 +100,11 @@ export function ProgressTracker({
           )}
         />
         <div className="flex flex-col items-center justify-center gap-2">
-          <p className="text-default heading-lg flex items-center text-center">
-            <BookOpen02Icon className="text-icon-secondary max-md-gutters:hidden mr-2 size-6!" />{' '}
+          <p className="flex items-center text-center heading-lg text-default">
+            <BookOpen02Icon className="mr-2 size-6! text-icon-secondary max-md:hidden" />{' '}
             {currentChapter.title}
           </p>
-          <p className="text-secondary max-w-[60ch] pb-2 text-center leading-normal">{summary}</p>
+          <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">{summary}</p>
         </div>
         <div className="flex items-center justify-center">
           <Checkbox

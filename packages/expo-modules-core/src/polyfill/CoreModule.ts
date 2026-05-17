@@ -100,9 +100,9 @@ export class SharedObject<TEventsMap extends Record<never, never>>
 }
 
 export class SharedRef<
-    TNativeRefType extends string = 'unknown',
-    TEventsMap extends EventsMap = Record<never, never>,
-  >
+  TNativeRefType extends string = 'unknown',
+  TEventsMap extends EventsMap = Record<never, never>,
+>
   extends SharedObject<TEventsMap>
   implements SharedRefType<TNativeRefType>
 {

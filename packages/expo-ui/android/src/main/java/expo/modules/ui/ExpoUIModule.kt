@@ -86,7 +86,8 @@ class ExpoUIModule : Module() {
     //region Views use expo-modules-core DSL for uncommon features
 
     View(HostView::class) {
-      Events("onLayoutContent")
+      // See ShadowNodeSyncFlush.kt for why onExpoUISyncFlush is needed.
+      Events("onLayoutContent", "onExpoUISyncFlush")
 
       OnViewDidUpdateProps { view ->
         view.onViewDidUpdateProps()
@@ -123,7 +124,10 @@ class ExpoUIModule : Module() {
       colorScheme.toTokenMap()
     }
 
-    View(RNHostView::class)
+    View(RNHostView::class) {
+      // See ShadowNodeSyncFlush.kt for why this internal phantom event is needed.
+      Events("onExpoUISyncFlush")
+    }
 
     View(SlotView::class) {
       Events("onSlotEvent")
@@ -135,6 +139,8 @@ class ExpoUIModule : Module() {
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)
     View(RichTooltipView::class)
+    // Class-based view so SnackbarHostView can read its styling via findChildOfType
+    View(SnackbarView::class)
 
     //endregion Views use expo-modules-core DSL for uncommon features
 
@@ -592,6 +598,14 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<SnackbarHostProps>("SnackbarHostView") {
+      val showSnackbar by AsyncFunction<SnackbarShowOptions>()
+
+      Content { props ->
+        SnackbarHostContent(props, showSnackbar)
+      }
+    }
+
     ExpoUIView<TooltipBoxViewProps>("TooltipBoxView") {
       val show by AsyncFunction()
       val dismiss by AsyncFunction()
@@ -603,21 +617,27 @@ class ExpoUIModule : Module() {
 
     ExpoUIView<TextFieldProps>("TextFieldView") {
       val setText by AsyncFunction<String>()
+      val setSelection by AsyncFunction<Int, Int>()
+      val clear by AsyncFunction()
       val focus by AsyncFunction()
       val blur by AsyncFunction()
       val onValueChange by Event<TextFieldValuePayload>()
       val onFocusChanged by Event<GenericEventPayload1<Boolean>>()
       val onKeyboardAction by Event<KeyboardActionEvent>()
+      val onSelectionChange by Event<TextFieldSelectionPayload>()
 
       Content { props ->
         TextFieldContent(
           props,
           setText,
+          setSelection,
+          clear,
           focus,
           blur,
           onValueChanged = { onValueChange(it) },
           onFocusChange = { onFocusChanged(it) },
-          onKeyboardActionTriggered = { onKeyboardAction(it) }
+          onKeyboardActionTriggered = { onKeyboardAction(it) },
+          onSelectionChanged = { onSelectionChange(it) }
         )
       }
     }
@@ -663,6 +683,12 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         ExposedDropdownMenuContent(props) { onDismissRequest(Unit) }
+      }
+    }
+
+    ExpoUIView<MaskViewProps>("MaskView") {
+      Content { props ->
+        MaskViewContent(props)
       }
     }
 

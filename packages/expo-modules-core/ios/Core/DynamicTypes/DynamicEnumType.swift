@@ -25,8 +25,9 @@ internal struct DynamicEnumType: AnyDynamicType {
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
-    // Idempotent: `MainValueConverter.toNative` calls this after `cast(jsValue:)`,
-    // which already hydrates the enum. Pass it through unchanged in that case.
+    // Pass through values that are already the hydrated enum, e.g. when called from
+    // record-field setters with a `[String: Any]` dictionary that already contains the
+    // enum case (rather than its raw value).
     if let value = value as? any Enumerable, type(of: value) == innerType {
       return value
     }

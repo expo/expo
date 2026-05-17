@@ -262,7 +262,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
       FatalError.runtimeLost()
     }
     assert(isString(), "Value is not a string")
-    return String(pointee.getString(jsiRuntime).utf16(jsiRuntime))
+    return String(pointee.getString(jsiRuntime).utf8(jsiRuntime))
   }
 
   /**
@@ -447,7 +447,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return String(pointee.toString(jsiRuntime).utf16(jsiRuntime))
+    return String(pointee.toString(jsiRuntime).utf8(jsiRuntime))
   }
 
   /**
@@ -704,11 +704,11 @@ extension JavaScriptValue: JavaScriptRepresentable {
 }
 
 extension JavaScriptValue: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> JavaScriptValue {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptValue {
     FatalError.unimplemented()
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return facebook.jsi.Value(runtime, pointee)
   }
 }

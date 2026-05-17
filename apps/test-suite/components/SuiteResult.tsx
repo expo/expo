@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import SpecResult from './SpecResult';
 import { useTheme } from '../../common/ThemeProvider';
 import { type Status } from '../constants/Statuses';
 import { type Suite } from '../types';
-import SpecResult from './SpecResult';
 
 function childHasFailures(suite: Suite): boolean {
   if (suite.specs.some((s) => s.status === 'failed')) {

@@ -8,6 +8,10 @@ export type DropdownMenuItemElementColors = {
     textColor?: ColorValue;
     /** Color of the text when the menu item is disabled. */
     disabledTextColor?: ColorValue;
+    leadingIconColor?: ColorValue;
+    trailingIconColor?: ColorValue;
+    disabledLeadingIconColor?: ColorValue;
+    disabledTrailingIconColor?: ColorValue;
 };
 /**
  * Props of the `DropdownMenuItem` component.

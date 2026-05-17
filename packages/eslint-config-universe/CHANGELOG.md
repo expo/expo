@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 15.1.1 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `eslint-plugin-react-hooks@^7.0.0` ([#43820](https://github.com/expo/expo/pull/43820) by [@hassankhan](https://github.com/hassankhan))
+
+## 15.1.0 — 2026-05-05
+
+### 🎉 New features
+
+- Disabled `import/no-named-as-default` in both core and TypeScript presets ([#45088](https://github.com/expo/expo/pull/45088) by [@hassankhan](https://github.com/hassankhan))
+
+## 15.0.4 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
 ## 15.0.3 — 2025-04-25
 
 _This version does not introduce any user-facing changes._

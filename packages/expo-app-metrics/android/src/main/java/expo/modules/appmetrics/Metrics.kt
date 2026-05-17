@@ -14,22 +14,6 @@ enum class AppStartupMetric(
   }
 }
 
-enum class FrameRateMetric(
-  val metricName: String
-) {
-  RenderedFrames("renderedFrames"),
-  ExpectedFrames("expectedFrames"),
-  DroppedFrames("droppedFrames"),
-  FrozenFrames("frozenFrames"),
-  SlowFrames("slowFrames"),
-  FreezeTime("freezeTime"),
-  SessionDuration("sessionDuration");
-
-  companion object {
-    val category = MetricCategory.FrameRate
-  }
-}
-
 enum class MemoryMetric(
   val metricName: String
 ) {
@@ -46,7 +30,7 @@ enum class MetricCategory(
   val categoryName: String
 ) {
   AppStartup("appStartup"),
-  FrameRate("frameRate"),
   Memory("memory"),
-  Updates("updates")
+  Updates("updates"),
+  Navigation("navigation")
 }

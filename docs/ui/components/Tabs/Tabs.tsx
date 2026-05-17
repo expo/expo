@@ -76,8 +76,8 @@ const InnerTabs = ({
     <ReachTabs
       index={tabIndex}
       onChange={setIndex}
-      className="border-default my-4 rounded-md border shadow-xs">
-      <TabList className="border-secondary flex flex-wrap gap-1 border-b px-4 py-3">
+      className="my-4 rounded-md border border-default shadow-xs">
+      <TabList className="flex flex-wrap gap-1 border-b border-secondary px-4 py-3">
         {tabTitles.map((title, index) => (
           <TabButton key={index} active={index === tabIndex} label={title} layoutId={layoutId} />
         ))}

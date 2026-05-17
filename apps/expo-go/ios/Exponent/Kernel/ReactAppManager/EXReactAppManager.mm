@@ -332,10 +332,8 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
-    // Notify the dev menu that the manifest has changed
-    if ([self enablesDeveloperTools]) {
-      [[DevMenuManager shared] notifyManifestChanged];
-    }
+    // Notify the dev menu that the manifest has changed (all projects, dev and published)
+    [[DevMenuManager shared] notifyManifestChanged];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {

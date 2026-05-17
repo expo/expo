@@ -14,8 +14,7 @@ export type RequestHandler = (req: Request) => Promise<Response>;
 const STORE = new AsyncLocalStorage();
 
 export interface RequestHandlerParams
-  extends ExpoRequestHandlerParams,
-    Partial<ExpoRequestHandlerInput> {}
+  extends ExpoRequestHandlerParams, Partial<ExpoRequestHandlerInput> {}
 
 /**
  * Returns a request handler for Express that serves the response using Remix.

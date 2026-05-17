@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { addTemplateTarball } from './addTemplateTarball';
+import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
@@ -13,6 +14,7 @@ import { loadRequestedParcels } from './loadRequestedParcels';
 import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
+import { refreshPnpmLockfile } from './refreshPnpmLockfile';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { updateAndroidProjects } from './updateAndroidProjects';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
@@ -59,9 +61,9 @@ const cleanWorkingTree = new Task<TaskArgs>(
         });
         // Remove tarballs.
         await Git.cleanAsync({
-          recursive: false,
+          recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'templates/**/*.tgz'],
+          paths: ['packages/**/*.tgz', 'packages/**/prebuilds/**', 'templates/**/*.tgz'],
         });
       },
       'Cleaned up the working tree'
@@ -90,9 +92,11 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updateIosProjects,
       addTemplateTarball,
       cutOffChangelogs,
+      refreshPnpmLockfile,
       commitStagedChanges,
       pushCommittedChanges,
       publishAndroidArtifacts,
+      bundleIOSPrebuilds,
       publishPackages,
       updateVersionsEndpoint,
       grantTeamAccessToPackages,

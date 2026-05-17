@@ -1,6 +1,6 @@
 'use client';
 
-import type { LoaderFunction } from 'expo-server';
+import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
@@ -20,6 +20,7 @@ export type LoadedRoute = {
   getNavOptions?: (args: any) => any;
   generateStaticParams?: (props: { params?: Params }) => Params[];
   loader?: LoaderFunction;
+  generateMetadata?: GenerateMetadataFunction;
 };
 
 export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'>;

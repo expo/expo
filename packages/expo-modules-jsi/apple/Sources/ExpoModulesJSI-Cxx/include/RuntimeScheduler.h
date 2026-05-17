@@ -2,65 +2,76 @@
 
 #ifdef __cplusplus
 
-#include <memory>
+#include <atomic>
 #include <swift/bridging>
-#include <jsi/jsi.h>
-#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-
-namespace jsi = facebook::jsi;
-namespace react = facebook::react;
 
 namespace expo {
 
 /**
- Wrapper for RuntimeScheduler from React which for some reason cannot be constructed from Swift.
- Imported as a shared reference type so Swift manages its lifetime via retain/release.
+ Wrapper around React Native's RuntimeScheduler. The native scheduler reference
+ and dispatch trampoline are supplied by the host (e.g. ExpoReactNativeFactory)
+ at construction time. The xcframework intentionally avoids linking against
+ React-runtimescheduler so the prebuilt binary works with hosts that build RN
+ either as a dynamic framework or as a static archive — without needing
+ -undefined dynamic_lookup to resolve React internals.
+
+ Priority values mirror facebook::react::SchedulerPriority — kept here as a
+ plain enum so we don't include the React header.
  */
 class RuntimeScheduler {
-private:
-  std::shared_ptr<react::RuntimeScheduler> reactRuntimeScheduler;
+public:
+  enum class Priority : int {
+    ImmediatePriority = 1,
+    UserBlockingPriority = 2,
+    NormalPriority = 3,
+    LowPriority = 4,
+    IdlePriority = 5,
+  };
+
+  using ScheduleTaskCallback = void(^)();
 
   /**
-   Reference count managed by Swift's ARC via SWIFT_SHARED_REFERENCE.
-   Prevents premature deallocation when C++ shared_ptr and Swift references coexist.
+   Trampoline implemented by the host — casts `nativeScheduler` back to
+   react::RuntimeScheduler* and calls scheduleTask on it. Keeping it as a
+   function pointer keeps React types out of this header.
    */
+  using ScheduleFn = void (*)(void *nativeScheduler, int priority, ScheduleTaskCallback callback);
+
+private:
+  void *const nativeScheduler{nullptr};
+  const ScheduleFn scheduleFn{nullptr};
+
   std::atomic<int> refCount{1};
 
 public:
   /**
-   Constructs the scheduler from a React Native runtime binding.
-   Falls back to a no-op scheduler when no binding is installed.
+   Constructs a scheduler bound to a host-provided native RuntimeScheduler.
+   `scheduleTask` dispatches through `fn`, which the host implements against
+   the real react::RuntimeScheduler.
    */
-  RuntimeScheduler(jsi::Runtime &runtime) {
-    if (auto binding = react::RuntimeSchedulerBinding::getBinding(runtime)) {
-      reactRuntimeScheduler = binding->getRuntimeScheduler();
-    }
-  }
+  RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
+      : nativeScheduler(scheduler), scheduleFn(fn) {}
 
   /**
-   Constructs a no-op scheduler for standalone runtimes (e.g. tests).
-   Scheduled tasks are executed synchronously by the caller.
+   Constructs a no-op scheduler. Scheduled tasks run synchronously on the
+   caller's thread — intended for standalone runtimes (e.g. tests) that have
+   no React scheduler.
    */
   RuntimeScheduler() {}
 
-  RuntimeScheduler(const RuntimeScheduler &) = delete; // non-copyable
+  RuntimeScheduler(const RuntimeScheduler &) = delete;
 
   /**
    Whether the scheduler can dispatch work asynchronously to the JS thread.
    When false, tasks run synchronously and callers should avoid dispatching to background queues.
    */
   bool supportsAsyncScheduling() const noexcept {
-    return reactRuntimeScheduler != nullptr;
+    return scheduleFn != nullptr;
   }
 
-  using ScheduleTaskCallback = void(^)();
-
-  void scheduleTask(react::SchedulerPriority priority, ScheduleTaskCallback callback) noexcept {
-    if (reactRuntimeScheduler) {
-      reactRuntimeScheduler->scheduleTask(priority, [callback = std::move(callback)](jsi::Runtime &runtime) {
-        callback();
-      });
+  void scheduleTask(Priority priority, ScheduleTaskCallback callback) noexcept {
+    if (scheduleFn != nullptr) {
+      scheduleFn(nativeScheduler, static_cast<int>(priority), callback);
     } else {
       callback();
     }

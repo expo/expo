@@ -1,5 +1,5 @@
-enum WidgetsStorage {
-  static var appGroupIdentifier: String? = Bundle.main.object(forInfoDictionaryKey: "ExpoWidgetsAppGroupIdentifier") as? String
+public enum WidgetsStorage {
+  public static var appGroupIdentifier: String? = Bundle.main.object(forInfoDictionaryKey: "ExpoWidgetsAppGroupIdentifier") as? String
   static let defaults = UserDefaults(suiteName: appGroupIdentifier)
 
   static func set(_ value: [String: Any], forKey key: String) {
@@ -26,25 +26,25 @@ enum WidgetsStorage {
     defaults.set(value, forKey: key)
   }
 
-  static func getDictionary(forKey key: String) -> [String: Any]? {
+  public static func getDictionary(forKey key: String) -> [String: Any]? {
     guard let defaults else { return nil }
 
     return defaults.dictionary(forKey: key)
   }
 
-  static func getArray(forKey key: String) -> [Any]? {
+  public static func getArray(forKey key: String) -> [Any]? {
     guard let defaults else { return nil }
 
     return defaults.array(forKey: key)
   }
 
-  static func getData(forKey key: String) -> Data? {
+  public static func getData(forKey key: String) -> Data? {
     guard let defaults else { return nil }
 
     return defaults.data(forKey: key)
   }
 
-  static func getString(forKey key: String) -> String? {
+  public static func getString(forKey key: String) -> String? {
     guard let defaults else { return nil }
 
     return defaults.string(forKey: key)

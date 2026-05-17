@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-#include <react/jni/ReadableNativeArray.h>
+#include "ExpoHeader.pch"
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;

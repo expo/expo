@@ -1,6 +1,7 @@
 import '../State/index.fx';
 
 export * from './AccessoryWidgetBackground';
+export * from './Alert';
 export * from './BottomSheet';
 export * from './Button';
 export * from './Chart';
@@ -33,12 +34,18 @@ export * from './ShareLink';
 export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
+export * from './SwipeActions';
 export * from './Text';
 export { useNativeState } from '../State/useNativeState';
 export * from './SyncToggle';
 export * from './TabView';
 export * from './Toggle';
-export * from './TextField';
+export {
+  TextField,
+  type TextFieldProps,
+  type TextFieldRef,
+  type TextFieldSelection,
+} from './TextField';
 export * from './SecureField';
 export * from './Namespace';
 export * from './GlassEffectContainer';

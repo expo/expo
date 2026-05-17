@@ -35,7 +35,7 @@ export const SDKRangeTag = ({ min, max, exact, className, ...rest }: SDKRangeTag
       <Tooltip.Trigger asChild>
         <div
           className={mergeClasses(
-            'border-default bg-element inline-flex min-h-[21px] items-center gap-1 rounded-full border px-[7px] py-0.5 align-middle select-none',
+            'inline-flex min-h-5.25 items-center gap-1 rounded-full border border-default bg-element px-1.75 py-0.5 align-middle select-none',
             '[table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5',
             '[h2_&]:px-2 [h2_&]:py-1',
             '[h3_&]:px-2 [h3_&]:py-0.5',

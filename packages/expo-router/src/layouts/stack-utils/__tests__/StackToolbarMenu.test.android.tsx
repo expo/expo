@@ -247,6 +247,20 @@ describe('NativeToolbarMenu', () => {
         expect(icon.props.size).toBe(24);
       });
 
+      it('passes accessibilityLabel to root Icon as contentDescription', () => {
+        render(<NativeToolbarMenu {...defaultProps} accessibilityLabel="More options" />);
+
+        const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+        expect(icon.props.contentDescription).toBe('More options');
+      });
+
+      it('omits contentDescription when accessibilityLabel is not provided', () => {
+        render(<NativeToolbarMenu {...defaultProps} />);
+
+        const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+        expect(icon.props.contentDescription).toBeUndefined();
+      });
+
       it('renders DropdownMenu with IconButton trigger', () => {
         render(<NativeToolbarMenu {...defaultProps} />);
 

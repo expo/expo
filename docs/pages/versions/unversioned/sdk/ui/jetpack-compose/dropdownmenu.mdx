@@ -8,8 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI DropdownMenu matches the official Jetpack Compose [Menu API](https://developer.android.com/develop/ui/compose/components/menu) and displays a dropdown menu when a trigger element is pressed.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/dropdownmenu/android-light.webp"
+  darkSource="/static/images/expo-ui/dropdownmenu/android-dark.webp"
+  alt="Three-dot more menu opened to show Edit, Share, and Delete options with leading icons"
+/>
 
 ## Installation
 
@@ -20,7 +28,7 @@ Expo UI DropdownMenu matches the official Jetpack Compose [Menu API](https://dev
 ### Basic dropdown menu
 
 ```tsx BasicDropdownMenuExample.tsx
-import { Host, DropdownMenu, Button, Text, Icon } from '@expo/ui/jetpack-compose';
+import { Host, DropdownMenu, DropdownMenuItem, Button, Text, Icon } from '@expo/ui/jetpack-compose';
 import { useState } from 'react';
 
 export default function BasicDropdownMenuExample() {
@@ -45,6 +53,105 @@ export default function BasicDropdownMenuExample() {
             <DropdownMenuItem.LeadingIcon>
               <Icon source={homeIcon} size={24} />
             </DropdownMenuItem.LeadingIcon>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
+### React Native components as trigger
+
+You can use a React Native view (such as `Pressable`) as the dropdown's trigger by wrapping it in [`RNHostView`](rnhostview).
+
+```tsx RNTriggerDropdownMenuExample.tsx
+import {
+  Host,
+  DropdownMenu,
+  DropdownMenuItem,
+  Text as ComposeText,
+  RNHostView,
+} from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+import { Pressable, Text } from 'react-native';
+
+export default function RNTriggerDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+        <DropdownMenu.Trigger>
+          <RNHostView matchContents>
+            <Pressable
+              onPress={() => setIsExpanded(true)}
+              style={{
+                alignSelf: 'flex-start',
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 8,
+                backgroundColor: '#9B59B6',
+              }}>
+              <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+            </Pressable>
+          </RNHostView>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <ComposeText>Item 1</ComposeText>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <ComposeText>Item 2</ComposeText>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
+### Long-press trigger
+
+Jetpack Compose has no dedicated long-press menu primitive — you compose one from a [`combinedClickable`](./modifiers.mdx) modifier on the trigger view plus the existing controlled `DropdownMenu`. The menu anchors to the trigger automatically.
+
+```tsx LongPressDropdownMenuExample.tsx
+import { Host, DropdownMenu, DropdownMenuItem, Text } from '@expo/ui/jetpack-compose';
+import { background, combinedClickable } from '@expo/ui/jetpack-compose/modifiers';
+import { useState } from 'react';
+
+export default function LongPressDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+        <DropdownMenu.Trigger>
+          <Text
+            modifiers={[
+              background('#e0e0e0'),
+              combinedClickable({
+                onClick: () => console.log('Short tap'),
+                onLongClick: () => setIsExpanded(true),
+              }),
+            ]}>
+            Long-press me
+          </Text>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <Text>Copy</Text>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            elementColors={{ textColor: '#B3261E' }}
+            onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <Text>Delete</Text>
+            </DropdownMenuItem.Text>
           </DropdownMenuItem>
         </DropdownMenu.Items>
       </DropdownMenu>

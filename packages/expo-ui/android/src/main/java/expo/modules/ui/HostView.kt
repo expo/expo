@@ -157,10 +157,10 @@ internal class HostView(context: Context, appContext: AppContext) :
     ) { measurables, constraints ->
       val useViewportSizeMeasurement = props.useViewportSizeMeasurement.value
 
-      // useViewportSizeMeasurement: clamp Infinity/0 maxConstraints to the safe area so the                                                               
-      // content has a concrete size to fill. 
-      // matchContents: pass through, so children measure 
-      // at intrinsic size (the unbounded constraint comes from onMeasure's UNSPECIFIED). 
+      // useViewportSizeMeasurement: clamp Infinity/0 maxConstraints to the safe area so the
+      // content has a concrete size to fill.
+      // matchContents: pass through, so children measure
+      // at intrinsic size (the unbounded constraint comes from onMeasure's UNSPECIFIED).
       val boundedConstraints = Constraints(
         minWidth = constraints.minWidth,
         maxWidth = if (useViewportSizeMeasurement &&
@@ -193,6 +193,7 @@ internal class HostView(context: Context, appContext: AppContext) :
             if (constraints.maxWidth == 0) widthDp else Double.NaN,
             if (constraints.maxHeight == 0) heightDp else Double.NaN
           )
+          flushPendingStateUpdates()
         }
       }
 
@@ -221,6 +222,7 @@ internal class HostView(context: Context, appContext: AppContext) :
         val styleWidth = if (matchContentsHorizontal == true && width > 0) width else null
         val styleHeight = if (matchContentsVertical == true && height > 0) height else null
         shadowNodeProxy.setStyleSize(styleWidth?.toDouble(), styleHeight?.toDouble())
+        flushPendingStateUpdates()
       }
 
       onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble()))

@@ -18,15 +18,15 @@ export function AskPageAIChatInput({
   conversationLength,
 }: AskPageAIChatInputProps) {
   return (
-    <div className="border-default mt-auto border-t px-5 pt-4 pb-6">
+    <div className="mt-auto border-t border-default px-5 pt-4 pb-6">
       <form
-        className="border-default bg-default flex items-center gap-1 rounded-md border px-2 py-1.5"
+        className="flex items-center gap-1 rounded-md border border-default bg-default px-2 py-1.5"
         onSubmit={onSubmit}
         aria-label="Ask AI form">
         <textarea
           aria-label="Ask AI about this page"
           placeholder="Ask about this page (Shift+Enter for newline)"
-          className="bg-subtle placeholder:text-tertiary max-h-[160px] min-h-[64px] flex-1 resize-none overflow-y-auto rounded-md border border-transparent px-3 py-2 text-sm leading-relaxed outline-none focus:shadow-none! focus:ring-0 focus:outline-none! focus-visible:shadow-none! focus-visible:ring-0 focus-visible:outline-none!"
+          className="max-h-40 min-h-16 flex-1 resize-none overflow-y-auto rounded-md border border-transparent bg-subtle px-3 py-2 text-sm leading-relaxed outline-none placeholder:text-tertiary focus:shadow-none! focus:ring-0 focus:outline-none! focus-visible:shadow-none! focus-visible:ring-0 focus-visible:outline-none!"
           rows={2}
           value={question}
           onChange={event => {

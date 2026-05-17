@@ -1,60 +1,35 @@
 ---
-title: Prebuilt Expo Modules for Android
-sidebar_title: Prebuilt Expo Modules
-description: Learn how prebuilt Expo Modules reduce Android build times by up to 25% on your machine.
+title: Prebuilt Expo Modules
+description: Learn how prebuilt Expo Modules reduce native build times on Android and iOS.
 ---
 
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
-When building React Native apps, longer build times can slow down your development workflow and reduce productivity. Each time you make changes to your code, you might need to wait for the build process to complete, which can add up to significant delays.
+Native build times can slow down your development workflow. Expo provides prebuilt versions of its most complex modules so your project links pre-compiled binaries instead of recompiling them from source on every build. On Android, those binaries ship as `.aar` files linked through Gradle; on iOS, they ship as `XCFrameworks` linked through CocoaPods. Both are bundled into the regular Expo npm packages, and packages that aren't yet precompiled fall back to building from source automatically — precompiled and source-built modules coexist in the same project.
 
-Expo provides prebuilt Expo Modules for Android to address this pain point. Instead of compiling Expo Modules source code from scratch during each build, your project can use pre-compiled versions of these modules. This results in faster build times.
+**Most projects don't need to do anything** — prebuilt Expo Modules are enabled automatically in new and existing projects with a supported SDK version.
 
-## Benefits
+- **Android**: enabled by default since SDK 53.
+- **iOS**: enabled by default in SDK 56+. In SDK 55, enabled by default only on EAS Build — set `EXPO_USE_PRECOMPILED_MODULES=1` in your shell to opt in for local builds.
 
-- **Faster local development**: Up to 25% reduction in Android build times on local machines
-- **Improved developer experience**: Less waiting time during development iterations
-- **Automatic optimization**: Works out of the box with new projects
+<Collapsible summary="Disabling on iOS">
 
-## How prebuilt Expo Modules for Android work
+Set `EXPO_USE_PRECOMPILED_MODULES` to `0`. For local builds, export the env var in your shell.
 
-During your project's Android build process, look for the `[📦]` emoji prefix next to package names in the build output. This indicates that those packages are using prebuilt versions rather than being compiled from source.
+For EAS Build, create an [EAS environment variable](/eas/environment-variables/manage/):
 
-For example, after creating a project with SDK 53's default template, and running the `npx expo run:android` command, you will notice the `[📦 package-name` prefix next to packages that are precompiled:
-
-<ContentSpotlight
-  alt="An example of the prebuilt Expo Modules for Android build output."
-  src="/static/images/guides/prebuilt-expo-modules-on-android.png"
-  className="max-w-[280px]"
+<Terminal
+  cmd={['$ eas env:create --name EXPO_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext']}
 />
 
-## Configuration
+The CLI will prompt you to select which environment(s) (`development`, `preview`, `production`) the variable applies to.
 
-**No configuration steps are required for projects** that are created with one of the available [Expo templates](/more/create-expo/#--template).
+</Collapsible>
 
-### Opting out of prebuilt Expo Modules
+<Collapsible summary="Disabling specific modules via Expo Autolinking">
 
-You can opt out of prebuilt modules. This might be required when you are modifying the module source code yourself. In this scenario, you can configure the Expo Autolinking configuration by adding `buildFromSource` to the **package.json** file:
-
-{/* prettier-ignore */}
-```json package.json
-{
-  "name": "your-app-name",
-  "expo": {
-    "autolinking": {
-      "android": {
-        "buildFromSource": [
-          ".*"
-        ]
-      }
-    }
-  }
-}
-```
-
-### Selectively opt out
-
-You can also opt out of specific modules while keeping others prebuilt by specifying individual package names instead of the wildcard `".*"`:
+Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"` to opt out of every prebuilt module, or list specific package names. The same setting is available for both `android` and `ios`:
 
 {/* prettier-ignore */}
 ```json package.json
@@ -63,18 +38,16 @@ You can also opt out of specific modules while keeping others prebuilt by specif
   "expo": {
     "autolinking": {
       "android": {
-        "buildFromSource": [
-          "expo-camera",
-          "expo-web-browser",
-          "expo-linking",
-        ]
+        "buildFromSource": [".*"]
+      },
+      "ios": {
+        "buildFromSource": [".*"]
       }
     }
   }
 }
 ```
 
-## Considerations
+This is typically only needed when you're modifying module source code yourself.
 
-- Performance improvements may vary based on your hardware configuration
-- Current improvements on EAS Builds are more modest but provide groundwork for future caching mechanisms
+</Collapsible>

@@ -19,6 +19,8 @@ import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
+import { id, scrollPosition } from './scrollPosition';
+import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { widgetAccentedRenderingMode, widgetURL } from './widgets';
 
@@ -185,6 +187,16 @@ export const onAppear = (handler: () => void) =>
  */
 export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
+
+/**
+ * Calls the handler whenever the view's geometry changes. Sizes are in points.
+ * @param handler - Function called with the new size.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
+ */
+export const onGeometryChange = (handler: (size: { width: number; height: number }) => void) =>
+  createModifierWithEventListener('onGeometryChange', (size: { width: number; height: number }) =>
+    handler(size)
+  );
 
 /**
  * Marks a view as refreshable. Adds pull-to-refresh functionality.
@@ -580,7 +592,25 @@ export const scrollDismissesKeyboard = (
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
-type UnitPointValue =
+/**
+ * Controls the visibility of scroll indicators for scrollable views.
+ * Mirrors SwiftUI's `scrollIndicators(_:axes:)` modifier.
+ * @param visibility - Indicator visibility:
+ * - `'automatic'`: platform-default behavior.
+ * - `'visible'`: prefer showing indicators (may still be hidden by the system).
+ * - `'hidden'`: prefer hiding indicators (may still be shown by the system).
+ * - `'never'`: never show indicators.
+ * @param axes - Axes to apply the visibility to. Defaults to `'both'`.
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrollindicators(_:axes:)).
+ */
+export const scrollIndicators = (
+  visibility: 'automatic' | 'visible' | 'hidden' | 'never',
+  axes: 'vertical' | 'horizontal' | 'both' = 'both'
+) => createModifier('scrollIndicators', { visibility, axes });
+
+export type UnitPointValue =
   | 'zero'
   | 'topLeading'
   | 'top'
@@ -873,6 +903,15 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linespacing(_:)).
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
+/**
+ * Sets the total line height for text in this view.
+ * @param value - The line height in points.
+ * @platform ios 26.0+
+ * @platform macos 26.0+
+ * @platform tvos 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/lineheight(_:)).
+ */
+export const lineHeight = (value: number) => createModifier('lineHeight', { value });
 /**
  * Sets the line limit for text in the view.
  *
@@ -1245,6 +1284,7 @@ export type BuiltInModifier =
   | ReturnType<typeof onAppear>
   | ReturnType<typeof luminanceToAlpha>
   | ReturnType<typeof onDisappear>
+  | ReturnType<typeof onGeometryChange>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
@@ -1292,10 +1332,13 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof scrollIndicators>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof scrollTargetBehavior>
   | ReturnType<typeof scrollTargetLayout>
+  | ReturnType<typeof id>
+  | ReturnType<typeof scrollPosition>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1310,6 +1353,7 @@ export type BuiltInModifier =
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
   | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof lineHeight>
   | ReturnType<typeof lineLimit>
   | ReturnType<typeof headerProminence>
   | ReturnType<typeof listRowInsets>
@@ -1333,6 +1377,7 @@ export type BuiltInModifier =
   | ReturnType<typeof listStyle>
   | ReturnType<typeof contentTransition>
   | ReturnType<typeof resizable>
+  | ReturnType<typeof symbolEffect>
   | ReturnType<typeof widgetAccentedRenderingMode>
   | ReturnType<typeof widgetURL>
   | ReturnType<typeof containerBackground>;
@@ -1382,6 +1427,8 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export * from './scrollPosition';
+export * from './symbolEffect';
 export * from './widgets';
 export type {
   TimingAnimationParams,

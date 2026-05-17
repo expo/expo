@@ -9,6 +9,7 @@ import { isSpawnResultError, xcrunAsync } from './xcrun';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
+import { learnMore } from '../../../utils/link';
 import { parsePlistAsync } from '../../../utils/plist';
 import { profile } from '../../../utils/profile';
 
@@ -275,6 +276,7 @@ export async function bootDeviceAsync(device: DeviceContext): Promise<void> {
     await simctlAsync(['boot', device.udid]);
   } catch (error: any) {
     if (!error.stderr?.match(/Unable to boot device in current state: Booted/)) {
+      error.message += `\n${learnMore('https://docs.expo.dev/workflow/ios-simulator/#troubleshooting', { learnMoreMessage: 'Troubleshooting guide' })}`;
       throw error;
     }
   }
