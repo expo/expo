@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Sanitize values in web font loader and Android config plugin ([#45887](https://github.com/expo/expo/pull/45887) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-05-05
