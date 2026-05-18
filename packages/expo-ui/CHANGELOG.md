@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `LoadingIndicator` and `ContainedLoadingIndicator` components. ([#41169](https://github.com/expo/expo/pull/41169) by [@suveshmoza](https://github.com/suveshmoza))
 
 ### 🐛 Bug fixes
 
@@ -342,7 +343,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#42571](https://github.com/expo/expo/pull/42571) by [@shubh73](https://github.com/shubh73))
 - Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
-- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
+- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo/pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
 
 ## 55.0.0-beta.3 — 2026-01-27
 
