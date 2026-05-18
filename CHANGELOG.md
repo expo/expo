@@ -13,6 +13,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- Sort `dependencies` and `devDependencies` alphabetically across all `package.json` files so that running `npm install`, `yarn add`, or `pnpm add` in a fresh Expo app no longer reorders unrelated entries. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@tomekzaw](https://github.com/tomekzaw))
+
 ## 55.0.0 — 2026-02-25
 
 ### 🛠 Breaking changes
