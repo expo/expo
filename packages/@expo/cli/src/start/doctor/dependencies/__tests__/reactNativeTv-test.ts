@@ -1,13 +1,13 @@
 import { vol } from 'memfs';
 
-import { fetch } from '../../../utils/fetch';
+import { fetch } from '../../../../utils/fetch';
 import {
   correctReactNativeTvVersion,
   isReactNativeTvProjectAsync,
   reactNativeTvVersionMatchesBundled,
 } from '../reactNativeTv';
 
-jest.mock('../../../utils/fetch', () => ({
+jest.mock('../../../../utils/fetch', () => ({
   fetch: jest.fn(),
 }));
 
@@ -32,6 +32,10 @@ describe(isReactNativeTvProjectAsync, () => {
 
   beforeEach(() => {
     vol.reset();
+  });
+
+  afterEach(() => {
+    mockedFetch.mockReset();
   });
 
   it('returns true when node_modules/react-native/package.json has name "react-native-tvos"', async () => {

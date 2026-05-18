@@ -1,9 +1,9 @@
 import JsonFile from '@expo/json-file';
-import resolveFrom from 'resolve-from';
+import { resolveFrom } from '@expo/require-utils';
 import semver from 'semver';
 
-import { env } from '../../utils/env';
-import { fetch } from '../../utils/fetch';
+import { env } from '../../../utils/env';
+import { fetch } from '../../../utils/fetch';
 
 export const REACT_NATIVE_TVOS_PACKAGE_NAME = 'react-native-tvos';
 
@@ -26,7 +26,7 @@ const LATEST_FALLBACK_SPEC = `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@latest`;
  * lockfile rewrites.
  */
 export async function isReactNativeTvProjectAsync(projectRoot: string): Promise<boolean> {
-  const reactNativePackageJsonPath = resolveFrom.silent(projectRoot, 'react-native/package.json');
+  const reactNativePackageJsonPath = resolveFrom(projectRoot, 'react-native/package.json');
   if (!reactNativePackageJsonPath) {
     return false;
   }

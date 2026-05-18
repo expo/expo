@@ -7,14 +7,14 @@ import semverRangeSubset from 'semver/ranges/subset';
 
 import type { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
-import { resolveAllPackageVersionsAsync } from './resolvePackages';
-import * as Log from '../../../log';
-import { env } from '../../../utils/env';
 import {
   correctReactNativeTvVersion,
   isReactNativeTvProjectAsync,
   reactNativeTvVersionMatchesBundled,
-} from '../reactNativeTv';
+} from './reactNativeTv';
+import { resolveAllPackageVersionsAsync } from './resolvePackages';
+import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
 
