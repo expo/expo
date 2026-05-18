@@ -18,8 +18,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     width: '100%',
-    // @ts-expect-error
-    overflow: 'auto',
+    overflowX: 'auto',
+    overflowY: 'auto',
   },
 });
 
