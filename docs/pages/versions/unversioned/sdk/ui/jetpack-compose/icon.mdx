@@ -12,7 +12,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Icon`](../universal/icon) — it renders the appropriate native component per platform.
 
-An icon component for rendering Android XML vector drawables in Jetpack Compose. The recommended source is [`@expo/material-symbols`](https://github.com/expo/material-symbols/tree/main/packages/expo-material-symbols) — it ships Google's [Material Symbols](https://fonts.google.com/icons) as individual asset subpaths, so Metro only bundles the icons you actually import. For other styles (rounded, sharp, filled) or custom axes, the package's [`add-material-symbols`](#custom-styles-via-add-material-symbols) CLI downloads any variant directly into your project.
+An icon component for rendering Material Symbol XML vector drawables in Jetpack Compose. The recommended source is [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) — it ships Google's [Material Symbols](https://fonts.google.com/icons) as individual asset subpaths, so Metro only bundles the icons you actually import. For other styles (rounded, sharp, filled) or custom axes, the package's [CLI](#custom-styles-via-expomaterial-symbols-cli) downloads any variant directly into your project.
 
 <ContentSpotlight
   variant="component"
@@ -26,7 +26,7 @@ An icon component for rendering Android XML vector drawables in Jetpack Compose.
 
 <APIInstallSection />
 
-To use Material Symbols icons, also install the companion package:
+Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) to use the bundled icons. For a different style or custom axes, see [Custom styles](#custom-styles-via-expomaterial-symbols-cli) — no install needed.
 
 ```bash
 $ npx expo install @expo/material-symbols
@@ -36,7 +36,7 @@ $ npx expo install @expo/material-symbols
 
 ### Basic icon
 
-Import any icon directly from its own subpath — each icon resolves to a Metro asset that `Icon` can render natively.
+Import any icon directly from its own subpath of `@expo/material-symbols` — each icon resolves to a Metro asset that `Icon` can render natively. For local XML files you add to your project, use `require()` instead (see [Custom styles](#custom-styles-via-expomaterial-symbols-cli) below).
 
 ```tsx BasicIcon.tsx
 import { Host, Icon } from '@expo/ui/jetpack-compose';
@@ -85,22 +85,22 @@ export default function SizedIcon() {
 }
 ```
 
-### Custom styles via `add-material-symbols`
+### Custom styles via `@expo/material-symbols` CLI
 
-`@expo/material-symbols` ships the **outlined** style with default axes. When you need a different style (`rounded`, `sharp`), a filled variant, or custom weight, grade, or optical size, use the `add-material-symbols` CLI to fetch specific drawables straight from Google Fonts into your project.
+`@expo/material-symbols` ships the **outlined** style with default axes. When you need a different style (`rounded`, `sharp`), a filled variant, or custom weight, grade, or optical size, use its CLI to fetch specific drawables straight from Google Fonts into your project.
 
 ```bash
 # Download icons by name (defaults: outlined, weight 400, 24px)
-$ npx add-material-symbols star home
+$ npx @expo/material-symbols star home
 
 # Rounded style
-$ npx add-material-symbols --style rounded star home
+$ npx @expo/material-symbols --style rounded star home
 
 # Sharp + filled
-$ npx add-material-symbols --style sharp --fill favorite
+$ npx @expo/material-symbols --style sharp --fill favorite
 
 # Paste a URL from fonts.google.com/icons to preserve the axes you picked there
-$ npx add-material-symbols "https://fonts.google.com/icons?selected=Material+Symbols+Outlined:check_box:FILL@1;wght@300;GRAD@0;opsz@24"
+$ npx @expo/material-symbols "https://fonts.google.com/icons?selected=Material+Symbols+Outlined:check_box:FILL@1;wght@300;GRAD@0;opsz@24"
 ```
 
 | Option                | Description                                | Default    |
@@ -112,7 +112,7 @@ $ npx add-material-symbols "https://fonts.google.com/icons?selected=Material+Sym
 | `-g, --grade <grad>`  | Grade: `-25`, `0`, `200`                   | `0`        |
 | `--opsz <size>`       | Optical size: `20`, `24`, `40`, `48`       | `24`       |
 
-The CLI writes ready-to-use XML vector drawables into your project. Load them with `require()` (or a static `import`) and pass them to `Icon`.
+The CLI writes ready-to-use XML vector drawables into your project. Load them with `require()` and pass them to `Icon`.
 
 ```tsx CustomIcon.tsx
 import { Host, Icon } from '@expo/ui/jetpack-compose';
@@ -120,7 +120,7 @@ import { Host, Icon } from '@expo/ui/jetpack-compose';
 export default function CustomIcon() {
   return (
     <Host matchContents>
-      <Icon source={require('./assets/star-rounded.xml')} size={32} />
+      <Icon source={require('./assets/star-rounded.xml')} size={32} contentDescription="Star" />
     </Host>
   );
 }
