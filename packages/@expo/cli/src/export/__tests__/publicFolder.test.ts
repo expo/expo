@@ -41,6 +41,14 @@ describe(getPublicFolderPath, () => {
     expect(getPublicFolderPath(projectRoot)).toBe('/project/static');
   });
 
+  it('honors a relative override in non-canonical formats', () => {
+    process.env.EXPO_PUBLIC_FOLDER = './static';
+    expect(getPublicFolderPath(projectRoot)).toBe('/project/static');
+
+    process.env.EXPO_PUBLIC_FOLDER = './static/../static';
+    expect(getPublicFolderPath(projectRoot)).toBe('/project/static');
+  });
+
   it('rejects parent-traversal values that escape the project root', () => {
     process.env.EXPO_PUBLIC_FOLDER = '../other';
     expect(() => getPublicFolderPath(projectRoot)).toThrow(/outside the project root/);
