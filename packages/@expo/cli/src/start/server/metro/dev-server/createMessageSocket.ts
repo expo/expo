@@ -13,6 +13,8 @@ type MessageSocketOptions = {
   serverBaseUrl: string;
 };
 
+const debug = require('debug')('expo:metro:devserver:messageSocket') as typeof console.log;
+
 const CLIENT_BROADCAST_ALLOWED_METHODS = new Set(['reload', 'devMenu']);
 
 /**
@@ -95,7 +97,10 @@ function createClientMessageHandler(
 
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
-      if (!isTrustedClient || !CLIENT_BROADCAST_ALLOWED_METHODS.has(message.method)) return;
+      if (!isTrustedClient || !CLIENT_BROADCAST_ALLOWED_METHODS.has(message.method)) {
+        debug(`Refused broadcast message from untrusted client (method: ${message.method})`);
+        return;
+      }
       return broadcast(null, data.toString());
     }
 
