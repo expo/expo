@@ -58,7 +58,7 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      /* @info <A href="https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens">Click for more information on available <CODE>screenOptions</CODE> from React Navigation documentation</A>.*/
+      // See React Navigation documentation for more information on available screenOptions: https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens
       screenOptions={{
         headerStyle: {
           backgroundColor: '#f4511e',
@@ -68,7 +68,6 @@ export default function Layout() {
           fontWeight: 'bold',
         },
       }}>
-      /* @end */
       {/* Optionally configure static options outside the route.*/}
       <Stack.Screen name="home" options={{}} />
     </Stack>
