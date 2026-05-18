@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing HTML attribute sanitization to vendored react-helmet-async ([#45851](https://github.com/expo/expo/pull/45851) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 6.0.23 — 2026-01-31
