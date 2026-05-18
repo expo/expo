@@ -10,13 +10,10 @@
 #import <ExpoModulesCore/ExpoModulesCore-Swift.h>
 #elif __has_include("ExpoModulesCore-Swift.h")
 #import "ExpoModulesCore-Swift.h"
-#endif
-
-
-#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
-#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
 #else
-#import "ExpoModulesCore-Swift.h"
+// Under SwiftPM the generated Swift header isn't on this target's path;
+// forward-declare what we use from `ExpoModulesCore`'s Swift side.
+@class EXAppContext;
 #endif
 #import <ReactCommon/RCTHost.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>

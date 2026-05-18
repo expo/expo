@@ -1,9 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#if !__building_module(ExpoModulesCore)
-#import <React/RCTBridge.h>
-#else
+#if __building_module(ExpoModulesCore) || __building_module(ExpoModulesCoreObjC)
 @class RCTBridge;
+#else
+#import <React/RCTBridge.h>
 #endif
 
 // Forward declarations for types - use protocol for AppContext to avoid Swift.h import
