@@ -7,6 +7,7 @@ declare module 'react-native' {
   ) => React.ReactElement<P>;
 
   type DisplayValue = ReactNative.FlexStyle['display'] | 'inline-flex';
+  type OverflowValue = 'auto' | 'hidden' | 'scroll' | 'visible';
   type WebDimensionValue = ReactNative.DimensionValue | string;
 
   type WebRole =
@@ -104,6 +105,8 @@ declare module 'react-native' {
     display?: DisplayValue;
     height?: WebDimensionValue;
     width?: WebDimensionValue;
+    overflowX?: OverflowValue;
+    overflowY?: OverflowValue;
     paddingLeft?: WebDimensionValue;
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
@@ -114,6 +117,8 @@ declare module 'react-native' {
     display?: DisplayValue;
     height?: WebDimensionValue;
     width?: WebDimensionValue;
+    overflowX?: OverflowValue;
+    overflowY?: OverflowValue;
     paddingLeft?: WebDimensionValue;
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
@@ -124,6 +129,8 @@ declare module 'react-native' {
     display?: DisplayValue;
     height?: WebDimensionValue;
     width?: WebDimensionValue;
+    overflowX?: OverflowValue;
+    overflowY?: OverflowValue;
     paddingLeft?: WebDimensionValue;
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
