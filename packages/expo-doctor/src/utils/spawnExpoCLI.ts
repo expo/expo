@@ -12,8 +12,8 @@ export async function spawnExpoCLI(
   // any project-controlled overrides the parent loaded.
   const spawnOptions: spawnAsync.SpawnOptions = {
     cwd: projectRoot,
-    env: getOriginalEnv(),
     ...options,
+    env: options.env ? { ...getOriginalEnv(), ...options.env } : getOriginalEnv(),
   };
   const expoCliPath = resolveFrom.silent(projectRoot, 'expo/bin/cli');
   if (expoCliPath) {
