@@ -21,10 +21,10 @@ Use the following dependencies in a library that provides a config plugin:
 {
   "dependencies": {},
   "devDependencies": {
-    "expo": "^54.0.0"
+    "expo": "^{{expoSdkVersion}}"
   },
   "peerDependencies": {
-    "expo": ">=54.0.0"
+    "expo": ">={{expoSdkVersion}}"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -131,7 +131,7 @@ Packages should attempt to use the built-in **AndroidManifest.xml** [merging sys
 Here is an example of a package's **AndroidManifest.xml**, which injects a required permission:
 
 ```xml AndroidManifest.xml
-<!-- @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. -->
+<!-- @info Include `xmlns:android="..."` to use `android:*` properties like `android:name` in your manifest. -->
 <manifest package="expo.modules.filesystem" xmlns:android="http://schemas.android.com/apk/res/android">
   <!-- @end -->
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -441,7 +441,7 @@ Instead of modifying them directly with the `withProjectBuildGradle`, `withAppBu
 The `gradle.properties` is a static key/value pair that groovy files can read from. For example, say you wanted to control some toggle in Groovy:
 
 ```properties gradle.properties
-# @info Safely modified using the <code>withGradleProperties()</code> mod. #
+# @info Safely modified using the `withGradleProperties()` mod. #
 expo.react.jsEngine=hermes
 # @end #
 ```
@@ -449,7 +449,7 @@ expo.react.jsEngine=hermes
 Then later in a Gradle file:
 
 ```groovy app/build.gradle
-project.ext.react = [/* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */ enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc' /* @end */]
+project.ext.react = [/* @info This code would be added to the template ahead of time, but it could be regexed in using `withAppBuildGradle()` */ enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc' /* @end */]
 ```
 
 - For keys in the `gradle.properties`, use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
@@ -480,7 +480,7 @@ require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 # @end #
 
-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '{{iosDeploymentTarget}}'
 
 target 'yolo27' do
   use_expo_modules!

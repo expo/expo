@@ -30,13 +30,13 @@ This guide provides information on how you can create a `Stack` navigator in you
 
 You can use file-based routing to create a stack navigator. Here's an example file structure:
 
-<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/details.tsx']} />
+<FileTree files={['src/app/_layout.tsx', 'src/app/index.tsx', 'src/app/details.tsx']} />
 
 This file structure produces a layout where the `index` route is the first route in the stack, and the `details` route is pushed on top of the `index` route when navigated.
 
-You can use the **app/\_layout.tsx** file to define your app's `Stack` navigator with these two routes:
+You can use the **src/app/\_layout.tsx** file to define your app's `Stack` navigator with these two routes:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -52,13 +52,13 @@ Starting in SDK 55, you can configure screen options and the header using either
 
 You can use the `<Stack.Screen name={routeName} />` component in the layout component route to statically configure a route's options.
 
-```tsx app/_layout.tsx|collapseHeight=440
+```tsx src/app/_layout.tsx|collapseHeight=440
 import { Stack } from 'expo-router';
 
 export default function Layout() {
   return (
     <Stack
-      /* @info <A href="https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens">Click for more information on available <CODE>screenOptions</CODE> from React Navigation documentation</A>.*/
+      // See React Navigation documentation for more information on available screenOptions: https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens
       screenOptions={{
         headerStyle: {
           backgroundColor: '#f4511e',
@@ -68,7 +68,6 @@ export default function Layout() {
           fontWeight: 'bold',
         },
       }}>
-      /* @end */
       {/* Optionally configure static options outside the route.*/}
       <Stack.Screen name="home" options={{}} />
     </Stack>
@@ -80,7 +79,7 @@ export default function Layout() {
 
 You can configure the header bar for all routes in a `Stack` navigator by using the `screenOptions` prop. This is useful for setting a common header style across all routes.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -108,7 +107,7 @@ To configure a route's options dynamically, you can use either the composition c
 
 <Tab label="Options API">
 
-```tsx app/details.tsx
+```tsx src/app/details.tsx
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -146,9 +145,9 @@ const styles = StyleSheet.create({
 </Tab>
 <Tab label="Composition components">
 
-> **important** Screen composition API is in alpha and available in SDK 55 and later.
+> **important** Screen composition API is in [alpha](/more/release-statuses/#alpha) and available in SDK 55 and later.
 
-```tsx app/details.tsx
+```tsx src/app/details.tsx
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -158,7 +157,7 @@ export default function Details() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen.Title>{params.name}</Stack.Screen.Title>
+      <Stack.Title>{params.name}</Stack.Title>
       <Stack.Header style={{ backgroundColor: 'lightblue' }} />
       <Text
         onPress={() => {
@@ -205,7 +204,7 @@ You can add buttons to the header by using the `headerLeft` and `headerRight` op
 
 <Tab label="Options API">
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Stack } from 'expo-router';
 import { Button, Text, Image, StyleSheet } from 'react-native';
 import { useState } from 'react';
@@ -243,9 +242,9 @@ const styles = StyleSheet.create({
 </Tab>
 <Tab label="Composition components">
 
-> **important** Screen composition API is in alpha and available in SDK 55 and later.
+> **important** Screen composition API is in [alpha](/more/release-statuses/#alpha) and available in SDK 55 and later.
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Stack } from 'expo-router';
 import { Button, Text, Image, StyleSheet } from 'react-native';
 import { useState } from 'react';
@@ -261,9 +260,9 @@ export default function Home() {
 
   return (
     <>
-      <Stack.Screen.Title asChild>
+      <Stack.Title asChild>
         <LogoTitle />
-      </Stack.Screen.Title>
+      </Stack.Title>
       <Stack.Toolbar placement="right" asChild>
         <Button onPress={() => setCount(c => c + 1)} title="Update count" />
       </Stack.Toolbar>
@@ -299,9 +298,9 @@ For example, the `index` route in the following layout structure shows a list of
 
 <FileTree
   files={[
-    'app/_layout.tsx',
-    'app/index.tsx',
-    ['app/[details].tsx', "matches dynamic paths like '/details1'"],
+    'src/app/_layout.tsx',
+    'src/app/index.tsx',
+    ['src/app/[details].tsx', "matches dynamic paths like '/details1'"],
   ]}
 />
 
@@ -309,7 +308,7 @@ The `Stack` navigator will push a new screen every time the app user navigates t
 
 You can use the `<Stack.Screen name="[profile]" getId={}>` component in the layout component route to modify the push behavior:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -341,19 +340,19 @@ You can optionally pass a positive number to dismiss up to that specified number
 Dismiss is different from `back` as it targets the closest stack and not the current navigator. If you have nested navigators, calling `dismiss` will take you back multiple screens.
 
 {/* prettier-ignore */}
-```tsx app/settings.tsx
+```tsx src/app/settings.tsx
 import { Button, View } from 'react-native';
-/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+/* @info Import `useRouter` from Expo Router. */
 import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
-  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  /* @info Access the router from the `useRouter` hook. */
   const router = useRouter();
   /* @end */
 
   const handleDismiss = (count: number) => {
-    /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back. */
+    /* @info In the handler method, call `router.dismiss` to go back. */
     router.dismiss(count)
     /* @end */
   };
@@ -377,19 +376,19 @@ Dismisses screens in the current `<Stack />` until the specified `Href` is reach
 For example, consider the history of `/one`, `/two`, `/three` routes, where `/three` is the current route. The action `router.dismissTo('/one')` will cause the history to go back twice, while `router.dismissTo('/four')` will `push` the history forward to the `/four` route.
 
 {/* prettier-ignore */}
-```tsx app/settings.tsx
+```tsx src/app/settings.tsx
 import { Button, View, Text } from 'react-native';
-/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+/* @info Import `useRouter` from Expo Router. */
 import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
-  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  /* @info Access the router from the `useRouter` hook. */
   const router = useRouter();
   /* @end */
 
   const handleDismissAll = () => {
-    /* @info In the handler method, call <CODE>router.dismissTo</CODE> to go back to a specific route. */
+    /* @info In the handler method, call `router.dismissTo` to go back to a specific route. */
     router.dismissTo('/')
     /* @end */
   };
@@ -411,19 +410,19 @@ To return to the first screen in the closest stack. This is similar to [`popToTo
 For example, the `home` route is the first screen, and the `settings` is the last. To go from `settings` to `home` route you'll have to go back to `details`. However, using the `dismissAll` action, you can go from `settings` to `home` and dismiss any screen in between.
 
 {/* prettier-ignore */}
-```tsx app/settings.tsx
+```tsx src/app/settings.tsx
 import { Button, View, Text } from 'react-native';
-/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+/* @info Import `useRouter` from Expo Router. */
 import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
-  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  /* @info Access the router from the `useRouter` hook. */
   const router = useRouter();
   /* @end */
 
   const handleDismissAll = () => {
-    /* @info In the handler method, call <CODE>router.dismissAll</CODE> to go back to the first screen in a stack. */
+    /* @info In the handler method, call `router.dismissAll` to go back to the first screen in a stack. */
     router.dismissAll()
     /* @end */
   };
@@ -443,21 +442,21 @@ export default function Settings() {
 To check if it is possible to dismiss the current screen. Returns `true` if the router is within a stack with more than one screen in the stack's history.
 
 {/* prettier-ignore */}
-```tsx app/settings.tsx|collapseHeight=410
+```tsx src/app/settings.tsx|collapseHeight=410
 import { Button, View } from 'react-native';
-/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+/* @info Import `useRouter` from Expo Router. */
 import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
-  /* @info Access the router from <CODE>useRouter</CODE> hook. */
+  /* @info Access the router from `useRouter` hook. */
   const router = useRouter();
   /* @end */
 
   const handleDismiss = (count: number) => {
     /* @info Check if we can dismiss. */
     if (router.canDismiss()) {
-      /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back to. */
+      /* @info In the handler method, call `router.dismiss` to go back to. */
       router.dismiss(count)
       /* @end */
     }
@@ -506,7 +505,7 @@ export const JsStack = withLayoutContext<
 After defining the `JsStack` component, you can use it in your app:
 
 {/* prettier-ignore */}
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { JsStack } from '../layouts/js-stack';
 
 export default function Layout() {
@@ -555,11 +554,11 @@ For more information, see [JavaScript stack with `@react-navigation/stack`](#jav
 
 <Collapsible summary="Large title does not collapse when scrolling">
 
-When using `headerLargeTitle: true` (or `<Stack.Screen.Title large>`) with a `ScrollView` or `FlatList`, the large title may not collapse on scroll. This happens when the scrollable view is not the direct first child of the screen component.
+When using `headerLargeTitle: true` (or `<Stack.Title large>`) with a `ScrollView` or `FlatList`, the large title may not collapse on scroll. This happens when the scrollable view is not the direct first child of the screen component.
 
 To fix this, ensure `ScrollView` or `FlatList` is the first child rendered by your screen component. If you need a wrapper, set `collapsable={false}` on it:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Stack } from 'expo-router';
 import { ScrollView, View, Text } from 'react-native';
 
@@ -567,7 +566,7 @@ import { ScrollView, View, Text } from 'react-native';
 export default function Home() {
   return (
     <ScrollView>
-      <Stack.Screen.Title large>Home</Stack.Screen.Title>
+      <Stack.Title large>Home</Stack.Title>
       <Text>Content here</Text>
     </ScrollView>
   );
@@ -577,7 +576,7 @@ export default function Home() {
 
 If you need to wrap the `ScrollView`, set `collapsable={false}` on the wrapper:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Stack } from 'expo-router';
 import { ScrollView, View, Text } from 'react-native';
 
@@ -587,7 +586,7 @@ export default function Home() {
     <View collapsable={false}>
       /* @end */
       <ScrollView>
-        <Stack.Screen.Title large>Home</Stack.Screen.Title>
+        <Stack.Title large>Home</Stack.Title>
         <Text>Content here</Text>
       </ScrollView>
     </View>
@@ -601,9 +600,9 @@ export default function Home() {
 
 A white flash between screen transitions usually means the navigation stack is using a light background while your app uses a dark theme.
 
-To fix this, wrap your root layout with React Navigation's `ThemeProvider` and pass the appropriate theme:
+To fix this, wrap your root layout with React Navigation's `<ThemeProvider>` and pass the appropriate theme:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { useColorScheme } from 'react-native';
@@ -623,7 +622,7 @@ export default function RootLayout() {
 
 For apps that are always dark-themed:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { ThemeProvider, DarkTheme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 

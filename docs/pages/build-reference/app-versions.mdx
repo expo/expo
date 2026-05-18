@@ -52,7 +52,7 @@ EAS servers can store and manage your app's developer-facing build version (`and
 ```json eas.json
 {
   "cli": {
-    /* @info The app version source is set to <CODE>remote</CODE> to store and manage the version of your app. */
+    /* @info The app version source is set to `remote` to store and manage the version of your app. */
     "appVersionSource": "remote"
     /* @end */
   },
@@ -66,7 +66,7 @@ EAS servers can store and manage your app's developer-facing build version (`and
       /* @end */
     },
     "production": {
-      /* @info The <CODE>autoIncrement</CODE> property is set to <CODE>true</CODE> to automatically increment the <CODE>android.versionCode</CODE> and <CODE>ios.buildNumber</CODE> values. */
+      /* @info The `autoIncrement` property is set to `true` to automatically increment the `android.versionCode` and `ios.buildNumber` values. */
       "autoIncrement": true
       /* @end */
     }
@@ -120,7 +120,7 @@ With this setup, EAS reads app version values and builds projects as they are. I
 ```json eas.json
 {
   "cli": {
-    /* @info The app version source is set to <CODE>local</CODE> for you to manage the version of your app manually. */
+    /* @info The app version source is set to `local` for you to manage the version of your app manually. */
     "appVersionSource": "local"
     /* @end */
   },
@@ -134,7 +134,7 @@ With this setup, EAS reads app version values and builds projects as they are. I
       /* @end */
     },
     "production": {
-      /* @info The <CODE>autoIncrement</CODE> property is set to <CODE>true</CODE> to automatically increment the <CODE>android.versionCode</CODE> and <CODE>ios.buildNumber</CODE> values. */
+      /* @info The `autoIncrement` property is set to `true` to automatically increment the `android.versionCode` and `ios.buildNumber` values. */
       "autoIncrement": true
       /* @end */
     }

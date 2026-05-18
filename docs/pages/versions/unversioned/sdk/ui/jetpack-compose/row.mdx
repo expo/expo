@@ -1,0 +1,56 @@
+---
+title: Row
+description: A Jetpack Compose Row component for placing children horizontally.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
+
+Expo UI Row matches the official Jetpack Compose [Row](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Row) API and places children horizontally with configurable arrangement and alignment.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/row/android-light.webp"
+  darkSource="/static/images/expo-ui/row/android-dark.webp"
+  alt="Three colored boxes laid out horizontally inside a Row"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+`Row` places children horizontally. Use `horizontalArrangement` and `verticalAlignment` to control spacing and alignment.
+
+```tsx RowExample.tsx
+import { Host, Row, Text } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, height } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function RowExample() {
+  return (
+    <Host matchContents>
+      <Row
+        horizontalArrangement="spaceEvenly"
+        verticalAlignment="center"
+        modifiers={[fillMaxWidth(), height(60)]}>
+        <Text>Item 1</Text>
+        <Text>Item 2</Text>
+        <Text>Item 3</Text>
+      </Row>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Row } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/row" apiName="Row" />

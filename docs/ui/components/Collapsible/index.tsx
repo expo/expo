@@ -80,7 +80,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
             '[&_h4]:my-0',
             '[&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug'
           )}>
-          <div className="ml-1.5 mr-2 mt-[5px] self-baseline">
+          <div className="mt-1.25 mr-2 ml-1.5 self-baseline">
             <TriangleDownIcon
               className={mergeClasses(
                 'icon-sm text-icon-default',
@@ -104,7 +104,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
             }}
             className="ml-auto inline rounded-md p-1 hocus:bg-element"
             aria-label="Permalink">
-            <PermalinkIcon className="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible" />
+            <PermalinkIcon className="invisible inline-flex icon-sm group-hover:visible group-focus-visible:visible" />
           </LinkBase>
           <div />
         </summary>
@@ -116,7 +116,10 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           }}
           className="overflow-hidden">
           <div
-            className={mergeClasses('px-5 py-4', 'last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0')}>
+            className={mergeClasses(
+              'px-5 py-4',
+              '[&_p]:ml-0 [&_pre>pre]:mt-0 [&>*:last-child]:mb-1!'
+            )}>
             {children}
           </div>
         </motion.div>

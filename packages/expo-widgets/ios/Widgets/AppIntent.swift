@@ -1,6 +1,27 @@
 import AppIntents
-import JavaScriptCore
 import WidgetKit
+
+struct WidgetReload: AppIntent {
+  // title is not used for non-discoverable intents, but it is required
+  static var title: LocalizedStringResource = "Reload widget"
+  static var isDiscoverable: Bool = false
+  @Parameter(title: "source")
+  var source: String?
+
+  init() {}
+  init(source: String?) {
+    self.source = source
+  }
+
+  func perform() async throws -> some IntentResult {
+    guard let source else {
+      return .result()
+    }
+
+    WidgetCenter.shared.reloadTimelines(ofKind: source)
+    return .result()
+  }
+}
 
 @available(iOS 16.0, *)
 struct WidgetUserInteraction: AppIntent {
@@ -13,39 +34,64 @@ struct WidgetUserInteraction: AppIntent {
   @Parameter(title: "target")
   var target: String?
 
+  @Parameter(title: "entryIndex")
+  var entryIndex: Int?
+
+  @Parameter(title: "environmentString")
+  var environmentString: String?
+
   init() {}
-  init(source: String?, target: String?) {
+  init(source: String?, target: String?, entryIndex: Int?, environmentString: String?) {
     self.source = source
     self.target = target
+    self.entryIndex = entryIndex
+    self.environmentString = environmentString
   }
 
   func perform() async throws -> some IntentResult {
     guard let source else {
       return .result()
     }
-    let props = WidgetsStorage.getDictionary(forKey: "__expo_widgets_\(source)_props")
-    let updateFunction = WidgetsStorage.getString(forKey: "__expo_widgets_\(source)_updateFunction")
 
-    guard let props, let updateFunction else {
+    let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(source)_layout") ?? ""
+    let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(source)_timeline")
+
+    guard let timeline,
+          let entryIndex,
+          timeline.indices.contains(entryIndex),
+          let entry = timeline[entryIndex] as? [String: Any],
+          let props = entry["props"] as? [String: Any],
+          let environmentData = environmentString?.data(using: .utf8),
+          var environment = try? JSONSerialization.jsonObject(with: environmentData) as? [String: Any] else {
       return .result()
     }
-    if let context = JSContext() {
-      context.setObject(target, forKeyedSubscript: "target" as NSString)
-      context.setObject(props, forKeyedSubscript: "prevProps" as NSString)
-      let jsCode = "var updateFunction = \(String(describing: updateFunction)); updateFunction(target, prevProps);"
-      let resultValue = context.evaluateScript(jsCode)
-      
-      if let resultDict = resultValue?.toObject() as? [String: Any] {
-        WidgetsStorage.set(resultDict, forKey: "__expo_widgets_\(source)_props")
-      } else {
+    environment["target"] = target
+
+    let newProps: [String: Any]?
+    switch evaluateWidgetButtonPress(layout: layout, props: props, environment: environment) {
+    case .success(let result):
+      newProps = result
+    case .failure(let error):
+      print("[ExpoWidgets] Button press evaluation failed: \(error.message)")
+      newProps = nil
+    }
+
+    if let newProps {
+      var newEntry = entry
+      if let originalProps = entry["props"] as? [String: Any] {
+        newEntry["props"] = originalProps.merging(newProps) { _, new in new }
+      }
+      guard var newTimeline = timeline as? [[String: Any]] else {
         return .result()
       }
+      newTimeline[entryIndex] = newEntry
+      WidgetsStorage.set(newTimeline, forKey: "__expo_widgets_\(source)_timeline")
     }
 
     WidgetsEvents.shared.sendNotification(type: .userEvent, data: [
       "source": source as Any,
       "target": target as Any,
-      "timestamp": Date().timeIntervalSince1970
+      "timestamp": Int(Date().timeIntervalSince1970 * 1000)
     ])
 
     WidgetCenter.shared.reloadTimelines(ofKind: source)
@@ -76,7 +122,7 @@ struct LiveActivityUserInteraction: LiveActivityIntent {
     WidgetsEvents.shared.sendNotification(type: .userEvent, data: [
       "source": source as Any,
       "target": target as Any,
-      "timestamp": Date().timeIntervalSince1970
+      "timestamp": Int(Date().timeIntervalSince1970 * 1000)
     ])
 
     return .result()

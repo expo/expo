@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { existsAndIsNotIgnoredAsync } from '../utils/files';
 
@@ -31,8 +31,8 @@ export class StoreCompatibilityCheck implements DoctorCheck {
       // checks for exact string from SDK 49 bare template, will not work if it was changed
       const targetSdkVersionRegex =
         /^\s*targetSdkVersion\s*=\s*(?:Integer\.parseInt\(findProperty\('android\.targetSdkVersion'\)\s*\?:\s*'(\d+)'\)|'(\d+)')/m;
-      const match = buildGradle.match(targetSdkVersionRegex);
-      const targetSdkVersion = match ? parseInt(match[1], 10) : undefined;
+      const match = buildGradle.match(targetSdkVersionRegex)?.[1];
+      const targetSdkVersion = match ? parseInt(match, 10) : undefined;
       if (targetSdkVersion && targetSdkVersion < PLAY_STORE_MINIMUM_REQS.AndroidSdkVersion) {
         issue = `This project appears to be targeting Android API level ${PLAY_STORE_MINIMUM_REQS.AndroidSdkVersion - 1} or lower. `;
       }

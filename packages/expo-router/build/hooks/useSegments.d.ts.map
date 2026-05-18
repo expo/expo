@@ -1,0 +1,1 @@
+{"version":3,"file":"useSegments.d.ts","sourceRoot":"","sources":["../../src/hooks/useSegments.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,SAAS,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;AAEzD;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GAkCG;AACH,wBAAgB,WAAW,CAAC,SAAS,SAAS,SAAS,GAAG,SAAS,KAAK,aAAa,CAAC,SAAS,CAAC,CAAC;AAEjG;;GAEG;AACH,wBAAgB,WAAW,CAAC,SAAS,SAAS,aAAa,CAAC,SAAS,CAAC,KAAK,SAAS,CAAC"}

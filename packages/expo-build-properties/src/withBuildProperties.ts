@@ -1,16 +1,18 @@
-import { ConfigPlugin } from 'expo/config-plugins';
+import type { ConfigPlugin } from 'expo/config-plugins';
 
 import {
   withAndroidBuildProperties,
   withAndroidCleartextTraffic,
   withAndroidDayNightTheme,
+  withAndroidPrecompiledHeaders,
   withAndroidProguardRules,
   withAndroidPurgeProguardRulesOnce,
   withAndroidQueries,
   withAndroidSettingsGradle,
 } from './android';
 import { withIosBuildProperties, withIosDeploymentTarget, withIosInfoPlist } from './ios';
-import { PluginConfigType, validateConfig } from './pluginConfig';
+import type { PluginConfigType } from './pluginConfig';
+import { validateConfig } from './pluginConfig';
 
 /**
  * Config plugin allowing customizing native Android and iOS build properties for managed apps.
@@ -35,6 +37,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   // plugins order matter: the later one would run first
   config = withAndroidPurgeProguardRulesOnce(config);
   config = withAndroidDayNightTheme(config, pluginConfig);
+  config = withAndroidPrecompiledHeaders(config, pluginConfig);
 
   config = withIosBuildProperties(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);

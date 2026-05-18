@@ -1,17 +1,16 @@
-import {
-  ParamListBase,
-  StackNavigationState,
-  type NavigationRoute,
-  type NavigationState,
-  type TabNavigationState,
-} from '@react-navigation/native';
-
+import type { TabPath } from './native';
 import { store, type ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
-import { Href } from '../../types';
-import { resolveHref } from '../href';
-import { TabPath } from './native';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
+import type {
+  ParamListBase,
+  StackNavigationState,
+  NavigationRoute,
+  NavigationState,
+  TabNavigationState,
+} from '../../react-navigation/native';
+import type { Href } from '../../types';
+import { resolveHref } from '../href';
 
 export function getTabPathFromRootStateByHref(
   href: Href,
@@ -33,14 +32,14 @@ export function getTabPathFromRootStateByHref(
   navigationRoutes.forEach((route, i, arr) => {
     if (route.state?.type === 'tab') {
       const tabState = route.state as TabNavigationState<ParamListBase>;
-      const oldTabKey = tabState.routes[tabState.index].key;
+      const oldTabKey = tabState.routes[tabState.index]!.key;
       // The next route will be either stack inside a tab or a new tab key
       if (!arr[i + 1]) {
         throw new Error(
           `New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`
         );
       }
-      const newTabKey = arr[i + 1].key;
+      const newTabKey = arr[i + 1]!.key;
       tabPath.push({ oldTabKey, newTabKey });
     }
   });
@@ -80,7 +79,7 @@ export function getPreloadedRouteFromRootStateByHref(
         )
     );
 
-    const activeRoute = stackState.routes[stackState.index];
+    const activeRoute = stackState.routes[stackState.index]!;
     // When the active route is the same as the preloaded route,
     // then we should not navigate. It aligns with base link behavior.
     if (

@@ -9,8 +9,7 @@ internal struct MenuView: ExpoSwiftUI.View {
   // If label is a component, it is passed as a child, so we need to exclude it in order to display the menu content
   @ViewBuilder
   func ChildrenWithoutLabel() -> some View {
-    let labelView = props.children?.first(where: { $0.childView is MenuLabel })
-    ForEach(props.children?.filter { $0.id != labelView?.id } ?? [], id: \.id) { child in
+    ForEach(props.children?.withoutSlot("label") ?? [], id: \.id) { child in
       let view: any View = child.childView
       AnyView(view)
     }
@@ -18,9 +17,7 @@ internal struct MenuView: ExpoSwiftUI.View {
 
   var body: some View {
     if #available(iOS 14.0, tvOS 17.0, *) {
-      let labelContent = props.children?
-        .compactMap { $0.childView as? MenuLabel }
-        .first
+      let labelContent = props.children?.slot("label")
 
       if props.hasPrimaryAction {
         // With primaryAction, tap triggers callback and long-press shows menu

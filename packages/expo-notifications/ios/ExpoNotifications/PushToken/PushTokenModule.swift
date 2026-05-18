@@ -32,8 +32,12 @@ To obtain the push token, await the result of the newer call.
       }
 
       #if targetEnvironment(simulator)
-      if let appContext = appContext {
-        appContext.jsLogger.warn("expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433")
+      // Log warning only for iOS 26.0 simulator due to known issue
+      let os = ProcessInfo.processInfo.operatingSystemVersion
+      if os.majorVersion == 26 && os.minorVersion == 0 {
+        if let appContext = appContext {
+          appContext.jsLogger.warn("expo-notifications: obtaining a push token may not reliably work on the iOS 26.0 simulator due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433")
+        }
       }
       #endif
       promiseNotYetResolved = promise

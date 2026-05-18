@@ -6,22 +6,46 @@
 import { createConnectMiddleware } from '@expo/metro/metro';
 import type { RunServerOptions } from '@expo/metro/metro';
 import MetroHmrServer, { type Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
-import Server from '@expo/metro/metro/Server';
+import type Server from '@expo/metro/metro/Server';
 import createWebsocketServer from '@expo/metro/metro/lib/createWebsocketServer';
 import type { ConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
-import { parse } from 'url';
 import type { WebSocketServer } from 'ws';
 
-import { MetroBundlerDevServer } from './MetroBundlerDevServer';
+import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
-import { getRunningProcess } from '../../../utils/getRunningProcess';
 import type { ConnectAppType } from '../middleware/server.types';
 
+export interface SecureServerOptions {
+  readonly key: string | Buffer;
+  readonly cert: string | Buffer;
+  readonly ca: string | Buffer;
+  readonly requestCert: boolean;
+}
+
+export interface ServerAddressInfo {
+  protocol: 'http' | 'https';
+  address: string;
+  family: string;
+  port: number;
+}
+
+interface RunServerOptionsFork {
+  hasReducedPerformance?: boolean;
+  host?: string;
+  onError?($$PARAM_0$$: Error & { code?: string }): void;
+  onReady?(server: http.Server | https.Server): void;
+  onClose?(): void;
+  websocketEndpoints?: RunServerOptions['websocketEndpoints'];
+  secureServerOptions?: SecureServerOptions;
+  waitForBundler?: boolean;
+  watch?: boolean;
+}
+
 export const runServer = async (
-  metroBundler: MetroBundlerDevServer,
+  _metroBundler: MetroBundlerDevServer,
   config: ConfigT,
   {
     hasReducedPerformance = false,
@@ -29,10 +53,10 @@ export const runServer = async (
     onError,
     onReady,
     secureServerOptions,
-    waitForBundler = false,
     websocketEndpoints = {},
     watch,
-  }: RunServerOptions,
+    waitForBundler = !!watch,
+  }: RunServerOptionsFork,
   {
     mockServer,
   }: {
@@ -40,6 +64,7 @@ export const runServer = async (
     mockServer: boolean;
   }
 ): Promise<{
+  address: ServerAddressInfo | null;
   server: http.Server | https.Server;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
   metro: Server;
@@ -68,10 +93,13 @@ export const runServer = async (
   const serverApp = middleware as ConnectAppType;
 
   let httpServer: http.Server | https.Server;
+  let protocol: 'http' | 'https';
 
   if (secureServerOptions != null) {
+    protocol = 'https';
     httpServer = https.createServer(secureServerOptions, serverApp);
   } else {
+    protocol = 'http';
     httpServer = http.createServer(serverApp);
   }
 
@@ -79,12 +107,15 @@ export const runServer = async (
     if ('code' in error && error.code === 'EADDRINUSE') {
       // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
       // about the process before throwing.
-      const info = getRunningProcess(config.server.port);
-      if (info) {
-        Log.error(
-          `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
-        );
-      }
+      const { getRunningProcess } =
+        require('../../../utils/getRunningProcess') as typeof import('../../../utils/getRunningProcess');
+      getRunningProcess(config.server.port).then((info) => {
+        if (info) {
+          Log.error(
+            `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
+          );
+        }
+      });
     }
 
     if (onError) {
@@ -122,14 +153,10 @@ export const runServer = async (
   };
 
   if (mockServer) {
-    return { server: httpServer, hmrServer: null, metro: metroServer };
+    return { address: null, server: httpServer, hmrServer: null, metro: metroServer };
   }
 
-  return new Promise<{
-    server: http.Server | https.Server;
-    hmrServer: MetroHmrServer<MetroHmrClient>;
-    metro: Server;
-  }>((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     httpServer.on('error', (error) => {
       reject(error);
     });
@@ -152,17 +179,33 @@ export const runServer = async (
       });
 
       httpServer.on('upgrade', (request, socket, head) => {
-        const { pathname } = parse(request.url!);
+        const { pathname } = new URL(request.url!, 'http://localhost');
         if (pathname != null && websocketEndpoints[pathname]) {
           websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
-            websocketEndpoints[pathname].emit('connection', ws, request);
+            websocketEndpoints[pathname]?.emit('connection', ws, request);
           });
         } else {
           socket.destroy();
         }
       });
 
-      resolve({ server: httpServer, hmrServer, metro: metroServer });
+      const address = httpServer.address();
+      assert(
+        address == null || typeof address === 'object',
+        'Expected httpServer.address() to be an object'
+      );
+
+      resolve({
+        address: {
+          protocol,
+          address: address?.address ?? host ?? 'localhost',
+          family: address?.family ?? 'ipv4',
+          port: address?.port ?? config.server.port,
+        },
+        server: httpServer,
+        hmrServer,
+        metro: metroServer,
+      });
     });
   });
 };

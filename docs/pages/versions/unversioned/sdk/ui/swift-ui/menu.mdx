@@ -3,13 +3,21 @@ title: Menu
 description: A SwiftUI Menu component for displaying dropdown menus.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Menu matches the official SwiftUI [Menu API](https://developer.apple.com/documentation/swiftui/menu) and supports styling via the [`buttonStyle`](modifiers/#buttonstylestyle) modifier. Menu opens on a single tap. For long-press interactions, use [`ContextMenu`](contextmenu) instead.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/menu/ios-light.webp"
+  darkSource="/static/images/expo-ui/menu/ios-dark.webp"
+  alt="Open Menu showing Settings, Profile and a destructive Delete item"
+/>
 
 > **Note:** On tvOS, Menu requires tvOS 17.0 or later.
 
@@ -80,6 +88,41 @@ export default function CustomLabelMenuExample() {
 }
 ```
 
+### React Native components as label
+
+You can use a React Native view (such as `Pressable`) as the menu's label by wrapping it in [`RNHostView`](rnhostview).
+
+```tsx RNLabelMenuExample.tsx
+import { Host, Menu, Button, RNHostView } from '@expo/ui/swift-ui';
+import { Pressable, Text } from 'react-native';
+
+export default function RNLabelMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu
+        label={
+          <RNHostView matchContents>
+            <Pressable
+              onPress={() => console.log('RN trigger pressed')}
+              style={{
+                alignSelf: 'flex-start',
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 8,
+                backgroundColor: '#9B59B6',
+              }}>
+              <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+            </Pressable>
+          </RNHostView>
+        }>
+        <Button label="Item 1" onPress={() => console.log('Item 1')} />
+        <Button label="Item 2" onPress={() => console.log('Item 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
 ### Nested menu
 
 Menus can be nested to create submenus.
@@ -140,6 +183,156 @@ export default function StyledMenuExample() {
       <Menu label="Styled Menu" modifiers={[buttonStyle('borderedProminent')]}>
         <Button label="Styled Action 1" onPress={() => console.log('Styled 1')} />
         <Button label="Styled Action 2" onPress={() => console.log('Styled 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Glass menu
+
+To create a menu with the iOS Liquid Glass appearance, use `buttonStyle('glass')` or `buttonStyle('glassProminent')` on the Menu component.
+
+> **Important:** Do not apply the `glassEffect()` modifier to the Menu's label view to achieve a glass look. This causes a visual artifact where a rectangular halo briefly appears behind the trigger when the menu is dismissed. Always use `buttonStyle` instead, which correctly integrates with the Menu's dismiss animation.
+
+```tsx GlassMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function GlassMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Glass Menu" systemImage="ellipsis.circle" modifiers={[buttonStyle('glass')]}>
+        <Button label="Action 1" onPress={() => console.log('Action 1')} />
+        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+For a more prominent glass effect, use `glassProminent`:
+
+```tsx GlassProminentMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function GlassProminentMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu
+        label="Glass Prominent Menu"
+        systemImage="slider.horizontal.3"
+        modifiers={[buttonStyle('glassProminent')]}>
+        <Button label="Settings" systemImage="gear" onPress={() => console.log('Settings')} />
+        <Button
+          label="Filter"
+          systemImage="line.3.horizontal.decrease"
+          onPress={() => console.log('Filter')}
+        />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### With control group
+
+Use a [`ControlGroup`](controlgroup) inside a menu to render a horizontal row of icon buttons, similar to the quick actions row in Apple Music or Safari menus.
+
+```tsx MenuWithControlGroupExample.tsx
+import { Host, Menu, ControlGroup, Button, Section, Divider } from '@expo/ui/swift-ui';
+
+export default function MenuWithControlGroupExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Song Options" systemImage="ellipsis.circle">
+        <ControlGroup>
+          <Button systemImage="plus" label="Add" onPress={() => console.log('Add')} />
+          <Button systemImage="star" label="Favorite" onPress={() => console.log('Favorite')} />
+          <Button
+            systemImage="square.and.arrow.up"
+            label="Share"
+            onPress={() => console.log('Share')}
+          />
+        </ControlGroup>
+        <Section>
+          <Button
+            systemImage="text.badge.plus"
+            label="Add to a Playlist"
+            onPress={() => console.log('Add to Playlist')}
+          />
+          <Button
+            systemImage="antenna.radiowaves.left.and.right"
+            label="Create Station"
+            onPress={() => console.log('Create Station')}
+          />
+        </Section>
+        <Divider />
+        <Button
+          systemImage="hand.thumbsdown"
+          label="Suggest Less"
+          onPress={() => console.log('Suggest Less')}
+        />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Disabled items
+
+Use the [`disabled(true)`](modifiers/#disableddisabled) modifier on a menu `Button` to render it greyed-out and non-interactive. The button still appears in the menu but won't fire `onPress`.
+
+```tsx DisabledMenuItemExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+import { disabled } from '@expo/ui/swift-ui/modifiers';
+
+export default function DisabledMenuItemExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Options">
+        <Button label="Available" onPress={() => console.log('Available')} />
+        <Button
+          label="Locked"
+          systemImage="lock"
+          modifiers={[disabled(true)]}
+          onPress={() => console.log('This never fires')}
+        />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Selectable items (checkmarks)
+
+A SwiftUI [`Toggle`](toggle) placed inside a `Menu` automatically renders as a row with a leading SF Symbol (when `systemImage` is set) and a trailing checkmark when `isOn` is `true`. Use this pattern instead of inventing a custom checkmark item.
+
+```tsx CheckmarkMenuItemExample.tsx
+import { Host, Menu, Button, Toggle } from '@expo/ui/swift-ui';
+import { useState } from 'react';
+
+export default function CheckmarkMenuItemExample() {
+  const [showCompleted, setShowCompleted] = useState(true);
+  const [showArchived, setShowArchived] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Menu label="Filter" systemImage="line.3.horizontal.decrease.circle">
+        <Toggle
+          isOn={showCompleted}
+          label="Show completed"
+          systemImage="checkmark.circle"
+          onIsOnChange={setShowCompleted}
+        />
+        <Toggle
+          isOn={showArchived}
+          label="Show archived"
+          systemImage="archivebox"
+          onIsOnChange={setShowArchived}
+        />
+        <Button label="Clear filters" onPress={() => console.log('Clear')} />
       </Menu>
     </Host>
   );

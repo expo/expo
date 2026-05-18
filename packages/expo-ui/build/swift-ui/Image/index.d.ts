@@ -1,12 +1,18 @@
-import { ColorValue } from 'react-native';
-import { type SFSymbol } from 'sf-symbols-typescript';
-import { type CommonViewModifierProps } from '../types';
+import type { ColorValue } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
+import type { CommonViewModifierProps } from '../types';
 export interface ImageProps extends CommonViewModifierProps {
     /**
      * The name of the system image (SF Symbol).
      * For example: 'photo', 'heart.fill', 'star.circle'
      */
-    systemName: SFSymbol;
+    systemName?: SFSymbol;
+    /**
+     * The URI of the local image file to display.
+     * For example: 'file:///path/to/image.jpg'
+     * Performs a synchronous read operation that blocks the main thread.
+     */
+    uiImage?: string;
     /**
      * The size of the system image.
      */
@@ -29,5 +35,5 @@ export interface ImageProps extends CommonViewModifierProps {
      */
     onPress?: () => void;
 }
-export declare function Image(props: ImageProps): import("react").JSX.Element;
+export declare function Image(props: ImageProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

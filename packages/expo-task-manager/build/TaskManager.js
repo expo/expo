@@ -1,5 +1,12 @@
-import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { AppRegistry } from 'react-native';
 import ExpoTaskManager from './ExpoTaskManager';
+// Register a no-op headless task so that HeadlessJsTaskContext.startTask()
+// doesn't log a warning. On Android, TaskService registers a headless task
+// in native code to keep JS timers alive during background task execution.
+if (Platform.OS === 'android') {
+    AppRegistry.registerHeadlessTask('expo-task-manager', () => async () => { });
+}
 const tasks = new Map();
 function _validate(taskName) {
     if (!taskName || typeof taskName !== 'string') {

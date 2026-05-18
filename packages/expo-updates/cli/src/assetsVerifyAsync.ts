@@ -54,10 +54,10 @@ export async function getMissingAssetsAsync(
       const asset = fullAssetHashMap.get(hash);
       asset?.fileHashes.forEach((fileHash, index) => {
         if (asset?.fileHashes[index] === hash) {
-          missingAssets.push({
-            hash,
-            path: asset?.files[index],
-          });
+          const path = asset?.files[index];
+          if (path != null) {
+            missingAssets.push({ hash, path });
+          }
         }
       });
     }

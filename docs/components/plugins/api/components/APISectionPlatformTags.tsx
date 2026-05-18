@@ -33,10 +33,10 @@ export const APISectionPlatformTags = ({
   const isCompatibleVersion = [
     'unversioned',
     'latest',
+    'v56.0.0',
     'v55.0.0',
     'v54.0.0',
     'v53.0.0',
-    'v52.0.0',
   ].includes(version);
   const platformsData = platforms ?? getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
@@ -62,8 +62,10 @@ export const APISectionPlatformTags = ({
       className={mergeClasses('mb-3 flex flex-row items-start [table_&]:mb-2.5', className)}>
       {experimentalData.length > 0 && (
         <div className="inline-flex flex-row">
-          <StatusTag status="experimental" className="!mr-0" />
-          <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+          <StatusTag status="experimental" className="mr-0!" />
+          {!!platformNames?.length && (
+            <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+          )}
         </div>
       )}
       <PlatformTags

@@ -1,9 +1,9 @@
-import type { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
-import { type EventMapBase, type NavigationProp, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from '@react-navigation/native';
-import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import React from 'react';
-import { RouteNode } from './Route';
-import { UnknownOutputParams } from './types';
+import type { RouteNode } from './Route';
+import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
+import { type EventMapBase, type NavigationProp, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from './react-navigation/native';
+import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
+import type { UnknownOutputParams } from './types';
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>, TState extends NavigationState = NavigationState, TEventMap extends EventMapBase = EventMapBase> = {
     /** Name is required when used inside a Layout component. */
     name?: string;
@@ -38,10 +38,10 @@ export declare function getQualifiedRouteComponent(value: RouteNode): React.Comp
         navigation: Omit<NavigationProp<ParamListBase, string, undefined, NavigationState, object, NativeStackNavigationEventMap | BottomTabNavigationEventMap>, "getState"> & {
             getState(): NavigationState | undefined;
         };
-    }): React.JSX.Element;
+    }): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): ScreenProps['options'];
-export declare function routeToScreen(route: RouteNode, { options, getId, ...props }?: Partial<ScreenProps>): React.JSX.Element;
+export declare function routeToScreen(route: RouteNode, { options, getId, ...props }?: Partial<ScreenProps>): import("react/jsx-runtime").JSX.Element;
 export declare function getSingularId(name: string, options?: Record<string, any>): string;
 //# sourceMappingURL=useScreens.d.ts.map

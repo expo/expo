@@ -59,6 +59,21 @@ NativeArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
   return value;
 }
 
+jni::local_ref<NativeArrayBuffer::javaobject>
+NativeArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
+                               expo::TypedArray& typedArray) {
+
+  size_t size = typedArray.byteLength(runtime);
+
+  auto byteBuffer = jni::JByteBuffer::allocateDirect(static_cast<jint>(size));
+  byteBuffer->order(jni::JByteOrder::nativeOrder());
+  memcpy(byteBuffer->getDirectAddress(), typedArray.getRawPointer(runtime), size);
+
+  auto value = NativeArrayBuffer::newObjectCxxArgs(byteBuffer);
+  jsiContext->jniDeallocator->addReference(value);
+  return value;
+}
+
 NativeArrayBuffer::NativeArrayBuffer(const jni::alias_ref<jni::JByteBuffer> &byteBuffer)
   : buffer(std::make_shared<ByteBufferJSIWrapper>(byteBuffer)) { }
 

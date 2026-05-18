@@ -36,7 +36,7 @@ export default function CameraScreenPauseRecording() {
         <>
           <CameraView
             ref={camera}
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             facing="back"
             active
             mode="video"

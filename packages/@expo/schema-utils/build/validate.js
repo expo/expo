@@ -45,8 +45,8 @@ const isDeepEqual = (a, b) => {
     if (!isDeepEqual(keysA, keysB)) {
       return false;
     }
-    for (let idx = 0; idx < keysA.length; idx++) {
-      if (!isDeepEqual(a[keysA[idx]], b[keysA[idx]])) {
+    for (const key of keysA) {
+      if (!isDeepEqual(a[key], b[key])) {
         return false;
       }
     }
@@ -272,12 +272,12 @@ const validateArray = (schema, value, path) => {
   }
 };
 const validateRequired = (keys, value, path) => {
-  for (let idx = 0; idx < keys.length; idx++) {
-    if (value[keys[idx]] === undefined) {
+  for (const key of keys) {
+    if (value[key] === undefined) {
       return {
-        message: `Required property "${keys[idx]}" is missing`,
+        message: `Required property "${key}" is missing`,
         keyword: 'required',
-        path: `${path}.${keys[idx]}`,
+        path: `${path}.${key}`,
         value
       };
     }
@@ -287,7 +287,7 @@ const validateRequired = (keys, value, path) => {
 const validateProperties = (properties, value, path) => {
   let child;
   for (const key in properties) {
-    if (value[key] !== undefined && (child = validateSchema(properties[key], value[key], `${path}.${key}`)) != null) {
+    if (properties[key] != null && value[key] !== undefined && (child = validateSchema(properties[key], value[key], `${path}.${key}`)) != null) {
       return child;
     }
   }
@@ -297,10 +297,9 @@ const validatePatternProperties = (validatedProperties, patternProperties, keys,
   let child;
   for (const pattern in patternProperties) {
     const propertyRe = new RegExp(pattern);
-    for (let idx = 0; idx < keys.length; idx++) {
-      const key = keys[idx];
+    for (const key of keys) {
       const childSchema = patternProperties[pattern];
-      if (propertyRe.test(key)) {
+      if (propertyRe.test(key) && childSchema != null) {
         validatedProperties.add(key);
         if ((child = validateSchema(childSchema, value[key], `${path}.${key}`)) != null) {
           return child;
@@ -315,8 +314,7 @@ const validateAdditionalProperties = (additionalProperties, properties, visitedP
     return null;
   }
   let child;
-  for (let idx = 0; idx < keys.length; idx++) {
-    const key = keys[idx];
+  for (const key of keys) {
     if (!visitedPatternProperties.has(key) && !properties?.[key]) {
       if (additionalProperties === false) {
         return {
@@ -334,8 +332,7 @@ const validateAdditionalProperties = (additionalProperties, properties, visitedP
 };
 const validatePropertyNames = (propertyNames, keys, path) => {
   let child;
-  for (let idx = 0; idx < keys.length; idx++) {
-    const key = keys[idx];
+  for (const key of keys) {
     if ((child = validateString(propertyNames, key, `${path}.${key}`)) != null) {
       child.message = `Property name "${key}" does not match schema. ${child.message}`;
       return child;
@@ -347,18 +344,19 @@ const validateDependencies = (dependencies, value, path) => {
   let child;
   for (const key in dependencies) {
     if (value[key] !== undefined) {
-      if (Array.isArray(dependencies[key])) {
-        for (let idx = 0; idx < dependencies[key].length; idx++) {
-          if (value[dependencies[key][idx]] === undefined) {
+      const dependency = dependencies[key];
+      if (Array.isArray(dependency)) {
+        for (const property of dependency) {
+          if (value[property] === undefined) {
             return {
-              message: `Property "${dependencies[key][idx]}" is required when "${key}" is present`,
+              message: `Property "${property}" is required when "${key}" is present`,
               keyword: 'dependencies',
-              path: `${path}.${dependencies[key][idx]}`,
+              path: `${path}.${property}`,
               value: undefined
             };
           }
         }
-      } else if (dependencies[key] != null && (child = validateSchema(dependencies[key], value, path)) != null) {
+      } else if (dependency != null && (child = validateSchema(dependency, value, path)) != null) {
         return child;
       }
     }
@@ -424,8 +422,8 @@ const validateType = (schemaType, valueType, path) => {
 };
 const validateAllOf = (schemas, value, path) => {
   let child;
-  for (let idx = 0; idx < schemas.length; idx++) {
-    if ((child = validateSchema(schemas[idx], value, path)) != null) {
+  for (const schema of schemas) {
+    if ((child = validateSchema(schema, value, path)) != null) {
       return child;
     }
   }
@@ -434,8 +432,8 @@ const validateAllOf = (schemas, value, path) => {
 const validateAnyOf = (schemas, value, path) => {
   let child;
   const cause = [];
-  for (let idx = 0; idx < schemas.length; idx++) {
-    if ((child = validateSchema(schemas[idx], value, path)) != null) {
+  for (const schema of schemas) {
+    if ((child = validateSchema(schema, value, path)) != null) {
       cause.push(child);
     } else {
       return null;
@@ -452,8 +450,8 @@ const validateAnyOf = (schemas, value, path) => {
 const validateOneOf = (schemas, value, path) => {
   let child;
   const cause = [];
-  for (let idx = 0; idx < schemas.length; idx++) {
-    if ((child = validateSchema(schemas[idx], value, path)) != null) {
+  for (const schema of schemas) {
+    if ((child = validateSchema(schema, value, path)) != null) {
       cause.push(child);
     }
   }

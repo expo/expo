@@ -6,6 +6,7 @@ import SwiftUI
 internal enum ShapeType: String, Enumerable {
   case capsule
   case circle
+  case containerRelativeShape
   case ellipse
   case rectangle
   case roundedRectangle

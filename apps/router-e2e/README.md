@@ -6,26 +6,26 @@ The runnable projects are located in the `__e2e__` directory. We use scripts in 
 
 ### E2E Tests
 
-To run the E2E tests, navigate to `packages/@expo/cli` and run `yarn test:e2e <NAME_OF_RUNNABLE_PROJECT>`, or `yarn test:playwright <NAME_OF_RUNNABLE_PROJECT>`
+To run the E2E tests, navigate to `packages/@expo/cli` and run `pnpm test:e2e <NAME_OF_RUNNABLE_PROJECT>`, or `pnpm test:playwright <NAME_OF_RUNNABLE_PROJECT>`
 
 ### Maestro E2E Tests
 
 To run the tests for native navigation, in the `apps/router-e2e` directory, run:
 
 ```bash
-yarn test:e2e
+pnpm test:e2e
 ```
 
 This command will start the expo server and run the maestro tests located in the `__e2e__/native-navigation/__tests__` directory.
 
 ### Native
 
-- Run `yarn prebuild` to create the ios and android directories using the latest `expo-template-bare-minimum` template.
+- Run `pnpm prebuild` to create the ios and android directories using the latest `expo-template-bare-minimum` template.
 - Run `npx expo run:ios` and `npx expo run:android` to build the native projects.
 - For production, use `npx expo run:ios --configuration Release` and `npx expo run:android --variant release`.
 - Optional: Create a `.env.local` file with your Apple Team ID. `touch .env.local && echo "APPLE_TEAM_ID=YOUR_TEAM_ID" >> .env.local`.
 
 ### Web
 
-- Start any project and open it in a web browser, e.g. `yarn start:01-rsc`.
-- For production, use an export script like `yarn export:web-workers` and then serve it with `npx expo serve`.
+- Start any project and open it in a web browser, e.g. `pnpm start:01-rsc`.
+- For production, use an export script like `pnpm export:web-workers` and then serve it with `npx expo serve`.

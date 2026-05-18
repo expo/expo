@@ -24,7 +24,10 @@ class HomeViewModel: ObservableObject {
   @Published var developmentServers: [DevelopmentServer] = []
   @Published var projects: [ExpoProject] = []
   @Published var snacks: [Snack] = []
+  @Published var totalProjectCount: Int = 0
   @Published var isLoadingData = false
+  @Published var isLoadingApp = false
+  @Published var pendingLessonId: Int?
   @Published var dataError: APIError?
 
   private var cancellables = Set<AnyCancellable>()
@@ -64,11 +67,14 @@ class HomeViewModel: ObservableObject {
   }
 
   func onViewWillAppear() {
-    serverService.startDiscovery()
     serverService.setSessionSecret(authService.sessionSecret)
 
     if isAuthenticated, let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
+    }
+
+    if serverService.hasGrantedNetworkPermission || DevelopmentServerService.isSimulator {
+      serverService.startDiscovery()
     }
 
     Task {
@@ -103,6 +109,17 @@ class HomeViewModel: ObservableObject {
     }
   }
 
+  func ssoLogin() async {
+    do {
+      try await authService.ssoLogin()
+      if let account = selectedAccount {
+        dataService.startPolling(accountName: account.name)
+      }
+    } catch {
+      showError("Failed to sign in with SSO")
+    }
+  }
+
   func signOut() {
     authService.signOut()
     clearRecentlyOpenedApps()
@@ -122,10 +139,9 @@ class HomeViewModel: ObservableObject {
     guard let account = selectedAccount else { return }
 
     async let fetchTask: Void = dataService.fetchProjectsAndData(accountName: account.name)
-    async let discoveryTask: Void = serverService.discoverDevelopmentServers()
     async let remoteTask: Void = serverService.refreshRemoteSessions()
 
-    _ = await (fetchTask, discoveryTask, remoteTask)
+    _ = await (fetchTask, remoteTask)
   }
 
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {
@@ -178,6 +194,10 @@ class HomeViewModel: ObservableObject {
     openAppViaBridge(url: url)
   }
 
+  func openApp(url: String, snackParams: NSDictionary) {
+    openAppViaBridge(url: url, snackParams: snackParams)
+  }
+
   func updateShakeGesture(_ enabled: Bool) {
     settingsManager.updateShakeGesture(enabled)
   }
@@ -224,6 +244,10 @@ class HomeViewModel: ObservableObject {
 
     dataService.$snacks
       .sink { [weak self] in self?.snacks = $0 }
+      .store(in: &cancellables)
+
+    dataService.$totalProjectCount
+      .sink { [weak self] in self?.totalProjectCount = $0 }
       .store(in: &cancellables)
 
     dataService.$isLoadingData

@@ -63,7 +63,7 @@ class VideoPlayerSubtitles {
 
       if let group = try await asset.loadMediaSelectionGroup(for: characteristic) {
         for option in group.options {
-          guard let subtitleTrack = SubtitleTrack.from(mediaSelectionOption: option) else {
+          guard let subtitleTrack = SubtitleTrack.from(mediaSelectionOption: option, in: group) else {
             continue
           }
 
@@ -83,6 +83,6 @@ class VideoPlayerSubtitles {
       return nil
     }
 
-    return SubtitleTrack.from(mediaSelectionOption: selectedMediaOption)
+    return SubtitleTrack.from(mediaSelectionOption: selectedMediaOption, in: mediaSelectionGroup)
   }
 }

@@ -143,7 +143,7 @@ export const renderMethod = (
           !nested && STYLES_APIBOX_NESTED,
           nested && 'border-b border-palette-gray4 last:border-b-0'
         )}>
-        <APISectionDeprecationNote comment={comment} sticky className="!rounded-t-none" />
+        <APISectionDeprecationNote comment={comment} sticky className="rounded-t-none!" />
         <APIBoxHeader
           name={getMethodName(
             method as MethodDefinitionData,
@@ -156,13 +156,13 @@ export const renderMethod = (
           platforms={platforms.length > 0 ? platforms : parentPlatforms}
           baseNestingLevel={baseNestingLevel}
           // only show first overload in sidebar to avoid duplicates
-          hideInSidebar={overloadIndex > 0}
+          hideInSidebar={!exposeInSidebar || overloadIndex > 0}
           tags={hasOverloads ? ['overload'] : undefined}
         />
         {hasOverloads && (
           <div className="px-4 pb-2 text-tertiary">
-            <BracketsEllipsesDuotoneIcon className="icon-xs mr-1 inline shrink-0" />
-            <span className="text-3xs">Overload #{overloadIndex + 1}</span>
+            <BracketsEllipsesDuotoneIcon className="mr-1 inline icon-xs shrink-0" />
+            <span className="text-xs">Overload #{overloadIndex + 1}</span>
           </div>
         )}
         {parameters && parameters.length > 0 && (
@@ -184,13 +184,13 @@ export const renderMethod = (
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
                   <div className="flex flex-row items-center gap-2">
-                    <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                    <CornerDownRightIcon className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary" />
                     <span className={STYLES_SECONDARY}>Returns:</span>
                   </div>
                   <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
                 </div>
                 {returnComment ? (
-                  <div className="mb-1 mt-1.5 flex flex-col pl-6">
+                  <div className="mt-1.5 mb-1 flex flex-col pl-6">
                     <APICommentTextBlock
                       comment={{ summary: returnComment.content }}
                       includeSpacing={false}

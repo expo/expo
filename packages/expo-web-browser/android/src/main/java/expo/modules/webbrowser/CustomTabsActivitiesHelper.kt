@@ -8,7 +8,6 @@ import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
 import androidx.core.net.toUri
-import expo.modules.core.errors.CurrentActivityNotFoundException
 import expo.modules.kotlin.AppContext
 
 private const val DUMMY_URL = "https://expo.dev"
@@ -20,7 +19,6 @@ internal class CustomTabsActivitiesHelper(
   // region Actual custom tabs activities helper methods
 
   /**
-   * @throws CurrentActivityNotFoundException
    * @throws PackageManagerNotFoundException
    */
   fun canResolveIntent(customTabsIntent: CustomTabsIntent): Boolean =
@@ -28,7 +26,6 @@ internal class CustomTabsActivitiesHelper(
 
   /**
    * @throws PackageManagerNotFoundException
-   * @throws CurrentActivityNotFoundException
    */
   val customTabsResolvingActivities: ArrayList<String>
     get() = getResolvingActivities(createDefaultCustomTabsIntent())
@@ -38,7 +35,6 @@ internal class CustomTabsActivitiesHelper(
 
   /**
    * @throws PackageManagerNotFoundException
-   * @throws CurrentActivityNotFoundException
    */
   val customTabsResolvingServices: ArrayList<String>
     get() = packageManager.queryIntentServices(createDefaultCustomTabsServiceIntent(), 0)
@@ -48,7 +44,6 @@ internal class CustomTabsActivitiesHelper(
 
   /**
    * @throws PackageManagerNotFoundException
-   * @throws CurrentActivityNotFoundException
    */
   fun getPreferredCustomTabsResolvingActivity(packages: List<String?>?): String? {
     val resolvedPackages = packages ?: customTabsResolvingActivities
@@ -57,7 +52,6 @@ internal class CustomTabsActivitiesHelper(
 
   /**
    * @throws PackageManagerNotFoundException
-   * @throws CurrentActivityNotFoundException
    */
   val defaultCustomTabsResolvingActivity: String?
     get() {
@@ -65,9 +59,6 @@ internal class CustomTabsActivitiesHelper(
       return info?.activityInfo?.packageName
     }
 
-  /**
-   * @throws CurrentActivityNotFoundException
-   */
   fun startCustomTabs(tabsIntent: CustomTabsIntent, options: OpenBrowserOptions) {
     val url = tabsIntent.intent.data ?: throw NoUrlProvidedException()
 
@@ -107,7 +98,6 @@ internal class CustomTabsActivitiesHelper(
 // region Private helpers
 
   /**
-   * @throws CurrentActivityNotFoundException
    * @throws PackageManagerNotFoundException
    */
   private fun getResolvingActivities(customTabsIntent: CustomTabsIntent): List<ResolveInfo> {
@@ -115,15 +105,11 @@ internal class CustomTabsActivitiesHelper(
   }
 
   /**
-   * @throws CurrentActivityNotFoundException
    * @throws PackageManagerNotFoundException
    */
   private val packageManager: PackageManager
     get() = currentActivity.packageManager ?: throw PackageManagerNotFoundException()
 
-  /**
-   * @throws CurrentActivityNotFoundException
-   */
   private val currentActivity: Activity
     get() = appContext.throwingActivity
 

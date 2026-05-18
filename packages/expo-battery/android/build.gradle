@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '55.0.5'
+version = '56.0.3'
 
 android {
   namespace "expo.modules.battery"
   defaultConfig {
     versionCode 11
-    versionName '55.0.5'
+    versionName '56.0.3'
   }
 }
 

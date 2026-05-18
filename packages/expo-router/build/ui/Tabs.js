@@ -17,7 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tabs = Tabs;
 exports.useTabsWithChildren = useTabsWithChildren;
 exports.useTabsWithTriggers = useTabsWithTriggers;
-const native_1 = require("@react-navigation/native");
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const TabContext_1 = require("./TabContext");
@@ -30,6 +30,7 @@ const useComponent_1 = require("./useComponent");
 const Route_1 = require("../Route");
 const hooks_1 = require("../hooks");
 const href_1 = require("../link/href");
+const native_1 = require("../react-navigation/native");
 const url_1 = require("../utils/url");
 const Navigator_1 = require("../views/Navigator");
 __exportStar(require("./TabContext"), exports);
@@ -64,9 +65,7 @@ function Tabs(props) {
             : children,
         ...options,
     });
-    return (<Comp style={styles.tabsRoot} {...rest}>
-      <NavigationContent>{children}</NavigationContent>
-    </Comp>);
+    return ((0, jsx_runtime_1.jsx)(Comp, { style: styles.tabsRoot, ...rest, children: (0, jsx_runtime_1.jsx)(NavigationContent, { children: children }) }));
 }
 /**
  * Hook version of `Tabs`. The returned NavigationContent component
@@ -129,11 +128,7 @@ function useTabsWithTriggers(options) {
         contextKey,
         router: TabRouter_1.ExpoTabRouter,
     }), [navigatorContext, contextKey, TabRouter_1.ExpoTabRouter]);
-    const NavigationContent = (0, useComponent_1.useComponent)((children) => (<TabContext_1.TabTriggerMapContext.Provider value={triggerMap}>
-      <Navigator_1.NavigatorContext.Provider value={navigatorContextValue}>
-        <RNNavigationContent>{children}</RNNavigationContent>
-      </Navigator_1.NavigatorContext.Provider>
-    </TabContext_1.TabTriggerMapContext.Provider>));
+    const NavigationContent = (0, useComponent_1.useComponent)((children) => ((0, jsx_runtime_1.jsx)(TabContext_1.TabTriggerMapContext.Provider, { value: triggerMap, children: (0, jsx_runtime_1.jsx)(Navigator_1.NavigatorContext.Provider, { value: navigatorContextValue, children: (0, jsx_runtime_1.jsx)(RNNavigationContent, { children: children }) }) })));
     return { state, descriptors, navigation, NavigationContent, describe };
 }
 function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = false) {

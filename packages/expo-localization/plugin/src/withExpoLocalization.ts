@@ -11,7 +11,7 @@ import {
 import fs from 'fs';
 import path from 'path';
 
-type ConfigPluginProps = {
+export type ConfigPluginProps = {
   supportsRTL?: boolean;
   forcesRTL?: boolean;
   allowDynamicLocaleChangesAndroid?: boolean;
@@ -22,6 +22,22 @@ type ConfigPluginProps = {
         android?: string[];
       };
 };
+
+function isValidBCP47(tag: string) {
+  try {
+    return !!new Intl.Locale(tag);
+  } catch {
+    return false;
+  }
+}
+
+function assertLocale(value: unknown): asserts value is string {
+  if (typeof value !== 'string' || !isValidBCP47(value)) {
+    throw new Error(
+      `Invalid supportedLocales entry ${JSON.stringify(value)}: must be a BCP-47 locale tag.`
+    );
+  }
+}
 
 export function convertBcp47ToResourceQualifier(locale: string): string {
   return `b+${locale.replaceAll('-', '+')}`;
@@ -78,6 +94,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
       : mergedConfig.supportedLocales;
 
   if (supportedLocales) {
+    supportedLocales.forEach(assertLocale);
     config = withDangerousMod(config, [
       'android',
       (config) => {

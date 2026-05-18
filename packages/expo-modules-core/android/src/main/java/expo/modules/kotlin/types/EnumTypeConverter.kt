@@ -5,16 +5,16 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
-import expo.modules.kotlin.fastPrimaryConstructor
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.toKClass
-import kotlin.reflect.KClass
+import expo.modules.kotlin.toClass
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
 class EnumTypeConverter(
-  private val enumClass: KClass<Enum<*>>
+  private val enumClass: Class<out Enum<*>>
 ) : DynamicAwareTypeConverters<Enum<*>>() {
-  private val enumConstants = requireNotNull(enumClass.java.enumConstants) {
+  private val enumConstants = requireNotNull(enumClass.enumConstants) {
     "Passed type is not an enum type"
   }.also {
     require(it.isNotEmpty()) {
@@ -22,15 +22,12 @@ class EnumTypeConverter(
     }
   }
 
-  private val primaryConstructor = requireNotNull(
-    enumClass.fastPrimaryConstructor
-  ) {
-    "Cannot convert js value to enum without the primary constructor"
-  }
+  private val userFields: List<Field> =
+    enumClass.declaredFields.filter { !Modifier.isStatic(it.modifiers) && !it.isSynthetic }
 
   init {
-    if (!Enumerable::class.java.isAssignableFrom(enumClass.java)) {
-      logger.error("Enum '$enumClass' should inherit from ${Enumerable::class}.")
+    if (!Enumerable::class.java.isAssignableFrom(enumClass)) {
+      logger.error("Enum '${enumClass.simpleName}' should inherit from ${Enumerable::class}.")
     }
   }
 
@@ -39,34 +36,34 @@ class EnumTypeConverter(
   override fun isTrivial() = false
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Enum<*> {
-    if (primaryConstructor.parameters.isEmpty()) {
+    if (userFields.isEmpty()) {
       return convertEnumWithoutParameter(
-        value.asString() ?: throw DynamicCastException(String::class),
+        value.asString() ?: throw DynamicCastException(String::class.java),
         enumConstants
       )
-    } else if (primaryConstructor.parameters.size == 1) {
+    } else if (userFields.size == 1) {
       return convertEnumWithParameter(
         value,
         enumConstants,
-        primaryConstructor.parameters.first().name!!
+        userFields.first()
       )
     }
 
-    throw IncompatibleArgTypeException(value.type.toKClass(), enumClass)
+    throw IncompatibleArgTypeException(value.type.toClass(), enumClass)
   }
 
   override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Enum<*> {
-    if (primaryConstructor.parameters.isEmpty()) {
+    if (userFields.isEmpty()) {
       return convertEnumWithoutParameter(value as String, enumConstants)
-    } else if (primaryConstructor.parameters.size == 1) {
+    } else if (userFields.size == 1) {
       return convertEnumWithParameter(
         value,
         enumConstants,
-        primaryConstructor.parameters.first().name!!
+        userFields.first()
       )
     }
 
-    throw IncompatibleArgTypeException(value::class, enumClass)
+    throw IncompatibleArgTypeException(value.javaClass, enumClass)
   }
 
   /**
@@ -82,17 +79,14 @@ class EnumTypeConverter(
   }
 
   /**
-   * If the primary constructor take one parameter, we treat this parameter as a enum value.
-   * In that case, we handles two different types: Int and String.
+   * If the primary constructor take one parameter, we treat this parameter as an enum value.
+   * In that case, we handle two different types: Int and String.
    */
   private fun convertEnumWithParameter(
     jsValue: Any,
     enumConstants: Array<out Enum<*>>,
-    parameterName: String
+    field: Field
   ): Enum<*> {
-    val field = enumClass.java.getDeclaredField(parameterName)
-    requireNotNull(field) { "Cannot find a property for $parameterName parameter" }
-
     field.isAccessible = true
 
     val parameterType = field.type
@@ -102,7 +96,7 @@ class EnumTypeConverter(
       enumConstants.find {
         field.get(it) == jsUnwrapValue
       }
-    ) { "Couldn't convert '$jsValue' to ${enumClass.simpleName} where $parameterName is the enum parameter" }
+    ) { "Couldn't convert '$jsValue' to ${enumClass.simpleName} where ${field.name} is the enum parameter" }
   }
 
   private fun Any.unwrapValue(parameterType: Class<*>): Any? {

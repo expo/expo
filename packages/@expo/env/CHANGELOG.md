@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 2.2.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.2 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- Fix env variables from system env being returned instead of sourced value from files ([#43037](https://github.com/expo/expo/pull/43037) by [@kitten](https://github.com/kitten))
+
 ## 2.1.0 — 2026-02-08
 
 ### 🎉 New features

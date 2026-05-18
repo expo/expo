@@ -1,13 +1,19 @@
 import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
 
-const pkg = require('expo-contacts/package.json');
+const pkg = require('../../package.json');
 
 const CONTACTS_USAGE = 'Allow $(PRODUCT_NAME) to access your contacts';
 
-const withContacts: ConfigPlugin<{ contactsPermission?: string } | void> = (
-  config,
-  { contactsPermission } = {}
-) => {
+export type Props = {
+  /**
+   * A string to set the `NSContactsUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to access your contacts"
+   * @platform ios
+   */
+  contactsPermission?: string;
+};
+
+const withContacts: ConfigPlugin<Props | void> = (config, { contactsPermission } = {}) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSContactsUsageDescription: CONTACTS_USAGE,
   })(config, {

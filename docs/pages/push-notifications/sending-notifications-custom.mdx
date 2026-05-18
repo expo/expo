@@ -37,7 +37,7 @@ Communicating with FCM is done by sending a POST request. However, before sendin
 
 ### Getting an authentication token
 
-FCM requires an Oauth 2.0 access token, which must be obtained via one of the methods described in ["Update authorization of send requests"](https://firebase.google.com/docs/cloud-messaging/migrate-v1#update-authorization-of-send-requests).
+FCM requires an Oauth 2.0 access token, which must be obtained via one of the methods described in ["Update authorization of send requests"](https://firebase.google.com/docs/cloud-messaging/send/v1-api#authorize-http-v1-send-requests).
 
 For testing purposes, you can use the Google Auth Library and your private key file obtained above, to obtain a short lived token for a single notification, as in this Node example adapted from Firebase documentation:
 
@@ -117,7 +117,7 @@ async function sendFCMv1Notification() {
 
 The `experienceId` and `scopeKey` fields are only applicable when using Expo Go (from SDK 53, push notifications support is removed from Expo Go). Otherwise, your notifications will not go through to your app. FCM has a list of supported fields in the [notification payload](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at the [FirebaseRemoteMessage](/versions/latest/sdk/notifications/#firebaseremotemessage).
 
-FCM also provides some [server-side libraries in a few different languages](https://firebase.google.com/docs/cloud-messaging/send-message#node.js) you can use instead of raw `fetch` requests.
+FCM also provides some [server-side libraries in a few different languages](https://firebase.google.com/docs/cloud-messaging/send/admin-sdk) you can use instead of raw `fetch` requests.
 
 ### How to find FCM server key
 

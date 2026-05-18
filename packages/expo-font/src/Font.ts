@@ -1,7 +1,7 @@
 import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
+import type { FontSource, UnloadFontOptions } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 import {
   isLoadedInCache,
@@ -223,4 +223,10 @@ async function unloadFontInNamespaceAsync(
   await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
 
-export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
+export {
+  FontDisplay,
+  type FontSource,
+  type FontResource,
+  type UnloadFontOptions,
+  type ServerFontResourceDescriptor,
+} from './Font.types';

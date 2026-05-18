@@ -1,7 +1,7 @@
 import { type EventSubscription, Platform } from 'expo-modules-core';
 
 import PushTokenManager from './PushTokenManager';
-import { DevicePushToken } from './Tokens.types';
+import type { DevicePushToken } from './Tokens.types';
 import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
 
 /**

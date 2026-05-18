@@ -10,6 +10,145 @@
 
 ### 💡 Others
 
+## 56.0.9 — 2026-05-15
+
+### 💡 Others
+
+- Switch to msgpackr-backed binary file store ([#45656](https://github.com/expo/expo/pull/45656) by [@kitten](https://github.com/kitten))
+
+## 56.0.8 — 2026-05-13
+
+### 💡 Others
+
+- Skip Babel transform for CSS's JS mount module ([#45657](https://github.com/expo/expo/pull/45657) by [@kitten](https://github.com/kitten))
+
+## 56.0.7 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `picomatch@^4.0.4` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
+
+## 56.0.6 — 2026-05-11
+
+### 🛠 Breaking changes
+
+- Replace source-map representation used internally, and source-map format returned by transformer, reducing peak and retained memory usage ([#45594](https://github.com/expo/expo/pull/45594) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `postcss@^8.5.14` ([#45626](https://github.com/expo/expo/pull/45626) by [@kitten](https://github.com/kitten))
+
+## 56.0.5 — 2026-05-08
+
+### 💡 Others
+
+- Thread `excludeSource` through to source map serialization ([#45507](https://github.com/expo/expo/pull/45507) by [@kitten](https://github.com/kitten))
+- Rename cache then asynchronously delete to remove `--clear` penalty ([#45553](https://github.com/expo/expo/pull/45553) by [@kitten](https://github.com/kitten))
+
+## 56.0.4 — 2026-05-07
+
+### 💡 Others
+
+- Drop obsolete `EXPO_USE_EXOTIC` flag warning ([#45494](https://github.com/expo/expo/pull/45494) by [@kitten](https://github.com/kitten))
+- Fall back to our own Babel cache key with custom Babel transformer ([#45495](https://github.com/expo/expo/pull/45495) by [@kitten](https://github.com/kitten))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+### 💡 Others
+
+- Update `blockList` pattern to exclude `.expo/web/cache`, `<root>/ios/Pods`, `<root>/android/app/build`, and `<root>/android/.gradle` ([#45418](https://github.com/expo/expo/pull/45418) by [@kitten](https://github.com/kitten))
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🎉 New features
+
+- Add Hermes V1 detection ([#43080](https://github.com/expo/expo/pull/43080) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Respect `enableBabelRCLookup` in `loadBabelConfig` to skip Babel config file discovery ([#44841](https://github.com/expo/expo/pull/44841) by [@zoontek](https://github.com/zoontek))
+- Fix mangled async chunk filenames for catch-all routes ([#43547](https://github.com/expo/expo/pull/43547) by [@hassankhan](https://github.com/hassankhan))
+- Fixed DOM Components rendering issues on Android 9 devices. ([#43156](https://github.com/expo/expo/pull/43156) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Delete Hermes v1 detection as it's the default ([#45263](https://github.com/expo/expo/pull/45263) by [@kitten](https://github.com/kitten))
+- Add more stringent Babel config detection that disables redundant Babel config/rc file crawling, and support more Babel config filenames by default ([#45254](https://github.com/expo/expo/pull/45254) by [@kitten](https://github.com/kitten))
+- Use Babel config path hint to Expo Metro transformer and add `loadPartialConfigSync` cache key to invalidate Babel transform cache more granularly ([#45260](https://github.com/expo/expo/pull/45260) by [@kitten](https://github.com/kitten))
+- Skip `generateImportNames` traversal/phase when live bindings import/export support is enabled ([#45349](https://github.com/expo/expo/pull/45349) by [@kitten](https://github.com/kitten))
+- Bump to `@expo/metro@56.0.0` and `metro@0.84.4` ([#45404](https://github.com/expo/expo/pull/45404) by [@kitten](https://github.com/kitten))
+
+## 55.0.20 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.19 - 2026-05-04
+
+### 🐛 Bug fixes
+
+- Fix `BABEL_ENV` being incorrectly restored ([#45348](https://github.com/expo/expo/pull/45348) by [@kitten](https://github.com/kitten))
+
+## 55.0.16 - 2026-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-09
+
+### 💡 Others
+
+- Remove outdated `watcher.unstable_workerThreads` option ([#44591](https://github.com/expo/expo/pull/44591) by [@kitten](https://github.com/kitten))
+
+## 55.0.14 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-19
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 — 2026-02-25
+
+### 💡 Others
+
+- Bump to `babel-plugin-syntax-hermes-parser@^0.32.0` ([#43429](https://github.com/expo/expo/pull/43429) by [@kitten](https://github.com/kitten))
+
+## 55.0.8 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- Fix basename matching for `picomatch` in side-effect matcher ([#43395](https://github.com/expo/expo/pull/43395) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Revert: Set default `resolver.useWatchman: undefined` value (enables it by default, as before) ([#43251](https://github.com/expo/expo/pull/43251) by [@kitten](https://github.com/kitten))
+- Replace `minimatch` with `picomatch` ([#43323](https://github.com/expo/expo/pull/43323) by [@kitten](https://github.com/kitten))
+
+## 55.0.7 — 2026-02-20
+
+### 💡 Others
+
+- Set default `resolver.useWatchman: undefined` value (enables it by default, as before) ([#43251](https://github.com/expo/expo/pull/43251) by [@kitten](https://github.com/kitten))
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.5 — 2026-02-08
 
 ### 💡 Others

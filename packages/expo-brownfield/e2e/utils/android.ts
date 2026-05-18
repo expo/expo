@@ -3,6 +3,7 @@ import path from 'path';
 
 import { addPlugin, prebuildProject } from './project';
 import { PluginProps } from './types';
+import { listFiles } from './test';
 
 // SECTION: Validation functions
 
@@ -32,9 +33,7 @@ export const validateBrownfieldFiles = (
       expect(fs.existsSync(filePath)).toBe(true);
     } catch (error) {
       const filename = path.basename(filePath);
-      const files = fs
-        .readdirSync(brownfieldPath, { recursive: true })
-        .filter((file) => path.basename(file) === filename);
+      const files = listFiles(brownfieldPath).filter((file) => path.basename(file) === filename);
       throw new Error(
         `File at path: ${filePath} not found\nDid you mean any of the following files?\n${files.join('\n')}`
       );
@@ -134,8 +133,7 @@ export const getAndroidPaths = (packageId: string): AndroidPaths => {
  */
 export const getPublishingLines = (
   projectRoot: string,
-  publishing: PluginProps['android']['publishing'],
-  env?: Record<string, string>
+  publishing: PluginProps['android']['publishing']
 ): string[] => {
   const lines = [];
   const count = {
@@ -151,38 +149,40 @@ export const getPublishingLines = (
 
     switch (publication.type) {
       case 'localMaven':
-        lines.push('localDefault {', 'type = "localMaven"');
+        lines.push('localDefault {', 'type.set("localMaven")');
         break;
       case 'localDirectory':
         name = publication.name ?? `localDirectory${count['localDirectory']} {`;
         url = path.isAbsolute(publication.path)
           ? publication.path
           : path.join(projectRoot, publication.path);
-        lines.push(name, 'type = "localDirectory"', `url = "file://${url}"`);
+        lines.push(name, 'type.set("localDirectory")', `url.set("file://${url}")`);
         break;
       case 'remotePublic':
         name = publication.name ?? `remotePublic${count['remotePublic']} {`;
         url = publication.url;
-        lines.push(name, 'type = "remotePublic"', `url = "${url}"`);
+        lines.push(name, 'type.set("remotePublic")', `url.set("${url}")`);
         if (publication.allowInsecure) {
-          lines.push('allowInsecure = true');
+          lines.push('allowInsecure.set(true)');
         }
         break;
       case 'remotePrivate':
         name = publication.name ?? `remotePrivate${count['remotePrivate']} {`;
-        url = typeof publication.url === 'object' ? env[publication.url.variable] : publication.url;
+        url =
+          typeof publication.url === 'object'
+            ? `url.set(providers.environmentVariable("${publication.url.variable}").orElse(""))`
+            : `url.set("${publication.url}")`;
         username =
           typeof publication.username === 'object'
-            ? env[publication.username.variable]
-            : publication.username;
+            ? `username.set(providers.environmentVariable("${publication.username.variable}").orElse(""))`
+            : `username.set("${publication.username}")`;
         password =
           typeof publication.password === 'object'
-            ? env[publication.password.variable]
-            : publication.password;
-        lines.push(name, 'type = "remotePrivate"', `url = "${url}"`);
-        lines.push(`username = "${username}"`, `password = "${password}"`);
+            ? `password.set(providers.environmentVariable("${publication.password.variable}").orElse(""))`
+            : `password.set("${publication.password}")`;
+        lines.push(name, 'type.set("remotePrivate")', url, username, password);
         if (publication.allowInsecure) {
-          lines.push('allowInsecure = true');
+          lines.push('allowInsecure.set(true)');
         }
         break;
     }

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import type { Application } from 'express';
 import fs from 'node:fs';
-import http from 'node:http';
+import type http from 'node:http';
 import path from 'node:path';
 import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
@@ -17,12 +17,12 @@ import { ensureEnvironmentSupportsTLSAsync } from './tls';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { getIpAddress } from '../../../utils/ip';
-import { setNodeEnv } from '../../../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../../../utils/nodeEnv';
 import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
-import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { BundlerDevServer } from '../BundlerDevServer';
 
 const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
 
@@ -160,9 +160,10 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     options.port = await this.getAvailablePortAsync({
       defaultPort: options.port,
     });
+
     const { resetDevServer, https, port, mode } = options;
 
-    this.urlCreator = this.getUrlCreator({
+    const urlCreator = await this.initUrlCreator({
       port,
       location: {
         scheme: https ? 'https' : 'http',
@@ -210,13 +211,14 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       });
     };
 
-    const _host = getIpAddress();
+    const _host = urlCreator.getDefaultRouteAddress();
     const protocol = https ? 'https' : 'http';
 
     return {
       // Server instance
       server,
       // URL Info
+      // TODO(@kitten): Why is this not using the URL creator?
       location: {
         url: `${protocol}://${_host}:${port}`,
         port,
@@ -258,8 +260,10 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       mode: options.mode,
       https: options.https,
     };
+
     setNodeEnv(env.mode ?? 'development');
-    require('@expo/env').load(env.projectRoot);
+    loadEnvFiles(env.projectRoot);
+
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
     let config: WebpackConfiguration;

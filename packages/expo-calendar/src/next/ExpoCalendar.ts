@@ -1,14 +1,14 @@
-import { isRunningInExpoGo } from 'expo';
-import { NativeModule, PermissionResponse, requireNativeModule } from 'expo-modules-core';
-import { ProcessedColorValue } from 'react-native';
+import { isRunningInExpoGo, type PermissionResponse } from 'expo';
+import { NativeModule, requireNativeModule } from 'expo-modules-core';
+import type { ProcessedColorValue } from 'react-native';
 
-import {
+import type {
   ExpoCalendar,
   ExpoCalendarAttendee,
   ExpoCalendarEvent,
   ExpoCalendarReminder,
 } from './ExpoCalendar.types';
-import { Calendar, EntityTypes, Source } from '../Calendar';
+import type { Calendar, EntityTypes, Source } from '../Calendar';
 import ExpoGoCalendarNextStub from './ExpoGoCalendarNextStub';
 
 declare class ExpoCalendarNextModule extends NativeModule {
@@ -32,11 +32,12 @@ declare class ExpoCalendarNextModule extends NativeModule {
   ): Promise<ExpoCalendarEvent[]>;
 
   getCalendarById(calendarId: string): Promise<ExpoCalendar>;
+  presentPicker(): Promise<ExpoCalendar | null>;
   getEventById(eventId: string): Promise<ExpoCalendarEvent>;
   getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
 
-  requestCalendarPermissions(): Promise<PermissionResponse>;
-  getCalendarPermissions(): Promise<PermissionResponse>;
+  requestCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse>;
+  getCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse>;
   requestRemindersPermissions(): Promise<PermissionResponse>;
   getRemindersPermissions(): Promise<PermissionResponse>;
 

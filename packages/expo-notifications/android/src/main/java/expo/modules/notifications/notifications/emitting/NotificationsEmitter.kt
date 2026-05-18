@@ -72,7 +72,7 @@ open class NotificationsEmitter : Module(), NotificationListener {
     return true
   }
 
-  override fun onNotificationResponseIntentReceived(extras: Bundle?) {
+  override fun onNotificationResponseIntentReceived(extras: Bundle) {
     val bundle = NotificationSerializer.toResponseBundleFromExtras(extras)
     DebugLogging.logBundle("NotificationsEmitter.onNotificationResponseIntentReceived", bundle)
     lastNotificationResponseBundle = bundle

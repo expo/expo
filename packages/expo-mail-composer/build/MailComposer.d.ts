@@ -1,4 +1,4 @@
-import { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
+import type { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
 /**
  * Retrieves a list of available email clients installed on the device.
  * This can be used to present options to the user for sending emails through their preferred email client,

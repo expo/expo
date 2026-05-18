@@ -1,3 +1,3 @@
 export * from './Contacts';
-export { default as ContactAccessButton, ContactAccessButtonProps } from './ContactAccessButton';
+export { default as ContactAccessButton, type ContactAccessButtonProps, } from './ContactAccessButton';
 //# sourceMappingURL=index.d.ts.map

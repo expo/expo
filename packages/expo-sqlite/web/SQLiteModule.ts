@@ -4,7 +4,7 @@ import { registerWebModule, NativeModule } from 'expo';
 
 import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
-import { type Changeset } from '../src/NativeSession';
+import { type Changeset, type NativeChangeset } from '../src/NativeSession';
 import {
   type SQLiteBindBlobParams,
   type SQLiteBindPrimitiveParams,
@@ -31,6 +31,11 @@ function getWorker(): Worker {
     });
   }
   return worker;
+}
+
+// web worker works on Uint8Array, but session methods accept ArrayBuffer too
+function convertChangesetInput(changeset: Changeset | NativeChangeset): Changeset {
+  return ArrayBuffer.isView(changeset) ? changeset : new Uint8Array(changeset);
 }
 
 class NativeDatabase {
@@ -331,60 +336,66 @@ export class NativeSession {
     });
   }
 
-  async createChangesetAsync(database: NativeDatabase): Promise<Changeset> {
-    return await invokeWorkerAsync(getWorker(), 'sessionCreateChangeset', {
+  async createChangesetAsync(database: NativeDatabase): Promise<NativeChangeset> {
+    const result = await invokeWorkerAsync(getWorker(), 'sessionCreateChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
     });
+    return result.buffer as ArrayBuffer;
   }
-  createChangesetSync(database: NativeDatabase): Changeset {
-    return invokeWorkerSync(getWorker(), 'sessionCreateChangeset', {
+  createChangesetSync(database: NativeDatabase): NativeChangeset {
+    const result = invokeWorkerSync(getWorker(), 'sessionCreateChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
     });
-  }
-
-  async createInvertedChangesetAsync(database: NativeDatabase): Promise<Changeset> {
-    return await invokeWorkerAsync(getWorker(), 'sessionCreateInvertedChangeset', {
-      nativeDatabaseId: database.id,
-      nativeSessionId: this.id,
-    });
-  }
-  createInvertedChangesetSync(database: NativeDatabase): Changeset {
-    return invokeWorkerSync(getWorker(), 'sessionCreateInvertedChangeset', {
-      nativeDatabaseId: database.id,
-      nativeSessionId: this.id,
-    });
+    return result.buffer as ArrayBuffer;
   }
 
-  async applyChangesetAsync(database: NativeDatabase, changeset: Changeset): Promise<void> {
+  async createInvertedChangesetAsync(database: NativeDatabase): Promise<NativeChangeset> {
+    const result = await invokeWorkerAsync(getWorker(), 'sessionCreateInvertedChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+    });
+    return result.buffer as ArrayBuffer;
+  }
+  createInvertedChangesetSync(database: NativeDatabase): NativeChangeset {
+    const result = invokeWorkerSync(getWorker(), 'sessionCreateInvertedChangeset', {
+      nativeDatabaseId: database.id,
+      nativeSessionId: this.id,
+    });
+    return result.buffer as ArrayBuffer;
+  }
+
+  async applyChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<void> {
     await invokeWorkerAsync(getWorker(), 'sessionApplyChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
-      changeset,
+      changeset: convertChangesetInput(changeset),
     });
   }
-  applyChangesetSync(database: NativeDatabase, changeset: Changeset): void {
+  applyChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): void {
     invokeWorkerSync(getWorker(), 'sessionApplyChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
-      changeset,
+      changeset: convertChangesetInput(changeset),
     });
   }
 
-  async invertChangesetAsync(database: NativeDatabase, changeset: Changeset): Promise<Changeset> {
-    return await invokeWorkerAsync(getWorker(), 'sessionInvertChangeset', {
+  async invertChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<NativeChangeset> {
+    const result = await invokeWorkerAsync(getWorker(), 'sessionInvertChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
-      changeset,
+      changeset: convertChangesetInput(changeset),
     });
+    return result.buffer as ArrayBuffer;
   }
-  invertChangesetSync(database: NativeDatabase, changeset: Changeset): Changeset {
-    return invokeWorkerSync(getWorker(), 'sessionInvertChangeset', {
+  invertChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): NativeChangeset {
+    const result = invokeWorkerSync(getWorker(), 'sessionInvertChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
-      changeset,
+      changeset: convertChangesetInput(changeset),
     });
+    return result.buffer as ArrayBuffer;
   }
 }
 

@@ -30,24 +30,11 @@ internal fun setupPublishing(project: Project) {
         return@afterEvaluate
       }
 
-      val rnVersion =
-        if (project.name == configExtension.libraryName.get()) {
-          getReactNativeVersion(project)
-        } else {
-          null
-        }
-      val hermesVersion =
-        if (project.name == configExtension.libraryName.get()) {
-          getHermesVersion(project)
-        } else {
-          null
-        }
-
       variants.forEach { variant ->
-        publicationExtension.createPublication(variant, project, libraryExtension, rnVersion, hermesVersion)
+        publicationExtension.createPublication(variant, project, libraryExtension)
       }
 
-      createModuleRelatedTasks(project, rnVersion, hermesVersion)
+      createModuleRelatedTasks(project)
       setupRepositories(publicationExtension, project, configExtension)
     }
   }
@@ -89,13 +76,11 @@ internal fun setupRepositories(
  * @param project The project to remove react-native dependency from.
  * @param isBrownfieldProject Whether the project is the brownfield project.
  */
-internal fun createModuleRelatedTasks(project: Project, rnVersion: String?, hermesVersion: String?) {
+internal fun createModuleRelatedTasks(project: Project) {
   val variants = listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll")
   variants.forEach { variant ->
     createRemoveReactNativeDependencyModuleTask(project, variant)
-    if (rnVersion != null && hermesVersion != null) {
-      createSetReactNativeVersionModuleTask(project, variant, rnVersion, hermesVersion)
-    }
+    createSetReactNativeVersionModuleTask(project, variant)
   }
 }
 
@@ -147,9 +132,10 @@ internal fun createRemoveReactNativeDependencyModuleTask(project: Project, varia
 internal fun createSetReactNativeVersionModuleTask(
   project: Project,
   variant: String,
-  rnVersion: String,
-  hermesVersion: String,
 ) {
+  val rnVersion = getReactNativeVersion(project)
+  val hermesVersion = getHermesVersion(project)
+
   val setVersionTask =
     project.tasks.register("setRNDependencyVersionInModuleFile$variant") { task ->
       task.doLast {

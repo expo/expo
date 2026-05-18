@@ -6,6 +6,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("DynamicType")
+@JavaScriptActor
 struct DynamicTypeTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {
@@ -31,7 +32,7 @@ struct DynamicTypeTests {
     @Test
     func `is created`() {
       #expect(~Any.self is DynamicRawType<Any>)
-      #expect(~Bool.self is DynamicRawType<Bool>)
+      #expect(~Bool.self is DynamicBoolType)
       #expect(~DynamicRawTypeTests.self is DynamicRawType<DynamicRawTypeTests>)
     }
 
@@ -40,6 +41,28 @@ struct DynamicTypeTests {
       #expect(try (~String.self).cast("expo", appContext: appContext) as? String == "expo")
       #expect(try (~Double.self).cast(2.1, appContext: appContext) as? Double == 2.1)
       #expect(try (~Bool.self).cast(false, appContext: appContext) as? Bool == false)
+    }
+
+    @Test
+    func `rejects NSNumber created from number as Bool`() {
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 0 as Int), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 1 as Int), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 0.0), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 1.0), appContext: appContext)
+      }
+    }
+
+    @Test
+    func `accepts NSNumber created from boolean as Bool`() throws {
+      #expect(try (~Bool.self).cast(NSNumber(value: true), appContext: appContext) as? Bool == true)
+      #expect(try (~Bool.self).cast(NSNumber(value: false), appContext: appContext) as? Bool == false)
     }
 
     @Test
@@ -91,6 +114,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicNumberType
 
   @Suite("DynamicNumberType")
+  @JavaScriptActor
   struct DynamicNumberTypeTests {
     let appContext: AppContext
 
@@ -139,6 +163,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicStringType
 
   @Suite("DynamicStringType")
+  @JavaScriptActor
   struct DynamicStringTypeTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
@@ -163,13 +188,14 @@ struct DynamicTypeTests {
 
     @Test
     func `casts from JS value`() throws {
-      #expect(try (~String.self).cast(jsValue: .string("bar", runtime: runtime), appContext: appContext) as? String == "bar")
+      #expect(try (~String.self).cast(jsValue: JavaScriptValue(runtime, "bar"), appContext: appContext) as? String == "bar")
     }
   }
 
   // MARK: - DynamicArrayType
 
   @Suite("DynamicArrayType")
+  @JavaScriptActor
   struct DynamicArrayTypeTests {
     let appContext: AppContext
 
@@ -208,6 +234,14 @@ struct DynamicTypeTests {
     }
 
     @Test
+    func `arrayizes a single JS value`() throws {
+      let jsInt = try appContext.runtime.eval("67")
+      let jsString = try appContext.runtime.eval("'Expo'")
+      #expect(try (~[Int].self).cast(jsValue: jsInt, appContext: appContext) as? [Int] == [67])
+      #expect(try (~[String].self).cast(jsValue: jsString, appContext: appContext) as? [String] == ["Expo"])
+    }
+
+    @Test
     func `arrayizes single element`() throws {
       // The dynamic array type can arrayize the single element
       // if only the array element's dynamic type can cast it.
@@ -220,6 +254,30 @@ struct DynamicTypeTests {
       #expect(throws: Conversions.CastingException<String>.self) {
         try (~[String].self).cast(84, appContext: appContext)
       }
+    }
+    
+    @Test
+    func `returns mixed elements to JS`() throws {
+      let mixedArray: [Any] = [1, NativeArrayBuffer.allocate(size: 3)]
+
+      let converted = try (~[Any].self).convertResult(mixedArray, appContext: appContext)
+      let jsValue = try (~[Any].self).castToJS(converted, appContext: appContext)
+      
+      #expect(jsValue.kind == .object)
+      let jsArray = try jsValue.asArray()
+      #expect(try jsArray[0].getInt() == 1)
+      #expect(try jsArray[jsArray.length - 1].isArrayBuffer() == true)
+    }
+
+    @Test
+    func `returns convertible elements to JS`() throws {
+      let sizes = [CGSize(width: 4, height: 3)]
+      let jsValue = try (~[CGSize].self).castToJS(sizes, appContext: appContext)
+      let jsArray = try jsValue.asArray()
+      let sizeObject = try jsArray[0].asObject()
+
+      #expect(try sizeObject.getProperty("width").asDouble() == 4)
+      #expect(try sizeObject.getProperty("height").asDouble() == 3)
     }
 
     @Test
@@ -250,9 +308,113 @@ struct DynamicTypeTests {
     }
   }
 
+  // MARK: - DynamicDictionaryType
+
+  @Suite("DynamicDictionaryType")
+  @JavaScriptActor
+  struct DynamicDictionaryTypeTests {
+    let appContext: AppContext
+
+    init() {
+      appContext = AppContext.create()
+    }
+
+    @Test
+    func `is created`() {
+      #expect(~[String: Double].self is DynamicDictionaryType)
+      #expect(~[String: String?].self is DynamicDictionaryType)
+      #expect(~[String: [Int]].self is DynamicDictionaryType)
+      #expect(~[String: Any].self is DynamicDictionaryType)
+    }
+
+    @Test
+    func `casts succeeds`() throws {
+      #expect(try (~[String: Double].self).cast(["a": 1.2, "b": 3.4], appContext: appContext) as? [String: Double] == ["a": 1.2, "b": 3.4])
+      #expect(try (~[String: [String]].self).cast(["key": ["hello", "expo"]], appContext: appContext) as? [String: [String]] == ["key": ["hello", "expo"]])
+    }
+
+    @Test
+    func `casts from JS value`() throws {
+      let appContext = AppContext.create()
+      let jsValue = try appContext.runtime.eval("({a: 1.2, b: 3.4})")
+      #expect(try (~[String: Double].self).cast(jsValue: jsValue, appContext: appContext) as? [String: Double] == ["a": 1.2, "b": 3.4])
+    }
+
+    @Test
+    func `casts dictionary values`() throws {
+      let value = 9.9
+      let anyValue: [String: Any] = ["key": value]
+      let result = try (~[String: Double].self).cast(anyValue, appContext: appContext) as! [AnyHashable: Any]
+
+      #expect(result is [String: Double])
+      #expect(result as? [String: Double] == ["key": value])
+    }
+
+    @Test
+    func `returns mixed elements to JS`() throws {
+      let mixedDict: [String: Any] = ["num": 1, "buf": NativeArrayBuffer.allocate(size: 3)]
+
+      let converted = try (~[String: Any].self).convertResult(mixedDict, appContext: appContext)
+      let jsValue = try (~[String: Any].self).castToJS(converted, appContext: appContext)
+
+      #expect(jsValue.kind == .object)
+      let jsObject = try jsValue.asObject()
+      #expect(try jsObject.getProperty("num").getInt() == 1)
+      #expect(jsObject.getProperty("buf").isArrayBuffer() == true)
+    }
+
+    @Test
+    func `returns convertible values to JS`() throws {
+      let sizes: [String: CGSize] = ["size": CGSize(width: 4, height: 3)]
+      let jsValue = try (~[String: CGSize].self).castToJS(sizes, appContext: appContext)
+      let jsObject = try jsValue.asObject()
+      let sizeObject = try jsObject.getProperty("size").asObject()
+
+      #expect(try sizeObject.getProperty("width").asDouble() == 4)
+      #expect(try sizeObject.getProperty("height").asDouble() == 3)
+    }
+
+    @Test
+    func `throws CastingException`() {
+      #expect(throws: Conversions.CastingException<[AnyHashable: Any]>.self) {
+        try (~[String: String].self).cast(84, appContext: appContext)
+      }
+    }
+
+    @Test
+    func `wraps is true`() {
+      #expect((~[String: Double].self ~> [String: Double].self) == true)
+      #expect((~[String: [String]].self ~> [String: [String]].self) == true)
+      #expect((~[String: CGPoint].self ~> [String: CGPoint].self) == true)
+      #expect((~[String: Any].self ~> [String: Any].self) == true)
+    }
+
+    @Test
+    func `wraps is false`() {
+      #expect((~[String: String].self !~> [String: Int].self) == true)
+      #expect((~[String: Double].self !~> Double.self) == true)
+    }
+
+    @Test
+    func `equals is true`() {
+      #expect((~[String: String].self == ~[String: String].self) == true)
+      #expect((~[String: CGSize].self == ~[String: CGSize].self) == true)
+      #expect((~[String: [[Double]]].self == ~[String: [[Double]]].self) == true)
+      #expect((~[String: Any].self == ~[String: Any].self) == true)
+    }
+
+    @Test
+    func `equals is false`() {
+      #expect((~[String: Int].self != ~[String: Double].self) == true)
+      #expect((~[String: [String]].self != ~[String: String].self) == true)
+      #expect((~[String: URL].self != ~[String: String].self) == true)
+    }
+  }
+
   // MARK: - DynamicConvertibleType
 
   @Suite("DynamicConvertibleType")
+  @JavaScriptActor
   struct DynamicConvertibleTypeTests {
     let appContext: AppContext
 
@@ -273,6 +435,78 @@ struct DynamicTypeTests {
       #expect(try (~CGPoint.self).cast([2.1, 3.7], appContext: appContext) as? CGPoint == CGPoint(x: 2.1, y: 3.7))
       #expect(try (~CGVector.self).cast(["dx": 0.8, "dy": 4.1], appContext: appContext) as? CGVector == CGVector(dx: 0.8, dy: 4.1))
       #expect(try (~URL.self).cast("/test/path", appContext: appContext) as? URL == URL(fileURLWithPath: "/test/path"))
+    }
+
+    @Test
+    func `casts record from JS value while ignoring extra function-valued properties`() throws {
+      struct TestRecord: Record {
+        @Field var property: String = ""
+      }
+
+      let jsValue = try appContext.runtime.eval("""
+        ({
+          property: "expo",
+          signal: {
+            addEventListener() {}
+          }
+        })
+      """)
+
+      let record = try (~TestRecord.self).cast(jsValue: jsValue, appContext: appContext) as? TestRecord
+      #expect(record?.property == "expo")
+    }
+
+    @Test
+    func `returns record directly to JS while preserving null and undefined`() throws {
+      struct NestedRecord: Record {
+        @Field var label: String = "nested"
+      }
+
+      struct TestRecord: Record {
+        @Field var nested: NestedRecord = NestedRecord()
+        @Field var optional: String?
+        @Field var maybeNumber: ValueOrUndefined<Double?> = .undefined
+      }
+
+      let result = try (~TestRecord.self).castToJS(TestRecord(), appContext: appContext)
+      let object = try result.asObject()
+
+      #expect(object.hasProperty("nested") == true)
+      #expect(try object.getProperty("nested").asObject().getProperty("label").asString() == "nested")
+      #expect(object.hasProperty("optional") == true)
+      #expect(object.getProperty("optional").isNull() == true)
+      #expect(object.hasProperty("maybeNumber") == true)
+      #expect(object.getProperty("maybeNumber").isUndefined() == true)
+    }
+
+    @Test
+    func `returns convertible directly to JS without double-converting convertResult`() throws {
+      let result = try (~CGColor.self).convertToJS(UIColor.red.cgColor, appContext: appContext)
+
+      #expect(result.kind == .string)
+      #expect(result.getString() == "#ff0000ff")
+    }
+
+    @Test
+    func `returns formatted record directly to JS while preserving formatter behavior`() throws {
+      struct TestRecord: Record {
+        @Field var a: String = "a"
+        @Field var b: String? = nil
+        @Field var c: String = "c"
+      }
+
+      let formatted = TestRecord().format { formatter in
+        formatter.property("a", keyPath: \.a).map { $0.uppercased() }
+        formatter.property("b", keyPath: \.b).map { $0 ?? "default" }
+        formatter.property("c", keyPath: \.c).skip()
+      }
+
+      let result = try (~FormattedRecord<TestRecord>.self).castToJS(formatted, appContext: appContext)
+      let object = try result.asObject()
+
+      #expect(try object.getProperty("a").asString() == "A")
+      #expect(try object.getProperty("b").asString() == "default")
+      #expect(object.hasProperty("c") == false)
     }
 
     @Test
@@ -308,78 +542,6 @@ struct DynamicTypeTests {
       #expect((~CGSize.self != ~CGRect.self) == true)
       #expect((~CGPoint.self != ~CGVector.self) == true)
       #expect((~URL.self != ~String.self) == true)
-    }
-  }
-
-  // MARK: - DynamicEnumType
-
-  @Suite("DynamicEnumType")
-  struct DynamicEnumTypeTests {
-    let appContext: AppContext
-
-    enum StringTestEnum: String, Enumerable {
-      case hello
-      case expo
-    }
-    enum IntTestEnum: Int, Enumerable {
-      case negative = -1
-      case positive = 1
-    }
-
-    init() {
-      appContext = AppContext.create()
-    }
-
-    @Test
-    func `is created`() {
-      #expect(~StringTestEnum.self is DynamicEnumType)
-      #expect(~IntTestEnum.self is DynamicEnumType)
-    }
-
-    @Test
-    func `casts succeeds`() throws {
-      #expect(try (~StringTestEnum.self).cast("expo", appContext: appContext) as? StringTestEnum == .expo)
-      #expect(try (~IntTestEnum.self).cast(1, appContext: appContext) as? IntTestEnum == .positive)
-    }
-
-    @Test
-    func `throws EnumNoSuchValueException`() {
-      #expect(throws: EnumNoSuchValueException.self) {
-        try (~StringTestEnum.self).cast("react native", appContext: appContext)
-      }
-    }
-
-    @Test
-    func `throws EnumCastingException`() {
-      #expect(throws: EnumCastingException.self) {
-        try (~IntTestEnum.self).cast(true, appContext: appContext)
-      }
-    }
-
-    @Test
-    func `wraps is true`() {
-      #expect((~StringTestEnum.self ~> StringTestEnum.self) == true)
-      #expect((~IntTestEnum.self ~> IntTestEnum.self) == true)
-    }
-
-    @Test
-    func `wraps is false`() {
-      #expect((~StringTestEnum.self !~> IntTestEnum.self) == true)
-      #expect((~IntTestEnum.self !~> StringTestEnum.self) == true)
-    }
-
-    @Test
-    func `equals is true`() {
-      #expect((~StringTestEnum.self == ~StringTestEnum.self) == true)
-      #expect((~IntTestEnum.self == ~IntTestEnum.self) == true)
-    }
-
-    @Test
-    func `equals is false`() {
-      #expect((~StringTestEnum.self != ~IntTestEnum.self) == true)
-      #expect((~IntTestEnum.self != ~StringTestEnum.self) == true)
-      #expect((~StringTestEnum.self != ~Double.self) == true)
-      #expect((~IntTestEnum.self != ~Int.self) == true)
     }
   }
 
@@ -464,6 +626,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicSharedObjectType
 
   @Suite("DynamicSharedObjectType")
+  @JavaScriptActor
   struct DynamicSharedObjectTypeTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
@@ -554,10 +717,11 @@ struct DynamicTypeTests {
     }
   }
 
-  // MARK: - DynamicEncodableType
+  // MARK: - DynamicCodableType
 
-  @Suite("DynamicEncodableType")
-  struct DynamicEncodableTypeTests {
+  @Suite("DynamicCodableType")
+  @JavaScriptActor
+  struct DynamicCodableTypeTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
       get throws {
@@ -582,7 +746,7 @@ struct DynamicTypeTests {
 
     @Test
     func `is created`() {
-      #expect(~TestEncodable.self is DynamicEncodableType)
+      #expect(~TestEncodable.self is DynamicCodableType<TestEncodable>)
     }
 
     @Test
@@ -599,10 +763,14 @@ struct DynamicTypeTests {
       let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
       let propertyNames = result.getObject().getPropertyNames()
 
-      #expect(propertyNames.count == 3)
+      // Nil optional fields are emitted as explicit `null` rather than omitted,
+      // so the resulting JS object exposes every declared field.
+      #expect(propertyNames.count == 5)
       #expect(propertyNames.contains("string"))
       #expect(propertyNames.contains("number"))
       #expect(propertyNames.contains("bool"))
+      #expect(propertyNames.contains("object"))
+      #expect(propertyNames.contains("array"))
     }
 
     @Test
@@ -614,8 +782,8 @@ struct DynamicTypeTests {
       #expect(try object.getProperty("string").asString() == encodable.string)
       #expect(try object.getProperty("number").asInt() == encodable.number)
       #expect(try object.getProperty("bool").asBool() == encodable.bool)
-      #expect(object.getProperty("object").isUndefined() == true)
-      #expect(object.getProperty("array").isUndefined() == true)
+      #expect(object.getProperty("object").isNull() == true)
+      #expect(object.getProperty("array").isNull() == true)
     }
 
     @Test
@@ -644,7 +812,7 @@ struct DynamicTypeTests {
       let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
       let array = result.getObject().getProperty("array").getArray()
 
-      #expect(array.count == encodable.array?.count)
+      #expect(array.length == encodable.array?.count)
       #expect(array.map({ $0.getInt() }) == encodable.array)
     }
   }

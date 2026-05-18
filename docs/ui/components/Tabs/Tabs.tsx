@@ -12,6 +12,7 @@ import {
   useMemo,
 } from 'react';
 
+import { InsideTabsContext } from './InsideTabsContext';
 import { Tab } from './Tab';
 import { TabButton } from './TabButton';
 import { SharedTabsContext } from './TabsGroup';
@@ -64,7 +65,7 @@ const InnerTabs = ({
   setIndex,
 }: Props & { index: number; setIndex: (index: number) => void }) => {
   const tabPanels = useMemo(() => collectTabPanels(children), [children]);
-  const tabTitles = tabs && tabs.length === tabPanels.length ? tabs : generateTabLabels(tabPanels);
+  const tabTitles = tabs?.length === tabPanels.length ? tabs : generateTabLabels(tabPanels);
 
   const layoutId = useMemo(
     () => tabTitles.reduce((acc, tab) => acc + tab, `${Math.random().toString(36).slice(5)}-`),
@@ -81,15 +82,17 @@ const InnerTabs = ({
           <TabButton key={index} active={index === tabIndex} label={title} layoutId={layoutId} />
         ))}
       </TabList>
-      <TabPanels
-        className={mergeClasses(
-          'px-5 py-4',
-          '[&_ul]:mb-3',
-          'first:[&_figure]:mt-1 first:[&_pre]:mt-1',
-          'last:[&>div>*]:!mb-0'
-        )}>
-        {tabPanels}
-      </TabPanels>
+      <InsideTabsContext.Provider value>
+        <TabPanels
+          className={mergeClasses(
+            'px-5 py-4',
+            '[&_ul]:mb-3',
+            '[&_figure:first-child]:mt-1 [&_pre:first-child]:mt-1',
+            '[&>div>*:last-child]:mb-0!'
+          )}>
+          {tabPanels}
+        </TabPanels>
+      </InsideTabsContext.Provider>
     </ReachTabs>
   );
 };

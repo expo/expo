@@ -8,5 +8,3 @@ internal final class MenuProps: UIBaseViewProps {
   @Field var hasPrimaryAction: Bool = false
   var onPrimaryAction = EventDispatcher()
 }
-
-internal final class MenuLabelProps: ExpoSwiftUI.ViewProps {}

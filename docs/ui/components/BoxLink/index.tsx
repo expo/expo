@@ -29,17 +29,17 @@ export function BoxLink({ title, description, href, testID, Icon, imageUrl }: Bo
       openInNewTab={isExternal}>
       <div className="flex flex-row gap-4">
         {Icon && (
-          <div className="flex h-9 min-w-[36px] items-center justify-center self-center rounded-md bg-element transition group-hover:bg-hover">
+          <div className="flex h-9 min-w-9 items-center justify-center self-center rounded-md bg-element transition group-hover:bg-hover">
             <Icon className="icon-lg text-icon-default" />
           </div>
         )}
-        {imageUrl && <img className="!h-9 !w-9 self-center" src={imageUrl} alt="Icon" />}
+        {imageUrl && <img className="size-9! self-center" src={imageUrl} alt="Icon" />}
         <div className="flex flex-col self-center">
           <DEMI>{title}</DEMI>
           {description && <CALLOUT theme="secondary">{description}</CALLOUT>}
         </div>
       </div>
-      <ArrowIcon className="ml-3 min-w-[20px] content-end self-center text-icon-secondary" />
+      <ArrowIcon className="ml-3 min-w-5 content-end self-center text-icon-secondary" />
     </LinkBase>
   );
 }

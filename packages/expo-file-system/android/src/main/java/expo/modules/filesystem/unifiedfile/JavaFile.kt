@@ -2,9 +2,11 @@ package expo.modules.filesystem.unifiedfile
 
 import android.net.Uri
 import android.os.Build
+import android.os.ParcelFileDescriptor
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import expo.modules.filesystem.fsops.CopyMoveStrategy
 import expo.modules.kotlin.AppContext
 import java.io.File
 import java.io.FileInputStream
@@ -22,13 +24,13 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
     get() = super<File>.parentFile?.toUri()?.let { JavaFile(it) }
 
   override fun createFile(mimeType: String, displayName: String): UnifiedFileInterface? {
-    val childFile = File(super<File>.parentFile, displayName)
+    val childFile = File(this, displayName)
     childFile.createNewFile()
     return JavaFile(childFile.toUri())
   }
 
   override fun createDirectory(displayName: String): UnifiedFileInterface? {
-    val childFile = File(super<File>.parentFile, displayName)
+    val childFile = File(this, displayName)
     childFile.mkdir()
     return JavaFile(childFile.toUri())
   }
@@ -76,7 +78,21 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
     return FileInputStream(this)
   }
 
+  override fun openFileDescriptor(mode: String): ParcelFileDescriptor? = runCatching {
+    val pfdMode = when (mode) {
+      "r" -> ParcelFileDescriptor.MODE_READ_ONLY
+      "w" ->
+        ParcelFileDescriptor.MODE_WRITE_ONLY or
+          ParcelFileDescriptor.MODE_CREATE or
+          ParcelFileDescriptor.MODE_TRUNCATE
+      else -> return null
+    }
+    ParcelFileDescriptor.open(this, pfdMode)
+  }.getOrNull()
+
   override fun walkTopDown(): Sequence<JavaFile> {
     return walk(direction = FileWalkDirection.TOP_DOWN).map { JavaFile(it.toUri()) }
   }
+
+  override val copyMoveStrategy: CopyMoveStrategy = CopyMoveStrategy.LocalFile(this)
 }

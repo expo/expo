@@ -7,9 +7,13 @@ export { StackSearchBar, type StackSearchBarProps } from './StackSearchBar';
 export * from './toolbar';
 export * from './screen';
 
+export { StackTitle, appendStackTitlePropsToOptions, type StackTitleProps } from './StackTitle';
+
 export {
   StackScreen,
   appendScreenStackPropsToOptions,
   validateStackPresentation,
   type StackScreenProps,
 } from './StackScreen';
+
+export { mapProtectedScreen } from './mapProtectedScreen';

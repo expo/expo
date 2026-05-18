@@ -4,16 +4,15 @@ import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.JSTypeConverterProvider
-import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.types.TypeConverterProviderImpl
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
   @PublishedApi
-  internal var returnType: KType? = null
+  internal var returnType: TypeDescriptor? = null
 
   fun isValid() = mHybridData.isValid
 
@@ -27,11 +26,7 @@ class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoN
 
     val converter = TypeConverterProviderImpl
       .obtainTypeConverter(
-        returnType ?: LazyKType(
-          classifier = Unit::class,
-          isMarkedNullable = false,
-          kTypeProvider = { typeOf<Unit>() }
-        )
+        returnType ?: typeDescriptorOf<Unit>()
       )
 
     val expectedReturnType = converter.getCppRequiredTypes()

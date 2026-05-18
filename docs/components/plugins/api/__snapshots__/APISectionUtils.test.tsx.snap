@@ -619,7 +619,8 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
 exports[`APISectionUtils.resolveTypeName union with array 1`] = `
 <div>
   <span>
-    number[]
+    number
+    []
     <span
       class="text-quaternary"
     >

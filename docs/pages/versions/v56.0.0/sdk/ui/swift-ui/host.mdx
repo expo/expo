@@ -1,0 +1,147 @@
+---
+title: Host
+description: A SwiftUI Host component that enables SwiftUI components in React Native.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which underlying uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
+
+Since the `Host` component is a React Native [`View`](https://reactnative.dev/docs/view), you can pass the [`style`](https://reactnative.dev/docs/style) prop to it or `matchContents` prop to make the `Host` component match the contents' size.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Match contents sizing
+
+Use `matchContents` to let the `Host` automatically size itself to fit its SwiftUI content, instead of requiring explicit dimensions.
+
+> **Note:** `matchContents` only works correctly with components that have an intrinsic size or an explicit [`frame`](modifiers/#frameparams) (for example, `Button`, `Toggle`, `Text`). Flexible-width components like `Slider` and linear `ProgressView` expand to fill available space and have no intrinsic width, using `matchContents` with them will result in near-zero width. For those components, either apply a [`frame`](modifiers/#frameparams) modifier on the component to give it an explicit width, or use explicit sizing with `style` on the `Host` instead (for example, `style={{ flex: 1 }}` or `style={{ width: 300 }}`).
+
+```tsx MatchContentsExample.tsx
+import { Button, Host } from '@expo/ui/swift-ui';
+
+export default function MatchContentsExample() {
+  return (
+    <Host matchContents>
+      <Button
+        onPress={() => {
+          console.log('Pressed');
+        }}>
+        Click
+      </Button>
+    </Host>
+  );
+}
+```
+
+> **Note:** Do not use `matchContents` on the same axis as a scroll container (`ScrollView`, `List`, `Form`, `LazyHStack`, `LazyVStack`). `matchContents` resolves to SwiftUI's `.fixedSize`, which sizes the scroll container to its content. It also leaves nothing past the viewport to scroll into, so scrolling silently stops working. Use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width on the scroll axis).
+
+```tsx ScrollViewMatchContents.tsx
+import { Host, HStack, ScrollView, Text } from '@expo/ui/swift-ui';
+
+export default function ScrollViewMatchContents() {
+  return (
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+      <ScrollView axes="horizontal">
+        <HStack spacing={12}>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <Text key={i}>Item {i}</Text>
+          ))}
+        </HStack>
+      </ScrollView>
+    </Host>
+  );
+}
+```
+
+### Explicit sizing with style
+
+Use `style` to set explicit sizes on the `Host`, such as filling the available space with `flex: 1`.
+
+```tsx ExplicitSizingExample.tsx
+import { Button, Host, VStack, Text } from '@expo/ui/swift-ui';
+
+export default function ExplicitSizingExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={8}>
+        <Text>Hello, world!</Text>
+        <Button
+          onPress={() => {
+            console.log('Pressed');
+          }}>
+          Click
+        </Button>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Ignoring keyboard safe area
+
+Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard avoidance (for example, with `react-native-keyboard-controller`), to prevent the SwiftUI host from applying its own keyboard inset.
+
+```tsx IgnoreKeyboardExample.tsx
+import { Host, TextField } from '@expo/ui/swift-ui';
+import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { View } from 'react-native';
+
+export default function IgnoreKeyboardExample() {
+  return (
+    <KeyboardProvider>
+      <View style={{ flex: 1, backgroundColor: 'black' }}>
+        <KeyboardStickyView
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: 16,
+            backgroundColor: 'green',
+          }}>
+          <Host matchContents ignoreSafeArea="keyboard" style={{ backgroundColor: 'red' }}>
+            <TextField placeholder="Enter text" multiline />
+          </Host>
+        </KeyboardStickyView>
+      </View>
+    </KeyboardProvider>
+  );
+}
+```
+
+### Ignoring all safe areas
+
+Use `ignoreSafeArea="all"` when you want SwiftUI content to extend behind the status bar, useful for full-screen overlays or backgrounds.
+
+```tsx IgnoreAllSafeAreasExample.tsx
+import { Host, Text, VStack } from '@expo/ui/swift-ui';
+
+export default function IgnoreAllSafeAreasExample() {
+  return (
+    <Host
+      ignoreSafeArea="all"
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+      <VStack>
+        <Text>This content extends behind the status bar and home indicator.</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Host } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/host" apiName="Host" />

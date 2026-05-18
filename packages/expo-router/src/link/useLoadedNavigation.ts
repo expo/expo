@@ -1,7 +1,8 @@
-import { NavigationProp, NavigationState, useNavigation } from '@react-navigation/native';
 import { useCallback, useState, useEffect, useRef } from 'react';
 
 import { store } from '../global-state/router-store';
+import type { NavigationProp, NavigationState } from '../react-navigation/native';
+import { useNavigation } from '../react-navigation/native';
 
 type GenericNavigation = NavigationProp<ReactNavigation.RootParamList> & {
   getState(): NavigationState | undefined;

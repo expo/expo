@@ -38,7 +38,11 @@ You can configure development client launcher using its built-in [config plugin]
       [
         "expo-dev-client",
         {
-          "launchMode": "most-recent"
+          "launchMode": "most-recent",
+          "defaultLaunchURL": "http://localhost:8081",
+          "android": {
+            "defaultLaunchURL": "http://10.0.0.2:8081"
+          }
         }
       ]
     ]
@@ -67,6 +71,13 @@ You can configure development client launcher using its built-in [config plugin]
       default: 'true',
     },
     {
+      name: 'defaultLaunchURL',
+      description: [
+        'Launch directly into this URL instead of navigating to launcher screen.',
+        'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
+      ].join('\n'),
+    },
+    {
       name: 'android.launchMode',
       description: [
         'Determines whether to launch the most recently opened project or navigate to the launcher screen on Android. Overrides the top-level `launchMode` setting for Android only.',
@@ -84,6 +95,22 @@ You can configure development client launcher using its built-in [config plugin]
         '* `launcher` - Opens the launcher screen.',
       ].join('\n'),
       default: '"most-recent"',
+      platform: 'ios',
+    },
+    {
+      name: 'android.defaultLaunchURL',
+      description: [
+        'Instead of navigating to launcher screen launch directly into this URL.',
+        'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
+      ].join('\n'),
+      platform: 'android',
+    },
+    {
+      name: 'ios.defaultLaunchURL',
+      description: [
+        'Instead of navigating to launcher screen launch directly into this URL.',
+        'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
+      ].join('\n'),
       platform: 'ios',
     },
   ]}

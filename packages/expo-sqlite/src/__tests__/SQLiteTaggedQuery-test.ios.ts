@@ -1,5 +1,6 @@
 import type { SQLiteRunResult } from '../NativeStatement';
-import { openDatabaseAsync, SQLiteDatabase } from '../SQLiteDatabase';
+import type { SQLiteDatabase } from '../SQLiteDatabase';
+import { openDatabaseAsync } from '../SQLiteDatabase';
 
 jest.mock('expo/devtools', () => ({
   getDevToolsPluginClientAsync: jest.fn(),
@@ -56,8 +57,8 @@ describe('SQLiteTaggedQuery', () => {
     const users = await sql<TestUser>`SELECT * FROM users WHERE age = ${age}`;
 
     expect(users).toHaveLength(2);
-    expect(users[0].name).toBe('Alice');
-    expect(users[1].name).toBe('Charlie');
+    expect(users[0]?.name).toBe('Alice');
+    expect(users[1]?.name).toBe('Charlie');
   });
 
   it('should execute query with multiple parameters', async () => {
@@ -71,8 +72,8 @@ describe('SQLiteTaggedQuery', () => {
     `;
 
     expect(users).toHaveLength(1);
-    expect(users[0].name).toBe('Alice');
-    expect(users[0].age).toBe(30);
+    expect(users[0]?.name).toBe('Alice');
+    expect(users[0]?.age).toBe(30);
   });
 
   it('should execute query with no parameters', async () => {
@@ -82,8 +83,8 @@ describe('SQLiteTaggedQuery', () => {
     const users = await sql<TestUser>`SELECT * FROM users ORDER BY age`;
 
     expect(users).toHaveLength(2);
-    expect(users[0].name).toBe('Bob');
-    expect(users[1].name).toBe('Alice');
+    expect(users[0]?.name).toBe('Bob');
+    expect(users[1]?.name).toBe('Alice');
   });
 
   it('should return first row with .first() method', async () => {
@@ -110,8 +111,8 @@ describe('SQLiteTaggedQuery', () => {
     `;
 
     expect(users).toHaveLength(2);
-    expect(users[0].name).toBe('Charlie');
-    expect(users[1].name).toBe('Alice');
+    expect(users[0]?.name).toBe('Charlie');
+    expect(users[1]?.name).toBe('Alice');
   });
 
   it('should execute insert and return metadata', async () => {
@@ -156,7 +157,7 @@ describe('SQLiteTaggedQuery', () => {
 
     const users = await db.getAllAsync<TestUser>('SELECT * FROM users');
     expect(users).toHaveLength(1);
-    expect(users[0].name).toBe('Bob');
+    expect(users[0]?.name).toBe('Bob');
   });
 
   it('should handle insert with returning clause', async () => {
@@ -167,9 +168,9 @@ describe('SQLiteTaggedQuery', () => {
     `;
 
     expect(users).toHaveLength(1);
-    expect(users[0].name).toBe('Alice');
-    expect(users[0].age).toBe(30);
-    expect(users[0].id).toBeGreaterThan(0);
+    expect(users[0]?.name).toBe('Alice');
+    expect(users[0]?.age).toBe(30);
+    expect(users[0]?.id).toBeGreaterThan(0);
   });
 
   it('should return values as arrays with .values()', async () => {
@@ -194,9 +195,9 @@ describe('SQLiteTaggedQuery', () => {
     }
 
     expect(users).toHaveLength(3);
-    expect(users[0].name).toBe('Bob');
-    expect(users[1].name).toBe('Alice');
-    expect(users[2].name).toBe('Charlie');
+    expect(users[0]?.name).toBe('Bob');
+    expect(users[1]?.name).toBe('Alice');
+    expect(users[2]?.name).toBe('Charlie');
   });
 
   it('should iterate with parameters', async () => {
@@ -211,8 +212,8 @@ describe('SQLiteTaggedQuery', () => {
     }
 
     expect(users).toHaveLength(2);
-    expect(users[0].name).toBe('Alice');
-    expect(users[1].name).toBe('Charlie');
+    expect(users[0]?.name).toBe('Alice');
+    expect(users[1]?.name).toBe('Charlie');
   });
 
   it('should execute query synchronously with .allSync()', async () => {
@@ -223,7 +224,7 @@ describe('SQLiteTaggedQuery', () => {
     const users = sql<TestUser>`SELECT * FROM users WHERE age = ${age}`.allSync();
 
     expect(users).toHaveLength(1);
-    expect(users[0].name).toBe('Alice');
+    expect(users[0]?.name).toBe('Alice');
   });
 
   it('should execute query synchronously with .firstSync()', async () => {
@@ -256,8 +257,8 @@ describe('SQLiteTaggedQuery', () => {
     }
 
     expect(users).toHaveLength(2);
-    expect(users[0].name).toBe('Bob');
-    expect(users[1].name).toBe('Alice');
+    expect(users[0]?.name).toBe('Bob');
+    expect(users[1]?.name).toBe('Alice');
   });
 
   it('should return values as arrays synchronously with .valuesSync()', async () => {
@@ -394,7 +395,7 @@ describe('SQLiteTaggedQuery', () => {
     const users = await sql<TestUser>`SELECT * FROM users`;
 
     expect(users).toHaveLength(1);
-    expect(users[0].name).toBe('Alice');
+    expect(users[0]?.name).toBe('Alice');
   });
 
   it('should handle null values', async () => {
@@ -490,7 +491,7 @@ describe('SQLiteTaggedQuery', () => {
 
     const allUsers = await db.getAllAsync<TestUser>('SELECT * FROM users');
     expect(allUsers).toHaveLength(1);
-    expect(allUsers[0].name).toBe('Alice');
+    expect(allUsers[0]?.name).toBe('Alice');
   });
 
   it('should safely handle sql injection with or 1=1', async () => {
@@ -511,7 +512,7 @@ describe('SQLiteTaggedQuery', () => {
     const users = await sql<TestUser>`SELECT * FROM users WHERE name = ${name}`;
 
     expect(users).toHaveLength(1);
-    expect(users[0].name).toBe("O'Brien");
+    expect(users[0]?.name).toBe("O'Brien");
   });
 
   it('should handle strings with quotes and backslashes', async () => {
@@ -521,7 +522,7 @@ describe('SQLiteTaggedQuery', () => {
     const users = await sql<TestUser>`SELECT * FROM users WHERE name = ${name}`;
 
     expect(users).toHaveLength(1);
-    expect(users[0].name).toBe(name);
+    expect(users[0]?.name).toBe(name);
   });
 
   // Error cases

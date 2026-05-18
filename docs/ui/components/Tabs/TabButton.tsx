@@ -54,8 +54,8 @@ export function TabButton({
         disabled={disabled}
         className={mergeClasses(
           'relative z-10 rounded-md transition-colors',
-          !active && theme === 'default' && 'hocus:bg-selected dark:hocus:bg-element',
-          !active && theme === 'secondary' && 'hocus:bg-element dark:hocus:bg-subtle',
+          !active && theme === 'default' && 'dark:hocus:bg-element hocus:bg-selected',
+          !active && theme === 'secondary' && 'dark:hocus:bg-subtle hocus:bg-element',
           className
         )}>
         <div
@@ -67,7 +67,7 @@ export function TabButton({
           <LabelElement
             theme={active ? 'default' : 'tertiary'}
             weight="medium"
-            className="transition-colors max-md-gutters:text-sm max-sm-gutters:text-xs">
+            className="transition-colors max-md:text-sm max-sm:text-sm">
             {label}
           </LabelElement>
           {rightSlot}

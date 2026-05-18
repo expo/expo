@@ -13,7 +13,7 @@ import type { Href } from '../types';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
-import { LinkProps } from './useLinkHooks';
+import type { LinkProps } from './useLinkHooks';
 import { getFirstChildOfType } from '../utils/children';
 import { shouldLinkExternally } from '../utils/url';
 
@@ -88,6 +88,7 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
   );
 
   const isPreviewTapped = useRef(false);
+  const blockPressRef = useRef(false);
 
   const tabPathValue = useMemo(
     () => ({
@@ -108,8 +109,9 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
       tabPath={isPad ? undefined : tabPathValue}
       onWillPreviewOpen={() => {
         if (hasPreview) {
+          blockPressRef.current = true;
           isPreviewTapped.current = false;
-          prefetch(rest.hrefForPreviewNavigation);
+          prefetch(rest.href);
           setIsCurrenPreviewOpen(true);
         }
       }}
@@ -124,21 +126,26 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
         }
       }}
       onPreviewDidClose={() => {
+        blockPressRef.current = false;
         if (hasPreview && isPreviewTapped.current && isPad) {
-          router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
+          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
       }}
       onPreviewTapped={() => {
         isPreviewTapped.current = true;
         if (!isPad) {
-          router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
+          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
       }}
       style={{ display: 'contents' }}
       disableForceFlatten>
       <NativeMenuContext value>
         <InternalLinkPreviewContext
-          value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
+          value={{
+            isVisible: isCurrentPreviewOpen,
+            href: rest.hrefForPreviewNavigation,
+            blockPressRef,
+          }}>
           <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
           {preview}
           {menuElement}

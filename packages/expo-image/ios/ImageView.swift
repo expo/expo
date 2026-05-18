@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-import SDWebImage
+internal import SDWebImage
 import ExpoModulesCore
 import Symbols
 #if !os(tvOS)
@@ -11,10 +11,10 @@ typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
 // swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {
-  static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
-  static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
-  static let contentFitKey = SDWebImageContextOption(rawValue: "contentFit")
-  static let frameSizeKey = SDWebImageContextOption(rawValue: "frameSize")
+  nonisolated static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
+  nonisolated static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
+  nonisolated static let contentFitKey = SDWebImageContextOption(rawValue: "contentFit")
+  nonisolated static let frameSizeKey = SDWebImageContextOption(rawValue: "frameSize")
 
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
@@ -87,9 +87,9 @@ public final class ImageView: ExpoView {
   var isSFSymbolSource: Bool = false
 
   /**
-   The ideal image size that fills in the container size while maintaining the source aspect ratio.
+   `idealSize` before rounding, used only for `contentPosition` math so alignment matches true cover/contain geometry.
    */
-  var imageIdealSize: CGSize = .zero
+  var imageLayoutSize: CGSize = .zero
 
   // MARK: - Events
 
@@ -139,7 +139,7 @@ public final class ImageView: ExpoView {
     if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
       // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
       // After that we have to recalculate the mask layer in `applyContentPosition`.
-      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     }
   }
 
@@ -266,15 +266,15 @@ public final class ImageView: ExpoView {
       ])
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
-      imageIdealSize = idealSize(
+      imageLayoutSize = idealSize(
         contentPixelSize: image.size * image.scale,
         containerSize: frame.size,
         scale: scale,
         contentFit: contentFit
-      ).rounded(.up)
-
+      )
+      let imageIdealSize = imageLayoutSize.rounded(.up)
       let image = processImage(image, idealSize: imageIdealSize, scale: scale)
-      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
       renderSourceImage(image)
     } else {
       displayPlaceholderIfNecessary()
@@ -310,14 +310,14 @@ public final class ImageView: ExpoView {
     ])
 
     let scale = window?.screen.scale ?? UIScreen.main.scale
-    imageIdealSize = idealSize(
+    imageLayoutSize = idealSize(
       contentPixelSize: image.size * image.scale,
       containerSize: frame.size,
       scale: scale,
       contentFit: contentFit
-    ).rounded(.up)
+    )
 
-    applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     renderSFSymbolImage(image)
   }
 

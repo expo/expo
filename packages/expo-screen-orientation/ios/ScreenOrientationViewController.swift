@@ -64,9 +64,19 @@ class ScreenOrientationViewController: UIViewController {
   }
 
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-    guard !shouldUseRNScreenOrientation() else {
-      return super.supportedInterfaceOrientations
+    if let vc = vcWithRNScreenOrientation() {
+      // react-native-screens has per-screen orientation set. Defer to that VC's
+      // supportedInterfaceOrientations so RNScreens' swizzled implementation can
+      // resolve the active screen's orientation mask. When the matching VC is
+      // self, call super to avoid recursing into this override.
+      if vc === self {
+        return super.supportedInterfaceOrientations
+      }
+      return vc.supportedInterfaceOrientations
     }
+
+    // No react-native-screens orientation — use expo-screen-orientation's registry mask
+    // (set via lockAsync) or the default from Info.plist.
     let mask = screenOrientationRegistry.requiredOrientationMask()
     return !mask.isEmpty ? mask : defaultOrientationMask
   }
@@ -79,8 +89,9 @@ class ScreenOrientationViewController: UIViewController {
   override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     super.viewWillTransition(to: size, with: coordinator)
 
-    // Update after the transition ends, this ensures that the trait collection passed to didUpdateDimensionsEvent is already updated
-    coordinator.animate(alongsideTransition: { [weak self] _ in
+    // Use the completion block, windowScene.interfaceOrientation is still stale during the
+    // alongside-transition closure, which makes viewDidTransition read .unknown.
+    coordinator.animate(alongsideTransition: nil) { [weak self] _ in
       guard let self = self, let windowInterfaceOrientation = self.windowInterfaceOrientation else {
         return
       }
@@ -89,15 +100,27 @@ class ScreenOrientationViewController: UIViewController {
         self.screenOrientationRegistry.viewDidTransition(toOrientation: windowInterfaceOrientation)
       }
       self.previousInterfaceOrientation = windowInterfaceOrientation
-    })
+    }
   }
 
-  private func shouldUseRNScreenOrientation() -> Bool {
-    // If RNScreens has set the orientation we want to use it instead of our orientation
+  /// Finds the VC whose subtree has a react-native-screens screen with orientation set.
+  /// Checks self first (the common case), then each child VC. The child-level search handles
+  /// cases where an intermediate VC (e.g. DevLauncherViewController from expo-dev-client)
+  /// sits between this root VC and the RNSNavigationController, blocking the single-level
+  /// traversal that RNScreens' shouldAskScreensForScreenOrientation performs.
+  private func vcWithRNScreenOrientation() -> UIViewController? {
     guard let screenWindowTraitsClass = NSClassFromString("RNSScreenWindowTraits") else {
-      return false
+      return nil
     }
-    return screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: self) ?? false
+    if screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: self) ?? false {
+      return self
+    }
+    for child in children {
+      if screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: child) ?? false {
+        return child
+      }
+    }
+    return nil
   }
 
   /**

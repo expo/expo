@@ -1,6 +1,8 @@
 import { act, fireEvent, screen, userEvent } from '@testing-library/react-native';
-import React, { forwardRef, Ref, useState } from 'react';
-import { ViewProps, View, Text, Button } from 'react-native';
+import type { Ref } from 'react';
+import React, { forwardRef, useState } from 'react';
+import type { ViewProps } from 'react-native';
+import { View, Text, Button } from 'react-native';
 
 import { store } from '../global-state/router-store';
 import { useLocalSearchParams } from '../hooks';
@@ -10,7 +12,8 @@ import { Tabs as JSTabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link/Link';
 import { type RenderRouterOptions, renderRouter, waitFor } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs } from '../ui';
-import { Pressable, PressableProps } from '../views/Pressable';
+import type { PressableProps } from '../views/Pressable';
+import { Pressable } from '../views/Pressable';
 
 const renderFruitApp = (options: RenderRouterOptions = {}) =>
   renderRouter(
@@ -260,7 +263,7 @@ it('does works with shared groups', () => {
         </Tabs>
       ),
       '(one,two)/[fruit]': function Fruit() {
-        const fruit = useLocalSearchParams().fruit.toString();
+        const fruit = useLocalSearchParams().fruit!.toString();
         return <Text testID={fruit}>Fruit: {fruit}</Text>;
       },
     },

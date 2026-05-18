@@ -5,6 +5,7 @@
     "/_next/*",
     "/static/*",
     "/data/*",
+    "/*.md",
     "/*.txt",
     "/*.xml",
     "/*.ico",

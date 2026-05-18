@@ -6,7 +6,8 @@ import type {
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import { scanFilesRecursively, fileExistsAsync } from '../utils';
+import { taskAll } from '../concurrency';
+import { scanFilesRecursively, fileExistsAsync, fastJoin, loadPackageJson } from '../utils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
@@ -61,7 +62,7 @@ export async function resolveDependencyConfigImplAndroidAsync(
     packageInstance = reactNativeConfig?.packageInstance || `new ${nativePackageClassName}()`;
   }
 
-  const packageJson = JSON.parse(await fs.readFile(path.join(packageRoot, 'package.json'), 'utf8'));
+  const packageJson = await loadPackageJson(fastJoin(packageRoot, 'package.json'));
   const buildTypes = reactNativeConfig?.buildTypes || [];
   const dependencyConfiguration = reactNativeConfig?.dependencyConfiguration;
   const libraryName =
@@ -116,16 +117,16 @@ export async function parsePackageNameAsync(
 ): Promise<string | null> {
   if (gradlePath) {
     const gradleContents = await fs.readFile(gradlePath, 'utf8');
-    const match = gradleContents.match(/namespace\s*[=]*\s*["'](.+?)["']/);
+    const match = gradleContents.match(/namespace\s*[=]*\s*["'](.+?)["']/)?.[1];
     if (match) {
-      return match[1];
+      return match;
     }
   }
   if (manifestPath) {
     const manifestContents = await fs.readFile(manifestPath, 'utf8');
-    const match = manifestContents.match(/package="(.+?)"/);
+    const match = manifestContents.match(/package="(.+?)"/)?.[1];
     if (match) {
-      return match[1];
+      return match;
     }
   }
   return null;
@@ -181,9 +182,9 @@ export function matchNativePackageClassName(_filePath: string, contents: Buffer)
     lazyReactPackageRegex =
       /class\s+(\w+[^(\s]*)[\s\w():]*(\s+implements\s+|:)[\s\w():,]*[^{]*ReactPackage/;
   }
-  const matchReactPackage = fileContents.match(lazyReactPackageRegex);
+  const matchReactPackage = fileContents.match(lazyReactPackageRegex)?.[1];
   if (matchReactPackage) {
-    return matchReactPackage[1];
+    return matchReactPackage;
   }
 
   // [1] Match (Base|Turbo)ReactPackage
@@ -191,9 +192,9 @@ export function matchNativePackageClassName(_filePath: string, contents: Buffer)
     lazyTurboReactPackageRegex =
       /class\s+(\w+[^(\s]*)[\s\w():]*(\s+extends\s+|:)[\s\w():,]*[^{]*(Base|Turbo)ReactPackage/;
   }
-  const matchTurboReactPackage = fileContents.match(lazyTurboReactPackageRegex);
+  const matchTurboReactPackage = fileContents.match(lazyTurboReactPackageRegex)?.[1];
   if (matchTurboReactPackage) {
-    return matchTurboReactPackage[1];
+    return matchTurboReactPackage;
   }
 
   return null;
@@ -213,9 +214,9 @@ export async function parseLibraryNameAsync(
   // [1] `libraryName` from build.gradle
   if (await fileExistsAsync(gradlePath)) {
     const buildGradleContents = await fs.readFile(gradlePath, 'utf8');
-    const match = buildGradleContents.match(libraryNameRegExp);
+    const match = buildGradleContents.match(libraryNameRegExp)?.[1];
     if (match) {
-      return match[1];
+      return match;
     }
   }
 
@@ -223,9 +224,9 @@ export async function parseLibraryNameAsync(
   const gradleKtsPath = path.join(androidDir, 'build.gradle.kts');
   if (await fileExistsAsync(gradleKtsPath)) {
     const buildGradleContents = await fs.readFile(gradleKtsPath, 'utf8');
-    const match = buildGradleContents.match(libraryNameRegExp);
+    const match = buildGradleContents.match(libraryNameRegExp)?.[1];
     if (match) {
-      return match[1];
+      return match;
     }
   }
 
@@ -243,7 +244,7 @@ export async function parseComponentDescriptorsAsync(
   const results = new Set<string>();
   for await (const entry of scanFilesRecursively(jsRoot)) {
     if (extRe.test(entry.name)) {
-      const contents = await fs.readFile(entry.path);
+      const contents = await fs.readFile(entry.path, 'utf8');
       const matched = matchComponentDescriptors(entry.path, contents);
       if (matched) {
         results.add(matched);
@@ -254,14 +255,12 @@ export async function parseComponentDescriptorsAsync(
 }
 
 let lazyCodegenComponentRegex: RegExp | null = null;
-function matchComponentDescriptors(_filePath: string, contents: Buffer): string | null {
-  const fileContents = contents.toString();
-
+function matchComponentDescriptors(_filePath: string, contents: string): string | null {
   if (!lazyCodegenComponentRegex) {
     lazyCodegenComponentRegex =
       /codegenNativeComponent(<.*>)?\s*\(\s*["'`](\w+)["'`](,?[\s\S]+interfaceOnly:\s*(\w+))?/m;
   }
-  const match = fileContents.match(lazyCodegenComponentRegex);
+  const match = contents.match(lazyCodegenComponentRegex);
   if (!(match?.[4] === 'true') && match?.[2]) {
     return `${match[2]}ComponentDescriptor`;
   }
@@ -298,8 +297,8 @@ const findAndroidManifestsAsync = async (targetPath: string) => {
 };
 
 const getFileCandidatesAsync = async (targetPath: string, fileNames: string[]) => {
-  const gradlePaths = await Promise.all(
-    fileNames.map((fileName) => fileExistsAsync(path.join(targetPath, fileName)))
+  const gradlePaths = await taskAll(fileNames, (fileName) =>
+    fileExistsAsync(path.join(targetPath, fileName))
   );
   return gradlePaths.filter((file) => file != null).sort((a, b) => a.localeCompare(b));
 };

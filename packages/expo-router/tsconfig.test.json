@@ -6,10 +6,8 @@
   "include": [
     "**/__tests__/",
     "**/__rsc_tests__/",
-    "./types/expect.d.ts",
     "./src/ts-declarations",
-    "../@expo/cli/ts-declarations",
-    "../expo/src/ts-declarations"
+    "./src/types",
   ],
   "exclude": [
     "**/__mocks__/*",

@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 import type { VideoPlayer } from './VideoPlayer.types';
 /**
  * Describes how a video should be scaled to fit in a container.
@@ -51,6 +51,11 @@ export interface VideoViewProps extends ViewProps {
      * @platform ios
      */
     requiresLinearPlayback?: boolean;
+    /**
+     * Configuration for controlling the visibility of player control buttons.
+     * @platform android
+     */
+    buttonOptions?: ButtonOptions;
     /**
      * Determines the type of the surface used to render the video.
      * > This prop should not be changed at runtime.
@@ -160,6 +165,62 @@ export interface VideoViewProps extends ViewProps {
     useAudioNodePlayback?: boolean;
 }
 /**
+ * Configuration for controlling the visibility of player control buttons.
+ *
+ * > The fullscreen button should be controlled with [`fullscreenOptions.enable`](#fullscreenoptions).
+ *
+ * @platform android
+ */
+export type ButtonOptions = {
+    /**
+     * Whether to show the next button.
+     * @default false
+     */
+    showNext?: boolean;
+    /**
+     * Whether to show the previous button.
+     * @default false
+     */
+    showPrevious?: boolean;
+    /**
+     * Whether to show the seek forward button.
+     * @default true
+     */
+    showSeekForward?: boolean;
+    /**
+     * Whether to show the seek backward button.
+     * @default true
+     */
+    showSeekBackward?: boolean;
+    /**
+     * Whether to show the subtitles button.
+     * - `true`: Button is always visible
+     * - `false`: Button is never visible
+     * - `undefined`: Button is visible only when subtitles are available (default behavior)
+     * @default undefined
+     */
+    showSubtitles?: boolean | null;
+    /**
+     * Whether to show the settings button.
+     * @default true
+     */
+    showSettings?: boolean;
+    /**
+     * Whether to show the play/pause button.
+     * @default true
+     */
+    showPlayPause?: boolean;
+    /**
+     * Whether to show the bottom control bar (containing time, progress bar, and buttons).
+     * When set to `false`, the entire bottom bar including the progress bar will be hidden.
+     *
+     * > **Note**: The bottom bar is always visible in fullscreen mode to allow users to exit fullscreen.
+     *
+     * @default true
+     */
+    showBottomBar?: boolean;
+};
+/**
  * Describes the orientation of the video in fullscreen mode. Available values are:
  * - `default`: The video is displayed in any of the available device rotations.
  * - `portrait`: The video is displayed in one of two available portrait orientations and rotates between them.
@@ -170,6 +231,14 @@ export interface VideoViewProps extends ViewProps {
  * - `landscapeRight`: The video is displayed in the right landscape orientation - the notch of the phone is in the right palm of the user.
  */
 export type FullscreenOrientation = 'default' | 'portrait' | 'portraitUp' | 'portraitDown' | 'landscape' | 'landscapeLeft' | 'landscapeRight';
+/**
+ * Determines whether the player keeps fullscreen when Picture in Picture (PiP) stops.
+ * Only has an effect if the player was in fullscreen when PiP started.
+ * - `'always'`: Always re-enter fullscreen when PiP stops.
+ * - `'autoEnter'`: Re-enter fullscreen only when PiP was started automatically by the app going to the background.
+ * - `'never'`: Do not re-enter fullscreen when PiP stops.
+ */
+export type KeepFullscreenOnPiPStopBehavior = 'always' | 'autoEnter' | 'never';
 /**
  * Describes the options for fullscreen video mode.
  */
@@ -198,5 +267,13 @@ export type FullscreenOptions = {
      * @platform ios
      */
     autoExitOnRotate?: boolean;
+    /**
+     * Determines whether the player keeps fullscreen when Picture in Picture (PiP) stops.
+     * Only has an effect if the player was in fullscreen when PiP started.
+     *
+     * @default 'autoEnter'
+     * @platform ios
+     */
+    keepFullscreenOnPiPStop?: KeepFullscreenOnPiPStopBehavior;
 };
 //# sourceMappingURL=VideoView.types.d.ts.map

@@ -6,6 +6,7 @@ import { CodeBlock } from '~/components/base/code';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import {
   CALLOUT,
   CODE,
@@ -41,7 +42,7 @@ export default function AppConfigSchemaTable({ schema }: AppConfigSchemaProps) {
 
 type PropertyNameProps = { name: string; nestingLevel: number };
 
-const PROPERTY_HEADING_CLASSNAME = 'font-normal text-base [&_strong]:break-words';
+const PROPERTY_HEADING_CLASSNAME = 'font-normal text-base [&_strong]:wrap-break-word';
 const PropertyHeadingH3 = createTextComponent(TextElement.H3, PROPERTY_HEADING_CLASSNAME);
 const PropertyHeadingH4 = createTextComponent(TextElement.H4, PROPERTY_HEADING_CLASSNAME);
 const PropertyHeadingH5 = createTextComponent(TextElement.H5, PROPERTY_HEADING_CLASSNAME);
@@ -79,17 +80,24 @@ function AppConfigProperty({
   nestingLevel,
   subproperties,
   parent,
+  deprecated,
+  enum: enumValues,
 }: FormattedProperty & { nestingLevel: number }) {
   const canHaveMultipleValues = Array.isArray(type);
   return (
     <APIBox
       className={mergeClasses(
-        '!mb-0 !rounded-none !border-b-0 !shadow-none',
-        '[&]:first-of-type:!rounded-t-md',
-        '[&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default',
+        'mb-0! rounded-none! border-b-0! shadow-none!',
+        '[&]:first-of-type:rounded-t-md!',
+        '[&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default!',
         'px-4 py-3'
       )}>
       <PropertyName name={name} nestingLevel={nestingLevel} />
+      {deprecated && (
+        <InlineHelp size="sm" type="warning" className="mt-2 border-palette-yellow5">
+          <span className="font-bold">Deprecated</span>
+        </InlineHelp>
+      )}
       <div className="my-3" data-text="true">
         {canHaveMultipleValues ? (
           <div className="mb-2 grid grid-cols-1">
@@ -160,12 +168,23 @@ function AppConfigProperty({
         ) : (
           <CALLOUT theme="secondary" tag="span">
             Type: <CODE>{type ?? 'undefined'}</CODE>
+            {enumValues && (
+              <>
+                &emsp;&bull;&emsp;{'One of: '}
+                {enumValues.map((value, i) => (
+                  <span key={value}>
+                    {i > 0 && ', '}
+                    <CODE>{value}</CODE>
+                  </span>
+                ))}
+              </>
+            )}
           </CALLOUT>
         )}
         {!canHaveMultipleValues && nestingLevel > 0 && (
           <CALLOUT theme="secondary" tag="span">
             &emsp;&bull;&emsp;Path:{' '}
-            <code className="break-words px-1 text-secondary">
+            <code className="px-1 wrap-break-word text-secondary">
               {parent}.{name}
             </code>
           </CALLOUT>

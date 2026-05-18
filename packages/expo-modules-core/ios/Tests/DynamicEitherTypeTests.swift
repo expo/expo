@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("DynamicEitherType")
+@JavaScriptActor
 struct DynamicEitherTypeTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {
@@ -36,7 +37,7 @@ struct DynamicEitherTypeTests {
     let either1 = try (~Either<Int, String>.self).cast(jsValue: .number(123), appContext: appContext) as! Either<Int, String>
     #expect(try either1.as(Int.self) == 123)
 
-    let either2 = try (~Either<Int, String>.self).cast(jsValue: .string("expo", runtime: runtime), appContext: appContext) as! Either<Int, String>
+    let either2 = try (~Either<Int, String>.self).cast(jsValue: JavaScriptValue(runtime, "expo"), appContext: appContext) as! Either<Int, String>
     #expect(try either2.as(String.self) == "expo")
   }
 
@@ -57,6 +58,17 @@ struct DynamicEitherTypeTests {
     #expect(throws: NeitherTypeException.self) {
       try (~EitherOfFour<String, Int, Double, Bool>.self).cast([1, 2], appContext: appContext)
     }
+  }
+
+  @Test
+  func `decodes numeric 0 and 1 as Double not Bool`() throws {
+    let either0 = try (~Either<Bool, Double>.self).cast(jsValue: .number(0), appContext: appContext) as! Either<Bool, Double>
+    #expect(either0.is(Double.self) == true)
+    #expect(either0.is(Bool.self) == false)
+
+    let either1 = try (~Either<Bool, Double>.self).cast(jsValue: .number(1), appContext: appContext) as! Either<Bool, Double>
+    #expect(either1.is(Double.self) == true)
+    #expect(either1.is(Bool.self) == false)
   }
 
   @Test

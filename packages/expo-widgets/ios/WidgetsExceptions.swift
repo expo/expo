@@ -17,3 +17,9 @@ internal final class LiveActivityNotFoundException: GenericException<String>, @u
     "Can't find live activity with id: \(param)"
   }
 }
+
+internal final class UpdatedTimelineWithoutLayout: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Cannot update widget timeline without a layout, first register a layout for: \(param)"
+  }
+}

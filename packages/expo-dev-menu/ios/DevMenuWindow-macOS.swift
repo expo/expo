@@ -100,7 +100,7 @@ class DevMenuWindow: NSObject, AnyObject {
       ctx.duration = 0.3
       overlay.animator().alphaValue = 0.0
     }, completionHandler: { [weak self] in
-      guard let self = self else { return }
+      guard let self else { return }
       overlay.removeFromSuperview()
       self.overlayView = nil
       self.hostingView = nil

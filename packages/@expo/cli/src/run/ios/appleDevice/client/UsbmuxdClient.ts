@@ -7,7 +7,8 @@
  */
 import plist from '@expo/plist';
 import Debug from 'debug';
-import { Socket, connect } from 'net';
+import type { Socket } from 'net';
+import { connect } from 'net';
 
 import { ResponseError, ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
@@ -165,7 +166,7 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
     }
 
     if (!udid) {
-      return devices[0];
+      return devices[0]!;
     }
 
     for (const device of devices) {

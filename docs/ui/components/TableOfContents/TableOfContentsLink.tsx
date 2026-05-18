@@ -46,21 +46,21 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
             href={'#' + slug}
             onClick={onClick}
             className={mergeClasses(
-              'mb-1.5 flex items-center justify-between truncate !text-pretty',
+              'mb-1.5 flex items-center justify-between truncate text-pretty!',
               convertToIndentClass(level - BASE_HEADING_LEVEL),
               'focus-visible:relative focus-visible:z-10'
             )}>
             <TitleElement
               className={mergeClasses(
-                'w-full !text-secondary hocus:!text-link',
-                isCodeOrFilePath && 'truncate !text-2xs',
-                isActive && '!text-link',
+                'w-full text-secondary! hocus:text-link!',
+                isCodeOrFilePath && 'truncate text-xs!',
+                isActive && 'text-link!',
                 isDeprecated && 'line-through opacity-80'
               )}>
               {displayTitle}
               {hasOverloads && (
                 <>
-                  <BracketsEllipsesDuotoneIcon className="icon-xs ml-1 inline text-icon-secondary" />
+                  <BracketsEllipsesDuotoneIcon className="ml-1 inline icon-xs text-icon-secondary" />
                   <span className="sr-only">Has overloads</span>
                 </>
               )}

@@ -19,7 +19,8 @@ import { LoaderCache, LoaderCacheContext } from '../loaders/LoaderCache';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { fetchLoader } from '../loaders/utils';
 import { renderRouter } from '../testing-library';
-import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
+import type { MemoryContext } from '../testing-library/context-stubs';
+import { inMemoryContext } from '../testing-library/context-stubs';
 
 jest.mock('../loaders/utils', () => ({
   fetchLoader: jest.fn(),
@@ -260,17 +261,12 @@ describe(useGlobalSearchParams, () => {
 
     expect(results1).toEqual([{ id: '1' }]);
     act(() => router.push('/2'));
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-    expect(results1).toEqual([{ id: '1' }, { id: '2' }, { id: '2' }]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
 
     act(() => router.push('/3/apple'));
     // The first screen has not rerendered
-    expect(results1).toEqual([{ id: '1' }, { id: '2' }, { id: '2' }]);
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-    expect(results2).toEqual([
-      { id: '3', fruit: 'apple' },
-      { id: '3', fruit: 'apple' },
-    ]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
+    expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
 
   it(`handles encoded params`, () => {
@@ -348,17 +344,12 @@ describe(useLocalSearchParams, () => {
 
     expect(results1).toEqual([{ id: '1' }]);
     act(() => router.push('/2'));
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-    expect(results1).toEqual([{ id: '1' }, { id: '2' }, { id: '2' }]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
 
     act(() => router.push('/3/apple'));
     // The first screen has not rerendered
-    expect(results1).toEqual([{ id: '1' }, { id: '2' }, { id: '2' }]);
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-    expect(results2).toEqual([
-      { id: '3', fruit: 'apple' },
-      { id: '3', fruit: 'apple' },
-    ]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
+    expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
 
   it(`defaults abstract types`, () => {
@@ -384,6 +375,20 @@ describe(useLocalSearchParams, () => {
     act(() => router.setParams({ test: undefined }));
 
     expect(result.current).toEqual({});
+  });
+
+  it('passes null search params through without stringifying them', () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/?test=1',
+    });
+
+    expect(result.current).toEqual({
+      test: '1',
+    });
+
+    act(() => router.setParams({ test: null }));
+
+    expect(result.current).toEqual({ test: null });
   });
 
   it(`handles encoded params`, () => {
@@ -503,10 +508,8 @@ describe(useSearchParams, () => {
 
     expect(results1).toEqual([['id', '1']]);
     act(() => router.push('/2'));
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
     expect(results1).toEqual([
       ['id', '1'],
-      ['id', '2'],
       ['id', '2'],
     ]);
 
@@ -515,12 +518,8 @@ describe(useSearchParams, () => {
     expect(results1).toEqual([
       ['id', '1'],
       ['id', '2'],
-      ['id', '2'],
     ]);
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
     expect(results2).toEqual([
-      ['id', '3'],
-      ['fruit', 'apple'],
       ['id', '3'],
       ['fruit', 'apple'],
     ]);
@@ -740,9 +739,9 @@ describe(useLoaderData, () => {
   });
 
   it.each([
-    { route: 'index', initialUrl: '/', expectedPath: '/' },
-    { route: 'users/index', initialUrl: '/users', expectedPath: '/users' },
-    { route: '(group)/index', initialUrl: '/', expectedPath: '/' },
+    { route: 'index', initialUrl: '/', expectedPath: '/index' },
+    { route: 'users/index', initialUrl: '/users', expectedPath: '/users/index' },
+    { route: '(group)/index', initialUrl: '/', expectedPath: '/(group)/index' },
     { route: 'users/[id]', initialUrl: '/users/123', expectedPath: '/users/123' },
   ])('resolves $route to $expectedPath', ({ route, initialUrl, expectedPath }) => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
@@ -756,14 +755,23 @@ describe(useLoaderData, () => {
 
   it('resolves nested route under `_layout` to full pathname', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/nested': { correct: true },
+      '/nested/index': { correct: true },
     };
 
-    const { result } = renderHook(() => useLoaderData(), ['nested/_layout', 'nested/index'], {
-      initialUrl: '/nested',
-    });
+    let loaderResult: any;
 
-    expect(result.current).toEqual({ correct: true });
+    renderRouter(
+      {
+        'nested/_layout': () => <Slot />,
+        'nested/index': function NestedIndex() {
+          loaderResult = useLoaderData();
+          return <Text>Nested</Text>;
+        },
+      },
+      { initialUrl: '/nested' }
+    );
+
+    expect(loaderResult).toEqual({ correct: true });
   });
 
   it('includes search params in the lookup key', () => {
@@ -781,11 +789,11 @@ describe(useLoaderData, () => {
   it('retrieves server-side data from `ServerDataLoaderContext`', () => {
     // Added to ensure that data is not fetched from global scope
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { source: 'global' },
+      '/index': { source: 'global' },
     };
 
     const ServerWrapper = ({ children }: { children: React.ReactNode }) => (
-      <ServerDataLoaderContext value={{ '/': { source: 'server' } }}>
+      <ServerDataLoaderContext value={{ '/index': { source: 'server' } }}>
         {children}
       </ServerDataLoaderContext>
     );
@@ -800,7 +808,7 @@ describe(useLoaderData, () => {
 
   it('retrieves server-injected data from `globalThis.__EXPO_ROUTER_LOADER_DATA__`', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { some: 'data' },
+      '/index': { some: 'data' },
     };
 
     const { result } = renderHook(() => useLoaderData(), ['index'], {
@@ -832,7 +840,7 @@ describe(useLoaderData, () => {
     expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
 
     await act(async () => {
-      await fetchLoaderMock.mock.results[0].value;
+      await fetchLoaderMock.mock.results[0]!.value;
     });
 
     expect(cache.getData('/users/123')).toEqual({ fromFetch: true });
@@ -864,7 +872,7 @@ describe(useLoaderData, () => {
     };
 
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
+      '/index': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
     };
 
     const { result } = renderHook(() => useLoaderData<typeof asyncLoader>(), ['index'], {
@@ -872,5 +880,40 @@ describe(useLoaderData, () => {
     });
 
     expectType<{ user: { id: number; name: string }; timestamp: number }>(result.current);
+  });
+
+  it('resolves loader data for non-focused tab route', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { tab: 'home' },
+      '/profile': { tab: 'profile' },
+    };
+
+    const homeResults: any[] = [];
+    const profileResults: any[] = [];
+
+    renderRouter(
+      {
+        _layout: () => <Tabs />,
+        index: function Home() {
+          homeResults.push(useLoaderData());
+          return <Text>Home</Text>;
+        },
+        profile: function Profile() {
+          profileResults.push(useLoaderData());
+          return <Text>Profile</Text>;
+        },
+      },
+      {
+        initialUrl: '/',
+      }
+    );
+
+    expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
+
+    act(() => router.push('/profile'));
+
+    expect(profileResults[profileResults.length - 1]).toEqual({ tab: 'profile' });
+    // Home screen should still be showing its own results
+    expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
   });
 });

@@ -1,7 +1,8 @@
 {
   "platforms": ["apple", "android", "web"],
   "apple": {
-    "modules": ["CameraViewModule"]
+    "modules": ["CameraViewModule"],
+    "podspecPath": ["ios/ExpoCamera.podspec"]
   },
   "android": {
     "modules": ["expo.modules.camera.CameraViewModule"]

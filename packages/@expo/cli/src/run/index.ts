@@ -2,7 +2,7 @@
 import chalk from 'chalk';
 
 import { logPlatformRunCommand } from './hints';
-import { Command } from '../../bin/cli';
+import type { Command } from '../../bin/cli';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 import { CommandError, logCmdError } from '../utils/errors';
 

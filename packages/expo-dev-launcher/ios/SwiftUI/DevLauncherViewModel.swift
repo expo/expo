@@ -10,7 +10,14 @@ private let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 private let BONJOUR_TYPE = "_expo._tcp"
-private let networkPermissionFlowKey = "expo.devlauncher.hasCompletedNetworkPermissionFlow"
+private let networkPermissionGrantedKey = "expo.devlauncher.hasGrantedNetworkPermission"
+
+enum LocalNetworkPermissionStatus: Equatable, Sendable {
+  case unknown
+  case checking
+  case granted
+  case denied
+}
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
@@ -45,21 +52,13 @@ class DevLauncherViewModel: ObservableObject {
   @Published var user: User?
   @Published var selectedAccountId: String?
   @Published var isLoadingServer: Bool = false
+  @Published var isLoadingLocalBundle: Bool = false
   @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
-
-  @Published var browserDevServers: [DevServer] = [] {
-    didSet { updateDevServers() }
-  }
-
-  @Published var localDevServers: [DevServer] = [] {
-    didSet { updateDevServers() }
-  }
 
   @Published var devServers: [DevServer] = []
 
   private var browser: NWBrowser?
   private var pingTask: Task<Void, Never>?
-  private var scanTask: Task<Void, Never>?
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -81,42 +80,21 @@ class DevLauncherViewModel: ObservableObject {
     return isAuthenticated && user != nil
   }
 
+  var hasEmbeddedBundle: Bool {
+    guard let enabled = Bundle.main.object(forInfoDictionaryKey: "EXDevClientEmbeddedBundle") as? Bool, enabled else {
+      return false
+    }
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle") != nil
+  }
+
   init() {
     loadData()
     checkAuthenticationStatus()
     checkForStoredCrashes()
   }
 
-  private func updateDevServers() {
-    let allServers = browserDevServers + localDevServers
-    var serversByPort: [String: DevServer] = [:]
-
-    for server in allServers {
-      guard let port = extractPort(from: server.url) else {
-        serversByPort[server.url] = server
-        continue
-      }
-
-      if let existing = serversByPort[port] {
-        let existingHasName = existing.description != existing.url
-        let newHasName = server.description != server.url
-
-        if newHasName && !existingHasName {
-          serversByPort[port] = server
-        } else if existingHasName == newHasName {
-          let existingIsLinkLocal = existing.url.contains("169.254.")
-          let newIsLinkLocal = server.url.contains("169.254.")
-
-          if existingIsLinkLocal && !newIsLinkLocal {
-            serversByPort[port] = server
-          }
-        }
-      } else {
-        serversByPort[port] = server
-      }
-    }
-
-    devServers = serversByPort.values.sorted(by: <)
+  private func updateDevServers(_ servers: [DevServer]) {
+    devServers = servers.sorted(by: <)
   }
 
   private func extractPort(from url: String) -> String? {
@@ -196,6 +174,22 @@ class DevLauncherViewModel: ObservableObject {
     self.recentlyOpenedApps = []
   }
 
+  func loadLocalBundle() {
+    guard !isLoadingLocalBundle else { return }
+    isLoadingLocalBundle = true
+
+    EXDevLauncherController.sharedInstance().loadLocalBundle(onSuccess: { [weak self] in
+      DispatchQueue.main.async {
+        self?.isLoadingLocalBundle = false
+      }
+    }, onError: { [weak self] error in
+      DispatchQueue.main.async {
+        self?.isLoadingLocalBundle = false
+        self?.showErrorAlert(error.localizedDescription)
+      }
+    })
+  }
+
   func isCompatibleRuntime(_ runtimeVersion: String) -> Bool {
     return runtimeVersion == structuredBuildInfo.runtimeVersion
   }
@@ -205,64 +199,80 @@ class DevLauncherViewModel: ObservableObject {
       return
     }
 
-    let hasCompletedPermissionFlow = UserDefaults.standard.bool(
-      forKey: networkPermissionFlowKey
-    )
-
-    #if targetEnvironment(simulator)
-    // Simulators don't need permission, continue
-    #else
-    if !hasCompletedPermissionFlow {
-      return
-    }
-    #endif
-
     stopServerDiscovery()
     startDevServerBrowser()
-    startLocalDevServerScanner()
-  }
-
-  func startDiscoveryForPermissionCheck() {
-    permissionStatus = .checking
-    stopServerDiscovery()
-    startDevServerBrowser()
-    startLocalDevServerScanner()
   }
   
-  func markPermissionFlowCompleted() {
-    UserDefaults.standard.set(true, forKey: networkPermissionFlowKey)
+  func markNetworkPermissionGranted() {
+    UserDefaults.standard.set(true, forKey: networkPermissionGrantedKey)
+    permissionStatus = .granted
   }
 
-  func resetPermissionFlowState() {
-    UserDefaults.standard.removeObject(forKey: networkPermissionFlowKey)
-    permissionStatus = .unknown
+  var hasGrantedNetworkPermission: Bool {
+    UserDefaults.standard.bool(forKey: networkPermissionGrantedKey)
   }
 
-  var isFirstPermissionCheck: Bool {
-    !UserDefaults.standard.bool(forKey: networkPermissionFlowKey)
+  func refreshPermissionStatus() {
+    permissionStatus = .checking
+    Task {
+      let hasAccess = await checkLocalNetworkAccess()
+      permissionStatus = hasAccess ? .granted : .denied
+    }
+  }
+
+  func checkLocalNetworkAccess() async -> Bool {
+    let serviceType = BONJOUR_TYPE
+    let queue = DispatchQueue(label: "expo.devlauncher.permissioncheck")
+
+    return await withCheckedContinuation { continuation in
+      var done = false
+
+      let listener = try? NWListener(using: .tcp, on: .any)
+      listener?.service = NWListener.Service(type: serviceType)
+      listener?.stateUpdateHandler = { _ in }
+      listener?.newConnectionHandler = { $0.cancel() }
+      listener?.start(queue: queue)
+
+      let browser = NWBrowser(for: .bonjour(type: serviceType, domain: nil), using: .tcp)
+      browser.browseResultsChangedHandler = { results, _ in
+        guard !done else { return }
+        if !results.isEmpty {
+          done = true
+          continuation.resume(returning: true)
+          browser.cancel()
+          listener?.cancel()
+        }
+      }
+
+      browser.stateUpdateHandler = { state in
+        guard !done else { return }
+        if case .waiting(let error) = state,
+           case .dns(let dnsError) = error,
+           dnsError == kDNSServiceErr_PolicyDenied {
+          done = true
+          continuation.resume(returning: false)
+          browser.cancel()
+          listener?.cancel()
+        }
+      }
+
+      browser.start(queue: queue)
+
+      queue.asyncAfter(deadline: .now() + 2) {
+        guard !done else { return }
+        done = true
+        continuation.resume(returning: false)
+        browser.cancel()
+        listener?.cancel()
+      }
+    }
   }
 
   func stopServerDiscovery() {
     pingTask?.cancel()
-    scanTask?.cancel()
     browser?.cancel()
     pingTask = nil
-    scanTask = nil
     browser = nil
-  }
-
-  private func startLocalDevServerScanner() {
-    scanTask?.cancel()
-    scanTask = Task {
-      await scanLocalDevServers()
-      while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
-        if Task.isCancelled {
-          break
-        }
-        await scanLocalDevServers()
-      }
-    }
   }
 
   private func startDevServerBrowser() {
@@ -282,8 +292,6 @@ class DevLauncherViewModel: ObservableObject {
       Task { @MainActor [weak self] in
         guard let self else { return }
         switch state {
-        case .ready:
-          self.permissionStatus = .granted
         case .waiting(let error):
           if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
             self.permissionStatus = .denied
@@ -299,9 +307,10 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     browser?.browseResultsChangedHandler = { [weak self] results, _ in
-      guard let self = self else { return }
+      guard let self else { return }
       Task { @MainActor [weak self, results] in
         guard let self else { return }
+        self.markNetworkPermissionGranted()
         self.pingTask?.cancel()
         self.pingTask = Task {
           defer { self.pingTask = nil }
@@ -316,31 +325,6 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     browser?.start(queue: DispatchQueue(label: "expo.devlauncher.discovery"))
-  }
-
-  private func scanLocalDevServers() async {
-    guard !Task.isCancelled else {
-      return
-    }
-
-    var discoveredServers: [DevServer] = []
-    await withTaskGroup(of: DevServer?.self) { group in
-      for result in NetworkUtilities.getLocalEndpointsToScan() {
-        group.addTask {
-          return await self.resolveDevServer(result)
-        }
-      }
-
-      for await server in group {
-        if let server {
-          discoveredServers.append(server)
-        }
-      }
-    }
-
-    await MainActor.run {
-      self.localDevServers = discoveredServers
-    }
   }
 
   private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {
@@ -368,7 +352,7 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     await MainActor.run {
-      self.browserDevServers = discoveredServers
+      self.updateDevServers(discoveredServers)
     }
   }
 

@@ -10,7 +10,9 @@ export default function ConsoleBox({ children, style }: Props) {
   return (
     <ScrollView style={[styles.scrollView, style]} indicatorStyle="black">
       <ScrollView contentContainerStyle={styles.contentContainer} horizontal indicatorStyle="black">
-        <Code style={styles.monoText}>{children}</Code>
+        <Code style={styles.monoText} selectable>
+          {children}
+        </Code>
       </ScrollView>
     </ScrollView>
   );

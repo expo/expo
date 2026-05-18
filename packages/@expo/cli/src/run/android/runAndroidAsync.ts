@@ -3,14 +3,14 @@ import fs from 'fs';
 import path from 'path';
 
 import { resolveInstallApkNameAsync } from './resolveInstallApkName';
-import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions';
+import type { Options, ResolvedOptions } from './resolveOptions';
+import { resolveOptionsAsync } from './resolveOptions';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
-import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';
-import { setNodeEnv } from '../../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
@@ -23,7 +23,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
   const isProduction = options.variant?.toLowerCase().endsWith('release');
   setNodeEnv(isProduction ? 'production' : 'development');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
 
@@ -104,7 +104,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     await installAppAsync(androidProjectRoot, props);
   }
 
-  await manager.getDefaultDevServer().openCustomRuntimeAsync<AndroidOpenInCustomProps>(
+  await manager.getDefaultDevServer().openCustomRuntimeAsync(
     'emulator',
     {
       applicationId: props.packageName,

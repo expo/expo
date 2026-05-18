@@ -1,5 +1,5 @@
-import { ERROR, HELP_MESSAGE } from '../../utils/output';
-import { executeCLIASync } from '../../utils/process';
+import { ERROR, HELP_MESSAGE, VERSION } from '../../utils/output';
+import { CLI_PATH, executeCLIASync, executeCommandAsync } from '../../utils/process';
 import { createTempProject, cleanUpProject } from '../../utils/project';
 
 const TASKS_ANDROID_ERROR = `Error: Value of Android library name: ENOENT: no such file or directory`;
@@ -24,12 +24,15 @@ describe('basic cli tests', () => {
    * Expected behavior: The CLI should display an error message
    */
   it('should correctly parse passed commands', async () => {
-    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['tasks:android'], {
-      ignoreErrors: true,
-    });
+    const { exitCode, stderr } = await executeCommandAsync(
+      TEMP_DIR,
+      'bash',
+      ['-c', `yes no | node ${CLI_PATH} build:android --repo MavenLocal`],
+      { ignoreErrors: true }
+    );
     // Expect error because we haven't run prebuild
     expect(exitCode).not.toBe(0);
-    expect(stderr).toContain(TASKS_ANDROID_ERROR);
+    expect(stderr).toContain(ERROR.MISSING_PREBUILD());
   });
 
   /**
@@ -39,7 +42,7 @@ describe('basic cli tests', () => {
   it('should correctly parse passed flags', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', '--help']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
+    expect(stdout).toContain(VERSION);
   });
 
   /**
@@ -47,9 +50,9 @@ describe('basic cli tests', () => {
    * Expected behavior: The CLI should display general help message
    */
   it('should display help message if no arguments are provided', async () => {
-    const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, [], { ignoreErrors: true });
-    expect(exitCode).toBe(0);
-    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
+    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, [], { ignoreErrors: true });
+    expect(exitCode).not.toBe(0);
+    expect(stderr).toContain(HELP_MESSAGE.GENERAL_HEADER);
   });
 
   /**
@@ -61,7 +64,7 @@ describe('basic cli tests', () => {
       ignoreErrors: true,
     });
     expect(exitCode).not.toBe(0);
-    expect(stderr).toContain(ERROR.UNKNOWN_COMMAND());
+    expect(stderr).toContain(ERROR.UNKNOWN_COMMAND('unknown:command'));
   });
 
   /**
@@ -76,5 +79,15 @@ describe('basic cli tests', () => {
     expect(stderr).toContain(ERROR.UNKNOWN_OPTION('--unknown-flag'));
   });
 
-  // TODO(pmleczek): Test for passing more than one command
+  /**
+   * Command: npx expo-brownfield build:android build:ios
+   * Expected behavior: The CLI should display the unkown arg error message for the first command
+   */
+  it('should allow passing only one command', async () => {
+    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['build:android', 'build:ios'], {
+      ignoreErrors: true,
+    });
+    expect(exitCode).not.toBe(0);
+    expect(stderr).toContain(ERROR.ADDITIONAL_COMMAND('build:android'));
+  });
 });

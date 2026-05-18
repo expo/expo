@@ -2,8 +2,8 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Link } from '../exports';
 import { getDevServer } from '../getDevServer';
+import { Link } from '../link';
 import { Pressable } from '../views/Pressable';
 
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;

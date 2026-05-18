@@ -3,29 +3,30 @@ import path from 'path';
 
 import { findModulesAsync } from './autolinking/findModules';
 import { resolveModulesAsync } from './autolinking/resolveModules';
+import type { AutolinkingCommonArguments, AutolinkingOptions } from './commands/autolinkingOptions';
 import {
-  AutolinkingCommonArguments,
-  AutolinkingOptions,
   createAutolinkingOptionsLoader,
   filterMapSearchPaths,
 } from './commands/autolinkingOptions';
-import { ModuleDescriptor, SupportedPlatform } from './types';
+import type { ModuleDescriptor, SupportedPlatform } from './types';
 
 export * from './types';
 export * from './autolinking';
 export * from './platforms';
 
 export {
-  ResolutionResult,
-  BaseDependencyResolution,
-  DependencyResolution,
-  DependencyResolutionSource,
-  CachedDependenciesLinker,
-  CachedDependenciesSearchOptions,
+  type ResolutionResult,
+  type BaseDependencyResolution,
+  type DependencyResolution,
+  type DependencyResolutionSource,
+  type CachedDependenciesLinker,
+  type CachedDependenciesSearchOptions,
   makeCachedDependenciesLinker,
   scanDependencyResolutionsForPlatform,
   scanExpoModuleResolutionsForPlatform,
 } from './dependencies';
+
+export * from './utilities';
 
 /** @deprecated */
 export async function mergeLinkingOptionsAsync<Options extends Partial<AutolinkingCommonArguments>>(

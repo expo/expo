@@ -18,7 +18,7 @@ import type { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
-import { getIpAddress } from '../../../utils/ip';
+import { getIpAddressAsync } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
 import {
   createBundleUrlSearchParams,
@@ -78,7 +78,7 @@ export function createServerComponentsMiddleware(
     renderRsc: async (args) => {
       // In development we should add simulated versions of common production headers.
       if (args.headers['x-real-ip'] == null) {
-        args.headers['x-real-ip'] = getIpAddress();
+        args.headers['x-real-ip'] = await getIpAddressAsync();
       }
       if (args.headers['x-forwarded-for'] == null) {
         args.headers['x-forwarded-for'] = args.headers['x-real-ip'];
@@ -169,14 +169,14 @@ export function createServerComponentsMiddleware(
 
       const reactClientReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+        ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
 
       if (reactClientReferences) {
         nestedClientBoundaries.push(...reactClientReferences!);
       }
       const reactServerReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+        ?.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
 
       if (reactServerReferences) {
         nestedServerBoundaries.push(...reactServerReferences!);
@@ -264,7 +264,7 @@ export function createServerComponentsMiddleware(
 
     const reactServerReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
-      .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+      ?.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
 
     if (!reactServerReferences) {
       throw new Error(
@@ -275,7 +275,7 @@ export function createServerComponentsMiddleware(
 
     const reactClientReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
-      .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+      ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
 
     if (!reactClientReferences) {
       throw new Error(

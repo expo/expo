@@ -39,7 +39,7 @@ runs:
     - name: '💿 Setup Android Emulator #1'
       id: retries-1
       continue-on-error: true
-      uses: reactivecircus/android-emulator-runner@v2
+      uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2
       with:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}
@@ -62,7 +62,7 @@ runs:
       id: retries-2
       continue-on-error: true
       if: steps.retries-1.outcome == 'failure'
-      uses: reactivecircus/android-emulator-runner@v2
+      uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2
       with:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}
@@ -84,7 +84,7 @@ runs:
       id: retries-3
       # continue-on-error: true
       if: steps.retries-2.outcome == 'failure'
-      uses: reactivecircus/android-emulator-runner@v2
+      uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2
       with:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}

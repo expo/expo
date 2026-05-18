@@ -20,8 +20,15 @@ const jestConfig = {
     '^nanoid/index.browser.js$': '<rootDir>/node_modules/nanoid/index.browser.cjs',
     '^nanoid$': '<rootDir>/node_modules/nanoid/index.cjs',
     '^nanoid/non-secure$': '<rootDir>/node_modules/nanoid/non-secure/index.cjs',
+    // c15t (used by our cookie consent) bundles CSS modules that jsdom cannot parse
+    '^@expo/styleguide-cookie-consent$':
+      '<rootDir>/node_modules/@expo/styleguide-cookie-consent/mock.js',
   },
   transform: {},
+  // next/jest's default `transform` runs SWC on `.mjs` and converts ESM
+  // exports to CJS-style `Object.defineProperty(exports, ...)`, which then
+  // links as zero named exports. Skip transforming native ESM files.
+  transformIgnorePatterns: ['\\.mjs$'],
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };
 

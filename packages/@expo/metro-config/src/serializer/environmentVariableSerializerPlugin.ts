@@ -13,21 +13,22 @@ import type {
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 
-import { SerializerParameters } from './withExpoSerializers';
+import type { SerializerParameters } from './withExpoSerializers';
 
 const debug = require('debug')('expo:metro-config:serializer:env-var') as typeof console.log;
 
 export function getTransformEnvironment(url: string): string | null {
   const match = url.match(/[&?]transform\.environment=([^&]+)/);
-  return match ? match[1] : null;
+  return match?.[1] ?? null;
 }
 
-function getAllExpoPublicEnvVars(inputEnv: NodeJS.ProcessEnv = process.env) {
+function getAllExpoPublicEnvVars(
+  inputEnv: NodeJS.ProcessEnv = process.env
+): Record<string, string> {
   // Create an object containing all environment variables that start with EXPO_PUBLIC_
-  const env = {};
+  const env: Record<string, string> = {};
   for (const key in inputEnv) {
-    if (key.startsWith('EXPO_PUBLIC_')) {
-      // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
+    if (key.startsWith('EXPO_PUBLIC_') && inputEnv[key] != null) {
       env[key] = inputEnv[key];
     }
   }
@@ -60,7 +61,9 @@ export function serverPreludeSerializerPlugin(
     const prelude = preModules.find((module) => module.path === '__prelude__');
     if (prelude) {
       debug('Stripping environment variable polyfill in server environment.');
-      prelude.output[0].data.code = prelude.output[0].data.code
+      // TODO: The module output type should be upcast
+      const data = prelude.output[0]?.data as any;
+      data.code = data.code
         .replace(/process=this\.process\|\|{},/, '')
         .replace(
           /process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/,
@@ -98,8 +101,10 @@ export function environmentVariableSerializerPlugin(
   if (prelude) {
     debug('Injecting environment variables in virtual module.');
 
+    // TODO: The module type should be upcast
+    const data = prelude.output[0]?.data as any;
     // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
-    prelude.output[0].data.code = code;
+    data.code = code;
     return [entryPoint, preModules, graph, options];
   }
 

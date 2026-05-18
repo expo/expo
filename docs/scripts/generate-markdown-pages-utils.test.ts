@@ -9,10 +9,100 @@ import {
   cleanHtml,
   cleanMarkdown,
   convertHtmlToMarkdown,
+  convertMdxInstructionToMarkdown,
   extractFrontmatter,
   findMdxSource,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
+
+describe('convertMdxInstructionToMarkdown', () => {
+  it('converts scene JSX components and inlines helper MDX', () => {
+    const mdx = `
+import Helper from './_helper.mdx';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+<BuildEnvironmentSwitch />
+
+## Set up root
+
+<Helper />
+
+<Step label="1">
+<Terminal cmd={['$ npm install -g eas-cli', '', '# comment', 'echo done']} />
+</Step>
+
+<div className="wrapper">
+  <QRCodeReact value="https://example.dev/download" size={228} />
+</div>
+
+Press <kbd>Y</kbd> when prompted.
+
+<ContentSpotlight alt="ignored" src="/image.png" />
+`;
+
+    const helperMdx = `
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Collapsible } from '~/ui/components/Collapsible';
+
+<Tabs>
+  <Tab label="macOS">
+    <Collapsible summary="Troubleshooting">Helper details</Collapsible>
+  </Tab>
+  <Tab label="Windows">
+    Helper on Windows
+  </Tab>
+</Tabs>
+`;
+
+    const markdown = convertMdxInstructionToMarkdown(
+      mdx,
+      (importPath, fromPath) => {
+        if (importPath === './_helper.mdx' && fromPath === '/tmp/root.mdx') {
+          return { content: helperMdx, resolvedPath: '/tmp/_helper.mdx' };
+        }
+        return null;
+      },
+      { fromPath: '/tmp/root.mdx' }
+    );
+
+    expect(markdown).toContain('## Set up root');
+    expect(markdown).toContain('#### macOS');
+    expect(markdown).toContain('**Troubleshooting**');
+    expect(markdown).toContain('```sh\nnpm install -g eas-cli\necho done\n```');
+    expect(markdown).toContain('Download link: [https://example.dev/download]');
+    expect(markdown).toContain('Press <kbd>Y</kbd> when prompted.');
+    expect(markdown).not.toMatch(
+      /<BuildEnvironmentSwitch|<Terminal|<Step|<ContentSpotlight|import\s/
+    );
+    expect(markdown).not.toContain('# comment');
+  });
+
+  it('avoids recursive import loops', () => {
+    const files = new Map<string, string>([
+      ['/tmp/main.mdx', "import A from './A.mdx';\n\n<A />\n"],
+      ['/tmp/A.mdx', "import B from './B.mdx';\n\n## A heading\n\n<B />\n"],
+      ['/tmp/B.mdx', "import A from './A.mdx';\n\n## B heading\n\n<A />\n"],
+    ]);
+
+    const markdown = convertMdxInstructionToMarkdown(
+      files.get('/tmp/main.mdx')!,
+      (importPath, fromPath) => {
+        const parentDir = path.dirname(fromPath ?? '/tmp/main.mdx');
+        const resolvedPath = path.resolve(parentDir, importPath);
+        const content = files.get(resolvedPath);
+        if (!content) {
+          return null;
+        }
+        return { content, resolvedPath };
+      },
+      { fromPath: '/tmp/main.mdx' }
+    );
+
+    expect(markdown).toContain('## A heading\n\n## B heading');
+    expect(markdown).not.toMatch(/<A\s*\/>|<B\s*\/>/);
+  });
+});
 
 describe('cleanHtml', () => {
   it('removes buttons', () => {
@@ -103,6 +193,126 @@ describe('cleanHtml', () => {
     expect(html).toContain('<code class="language-sh">');
     expect(html).toContain('npx expo start');
   });
+
+  it('removes <br> tags inside table cells', () => {
+    const html = [
+      '<main><table><tr>',
+      '<td>',
+      '<span>Only for: </span>',
+      '<div data-md="platform-badge"><svg/><span>iOS</span></div>',
+      '<br/>',
+      '<p>A string to set the permission message.</p>',
+      '</td>',
+      '</tr></table></main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('td').find('br').length).toBe(0);
+  });
+
+  it('removes style tags', () => {
+    const html = '<main><style>.foo { color: red; }</style><p>content</p></main>';
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('main').html()).not.toContain('style');
+    expect($('main').html()).not.toContain('color');
+    expect($('main').text()).toContain('content');
+  });
+
+  it('keeps only first tab panel in @reach/tabs groups', () => {
+    const html = [
+      '<main>',
+      '<div data-reach-tabs="">',
+      '<div data-reach-tab-panels="">',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">npm install expo</code></pre>',
+      '</div>',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">yarn add expo</code></pre>',
+      '</div>',
+      '</div>',
+      '</div>',
+      '</main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('main').text()).toContain('npm install expo');
+    expect($('main').text()).not.toContain('yarn add expo');
+  });
+
+  it('unwraps non-empty div/span inside headings', () => {
+    const html = [
+      '<main>',
+      '<h2><span class="wrapper"><span class="inner">Fix the error</span></span></h2>',
+      '</main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('h2').text().trim()).toBe('Fix the error');
+    expect($('h2').find('div').length).toBe(0);
+    expect($('h2').find('span').length).toBe(0);
+  });
+
+  it('re-escapes unknown HTML elements in code as angle-bracket text', () => {
+    const html = ['<main><p><code>', 'Promise<uint8array></uint8array>', '</code></p></main>'].join(
+      ''
+    );
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    const result = $('code').html() ?? '';
+    expect(result).toContain('&lt;uint8array&gt;');
+  });
+
+  it('decodes double-encoded HTML entities in code blocks', () => {
+    const html = [
+      '<main><pre><code>',
+      'filters: &amp;lt;expo-sfv&amp;gt;',
+      '</code></pre></main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    const result = $('code').html() ?? '';
+    expect(result).toContain('&lt;expo-sfv&gt;');
+    expect(result).not.toContain('&amp;');
+  });
+});
+
+describe('diagram elements', () => {
+  it('replaces data-md="diagram" with its alt text', () => {
+    const html = `<main>
+      <p>The following diagram shows the hierarchy:</p>
+      <div data-md="diagram" data-md-alt="withMyPlugin [Config Plugin] → withAndroidPlugin [Plugin Function]">
+        <div class="react-flow">node labels and other interactive content</div>
+      </div>
+      <p>More content below.</p>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('```\nwithMyPlugin [Config Plugin]');
+    expect(md).toContain('[Plugin Function]\n```');
+    expect(md).not.toContain('react-flow');
+    expect(md).not.toContain('interactive content');
+  });
+
+  it('escapes special HTML characters in diagram alt text', () => {
+    const html = `<main>
+      <div data-md="diagram" data-md-alt="A <B> & C"></div>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('A <B> & C');
+    expect(md).not.toContain('&lt;');
+    expect(md).not.toContain('&amp;');
+  });
+
+  it('removes data-md="diagram" with no alt text', () => {
+    const html = `<main>
+      <h2>Overview</h2>
+      <div data-md="diagram"><div>canvas content</div></div>
+      <p>Text after.</p>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).not.toContain('canvas content');
+    expect(md).toContain('Text after.');
+  });
 });
 
 describe('cleanMarkdown', () => {
@@ -149,10 +359,10 @@ describe('convertHtmlToMarkdown', () => {
 
   it('returns redirect pointer for meta refresh pages', () => {
     const html =
-      '<html><head><meta http-equiv="refresh" content="0; url=/get-started/introduction/"></head><body><div id="__next"></div></body></html>';
+      '<html><head><meta http-equiv="refresh" content="0; url=/get-started/create-a-project/"></head><body><div id="__next"></div></body></html>';
     const result = convertHtmlToMarkdown(html);
-    expect(result).toContain('/get-started/introduction/');
-    expect(result).toContain('https://docs.expo.dev/get-started/introduction/');
+    expect(result).toContain('/get-started/create-a-project/');
+    expect(result).toContain('https://docs.expo.dev/get-started/create-a-project/');
     expect(result).toContain('redirects to');
   });
 
@@ -269,6 +479,59 @@ describe('terminal snippet labels', () => {
     expect(md).not.toContain('Terminal');
     expect(md).not.toContain('- ');
   });
+
+  it('converts tabbed terminal commands from data-md-commands in package manager order', () => {
+    const commands = {
+      bun: ['$ bun add expo'],
+      yarn: ['$ yarn add expo'],
+      npm: ['$ npm install expo', '# npm comment'],
+      pnpm: ['$ pnpm add expo'],
+    };
+    const $ = cheerio.load(`<main>
+      <div data-md="terminal">
+        <div data-md="snippet-header"><span>Terminal</span></div>
+        <div data-md="code-block"><code>npm install expo</code></div>
+      </div>
+    </main>`);
+    $('[data-md="terminal"]').attr('data-md-commands', JSON.stringify(commands));
+
+    const md = convertHtmlToMarkdown($.html());
+    const npmIndex = md.indexOf('# npm');
+    const yarnIndex = md.indexOf('# yarn');
+    const pnpmIndex = md.indexOf('# pnpm');
+    const bunIndex = md.indexOf('# bun');
+
+    expect(npmIndex).toBeGreaterThan(-1);
+    expect(yarnIndex).toBeGreaterThan(npmIndex);
+    expect(pnpmIndex).toBeGreaterThan(yarnIndex);
+    expect(bunIndex).toBeGreaterThan(pnpmIndex);
+    expect(md).toContain('npm install expo');
+    expect(md).toContain('yarn add expo');
+    expect(md).toContain('pnpm add expo');
+    expect(md).toContain('bun add expo');
+    expect(md).not.toContain('# npm comment');
+  });
+
+  it('skips empty/comment-only manager sections, ignores unknown keys, and preserves angle brackets', () => {
+    const commands = {
+      npm: ['# only comment', ''],
+      pnpm: ['$ pnpm add <package-name>'],
+      unknown: ['$ unknown add expo'],
+    };
+    const $ = cheerio.load(`<main>
+      <div data-md="terminal">
+        <div data-md="snippet-header"><span>Terminal</span></div>
+        <div data-md="code-block"><code>npm install expo</code></div>
+      </div>
+    </main>`);
+    $('[data-md="terminal"]').attr('data-md-commands', JSON.stringify(commands));
+
+    const md = convertHtmlToMarkdown($.html());
+
+    expect(md).toContain('```sh\n# pnpm\npnpm add <package-name>\n```');
+    expect(md).not.toContain('# npm');
+    expect(md).not.toContain('unknown add expo');
+  });
 });
 
 describe('step numbers', () => {
@@ -294,7 +557,7 @@ describe('platform indicators', () => {
     const html = `<main>
       <div class="mb-2 inline-flex empty:hidden">
         <span data-text="true">
-          <span class="text-xs font-medium text-tertiary">Only for: </span>
+          <span class="text-sm font-medium text-tertiary">Only for: </span>
           <div data-md="platform-badge">
             <svg viewBox="0 0 24 24"><path/></svg>
             <span class="whitespace-nowrap">iOS</span>
@@ -307,6 +570,60 @@ describe('platform indicators', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('Only for: iOS, Android');
+  });
+});
+
+describe('platform indicators in table cells', () => {
+  it('keeps "Only for: iOS" on same line as description in table cells', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>',
+      '<tbody><tr>',
+      '<td><code>contactsPermission</code></td>',
+      '<td><code>"Allow..."</code></td>',
+      '<td>',
+      '<span>Only for: </span>',
+      '<div data-md="platform-badge"><svg/><span>iOS</span></div>',
+      '<br/>',
+      '<p>A string to set the permission message.</p>',
+      '</td>',
+      '</tr></tbody>',
+      '</table></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    // Should be a single table row, not split across lines
+    const lines = md.split('\n').filter(l => l.startsWith('|'));
+    const dataRow = lines.find(l => l.includes('contactsPermission'));
+    expect(dataRow).toBeDefined();
+    expect(dataRow).toContain('iOS');
+    expect(dataRow).toContain('permission message');
+  });
+});
+
+describe('tab panel deduplication', () => {
+  it('only includes first tab panel content in output', () => {
+    const html = [
+      '<main>',
+      '<h1>Installation</h1>',
+      '<div data-reach-tabs="">',
+      '<div data-reach-tab-panels="">',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">npx expo install expo-camera</code></pre>',
+      '</div>',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">yarn add expo-camera</code></pre>',
+      '</div>',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">bun add expo-camera</code></pre>',
+      '</div>',
+      '</div>',
+      '</div>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('npx expo install expo-camera');
+    expect(md).not.toContain('yarn add expo-camera');
+    expect(md).not.toContain('bun add expo-camera');
   });
 });
 
@@ -334,6 +651,34 @@ describe('diff tables', () => {
     expect(md).toContain('```diff');
     expect(md).toContain('- removed');
     expect(md).toContain('+ added');
+  });
+
+  it('infers +/- markers from react-diff-view CSS classes', () => {
+    const html = [
+      '<main><div data-md="diff"><table class="diff">',
+      '<colgroup><col class="diff-gutter-col"/><col class="diff-gutter-col"/><col/></colgroup>',
+      '<tr class="diff-line">',
+      '<td class="diff-gutter diff-gutter-delete">1</td>',
+      '<td class="diff-gutter diff-gutter-delete"></td>',
+      '<td class="diff-code diff-code-delete">old line</td>',
+      '</tr>',
+      '<tr class="diff-line">',
+      '<td class="diff-gutter diff-gutter-insert"></td>',
+      '<td class="diff-gutter diff-gutter-insert">1</td>',
+      '<td class="diff-code diff-code-insert">new line</td>',
+      '</tr>',
+      '<tr class="diff-line">',
+      '<td class="diff-gutter diff-gutter-normal">2</td>',
+      '<td class="diff-gutter diff-gutter-normal">2</td>',
+      '<td class="diff-code diff-code-normal">unchanged</td>',
+      '</tr>',
+      '</table></div></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('```diff');
+    expect(md).toContain('- old line');
+    expect(md).toContain('+ new line');
+    expect(md).toMatch(/^\s+unchanged$/m);
   });
 });
 
@@ -760,7 +1105,7 @@ describe('API returns section', () => {
       '<div data-md="api-returns" class="flex flex-row items-start gap-2">',
       '<div class="flex flex-row items-center gap-2">',
       '<svg viewBox="0 0 24 24"><path/></svg>',
-      '<span class="text-xs">Returns:</span>',
+      '<span class="text-sm">Returns:</span>',
       '</div>',
       '<code>Promise</code>',
       '</div></main>',
@@ -913,6 +1258,71 @@ describe('code block language from data-md-lang', () => {
   });
 });
 
+describe('collapsed headings', () => {
+  it('unwraps non-empty span wrappers inside headings', () => {
+    const html = [
+      '<main>',
+      '<h2><span class="text-wrapper"><span>Fix the TypeScript error</span></span></h2>',
+      '<p>Details here.</p>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('## Fix the TypeScript error');
+  });
+
+  it('unwraps non-empty div inside heading without losing text', () => {
+    const html = [
+      '<main>',
+      '<h3><div class="inline">Custom tabs</div></h3>',
+      '<p>Content.</p>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('### Custom tabs');
+  });
+});
+
+describe('generic type parameters', () => {
+  it('preserves angle brackets around unknown elements in code', () => {
+    // Simulates cheerio parsing <Uint8Array> as an HTML element
+    const html = ['<main><p><code>', 'Promise&lt;Uint8Array&gt;', '</code></p></main>'].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toMatch(/Promise.*Uint8Array/);
+  });
+});
+
+describe('double-encoded HTML entities', () => {
+  it('decodes double-encoded entities in code blocks', () => {
+    const html = [
+      '<main><pre><code>',
+      'expo-manifest-filters: &amp;lt;expo-sfv&amp;gt;',
+      '</code></pre></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('<expo-sfv>');
+    expect(md).not.toContain('&amp;');
+    expect(md).not.toContain('&lt;');
+  });
+});
+
+describe('style tag removal', () => {
+  it('removes style tags and their CSS content', () => {
+    const html = [
+      '<main>',
+      '<style>.react-flow { display: flex; } .node { padding: 10px; }</style>',
+      '<h1>Config Plugins</h1>',
+      '<p>Content here.</p>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('# Config Plugins');
+    expect(md).toContain('Content here.');
+    expect(md).not.toContain('react-flow');
+    expect(md).not.toContain('display');
+    expect(md).not.toContain('padding');
+  });
+});
+
 describe('findMdxSource', () => {
   const tmpDir = path.join(os.tmpdir(), 'findMdxSource-test-' + Date.now());
   const outDir = path.join(tmpDir, 'out');
@@ -1006,6 +1416,35 @@ describe('extractFrontmatter', () => {
       path.join(tmpDir, 'no-frontmatter.mdx'),
       "import Foo from './Foo';\n\n# Hello\n"
     );
+
+    fs.writeFileSync(
+      path.join(tmpDir, 'ui-fields.mdx'),
+      [
+        '---',
+        'title: Camera',
+        'description: A camera component.',
+        'hideTOC: true',
+        'maxHeadingDepth: 4',
+        'hideFromSearch: true',
+        'hideInSidebar: true',
+        'sidebar_title: Cam',
+        'searchRank: 10',
+        'searchPosition: 5',
+        'hasVideoLink: true',
+        'packageName: expo-camera',
+        'isDeprecated: true',
+        'isAlpha: true',
+        '---',
+        '',
+        '# Camera',
+        '',
+      ].join('\n')
+    );
+
+    fs.writeFileSync(
+      path.join(tmpDir, 'only-ui-fields.mdx'),
+      '---\nhideTOC: true\nmaxHeadingDepth: 4\n---\n\n# Page\n'
+    );
   });
 
   afterAll(() => {
@@ -1047,6 +1486,31 @@ describe('extractFrontmatter', () => {
 
   it('returns null when no frontmatter exists', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'no-frontmatter.mdx'));
+    expect(result).toBeNull();
+  });
+
+  it('strips UI-only fields and keeps semantic fields', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'ui-fields.mdx'));
+    expect(result).not.toBeNull();
+    // Semantic fields are preserved
+    expect(result).toContain('title: Camera');
+    expect(result).toContain('description: A camera component.');
+    expect(result).toContain('isDeprecated: true');
+    expect(result).toContain('isAlpha: true');
+    expect(result).toContain('packageName: expo-camera');
+    // UI-only fields are stripped
+    expect(result).not.toContain('hideTOC');
+    expect(result).not.toContain('maxHeadingDepth');
+    expect(result).not.toContain('hideFromSearch');
+    expect(result).not.toContain('hideInSidebar');
+    expect(result).not.toContain('sidebar_title');
+    expect(result).not.toContain('searchRank');
+    expect(result).not.toContain('searchPosition');
+    expect(result).not.toContain('hasVideoLink');
+  });
+
+  it('returns null when all fields are UI-only', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'only-ui-fields.mdx'));
     expect(result).toBeNull();
   });
 });

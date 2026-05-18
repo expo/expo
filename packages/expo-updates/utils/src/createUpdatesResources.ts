@@ -20,7 +20,11 @@ import { findUpProjectRoot } from './findUpProjectRoot';
   assert(destinationDir, 'Must provide a valid destination directory');
 
   const createUpdatesResourcesMode = process.argv[5];
-  if (!['all', 'only-fingerprint'].includes(createUpdatesResourcesMode)) {
+
+  if (
+    createUpdatesResourcesMode == null ||
+    !['all', 'only-fingerprint'].includes(createUpdatesResourcesMode)
+  ) {
     throw new Error(`Unsupported createUpdatesResourcesMode: ${createUpdatesResourcesMode}`);
   }
 

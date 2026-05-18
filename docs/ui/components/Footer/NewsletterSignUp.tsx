@@ -1,4 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
+import { isMarketingConsented } from '@expo/styleguide-cookie-consent';
 import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
 import { useState } from 'react';
 
@@ -9,6 +10,9 @@ const PORTAL_ID = '22007177';
 const FORM_GUID = '6a213eb9-5e86-4a8e-8607-33f9ac1e07d6';
 
 function getHutk() {
+  if (!isMarketingConsented()) {
+    return '';
+  }
   return (
     document.cookie
       .split('; ')
@@ -59,7 +63,7 @@ export const NewsletterSignUp = () => {
   }
 
   return (
-    <div className="max-w-[350px] flex-1 max-md-gutters:max-w-full">
+    <div className="max-w-87.5 flex-1 max-md:max-w-full">
       <CALLOUT className="flex items-center gap-2 font-medium text-secondary" id="newsletter-label">
         <Mail01Icon className="shrink-0 text-icon-tertiary" />
         Sign up for the Expo Newsletter
@@ -81,7 +85,7 @@ export const NewsletterSignUp = () => {
               }
             }}
             value={email}
-            className={mergeClasses('pr-[68px]', error && 'border-danger text-danger')}
+            className={mergeClasses('pr-17', error && 'border-danger text-danger')}
             type="email"
             placeholder="reader@email.com"
             aria-labelledby="newsletter-label"
@@ -91,7 +95,7 @@ export const NewsletterSignUp = () => {
           <Button
             size="xs"
             theme={userSignedUp ? 'quaternary' : 'secondary'}
-            className="absolute right-2.5 top-2 min-w-[68px]"
+            className="absolute top-2 right-2.5 min-w-17"
             disabled={userSignedUp || email.length === 0}
             onClick={signUpAsync}>
             {userSignedUp ? 'Done!' : 'Sign Up'}

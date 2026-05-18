@@ -1,12 +1,13 @@
-import { PBXNativeTarget, PBXTargetDependency, XCBuildConfiguration, XcodeProject } from 'xcode';
+import type {
+  PBXNativeTarget,
+  PBXTargetDependency,
+  XCBuildConfiguration,
+  XcodeProject,
+} from 'xcode';
 
 import { getApplicationTargetNameForSchemeAsync } from './BuildScheme';
-import {
-  getBuildConfigurationForListIdAndName,
-  getPbxproj,
-  isNotComment,
-  NativeTargetSectionEntry,
-} from './utils/Xcodeproj';
+import type { NativeTargetSectionEntry } from './utils/Xcodeproj';
+import { getBuildConfigurationForListIdAndName, getPbxproj, isNotComment } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
 
 export enum TargetType {
@@ -130,7 +131,7 @@ export function findFirstNativeTarget(project: XcodeProject): NativeTargetSectio
   const applicationTargets = targets.filter(([, target]) =>
     isTargetOfType(target, TargetType.APPLICATION)
   );
-  if (applicationTargets.length === 0) {
+  if (applicationTargets[0] == null) {
     throw new Error(`Could not find any application target in project.pbxproj`);
   }
   return applicationTargets[0];

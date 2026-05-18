@@ -140,7 +140,7 @@ export async function test(t) {
       }
     });
 
-    t.describe('With default assets', async () => {
+    t.describe('With default assets', () => {
       let testAssets;
       let album;
 
@@ -185,7 +185,7 @@ export async function test(t) {
         await cleanupAsync();
       }, TIMEOUT_WHEN_USER_NEEDS_TO_INTERACT);
 
-      t.describe('Every return value has proper shape', async () => {
+      t.describe('Every return value has proper shape', () => {
         t.it('createAssetAsync', () => {
           const keys = Object.keys(testAssets[0]);
           ASSET_KEYS.forEach((key) => t.expect(keys).toContain(key));
@@ -211,7 +211,7 @@ export async function test(t) {
         });
       });
 
-      t.describe('Small tests', async () => {
+      t.describe('Small tests', () => {
         t.it('Function getAlbums returns test album', async () => {
           const albums = await MediaLibrary.getAlbumsAsync();
           t.expect(albums.filter((elem) => elem.id === album.id).length).toBe(1);
@@ -251,6 +251,17 @@ export async function test(t) {
           }
         );
 
+        if (Platform.OS === 'ios') {
+          t.it('setAssetFavoriteAsync should mark asset as favorite', async () => {
+            const favoriteTestAsset = testAssets[0];
+            const infoBefore = await MediaLibrary.getAssetInfoAsync(favoriteTestAsset);
+            t.expect(infoBefore.isFavorite).toBe(false);
+            await MediaLibrary.setAssetFavoriteAsync(favoriteTestAsset, true);
+            const infoAfter = await MediaLibrary.getAssetInfoAsync(favoriteTestAsset);
+            t.expect(infoAfter.isFavorite).toBe(true);
+          });
+        }
+
         // On both platforms assets should perserve their id. On iOS it's native behaviour,
         // but on Android it should be implemented (but it isn't)
         // t.it("After createAlbum and addAssetsTo album all assets have the same id", async () => {
@@ -261,7 +272,7 @@ export async function test(t) {
         // });
       });
 
-      t.describe('Creating albums with initial assets', async () => {
+      t.describe('Creating albums with initial assets', () => {
         async function cleanupAsync() {
           const album = await MediaLibrary.getAlbumAsync(THIRD_ALBUM_NAME);
           await MediaLibrary.deleteAlbumsAsync([album], true);
@@ -293,7 +304,7 @@ export async function test(t) {
         });
       });
 
-      t.describe('getAssetsAsync', async () => {
+      t.describe('getAssetsAsync', () => {
         t.it('No arguments', async () => {
           const options = {};
           const { assets } = await MediaLibrary.getAssetsAsync(options);
@@ -423,7 +434,7 @@ export async function test(t) {
         });
       });
 
-      t.describe('getAssetInfoAsync', async () => {
+      t.describe('getAssetInfoAsync', () => {
         t.it('shouldDownloadFromNetwork: false, for photos', async () => {
           const mediaType = MediaLibrary.MediaType.photo;
           const options = { mediaType, album };
@@ -496,7 +507,7 @@ export async function test(t) {
       });
     });
 
-    t.describe('Delete tests', async () => {
+    t.describe('Delete tests', () => {
       t.it(
         'deleteAssetsAsync',
         async () => {
@@ -567,7 +578,7 @@ export async function test(t) {
       );
     });
 
-    t.describe('Listeners', async () => {
+    t.describe('Listeners', () => {
       const createdAssets = [];
 
       t.afterAll(async () => {

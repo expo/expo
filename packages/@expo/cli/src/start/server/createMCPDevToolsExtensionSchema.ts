@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { DevToolsPlugin } from './DevToolsPlugin';
+import type { DevToolsPlugin } from './DevToolsPlugin';
 
 /**
  * Creates an MCP-compatible JSON schema for a DevTools plugin's CLI extensions.
@@ -62,11 +62,13 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPlugin) {
   for (const command of commands) {
     if (command.parameters && command.parameters.length > 0) {
       for (const param of command.parameters) {
-        if (!parameterCommandMap[param.name]) {
-          parameterCommandMap[param.name] = [];
+        let commands = parameterCommandMap[param.name];
+        if (!commands) {
+          commands = [];
+          parameterCommandMap[param.name] = commands;
           parameterDescriptions[param.name] = param.description || '';
         }
-        parameterCommandMap[param.name].push(command.name);
+        commands.push(command.name);
       }
     }
   }

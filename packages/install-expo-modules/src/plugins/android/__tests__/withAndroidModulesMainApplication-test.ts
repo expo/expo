@@ -8,6 +8,20 @@ import { setModulesMainApplication } from '../withAndroidModulesMainApplication'
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 
 describe(setModulesMainApplication, () => {
+  it('should able to update from react-native@>=0.83.0 kotlin template', async () => {
+    const [rawContents, expectContents] = await Promise.all([
+      fs.promises.readFile(path.join(fixturesPath, 'MainApplication-rn083.kt'), 'utf8'),
+      fs.promises.readFile(path.join(fixturesPath, 'MainApplication-rn083-updated.kt'), 'utf8'),
+    ]);
+
+    const sdkVersion = getSdkVersion('0.83.0');
+    const contents = setModulesMainApplication(sdkVersion, rawContents, 'kt');
+    expect(contents).toEqual(expectContents);
+    // Try it twice...
+    const nextContents = setModulesMainApplication(sdkVersion, contents, 'kt');
+    expect(nextContents).toEqual(expectContents);
+  });
+
   it('should able to update from react-native@>=0.74.0 kotlin template', async () => {
     const [rawContents, expectContents] = await Promise.all([
       fs.promises.readFile(path.join(fixturesPath, 'MainApplication-rn074.kt'), 'utf8'),

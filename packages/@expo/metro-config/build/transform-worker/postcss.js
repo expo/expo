@@ -20,32 +20,44 @@ const resolve_from_1 = __importDefault(require("resolve-from"));
 const require_1 = require("./utils/require");
 const CONFIG_FILE_NAME = 'postcss.config';
 const debug = require('debug')('expo:metro:transformer:postcss');
+const loadPostcssPipelineAsync = (function () {
+    let promise = null;
+    return function _loadPostcssPipelineAsync(projectRoot) {
+        if (promise == null) {
+            promise = (async () => {
+                const inputConfig = await resolvePostcssConfig(projectRoot);
+                if (!inputConfig)
+                    return null;
+                const { plugins, processOptions } = await parsePostcssConfigAsync(projectRoot, {
+                    config: inputConfig,
+                    resourcePath: projectRoot,
+                });
+                debug('options:', processOptions);
+                debug('plugins:', plugins);
+                const postcss = require('postcss');
+                const { from: _from, to: _to, map: _map, ...baseOptions } = processOptions;
+                return {
+                    processor: postcss.default(plugins),
+                    baseOptions,
+                    emitMap: inputConfig.map === true,
+                };
+            })();
+        }
+        return promise;
+    };
+})();
 async function transformPostCssModule(projectRoot, { src, filename }) {
-    const inputConfig = await resolvePostcssConfig(projectRoot);
-    if (!inputConfig) {
+    const pipeline = await loadPostcssPipelineAsync(projectRoot);
+    if (!pipeline) {
         return { src, hasPostcss: false };
     }
-    return {
-        src: await processWithPostcssInputConfigAsync(projectRoot, {
-            inputConfig,
-            src,
-            filename,
-        }),
-        hasPostcss: true,
-    };
-}
-async function processWithPostcssInputConfigAsync(projectRoot, { src, filename, inputConfig }) {
-    const { plugins, processOptions } = await parsePostcssConfigAsync(projectRoot, {
-        config: inputConfig,
-        resourcePath: filename,
+    const { content } = await pipeline.processor.process(src, {
+        ...pipeline.baseOptions,
+        from: filename,
+        to: filename,
+        map: pipeline.emitMap ? { inline: true } : false,
     });
-    debug('options:', processOptions);
-    debug('plugins:', plugins);
-    // TODO: Surely this can be cached...
-    const postcss = require('postcss');
-    const processor = postcss.default(plugins);
-    const { content } = await processor.process(src, processOptions);
-    return content;
+    return { src: content, hasPostcss: true };
 }
 async function parsePostcssConfigAsync(projectRoot, { resourcePath: file, config: { plugins: inputPlugins, map, parser, stringifier, syntax, ...config } = {}, }) {
     const factory = pluginFactory();
@@ -143,22 +155,25 @@ function pluginFactory() {
                 else if (plugin && typeof plugin === 'function') {
                     listOfPlugins.set(plugin, undefined);
                 }
-                else if (plugin &&
-                    Object.keys(plugin).length === 1 &&
-                    (typeof plugin[Object.keys(plugin)[0]] === 'object' ||
-                        typeof plugin[Object.keys(plugin)[0]] === 'boolean') &&
-                    plugin[Object.keys(plugin)[0]] !== null) {
-                    const [name] = Object.keys(plugin);
-                    const options = plugin[name];
-                    if (options === false) {
-                        listOfPlugins.delete(name);
+                else if (plugin) {
+                    const pluginKeys = Object.keys(plugin);
+                    if (pluginKeys.length === 1 &&
+                        pluginKeys[0] != null &&
+                        (typeof plugin[pluginKeys[0]] === 'object' ||
+                            typeof plugin[pluginKeys[0]] === 'boolean') &&
+                        plugin[pluginKeys[0]] !== null) {
+                        const [name] = pluginKeys;
+                        const options = plugin[name];
+                        if (options === false) {
+                            listOfPlugins.delete(name);
+                        }
+                        else {
+                            listOfPlugins.set(name, options);
+                        }
                     }
                     else {
-                        listOfPlugins.set(name, options);
+                        listOfPlugins.set(plugin, undefined);
                     }
-                }
-                else if (plugin) {
-                    listOfPlugins.set(plugin, undefined);
                 }
             }
         }

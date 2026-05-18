@@ -10,10 +10,15 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-status-bar` gives you a component and imperative interface to control the app status bar to change its text color, background color, hide it, make it translucent or opaque, and apply animations to any of these changes. Exactly what you are able to do with the `StatusBar` component depends on the platform you're using.
+`expo-status-bar` gives you a component and imperative interface to control the app status bar to change its text color, hide it, and apply animations to any of these changes. Exactly what you are able to do with the `StatusBar` component depends on the platform you're using.
 
 > **tvOS and web support**
 >
@@ -26,6 +31,69 @@ import { SnackInline } from '~/ui/components/Snippet';
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-status-bar` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-status-bar",
+        {
+          "hidden": false,
+          "style": "dark"
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'hidden',
+      description:
+        'Determines whether the status bar starts hidden. Accepts `true` and `false` as values.',
+      default: 'undefined',
+    },
+    {
+      name: 'style',
+      description:
+        'Determines which style the status bar starts with. Accepts `light` and `dark` as values.',
+      default: 'undefined',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native project manually, then you need to add the following configuration to your native project:
+
+- To hide the status bar on **Android**, add `expoStatusBarHidden` to **android/app/src/main/res/values/styles.xml**:
+
+  ```xml
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <!-- ... -->
+    <item name="expoStatusBarHidden">true</item>
+  </style>
+  ```
+
+- To hide the status bar on **iOS**, set the following keys in your **ios/&lt;project&gt;/Info.plist**:
+
+  ```xml
+  <key>UIStatusBarHidden</key>
+  <true/>
+  ```
+
+</ConfigReactNative>
 
 ## Usage
 

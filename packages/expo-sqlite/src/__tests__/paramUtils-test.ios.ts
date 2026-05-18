@@ -47,7 +47,7 @@ describe(normalizeParams, () => {
 
   it('should support blob params', () => {
     const blob = new Uint8Array([0x00]);
-    const blob2 = new Uint8Array([0x01]);
+    const blob2 = new Uint8Array([0x01]).buffer;
     expect(normalizeParams(blob)).toStrictEqual([{}, { 0: blob }, true]);
     expect(normalizeParams('hello', blob)).toStrictEqual([{ 0: 'hello' }, { 1: blob }, true]);
     expect(normalizeParams(['hello', blob, 'world', blob2])).toStrictEqual([

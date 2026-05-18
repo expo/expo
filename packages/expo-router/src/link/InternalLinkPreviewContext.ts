@@ -1,7 +1,13 @@
-import { createContext } from 'react';
+import { createContext, type RefObject } from 'react';
 
 import type { LinkProps } from './useLinkHooks';
 
+export type InternalLinkPreviewContextValue = {
+  isVisible: boolean;
+  href: LinkProps['href'];
+  blockPressRef: RefObject<boolean>;
+};
+
 export const InternalLinkPreviewContext = createContext<
-  { isVisible: boolean; href: LinkProps['href'] } | undefined
+  InternalLinkPreviewContextValue | undefined
 >(undefined);

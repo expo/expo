@@ -7,6 +7,7 @@ final class BottomSheetProps: UIBaseViewProps {
   @Field var isPresented: Bool = false
   @Field var fitToContents: Bool = false
   var onIsPresentedChange = EventDispatcher()
+  var onDismiss = EventDispatcher()
 }
 
 struct SizePreferenceKey: PreferenceKey {
@@ -59,13 +60,8 @@ private struct BottomSheetSizeReader<Content: View>: View {
 
 struct BottomSheetView: ExpoSwiftUI.View {
   @ObservedObject var props: BottomSheetProps
-  @State private var isPresented: Bool
+  @State private var isPresented: Bool = false
   @State private var childrenSize: CGSize = .zero
-
-  init(props: BottomSheetProps) {
-    self.props = props
-    self._isPresented = State(initialValue: props.isPresented)
-  }
 
   private func handleSizeChange(_ size: CGSize) {
     guard childrenSize != size else { return }
@@ -91,7 +87,9 @@ struct BottomSheetView: ExpoSwiftUI.View {
 
   var body: some View {
     Rectangle().hidden()
-      .sheet(isPresented: $isPresented) {
+      .sheet(isPresented: $isPresented, onDismiss: {
+        props.onDismiss()
+      }) {
         sheetContent
       }
       .onChange(of: isPresented, perform: { newIsPresented in

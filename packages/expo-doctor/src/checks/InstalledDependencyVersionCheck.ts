@@ -1,32 +1,13 @@
-import spawnAsync, { SpawnResult } from '@expo/spawn-async';
-import resolveFrom from 'resolve-from';
+import type { SpawnResult } from '@expo/spawn-async';
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { parseInstallCheckOutput } from '../utils/parseInstallCheckOutput';
+import { spawnExpoCLI } from '../utils/spawnExpoCLI';
 
 function isSpawnResult(result: any): result is SpawnResult {
   return 'stderr' in result && 'stdout' in result && 'status' in result;
-}
-
-async function spawnExpoCLI(
-  projectRoot: string,
-  args: string[],
-  options: Omit<spawnAsync.SpawnOptions, 'cwd'>
-) {
-  const expoCliPath = resolveFrom.silent(projectRoot, 'expo/bin/cli');
-  if (expoCliPath) {
-    return await spawnAsync('node', [expoCliPath, ...args], {
-      cwd: projectRoot,
-      ...options,
-    });
-  } else {
-    return await spawnAsync('npx', ['expo', ...args], {
-      cwd: projectRoot,
-      ...options,
-    });
-  }
 }
 
 export class InstalledDependencyVersionCheck implements DoctorCheck {

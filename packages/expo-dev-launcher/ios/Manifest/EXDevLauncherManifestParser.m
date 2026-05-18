@@ -108,11 +108,11 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
     [request setValue:self.installationID forHTTPHeaderField:@"Expo-Dev-Client-ID"];
   }
   NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-    if (error) {
+    if (!error) {
+      completionHandler(data, response);
+    } else if (onError) {
       onError(error);
-      return;
     }
-    completionHandler(data, response);
   }];
   [dataTask resume];
 }

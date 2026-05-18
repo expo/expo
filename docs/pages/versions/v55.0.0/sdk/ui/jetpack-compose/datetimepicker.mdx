@@ -8,72 +8,88 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A date and time picker component that allows users to select dates, times, or both using native Android dialogs.
+Expo UI DateTimePicker matches the official Jetpack Compose [Date Picker](https://developer.android.com/develop/ui/compose/components/datepickers) and [Time Picker](https://developer.android.com/develop/ui/compose/components/time-pickers) APIs and supports date, time, and combined selection.
 
 ## Installation
 
 <APIInstallSection />
 
-## Date time picker
+## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="DateTimePicker component on Android."
-      src="/static/images/expo-ui/datetimepicker/date/android.png"
-      className="max-w-[240px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { DateTimePicker } from '@expo/ui/jetpack-compose';
+### Date picker
 
-    <DateTimePicker
-      onDateSelected={date => {
-        setSelectedDate(date);
-      }}
-      displayedComponents='date'
-      initialDate={selectedDate.toISOString()}
-      variant='picker'
-    />
-    ```
+```tsx DatePickerExample.tsx
+import { useState } from 'react';
+import { Host, DateTimePicker } from '@expo/ui/jetpack-compose';
 
-  </Tab>
-</Tabs>
+export default function DatePickerExample() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/datepickers) for more information.
+  return (
+    <Host matchContents>
+      <DateTimePicker
+        onDateSelected={date => {
+          setSelectedDate(date);
+        }}
+        displayedComponents="date"
+        initialDate={selectedDate.toISOString()}
+        variant="picker"
+      />
+    </Host>
+  );
+}
+```
 
-## Time picker
+### Time picker
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="DateTimePicker (time) component on Android."
-      src="/static/images/expo-ui/datetimepicker/time/android.png"
-      className="max-w-[240px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { DateTimePicker } from '@expo/ui/jetpack-compose';
+```tsx TimePickerExample.tsx
+import { useState } from 'react';
+import { Host, DateTimePicker } from '@expo/ui/jetpack-compose';
 
-    <DateTimePicker
-      onDateSelected={date => {
-        setSelectedDate(date);
-      }}
-      displayedComponents='hourAndMinute'
-      initialDate={selectedDate.toISOString()}
-      variant='picker'
-    />
-    ```
+export default function TimePickerExample() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  </Tab>
-</Tabs>
+  return (
+    <Host matchContents>
+      <DateTimePicker
+        onDateSelected={date => {
+          setSelectedDate(date);
+        }}
+        displayedComponents="hourAndMinute"
+        initialDate={selectedDate.toISOString()}
+        variant="picker"
+      />
+    </Host>
+  );
+}
+```
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/time-pickers) for more information.
+### Input variant
+
+Use `variant="input"` to display the picker as a text input field instead of the default picker UI.
+
+```tsx InputVariantExample.tsx
+import { useState } from 'react';
+import { Host, DateTimePicker } from '@expo/ui/jetpack-compose';
+
+export default function InputVariantExample() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  return (
+    <Host matchContents>
+      <DateTimePicker
+        onDateSelected={date => {
+          setSelectedDate(date);
+        }}
+        displayedComponents="date"
+        initialDate={selectedDate.toISOString()}
+        variant="input"
+      />
+    </Host>
+  );
+}
+```
 
 ## API
 

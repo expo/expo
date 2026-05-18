@@ -60,7 +60,7 @@ Ensure that the `uiMode` flag is present on your `MainActivity` (and any other a
 Implement the `onConfigurationChanged` method in **MainActivity.java**:
 
 ```java
-/* @info Import the <CODE>Intent</CODE> and <CODE>Configuration</CODE> classes. */
+/* @info Import the `Intent` and `Configuration` classes. */
 import android.content.Intent;
 import android.content.res.Configuration;
 /* @end */
@@ -96,13 +96,13 @@ The `userInterfaceStyle` property supports the following values:
 
 To detect the color scheme in your project, use `Appearance` or `useColorScheme` from `react-native`:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Appearance, useColorScheme } from 'react-native';
 ```
 
 Then, you can use `useColorScheme()` hook as shown below:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 function MyComponent() {
   let colorScheme = useColorScheme();
 
@@ -124,7 +124,7 @@ In some cases, you will find it helpful to get the current color scheme imperati
 
 {/* prettier-ignore */}
 ```tsx
-import { Text, StyleSheet, View, /* @info Import <CODE>useColorScheme</CODE> from react-native */ useColorScheme /* @end */ } from 'react-native';
+import { Text, StyleSheet, View, /* @info Import `useColorScheme` from react-native */ useColorScheme /* @end */ } from 'react-native';
 /* @info Automatically switches bar style based on theme. */
 import { StatusBar } from 'expo-status-bar';
 /* @end */

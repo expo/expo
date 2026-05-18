@@ -1,10 +1,5 @@
-import {
-  PermissionExpiration,
-  PermissionResponse,
-  PermissionStatus,
-  type EventSubscription,
-  UnavailabilityError,
-} from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
+import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 
 import ExponentPedometer from './ExponentPedometer';
@@ -95,9 +90,6 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
-export {
-  EventSubscription as Subscription,
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-};
+// TODO(@kitten): Remove re-exports from EMC
+export { type PermissionResponse, PermissionStatus, type PermissionExpiration } from 'expo';
+export { type EventSubscription as Subscription } from 'expo-modules-core';

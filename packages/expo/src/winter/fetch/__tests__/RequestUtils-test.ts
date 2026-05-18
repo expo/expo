@@ -7,7 +7,7 @@ import { TextDecoder, TextEncoder } from 'node:util';
 import RNFormData from 'react-native/Libraries/Network/FormData';
 import { ReadableStream as WebReadableStream } from 'web-streams-polyfill';
 
-import { type NativeHeadersType } from '../NativeRequest';
+import type { NativeHeadersType } from '../NativeRequest';
 import {
   convertReadableStreamToUint8ArrayAsync,
   normalizeBodyInitAsync,
@@ -101,8 +101,8 @@ describe(normalizeBodyInitAsync, () => {
     expect(resultBodyString).toMatch(/------ExpoFetchFormBoundary[\w]{16}/);
     const overrideHeaders = result.overriddenHeaders;
     expect(overrideHeaders?.length).toBe(1);
-    expect(overrideHeaders?.[0][0]).toBe('Content-Type');
-    expect(overrideHeaders?.[0][1]).toMatch(
+    expect(overrideHeaders?.[0]?.[0]).toBe('Content-Type');
+    expect(overrideHeaders?.[0]?.[1]).toMatch(
       /^multipart\/form-data; boundary=----ExpoFetchFormBoundary[\w]{16}$/
     );
   });
@@ -190,8 +190,8 @@ describe(normalizeHeadersInit, () => {
 
     for (let i = 0; i < sortedA.length; i++) {
       if (
-        sortedA[i][0].toLocaleLowerCase() !== sortedB[i][0].toLocaleLowerCase() ||
-        sortedA[i][1].toLocaleLowerCase() !== sortedB[i][1].toLocaleLowerCase()
+        sortedA[i]?.[0].toLocaleLowerCase() !== sortedB[i]?.[0].toLocaleLowerCase() ||
+        sortedA[i]?.[1].toLocaleLowerCase() !== sortedB[i]?.[1].toLocaleLowerCase()
       ) {
         return false;
       }

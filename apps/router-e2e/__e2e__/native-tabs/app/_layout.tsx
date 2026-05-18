@@ -1,4 +1,4 @@
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router/react-navigation';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { Appearance, Platform, useColorScheme } from 'react-native';
@@ -31,13 +31,22 @@ export default function Layout() {
           <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="dynamic">
-          <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
+          <NativeTabs.Trigger.Icon
+            sf="figure.disc.sports"
+            md={{
+              default: 'sports_hockey',
+              selected: 'sports_soccer',
+            }}
+          />
           <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
           <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="icon-test">
           <NativeTabs.Trigger.Icon
-            src={require('../../../assets/explore_orange.png')}
+            src={{
+              default: require('../../../assets/explore_orange.png'),
+              selected: require('../../../assets/expo-transparent.png'),
+            }}
             renderingMode="original"
           />
           <NativeTabs.Trigger.Label>Original Icon</NativeTabs.Trigger.Label>

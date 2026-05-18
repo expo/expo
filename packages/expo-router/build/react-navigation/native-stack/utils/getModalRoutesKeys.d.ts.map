@@ -1,0 +1,1 @@
+{"version":3,"file":"getModalRoutesKeys.d.ts","sourceRoot":"","sources":["../../../../src/react-navigation/native-stack/utils/getModalRoutesKeys.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,KAAK,EAAE,MAAM,cAAc,CAAC;AAC1C,OAAO,KAAK,EAAE,wBAAwB,EAAE,MAAM,UAAU,CAAC;AAEzD,eAAO,MAAM,iBAAiB,GAAI,QAAQ,KAAK,CAAC,MAAM,CAAC,EAAE,EAAE,aAAa,wBAAwB,aAkBxF,CAAC"}

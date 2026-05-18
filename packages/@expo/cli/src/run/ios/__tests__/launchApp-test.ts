@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
 import { SimulatorLogStreamer } from '../../../start/platforms/ios/simctlLogging';
-import { DevServerManager } from '../../../start/server/DevServerManager';
+import type { DevServerManager } from '../../../start/server/DevServerManager';
 import { getAppDeltaDirectory, installOnDeviceAsync } from '../appleDevice/installOnDeviceAsync';
 import { launchAppAsync } from '../launchApp';
 

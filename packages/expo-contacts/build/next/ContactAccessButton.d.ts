@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColorValue, ViewProps } from 'react-native';
+import type { ColorValue, ViewProps } from 'react-native';
 export type ContactAccessButtonProps = ViewProps & {
     /**
      * A string to match against contacts not yet exposed to the app.
@@ -55,6 +55,6 @@ export default class ContactAccessButton extends React.PureComponent<ContactAcce
      * This is `true` only on iOS 18.0 and newer.
      */
     static isAvailable(): boolean;
-    render(): React.JSX.Element | null;
+    render(): import("react/jsx-runtime").JSX.Element | null;
 }
 //# sourceMappingURL=ContactAccessButton.d.ts.map

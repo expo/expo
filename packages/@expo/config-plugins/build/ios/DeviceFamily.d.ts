@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
-import { XcodeProject } from 'xcode';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ExpoConfig } from '@expo/config-types';
+import type { XcodeProject } from 'xcode';
+import type { ConfigPlugin } from '../Plugin.types';
 export declare const withDeviceFamily: ConfigPlugin;
 export declare function getSupportsTablet(config: Pick<ExpoConfig, 'ios'>): boolean;
 export declare function getIsTabletOnly(config: Pick<ExpoConfig, 'ios'>): boolean;

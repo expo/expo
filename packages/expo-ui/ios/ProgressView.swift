@@ -3,11 +3,6 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class ClosedRangeDate: Record {
-  @Field var lower: Date?
-  @Field var upper: Date?
-}
-
 public final class ProgressViewProps: UIBaseViewProps {
   @Field var timerInterval: ClosedRangeDate?
   @Field var countsDown: Bool?

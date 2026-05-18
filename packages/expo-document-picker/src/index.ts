@@ -1,5 +1,5 @@
 import ExpoDocumentPicker from './ExpoDocumentPicker';
-import { DocumentPickerOptions, DocumentPickerResult } from './types';
+import type { DocumentPickerOptions, DocumentPickerResult } from './types';
 
 // @needsAudit
 /**

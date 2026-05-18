@@ -1,34 +1,15 @@
 'use client';
-import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import React from 'react';
 
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import { isModalPresentation } from '../../utils/stackPresentation';
 
 /**
  * A minimal subset of `ExtendedStackNavigationOptions` needed for the helper
  * @internal
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
-
-/**
- * Helper to determine if a given screen should be treated as a modal-type presentation
- *
- * @param options - The navigation options.
- * @returns Whether the screen should be treated as a modal-type presentation.
- *
- * @internal
- */
-export function isModalPresentation(options?: PresentationOptions | null) {
-  const presentation = options?.presentation;
-  return (
-    presentation === 'modal' ||
-    presentation === 'formSheet' ||
-    presentation === 'fullScreenModal' ||
-    presentation === 'containedModal' ||
-    presentation === 'transparentModal' ||
-    presentation === 'containedTransparentModal'
-  );
-}
 
 /**
  * Helper to determine if a given screen should be treated as a transparent modal-type presentation
@@ -101,7 +82,7 @@ export function convertStackStateToNonModalState(
 
   // Remove every modal-type route from the stack on web.
   const routes = state.routes.filter((route) => {
-    return !isModalPresentation(descriptors[route.key].options);
+    return !isModalPresentation(descriptors[route.key]!.options);
   });
 
   // Recalculate the active index so it still points at the same non-modal route, or –
@@ -129,7 +110,7 @@ export function findLastNonModalIndex(
 ) {
   // Iterate backwards through the stack to find the last non-modal route.
   for (let i = state.routes.length - 1; i >= 0; i--) {
-    if (!isModalPresentation(descriptors[state.routes[i].key].options)) {
+    if (!isModalPresentation(descriptors[state.routes[i]!.key]!.options)) {
       return i;
     }
   }

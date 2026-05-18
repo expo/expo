@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 /**
  * Asset manifest for client hydration bundles.
  *
@@ -52,6 +54,8 @@ export interface RouteInfo<TRegex = RegExp | string> {
   methods?: string[];
   /** Path to the loader module for this route, typically `_expo/loaders/[ROUTE].js`. When present, the loader should be executed before rendering. */
   loader?: string;
+  /** Per-route async chunk assets. Merged with top-level `assets` at serve time. */
+  assets?: AssetInfo;
 }
 
 export interface RoutesManifest<TRegex = RegExp | string> {
@@ -104,7 +108,19 @@ export type Route = RouteInfo<RegExp>;
  * @type {import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
  */
 export interface GetStaticContentOptions {
-  loader?: { data?: unknown };
+  loader?: { data?: unknown; key: string };
+  request?: Request;
+  assets?: AssetInfo;
+}
+
+/**
+ * @type {import('@expo/router-server/src/static/renderStreamingContent').GetStreamingContentOptions}
+ */
+export interface GetStreamingContentOptions {
+  loader?: { data?: unknown; key: string };
+  metadata?: {
+    headNodes: ReactNode[];
+  } | null;
   request?: Request;
   assets?: AssetInfo;
 }

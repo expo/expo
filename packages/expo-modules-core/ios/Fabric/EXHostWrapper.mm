@@ -3,6 +3,7 @@
 #import <ExpoModulesCore/EXHostWrapper.h>
 
 #import <ReactCommon/RCTHost.h>
+#import <ReactCommon/RCTHost+Internal.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -29,6 +30,11 @@
 {
   RCTComponentViewRegistry *componentViewRegistry = _host.surfacePresenter.mountingManager.componentViewRegistry;
   return [componentViewRegistry findComponentViewWithTag:tag];
+}
+
+- (nullable NSURL *)bundleURL
+{
+  return [_host.bundleManager bundleURL];
 }
 
 @end

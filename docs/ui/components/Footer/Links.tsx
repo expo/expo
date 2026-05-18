@@ -5,9 +5,9 @@ import { File02Icon } from '@expo/styleguide-icons/outline/File02Icon';
 import { MessageTextSquare02Icon } from '@expo/styleguide-icons/outline/MessageTextSquare02Icon';
 import * as Dialog from '@radix-ui/react-dialog';
 
+import { A, CALLOUT, LI } from '../Text';
 import { FeedbackDialog } from './FeedbackDialog';
 import { githubUrl } from './utils';
-import { A, CALLOUT, LI } from '../Text';
 
 const LINK_CLASSES = 'inline-flex items-center mb-1 focus-visible:outline-offset-4';
 const ICON_CLASSES = 'flex items-center mr-2.5 text-icon-secondary shrink-0';
@@ -83,7 +83,7 @@ export const ShareFeedbackLink = ({ pathname }: { pathname?: string }) => {
   return (
     <LI>
       <Dialog.Root>
-        <Dialog.Trigger className="h-[22px] focus-visible:outline-offset-4">
+        <Dialog.Trigger className="h-5.5 focus-visible:outline-offset-4">
           <A isStyled className={LINK_CLASSES}>
             <MessageTextSquare02Icon className={ICON_CLASSES} />
             <CALLOUT theme="secondary">Share your feedback</CALLOUT>

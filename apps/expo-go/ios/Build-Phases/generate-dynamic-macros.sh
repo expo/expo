@@ -55,7 +55,7 @@ EXPO_DIR="$(cd "$IOS_DIR/../../.." && pwd)"
 
 # Key paths
 EXPO_GO_DIR="$EXPO_DIR/apps/expo-go"
-APP_JSON="$EXPO_GO_DIR/app.json"
+SDK_VERSIONS_JSON="$EXPO_GO_DIR/sdkVersions.json"
 INFO_PLIST="$IOS_DIR/Exponent/Supporting/Info.plist"
 BUILD_CONSTANTS_PLIST="$IOS_DIR/Exponent/Supporting/EXBuildConstants.plist"
 TEMPLATE_FILES_DIR="$EXPO_DIR/template-files"
@@ -219,12 +219,12 @@ resolve_macros() {
   fi
   echo "Resolved TEST_RUN_ID macro to \"$TEST_RUN_ID\""
 
-  # TEMPORARY_SDK_VERSION (from app.json)
-  if [[ -f "$APP_JSON" ]]; then
-    TEMPORARY_SDK_VERSION=$(json_read "$APP_JSON" ".expo.sdkVersion")
+  # TEMPORARY_SDK_VERSION (from sdkVersions.json)
+  if [[ -f "$SDK_VERSIONS_JSON" ]]; then
+    TEMPORARY_SDK_VERSION=$(json_read "$SDK_VERSIONS_JSON" ".sdkVersion")
   else
     TEMPORARY_SDK_VERSION=""
-    echo "Warning: app.json not found at $APP_JSON"
+    echo "Warning: sdkVersions.json not found at $SDK_VERSIONS_JSON"
   fi
   echo "Resolved TEMPORARY_SDK_VERSION macro to \"$TEMPORARY_SDK_VERSION\""
 
@@ -276,6 +276,12 @@ EOF
   local api_endpoint=$(plist_read "$BUILD_CONSTANTS_PLIST" "API_SERVER_ENDPOINT")
   if [[ -z "$api_endpoint" ]]; then
     plist_set_string "$BUILD_CONSTANTS_PLIST" "API_SERVER_ENDPOINT" "https://api.expo.dev/v2/"
+  fi
+
+  # Set USE_EMBEDDED_SNACK_RUNTIME if not already set
+  local use_embedded_snack=$(plist_read "$BUILD_CONSTANTS_PLIST" "USE_EMBEDDED_SNACK_RUNTIME")
+  if [[ -z "$use_embedded_snack" ]]; then
+    plist_set_bool "$BUILD_CONSTANTS_PLIST" "USE_EMBEDDED_SNACK_RUNTIME" "true"
   fi
 
   # Set USE_GENERATED_DEFAULTS to true

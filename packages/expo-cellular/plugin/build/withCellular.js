@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-cellular/package.json');
+const pkg = require('../../package.json');
 const withCellular = (config) => {
     config = config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         // Required for TelephonyManager and `getNetworkType`

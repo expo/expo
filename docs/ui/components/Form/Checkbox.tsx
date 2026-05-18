@@ -15,7 +15,7 @@ export const Checkbox = forwardRef(function Checkbox(
   return (
     <div className={mergeClasses('relative flex items-center gap-2', className)}>
       {checked && (
-        <CheckIcon className="pointer-events-none absolute w-4 px-0.5 text-palette-white [&_path]:!stroke-[3px]" />
+        <CheckIcon className="pointer-events-none absolute w-4 px-0.5 text-palette-white [&_path]:stroke-[3px]!" />
       )}
       <input
         type="checkbox"
@@ -37,7 +37,7 @@ export const Checkbox = forwardRef(function Checkbox(
       {label && (
         <label
           htmlFor={id}
-          className={mergeClasses('select-none text-default', !disabled && 'hocus:cursor-pointer')}>
+          className={mergeClasses('text-default select-none', !disabled && 'hocus:cursor-pointer')}>
           {typeof label === 'string' ? <P>{label}</P> : label}
         </label>
       )}

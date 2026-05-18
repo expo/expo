@@ -13,6 +13,7 @@ const path_1 = __importDefault(require("path"));
 const debugId_1 = require("./debugId");
 const exportPath_1 = require("./exportPath");
 const getCssDeps_1 = require("./getCssDeps");
+const sourceMap_1 = require("./sourceMap");
 const getAssets_1 = __importDefault(require("../transform-worker/getAssets"));
 const filePath_1 = require("../utils/filePath");
 // Lazy-loaded to avoid pulling in metro-source-map at startup
@@ -22,15 +23,6 @@ function getBuildHermesBundleAsync() {
         _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
     }
     return _buildHermesBundleAsync;
-}
-// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString -> @babel/traverse at startup
-let _sourceMapString;
-function getSourceMapString() {
-    if (!_sourceMapString) {
-        _sourceMapString =
-            require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-    }
-    return _sourceMapString;
 }
 let _baseJSBundleWithDependencies;
 function getBaseJSBundleWithDependencies() {
@@ -53,15 +45,6 @@ function getPlatformOption(...args) {
     }
     return _getPlatformOption(...args);
 }
-// Convert file paths to regex matchers.
-function pathToRegex(path) {
-    // Escape regex special characters, except for '*'
-    let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
-    // Replace '*' with '.*' to act as a wildcard in regex
-    regexSafePath = regexSafePath.replace(/\*/g, '.*');
-    // Create a RegExp object with the modified string
-    return new RegExp('^' + regexSafePath + '$');
-}
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
@@ -70,76 +53,19 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     });
     // Create chunks for splitting.
     const chunks = new Set();
-    [
-        {
-            test: pathToRegex(entryFile),
-        },
-    ].map((chunkSettings) => gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false, true));
-    const entryChunk = [...chunks.values()].find((chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile));
+    gatherChunks(preModules, chunks, { test: pathToRegex(entryFile) }, preModules, graph, options, false, true);
+    const entryChunk = findEntryChunk(chunks, entryFile);
     if (entryChunk) {
-        for (const chunk of chunks.values()) {
-            if (!chunk.isEntry && chunk.isAsync) {
-                for (const dep of chunk.deps.values()) {
-                    if (entryChunk.deps.has(dep)) {
-                        // Remove the dependency from the async chunk since it will be loaded in the main chunk.
-                        chunk.deps.delete(dep);
-                    }
-                }
-            }
-        }
-        const toCompare = [...chunks.values()];
-        const commonDependencies = [];
-        while (toCompare.length) {
-            const chunk = toCompare.shift();
-            for (const chunk2 of toCompare) {
-                if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
-                    const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
-                    for (const dep of commonDeps) {
-                        chunk.deps.delete(dep);
-                        chunk2.deps.delete(dep);
-                    }
-                    commonDependencies.push(...commonDeps);
-                }
-            }
-        }
-        let commonChunk;
-        // If common dependencies were found, extract them to the shared chunk.
-        if (commonDependencies.length) {
-            const commonDependenciesUnique = [...new Set(commonDependencies)];
-            commonChunk = new Chunk('/__common.js', commonDependenciesUnique, graph, options, false, true);
+        removeEntryDepsFromAsyncChunks(entryChunk, chunks);
+        const commonChunk = extractCommonChunk(chunks, graph, options);
+        if (commonChunk) {
             entryChunk.requiredChunks.add(commonChunk);
             chunks.add(commonChunk);
         }
-        // TODO: Optimize this pass more.
-        // Remove all dependencies from async chunks that are already in the common chunk.
-        for (const chunk of [...chunks.values()]) {
-            if (!chunk.isEntry && chunk !== commonChunk) {
-                for (const dep of chunk.deps) {
-                    if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
-                        chunk.deps.delete(dep);
-                    }
-                }
-            }
-        }
-        // Remove empty chunks
-        for (const chunk of [...chunks.values()]) {
-            if (!chunk.isEntry && chunk.deps.size === 0) {
-                chunks.delete(chunk);
-            }
-        }
-        // Create runtime chunk
+        deduplicateAgainstKnownChunks(chunks, entryChunk, commonChunk);
+        removeEmptyChunks(chunks);
         if (commonChunk) {
-            const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
-            // All premodules (including metro-runtime) should load first
-            for (const preModule of entryChunk.preModules) {
-                runtimeChunk.preModules.add(preModule);
-            }
-            entryChunk.preModules = new Set();
-            for (const chunk of chunks) {
-                // Runtime chunk has to load before any other a.k.a all chunks require it.
-                chunk.requiredChunks.add(runtimeChunk);
-            }
-            chunks.add(runtimeChunk);
+            createRuntimeChunk(entryChunk, chunks, graph, options);
         }
     }
     const jsAssets = await serializeChunksAsync(chunks, config.serializer ?? {}, serializeChunkOptions);
@@ -354,75 +280,21 @@ class Chunk {
                 // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
                 modulePaths: [...this.deps].map((module) => module.path),
                 paths: jsCode.paths,
-                expoDomComponentReferences: [
-                    ...new Set([...this.deps]
-                        .map((module) => {
-                        return module.output.map((output) => {
-                            if ('expoDomComponentReference' in output.data &&
-                                typeof output.data.expoDomComponentReference === 'string') {
-                                return output.data.expoDomComponentReference;
-                            }
-                            return undefined;
-                        });
-                    })
-                        .flat()),
-                ].filter((value) => typeof value === 'string'),
-                reactClientReferences: [
-                    ...new Set([...this.deps]
-                        .map((module) => {
-                        return module.output.map((output) => {
-                            if ('reactClientReference' in output.data &&
-                                typeof output.data.reactClientReference === 'string') {
-                                return output.data.reactClientReference;
-                            }
-                            return undefined;
-                        });
-                    })
-                        .flat()),
-                ].filter((value) => typeof value === 'string'),
-                reactServerReferences: [
-                    ...new Set([...this.deps]
-                        .map((module) => {
-                        return module.output.map((output) => {
-                            if ('reactServerReference' in output.data &&
-                                typeof output.data.reactServerReference === 'string') {
-                                return output.data.reactServerReference;
-                            }
-                            return undefined;
-                        });
-                    })
-                        .flat()),
-                ].filter((value) => typeof value === 'string'),
-                loaderReferences: [
-                    ...new Set([...this.deps]
-                        .map((module) => {
-                        return module.output.map((output) => {
-                            if ('loaderReference' in output.data &&
-                                typeof output.data.loaderReference === 'string') {
-                                return output.data.loaderReference;
-                            }
-                            return undefined;
-                        });
-                    })
-                        .flat()),
-                ].filter((value) => typeof value === 'string'),
+                expoDomComponentReferences: collectOutputReferences(this.deps, 'expoDomComponentReference'),
+                reactClientReferences: collectOutputReferences(this.deps, 'reactClientReference'),
+                reactServerReferences: collectOutputReferences(this.deps, 'reactServerReference'),
+                loaderReferences: collectOutputReferences(this.deps, 'loaderReference'),
             },
             source: jsCode.code,
         };
         const assets = [jsAsset];
-        const mutateSourceMapWithDebugId = (sourceMap) => {
-            // TODO: Upstream this so we don't have to parse the source map back and forth.
-            if (!debugId) {
-                return sourceMap;
-            }
-            // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
-            // we don't need to disambiguate between multiple source maps.
-            const sourceMapObject = JSON.parse(sourceMap);
-            sourceMapObject.debugId = debugId;
-            // NOTE: Sentry does this, but bun does not.
-            // sourceMapObject.debug_id = debugId;
-            return JSON.stringify(sourceMapObject);
-        };
+        // debugId is passed into `sourceMapString` so the bundler-map path
+        // emits it inline rather than a JSON.parse + JSON.stringify
+        // roundtrip; the Hermes branch below has to splice into a finished
+        // JSON string because `buildHermesBundleAsync` is opaque.
+        // NOTE: skipped for inline source maps since they don't need
+        // disambiguation. We only emit `debugId` (Sentry also reads
+        // `debug_id`, but bun doesn't).
         if (
         // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
         includeSourceMaps &&
@@ -445,11 +317,13 @@ class Chunk {
                 }
                 return module;
             });
-            // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-            const sourceMap = mutateSourceMapWithDebugId(getSourceMapString()(modules, {
+            // TODO: We may not need to set `debugId` on the bundler sourcemap when
+            // Hermes is enabled, since we ship a separate `.hbc.map` for that case.
+            const sourceMap = (0, sourceMap_1.sourceMapString)(modules, {
                 excludeSource: false,
                 ...this.options,
-            }));
+                debugId,
+            });
             assets.push({
                 filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
                 originFilename: jsAsset.originFilename,
@@ -493,7 +367,9 @@ class Chunk {
                 }
             }
             if (assets[1] && hermesBundleOutput.sourcemap) {
-                assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);
+                assets[1].source = debugId
+                    ? (0, sourceMap_1.appendDebugIdToSourceMap)(hermesBundleOutput.sourcemap, debugId)
+                    : hermesBundleOutput.sourcemap;
                 assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
             }
         }
@@ -512,6 +388,39 @@ class Chunk {
     }
 }
 exports.Chunk = Chunk;
+function getSortedModules(modules, { createModuleId, }) {
+    // Assign IDs to modules in a consistent order
+    for (const module of modules) {
+        createModuleId(module.path);
+    }
+    // Sort by IDs
+    return modules.sort((a, b) => createModuleId(a.path) - createModuleId(b.path));
+}
+// Convert file paths to regex matchers.
+function pathToRegex(path) {
+    // Escape regex special characters, except for '*'
+    let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
+    // Replace '*' with '.*' to act as a wildcard in regex
+    regexSafePath = regexSafePath.replace(/\*/g, '.*');
+    // Create a RegExp object with the modified string
+    return new RegExp('^' + regexSafePath + '$');
+}
+function collectOutputReferences(modules, key) {
+    return [
+        ...new Set([...modules]
+            .map((module) => {
+            return module.output.map((output) => {
+                // TODO: This is a mess. This needs to be properly typed
+                const data = output.data;
+                if (key in data && typeof data[key] === 'string') {
+                    return data[key];
+                }
+                return undefined;
+            });
+        })
+            .flat()),
+    ].filter((value) => typeof value === 'string');
+}
 function getEntryModulesForChunkSettings(graph, settings) {
     return [...graph.dependencies.entries()]
         .filter(([path]) => settings.test.test(path))
@@ -570,6 +479,77 @@ function gatherChunks(runtimePremodules, chunks, settings, preModules, graph, op
     }
     return chunks;
 }
+function findEntryChunk(chunks, entryFile) {
+    return [...chunks.values()].find((chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile));
+}
+function removeEntryDepsFromAsyncChunks(entryChunk, chunks) {
+    for (const chunk of chunks.values()) {
+        if (!chunk.isEntry && chunk.isAsync) {
+            for (const dep of chunk.deps.values()) {
+                if (entryChunk.deps.has(dep)) {
+                    // Remove the dependency from the async chunk since it will be loaded in the main chunk.
+                    chunk.deps.delete(dep);
+                }
+            }
+        }
+    }
+}
+function extractCommonChunk(chunks, graph, options) {
+    const toCompare = [...chunks.values()];
+    const commonDependencies = [];
+    while (toCompare.length) {
+        const chunk = toCompare.shift();
+        for (const chunk2 of toCompare) {
+            if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
+                const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
+                for (const dep of commonDeps) {
+                    chunk.deps.delete(dep);
+                    chunk2.deps.delete(dep);
+                }
+                commonDependencies.push(...commonDeps);
+            }
+        }
+    }
+    // If common dependencies were found, extract them to the shared chunk.
+    if (commonDependencies.length) {
+        const commonDependenciesUnique = [...new Set(commonDependencies)];
+        return new Chunk('/__common.js', commonDependenciesUnique, graph, options, false, true);
+    }
+    return undefined;
+}
+function deduplicateAgainstKnownChunks(chunks, entryChunk, commonChunk) {
+    // TODO: Optimize this pass more.
+    // Remove all dependencies from async chunks that are already in the common chunk.
+    for (const chunk of [...chunks.values()]) {
+        if (!chunk.isEntry && chunk !== commonChunk) {
+            for (const dep of chunk.deps) {
+                if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
+                    chunk.deps.delete(dep);
+                }
+            }
+        }
+    }
+}
+function removeEmptyChunks(chunks) {
+    for (const chunk of [...chunks.values()]) {
+        if (!chunk.isEntry && chunk.deps.size === 0) {
+            chunks.delete(chunk);
+        }
+    }
+}
+function createRuntimeChunk(entryChunk, chunks, graph, options) {
+    const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
+    // All premodules (including metro-runtime) should load first
+    for (const preModule of entryChunk.preModules) {
+        runtimeChunk.preModules.add(preModule);
+    }
+    entryChunk.preModules = new Set();
+    for (const chunk of chunks) {
+        // Runtime chunk has to load before any other a.k.a all chunks require it.
+        chunk.requiredChunks.add(runtimeChunk);
+    }
+    chunks.add(runtimeChunk);
+}
 async function serializeChunksAsync(chunks, serializerConfig, options) {
     const jsAssets = [];
     const chunksArray = [...chunks.values()];
@@ -577,13 +557,5 @@ async function serializeChunksAsync(chunks, serializerConfig, options) {
         jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options)));
     }));
     return jsAssets;
-}
-function getSortedModules(modules, { createModuleId, }) {
-    // Assign IDs to modules in a consistent order
-    for (const module of modules) {
-        createModuleId(module.path);
-    }
-    // Sort by IDs
-    return modules.sort((a, b) => createModuleId(a.path) - createModuleId(b.path));
 }
 //# sourceMappingURL=serializeChunks.js.map

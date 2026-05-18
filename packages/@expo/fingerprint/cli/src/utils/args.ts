@@ -22,6 +22,9 @@ export function getProjectRoot(args: arg.Result<arg.Spec>) {
 }
 
 export function getFileArgumentAtIndex(args: arg.Result<arg.Spec>, index: number) {
+  if (args._[index] == null) {
+    Log.exit(`Argument at index ${index} is not set`);
+  }
   const path = resolve(args._[index]);
   if (!existsSync(path)) {
     Log.exit(`Invalid file: ${path}`);

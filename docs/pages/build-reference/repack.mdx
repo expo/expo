@@ -1,0 +1,162 @@
+---
+title: Repack app
+description: Repackage an existing APK, IPA, or .app with an updated JavaScript bundle without a full native rebuild.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+[`@expo/repack-app`](https://www.npmjs.com/package/@expo/repack-app) is a CLI tool that repackages an existing Android APK, iOS IPA, or iOS **.app** bundle without performing a full native build. It updates the existing artifact with a new JavaScript (JS) bundle, assets, and app metadata (such as, app name, version, and package name or bundle identifier). Since there is no native compilation involved, a repack is typically much faster than a full native build.
+
+To learn more about how fingerprint and repack work together to accelerate CI, see [Accelerating Continuous Integration with Fingerprint and Repack in EAS Workflows](https://expo.dev/blog/accelerating-continuous-integration-with-fingerprint-repack-in-eas-workflows) blog post.
+
+<Prerequisites>
+  <Requirement title="An existing build artifact">
+    A build artifact produced from your Expo project: an APK for Android, or an IPA or **.app**
+    bundle for iOS.
+  </Requirement>
+  <Requirement title="Signing credentials (optional)">
+    Required if the repacked artifact needs to be installable on a device. For more information, see
+    [Signing](#signing).
+  </Requirement>
+</Prerequisites>
+
+## When to use repack
+
+Repack assumes the source binary's native side is unchanged since it was built. If you added a native dependency, changed a [config plugin](/config-plugins/introduction/), or upgraded the Expo SDK, a repacked artifact will have JS that expects native APIs that do not exist, and will likely crash at runtime. Use [fingerprint](/versions/latest/sdk/fingerprint/) to compare the source binary's native identity against your current project. If the fingerprints match, then repack is safe. If they differ, do a full native build instead.
+
+Repack is not a replacement for [EAS Update](/eas-update/introduction/). EAS Update ships a new JS bundle to apps that are already installed, and users see it on the next launch. Repack produces a new installable artifact. A good rule of thumb is to use repack for internal testing (QA devices, testers, CI smoke tests) and use EAS Update to deliver JS changes to production users.
+
+## Use cases
+
+- **QA cycles**: Distribute one base build to testers, then repack with JS fixes for each iteration without waiting for a native rebuild.
+- **CI optimization**: Build native once per fingerprint, then repack the JS bundle on every subsequent PR to cut wait times from minutes to seconds.
+- **Branch testing**: Test multiple JS branches against the same native binary to isolate JavaScript-only changes.
+
+## Usage
+
+### Standalone CLI
+
+You need to run the commands specified for Android and iOS platforms below from your project's root directory. At minimum, `--platform` and `--source-app` are required. The tool runs `npx expo export:embed` under the hood to produce a fresh JS bundle, swaps it into the source binary, and writes the output artifact.
+
+The output format always matches the `--source-app` input. An APK input produces an APK, an IPA produces an IPA, and a **.app** bundle produces a **.app** bundle.
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal cmd={['$ npx @expo/repack-app --platform android --source-app MyApp.apk']} />
+
+</Tab>
+
+<Tab label="iOS">
+
+Using an IPA:
+
+<Terminal cmd={['$ npx @expo/repack-app --platform ios --source-app MyApp.ipa']} />
+
+Using a **.app** bundle (for simulator builds, the iOS device artifacts are always IPAs):
+
+<Terminal cmd={['$ npx @expo/repack-app --platform ios --source-app MyApp.app']} />
+
+</Tab>
+
+</Tabs>
+
+### EAS Workflows
+
+EAS Workflows provides a pre-packaged `repack` job type that handles signing and build management automatically. See [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#repack) for full syntax, parameters, and examples.
+
+## Signing
+
+To produce an artifact installable on a physical device, pass signing credentials alongside `--platform` and `--source-app`. Without them, the Android APK is output unsigned and the iOS IPA cannot be installed on a device. iOS **.app** bundles intended for the simulator do not need signing and can skip this step.
+
+If you do not already have signing credentials locally, see [App credentials](/app-signing/app-credentials/) for how to obtain a keystore (Android) or a signing identity and provisioning profile (iOS).
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal
+  cmd={[
+    '$ npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias',
+  ]}
+/>
+
+See the [Android-specific options](#android-specific-options) for keystore password flags and other settings.
+
+</Tab>
+
+<Tab label="iOS">
+
+Pass a signing identity and provisioning profile:
+
+> **Note**: iOS repacking supports ad-hoc and development signing only.
+
+<Terminal
+  cmd={[
+    '$ npx @expo/repack-app --platform ios --source-app MyApp.ipa --signing-identity "Apple Distribution: ..." --provisioning-profile /path/to/profile.mobileprovision',
+  ]}
+/>
+
+See the [iOS-specific options](#ios-specific-options) for the full list of signing flags.
+
+</Tab>
+
+</Tabs>
+
+## `--js-bundle-only` mode
+
+By default, repack updates the JS bundle, assets, and app metadata (app name, version, bundle identifier, and the expo-updates manifest). Pass `--js-bundle-only` when you intentionally want to update only the JS bundle and leave all native config untouched.
+
+<Terminal
+  cmd={['$ npx @expo/repack-app --platform android --source-app MyApp.apk --js-bundle-only']}
+/>
+
+## Limitations
+
+Repack is not recommended for production Google Play Store or Apple App Store submissions. Production builds should go through the complete build pipeline for correct symbolication and signing.
+
+## CLI reference
+
+```text
+Usage: @expo/repack-app [options] [project-root]
+```
+
+### Arguments
+
+| Argument         | Description                                                          |
+| ---------------- | -------------------------------------------------------------------- |
+| `[project-root]` | Path to the project root. Defaults to the current working directory. |
+
+### Options
+
+| Option                                    | Description                                                                                                                                              |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p, --platform <platform>`               | **Required.** Platform to repack the app for (`android` or `ios`).                                                                                       |
+| `--source-app <path>`                     | **Required.** Path to the source app (APK for Android, or IPA or **.app** for iOS). The output format matches the input.                                 |
+| `-o, --output <path>`                     | Path to the output artifact. Defaults to `repacked.apk`, `repacked.ipa`, or `repacked.app` in the project root, matching the source format.              |
+| `-w, --working-directory <path>`          | Path to the working directory for temporary files.                                                                                                       |
+| `--skip-working-dir-cleanup`              | Skip cleaning up the working directory after the repack completes. Useful for debugging.                                                                 |
+| `-v, --verbose`                           | Enable verbose logging.                                                                                                                                  |
+| `--js-bundle-only`                        | Only update the JS bundle and skip native config updates (such as app name, version, and other metadata).                                                |
+| `--embed-bundle-assets`                   | Force running `npx expo export:embed` to generate the JS bundle and assets, even for debug builds where the bundle is normally loaded from a dev server. |
+| `--bundle-assets-sourcemap-output <path>` | Generate a source map at the specified path. Requires `--embed-bundle-assets`.                                                                           |
+
+### Android-specific options
+
+| Option                             | Description                                                                                                       |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `--ks <path>`                      | Path to the keystore file.                                                                                        |
+| `--ks-pass <password>`             | Keystore password. Defaults to `pass:android`. Supported formats: `pass:<password>`, `env:<name>`, `file:<file>`. |
+| `--ks-key-alias <alias>`           | Keystore key alias.                                                                                               |
+| `--ks-key-pass <password>`         | Keystore key password. Supported formats: `pass:<password>`, `env:<name>`, `file:<file>`.                         |
+| `--android-build-tools-dir <path>` | Path to the Android SDK build-tools directory.                                                                    |
+
+### iOS-specific options
+
+| Option                          | Description                                                                                                                            |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `--signing-identity <identity>` | Code signing identity.                                                                                                                 |
+| `--provisioning-profile <path>` | Path to a provisioning profile. Alternatively, a JSON-encoded value for multi-target apps (for example, when bundling app extensions). |

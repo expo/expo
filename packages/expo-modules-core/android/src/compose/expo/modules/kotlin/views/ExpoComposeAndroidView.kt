@@ -11,13 +11,22 @@ import com.facebook.react.uimanager.PixelUtil.pxToDp
 import expo.modules.kotlin.AppContext
 
 /**
+ * Marks a view as capable of crossing the Jetpack Compose -> React Native boundary.
+ */
+interface RNHostViewInterface {
+  var matchContents: Boolean
+}
+
+/**
  * An ExpoComposeView for [AndroidView] wrapping with existing view
  */
 @SuppressLint("ViewConstructor")
 internal class ExpoComposeAndroidView(
   private val view: View,
   appContext: AppContext
-) : ExpoComposeView<ComposeProps>(view.context, appContext) {
+) : ExpoComposeView<ComposeProps>(view.context, appContext), RNHostViewInterface {
+  override var matchContents = false
+
   @Composable
   override fun ComposableScope.Content() {
     AndroidView(

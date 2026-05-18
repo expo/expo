@@ -2,15 +2,20 @@ import spawnAsync from '@expo/spawn-async';
 import { glob } from 'glob';
 import fs from 'node:fs';
 import path from 'node:path';
-import tempDir from 'temp-dir';
+import os from 'node:os';
 
-import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
+import {
+  executeCommandAsync,
+  executeCreateExpoCLIAsync,
+  executeExpoCLIAsync,
+  sleep,
+} from './process';
 import type { PluginProps, TemplateEntry } from './types';
 
 const PROJECT_NAME = 'testapp';
 const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
   ? path.resolve(process.env.EXPO_E2E_TEMP_DIR)
-  : tempDir;
+  : fs.realpathSync(os.tmpdir());
 
 export const projectName = (suffix: string) => PROJECT_NAME + suffix;
 
@@ -28,8 +33,8 @@ export const createTempProject = async (
   try {
     await createProjectWithTemplate(TEMP_DIR, projectName(suffix));
     await installPackage(projectRoot);
+    await addPlugin(projectRoot);
     if (prebuild) {
-      await addPlugin(projectRoot);
       await prebuildProject(projectRoot, undefined, install);
     }
   } catch (error) {
@@ -77,6 +82,8 @@ export const addPlugin = async (
     ...android,
   };
 
+  appConfig.expo.experiments.autolinkingModuleResolution = true;
+
   await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
 };
 
@@ -110,41 +117,75 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     throw new Error(`Template directory not found at: ${templatePath}`);
   }
 
-  const tarballs = await glob('*.tgz', { cwd: templatePath });
+  let tarballs = await glob('*.tgz', { cwd: templatePath });
   if (tarballs.length === 0) {
-    throw new Error(`No tarballs found in template directory: ${templatePath}`);
+    await executeCommandAsync(templatePath, 'pnpm', ['pack', '--json']);
+    tarballs = await glob('*.tgz', { cwd: templatePath });
+    if (tarballs.length === 0) {
+      throw new Error(`No tarballs found in template directory: ${templatePath}`);
+    }
   }
 
   await executeCreateExpoCLIAsync(at, [
     projectName,
     '--template',
     path.join(templatePath, tarballs[0]),
+    '--no-install',
   ]);
+};
+
+const listWorkspaces = async (): Promise<Record<string, string>> => {
+  const { stdout } = await spawnAsync('pnpm', ['list', '--depth=-1', '-r', '--json'], {
+    cwd: path.join(__dirname, '../../'),
+  });
+  const workspaces: { name: string; path: string; }[] = JSON.parse(stdout);
+  return workspaces.reduce((acc, entry) => {
+    acc[entry.name] = entry.path;
+    return acc;
+  }, {} as Record<string, string>);
 };
 
 /**
  * Install `expo-brownfield` package from a tarball
  */
 const installPackage = async (projectRoot: string) => {
+  const packageJsonPath = path.join(projectRoot, 'package.json');
+  const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
+
+  packageJson.resolutions ??= {};
+  packageJson.dependencies ??= {};
+
+  // Strip npm_config_minimum_release_age inherited from the monorepo's pnpm-workspace.yaml,
+  // as it blocks recently published packages without the matching exclusion list.
+  const { npm_config_minimum_release_age, ...processEnv } = process.env;
+
   const packageRoot = path.join(__dirname, '../../');
-  const tarballs = await glob('*.tgz', { cwd: packageRoot });
-  if (tarballs.length !== 1) {
-    throw new Error(
-      `Expected a single tarball to be created for 'expo-brownfield', received: ${tarballs.length}`
-    );
+  packageJson.resolutions['expo-brownfield'] = `link:${path.relative(projectRoot, packageRoot)}`;
+  packageJson.dependencies['expo-brownfield'] = '*';
+
+  // NOTE(@kitten): Forcefully links all monorepo packages
+  // The tests will still pass without this in this case for expo-brownfield, but linking
+  // ensures the prebuild logic is tested too and this installs faster
+  const workspaces = await listWorkspaces();
+  for (const name in packageJson.dependencies) {
+    if (workspaces[name]) {
+      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      packageJson.dependencies[name] = '*';
+    }
+  }
+  for (const name in packageJson.devDependencies) {
+    if (workspaces[name]) {
+      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      packageJson.dependencies[name] = '*';
+    }
   }
 
-  const packageTarball = tarballs[0];
-  const packageTarballPath = path.join(packageRoot, packageTarball);
-  await fs.promises.cp(packageTarballPath, path.join(projectRoot, packageTarball), {
-    recursive: true,
-    force: true,
-  });
+  await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-  // Use --legacy-peer-deps for better stability
-  await spawnAsync('npm', ['install', packageTarball, '--legacy-peer-deps'], {
+  await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,
     stdio: 'pipe',
+    env: processEnv,
   });
 };
 
@@ -202,20 +243,4 @@ export const createTemplateOverrides = async (projectRoot: string, entries: Temp
     const templatePath = path.join(subdirectoryPath ?? templatesDir, entry.filename);
     await fs.promises.writeFile(templatePath, entry.content);
   }
-};
-
-/**
- * Create an .env file with specified values
- */
-export const createEnvFile = async (projectRoot: string, variables: Record<string, string>) => {
-  const envFilePath = path.join(projectRoot, '.env');
-  if (fs.existsSync(envFilePath)) {
-    await fs.promises.rm(envFilePath, { force: true });
-  }
-  await fs.promises.writeFile(
-    envFilePath,
-    Object.entries(variables)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('\n')
-  );
 };

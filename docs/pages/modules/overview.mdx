@@ -9,6 +9,7 @@ import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 
 ## What is the Expo Modules API
 
@@ -17,6 +18,8 @@ The Expo Modules API allows you to write Swift and Kotlin to add new capabilitie
 We believe that using the Expo Modules API makes building and maintaining nearly all kinds of React Native modules about as easy as it can be, and we think that the Expo Modules API is the best choice for the vast majority of developers building native modules for their apps.
 
 ### Common questions
+
+<FAQ>
 
 <Collapsible summary="Do I need to know the Expo Modules API to build an Expo / React Native app?">
 
@@ -80,6 +83,8 @@ Learn more about this in the [Integrate an existing library](/modules/existing-l
 
 </Collapsible>
 
+</FAQ>
+
 ## Next steps
 
 <BoxLink
@@ -93,6 +98,13 @@ Learn more about this in the [Integrate an existing library](/modules/existing-l
   title="Tutorial: Creating a native view"
   description="A tutorial on creating a native view that renders a WebView with Expo Modules API."
   href="/modules/native-view-tutorial/"
+  Icon={Grid01Icon}
+/>
+
+<BoxLink
+  title="Expo Modules API: Get started"
+  description="Learn about getting started with Expo modules API."
+  href="/modules/module-api/"
   Icon={Grid01Icon}
 />
 

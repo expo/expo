@@ -64,7 +64,7 @@ export function expand(inputEnv: EnvOutput, sourceEnv: EnvOutput): EnvOutput {
       value =
         value != null && sourceEnv[key] === value
           ? interpolate(value, key, sourceEnv, outputEnv)
-          : sourceEnv[key];
+          : inputEnv[key];
     } else if (value != null) {
       value = interpolate(value, key, sourceEnv, outputEnv);
     }

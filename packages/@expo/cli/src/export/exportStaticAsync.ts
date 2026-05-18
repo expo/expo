@@ -4,28 +4,33 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
-import { RouteNode } from 'expo-router/build/Route';
-import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
-import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import type { RouteNode } from 'expo-router/build/Route';
+import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
-import { type RoutesManifest } from 'expo-server/private';
+import type { RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
 
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
+import type { ExportAssetMap } from './saveAssets';
+import { getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
-import {
+import type {
   ExpoRouterRuntimeManifest,
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
-import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import {
+  assetsRequiresSort,
+  serializeHtmlWithAssets,
+  sortMatchedAssetsByEntryPoints,
+} from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -256,15 +261,17 @@ export async function exportFromServerAsync(
 
         if (loaderResponse !== undefined) {
           const data = await loaderResponse.json();
-          const loaderPath = getLoaderModulePath(normalizedPathname);
-          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+          // Transforms a `route.contextKey` into a normalized path. For example,
+          // `./nested/[id]/index.tsx` becomes `/nested/[id]/index`
+          const loaderKey = getContextKey(route.contextKey);
+          const fileSystemPath = `_expo/loaders${loaderKey}`;
           files.set(fileSystemPath, {
             contents: JSON.stringify(data, null, 2),
             targetDomain: 'client',
-            loaderId: normalizedPathname,
+            loaderId: loaderKey,
           });
 
-          renderOpts = { loader: { data } };
+          renderOpts = { loader: { data, key: loaderKey } };
         }
       }
 
@@ -350,22 +357,67 @@ export async function exportFromServerAsync(
         });
       }
 
+      const toAssetUrl = (filename: string) =>
+        baseUrl ? `${baseUrl}/${filename}` : `/${filename}`;
+
       const cssAssets = resources.artifacts
         .filter((asset) => asset.type === 'css')
-        .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
-      const jsAssets = resources.artifacts
-        .filter((asset) => asset.type === 'js')
-        .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
+        .map((asset) => toAssetUrl(asset.filename));
+
+      const jsArtifacts = resources.artifacts.filter((asset) => asset.type === 'js');
+      const orderedJsAssets = assetsRequiresSort(jsArtifacts);
+      const syncJs = orderedJsAssets.filter((asset) => !asset.metadata.isAsync);
+      const asyncJs = orderedJsAssets.filter((asset) => asset.metadata.isAsync);
+
+      const syncJsAssets = syncJs.map((asset) => toAssetUrl(asset.filename));
+
+      const htmlRoutes = getHtmlFiles({ manifest, includeGroupVariations: false });
+
+      // Build per-route async chunk assignments
+      const routeAssets = new Map<string, string[]>();
+      for (const { route } of htmlRoutes) {
+        if (!route.entryPoints || !Array.isArray(route.entryPoints)) {
+          continue;
+        }
+
+        const matchedChunks: SerialAsset[] = [];
+        for (const asyncChunk of asyncJs) {
+          if (!asyncChunk.metadata.modulePaths || !Array.isArray(asyncChunk.metadata.modulePaths)) {
+            continue;
+          }
+          const hasRouteEntryPoint = route.entryPoints.some((entryPoint) =>
+            (asyncChunk.metadata.modulePaths as string[]).includes(entryPoint)
+          );
+          if (hasRouteEntryPoint) {
+            matchedChunks.push(asyncChunk);
+          }
+        }
+
+        if (matchedChunks.length > 0) {
+          const sorted = sortMatchedAssetsByEntryPoints(matchedChunks, route.entryPoints);
+          routeAssets.set(
+            route.contextKey,
+            sorted.map((chunk) => toAssetUrl(chunk.filename))
+          );
+        }
+      }
 
       // Add assets and rendering config to the routes manifest
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
-          manifest.assets = { css: cssAssets, js: jsAssets };
+          manifest.assets = { css: cssAssets, js: syncJsAssets };
           manifest.rendering = {
             mode: 'ssr',
             file: '_expo/server/render.js',
           };
+
+          for (const route of manifest.htmlRoutes) {
+            const asyncChunks = routeAssets.get(route.file);
+            if (asyncChunks) {
+              route.assets = { css: [], js: asyncChunks };
+            }
+          }
         },
       });
     }
@@ -505,7 +557,7 @@ export function getPathVariations(routePath: string): string[] {
 
     const [head, ...rest] = segments;
 
-    if (matchGroupName(head)) {
+    if (head && matchGroupName(head)) {
       const groups = head.slice(1, -1).split(',');
 
       if (groups.length > 1) {
@@ -519,10 +571,10 @@ export function getPathVariations(routePath: string): string[] {
         generateVariations(rest, current ? `${current}/(${groups[0]})` : `(${groups[0]})`);
         // This code will continue and add paths without this group included`
       }
-    } else if (current) {
+    } else if (head && current) {
       current = `${current}/${head}`;
     } else {
-      current = head;
+      current = head ?? current;
     }
 
     generateVariations(rest, current);

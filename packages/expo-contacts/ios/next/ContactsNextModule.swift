@@ -3,6 +3,7 @@ import ContactsUI
 import Contacts
 
 public class ContactsNextModule: Module {
+  private static let contactsDidChangeEvent = "contactsDidChange"
   private let contactStore = CNContactStore()
   private lazy var contactRepository = ContactRepository(store: contactStore)
   private lazy var groupRepository = GroupRepository(store: contactStore)
@@ -19,12 +20,33 @@ public class ContactsNextModule: Module {
     groupRepository: groupRepository,
     contactFactory: contactFactory
   )
+  private lazy var contactsObserver = ContactsObserver(onChange: { [weak self] body in
+    guard let self = self else {
+      return
+    }
+    self.sendEvent(ContactsNextModule.contactsDidChangeEvent, body)
+    }
+  )
   private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
 
   // swiftlint:disable:next function_body_length
   public func definition() -> ModuleDefinition {
     Name("ExpoContactsNext")
+
+    Events(ContactsNextModule.contactsDidChangeEvent)
+
+    OnDestroy {
+      contactsObserver.stopObserving()
+    }
+
+    OnStartObserving(ContactsNextModule.contactsDidChangeEvent) {
+      contactsObserver.startObserving()
+    }
+
+    OnStopObserving(ContactsNextModule.contactsDidChangeEvent) {
+      contactsObserver.stopObserving()
+    }
 
     // swiftlint:disable:next closure_body_length
     Class(ContactNext.self) {
@@ -334,8 +356,8 @@ public class ContactsNextModule: Module {
         try this.thumbnail.get()
       }
 
-      AsyncFunction("presentEditForm") { (this: ContactNext, options: FormOptions?, promise: Promise) in
-        try formDelegate.presentEditForm(for: this, options: options, promise: promise)
+      AsyncFunction("editWithForm") { (this: ContactNext, options: FormOptions?, promise: Promise) in
+        try formDelegate.editWithForm(for: this, options: options, promise: promise)
       }.runOnQueue(.main)
 
       StaticAsyncFunction("getAll") { (queryOptions: ContactQueryOptions?) in
@@ -385,21 +407,6 @@ public class ContactsNextModule: Module {
         }
       }
 
-      StaticAsyncFunction("getPermissionsAsync") { (promise: Promise) in
-        appContext?.permissions?.getPermissionUsingRequesterClass(
-          ContactsPermissionRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
-        )
-      }
-
-      StaticAsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-        appContext?.permissions?.askForPermission(
-          usingRequesterClass: ContactsPermissionRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
-        )
-      }
     }
 
     // swiftlint:disable:next closure_body_length
@@ -510,6 +517,22 @@ public class ContactsNextModule: Module {
           contactFactory: contactFactory
         )
       }
+    }
+
+    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
+      appContext?.permissions?.getPermissionUsingRequesterClass(
+        ContactsPermissionRequester.self,
+        resolve: promise.legacyResolver,
+        reject: promise.legacyRejecter
+      )
+    }
+
+    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
+      appContext?.permissions?.askForPermission(
+        usingRequesterClass: ContactsPermissionRequester.self,
+        resolve: promise.legacyResolver,
+        reject: promise.legacyRejecter
+      )
     }
   }
 }

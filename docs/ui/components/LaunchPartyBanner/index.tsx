@@ -35,21 +35,21 @@ export function LaunchPartyBanner({ currentDateAsString }: Props) {
   return (
     <div
       className={mergeClasses(
-        'asset-shadow relative mb-6 flex justify-between overflow-hidden rounded-lg',
+        'relative mb-6 flex justify-between overflow-hidden rounded-lg asset-shadow',
         'border-2 border-palette-black bg-palette-white dark:border-palette-white dark:bg-palette-black',
-        'max-md-gutters:flex-col max-md-gutters:items-start max-md-gutters:gap-2 max-md-gutters:bg-launch-party-banner-mobile'
+        'max-md:flex-col max-md:items-start max-md:gap-2 max-md:bg-launch-party-banner-mobile'
       )}>
       <div
         className={mergeClasses(
-          'absolute bottom-0 hidden h-[60px] w-full bg-launch-party-banner bg-left-bottom',
-          'max-md-gutters:flex'
+          'absolute bottom-0 hidden h-[60px] w-full bg-launch-party-banner bg-bottom-left',
+          'max-md:flex'
         )}
       />
       <div className="flex items-center gap-4 p-5">
         <div
           className={mergeClasses(
-            'relative z-10 flex size-[44px] shrink-0 select-none justify-center rounded-md border-2 border-default bg-hover text-[24px] leading-[42px] shadow-xs',
-            'max-sm-gutters:hidden'
+            'relative z-10 flex size-11 shrink-0 justify-center rounded-md border-2 border-default bg-hover text-[24px] leading-10.5 shadow-xs select-none',
+            'max-sm:hidden'
           )}>
           <ConfettiPopper />
         </div>
@@ -63,7 +63,7 @@ export function LaunchPartyBanner({ currentDateAsString }: Props) {
       <div
         className={mergeClasses(
           'z-10 flex min-w-[39.5%] shrink-0 items-center justify-end gap-3 bg-launch-party-banner bg-left bg-no-repeat pr-5',
-          'max-md-gutters:mb-4 max-md-gutters:h-[unset] max-md-gutters:min-w-[unset] max-md-gutters:bg-none max-md-gutters:px-5'
+          'max-md:mb-4 max-md:h-[unset] max-md:min-w-[unset] max-md:bg-none max-md:px-5'
         )}>
         <Button
           size="xs"
@@ -72,7 +72,7 @@ export function LaunchPartyBanner({ currentDateAsString }: Props) {
           rightSlot={<ArrowUpRightIcon className="icon-xs text-palette-black opacity-75" />}
           className={mergeClasses(
             'gap-1.5 border-2 border-palette-white bg-launch-party-yellow text-palette-black',
-            'hocus:bg-launch-party-yellow hocus:bg-opacity-80 hocus:backdrop-blur-sm'
+            'hocus:bg-launch-party-yellow/80 hocus:backdrop-blur-sm'
           )}>
           Learn More
         </Button>
@@ -83,7 +83,7 @@ export function LaunchPartyBanner({ currentDateAsString }: Props) {
           }}
           className={mergeClasses(
             'border-2 border-palette-white bg-launch-party-red text-palette-white',
-            'hocus:bg-launch-party-red hocus:bg-opacity-80 hocus:backdrop-blur-sm'
+            'hocus:bg-launch-party-red/80 hocus:backdrop-blur-sm'
           )}
           leftSlot={<XIcon />}
         />

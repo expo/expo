@@ -3,7 +3,7 @@ public final class ModuleRegistry: Sequence {
 
   private weak var appContext: AppContext?
 
-  private var registry: [String: ModuleHolder] = [:]
+  private let registry = Mutex<[String: ModuleHolder]>([:])
   private var overrideDisallowModules = Set<String>()
 
   init(appContext: AppContext) {
@@ -16,16 +16,17 @@ public final class ModuleRegistry: Sequence {
   internal func register(holder: ModuleHolder, preventModuleOverriding: Bool = false) {
     log.info("Registering module '\(holder.name)'")
 
-    // if overriding is disallowed for this module and the module already registered, don't re-register
-    if overrideDisallowModules.contains(holder.name) && registry[holder.name] != nil {
-      log.info("Not re-registering module '\(holder.name)' since a previous registration specified preventModuleOverriding: true")
-      return
-    }
-
     if preventModuleOverriding {
       overrideDisallowModules.insert(holder.name)
     }
-    registry[holder.name] = holder
+    registry.withLock { registry in
+      // if overriding is disallowed for this module and the module already registered, don't re-register
+      if overrideDisallowModules.contains(holder.name) && registry[holder.name] != nil {
+        log.info("Not re-registering module '\(holder.name)' since a previous registration specified preventModuleOverriding: true")
+        return
+      }
+      registry[holder.name] = holder
+    }
   }
 
   /**
@@ -63,45 +64,61 @@ public final class ModuleRegistry: Sequence {
    Unregisters given module from the registry.
    */
   public func unregister(module: AnyModule) {
-    if let index = registry.firstIndex(where: { $1.module === module }) {
-      registry.remove(at: index)
+    registry.withLock { registry in
+      if let index = registry.firstIndex(where: { $1.module === module }) {
+        registry.remove(at: index)
+      }
     }
   }
 
   public func unregister(moduleName: String) {
-    if registry[moduleName] != nil {
-      log.info("Unregistering module '\(moduleName)'")
-      registry[moduleName] = nil
+    registry.withLock { registry in
+      if registry[moduleName] != nil {
+        log.info("Unregistering module '\(moduleName)'")
+        registry[moduleName] = nil
+      }
     }
   }
 
   public func has(moduleWithName moduleName: String) -> Bool {
-    return registry[moduleName] != nil
+    return registry.withLock { registry in
+      return registry[moduleName] != nil
+    }
   }
 
   public func get(moduleHolderForName moduleName: String) -> ModuleHolder? {
-    return registry[moduleName]
+    return registry.withLock { registry in
+      return registry[moduleName]
+    }
   }
 
   public func get(moduleWithName moduleName: String) -> AnyModule? {
-    return registry[moduleName]?.module
+    return registry.withLock { registry in
+      registry[moduleName]?.module
+    }
   }
 
   internal func getModule<ModuleProtocol>(implementing protocol: ModuleProtocol.Type) -> ModuleProtocol? {
-    for holder in registry.values {
-      if let module = holder.module as? ModuleProtocol {
-        return module
+    return registry.withLock { registry in
+      for holder in registry.values {
+        if let module = holder.module as? ModuleProtocol {
+          return module
+        }
       }
+      return nil
     }
-    return nil
   }
 
   public func getModuleNames() -> [String] {
-    return Array(registry.keys)
+    return registry.withLock { registry in
+      return Array(registry.keys)
+    }
   }
 
   public func makeIterator() -> IndexingIterator<[ModuleHolder]> {
-    return registry.map({ $1 }).makeIterator()
+    return registry.withLock { registry in
+      return registry.map({ $1 }).makeIterator()
+    }
   }
 
   internal func post(event: EventName) {
@@ -117,4 +134,5 @@ public final class ModuleRegistry: Sequence {
       holder.post(event: event, payload: payload)
     }
   }
+
 }

@@ -151,7 +151,7 @@ static SEL alwaysAuthorizationSelector;
     }
   }
   
-  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none") };
+  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none"), @"accuracy": [self accuracyAuthorizationString] };
 }
 
 @end

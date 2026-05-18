@@ -1,9 +1,10 @@
-import { AutolinkingCommonArguments, AutolinkingOptions } from './commands/autolinkingOptions';
-import { ModuleDescriptor, SupportedPlatform } from './types';
+import type { AutolinkingCommonArguments, AutolinkingOptions } from './commands/autolinkingOptions';
+import type { ModuleDescriptor, SupportedPlatform } from './types';
 export * from './types';
 export * from './autolinking';
 export * from './platforms';
-export { ResolutionResult, BaseDependencyResolution, DependencyResolution, DependencyResolutionSource, CachedDependenciesLinker, CachedDependenciesSearchOptions, makeCachedDependenciesLinker, scanDependencyResolutionsForPlatform, scanExpoModuleResolutionsForPlatform, } from './dependencies';
+export { type ResolutionResult, type BaseDependencyResolution, type DependencyResolution, type DependencyResolutionSource, type CachedDependenciesLinker, type CachedDependenciesSearchOptions, makeCachedDependenciesLinker, scanDependencyResolutionsForPlatform, scanExpoModuleResolutionsForPlatform, } from './dependencies';
+export * from './utilities';
 /** @deprecated */
 export declare function mergeLinkingOptionsAsync<Options extends Partial<AutolinkingCommonArguments>>(argumentsOptions: Options): Promise<Options & AutolinkingOptions>;
 interface QueryAutolinkingModulesFromProjectParams extends Partial<AutolinkingCommonArguments> {

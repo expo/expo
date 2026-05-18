@@ -206,7 +206,7 @@ const HomeIndex = () => {
             />
           </Pressable>
         </Link.Trigger>
-        <Link.Preview />
+        <Link.Preview style={{ width, height }} />
       </Link>
       <Link href="/zoom-dest-list" asChild>
         <Link.Trigger withAppleZoom>

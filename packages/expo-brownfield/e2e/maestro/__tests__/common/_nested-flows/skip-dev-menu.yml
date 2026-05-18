@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+name: Close dev menu if visible
+---
+# Wait for the dev menu to be visible
+- waitForAnimationToEnd:
+    timeout: 5000
+
+# Common - press 'Continue'
+- runFlow:
+    when:
+      visible:
+        text: "Continue"
+    commands:
+      - tapOn:
+          text: "Continue"
+
+# Android — close button with text "Close"
+- runFlow:
+    when:
+      visible:
+        text: "Close"
+    commands:
+      - tapOn:
+          text: "Close"
+
+# iOS — close button with testID "xmark"
+- runFlow:
+    when:
+      visible:
+        id: xmark
+    commands:
+      - tapOn:
+          id: xmark

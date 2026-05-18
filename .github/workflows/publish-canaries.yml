@@ -1,7 +1,12 @@
 name: Publish Canaries
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+      inputs:
+        skip-ios-prebuilds:
+          description: Skip bundling iOS xcframeworks
+          type: boolean
+          default: false
   pull_request:
     paths:
       - .github/workflows/publish-canaries.yml
@@ -14,37 +19,39 @@ concurrency:
 
 jobs:
   publish-canaries:
-    runs-on: ubuntu-24.04
+    if: github.repository == 'expo/expo'
+    runs-on: macos-15
+    timeout-minutes: 120
     env:
       NODE_AUTH_TOKEN: ${{ secrets.EXPO_BOT_NPM_TOKEN }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          submodules: true
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - name: 🔨 Add bin to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
+          cache: 'pnpm'
           registry-url: https://registry.npmjs.org/
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: 🧶 Install modules in tools dir
-        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
-        run: yarn install --ignore-scripts --frozen-lockfile
-        working-directory: tools
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
       - name: 📦 Publish canaries
-        run: ./bin/expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
+        run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }} ${{ inputs.skip-ios-prebuilds && '--skip-ios-prebuilds' || '' }}
         env:
           FORCE_COLOR: '2'
       - name: 🔔 Notify on Slack

@@ -1,11 +1,11 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import npmPackageArg from 'npm-package-arg';
 import semver from 'semver';
 import semverRangeSubset from 'semver/ranges/subset';
 
-import { BundledNativeModules } from './bundledNativeModules';
+import type { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 import { resolveAllPackageVersionsAsync } from './resolvePackages';
 import * as Log from '../../../log';
@@ -148,7 +148,7 @@ export async function getVersionedDependenciesAsync(
       .filter((dep) => {
         if (parsedPackagesToExclude[dep.packageName]) {
           const { name, raw, rawSpec, type } = parsedPackagesToExclude[dep.packageName];
-          const suggestedRange = combinedKnownPackages[name];
+          const suggestedRange = combinedKnownPackages[name]!;
 
           // If only the package name itself is specified, then we keep it in the exclude list
           if (name === raw) {
@@ -192,7 +192,7 @@ export async function getVersionedDependenciesAsync(
 
 function getFilteredObject(keys: string[], object: Record<string, string>) {
   return keys.reduce<Record<string, string>>((acc, key) => {
-    acc[key] = object[key];
+    acc[key] = object[key]!;
     return acc;
   }, {});
 }
@@ -222,8 +222,8 @@ function findIncorrectDependencies(
   const packages = Object.keys(packageVersions);
   const incorrectDeps: IncorrectDependency[] = [];
   for (const packageName of packages) {
-    const expectedVersionOrRange = bundledNativeModules[packageName];
-    const actualVersion = packageVersions[packageName];
+    const expectedVersionOrRange = bundledNativeModules[packageName]!;
+    const actualVersion = packageVersions[packageName]!;
     if (isDependencyVersionIncorrect(packageName, actualVersion, expectedVersionOrRange)) {
       incorrectDeps.push({
         packageName,

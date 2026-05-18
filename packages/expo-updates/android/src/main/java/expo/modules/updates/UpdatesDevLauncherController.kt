@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
@@ -29,11 +30,15 @@ import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClie
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import expo.modules.updatesinterface.UpdatesStateChangeListener
+import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
@@ -56,7 +61,7 @@ class UpdatesDevLauncherController(
   initialUpdatesConfiguration: UpdatesConfiguration?,
   override val updatesDirectory: File?,
   private val updatesDirectoryException: Exception?
-) : IUpdatesController, UpdatesInterface {
+) : IUpdatesController, UpdatesDevLauncherInterface {
   override val eventManager = NoOpUpdatesEventManager()
   override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
@@ -102,6 +107,7 @@ class UpdatesDevLauncherController(
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
 
   override val reloadScreenManager = ReloadScreenManager()
+  override var reactHost: WeakReference<ReactHost> = WeakReference(null)
 
   override fun onEventListenerStartObserving() {
     // no-op for UpdatesDevLauncherController
@@ -138,13 +144,20 @@ class UpdatesDevLauncherController(
   override val updateUrl: Uri?
     get() = updatesConfiguration?.updateUrl
 
+  override val requestHeaders: Map<String, String>?
+    get() = updatesConfiguration?.requestHeaders
+
+  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
+    return DisabledUpdatesStateChangeSubscription()
+  }
+
   /**
    * Fetch an update using a dynamically generated configuration object (including a potentially
    * different update URL than the one embedded in the build).
    */
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
-    callback: UpdatesInterface.UpdateCallback
+    callback: UpdatesDevLauncherInterface.UpdateCallback
   ) {
     val newUpdatesConfiguration: UpdatesConfiguration
     try {
@@ -175,7 +188,8 @@ class UpdatesDevLauncherController(
       databaseHolder.database,
       fileDownloader,
       updatesDirectory,
-      null
+      null,
+      controllerScope
     )
     controllerScope.launch {
       val progressJob = launch {
@@ -207,6 +221,8 @@ class UpdatesDevLauncherController(
           return@launch
         }
         launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, callback)
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         // reset controller's configuration to what it was before this request
         updatesConfiguration = previousUpdatesConfiguration
@@ -266,7 +282,7 @@ class UpdatesDevLauncherController(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
     fileDownloader: FileDownloader,
-    callback: UpdatesInterface.UpdateCallback
+    callback: UpdatesDevLauncherInterface.UpdateCallback
   ) {
     // ensure that we launch the update we want, even if it isn't the latest one
     val currentSelectionPolicy = selectionPolicy
@@ -294,13 +310,15 @@ class UpdatesDevLauncherController(
     try {
       launcher.launch(databaseHolder.database)
       this@UpdatesDevLauncherController.launcher = launcher
-      callback.onSuccess(object : UpdatesInterface.Update {
+      callback.onSuccess(object : UpdatesDevLauncherInterface.Update {
         override val manifest: JSONObject
           get() = launcher.launchedUpdate!!.manifest
         override val launchAssetPath: String
           get() = launcher.launchAssetFile!!
       })
       runReaper()
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       // reset controller's configuration to what it was before this request
       updatesConfiguration = previousUpdatesConfiguration
@@ -377,7 +395,7 @@ class UpdatesDevLauncherController(
   }
 
   override fun shutdown() {
-    // no-op
+    controllerScope.cancel()
   }
 
   companion object {

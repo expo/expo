@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 
-import { NativeURLListener, URLListener } from './Linking.types';
+import type { NativeURLListener, URLListener } from './Linking.types';
 
 const listeners: { listener: URLListener; nativeListener: NativeURLListener }[] = [];
 
@@ -34,9 +34,11 @@ export default {
       listenerIndex !== -1,
       'Linking.removeEventListener(): cannot remove an unregistered event listener.'
     );
-    const nativeListener = listeners[listenerIndex].nativeListener;
-    window.removeEventListener('message', nativeListener, false);
-    listeners.splice(listenerIndex, 1);
+    const nativeListener = listeners[listenerIndex]?.nativeListener;
+    if (nativeListener != null) {
+      window.removeEventListener('message', nativeListener, false);
+      listeners.splice(listenerIndex, 1);
+    }
   },
 
   async canOpenURL(): Promise<boolean> {

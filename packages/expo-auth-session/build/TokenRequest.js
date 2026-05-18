@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import * as Base64 from './Base64';
 import { TokenError } from './Errors';
 import { requestAsync } from './Fetch';
-import { GrantType, } from './TokenRequest.types';
+import { GrantType } from './TokenRequest.types';
 /**
  * Returns the current time in seconds.
  */
@@ -215,7 +215,10 @@ export class TokenRequest extends Request {
         if (this.extraParams) {
             for (const extra in this.extraParams) {
                 if (extra in this.extraParams && !(extra in queryBody)) {
-                    queryBody[extra] = this.extraParams[extra];
+                    const param = this.extraParams[extra];
+                    if (param != null) {
+                        queryBody[extra] = param;
+                    }
                 }
             }
         }

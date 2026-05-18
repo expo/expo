@@ -20,5 +20,7 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 
 - (nullable id)findModuleWithName:(nonnull NSString *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary;
 
+- (nullable NSURL *)bundleURL;
+
 @end
 

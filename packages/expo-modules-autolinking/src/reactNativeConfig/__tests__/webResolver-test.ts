@@ -1,15 +1,23 @@
 import { vol } from 'memfs';
 
+import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
 import { checkDependencyWebAsync } from '../webResolver';
 
 jest.mock('fs/promises');
+
+const itWithMemoize = (name: string, fn: () => Promise<void>) => {
+  return it(name, async () => {
+    await createMemoizer().withMemoizer(fn);
+    expect(_verifyMemoizerFreed()).toBe(true);
+  });
+};
 
 describe(checkDependencyWebAsync, () => {
   afterEach(() => {
     vol.reset();
   });
 
-  it('should return web config if react-native config found', async () => {
+  itWithMemoize('should return web config if react-native config found', async () => {
     const result = await checkDependencyWebAsync(
       { path: '/app/node_modules/react-native-test', version: '1.0.0' },
       { root: '/app/node_modules/react-native-test' }
@@ -21,7 +29,7 @@ describe(checkDependencyWebAsync, () => {
     `);
   });
 
-  it('should return web config if heuristic matches a native module', async () => {
+  itWithMemoize('should return web config if heuristic matches a native module', async () => {
     vol.fromJSON({
       '/app/node_modules/react-native-maps/package.json': JSON.stringify({
         name: 'react-native-maps',
@@ -44,7 +52,7 @@ describe(checkDependencyWebAsync, () => {
     `);
   });
 
-  it('should return null if heuristic does not match a native module', async () => {
+  itWithMemoize('should return null if heuristic does not match a native module', async () => {
     vol.fromJSON({
       '/app/node_modules/react-native-maps/package.json': JSON.stringify({
         name: 'react-native-maps',

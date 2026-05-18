@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  createNavigatorFactory,
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
-  useNavigationBuilder,
-} from '@react-navigation/native';
-import React, { use, useCallback, useMemo } from 'react';
+import React, { use, useCallback, useMemo, useRef } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
@@ -18,10 +11,17 @@ import type {
   NativeTabOptions,
   NativeTabsProps,
   NativeTabsViewTabItem,
+  OnTabChangeEventPayload,
 } from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import { getPathFromState } from '../link/linking';
+import type {
+  ParamListBase,
+  TabNavigationState,
+  TabRouterOptions,
+} from '../react-navigation/native';
+import { createNavigatorFactory, useNavigationBuilder } from '../react-navigation/native';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
@@ -92,19 +92,19 @@ export function NativeTabsNavigator({
       routes
         // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
         // If it is not defined, then it was not specified, and we should hide the tab.
-        .filter((route) => descriptors[route.key].options?.hidden !== true)
+        .filter((route) => descriptors[route.key]!.options?.hidden !== true)
         .map(
           (route): NativeTabsViewTabItem => ({
-            options: descriptors[route.key].options,
+            options: descriptors[route.key]!.options,
             routeKey: route.key,
             name: route.name,
-            contentRenderer: () => descriptors[route.key].render(),
+            contentRenderer: () => descriptors[route.key]!.render(),
           })
         ),
     [routes, descriptors]
   );
   const visibleFocusedTabIndex = useMemo(
-    () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key),
+    () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index]!.key),
     [visibleTabs, routes, state.index]
   );
   const visibleTabsKeys = useMemo(
@@ -120,25 +120,30 @@ export function NativeTabsNavigator({
     }
   }
   const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
+  const provenanceRef = useRef(0);
 
   const onTabChange = useCallback(
-    (tabKey: string) => {
-      const descriptor = descriptors[tabKey];
-      const route = descriptor.route;
-      navigation.emit({
-        type: 'tabPress',
-        target: tabKey,
-        data: {
-          __internalTabsType: 'native',
-        },
-      });
-      navigation.dispatch({
-        type: 'JUMP_TO',
-        target: state.key,
-        payload: {
-          name: route.name,
-        },
-      });
+    ({ selectedKey, provenance, isNativeAction }: OnTabChangeEventPayload) => {
+      // We should always send the last provenance we got from native side
+      provenanceRef.current = provenance;
+
+      if (isNativeAction) {
+        const { route } = descriptors[selectedKey]!;
+        navigation.emit({
+          type: 'tabPress',
+          target: selectedKey,
+          data: {
+            __internalTabsType: 'native',
+          },
+        });
+        navigation.dispatch({
+          type: 'JUMP_TO',
+          target: state.key,
+          payload: {
+            name: route.name,
+          },
+        });
+      }
     },
     [descriptors, navigation, state.key]
   );
@@ -150,6 +155,10 @@ export function NativeTabsNavigator({
           {...rest}
           key={visibleTabsKeys}
           focusedIndex={focusedIndex}
+          // Provenance should only be sent with updates, and updates
+          // on JS side are only triggered by rerender, so passing ref
+          // here is ok.
+          provenance={provenanceRef.current}
           tabs={visibleTabs}
           onTabChange={onTabChange}
         />

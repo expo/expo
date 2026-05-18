@@ -2,7 +2,6 @@
 
 #include "JNIFunctionBody.h"
 #include "Exceptions.h"
-#include "JavaReferencesCache.h"
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;

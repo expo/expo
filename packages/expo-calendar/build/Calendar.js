@@ -1,8 +1,8 @@
-import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate } from './utils';
-export { PermissionStatus, } from 'expo-modules-core';
 // @docsMissing
 /**
  * @platform ios
@@ -71,6 +71,7 @@ export var CalendarDialogResultActions;
 })(CalendarDialogResultActions || (CalendarDialogResultActions = {}));
 /**
  * Launches the calendar UI provided by the OS to create a new event.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.addEventWithForm()` from `expo-calendar/next` instead.
  * @param eventData A map of details for the event to be created.
  * @param presentationOptions Configuration that influences how the calendar UI is presented.
  * @return A promise which resolves with information about the dialog result.
@@ -90,6 +91,7 @@ export async function createEventInCalendarAsync(eventData = {}, presentationOpt
 }
 /**
  * Launches the calendar UI provided by the OS to preview an event.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.openInCalendar()` from `expo-calendar/next` instead.
  * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
@@ -105,6 +107,7 @@ export async function openEventInCalendarAsync(params, presentationOptions) {
 }
 /**
  * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.editInCalendar()` from `expo-calendar/next` instead.
  * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
@@ -121,7 +124,7 @@ export async function editEventInCalendarAsync(params, presentationOptions) {
 // @needsAudit
 /**
  * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
- *
+ * @deprecated This legacy `expo-calendar` API is deprecated. This feature will be removed in `expo-calendar/next`.
  * @returns Async `boolean`, indicating whether the Calendar API is available on the current device.
  * Currently, this resolves `true` on iOS and Android only.
  */
@@ -131,6 +134,7 @@ export async function isAvailableAsync() {
 // @needsAudit
 /**
  * Gets an array of calendar objects with details about the different calendars stored on the device.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `getCalendars()` from `expo-calendar/next` instead.
  * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
  * a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in
  * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
@@ -149,6 +153,7 @@ export async function getCalendarsAsync(entityType) {
 // @needsAudit
 /**
  * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `createCalendar()` from `expo-calendar/next` instead.
  * @param details A map of details for the calendar to be created.
  * @return A string representing the ID of the newly created calendar.
  */
@@ -164,6 +169,7 @@ export async function createCalendarAsync(details = {}) {
 /**
  * Updates the provided details of an existing calendar stored on the device. To remove a property,
  * explicitly set it to `null` in `details`.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.update()` from `expo-calendar/next` instead.
  * @param id ID of the calendar to update.
  * @param details A map of properties to be updated.
  */
@@ -204,6 +210,7 @@ export async function updateCalendarAsync(id, details = {}) {
 // @needsAudit
 /**
  * Deletes an existing calendar and all associated events/reminders/attendees from the device. __Use with caution.__
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.delete()` from `expo-calendar/next` instead.
  * @param id ID of the calendar to delete.
  */
 export async function deleteCalendarAsync(id) {
@@ -221,6 +228,7 @@ export async function deleteCalendarAsync(id) {
  * slightly different behavior per-platform - on iOS, all events that overlap at all with the
  * `[startDate, endDate]` interval are returned, whereas on Android, only events that begin on or
  * after the `startDate` and end on or before the `endDate` will be returned.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `listEvents()` from `expo-calendar/next` instead.
  * @param calendarIds Array of IDs of calendars to search for events in.
  * @param startDate Beginning of time period to search for events in.
  * @param endDate End of time period to search for events in.
@@ -246,6 +254,7 @@ export async function getEventsAsync(calendarIds, startDate, endDate) {
  * Returns a specific event selected by ID. If a specific instance of a recurring event is desired,
  * the start date of this instance must also be provided, as instances of recurring events do not
  * have their own unique and stable IDs on either iOS or Android.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `ExpoCalendarEvent.get()` from `expo-calendar/next` instead.
  * @param id ID of the event to return.
  * @param recurringEventOptions A map of options for recurring events.
  * @return A promise which fulfils with an [`Event`](#event) object matching the provided criteria, if one exists.
@@ -267,6 +276,7 @@ export async function getEventAsync(id, recurringEventOptions = {}) {
 // @needsAudit
 /**
  * Creates a new event on the specified calendar.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.createEvent()` from `expo-calendar/next` instead.
  * @param calendarId ID of the calendar to create this event in.
  * @param eventData A map of details for the event to be created.
  * @return A promise which fulfils with a string representing the ID of the newly created event.
@@ -301,6 +311,7 @@ export async function createEventAsync(calendarId, eventData = {}) {
 /**
  * Updates the provided details of an existing calendar stored on the device. To remove a property,
  * explicitly set it to `null` in `details`.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.update()` from `expo-calendar/next` instead.
  * @param id ID of the event to be updated.
  * @param details A map of properties to be updated.
  * @param recurringEventOptions A map of options for recurring events.
@@ -329,6 +340,7 @@ export async function updateEventAsync(id, details = {}, recurringEventOptions =
 // @needsAudit
 /**
  * Deletes an existing event from the device. Use with caution.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.delete()` from `expo-calendar/next` instead.
  * @param id ID of the event to be deleted.
  * @param recurringEventOptions A map of options for recurring events.
  */
@@ -345,6 +357,7 @@ export async function deleteEventAsync(id, recurringEventOptions = {}) {
 // @needsAudit
 /**
  * Gets all attendees for a given event (or instance of a recurring event).
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.getAttendees()` from `expo-calendar/next` instead.
  * @param id ID of the event to return attendees for.
  * @param recurringEventOptions A map of options for recurring events.
  * @return A promise which fulfils with an array of [`Attendee`](#attendee) associated with the
@@ -366,6 +379,7 @@ export async function getAttendeesForEventAsync(id, recurringEventOptions = {}) 
 /**
  * Creates a new attendee record and adds it to the specified event. Note that if `eventId` specifies
  * a recurring event, this will add the attendee to every instance of the event.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.createAttendee()` from `expo-calendar/next` instead.
  * @param eventId ID of the event to add this attendee to.
  * @param details A map of details for the attendee to be created.
  * @return A string representing the ID of the newly created attendee record.
@@ -396,6 +410,7 @@ export async function createAttendeeAsync(eventId, details = {}) {
 // @needsAudit
 /**
  * Updates an existing attendee record. To remove a property, explicitly set it to `null` in `details`.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `attendee.update()` from `expo-calendar/next` instead.
  * @param id ID of the attendee record to be updated.
  * @param details A map of properties to be updated.
  * @platform android
@@ -413,6 +428,7 @@ export async function updateAttendeeAsync(id, details = {}) {
 // @needsAudit
 /**
  * Gets an instance of the default calendar object.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `getDefaultCalendarSync()` from `expo-calendar/next` instead.
  * @return A promise resolving to the [Calendar](#calendar) object that is the user's default calendar.
  * @platform ios
  */
@@ -425,6 +441,7 @@ export async function getDefaultCalendarAsync() {
 // @needsAudit
 /**
  * Deletes an existing attendee record from the device. __Use with caution.__
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `attendee.delete()` from `expo-calendar/next` instead.
  * @param id ID of the attendee to delete.
  * @platform android
  */
@@ -442,6 +459,7 @@ export async function deleteAttendeeAsync(id) {
  * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
  * returns all reminders that overlap at all with the [startDate, endDate] interval - i.e. all reminders
  * that end after the `startDate` or begin before the `endDate`.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.listReminders()` from `expo-calendar/next` instead.
  * @param calendarIds Array of IDs of calendars to search for reminders in.
  * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`.
  * @param startDate Beginning of time period to search for reminders in. Required if `status` is defined.
@@ -469,6 +487,7 @@ export async function getRemindersAsync(calendarIds, status, startDate, endDate)
 // @needsAudit
 /**
  * Returns a specific reminder selected by ID.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `ExpoCalendarReminder.get()` from `expo-calendar/next` instead.
  * @param id ID of the reminder to return.
  * @return A promise which fulfils with a [`Reminder`](#reminder) matching the provided ID, if one exists.
  * @platform ios
@@ -485,6 +504,7 @@ export async function getReminderAsync(id) {
 // @needsAudit
 /**
  * Creates a new reminder on the specified calendar.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.createReminder()` from `expo-calendar/next` instead.
  * @param calendarId ID of the calendar to create this reminder in (or `null` to add the calendar to
  * the OS-specified default calendar for reminders).
  * @param reminder A map of details for the reminder to be created
@@ -506,6 +526,7 @@ export async function createReminderAsync(calendarId, reminder = {}) {
 /**
  * Updates the provided details of an existing reminder stored on the device. To remove a property,
  * explicitly set it to `null` in `details`.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `reminder.update()` from `expo-calendar/next` instead.
  * @param id ID of the reminder to be updated.
  * @param details A map of properties to be updated.
  * @platform ios
@@ -526,6 +547,7 @@ export async function updateReminderAsync(id, details = {}) {
 // @needsAudit
 /**
  * Deletes an existing reminder from the device. __Use with caution.__
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `reminder.delete()` from `expo-calendar/next` instead.
  * @param id ID of the reminder to be deleted.
  * @platform ios
  */
@@ -540,6 +562,7 @@ export async function deleteReminderAsync(id) {
 }
 // @needsAudit @docsMissing
 /**
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `getSourcesSync()` from `expo-calendar/next` instead.
  * @return A promise which fulfils with an array of [`Source`](#source) objects all sources for
  * calendars stored on the device.
  * @platform ios
@@ -553,6 +576,7 @@ export async function getSourcesAsync() {
 // @needsAudit
 /**
  * Returns a specific source selected by ID.
+ * @deprecated This legacy `expo-calendar` API is deprecated. This feature will be removed in `expo-calendar/next`.
  * @param id ID of the source to return.
  * @return A promise which fulfils with an array of [`Source`](#source) object matching the provided
  * ID, if one exists.
@@ -572,7 +596,7 @@ export async function getSourceAsync(id) {
  * Sends an intent to open the specified event in the OS Calendar app.
  * @param id ID of the event to open.
  * @platform android
- * @deprecated Use [`openEventInCalendarAsync`](#openeventincalendarasyncparams-presentationoptions) instead.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.openInCalendar()` from `expo-calendar/next` instead.
  * @header systemProvidedUI
  */
 export function openEventInCalendar(id) {
@@ -587,7 +611,7 @@ export function openEventInCalendar(id) {
 } // Android
 // @needsAudit
 /**
- * @deprecated Use [`requestCalendarPermissionsAsync()`](#calendarrequestcalendarpermissionsasync) instead.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `requestCalendarPermissions()` from `expo-calendar/next` instead.
  */
 export async function requestPermissionsAsync() {
     console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');
@@ -596,6 +620,7 @@ export async function requestPermissionsAsync() {
 // @needsAudit
 /**
  * Checks user's permissions for accessing user's calendars.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `getCalendarPermissions()` from `expo-calendar/next` instead.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
 export async function getCalendarPermissionsAsync() {
@@ -607,6 +632,7 @@ export async function getCalendarPermissionsAsync() {
 // @needsAudit
 /**
  * Checks user's permissions for accessing user's reminders.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `getRemindersPermissions()` from `expo-calendar/next` instead.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  * @platform ios
  */
@@ -619,6 +645,7 @@ export async function getRemindersPermissionsAsync() {
 // @needsAudit
 /**
  * Asks the user to grant permissions for accessing user's calendars.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `requestCalendarPermissions()` from `expo-calendar/next` instead.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
 export async function requestCalendarPermissionsAsync() {
@@ -630,6 +657,7 @@ export async function requestCalendarPermissionsAsync() {
 // @needsAudit
 /**
  * Asks the user to grant permissions for accessing user's reminders.
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `requestRemindersPermissions()` from `expo-calendar/next` instead.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  * @platform ios
  */
@@ -644,7 +672,7 @@ export async function requestRemindersPermissionsAsync() {
  * Check or request permissions to access the calendar.
  * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
  * with the permissions.
- *
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `useCalendarPermissions()` from `expo-calendar/next` instead.
  * @example
  * ```ts
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
@@ -659,7 +687,7 @@ export const useCalendarPermissions = createPermissionHook({
  * Check or request permissions to access reminders.
  * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact
  * with the permissions.
- *
+ * @deprecated This legacy `expo-calendar` API is deprecated. Use `useRemindersPermissions()` from `expo-calendar/next` instead.
  * @example
  * ```ts
  * const [status, requestPermission] = Calendar.useRemindersPermissions();

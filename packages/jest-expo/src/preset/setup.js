@@ -127,7 +127,7 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
 jest.mock('expo/src/async-require/messageSocket', () => undefined);
 
 try {
-  jest.mock('expo-file-system', () => ({
+  jest.mock('expo-file-system/legacy', () => ({
     downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
     getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
     readAsStringAsync: jest.fn(() => Promise.resolve()),
@@ -229,6 +229,7 @@ function attemptLookup(moduleName) {
   }
 }
 
+// TODO(@kitten): This is an invalid dependency chain
 jest.doMock('expo-modules-core', () => {
   const ExpoModulesCore = jest.requireActual('expo-modules-core');
 
@@ -266,7 +267,14 @@ jest.doMock('expo-modules-core', () => {
 
     const nativeModule = new NativeModule();
     for (const [key, value] of Object.entries(nativeModuleMock)) {
-      nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
+      if (typeof value === 'function') {
+        // Don't wrap classes with jest.fn() as it destroys the prototype chain
+        // needed for `extends` (e.g. File extends ExpoFileSystem.FileSystemFile).
+        const isClass = Object.getOwnPropertyNames(value.prototype ?? {}).length > 1;
+        nativeModule[key] = isClass ? value : jest.fn(value);
+      } else {
+        nativeModule[key] = value;
+      }
     }
     return nativeModule;
   }
@@ -309,6 +317,22 @@ jest.doMock('expo-modules-core', () => {
 
 // Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
 require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
+
+// `expo/fetch` defines `class FetchResponse extends ExpoFetchModule.NativeResponse`
+// at module load — provide stub classes so tests that transitively import fetch
+// don't need to mock `ExpoFetchModule` themselves.
+globalThis.expo.modules.ExpoFetchModule = {
+  NativeRequest: class extends globalThis.expo.SharedObject {
+    start() {}
+    cancel() {}
+  },
+  NativeResponse: class extends globalThis.expo.SharedObject {
+    startStreaming() {}
+    cancelStreaming() {}
+    arrayBuffer() {}
+    text() {}
+  },
+};
 
 jest.doMock('expo/src/winter/FormData', () => ({
   // The `installFormDataPatch` function is for native runtime only,

@@ -3,19 +3,29 @@ title: Slider
 description: A SwiftUI Slider component for selecting values from a range.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios']
+platforms: ['ios', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Slider matches the official SwiftUI [Slider API](https://developer.apple.com/documentation/swiftui/slider) and allows selecting values from a bounded range.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/slider/ios-light.webp"
+  darkSource="/static/images/expo-ui/slider/ios-dark.webp"
+  alt="Slider with brightness icons on either side, in a Form section"
+/>
 
 ## Installation
 
 <APIInstallSection />
 
 ## Usage
+
+> **Note:** `Slider` is a flexible-width component, it expands to fill available horizontal space and does not have an intrinsic width. When using `matchContents` on the `Host`, you should apply a [`frame`](modifiers/#frameparams) modifier on the `Slider` to give it an explicit width. Alternatively, give the `Host` an explicit size using `style` (for example, `style={{ width: 300 }}` or `style={{ flex: 1 }}`), or place the `Slider` inside a SwiftUI container like `Form` that provides width constraints.
 
 ### Basic slider
 
@@ -27,7 +37,7 @@ export default function BasicSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Slider value={value} onValueChange={setValue} />
     </Host>
   );
@@ -44,7 +54,7 @@ export default function CustomRangeSliderExample() {
   const [value, setValue] = useState(50);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Slider value={value} min={0} max={100} onValueChange={setValue} />
     </Host>
   );
@@ -63,7 +73,7 @@ export default function SteppedSliderExample() {
   const [value, setValue] = useState(0);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Slider value={value} min={0} max={100} step={10} onValueChange={setValue} />
     </Host>
   );
@@ -82,7 +92,7 @@ export default function LabeledSliderExample() {
   const [value, setValue] = useState(50);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Slider
         value={value}
         min={0}

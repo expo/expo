@@ -104,7 +104,10 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
         const sorted = Object.keys(deps)
             .sort((a, b) => a.localeCompare(b, 'en'))
             .reduce((res, key) => {
-            res[key] = deps[key];
+            const dep = deps[key];
+            if (dep != null) {
+                res[key] = dep;
+            }
             return res;
         }, {});
         return sorted;

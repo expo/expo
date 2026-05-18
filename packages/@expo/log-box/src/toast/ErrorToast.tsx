@@ -9,7 +9,8 @@ import React, { useEffect, useCallback, useMemo } from 'react';
 
 import styles from './ErrorToast.module.css';
 import * as LogBoxData from '../Data/LogBoxData';
-import { LogBoxLog, useLogs } from '../Data/LogBoxLog';
+import type { LogBoxLog } from '../Data/LogBoxLog';
+import { useLogs } from '../Data/LogBoxLog';
 import { LogBoxMessage } from '../overlay/Message';
 import { parseUnexpectedThrownValue } from '../utils/parseUnexpectedThrownValue';
 import '../overlay/Overlay.module.css';
@@ -46,14 +47,16 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
     [logs]
   );
 
+  const lastError = errors[errors.length - 1];
+
   return (
     <div className={styles.container}>
-      {errors.length > 0 && (
+      {lastError != null && (
         <ErrorToast
-          log={errors[errors.length - 1]}
+          log={lastError}
           level="error"
           totalLogCount={errors.length}
-          onPressOpen={() => openLog(errors[errors.length - 1])}
+          onPressOpen={() => openLog(lastError)}
           onPressDismiss={onDismissErrors}
         />
       )}

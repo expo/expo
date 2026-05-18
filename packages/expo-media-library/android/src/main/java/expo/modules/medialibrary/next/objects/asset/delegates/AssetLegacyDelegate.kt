@@ -23,9 +23,14 @@ import expo.modules.medialibrary.next.extensions.safeCopy
 import expo.modules.medialibrary.next.extensions.safeMove
 import expo.modules.medialibrary.next.extensions.scanFile
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
+import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
+import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
+import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetBucketId
+import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
@@ -45,6 +50,8 @@ class AssetLegacyDelegate(
   contentUri: Uri,
   val assetDeleter: AssetDeleter,
   val systemPermissionsDelegate: SystemPermissionsDelegate,
+  val assetFactory: AssetFactory,
+  val assetMover: AssetMover,
   context: Context
 ) : AssetDelegate {
   private val contextRef = WeakReference(context)
@@ -145,6 +152,14 @@ class AssetLegacyDelegate(
       ?: MimeType.from(getUri())
   }
 
+  override suspend fun getAlbums(): List<Album> {
+    val albumId = contentResolver.queryAssetBucketId(contentUri)?.toString() ?: return emptyList()
+    if (contentResolver.queryAlbumTitle(albumId) == null) {
+      return emptyList()
+    }
+    return listOf(Album(albumId, assetDeleter, assetFactory, assetMover, contextRef.getOrThrow()))
+  }
+
   override suspend fun getLocation(): Location? {
     systemPermissionsDelegate.requireReadPermissions()
     return contentResolver.openInputStream(contentUri)?.use { stream ->
@@ -199,7 +214,6 @@ class AssetLegacyDelegate(
     if (uri == null) {
       throw AssetCouldNotBeCreated("Could not create a new asset while copying the old one")
     }
-    val newAssetDelegate = AssetLegacyDelegate(contentUri, assetDeleter, systemPermissionsDelegate, contextRef.getOrThrow())
-    return@withContext Asset(newAssetDelegate)
+    return@withContext assetFactory.create(uri)
   }
 }

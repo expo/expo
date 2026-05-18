@@ -1,5 +1,5 @@
 import type { ExpoConfig } from 'expo/config';
-type ConfigPluginProps = {
+export type ConfigPluginProps = {
     supportsRTL?: boolean;
     forcesRTL?: boolean;
     allowDynamicLocaleChangesAndroid?: boolean;

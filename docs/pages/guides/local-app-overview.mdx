@@ -9,6 +9,7 @@ searchPosition: 1
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
 You can leverage your local development environment to build your app locally by utilizing Android Studio and Xcode. This build process can be done for both debug and release builds. This page provides an overview on different ways to build your app locally using your own machine and references to other guides that might be necessary in this workflow.
 
@@ -25,12 +26,18 @@ There are different scenarios when you want to build your app on your developer 
 
 > **Note**: Building your app locally complements EAS Build. You can keep using the build service for cloud automation and fall back to local builds for development.
 
-## Prerequisites
-
-You need to install and set up Android Studio and Xcode to compile and run Android and iOS projects on your local machine. See the following guides on how to set up these tools:
-
-- [Android Studio](/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local#set-up-an-android-device-with-a-development-build)
-- [Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-an-ios-device-with-a-development-build)
+<Prerequisites>
+  <Requirement title="Android Studio">
+    [Set up Android
+    Studio](/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local#set-up-an-android-device-with-a-development-build)
+    to compile and run Android projects on your local machine.
+  </Requirement>
+  <Requirement title="Xcode">
+    [Set up
+    Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-an-ios-device-with-a-development-build)
+    to compile and run iOS projects on your local machine.
+  </Requirement>
+</Prerequisites>
 
 ## Creating your debug build locally
 
@@ -67,7 +74,7 @@ You can accelerate your local development by caching and reusing builds from a p
 
 ## Prebuilt Expo Modules for Android
 
-SDK 53 and later ship with prebuilt Expo Modules for Android that reduce the work Gradle performs on each build. You can continue using the defaults or selectively opt out when you need to modify a module's source code.
+Expo ships prebuilt Expo Modules for Android that reduce the work Gradle performs on each build. You can continue using the defaults or selectively opt out when you need to modify a module's source code.
 
 <BoxLink
   title="Prebuilt Expo Modules for Android"

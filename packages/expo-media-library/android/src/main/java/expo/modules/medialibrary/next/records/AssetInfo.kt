@@ -4,7 +4,9 @@ import android.net.Uri
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class AssetInfo(
   @Field val id: Uri,
   @Field val creationTime: Long?,

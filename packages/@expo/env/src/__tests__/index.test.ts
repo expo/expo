@@ -3,10 +3,10 @@ import console from 'node:console';
 import process from 'node:process';
 import { stripVTControlCharacters } from 'node:util';
 
+import type { loadEnvFiles } from '../';
 import {
   getEnvFiles,
   LOADED_ENV_NAME,
-  loadEnvFiles,
   loadProjectEnv,
   logLoadedEnv,
   parseEnvFiles,
@@ -333,7 +333,7 @@ describe(loadProjectEnv, () => {
 
     expect(loadProjectEnv('/', { force: true })).toEqual({
       result: 'loaded',
-      env: { FOO: 'previous' },
+      env: { FOO: 'bar' },
       files: ['/.env'],
       loaded: [],
     });

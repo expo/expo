@@ -1,5 +1,6 @@
 import ExpoModulesCore
 import EventKit
+internal import React
 
 public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
   private let eventStore: EKEventStore
@@ -26,7 +27,6 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
     if Bundle.main.object(forInfoDictionaryKey: description) != nil {
       permissions = EKEventStore.authorizationStatus(for: .reminder)
     } else {
-      RCTFatal(MissingCalendarPListValueException(description))
       permissions = .denied
     }
 

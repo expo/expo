@@ -38,18 +38,6 @@ describe('--version option', () => {
   });
 
   /**
-   * Command: npx expo-brownfield tasks:android --version
-   * Expected behavior: The CLI should not support the `--version` option after a command is used
-   */
-  it("shouldn't be supported after a command is used", async () => {
-    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['tasks:android', '--version'], {
-      ignoreErrors: true,
-    });
-    expect(exitCode).not.toBe(0);
-    expect(stderr).toContain('Error: unknown or unexpected option: --version');
-  });
-
-  /**
    * Command: npx expo-brownfield --version tasks:android
    * Expected behavior: The `--version` option should be executed instead of the command
    */

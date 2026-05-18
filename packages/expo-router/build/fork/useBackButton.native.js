@@ -34,6 +34,9 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useBackButton = useBackButton;
+/**
+ * This file is unchanged, except for removing eslint comments
+ */
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 function useBackButton(ref) {

@@ -11,29 +11,24 @@ final class ListProps: UIBaseViewProps {
 struct ListView: ExpoSwiftUI.View {
   @ObservedObject var props: ListProps
   @State private var selection = Set<AnyHashable>()
-  @State private var prevSelection = Set<AnyHashable>()
-
-  init(props: ListProps) {
-    self.props = props
-  }
 
   var body: some View {
     List(selection: $selection) {
       Children()
     }
+    .onAppear {
+      selection = Self.getHashableSetFromEither(props.selection)
+    }
+    .onChange(of: props.selection) { newValue in
+      selection = Self.getHashableSetFromEither(newValue)
+    }
     .onChange(of: selection) { newSelection in
       handleSelectionChange(selection: newSelection)
-    }
-    .onReceive(props.selection.publisher) { newValue in
-      let hashableSet = getHashableSetFromEither(newValue)
-      if prevSelection == hashableSet { return }
-      selection = hashableSet
-      prevSelection = hashableSet
     }
   }
 
   func handleSelectionChange(selection: Set<AnyHashable>) {
-    let propsSelection = getHashableSetFromEither(props.selection)
+    let propsSelection = Self.getHashableSetFromEither(props.selection)
     if propsSelection == selection { return }
 
     let selectionArray: [Any] = selection.compactMap { value in
@@ -47,7 +42,7 @@ struct ListView: ExpoSwiftUI.View {
     props.onSelectionChange(["selection": selectionArray])
   }
 
-  private func getHashableSetFromEither(_ array: [Either<String, Double>]?) -> Set<AnyHashable> {
+  private static func getHashableSetFromEither(_ array: [Either<String, Double>]?) -> Set<AnyHashable> {
     guard let array else { return Set() }
     var result = Set<AnyHashable>()
     for item in array {

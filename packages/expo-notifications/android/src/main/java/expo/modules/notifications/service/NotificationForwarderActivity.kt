@@ -3,6 +3,7 @@ package expo.modules.notifications.service
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import expo.modules.notifications.BuildConfig
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 
@@ -14,11 +15,19 @@ import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 class NotificationForwarderActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val broadcastIntent =
-      NotificationsService.createNotificationResponseBroadcastIntent(applicationContext, intent)
-    val notificationResponse = NotificationsService.getNotificationResponseFromBroadcastIntent(intent)
-    ExpoHandlingDelegate.openAppToForeground(this, notificationResponse)
-    sendBroadcast(broadcastIntent)
+    try {
+      val broadcastIntent =
+        NotificationsService.createNotificationResponseBroadcastIntent(applicationContext, intent)
+      val notificationResponse = NotificationsService.getNotificationResponseFromBroadcastIntent(intent)
+      ExpoHandlingDelegate.openAppToForeground(this, notificationResponse)
+      sendBroadcast(broadcastIntent)
+    } catch (e: IllegalArgumentException) {
+      Log.e("expo-notifications", "Failed to handle notification response: could not recover notification data from intent extras. This may happen on some Android versions. Opening app to foreground.", e)
+      // Open the app anyway so the user isn't stuck
+      packageManager.getLaunchIntentForPackage(packageName)?.let {
+        startActivity(it)
+      }
+    }
     finish()
   }
 

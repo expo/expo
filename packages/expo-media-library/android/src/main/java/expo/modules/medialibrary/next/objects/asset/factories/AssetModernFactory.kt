@@ -14,6 +14,7 @@ import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetModernDelegate
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
+import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,7 @@ import java.lang.ref.WeakReference
 @RequiresApi(Build.VERSION_CODES.R)
 class AssetModernFactory(
   val assetDeleter: AssetDeleter,
+  val assetMover: AssetMover,
   val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate,
   context: Context
 ) : AssetFactory {
@@ -38,7 +40,9 @@ class AssetModernFactory(
     return AssetModernDelegate(
       contentUri,
       assetDeleter,
+      assetMover,
       mediaStorePermissionsDelegate,
+      this,
       contextRef.getOrThrow()
     )
   }

@@ -49,8 +49,11 @@ class MainRuntime(
    * Runs a code block on the JavaScript thread.
    */
   override fun schedule(block: () -> Unit) {
-    // TODO(@lukmccall): start using RuntimeScheduler
-    reactContext?.runOnJSQueueThread(block)
+    if (isJSIContextInitialized()) {
+      jsiContext.scheduleOnJSThread(block)
+    } else {
+      reactContext?.runOnJSQueueThread(block)
+    }
   }
 
   /**

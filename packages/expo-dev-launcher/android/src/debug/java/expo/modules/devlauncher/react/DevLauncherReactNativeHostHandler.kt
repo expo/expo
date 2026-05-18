@@ -9,6 +9,7 @@ import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.DevLauncherController
 import java.lang.ref.WeakReference
 import expo.modules.updatesinterface.UpdatesControllerRegistry
+import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,7 +46,7 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
     CoroutineScope(Dispatchers.Main).launch {
       UpdatesControllerRegistry.controller?.get()?.let {
         DevLauncherController.instance.updatesInterface = it
-        it.updatesInterfaceCallbacks = WeakReference(DevLauncherController.instance)
+        (it as UpdatesDevLauncherInterface).updatesInterfaceCallbacks = WeakReference(DevLauncherController.instance)
       }
     }
   }

@@ -1,4 +1,5 @@
-import { ConfigPlugin, WarningAggregator, withEntitlementsPlist } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { WarningAggregator, withEntitlementsPlist } from '@expo/config-plugins';
 
 import { createLegacyPlugin } from './createLegacyPlugin';
 

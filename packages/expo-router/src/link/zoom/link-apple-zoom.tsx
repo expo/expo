@@ -2,7 +2,7 @@
 
 import { Children, use, useEffect, type PropsWithChildren } from 'react';
 
-import { isZoomTransitionEnabled } from './ZoomTransitionEnabler.ios';
+import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
 import { ZoomTransitionSourceContext } from './zoom-transition-context';
 import { Slot } from '../../ui/Slot';
 import { LinkZoomTransitionSource } from '../preview/native';

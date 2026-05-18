@@ -43,7 +43,7 @@ export type APISectionTypesProps = {
 const COLLAPSED_LITERAL_MESSAGE = 'Acceptable values are: See description for available values.';
 
 const renderTypeDeclarationTable = (
-  { children, indexSignature, comment }: TypeDeclarationContentData,
+  { children, indexSignatures, comment }: TypeDeclarationContentData,
   sdkVersion: string,
   index?: number
 ) => (
@@ -59,7 +59,11 @@ const renderTypeDeclarationTable = (
       <APIParamsTableHeadRow mainCellLabel="Property" />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
-        {indexSignature?.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+        {indexSignatures?.map(sig =>
+          sig.parameters?.map(param =>
+            renderTypePropertyRow({ ...param, type: sig.type ?? param.type }, sdkVersion)
+          )
+        )}
       </tbody>
     </Table>
   </Fragment>
@@ -78,7 +82,7 @@ const renderTypeMethodEntry = (
 
   const content = (
     <>
-      <RawH4 className="!mb-3">
+      <RawH4 className="mb-3!">
         <MONOSPACE>
           {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
           {` => `}
@@ -101,7 +105,7 @@ const renderTypeMethodEntry = (
     return (
       <APIBox
         key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
-        className="!mb-0">
+        className="mb-0!">
         {content}
       </APIBox>
     );
@@ -174,7 +178,7 @@ const renderType = (
   const defaultValueElement = defaultValue ? (
     <CALLOUT className="flex items-start gap-1">
       <span className={STYLES_SECONDARY}>Default:</span>
-      <CODE className="!text-[90%]">{defaultValue}</CODE>
+      <CODE className="text-[90%]!">{defaultValue}</CODE>
     </CALLOUT>
   ) : undefined;
 
@@ -193,7 +197,8 @@ const renderType = (
           includePlatforms={false}
           afterContent={defaultValueElement}
         />
-        {declaration.children && renderTypeDeclarationTable(declaration, sdkVersion)}
+        {(declaration.children || declaration.indexSignatures) &&
+          renderTypeDeclarationTable(declaration, sdkVersion)}
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />
@@ -210,7 +215,7 @@ const renderType = (
               'mt-3.5 flex flex-row items-start gap-2'
             )}>
             <div className="flex flex-row items-center gap-2">
-              <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+              <CornerDownRightIcon className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary" />
               <span className={STYLES_SECONDARY}>Returns:</span>
             </div>
             <CALLOUT>

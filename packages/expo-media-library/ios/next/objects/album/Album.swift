@@ -29,17 +29,21 @@ class Album: SharedObject {
     return title
   }
 
-  func add(_ asset: Asset) async throws {
+  func add(_ assets: [Asset]) async throws {
     let collection = try await requirePHAssetCollection()
-    guard let phAsset = AssetRepository.shared.get(by: [asset.localIdentifier]).first else {
-      throw AssetCouldNotBeAddedToAlbumException("phAsset not found")
-    }
-    try await AssetCollectionRepository.shared.add(assets: [phAsset], to: collection)
+    let phAssets = try resolvePHAssets(from: assets)
+    try await AssetCollectionRepository.shared.add(assets: phAssets, to: collection)
   }
 
   func delete(deleteAssets: Bool = false) async throws {
     let collection = try await requirePHAssetCollection()
     try await AssetCollectionRepository.shared.delete(by: [collection], deleteAssets: deleteAssets)
+  }
+
+  func removeAssets(_ assets: [Asset]) async throws {
+    let collection = try await requirePHAssetCollection()
+    let phAssets = AssetRepository.shared.get(by: assets.map { $0.localIdentifier })
+    try await AssetCollectionRepository.shared.remove(assets: phAssets, from: collection)
   }
 
   private func requirePHAssetCollection() async throws -> PHAssetCollection {
@@ -68,5 +72,25 @@ class Album: SharedObject {
     }
 
     collection = fetchedAlbum
+  }
+
+  private func resolvePHAssets(from assets: [Asset]) throws -> [PHAsset] {
+    let localIdentifiers = assets.map(\.localIdentifier)
+    let fetchedAssets = AssetRepository.shared.get(by: localIdentifiers)
+    let assetsByIdentifier = Dictionary(
+      uniqueKeysWithValues: fetchedAssets.map { ($0.localIdentifier, $0) }
+    )
+
+    return try localIdentifiers.map { localIdentifier in
+      guard let phAsset = assetsByIdentifier[localIdentifier] else {
+        throw AssetCouldNotBeAddedToAlbumException("phAsset not found")
+      }
+      return phAsset
+    }
+  }
+
+  static func getAll() async throws -> [Album] {
+    AssetCollectionRepository.shared.getAll()
+      .map { Album(id: $0.localIdentifier) }
   }
 }

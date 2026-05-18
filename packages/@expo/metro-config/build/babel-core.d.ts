@@ -1,1 +1,1 @@
-export { type PluginItem, type TransformOptions, transformFromAstSync, transformSync, } from '@babel/core';
+export { type PluginItem, type TransformOptions, loadPartialConfigSync, transformFromAstSync, transformSync, } from '@babel/core';

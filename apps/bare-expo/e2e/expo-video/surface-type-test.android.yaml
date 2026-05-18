@@ -3,7 +3,10 @@ jsEngine: graaljs
 ---
 - openLink: bareexpo://components/video/video-view-surface-type
 
-- tapOn: "e2e setup"
+- tapOn: 'e2e setup'
+- extendedWaitUntil:
+    visible: 'Players ready'
+    timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:

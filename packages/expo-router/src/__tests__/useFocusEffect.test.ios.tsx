@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';

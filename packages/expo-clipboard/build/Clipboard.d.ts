@@ -1,7 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import type { ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
-import { ClipboardPasteButton } from './ClipboardPasteButton';
-export { EventSubscription as Subscription };
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -22,14 +21,6 @@ export declare function getStringAsync(options?: GetStringOptions): Promise<stri
  * the string was saved to the user's clipboard. On iOS and Android, the promise always resolves to `true`.
  */
 export declare function setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
-/**
- * Sets the content of the user's clipboard.
- * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
- *
- * @returns On web, this returns a boolean value indicating whether or not the string was saved to
- * the user's clipboard. On iOS and Android, nothing is returned.
- */
-export declare function setString(text: string): void;
 /**
  * Returns whether the clipboard has text content. Returns true for both plain text and rich text (e.g. HTML).
  *
@@ -145,6 +136,5 @@ export declare function removeClipboardListener(subscription: EventSubscription)
  */
 export declare const isPasteButtonAvailable: boolean;
 export * from './Clipboard.types';
-export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
-export { ClipboardPasteButton };
+export { ClipboardPasteButton, type ClipboardPasteButtonProps } from './ClipboardPasteButton';
 //# sourceMappingURL=Clipboard.d.ts.map

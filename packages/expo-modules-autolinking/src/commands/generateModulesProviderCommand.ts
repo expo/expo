@@ -1,20 +1,23 @@
-import commander from 'commander';
+import type commander from 'commander';
+import fs from 'fs';
 
-import {
-  AutolinkingCommonArguments,
-  createAutolinkingOptionsLoader,
-  registerAutolinkingArguments,
-} from './autolinkingOptions';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import { findModulesAsync } from '../autolinking/findModules';
 import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
 import { resolveModulesAsync } from '../autolinking/resolveModules';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
+  podfilePropertiesFilePath: string;
   entitlement?: string;
   packages?: string[] | null;
   appRoot?: string;
 }
+
+type PartialPodfileProperties = {
+  'expo.inlineModules.watchedDirectories'?: string;
+};
 
 /** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
@@ -29,6 +32,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
       'Names of the packages to include in the generated modules provider.'
     )
     .option('--app-root <path>', 'Path to the app root directory.')
+    .option('--podfile-properties-file-path <path>', 'Path to the Podfile properties file.')
     .action(
       async (searchPaths: string[] | null, commandArguments: GenerateModulesProviderArguments) => {
         const platform = commandArguments.platform ?? 'apple';
@@ -38,9 +42,10 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         });
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
 
+        const appRoot = commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot());
         const expoModulesSearchResults = await findModulesAsync({
           autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-          appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
+          appRoot,
         });
         const expoModulesResolveResults = await resolveModulesAsync(
           expoModulesSearchResults,
@@ -52,10 +57,23 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           includeModules.has(module.packageName)
         );
 
+        const podfileProperties: PartialPodfileProperties = await fs.promises
+          .readFile(commandArguments.podfilePropertiesFilePath, {
+            encoding: 'utf8',
+          })
+          .then((file) => JSON.parse(file))
+          .catch(() => ({}));
+
+        const watchedDirectories = JSON.parse(
+          podfileProperties['expo.inlineModules.watchedDirectories'] ?? '[]'
+        );
+
         await generateModulesProviderAsync(filteredModules, {
           platform,
           targetPath: commandArguments.target,
           entitlementPath: commandArguments.entitlement ?? null,
+          watchedDirectories,
+          appRoot,
         });
       }
     );

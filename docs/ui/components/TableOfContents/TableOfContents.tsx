@@ -417,19 +417,19 @@ export const TableOfContents = forwardRef<
   };
 
   return (
-    <nav className="w-[280px] px-6 pb-10 pt-[52px]" data-toc>
+    <nav className="w-70 px-6 pt-13 pb-10" data-toc>
       <CALLOUT
         weight="medium"
         className={mergeClasses(
-          'absolute z-[100] -ml-6 -mt-[52px] flex min-h-[32px] w-[272px] select-none',
-          'items-center gap-2 bg-gradient-to-b from-default from-80% to-transparent py-3 pl-6'
+          'absolute z-100 -mt-13 -ml-6 flex min-h-8 w-68 select-none',
+          'items-center gap-2 bg-linear-to-b from-default from-80% to-transparent py-3 pl-6'
         )}>
         <LayoutAlt03Icon className="icon-sm" /> On this page
         <Button
           theme="quaternary"
           size="xs"
           className={mergeClasses(
-            'ml-auto mr-2 px-2 transition-opacity duration-300',
+            'mr-2 ml-auto px-2 transition-opacity duration-300',
             !showScrollTop && 'pointer-events-none opacity-0'
           )}
           onClick={handleTopClick}>

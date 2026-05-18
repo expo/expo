@@ -15,5 +15,7 @@ export declare function createRequestHandler(params: {
     isDevelopment?: boolean;
 }, setup?: Partial<RequestHandlerParams>): RequestHandler;
 export declare function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request;
-export declare function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Headers;
-export declare function respond(res: http.ServerResponse, expoRes: Response): Promise<void>;
+interface RespondOptions {
+    signal?: AbortSignal;
+}
+export declare function respond(nodeResponse: http.ServerResponse, webResponse: Response, options?: RespondOptions): Promise<void>;

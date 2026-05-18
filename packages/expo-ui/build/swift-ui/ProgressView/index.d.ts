@@ -1,8 +1,4 @@
-import { type CommonViewModifierProps } from '../types';
-export type ClosedRangeDate = {
-    lower: Date;
-    upper: Date;
-};
+import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
 export type ProgressViewProps = {
     /**
      * The current progress value. A value between `0` and `1`.
@@ -30,5 +26,5 @@ export type ProgressViewProps = {
 /**
  * Renders a SwiftUI `ProgressView` component.
  */
-export declare function ProgressView(props: ProgressViewProps): import("react").JSX.Element;
+export declare function ProgressView(props: ProgressViewProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -101,6 +101,11 @@ object VideoManager {
     fullscreenPlayerActivities.remove(id)
   }
 
+  fun finishFullscreenPlayer(id: String) {
+    val activityRef = fullscreenPlayerActivities[id]
+    activityRef?.get()?.finish()
+  }
+
   fun onVideoPlayerAttachedToView(videoPlayer: VideoPlayer, videoView: VideoView) {
     if (videoPlayersToVideoViews[videoPlayer]?.contains(videoView) == true) {
       return
@@ -144,12 +149,6 @@ object VideoManager {
   fun onAppForegrounded() {
     listeners.forEach {
       it.get()?.onAppForegrounded()
-    }
-
-    // Pressing the app icon will bring up the mainActivity instead of the fullscreen activity (at least for BareExpo)
-    // In this case we have to manually finish the fullscreen activity
-    for (fullscreenActivity in fullscreenPlayerActivities.values) {
-      fullscreenActivity.get()?.finish()
     }
   }
 

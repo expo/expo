@@ -7,6 +7,12 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { CODE } from '~/ui/components/Text';
 import { useIsMobileView } from '~/ui/components/utils/isMobileView';
 
+import { Select } from '../../Select';
+import { Snippet } from '../Snippet';
+import { SnippetAction } from '../SnippetAction';
+import { SnippetContent } from '../SnippetContent';
+import { SnippetHeader } from '../SnippetHeader';
+import { CopyAction } from '../actions/CopyAction';
 import {
   PACKAGE_MANAGER_ORDER,
   getPackageManagerServerSnapshot,
@@ -15,12 +21,6 @@ import {
   subscribePackageManagerStore,
 } from './packageManagerStore';
 import type { PackageManagerKey } from './packageManagerStore';
-import { Select } from '../../Select';
-import { Snippet } from '../Snippet';
-import { SnippetAction } from '../SnippetAction';
-import { SnippetContent } from '../SnippetContent';
-import { SnippetHeader } from '../SnippetHeader';
-import { CopyAction } from '../actions/CopyAction';
 
 type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
 
@@ -89,7 +89,10 @@ export const Terminal = ({
   ) : null;
 
   return (
-    <Snippet data-md="terminal" className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
+    <Snippet
+      data-md="terminal"
+      data-md-commands={packageManagers ? JSON.stringify(packageManagers) : undefined}
+      className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
       <SnippetHeader
         alwaysDark
         title={title}
@@ -199,7 +202,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
           role="tab"
           aria-selected={isActive}
           className={mergeClasses(
-            'rounded-md px-2 py-1 text-xs font-semibold transition-colors',
+            'rounded-md px-2 py-1 text-sm font-semibold transition-colors',
             isActive
               ? 'bg-palette-gray6 text-palette-white'
               : 'text-palette-gray9 hocus:bg-palette-gray5'
@@ -217,7 +220,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
 const PackageSelect = ({ managers, activeManager, onSelect, className }: PackageTabsProps) => (
   <Select
     className={mergeClasses(
-      '!h-6 !min-h-[16px] min-w-[76px] !gap-1 !px-2 !py-0 text-xs [&_svg]:!h-3 [&_svg]:!w-3',
+      'h-6! min-h-4! min-w-19 gap-1! px-2! py-0! text-sm [&_svg]:size-3!',
       className
     )}
     ariaLabel="Select package manager"
@@ -234,7 +237,7 @@ const PackageSelect = ({ managers, activeManager, onSelect, className }: Package
 const BrowserAction = ({ href, label }: BrowserActionProps) => (
   <SnippetAction
     alwaysDark
-    className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
+    className="max-sm:gap-0 [&_p]:max-sm:hidden"
     rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
     onClick={() => {
       if (typeof window !== 'undefined') {
@@ -265,7 +268,7 @@ function cmdMapper(line: string, index: number) {
       <CODE
         key={key}
         data-md="skip"
-        className="select-none whitespace-pre !border-none !bg-transparent !text-palette-gray10">
+        className="border-none! bg-transparent! whitespace-pre text-palette-gray10! select-none">
         {line}
       </CODE>
     );
@@ -276,11 +279,11 @@ function cmdMapper(line: string, index: number) {
       <div key={key} className="w-fit">
         <CODE
           data-md="skip"
-          className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
+          className="border-none! bg-transparent! whitespace-pre text-secondary! select-none">
           -&nbsp;
         </CODE>
         <CODE
-          className="whitespace-pre !border-none !bg-transparent text-default"
+          className="border-none! bg-transparent! whitespace-pre text-default"
           dangerouslySetInnerHTML={{
             __html: Prism.highlight(
               line.slice(1).trim(),
@@ -294,7 +297,7 @@ function cmdMapper(line: string, index: number) {
   }
 
   return (
-    <CODE key={key} className="whitespace-pre !border-none !bg-transparent text-default">
+    <CODE key={key} className="border-none! bg-transparent! whitespace-pre text-default">
       {line}
     </CODE>
   );

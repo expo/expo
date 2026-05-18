@@ -3,7 +3,6 @@
 #import "EXLinkingManager.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXUtil.h"
-#import "Expo_Go-Swift.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -81,25 +80,14 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
     [_kernelLinkingDelegate linkingModule:self didOpenUrl:URL.absoluteString];
     resolve(@YES);
   } else {
-    /**
-     [RCTSharedApplication() openURL: options:completionHandler:) will request local network access before attempting to open the link but
-      it won't present the alert in expo go. Instead the app becomes unresponsive and the user needs to background it to see the alert. To workaround this
-      we wrap the call in our own check so the alert is presented in expo go.
-     */
-    [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
-      if (success) {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        [userDefaults setBool:YES forKey:@"EXIsLocalNetworkAccessGranted"];
-        [EXUtil performSynchronouslyOnMainThread:^{
-          [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
-            if (success) {
-              resolve(nil);
-            } else {
-              reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
-            }
-          }];
-        }];
-      }
+    [EXUtil performSynchronouslyOnMainThread:^{
+      [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
+        if (success) {
+          resolve(nil);
+        } else {
+          reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+        }
+      }];
     }];
   }
 }

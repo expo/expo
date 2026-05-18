@@ -86,12 +86,62 @@ export interface SFSymbolIcon {
         selected: SFSymbol;
     };
 }
+export interface XcassetIcon {
+    /**
+     * The name of the iOS asset catalog image to use as an icon.
+     *
+     * Xcassets provide automatic multi-resolution (@1x/@2x/@3x), dark mode variants,
+     * and device-specific images via `[UIImage imageNamed:]`.
+     *
+     * The rendering mode (template vs original) can be controlled via the `renderingMode` prop
+     * on the `Icon` component. By default, icons are tinted when `iconColor` is set, and
+     * rendered as original otherwise.
+     *
+     * The value can be provided in two ways:
+     * - As a string with the asset catalog image name
+     * - As an object specifying the default and selected states
+     *
+     * @example
+     * ```tsx
+     * <Icon xcasset="custom-icon" />
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <Icon xcasset={{ default: "home-outline", selected: "home-filled" }} />
+     * ```
+     *
+     * @platform iOS
+     */
+    xcasset?: string | {
+        default?: string;
+        selected: string;
+    };
+}
 export interface DrawableIcon {
     /**
      * The name of the drawable resource to use as an icon.
+     *
+     * The value can be provided in two ways:
+     * - As a string with the drawable resource name
+     * - As an object specifying the default and selected states
+     *
+     * @example
+     * ```tsx
+     * <Icon drawable="ic_home" />
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <Icon drawable={{ default: 'ic_home_outline', selected: 'ic_home_filled' }} />
+     * ```
+     *
      * @platform android
      */
-    drawable?: string;
+    drawable?: string | {
+        default?: string;
+        selected: string;
+    };
 }
 /**
  * Material icon name for Android native tabs.
@@ -101,23 +151,47 @@ export interface DrawableIcon {
 export interface MaterialIcon {
     /**
      * Material icon glyph name. See the [Material icons for the complete catalog](https://fonts.google.com/icons).
+     *
+     * The value can be provided in two ways:
+     * - As a string with the Material icon name
+     * - As an object specifying the default and selected states
+     *
+     * @example
+     * ```tsx
+     * <Icon md="home" />
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <Icon md={{ default: 'home', selected: 'home_filled' }} />
+     * ```
      */
-    md: AndroidSymbol;
+    md: AndroidSymbol | {
+        default?: AndroidSymbol;
+        selected: AndroidSymbol;
+    };
 }
-export type BaseNativeTabsTriggerIconProps = {
+export type NativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
-};
-export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
+} & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (XcassetIcon & DrawableIcon) | (XcassetIcon & MaterialIcon) | (XcassetIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
  *
- * Accepts various icon sources such as SF Symbols, drawable resources, material icons, or image sources.
+ * Accepts various icon sources such as SF Symbols, xcasset images, drawable resources, material icons, or image sources.
+ *
+ * Each icon prop (`sf`, `xcasset`, `drawable`, `md`, `src`) can be either a single value, or an object
+ * with `{ default, selected }` to use a distinct icon when the tab is selected.
  *
  * Acceptable props combinations:
  * - `sf` and `drawable` - `sf` will be used for iOS icon, `drawable` for Android icon
  * - `sf` and `src` - `sf` will be used for iOS icon, `src` for Android icon
+ * - `xcasset` and `drawable` - `xcasset` will be used for iOS icon, `drawable` for Android icon
+ * - `xcasset` and `md` - `xcasset` will be used for iOS icon, `md` for Android icon
+ * - `xcasset` and `src` - `xcasset` will be used for iOS icon, `src` for Android icon
  * - `src` and `drawable` - `src` will be used for iOS icon, `drawable` for Android icon
  * - `src` only - `src` will be used for both iOS and Android icons
+ *
+ * Priority on iOS: `sf` > `xcasset` > `src`. Priority on Android: `drawable` > `md` > `src`.
  *
  * @platform ios
  * @platform android

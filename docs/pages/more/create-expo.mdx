@@ -14,12 +14,14 @@ To create a new project, run the following command:
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest'],
-    yarn: ['$ yarn create expo-app'],
-    pnpm: ['$ pnpm create expo-app'],
-    bun: ['$ bun create expo'],
+    npm: ['$ npx create-expo-app@latest --template default@sdk-55'],
+    yarn: ['$ yarn create expo-app --template default@sdk-55'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-55'],
+    bun: ['$ bun create expo --template default@sdk-55'],
   }}
 />
+
+> **Note:** During the SDK 55 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-55` to create an SDK 55 project.
 
 Running the above command will prompt you to enter the app name of your project. This app name is also used in the app config's [`name`](/versions/latest/config/app/#name) property.
 
@@ -37,6 +39,10 @@ Uses the default options to create a new project.
 
 Skips installing npm dependencies or CocoaPods.
 
+### `--no-agents-md`
+
+Skips generating **AGENTS.md**, **CLAUDE.md**, and **.claude/settings.json**. By default, `create-expo-app` generates these files so AI coding agents (such as Claude Code) have Expo-specific context and the [`expo` skills plugin](https://expo.dev/expo-skills) configured automatically. The generated **AGENTS.md** points to the versioned Expo docs matching your project's SDK version.
+
 ### `--template`
 
 Running `create-expo-app` with a [Node Package Manager](#node-package-managers-support) initializes and sets up a new Expo project using the default template.
@@ -51,7 +57,7 @@ You can use the `--template` option to select one of the following templates or 
 | [`blank`](https://github.com/expo/expo/tree/main/templates/expo-template-blank)                       | Installs minimum required npm dependencies without configuring navigation.                                                                                                            |
 | [`blank-typescript`](https://github.com/expo/expo/tree/main/templates/expo-template-blank-typescript) | A Blank template with TypeScript enabled.                                                                                                                                             |
 | [`tabs`](https://github.com/expo/expo/tree/main/templates/expo-template-tabs)                         | Installs and configures file-based routing with Expo Router and TypeScript enabled.                                                                                                   |
-| [`bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum)         | A Blank template with native directories (**android** and **ios**) generated. Runs [`npx expo prebuild`](/workflow/prebuild/) during the setup.                                       |
+| [`bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum)         | A Blank template with native directories (**android** and **ios**) generated. Runs [`npx expo prebuild`](/workflow/continuous-native-generation) during the setup.                    |
 
 ### `--example`
 
@@ -114,15 +120,27 @@ nodeLinker: node-modules
 
 #### EAS installation
 
-Yarn Modern on EAS requires adding [`eas-build-pre-install` hook](/build-reference/npm-hooks/). In your project's **package.json**, add the following configuration:
+Yarn Modern on EAS requires enabling [Corepack](https://github.com/nodejs/corepack) for the build. Set [`corepack`](/eas/json/#corepack) to `true` in your build profile in **eas.json**:
 
-```json package.json
+```json eas.json
 {
-  "scripts": {
-    "eas-build-pre-install": "corepack enable && yarn set version 4"
+  "build": {
+    "production": {
+      "corepack": true
+    }
   }
 }
 ```
+
+Then, pin the Yarn version in your project's **package.json** using the [`packageManager`](https://nodejs.org/api/packages.html#packagemanager) field. Running `yarn set version <version>` locally will update this field for you:
+
+```json package.json
+{
+  "packageManager": "yarn@4.14.1"
+}
+```
+
+After adding both of the above configurations, Corepack automatically downloads and uses the pinned Yarn version when EAS installs dependencies.
 
 ### pnpm
 
@@ -130,13 +148,13 @@ Yarn Modern on EAS requires adding [`eas-build-pre-install` hook](/build-referen
 
 Requires installing Node.js. See [pnpm documentation](https://pnpm.io/installation) for installation instructions.
 
-By default, a project created with `create-expo-app` and pnpm uses [`node-linker`](https://pnpm.io/npmrc#node-linker) with its value set to `hoisted` to install dependencies.
+By default, a project created with `create-expo-app` and pnpm uses [`nodeLinker`](https://pnpm.io/settings#nodelinker) with its value set to `hoisted` to install dependencies.
 
-```ini .npmrc
-node-linker=hoisted
+```yaml pnpm-workspace.yaml
+nodeLinker: hoisted
 ```
 
-> **info** In **SDK 54** and later, Expo supports isolated installations, and you can delete the `node-linker` setting if you prefer to use isolated dependencies.
+> **info** In **SDK 54** and later, Expo supports isolated installations, and you can delete the `nodeLinker` setting if you prefer to use isolated dependencies.
 
 #### EAS installation
 

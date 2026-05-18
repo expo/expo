@@ -79,7 +79,7 @@ enum BarcodeType: String, Enumerable {
       return .ean8
     case .pdf417:
       return .pdf417
-    case .itf14:
+    case .itf14, .interleaved2of5:
       return .itf14
     case .upce:
       return .upc_e
@@ -147,9 +147,9 @@ enum VNBarcodeType: String, Enumerable {
 
 struct VisionScannerOptions: Record {
   @Field var barcodeTypes: [VNBarcodeType] = []
-  @Field var isPinchToZoomEnabled: Bool = false
-  @Field var isGuidanceEnabled: Bool = true
-  @Field var isHighlightingEnabled: Bool = false
+  @Field var isPinchToZoomEnabled: Bool?
+  @Field var isGuidanceEnabled: Bool?
+  @Field var isHighlightingEnabled: Bool?
 
   @available(iOS 16.0, *)
   func toSymbology() -> [VNBarcodeSymbology] {

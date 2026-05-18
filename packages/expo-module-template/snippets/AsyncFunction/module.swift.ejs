@@ -1,0 +1,5 @@
+    AsyncFunction("setValueAsync") { (value: String) in
+<% if (project.features.includes('Event')) { %>      self.sendEvent("onChange", [
+        "value": value
+      ])
+<% } %>    }

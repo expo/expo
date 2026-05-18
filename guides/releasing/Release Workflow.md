@@ -111,7 +111,7 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 - Do this step immediately before cutting the release branch.
 - Run `et generate-docs-api-data` to regenerate `unversioned` API data files before cutting new documentation version.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK.
-- Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
+- Run `pnpm schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to main.
 
@@ -223,8 +223,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas android-apk-upload` to download the build artifact and upload it to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
 - Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.
 - Ensure that you update the root `iosVersion`/`androidVersion` `iosUrl`/`androidUrl` properties, eg:
-  - `et update-versions-endpoint -k 'iosVersion' -v '2.19.3' --root`
-  - `et update-versions-endpoint -k 'iosUrl' -v 'https://dpq5q02fu5f55.cloudfront.net/Exponent-2.19.3.tar.gz' --root`
+  - `et update-versions-endpoint -k 'iosVersion' -v '55.0.9' --root`
+  - `et update-versions-endpoint -k 'iosUrl' -v 'https://github.com/expo/expo-go-releases/releases/download/Expo-Go-55.0.9/Expo-Go-55.0.9.tar.gz' --root`
 
 # Stage 3 - Sync with EAS Build
 

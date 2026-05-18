@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { I18nManager, StyleProp, ViewStyle } from 'react-native';
+import { I18nManager, type StyleProp, type ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';

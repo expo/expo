@@ -73,6 +73,7 @@ class DevMenuFragment(
 
   private fun showMenuAtLaunch() {
     val reactHost = reactHostHolder.get() ?: return
+    preferences.showsAtLaunch = false
 
     // If the React Context is already initialized, we can open the menu right away.
     if (reactHost.currentReactContext != null) {
@@ -180,10 +181,7 @@ class DevMenuFragment(
               DevMenuBottomSheet(viewModel.state, viewModel::onAction)
               MovableFloatingActionButton(
                 state = viewModel.state,
-                onRefreshPress = {
-                  viewModel.onAction(DevMenuAction.Reload)
-                },
-                onOpenMenuPress = {
+                onPress = {
                   viewModel.onAction(DevMenuAction.Open)
                 }
               )

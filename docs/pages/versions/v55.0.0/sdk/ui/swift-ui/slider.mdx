@@ -17,6 +17,8 @@ Expo UI Slider matches the official SwiftUI [Slider API](https://developer.apple
 
 ## Usage
 
+> **Note:** `Slider` is a flexible-width component, it expands to fill available horizontal space and does not have an intrinsic width. When using `matchContents` on the `Host`, you should apply a [`frame`](modifiers/#frameparams) modifier on the `Slider` to give it an explicit width. Alternatively, give the `Host` an explicit size using `style` (for example, `style={{ width: 300 }}` or `style={{ flex: 1 }}`), or place the `Slider` inside a SwiftUI container like `Form` that provides width constraints.
+
 ### Basic slider
 
 ```tsx BasicSliderExample.tsx
@@ -27,7 +29,7 @@ export default function BasicSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Slider value={value} onValueChange={setValue} />
     </Host>
   );
@@ -44,7 +46,7 @@ export default function CustomRangeSliderExample() {
   const [value, setValue] = useState(50);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Slider value={value} min={0} max={100} onValueChange={setValue} />
     </Host>
   );
@@ -63,7 +65,7 @@ export default function SteppedSliderExample() {
   const [value, setValue] = useState(0);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Slider value={value} min={0} max={100} step={10} onValueChange={setValue} />
     </Host>
   );
@@ -82,7 +84,7 @@ export default function LabeledSliderExample() {
   const [value, setValue] = useState(50);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Slider
         value={value}
         min={0}

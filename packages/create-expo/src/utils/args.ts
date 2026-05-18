@@ -1,6 +1,7 @@
 // Common utilities for interacting with `args` library.
 // These functions should be used by every command.
-import arg, { Spec } from 'arg';
+import type { Spec } from 'arg';
+import arg from 'arg';
 import chalk from 'chalk';
 
 import { replaceValue } from './array';
@@ -86,7 +87,7 @@ export function _resolveStringOrBooleanArgs(multiTypeArgs: Spec, args: string[])
   for (let i = args.length - 1; i > -1; i--) {
     const value = args[i];
     // At this point we should have converted all aliases to fully qualified arguments.
-    if (value.startsWith('--')) {
+    if (value?.startsWith('--')) {
       // If we ever find an argument then it must be a boolean because we are checking in reverse
       // and removing arguments from the array if we find a string.
       settings[value] = true;
@@ -97,6 +98,7 @@ export function _resolveStringOrBooleanArgs(multiTypeArgs: Spec, args: string[])
         settings[nextValue] = value;
         i--;
       } else if (
+        value != null &&
         // Prevent finding two values that are dangling
         !projectRoot &&
         // If the last value is not a flag and it doesn't have a recognized flag before it (instead having a string value or nothing)

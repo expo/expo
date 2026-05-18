@@ -8,8 +8,8 @@ import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import type { ContextScope, GlobalSwitchStatus, ContextMarker } from './AskPageAIChat.types';
 import { FOOTNOTE } from '../Text';
+import type { ContextScope, GlobalSwitchStatus, ContextMarker } from './AskPageAIChat.types';
 import { normalizeQuestion } from './AskPageAIChat.utils';
 
 type ConversationEntry = {
@@ -60,7 +60,7 @@ export function AskPageAIChatMessages({
     return (
       <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
         <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-        <div className="mt-1 space-y-3 text-xs text-secondary">
+        <div className="mt-1 space-y-3 text-sm text-secondary">
           I'm an SDK AI assistant — ask me a question about the{' '}
           <span className="font-medium text-default">
             {contextScope === 'page' ? 'current page' : 'Expo docs'}
@@ -130,7 +130,7 @@ export function AskPageAIChatMessages({
             </div>
             <div className="px-0">
               <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-              <div className="mt-1 space-y-3 text-xs text-secondary">
+              <div className="mt-1 space-y-3 text-sm text-secondary">
                 {answerForDisplay ? (
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                     {answerForDisplay}
@@ -147,32 +147,32 @@ export function AskPageAIChatMessages({
                     type="button"
                     theme="quaternary"
                     size="xs"
-                    className="inline-flex items-center gap-2 rounded-md border border-default bg-subtle px-3 py-1 text-xs font-medium text-default shadow-xs transition-colors hover:bg-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-blue9 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-md border border-default bg-subtle px-3 py-1 text-sm font-medium text-default shadow-xs transition-colors hover:bg-element focus-visible:ring-2 focus-visible:ring-palette-blue9 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={isBusy || hasTriggeredGlobalSearch || isPendingGlobal}
                     onClick={() => {
                       onSearchAcrossDocs(displayQuestion);
                     }}>
-                    <FileSearch02Icon className="icon-xs mr-2 text-icon-secondary" />
+                    <FileSearch02Icon className="mr-2 icon-xs text-icon-secondary" />
                     {hasTriggeredGlobalSearch || isPendingGlobal
                       ? 'Searching Expo docs…'
                       : 'Search Expo docs'}
                   </Button>
                   {showSwitchingNotice ? (
-                    <FOOTNOTE theme="secondary" className="text-xs">
+                    <FOOTNOTE theme="secondary" className="text-sm">
                       {switchNoticeText}
                     </FOOTNOTE>
                   ) : null}
                 </div>
               ) : null}
               {canSubmitFeedback ? (
-                <div className="mt-3 flex items-center gap-1 text-xs text-secondary">
+                <div className="mt-3 flex items-center gap-1 text-sm text-secondary">
                   <span className="text-secondary">Was this helpful?</span>
                   <div className="flex items-center gap-1">
                     <Button
                       type="button"
                       theme="quaternary"
                       size="xs"
-                      className="px-2 !text-secondary hover:!text-default focus:!text-default disabled:cursor-not-allowed disabled:opacity-60"
+                      className="px-2 text-secondary! hover:text-default! focus:text-default! disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label="Upvote answer"
                       aria-pressed={isUpvoted}
                       disabled={disableUpvote}
@@ -193,7 +193,7 @@ export function AskPageAIChatMessages({
                       type="button"
                       theme="quaternary"
                       size="xs"
-                      className="px-2 !text-secondary hover:!text-default focus:!text-default disabled:cursor-not-allowed disabled:opacity-60"
+                      className="px-2 text-secondary! hover:text-default! focus:text-default! disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label="Downvote answer"
                       aria-pressed={isDownvoted}
                       disabled={disableDownvote}
@@ -215,7 +215,7 @@ export function AskPageAIChatMessages({
               ) : null}
             </div>
             {sourcesForDisplay?.length ? (
-              <FOOTNOTE theme="secondary" className="ml-1 text-xs">
+              <FOOTNOTE theme="secondary" className="ml-1 text-sm">
                 Sources:{' '}
                 {sourcesForDisplay.map((source, sourceIdx, sources) => (
                   <span key={source.source_url}>

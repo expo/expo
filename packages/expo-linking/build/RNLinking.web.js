@@ -24,9 +24,11 @@ export default {
         invariant(type === 'url', `Linking.addEventListener(): ${type} is not a valid event`);
         const listenerIndex = listeners.findIndex((pair) => pair.listener === listener);
         invariant(listenerIndex !== -1, 'Linking.removeEventListener(): cannot remove an unregistered event listener.');
-        const nativeListener = listeners[listenerIndex].nativeListener;
-        window.removeEventListener('message', nativeListener, false);
-        listeners.splice(listenerIndex, 1);
+        const nativeListener = listeners[listenerIndex]?.nativeListener;
+        if (nativeListener != null) {
+            window.removeEventListener('message', nativeListener, false);
+            listeners.splice(listenerIndex, 1);
+        }
     },
     async canOpenURL() {
         // In reality this should be able to return false for links like `chrome://` on chrome.

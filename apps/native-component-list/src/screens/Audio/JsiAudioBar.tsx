@@ -42,7 +42,11 @@ export function JsiAudioBar({ player, isPlaying }: { player: AudioPlayer; isPlay
   });
 
   if (!player.isAudioSamplingSupported) {
-    return <Text style={styles.errorText}>Audio sampling is not supported on this platform</Text>;
+    return (
+      <Text style={styles.errorText}>
+        Audio sampling requires the crossOrigin option for cross-origin sources
+      </Text>
+    );
   }
 
   if (!isPlaying) {

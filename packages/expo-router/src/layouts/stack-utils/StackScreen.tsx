@@ -1,19 +1,17 @@
 'use client';
-import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
-import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { Children, isValidElement, useMemo, type PropsWithChildren, type ReactNode } from 'react';
+import { Children, isValidElement, useMemo, type PropsWithChildren } from 'react';
 
 import { StackHeaderComponent, appendStackHeaderPropsToOptions } from './StackHeaderComponent';
-import {
-  StackScreenTitle,
-  appendStackScreenTitlePropsToOptions,
-  StackScreenBackButton,
-  appendStackScreenBackButtonPropsToOptions,
-} from './screen';
-import { StackToolbar, appendStackToolbarPropsToOptions, type StackToolbarProps } from './toolbar';
+import { StackTitle, appendStackTitlePropsToOptions } from './StackTitle';
+import { StackScreenBackButton, appendStackScreenBackButtonPropsToOptions } from './screen';
+import { StackToolbar, appendStackToolbarPropsToOptions } from './toolbar';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import type {
+  NativeStackNavigationOptions,
+  NativeStackNavigationEventMap,
+} from '../../react-navigation/native-stack';
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
-import { getAllChildrenOfType, isChildOfType } from '../../utils/children';
+import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
 
 type StackBaseScreenProps = BaseScreenProps<
@@ -73,20 +71,12 @@ export interface StackScreenProps extends PropsWithChildren {
   dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
 }
 
-function extractBottomToolbars(children: ReactNode): React.ReactElement<StackToolbarProps>[] {
-  return (
-    getAllChildrenOfType(children, StackToolbar).filter(
-      (child) => child.props.placement === 'bottom' || child.props.placement === undefined
-    ) ?? []
-  );
-}
-
 /**
  * Component used to define a screen in a native stack navigator.
  *
  * Can be used in the `_layout.tsx` files, or directly in page components.
  *
- * When configuring header inside page components, prefer using `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components.
+ * When configuring header inside page components, prefer using `Stack.Title`, `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components.
  *
  * @example
  * ```tsx app/_layout.tsx
@@ -103,23 +93,6 @@ function extractBottomToolbars(children: ReactNode): React.ReactElement<StackToo
  *  );
  * }
  * ```
- *
- * @example
- * ```tsx app/home.tsx
- * import { Stack } from 'expo-router';
- *
- * export default function HomePage() {
- *   return (
- *     <>
- *       <Stack.Screen
- *         options={{ headerTransparent: true }}
- *       />
- *       <Stack.Screen.Title>Welcome Home</Stack.Screen.Title>
- *       // Page content
- *     </>
- *   );
- * }
- * ```
  */
 export const StackScreen = Object.assign(
   function StackScreen({ children, options, ...rest }: StackScreenProps) {
@@ -130,26 +103,23 @@ export const StackScreen = Object.assign(
       );
     }
 
-    const updatedOptions = useMemo(
-      () =>
-        appendScreenStackPropsToOptions(typeof options === 'function' ? {} : (options ?? {}), {
-          children,
-        }),
-      [options, children]
+    const ownOptions = useMemo(
+      () => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})),
+      [options]
     );
-
-    const bottomToolbars = useMemo(() => extractBottomToolbars(children), [children]);
 
     return (
       <>
-        <Screen {...rest} options={updatedOptions} />
-        {/* Bottom toolbar is a native component rendered separately */}
-        {bottomToolbars}
+        <Screen {...rest} options={ownOptions} />
+        {children}
       </>
     );
   },
   {
-    Title: StackScreenTitle,
+    /**
+     * @deprecated Use `Stack.Title` instead.
+     */
+    Title: StackTitle,
     BackButton: StackScreenBackButton,
   }
 );
@@ -207,8 +177,8 @@ export function appendScreenStackPropsToOptions(
       return appendStackHeaderPropsToOptions(opts, child.props);
     }
 
-    if (isChildOfType(child, StackScreenTitle)) {
-      return appendStackScreenTitlePropsToOptions(opts, child.props);
+    if (isChildOfType(child, StackTitle)) {
+      return appendStackTitlePropsToOptions(opts, child.props);
     }
 
     if (isChildOfType(child, StackScreenBackButton)) {

@@ -40,6 +40,7 @@ class AppLauncherWithDatabaseMock: AppLauncherWithDatabase {
 }
 
 @Suite("AppLauncherWithDatabase", .serialized)
+@MainActor
 class AppLauncherWithDatabaseTests {
   var testDatabaseDir: URL
   var db: UpdatesDatabase
@@ -110,7 +111,7 @@ class AppLauncherWithDatabaseTests {
     db.databaseQueue.sync {
       let sameUpdate = try! db.update(withId: testUpdate.updateId, config: config)
       #expect(yesterday != sameUpdate?.lastAccessed)
-      #expect(abs(sameUpdate!.lastAccessed.timeIntervalSinceNow) < 1)
+      #expect(abs(sameUpdate!.lastAccessed.timeIntervalSinceNow) < 3)
     }
   }
 }

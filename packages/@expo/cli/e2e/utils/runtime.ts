@@ -80,7 +80,7 @@ export function prepareServers(
     EXPO_USE_STATIC: 'server',
     E2E_ROUTER_SRC: fixtureName,
     ...exportEnv,
-  };
+  } as const;
 
   const knownRuntimeConfigs: Record<RuntimeType, Omit<ServerTestConfiguration, 'name'>> = {
     [RUNTIME_EXPO_SERVE]: {

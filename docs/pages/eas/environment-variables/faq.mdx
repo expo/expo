@@ -20,9 +20,9 @@ To avoid confusing overrides during cloud jobs and leaking sensitive information
 
 ### Use the `--environment` flag with `eas update`
 
-When publishing updates, use the `--environment` flag with the `eas update` command to ensure that the same environment variables are used for your updates as your build jobs.
+When publishing updates, the `--environment` flag is required with the `eas update` command. This ensures the same environment variables are used for your updates as your build jobs.
 
-When the `--environment` flag is provided, `eas update` will use the environment variables on EAS servers for the update job and won't use the **.env** files present in your project often used for local development.
+When the `--environment` flag is provided, `eas update` will use the environment variables on EAS servers for the update job and ignore the **.env** files present in your project often used for local development.
 
 ### Sync the environment variables for local development using `eas env:pull`
 
@@ -32,9 +32,9 @@ You can use the `eas env:pull` command to pull environment variables from EAS se
 
 Explicitly set the [`environment`](/eas/json#environment) value in **eas.json** for your build profiles to ensure that the correct environment variables are always used for your build jobs and you have full control over this process.
 
-## Can I set my environment variables on a CI provider when triggering the build using `eas build` command?
+## Can I set my environment variables on a CI provider when triggering the build using the `eas build` command?
 
-Environment variables must be defined on EAS servers to be made available to EAS Build builders. If you are triggering builds from CI the same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets on EAS servers.
+Environment variables must be defined on EAS servers to be made available to EAS Build builders. If you are triggering builds from CI, the same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets on EAS servers.
 
 ## How do environment variables work for my development builds?
 
@@ -46,7 +46,7 @@ When you run `npx expo start` to load your app inside of your development build,
 
 In addition to setting strings as values, you can also upload files as the value of an environment variable.
 
-One common use case of using file environment variable is passing a git ignored **google-services.json** configuration file to a build job. During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`). For example, you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or workflow job.
+One common use case of using a file environment variable is passing a git ignored **google-services.json** configuration file to a build job. During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`). For example, you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or workflow job.
 
 ```js app.config.js
 export default {
@@ -65,9 +65,9 @@ One of the differences between using environment variables with the Expo framewo
 - Local app config resolution, done by EAS CLI when preparing the app config
 - Remote jobs happening on EAS servers, which often don't have access to your local **.env** files that are git ignored
 
-Using `eas update` is the one exception to this rule. By default, for backward compatibility reasons, it uses **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does (it executes the `npx expo export` command under the hood).
+In **SDK 54 and earlier**, `eas update` was an exception to this rule. By default, it used **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does (it executes the `npx expo export` command under the hood). In **SDK 55 or later**, the `--environment` flag is required, and `eas update` uses only the environment variables set on EAS servers.
 
-To ensure that you can use the same environment variables in your updates as your build jobs, you can use the `--environment` flag with the `eas update` command to force it to use **only** the environment variables set on the EAS servers instead of the **.env** files present in your project directory. It will ignore environment variables from **.env**.
+For projects on SDK 54 or earlier, you can use the `--environment` flag with the `eas update` command to opt into this behavior.
 
 ## Are there any limitations to using environment variables in EAS?
 

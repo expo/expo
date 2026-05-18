@@ -58,7 +58,8 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
                 break;
             state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
         }
-        routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
+        routeState =
+            state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
         const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
         if (!routeNode) {
             console.warn(`Unable to find routeNode for trigger ${JSON.stringify(trigger)}. This might be a bug with Expo Router`);

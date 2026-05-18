@@ -1,20 +1,19 @@
-import { EventMapBase, NavigationState } from '@react-navigation/native';
-import React, {
-  Children,
-  forwardRef,
+import type {
   ComponentProps,
   ComponentType,
   ForwardRefExoticComponent,
   PropsWithoutRef,
   ReactNode,
   RefAttributes,
-  useMemo,
 } from 'react';
+import { Children, forwardRef, useMemo } from 'react';
 
 import { useContextKey } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
-import { PickPartial } from '../types';
-import { useSortedScreens, ScreenProps } from '../useScreens';
+import type { EventMapBase, NavigationState } from '../react-navigation/native';
+import type { PickPartial } from '../types';
+import type { ScreenProps } from '../useScreens';
+import { useSortedScreens } from '../useScreens';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
@@ -91,11 +90,17 @@ export function useFilterScreenChildren(
     // Add an assertion for development
     if (process.env.NODE_ENV !== 'production') {
       // Assert if names are not unique
-      const names = screens?.map(
-        (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
-      );
-      if (names && new Set(names).size !== names.length) {
-        throw new Error('Screen names must be unique: ' + names);
+      const normalizeName = (name: unknown) =>
+        typeof name === 'string' ? name.replace(/\/index$/, '') : name;
+
+      const screenNames =
+        screens?.map(
+          (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
+        ) ?? [];
+      const protectedScreenNames = Array.from(protectedScreens).map(normalizeName);
+      const allNames = [...screenNames.map(normalizeName), ...protectedScreenNames];
+      if (new Set(allNames).size !== allNames.length) {
+        throw new Error('Screen names must be unique: ' + allNames);
       }
     }
 

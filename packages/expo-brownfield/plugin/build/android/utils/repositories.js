@@ -5,14 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addRepository = void 0;
 const node_path_1 = __importDefault(require("node:path"));
+const validation_1 = require("./validation");
 const repositoryTemplates = {
-    localMaven: () => ['    localDefault {', '        type = "localMaven"', '    }'],
+    localMaven: () => ['    localDefault {', '        type.set("localMaven")', '    }'],
     localDirectory: (count, publication, projectRoot) => {
         const nameOrPlaceholder = publication.name ?? `localDirectory${count + 1}`;
+        const resolvedPath = standardizePath(publication.path, projectRoot);
         return [
             `    ${nameOrPlaceholder} {`,
-            '        type = "localDirectory"',
-            `        url = "file://${standardizePath(publication.path, projectRoot)}"`,
+            '        type.set("localDirectory")',
+            `        url.set("file://${(0, validation_1.escapeGroovyDoubleQuotedString)(resolvedPath)}")`,
             '    }',
         ];
     },
@@ -20,9 +22,9 @@ const repositoryTemplates = {
         const nameOrPlaceholder = publication.name ?? `remotePublic${count + 1}`;
         return [
             `    ${nameOrPlaceholder} {`,
-            '        type = "remotePublic"',
-            `        url = "${publication.url}"`,
-            `        allowInsecure = ${publication.allowInsecure}`,
+            '        type.set("remotePublic")',
+            setProperty('url', publication.url),
+            `        allowInsecure.set(${publication.allowInsecure ?? false})`,
             '    }',
         ];
     },
@@ -30,11 +32,11 @@ const repositoryTemplates = {
         const nameOrPlaceholder = publication.name ?? `remotePrivate${count + 1}`;
         return [
             `    ${nameOrPlaceholder} {`,
-            '        type = "remotePrivate"',
-            `        url = "${publication.url}"`,
-            `        username = "${publication.username}"`,
-            `        password = "${publication.password}"`,
-            `        allowInsecure = ${publication.allowInsecure}`,
+            '        type.set("remotePrivate")',
+            setProperty('url', publication.url),
+            setProperty('username', publication.username),
+            setProperty('password', publication.password),
+            `        allowInsecure.set(${publication.allowInsecure ?? false})`,
             '    }',
         ];
     },
@@ -46,10 +48,7 @@ const addRepository = (lines, projectRoot, publication) => {
         case 'localDirectory':
         case 'remotePublic':
         case 'remotePrivate':
-            if (publication.type === 'remotePrivate') {
-                publication = resolveEnv(publication);
-            }
-            return repositoryTemplates[publication.type](countOccurences(lines, `type = "${publication.type}"`), 
+            return repositoryTemplates[publication.type](countOccurences(lines, `type.set("${publication.type}")`), 
             // @ts-expect-error - TypeScript can't narrow union in fall-through case
             publication, projectRoot);
         default:
@@ -65,24 +64,10 @@ const countOccurences = (lines, pattern) => {
 const standardizePath = (url, projectRoot) => {
     return node_path_1.default.isAbsolute(url) ? url : node_path_1.default.join(projectRoot, url);
 };
-const resolveEnv = (publication) => {
-    const publicationInternal = {
-        ...publication,
-    };
-    if (typeof publication.url === 'object') {
-        publicationInternal.url = findEnvOrThrow(publication.url.variable);
+const setProperty = (property, value) => {
+    if (typeof value === 'string') {
+        return `        ${property}.set("${(0, validation_1.escapeGroovyDoubleQuotedString)(value)}")`;
     }
-    if (typeof publication.username === 'object') {
-        publicationInternal.username = findEnvOrThrow(publication.username.variable);
-    }
-    if (typeof publication.password === 'object') {
-        publicationInternal.password = findEnvOrThrow(publication.password.variable);
-    }
-    return publicationInternal;
-};
-const findEnvOrThrow = (envVariable) => {
-    if (process.env[envVariable]) {
-        return process.env[envVariable];
-    }
-    throw new Error(`Environment variable: "${envVariable}" used to define publishing configuration not found`);
+    // `value.variable` is validated as an env var identifier upstream, so no escaping needed.
+    return `        ${property}.set(providers.environmentVariable("${value.variable}").orElse(""))`;
 };

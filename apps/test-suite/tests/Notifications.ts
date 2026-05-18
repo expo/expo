@@ -155,7 +155,7 @@ export async function test(t) {
         }
       });
 
-      t.describe('if handler responds in time', async () => {
+      t.describe('if handler responds in time', () => {
         t.it(
           'calls `handleSuccess` callback of the notification handler',
           async () => {
@@ -167,7 +167,7 @@ export async function test(t) {
         );
       });
 
-      t.describe('if handler fails to respond in time', async () => {
+      t.describe('if handler fails to respond in time', () => {
         t.beforeAll(() => {
           handleFuncOverride = async () => {
             await waitFor(3000);

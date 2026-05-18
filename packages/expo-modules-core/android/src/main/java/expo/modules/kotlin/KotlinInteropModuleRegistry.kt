@@ -2,17 +2,12 @@ package expo.modules.kotlin
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.uimanager.ViewManager
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
 import expo.modules.kotlin.tracing.trace
-import expo.modules.kotlin.views.GroupViewManagerWrapper
-import expo.modules.kotlin.views.SimpleViewManagerWrapper
-import expo.modules.kotlin.views.ViewManagerType
 import expo.modules.kotlin.views.ViewManagerWrapperDelegate
-import expo.modules.kotlin.views.ViewWrapperDelegateHolder
 import java.lang.ref.WeakReference
 
 class KotlinInteropModuleRegistry(
@@ -44,16 +39,12 @@ class KotlinInteropModuleRegistry(
     }
   }
 
-  fun exportViewManagers(): List<ViewManager<*, *>> =
-    trace("KotlinInteropModuleRegistry.exportViewManagers") {
+  fun exportViewManagerDelegates(): List<ViewManagerWrapperDelegate> =
+    trace("KotlinInteropModuleRegistry.exportViewManagerDelegates") {
       registry
         .flatMap { module ->
           module.definition.viewManagerDefinitions.map { (name, definition) ->
-            val wrapperDelegate = ViewManagerWrapperDelegate(module, definition, if (name == DEFAULT_MODULE_VIEW) module.name else null)
-            when (definition.getViewManagerType()) {
-              ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
-              ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
-            }
+            ViewManagerWrapperDelegate(module, definition, if (name == DEFAULT_MODULE_VIEW) module.name else null)
           }
         }
     }
@@ -74,11 +65,6 @@ class KotlinInteropModuleRegistry(
       return@trace result
     }
 
-  fun extractViewManagersDelegateHolders(viewManagers: List<ViewManager<*, *>>): List<ViewWrapperDelegateHolder> =
-    trace("KotlinInteropModuleRegistry.extractViewManagersDelegateHolders") {
-      viewManagers.filterIsInstance<ViewWrapperDelegateHolder>()
-    }
-
   /**
    * Since React Native v0.55, {@link com.facebook.react.ReactPackage#createViewManagers(ReactApplicationContext)}
    * gets called only once per lifetime of {@link com.facebook.react.ReactInstanceManager}.
@@ -87,13 +73,12 @@ class KotlinInteropModuleRegistry(
    * the instance that was bound with the prop method won't be the same as the instance returned by module registry.
    * To fix that we need to update all modules holder in exported view managers.
    */
-  fun updateModuleHoldersInViewManagers(viewWrapperHolders: List<ViewWrapperDelegateHolder>) =
-    trace("KotlinInteropModuleRegistry.updateModuleHoldersInViewManagers") {
-      viewWrapperHolders
-        .map { it.viewWrapperDelegate }
-        .forEach { holderWrapper ->
-          holderWrapper.moduleHolder = requireNotNull(registry.getModuleHolder(holderWrapper.moduleHolder.name)) {
-            "Cannot update the module holder for ${holderWrapper.moduleHolder.name}."
+  fun updateModuleHoldersInViewDelegates(viewDelegates: List<ViewManagerWrapperDelegate>) =
+    trace("KotlinInteropModuleRegistry.updateModuleHoldersInViewDelegates") {
+      viewDelegates
+        .forEach { delegate ->
+          delegate.moduleHolder = requireNotNull(registry.getModuleHolder(delegate.moduleHolder.name)) {
+            "Cannot update the module holder for ${delegate.moduleHolder.name}."
           }
         }
     }
