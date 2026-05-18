@@ -132,7 +132,7 @@ const withCustomProductName: ConfigPlugin<string> = (config, customName) => {
   return withXcodeProject(
     config,
     async (
-      /* @info <CODE>{ modResults, modRequest }</CODE> */ config
+      /* @info `{ modResults, modRequest }` */ config
       /* @end */
     ) => {
       config.modResults = IOSConfig.Name.setProductName({ name: customName }, config.modResults);

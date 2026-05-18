@@ -27,6 +27,30 @@ import { TextTheme } from '~/ui/components/Text/types';
 const { default: testTippy } = tippy;
 const tippyFunc = testTippy ?? tippy;
 
+// Builds a tooltip DOM tree from the annotation's data-tippy-content attribute.
+// Recognizes `code` -> <code> and **bold** -> <strong>.
+function buildTooltipContent(raw: string): HTMLSpanElement {
+  const wrapper = document.createElement('span');
+  const parts = raw.split(/(`[^`]+`|\*\*[^*]+\*\*)/);
+  for (const part of parts) {
+    if (!part) {
+      continue;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      const code = document.createElement('code');
+      code.textContent = part.slice(1, -1);
+      wrapper.appendChild(code);
+    } else if (part.startsWith('**') && part.endsWith('**')) {
+      const strong = document.createElement('strong');
+      strong.textContent = part.slice(2, -2);
+      wrapper.appendChild(strong);
+    } else {
+      wrapper.appendChild(document.createTextNode(part));
+    }
+  }
+  return wrapper;
+}
+
 const attributes = {
   'data-text': true,
 };
@@ -70,7 +94,10 @@ export function Code({ className, children, title }: CodeProps) {
 
   useEffect(() => {
     tippyFunc('.code-annotation.with-tooltip', {
-      allowHTML: true,
+      allowHTML: false,
+      ignoreAttributes: true,
+      content: (reference: Element) =>
+        buildTooltipContent(reference.getAttribute('data-tippy-content') ?? ''),
       theme: 'expo',
       placement: 'top',
       arrow: roundArrow,
@@ -80,7 +107,10 @@ export function Code({ className, children, title }: CodeProps) {
     });
 
     tippyFunc('.tutorial-code-annotation.with-tooltip', {
-      allowHTML: true,
+      allowHTML: false,
+      ignoreAttributes: true,
+      content: (reference: Element) =>
+        buildTooltipContent(reference.getAttribute('data-tippy-content') ?? ''),
       theme: 'expo',
       placement: 'top',
       arrow: roundArrow,
