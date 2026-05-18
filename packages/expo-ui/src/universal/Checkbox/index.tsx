@@ -1,5 +1,12 @@
 import type { ComponentProps } from 'react';
-import { StyleSheet, Text, unstable_createElement, View, type ViewProps } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  unstable_createElement,
+  useColorScheme,
+  View,
+  type ViewProps,
+} from 'react-native';
 
 import type { CheckboxProps } from './types';
 
@@ -19,6 +26,9 @@ const styles = StyleSheet.create({
     // @ts-expect-error
     cursor: 'inherit',
   },
+  darkText: {
+    color: '#fff',
+  },
 });
 
 const NativeCheckbox = (
@@ -29,6 +39,8 @@ const NativeCheckbox = (
  * A toggle control that represents a checked or unchecked state.
  */
 export function Checkbox({ value, onValueChange, label, disabled = false, testID }: CheckboxProps) {
+  const colorScheme = useColorScheme();
+
   return (
     <View role="label" aria-disabled={disabled} style={[styles.label, disabled && styles.disabled]}>
       <NativeCheckbox
@@ -38,7 +50,7 @@ export function Checkbox({ value, onValueChange, label, disabled = false, testID
         data-testid={testID}
         style={styles.cursorInherit}
       />
-      {label != null && <Text>{label}</Text>}
+      {label != null && <Text style={colorScheme === 'dark' && styles.darkText}>{label}</Text>}
     </View>
   );
 }
