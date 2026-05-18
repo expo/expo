@@ -1,7 +1,8 @@
 import type { ComponentProps } from 'react';
+import { StyleSheet, unstable_createElement, type ViewProps } from 'react-native';
+
 import { extractPickerItems } from './PickerItem';
 import type { PickerItemValue, PickerProps } from './types';
-import { StyleSheet, unstable_createElement, type ViewProps } from 'react-native';
 
 const Select = (props: Omit<ComponentProps<'select'>, 'style'> & { style?: ViewProps['style'] }) =>
   unstable_createElement('select', props);
