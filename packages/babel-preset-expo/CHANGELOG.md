@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Enforce `routerRoot` to be within `projectRoot` ([#45892](https://github.com/expo/expo/pull/45892) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.10 — 2026-01-20

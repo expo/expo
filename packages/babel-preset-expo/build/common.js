@@ -144,11 +144,19 @@ function getBabelRuntimeVersion(caller) {
 function getExpoRouterAbsoluteAppRoot(caller) {
     assertExpoBabelCaller(caller);
     const rootModuleId = caller?.routerRoot ?? './app';
-    if (node_path_1.default.isAbsolute(rootModuleId)) {
-        return rootModuleId;
+    const projectRoot = getPossibleProjectRoot(caller);
+    const resolved = node_path_1.default.isAbsolute(rootModuleId)
+        ? rootModuleId
+        : node_path_1.default.join(projectRoot || '/', rootModuleId);
+    // Silently fall back to the default if the configured router root escapes the project root, as a safety net
+    if (projectRoot && !isPathInside(resolved, projectRoot)) {
+        return node_path_1.default.join(projectRoot, 'app');
     }
-    const projectRoot = getPossibleProjectRoot(caller) || '/';
-    return node_path_1.default.join(projectRoot, rootModuleId);
+    return resolved;
+}
+function isPathInside(child, parent) {
+    const relative = node_path_1.default.relative(parent, child);
+    return !!relative && !relative.startsWith('..') && !node_path_1.default.isAbsolute(relative);
 }
 function getInlineEnvVarsEnabled(caller) {
     assertExpoBabelCaller(caller);
