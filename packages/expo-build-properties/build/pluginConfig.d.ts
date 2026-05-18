@@ -188,7 +188,10 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
      * native libraries, significantly speeding up C++ compilation by pre-compiling
      * commonly used React Native headers.
      *
+     * > **Note:** This feature is experimental and might not work with all native libraries.
+     *
      * @default false
+     * @experimental
      */
     usePrecompiledHeaders?: boolean;
     /**
