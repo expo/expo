@@ -24,7 +24,7 @@ async function main(args) {
     (0, inlineModulesInterfaceCommand_1.inlineModulesInterfaceCommand)(cli);
     (0, shortModuleInterfaceCommand_1.shortModuleInterfaceCommand)(cli);
     (0, generateMocksForFileCommand_1.generateMocksForFileCommand)(cli);
-    const otherCommands = cli.command('other').description('internal or very specific commands');
+    const otherCommands = cli.command('other').description('Internal or very specific commands');
     (0, typeInformationCommand_1.typeInformationCommand)(otherCommands);
     (0, generateModuleTypesCommand_1.generateModuleTypesCommand)(otherCommands);
     (0, generateViewTypesCommand_1.generateViewTypesCommand)(otherCommands);

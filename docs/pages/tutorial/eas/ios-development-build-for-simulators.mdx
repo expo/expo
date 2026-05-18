@@ -35,7 +35,7 @@ In **eas.json**, add a new build profile called `ios-simulator` with the propert
     "development": {
       /* @hide ... */ /* @end */
     },
-    /* @info The <CODE>simulator</CODE> property is required for iOS Simulator builds. */
+    /* @info The `simulator` property is required for iOS Simulator builds. */
     "ios-simulator": {
       "ios": {
         "simulator": true
@@ -51,7 +51,7 @@ For a development build, it's necessary to have the `developmentClient` and `dis
 ```json eas.json
 {
   "ios-simulator": {
-    /* @info The <CODE>extends</CODE> keyword inherits properties from the <CODE>development</CODE> profile. */
+    /* @info The `extends` keyword inherits properties from the `development` profile. */
     "extends": "development",
     /* @end */
     "ios": {

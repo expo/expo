@@ -31,6 +31,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [Android] Fixed network state listener emitting a stale "connected" event when the device disconnects from the network on Android 13+. ([#44656](https://github.com/expo/expo/pull/44656) by [@gueroverdenwshq](https://github.com/gueroverdenwshq))
+- [Android] Make `isInternetReachable` much more robust. Also emit network state changes when network capabilities change. ([#45101](https://github.com/expo/expo/pull/45101) by [@LumaDevelopment](https://github.com/LumaDevelopment))
 
 ## 55.0.13 - 2026-04-09
 

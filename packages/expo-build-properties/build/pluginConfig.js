@@ -160,6 +160,7 @@ const schema = {
                     nullable: true,
                 },
                 enableBundleCompression: { type: 'boolean', nullable: true },
+                usePrecompiledHeaders: { type: 'boolean', nullable: true },
                 gifEnabled: { type: 'boolean', nullable: true },
                 webpEnabled: { type: 'boolean', nullable: true },
                 webpAnimated: { type: 'boolean', nullable: true },

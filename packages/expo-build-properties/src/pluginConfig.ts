@@ -228,6 +228,19 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
   enableBundleCompression?: boolean;
 
   /**
+   * Enable precompiled headers (PCH) for Android native builds.
+   * When enabled, creates a custom CMakeLists.txt with PCH support for all autolinked
+   * native libraries, significantly speeding up C++ compilation by pre-compiling
+   * commonly used React Native headers.
+   *
+   * > **Note:** This feature is experimental and might not work with all native libraries.
+   *
+   * @default false
+   * @experimental
+   */
+  usePrecompiledHeaders?: boolean;
+
+  /**
    * Enable GIF support in React Native's `<Image>` component. This property does not affect
    * `expo-image`, which uses Glide on Android.
    *
@@ -775,6 +788,7 @@ const schema: JSONSchema<PluginConfigType> = {
           nullable: true,
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
+        usePrecompiledHeaders: { type: 'boolean', nullable: true },
         gifEnabled: { type: 'boolean', nullable: true },
         webpEnabled: { type: 'boolean', nullable: true },
         webpAnimated: { type: 'boolean', nullable: true },

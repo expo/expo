@@ -153,6 +153,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/loadingindicator': [
+    'jetpack-compose/LoadingIndicator/index.tsx',
+    'expo-ui',
+  ],
 
   // Universal (cross-platform JS components)
   'expo-ui/universal/host': ['universal/Host/index.tsx', 'expo-ui'],
@@ -189,6 +193,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
+  'expo-type-information': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],

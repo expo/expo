@@ -32,7 +32,13 @@ export const isMatchingOrigin = (
   if (!request.headers.origin) {
     return true;
   }
-  const actualHost = new URL(`${request.headers.origin}`).host;
+  let actualHost: string;
+  try {
+    actualHost = new URL(`${request.headers.origin}`).host;
+  } catch {
+    // Malformed Origin — treat as untrusted.
+    return false;
+  }
   const expectedHost = new URL(serverBaseUrl).host;
   return actualHost === expectedHost;
 };

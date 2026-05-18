@@ -188,6 +188,16 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     return bytes.buffer as ArrayBuffer;
   }
 
+  async json(): Promise<any> {
+    return JSON.parse(await this.text());
+  }
+
+  async formData(): ReturnType<Response['formData']> {
+    return new Response(await this.arrayBuffer(), {
+      headers: this.type ? { 'Content-Type': this.type } : undefined,
+    }).formData();
+  }
+
   stream(): ReadableStream<Uint8Array<ArrayBuffer>> {
     return this.readableStream();
   }

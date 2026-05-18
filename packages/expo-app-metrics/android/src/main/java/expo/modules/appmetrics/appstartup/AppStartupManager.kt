@@ -18,6 +18,7 @@ import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimestampInISOFormat
 import expo.modules.appmetrics.utils.TimeUtils.getProcessStartTimeInMillis
 import org.json.JSONObject
+import java.util.concurrent.CopyOnWriteArrayList
 
 enum class AppStartType { COLD, WARM }
 
@@ -36,14 +37,20 @@ data class EASObserveAppStartupInfo(
 object AppStartupManager {
   private const val BACKGROUND_THRESHOLD_MS = 60_000L
 
-  private val _metrics: MutableList<Metric> = mutableListOf()
+  // CopyOnWriteArrayList: writes (addMetric) happen on the React/JS/main threads;
+  // reads (saveStartupMetricsIfNotSaved) happen on appContext.modulesQueue. Snapshot
+  // iteration on the read side means we never CME under concurrent add().
+  private val _metrics: MutableList<Metric> = CopyOnWriteArrayList()
   internal val metrics: List<Metric>
     get() = _metrics
 
-  private var bundleLoadStartTime: Long? = null
-  private var launchTimeInMillis: Long? = null
-  private var hasRecordedInteractive = false
-  private var hasRecordedFirstRender = false
+  // These fields are read and written across the React marker thread, the main thread,
+  // and the JS thread. @Volatile guarantees writes are visible across threads so the
+  // one-shot guards (hasRecorded*) don't spuriously fire twice.
+  @Volatile private var bundleLoadStartTime: Long? = null
+  @Volatile private var launchTimeInMillis: Long? = null
+  @Volatile private var hasRecordedInteractive = false
+  @Volatile private var hasRecordedFirstRender = false
 
   @Volatile
   var startupState: StartupState = StartupState.LAUNCHING

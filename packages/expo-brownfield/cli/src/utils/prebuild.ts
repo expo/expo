@@ -1,10 +1,10 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { getConfig, getPackageJson } from 'expo/config';
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
 
-import { runCommand } from './commands';
 import CLIError from './error';
 import { withSpinner } from './spinner';
 import type { Platform } from './types';
@@ -23,7 +23,7 @@ export const validatePrebuild = async (platform: Platform): Promise<void> => {
 
     if (response.shouldRunPrebuild) {
       await withSpinner({
-        operation: () => runCommand('npx', ['expo', 'prebuild', '--platform', platform]),
+        operation: () => spawnAsync('npx', ['expo', 'prebuild', '--platform', platform]),
         loaderMessage: `Running 'npx expo prebuild' for platform: ${platform}...`,
         successMessage: `Prebuild for ${platform} completed\n`,
         errorMessage: `Prebuild for ${platform} failed`,
