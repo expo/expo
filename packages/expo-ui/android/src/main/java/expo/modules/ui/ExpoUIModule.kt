@@ -2,7 +2,6 @@
 
 package expo.modules.ui
 
-import android.os.Handler
 import android.os.Looper
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
@@ -41,6 +40,7 @@ import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
 import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
 import expo.modules.ui.menu.ExposedDropdownMenuContent
 import expo.modules.ui.menu.ExposedDropdownMenuProps
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
