@@ -35,7 +35,9 @@ async function generateCodeSigningAsync(projectRoot, { certificateValidityDurati
     const certificatePEM = (0, code_signing_certificates_1.convertCertificateToCertificatePEM)(certificate);
     await Promise.all([
         fs_1.promises.writeFile(path_1.default.join(keyOutputDir, 'public-key.pem'), keyPairPEM.publicKeyPEM),
-        fs_1.promises.writeFile(path_1.default.join(keyOutputDir, 'private-key.pem'), keyPairPEM.privateKeyPEM),
+        fs_1.promises.writeFile(path_1.default.join(keyOutputDir, 'private-key.pem'), keyPairPEM.privateKeyPEM, {
+            mode: 0o600,
+        }),
         fs_1.promises.writeFile(path_1.default.join(certificateOutputDir, 'certificate.pem'), certificatePEM),
     ]);
     (0, log_1.log)(`Generated public and private keys output in ${keyOutputDir}. Remember to add them to .gitignore or to encrypt them. (e.g. with git-crypt)`);

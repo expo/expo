@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [cli] Write private key into owner-only permissions file ([#45880](https://github.com/expo/expo/pull/45880) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 29.0.17 — 2026-04-27
