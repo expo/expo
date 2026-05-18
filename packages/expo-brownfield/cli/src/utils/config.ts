@@ -19,9 +19,12 @@ const HOST_PROVIDED_FRAMEWORKS_KEY = 'ios.brownfieldHostProvidedFrameworks';
 
 export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
   const fused = !!options.fused;
-  // The fused sibling subproject only registers a `brownfieldRelease` publication
-  // (single-variant by design — fused libraries can't carry multiple AGP variants),
-  // so `--debug` / `--all` alongside `--fused` falls through to Release.
+
+  if (fused && (options.debug || options.all)) {
+    throw new Error(
+      '`--fused` only supports release builds. Drop `--debug`/`--all` or run without `--fused`.'
+    );
+  }
   const variant: BuildVariant = fused ? 'Release' : resolveVariant(options);
   const library = resolveLibrary(options);
   return {
