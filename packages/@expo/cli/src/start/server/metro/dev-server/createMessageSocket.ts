@@ -27,7 +27,8 @@ export function createMessagesSocket(options: MessageSocketOptions) {
 
   server.on('connection', (socket, req) => {
     const client = clients.registerSocket(socket);
-    const trusted = isLocalSocket(req.socket) && isMatchingOrigin(req, options.serverBaseUrl);
+    const isTrustedClient =
+      isLocalSocket(req.socket) && isMatchingOrigin(req, options.serverBaseUrl);
 
     // Assign the query parameters to the socket, used for `getpeers` requests
     // NOTE(cedric): this looks like a legacy feature, might be able to drop it
@@ -43,7 +44,7 @@ export function createMessagesSocket(options: MessageSocketOptions) {
     // Register message handler
     socket.on(
       'message',
-      createClientMessageHandler(socket, client.id, clients, broadcast, trusted)
+      createClientMessageHandler(socket, client.id, clients, broadcast, isTrustedClient)
     );
   });
 
@@ -67,7 +68,7 @@ function createClientMessageHandler(
   clientId: SocketId,
   clients: ReturnType<typeof createSocketMap>,
   broadcast: ReturnType<typeof createBroadcaster>,
-  trusted: boolean
+  isTrustedClient: boolean
 ) {
   function handleServerRequest(message: RequestMessage) {
     // Ignore messages without identifiers, unable to link responses
@@ -94,7 +95,7 @@ function createClientMessageHandler(
 
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
-      if (!trusted || !CLIENT_BROADCAST_ALLOWED_METHODS.has(message.method)) return;
+      if (!isTrustedClient || !CLIENT_BROADCAST_ALLOWED_METHODS.has(message.method)) return;
       return broadcast(null, data.toString());
     }
 
