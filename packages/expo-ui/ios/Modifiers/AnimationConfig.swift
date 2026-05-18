@@ -20,10 +20,21 @@ internal enum AnimationCompletionCriteriaType: String, Enumerable {
 
 /**
  Describes a SwiftUI `Animation` value over the JS bridge. Consumed by both
- the `animation(_:value:)` view modifier and the `withAnimated(_:_:)`
+ the `animation(_:value:)` view modifier and the `withAnimation(_:_:)`
  function so they accept the same JS shape.
  */
 internal struct AnimationConfig: Record {
+  // Shared fallbacks used when the JS side omits a parameter. Mirrors
+  // SwiftUI's own defaults so each animation variant resolves the same way.
+  private static let defaultDuration: Double = 0.5
+  private static let defaultResponse: Double = 0.5
+  private static let defaultDampingFraction: Double = 0.825
+  private static let defaultBlendDuration: Double = 0.0
+  private static let defaultBounce: Double = 0.0
+  private static let defaultMass: Double = 1.0
+  private static let defaultInitialVelocity: Double = 0.0
+  private static let defaultAutoreverses: Bool = true
+
   @Field var type: AnimationType = .default
   @Field var duration: Double?
   @Field var response: Double?
@@ -53,15 +64,15 @@ internal struct AnimationConfig: Record {
     case .spring:
       if response != nil || dampingFraction != nil {
         animation = .spring(
-          response: response ?? 0.5,
-          dampingFraction: dampingFraction ?? 0.825,
-          blendDuration: blendDuration ?? 0.0
+          response: response ?? Self.defaultResponse,
+          dampingFraction: dampingFraction ?? Self.defaultDampingFraction,
+          blendDuration: blendDuration ?? Self.defaultBlendDuration
         )
       } else if duration != nil || bounce != nil {
         animation = .spring(
-          duration: duration ?? 0.5,
-          bounce: bounce ?? 0.0,
-          blendDuration: blendDuration ?? 0.0
+          duration: duration ?? Self.defaultDuration,
+          bounce: bounce ?? Self.defaultBounce,
+          blendDuration: blendDuration ?? Self.defaultBlendDuration
         )
       } else if let blendDuration {
         animation = .spring(blendDuration: blendDuration)
@@ -71,16 +82,16 @@ internal struct AnimationConfig: Record {
     case .interpolatingSpring:
       if duration != nil || bounce != nil {
         animation = .interpolatingSpring(
-          duration: duration ?? 0.5,
-          bounce: bounce ?? 0.0,
-          initialVelocity: initialVelocity ?? 0.0
+          duration: duration ?? Self.defaultDuration,
+          bounce: bounce ?? Self.defaultBounce,
+          initialVelocity: initialVelocity ?? Self.defaultInitialVelocity
         )
       } else if let stiffness, let damping {
         animation = .interpolatingSpring(
-          mass: mass ?? 1.0,
+          mass: mass ?? Self.defaultMass,
           stiffness: stiffness,
           damping: damping,
-          initialVelocity: initialVelocity ?? 0.0
+          initialVelocity: initialVelocity ?? Self.defaultInitialVelocity
         )
       } else {
         animation = .interpolatingSpring
@@ -93,7 +104,7 @@ internal struct AnimationConfig: Record {
       animation = animation.delay(delay)
     }
     if let repeatCount {
-      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses ?? false)
+      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses ?? Self.defaultAutoreverses)
     }
 
     return animation

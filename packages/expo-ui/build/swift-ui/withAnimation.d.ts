@@ -2,7 +2,7 @@ import type { ChainableAnimationType } from './modifiers/animation/types';
 /**
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/animationcompletioncriteria).
  */
-export type WithAnimatedCompletionCriteria = 'logicallyComplete' | 'removed';
+export type WithAnimationCompletionCriteria = 'logicallyComplete' | 'removed';
 /**
  * Mirrors SwiftUI's [`withAnimation(_:_:)`](https://developer.apple.com/documentation/swiftui/withanimation(_:_:)).
  * The body must be a worklet so the mutations run synchronously on the
@@ -22,5 +22,5 @@ export type WithAnimatedCompletionCriteria = 'logicallyComplete' | 'removed';
  * @param completionCriteria Controls when `completion` fires. Defaults to
  * `'logicallyComplete'`.
  */
-export declare function withAnimated(animation: ChainableAnimationType | null, body: () => void, completion?: () => void, completionCriteria?: WithAnimatedCompletionCriteria): void;
-//# sourceMappingURL=withAnimated.d.ts.map
+export declare function withAnimation(animation: ChainableAnimationType | null, body: () => void, completion?: () => void, completionCriteria?: WithAnimationCompletionCriteria): void;
+//# sourceMappingURL=withAnimation.d.ts.map

@@ -9,7 +9,7 @@ const ExpoUI = requireNativeModule('ExpoUI');
 /**
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/animationcompletioncriteria).
  */
-export type WithAnimatedCompletionCriteria = 'logicallyComplete' | 'removed';
+export type WithAnimationCompletionCriteria = 'logicallyComplete' | 'removed';
 
 /**
  * Mirrors SwiftUI's [`withAnimation(_:_:)`](https://developer.apple.com/documentation/swiftui/withanimation(_:_:)).
@@ -30,22 +30,22 @@ export type WithAnimatedCompletionCriteria = 'logicallyComplete' | 'removed';
  * @param completionCriteria Controls when `completion` fires. Defaults to
  * `'logicallyComplete'`.
  */
-export function withAnimated(
+export function withAnimation(
   animation: ChainableAnimationType | null,
   body: () => void,
   completion?: () => void,
-  completionCriteria?: WithAnimatedCompletionCriteria
+  completionCriteria?: WithAnimationCompletionCriteria
 ): void {
   if (!worklets) {
     throw new Error(
-      "withAnimated needs the 'react-native-worklets' package, which couldn't be loaded. " +
-        'Install react-native-worklets and rebuild the native app, then call withAnimated again.'
+      "withAnimation needs the 'react-native-worklets' package, which couldn't be loaded. " +
+        'Install react-native-worklets and rebuild the native app, then call withAnimation again.'
     );
   }
 
   if (!worklets.isWorkletFunction(body)) {
     throw new Error(
-      'withAnimated body must be a worklet. Worklets run synchronously on the UI thread ' +
+      'withAnimation body must be a worklet. Worklets run synchronously on the UI thread ' +
         "so state changes are captured by SwiftUI's animation transaction. " +
         "Add the 'worklet' directive as the first statement: " +
         "() => { 'worklet'; state.value = next; }."
@@ -56,7 +56,7 @@ export function withAnimated(
   if (completion) {
     if (!worklets.isWorkletFunction(completion)) {
       throw new Error(
-        "withAnimated completion must be a worklet. Add the 'worklet' directive as the " +
+        "withAnimation completion must be a worklet. Add the 'worklet' directive as the " +
           'first statement in your completion callback.'
       );
     }
@@ -67,5 +67,5 @@ export function withAnimated(
     animation == null ? null : animation[VALUE_SYMBOL]();
 
   const bodyCallback = new ExpoUI.WorkletCallback(worklets.createSerializable(body));
-  ExpoUI.withAnimated(animationObject, bodyCallback, completionCallback, completionCriteria);
+  ExpoUI.withAnimation(animationObject, bodyCallback, completionCallback, completionCriteria);
 }

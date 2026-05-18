@@ -39,7 +39,7 @@ public final class ExpoUIModule: Module {
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
-    AsyncFunction("withAnimated") { (
+    AsyncFunction("withAnimation") { (
       animation: AnimationConfig?,
       body: WorkletCallback,
       completion: WorkletCallback?,
@@ -60,7 +60,7 @@ public final class ExpoUIModule: Module {
         }
         #if DEBUG
         log.warn(
-          "withAnimated completion callback requires iOS 17 or tvOS 17. " +
+          "withAnimation completion callback requires iOS 17 or tvOS 17. " +
           "The animation will still run, but the completion callback will not be invoked on this OS version."
         )
         #endif
