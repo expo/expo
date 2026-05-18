@@ -4,7 +4,7 @@
 
 #ifdef __cplusplus
 
-#include <ExpoModulesCore/ExpoViewProps.h>
+#include "ExpoModulesCoreCommonUmbrella.h"
 
 namespace expo {
 

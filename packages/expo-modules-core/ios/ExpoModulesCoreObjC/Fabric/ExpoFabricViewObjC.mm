@@ -5,8 +5,8 @@
 
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
-#import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
+#import "ExpoModulesCoreCommonUmbrella.h"
 
 #import <React/RCTComponentViewFactory.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>

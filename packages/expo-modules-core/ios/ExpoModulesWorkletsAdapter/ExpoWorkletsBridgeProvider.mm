@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import "ExpoWorkletsBridgeProvider.h"
+#import <ExpoModulesWorkletsAdapter/ExpoWorkletsBridgeProvider.h>
 #import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
 #import <ExpoModulesWorklets/EXWorkletsProvider+Private.h>
 #import <ExpoModulesCore/EXJSIConversions.h>

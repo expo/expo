@@ -1,6 +1,6 @@
 #import <ExpoModulesCore/EXJSUtils.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/EventEmitter.h>
+#import "ExpoModulesCoreCommonUmbrella.h"
 
 @implementation EXJSUtils
 

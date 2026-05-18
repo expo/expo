@@ -10,7 +10,7 @@
  */
 
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
-#import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
+#import "ExpoModulesCoreCommonUmbrella.h"
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 
 #import <ExpoModulesCore/EXJSIConversions.h>
