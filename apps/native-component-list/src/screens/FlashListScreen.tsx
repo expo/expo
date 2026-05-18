@@ -1,5 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
+import { BodyText } from '../components/BodyText';
 
 interface ItemType {
   title: string;
@@ -29,8 +30,8 @@ function Item(item: ItemType) {
     <View style={styles.itemContainer}>
       <Image style={styles.itemImage} source={{ uri: manifest[item.index % manifest.length] }} />
       <View>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemSubtitle}>Subtitle</Text>
+        <BodyText style={styles.itemTitle}>{item.title}</BodyText>
+        <BodyText style={styles.itemSubtitle}>Subtitle</BodyText>
       </View>
     </View>
   );
@@ -53,12 +54,10 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     paddingBottom: 4,
-    color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
   },
   itemSubtitle: {
-    color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
     opacity: 0.6,

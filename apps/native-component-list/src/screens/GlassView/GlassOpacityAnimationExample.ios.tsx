@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { BodyText } from '../../components/BodyText';
 
 const AnimatedGlassView = Animated.createAnimatedComponent(GlassView);
 
@@ -39,7 +40,7 @@ export default function GlassOpacityAnimationExample({
 
   return (
     <>
-      <Text style={styles.title}>Opacity Animation Workaround (iOS 26.1+)</Text>
+      <BodyText style={styles.title}>Opacity Animation Workaround (iOS 26.1+)</BodyText>
       <View style={styles.backgroundContainer}>
         <Image
           style={styles.backgroundImage}

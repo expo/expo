@@ -31,6 +31,7 @@ import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 import SimpleActionDemo from '../components/SimpleActionDemo';
+import { BodyText } from '../components/BodyText';
 
 FileSystemScreen.navigationOptions = {
   title: 'FileSystem',
@@ -568,7 +569,7 @@ function CopyMoveSection({
       <HeadingText>Copy & Move</HeadingText>
       <View style={styles.optionRow}>
         <Checkbox value={overwrite} onValueChange={setOverwrite} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>overwrite</Text>
+        <BodyText style={styles.optionLabel}>overwrite</BodyText>
       </View>
       <SimpleActionDemo
         title="Copy to cache dir (file://)"
@@ -860,22 +861,22 @@ function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => vo
       <HeadingText>File Picker</HeadingText>
       <View style={styles.optionRow}>
         <Checkbox value={multiple} onValueChange={setMultiple} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>multiple files</Text>
+        <BodyText style={styles.optionLabel}>multiple files</BodyText>
       </View>
-      <Text>Mime types</Text>
+      <BodyText>Mime types</BodyText>
       <View style={styles.optionRow}>
         <Checkbox value={imageMime} onValueChange={setPngMime} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>images</Text>
+        <BodyText style={styles.optionLabel}>images</BodyText>
       </View>
       <View style={styles.optionRow}>
         <Checkbox value={pdfMime} onValueChange={setPdfMime} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>pdf files</Text>
+        <BodyText style={styles.optionLabel}>pdf files</BodyText>
       </View>
       <View style={styles.optionRow}>
         <Checkbox value={allMime} onValueChange={setAllMime} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>all files</Text>
+        <BodyText style={styles.optionLabel}>all files</BodyText>
       </View>
-      <Text> Selected mime types: {JSON.stringify(mimeTypes())}</Text>
+      <BodyText> Selected mime types: {JSON.stringify(mimeTypes())}</BodyText>
       <SimpleActionDemo
         title={multiple ? 'Pick multiple files' : 'Pick a single file'}
         action={async () => {
@@ -905,16 +906,16 @@ function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => vo
                     style={{ width: 100, height: 100 }}
                   />
                 ) : null}
-                <Text numberOfLines={1} ellipsizeMode="middle">
+                <BodyText numberOfLines={1} ellipsizeMode="middle">
                   {file?.name} ({file?.size! / 1000} KB)
-                </Text>
-                <Text numberOfLines={1} ellipsizeMode="middle">
+                </BodyText>
+                <BodyText numberOfLines={1} ellipsizeMode="middle">
                   URI: {file?.uri}
-                </Text>
-                <Text numberOfLines={1} ellipsizeMode="middle">
+                </BodyText>
+                <BodyText numberOfLines={1} ellipsizeMode="middle">
                   Mime type: {file?.type}
-                </Text>
-                <Text>Last modified: {file?.lastModified}</Text>
+                </BodyText>
+                <BodyText>Last modified: {file?.lastModified}</BodyText>
               </View>
             );
           })}

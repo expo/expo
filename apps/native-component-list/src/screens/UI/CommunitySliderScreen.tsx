@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Page } from '../../components/Page';
+import { BodyText } from '../../components/BodyText';
 
 const RANGES = [
   { label: '0 – 1', min: 0, max: 1 },
@@ -100,15 +101,15 @@ export default function CommunitySliderScreen() {
           onSelect={setWidthIndex}
         />
         <View style={styles.row}>
-          <Text style={styles.rowLabel}>Disabled</Text>
+          <BodyText style={styles.rowLabel}>Disabled</BodyText>
           <Switch value={disabled} onValueChange={setDisabled} />
         </View>
         <View style={styles.row}>
-          <Text style={styles.rowLabel}>Inverted</Text>
+          <BodyText style={styles.rowLabel}>Inverted</BodyText>
           <Switch value={inverted} onValueChange={setInverted} />
         </View>
         <View style={styles.row}>
-          <Text style={styles.rowLabel}>Limits (inner 60%)</Text>
+          <BodyText style={styles.rowLabel}>Limits (inner 60%)</BodyText>
           <Switch value={limited} onValueChange={setLimited} />
         </View>
       </View>
@@ -133,7 +134,7 @@ function PillRow({
 }) {
   return (
     <View style={styles.row}>
-      <Text style={styles.rowLabel}>{label}</Text>
+      <BodyText style={styles.rowLabel}>{label}</BodyText>
       <View style={styles.pillGroup}>
         {options.map((opt, i) => {
           const selected = i === index;
@@ -177,7 +178,6 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     fontSize: 15,
-    color: '#374151',
     fontWeight: '500',
   },
   pillGroup: {

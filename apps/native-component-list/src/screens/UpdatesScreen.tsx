@@ -3,6 +3,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
 
 import Button from '../components/Button';
+import { BodyText } from '../components/BodyText';
 
 export default function UpdatesScreen() {
   const getRandomColor = () => {
@@ -137,7 +138,7 @@ export default function UpdatesScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Configuration Options</Text>
+        <BodyText style={styles.sectionTitle}>Configuration Options</BodyText>
         <Button
           onPress={() => handleShowReloadScreen(setDefaultOptions)}
           title="Set Default Options"
@@ -168,7 +169,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
   },
   section: {
     marginBottom: 20,

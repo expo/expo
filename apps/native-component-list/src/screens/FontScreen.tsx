@@ -7,13 +7,18 @@ import * as Font from 'expo-font';
 import { RenderToImageResult } from 'expo-font';
 import { Image } from 'expo-image';
 import { useState, useEffect, Fragment } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View, Image as CoreImage } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, Image as CoreImage } from 'react-native';
 
 import { Page, Section } from '../components/Page';
+import { BodyText } from '../components/BodyText';
+import { useTheme } from 'ThemeProvider';
 
 const round = (num: number) => Math.round(num * 100) / 100;
 
 export default function FontScreen() {
+  const { theme } = useTheme();
+  const color = theme.text.default;
+
   const renderedFontAwesomeImage = useLoadIcon(() =>
     Font.renderToImageAsync(String.fromCodePoint(62491), {
       fontFamily: 'FontAwesome5Free-Brand',
@@ -49,14 +54,14 @@ export default function FontScreen() {
     <ScrollView style={{ flex: 1 }}>
       <Page>
         <Section title="loadAsync">
-          <Text style={{ fontFamily: 'space-mono', fontSize: 16 }}>
+          <BodyText style={{ fontFamily: 'space-mono', fontSize: 16 }}>
             Font icons sets and other custom fonts can be loaded from the web
-          </Text>
-          <Text style={{ fontFamily: 'Roboto', fontSize: 16 }}>
+          </BodyText>
+          <BodyText style={{ fontFamily: 'Roboto', fontSize: 16 }}>
             Font icons sets and other custom fonts can be loaded by providing remote uri as well.
-          </Text>
+          </BodyText>
           {Platform.OS === 'ios' && (
-            <Text
+            <BodyText
               adjustsFontSizeToFit
               numberOfLines={2}
               style={{
@@ -64,10 +69,10 @@ export default function FontScreen() {
                 fontSize: 420,
               }}>
               Custom font with `adjustsFontSizeToFit` on iOS
-            </Text>
+            </BodyText>
           )}
           {Platform.OS === 'ios' && (
-            <Text
+            <BodyText
               adjustsFontSizeToFit
               numberOfLines={1}
               style={{
@@ -75,88 +80,100 @@ export default function FontScreen() {
                 fontSize: 420,
               }}>
               Custom remote uri font with `adjustsFontSizeToFit` on iOS
-            </Text>
+            </BodyText>
           )}
         </Section>
         <Section title="Ionicons">
           <View style={styles.vectorIconsRow}>
-            <Ionicons name="search-sharp" size={25} />
-            <Ionicons name="share-outline" size={25} />
-            <Ionicons name="thunderstorm-outline" size={25} />
-            <Ionicons name="volume-medium" size={25} />
-            <Ionicons name="wine-sharp" size={25} />
-            <Ionicons name="newspaper-outline" size={25} />
+            <Ionicons name="search-sharp" size={25} color={color} />
+            <Ionicons name="share-outline" size={25} color={color} />
+            <Ionicons name="thunderstorm-outline" size={25} color={color} />
+            <Ionicons name="volume-medium" size={25} color={color} />
+            <Ionicons name="wine-sharp" size={25} color={color} />
+            <Ionicons name="newspaper-outline" size={25} color={color} />
           </View>
           <View style={styles.vectorIconsRow}>
-            <Ionicons name="logo-facebook" size={25} />
-            <Ionicons name="logo-apple" size={25} />
-            <Ionicons name="logo-amazon" size={25} />
-            <Ionicons name="logo-npm" size={25} />
-            <Ionicons name="logo-google" size={25} />
-            <Ionicons name="alarm" size={25} />
+            <Ionicons name="logo-facebook" size={25} color={color} />
+            <Ionicons name="logo-apple" size={25} color={color} />
+            <Ionicons name="logo-amazon" size={25} color={color} />
+            <Ionicons name="logo-npm" size={25} color={color} />
+            <Ionicons name="logo-google" size={25} color={color} />
+            <Ionicons name="alarm" size={25} color={color} />
           </View>
         </Section>
         <Section title="FontAwesome5">
           <View style={styles.vectorIconsRow}>
-            <FontAwesome5 name="laugh-wink" size={25} />
-            <FontAwesome5 name="smile-beam" size={25} />
-            <FontAwesome5 name="map" size={25} />
-            <FontAwesome5 name="bacon" size={25} />
-            <FontAwesome5 name="basketball-ball" size={25} />
-            <FontAwesome5 name="biking" size={25} />
+            <FontAwesome5 name="laugh-wink" size={25} color={color} />
+            <FontAwesome5 name="smile-beam" size={25} color={color} />
+            <FontAwesome5 name="map" size={25} color={color} />
+            <FontAwesome5 name="bacon" size={25} color={color} />
+            <FontAwesome5 name="basketball-ball" size={25} color={color} />
+            <FontAwesome5 name="biking" size={25} color={color} />
           </View>
           <View style={styles.vectorIconsRow}>
-            <FontAwesome5 name="home" size={25} />
-            <FontAwesome5 name="paw" size={25} />
-            <FontAwesome5 name="map" size={25} solid />
-            <FontAwesome5 name="camera" size={25} />
-            <FontAwesome5 name="cat" size={25} />
-            <FontAwesome5 name="horse" size={25} />
+            <FontAwesome5 name="home" size={25} color={color} />
+            <FontAwesome5 name="paw" size={25} color={color} />
+            <FontAwesome5 name="map" size={25} solid color={color} />
+            <FontAwesome5 name="camera" size={25} color={color} />
+            <FontAwesome5 name="cat" size={25} color={color} />
+            <FontAwesome5 name="horse" size={25} color={color} />
           </View>
           <View style={styles.vectorIconsRow}>
-            <FontAwesome5 name="react" size={25} />
-            <FontAwesome5 name="aws" size={25} />
-            <FontAwesome5 name="swift" size={25} />
-            <FontAwesome5 name="facebook" size={25} />
-            <FontAwesome5 name="twitter" size={25} />
-            <FontAwesome5 name="apple" size={25} />
+            <FontAwesome5 name="react" size={25} color={color} />
+            <FontAwesome5 name="aws" size={25} color={color} />
+            <FontAwesome5 name="swift" size={25} color={color} />
+            <FontAwesome5 name="facebook" size={25} color={color} />
+            <FontAwesome5 name="twitter" size={25} color={color} />
+            <FontAwesome5 name="apple" size={25} color={color} />
           </View>
         </Section>
         <Section title="Custom Fonts">
           <View style={styles.customFonts}>
             <View style={{ flex: 1 }}>
               {/* Loaded from .otf files in asset directory */}
-              <Text style={{ fontFamily: 'Inter-ThinItalic', fontSize: 16 }}>Inter-ThinItalic</Text>
-              <Text style={{ fontFamily: 'Inter-BoldItalic', fontSize: 16 }}>Inter-BoldItalic</Text>
-              <Text style={{ fontFamily: 'Inter-ExtraBoldItalic', fontSize: 16 }}>
+              <BodyText style={{ fontFamily: 'Inter-ThinItalic', fontSize: 16 }}>
+                Inter-ThinItalic
+              </BodyText>
+              <BodyText style={{ fontFamily: 'Inter-BoldItalic', fontSize: 16 }}>
+                Inter-BoldItalic
+              </BodyText>
+              <BodyText style={{ fontFamily: 'Inter-ExtraBoldItalic', fontSize: 16 }}>
                 Inter-ExtraBoldItalic
-              </Text>
+              </BodyText>
               {/* Loaded from @expo-google-fonts/inter */}
-              <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 16 }}>Inter_500Medium</Text>
-              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
+              <BodyText style={{ fontFamily: 'Inter_500Medium', fontSize: 16 }}>
+                Inter_500Medium
+              </BodyText>
+              <BodyText style={{ fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>
                 Inter_600SemiBold
-              </Text>
-              <Text style={{ fontFamily: 'Inter_800ExtraBold', fontSize: 16 }}>
+              </BodyText>
+              <BodyText style={{ fontFamily: 'Inter_800ExtraBold', fontSize: 16 }}>
                 Inter_800ExtraBold
-              </Text>
-              <Text style={{ fontFamily: 'Inter_900Black', fontSize: 16 }}>Inter_900Black</Text>
+              </BodyText>
+              <BodyText style={{ fontFamily: 'Inter_900Black', fontSize: 16 }}>
+                Inter_900Black
+              </BodyText>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: 'OpenSans_Condensed-SemiBold', fontSize: 16 }}>
+              <BodyText style={{ fontFamily: 'OpenSans_Condensed-SemiBold', fontSize: 16 }}>
                 OpenSans_Condensed-SemiBold
-              </Text>
-              <Text style={{ fontFamily: 'OpenSans_Condensed-BoldItalic', fontSize: 16 }}>
+              </BodyText>
+              <BodyText style={{ fontFamily: 'OpenSans_Condensed-BoldItalic', fontSize: 16 }}>
                 OpenSans_Condensed-BoldItalic
-              </Text>
-              <Text style={{ fontFamily: 'OpenSans-Light', fontSize: 16 }}>OpenSans-Light</Text>
-              <Text style={{ fontFamily: 'OpenSans-Medium', fontSize: 16 }}>OpenSans-Medium</Text>
-              <Text style={{ fontFamily: 'OpenSans-SemiBold', fontSize: 16 }}>
+              </BodyText>
+              <BodyText style={{ fontFamily: 'OpenSans-Light', fontSize: 16 }}>
+                OpenSans-Light
+              </BodyText>
+              <BodyText style={{ fontFamily: 'OpenSans-Medium', fontSize: 16 }}>
+                OpenSans-Medium
+              </BodyText>
+              <BodyText style={{ fontFamily: 'OpenSans-SemiBold', fontSize: 16 }}>
                 OpenSans-SemiBold
-              </Text>
+              </BodyText>
 
-              <Text style={{ fontFamily: 'OpenSans-ExtraBoldItalic', fontSize: 16 }}>
+              <BodyText style={{ fontFamily: 'OpenSans-ExtraBoldItalic', fontSize: 16 }}>
                 OpenSans-ExtraBoldItalic
-              </Text>
+              </BodyText>
             </View>
           </View>
         </Section>
@@ -165,10 +182,10 @@ export default function FontScreen() {
         <Section title="renderToImageAsync" gap={5}>
           {renderedFontAwesomeImage && (
             <>
-              <Text>
+              <BodyText>
                 FontAwesome5Free rendered to image
                 {round(renderedFontAwesomeImage.width)}x{round(renderedFontAwesomeImage.height)}
-              </Text>
+              </BodyText>
               <Image
                 source={{ uri: renderedFontAwesomeImage.uri }}
                 style={{
@@ -182,10 +199,10 @@ export default function FontScreen() {
           )}
           {renderedFontAsImage && (
             <>
-              <Text>
+              <BodyText>
                 Inter-BoldItalic rendered to image
                 {round(renderedFontAsImage.width)}x{round(renderedFontAsImage.height)}
-              </Text>
+              </BodyText>
               <Image
                 source={{ uri: renderedFontAsImage.uri }}
                 style={{
@@ -199,11 +216,11 @@ export default function FontScreen() {
           )}
           {renderedFontAsImageLineHeight100 && (
             <>
-              <Text>
+              <BodyText>
                 Inter-BoldItalic rendered to image line-heigth: 100{' '}
                 {round(renderedFontAsImageLineHeight100.width)}x
                 {round(renderedFontAsImageLineHeight100.height)}
-              </Text>
+              </BodyText>
               <Image
                 source={{ uri: renderedFontAsImageLineHeight100.uri }}
                 style={{
@@ -213,8 +230,8 @@ export default function FontScreen() {
                 }}
                 contentFit="cover"
               />
-              <Text>Image above should look the same as &lt;Text&gt;</Text>
-              <Text
+              <BodyText>Image above should look the same as &lt;Text&gt;</BodyText>
+              <BodyText
                 style={{
                   fontFamily: 'Inter-BoldItalic',
                   fontSize: 100,
@@ -222,16 +239,16 @@ export default function FontScreen() {
                   backgroundColor: 'grey',
                 }}>
                 ÅBÇD
-              </Text>
+              </BodyText>
             </>
           )}
           {renderedFontAsImageLineHeight150 && (
             <>
-              <Text>
+              <BodyText>
                 Inter-BoldItalic rendered to image line-heigth: 150{' '}
                 {round(renderedFontAsImageLineHeight150.width)}x
                 {round(renderedFontAsImageLineHeight150.height)}
-              </Text>
+              </BodyText>
               <Image
                 source={{ uri: renderedFontAsImageLineHeight150.uri }}
                 style={{
@@ -241,8 +258,8 @@ export default function FontScreen() {
                 }}
                 contentFit="cover"
               />
-              <Text>Image above should look the same as &lt;Text&gt;</Text>
-              <Text
+              <BodyText>Image above should look the same as &lt;Text&gt;</BodyText>
+              <BodyText
                 style={{
                   fontFamily: 'Inter-BoldItalic',
                   fontSize: 100,
@@ -250,7 +267,7 @@ export default function FontScreen() {
                   backgroundColor: 'grey',
                 }}>
                 ÅBÇD
-              </Text>
+              </BodyText>
             </>
           )}
         </Section>
@@ -314,16 +331,18 @@ function VectorIconSection() {
 
   return (
     <Section title="vector icon to image">
-      <Text>rendered in expo-image and RN-core Image</Text>
-      <Text>To get the pixel size of an image, multiply `renderedImage.dimension * scale`</Text>
+      <BodyText>rendered in expo-image and RN-core Image</BodyText>
+      <BodyText>
+        To get the pixel size of an image, multiply `renderedImage.dimension * scale`
+      </BodyText>
 
       {icons.map((icon) => {
         return (
           !!icon && (
             <Fragment key={icon.uri}>
-              <Text>
+              <BodyText>
                 Icon rendered to image {round(icon.width)}x{round(icon.height)}, scale: {icon.scale}
-              </Text>
+              </BodyText>
               <View style={{ flexDirection: 'row', gap: 4 }}>
                 <Image
                   source={icon}

@@ -1,9 +1,10 @@
-import { Platform, Text, View } from 'react-native';
+import { Platform, View } from 'react-native';
+import { BodyText } from '../../components/BodyText';
 
 export default function GlassViewScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>GlassView is not supported on {Platform.OS}</Text>
+      <BodyText>GlassView is not supported on {Platform.OS}</BodyText>
     </View>
   );
 }

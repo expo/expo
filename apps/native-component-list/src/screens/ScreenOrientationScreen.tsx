@@ -1,9 +1,10 @@
 import { Platform, type EventSubscription } from 'expo-modules-core';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
-import { ScrollView, Text, SafeAreaView } from 'react-native';
+import { ScrollView, SafeAreaView } from 'react-native';
 
 import ListButton from '../components/ListButton';
+import { BodyText } from '../components/BodyText';
 
 interface State {
   orientation?: ScreenOrientation.Orientation;
@@ -128,10 +129,12 @@ export default class ScreenOrientationScreen extends React.Component<object, Sta
       <SafeAreaView>
         <ScrollView style={{ padding: 10 }}>
           {orientation !== undefined && (
-            <Text>Orientation: {ScreenOrientation.Orientation[orientation]}</Text>
+            <BodyText>Orientation: {ScreenOrientation.Orientation[orientation]}</BodyText>
           )}
           {orientationLock !== undefined && (
-            <Text>OrientationLock: {ScreenOrientation.OrientationLock[orientationLock]}</Text>
+            <BodyText>
+              OrientationLock: {ScreenOrientation.OrientationLock[orientationLock]}
+            </BodyText>
           )}
           {this.getScreenOrientationLockOptions().map((o) => (
             <ListButton key={o.key} onPress={() => this.lock(o.value)} title={o.key} />

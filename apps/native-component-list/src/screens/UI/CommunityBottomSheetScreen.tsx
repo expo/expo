@@ -7,6 +7,7 @@ import BottomSheet, {
 import { useRef, useState } from 'react';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BodyText } from '../../components/BodyText';
 
 function SheetControls({ snapCount = 0 }: { snapCount?: number }) {
   const { close, snapToIndex } = useBottomSheet();
@@ -39,22 +40,22 @@ export default function CommunityBottomSheetScreen() {
       <BottomSheetModalProvider>
         <View style={styles.container}>
           {/* 1. BottomSheet with snapPoints */}
-          <Text style={styles.heading}>BottomSheet (snap points)</Text>
-          <Text style={styles.hint}>snapPoints: 25%, 50%, 90%</Text>
+          <BodyText style={styles.heading}>BottomSheet (snap points)</BodyText>
+          <BodyText style={styles.hint}>snapPoints: 25%, 50%, 90%</BodyText>
           <View style={styles.buttonRow}>
             <Button title="Open" onPress={() => sheetRef.current?.snapToIndex(0)} />
           </View>
 
           {/* 2. BottomSheetModal with snapPoints */}
-          <Text style={styles.heading}>BottomSheetModal (snap points)</Text>
-          <Text style={styles.hint}>snapPoints: 40%, 80%</Text>
+          <BodyText style={styles.heading}>BottomSheetModal (snap points)</BodyText>
+          <BodyText style={styles.hint}>snapPoints: 40%, 80%</BodyText>
           <View style={styles.buttonRow}>
             <Button title="Open" onPress={() => modalRef.current?.present()} />
           </View>
 
           {/* 3. BottomSheetModal fit to content */}
-          <Text style={styles.heading}>BottomSheetModal (fit to content)</Text>
-          <Text style={styles.hint}>No snapPoints — sheet sizes to content</Text>
+          <BodyText style={styles.heading}>BottomSheetModal (fit to content)</BodyText>
+          <BodyText style={styles.hint}>No snapPoints — sheet sizes to content</BodyText>
           <View style={styles.buttonRow}>
             <Button title="Open" onPress={() => fitRef.current?.present()} />
             <Button
@@ -143,7 +144,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     paddingTop: 20,
-    backgroundColor: '#f5f5f5',
     gap: 4,
   },
   heading: {

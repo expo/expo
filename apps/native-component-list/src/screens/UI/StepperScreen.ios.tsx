@@ -133,7 +133,6 @@ export default function StepperScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   contentContainer: {
     padding: 16,
@@ -152,13 +151,12 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e1e5e9',
+    // borderBottomColor: '#e1e5e9',
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
-    color: '#333',
   },
   stepperContainer: {
     marginBottom: 12,

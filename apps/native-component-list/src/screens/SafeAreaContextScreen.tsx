@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { Button, Platform, ScrollView, Text, View } from 'react-native';
+import { Button, Platform, ScrollView, View } from 'react-native';
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -8,6 +8,7 @@ import {
 } from 'react-native-safe-area-context';
 
 import HeadingText from '../components/HeadingText';
+import { BodyText } from '../components/BodyText';
 
 export default function SafeAreaContextScreen({
   navigation,
@@ -36,9 +37,11 @@ export default function SafeAreaContextScreen({
               paddingVertical: 8,
             }}>
             <HeadingText>Using useSafeArea hook</HeadingText>
-            <Text style={{ marginVertical: 10 }}>{JSON.stringify(insets, null, 2)}</Text>
+            <BodyText style={{ marginVertical: 10 }}>{JSON.stringify(insets, null, 2)}</BodyText>
             <HeadingText>Using SafeAreaConsumer component</HeadingText>
-            <Text style={{ marginVertical: 10 }}>{JSON.stringify(consumerInsets, null, 2)}</Text>
+            <BodyText style={{ marginVertical: 10 }}>
+              {JSON.stringify(consumerInsets, null, 2)}
+            </BodyText>
             <Button title="Switch to SafeAreaView" onPress={() => setFocused('view')} />
             <View style={{ marginVertical: Platform.OS === 'ios' ? 0 : 10 }} />
             <Button title="Go back to APIs" onPress={() => navigation.goBack()} />
@@ -50,10 +53,10 @@ export default function SafeAreaContextScreen({
     return (
       <SafeAreaView style={{ alignItems: 'center' }}>
         <HeadingText>Using SafeAreaView</HeadingText>
-        <Text style={{ marginVertical: 10, textAlign: 'center' }}>
+        <BodyText style={{ marginVertical: 10, textAlign: 'center' }}>
           If it works as expected then the above heading will not be obscured by a device notch or
           status bar.
-        </Text>
+        </BodyText>
         <Button
           title="Switch to SafeAreaConsumer & useSafeArea hook"
           onPress={() => setFocused('hook')}

@@ -4,6 +4,7 @@ import { FlatList, PixelRatio, StyleSheet, Text, TouchableHighlight, View } from
 
 import examples from './examples';
 import { optionalRequire } from '../../navigation/routeBuilder';
+import { BodyText } from '../../components/BodyText';
 
 export const SVGScreens = [
   {
@@ -36,10 +37,10 @@ export default function SVGScreen({
           onPress={() => navigation.navigate('SVGExample', { title: exampleKey, key: exampleKey })}>
           <View style={styles.row}>
             <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
-            <Text style={styles.rowLabel}>{exampleKey}</Text>
-            <Text style={styles.rowDecorator}>
+            <BodyText style={styles.rowLabel}>{exampleKey}</BodyText>
+            <BodyText style={styles.rowDecorator}>
               <Ionicons name="chevron-forward" size={18} color="#595959" />
-            </Text>
+            </BodyText>
           </View>
         </TouchableHighlight>
       )}
@@ -54,7 +55,6 @@ SVGScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'white',
   },
   row: {
     flexDirection: 'row',

@@ -1,11 +1,12 @@
 import { H2 } from '@expo/html-elements';
 import { Pedometer } from 'expo-sensors';
 import * as React from 'react';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import usePermissions from '../utilities/usePermissions';
 import { useResolvedValue } from '../utilities/useResolvedValue';
+import { BodyText } from '../components/BodyText';
 
 function usePedometer({ isActive }: { isActive: boolean }): Pedometer.PedometerResult | null {
   const [data, setData] = React.useState<Pedometer.PedometerResult | null>(null);
@@ -69,7 +70,7 @@ function StepTrackerView() {
       <H2>Step Tracker</H2>
       <ListButton onPress={() => setActive(true)} disabled={isActive} title="Start" />
       <ListButton onPress={() => setActive(false)} disabled={!isActive} title="Stop" />
-      <Text style={{ paddingTop: 10, fontWeight: 'bold' }}>{message}</Text>
+      <BodyText style={{ paddingTop: 10, fontWeight: 'bold' }}>{message}</BodyText>
     </View>
   );
 }
@@ -90,7 +91,7 @@ function StepHistoryMessage() {
   return (
     <View style={{ padding: 10 }}>
       <H2>Step History</H2>
-      <Text>{message}</Text>
+      <BodyText>{message}</BodyText>
     </View>
   );
 }
@@ -110,7 +111,7 @@ export default function PedometerGuard() {
       : 'Your device does not have a pedometer';
     return (
       <View style={{ flex: 1, justifyContent: 'center', padding: 24, alignItems: 'center' }}>
-        <Text>{message}</Text>
+        <BodyText>{message}</BodyText>
       </View>
     );
   }

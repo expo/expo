@@ -14,8 +14,10 @@ import {
 
 import Button from '../components/Button';
 import TitleSwitch from '../components/TitledSwitch';
+import { useTheme } from 'ThemeProvider';
 
 export default function ScrollViewScreen() {
+  const { theme } = useTheme();
   const [isHorizontal, setHorizontal] = React.useState(true);
   const [isEnabled, setEnabled] = React.useState(true);
   const [isRefreshing, setRefreshing] = React.useState(false);
@@ -72,7 +74,7 @@ export default function ScrollViewScreen() {
             <Item key={index}>{title}</Item>
           ))}
         </ScrollView>
-        <H3>Scroll to</H3>
+        <H3 style={{ color: theme.text.default }}>Scroll to</H3>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Button
             title="Start"
@@ -113,7 +115,7 @@ export default function ScrollViewScreen() {
           }}
         />
       </View>
-      <H3 style={{ marginHorizontal: 8 }}>Pagination</H3>
+      <H3 style={{ color: theme.text.default, marginHorizontal: 8 }}>Pagination</H3>
 
       <ScrollView pagingEnabled directionalLockEnabled horizontal style={{ marginBottom: 8 }}>
         <Image

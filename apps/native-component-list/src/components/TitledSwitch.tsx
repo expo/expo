@@ -1,6 +1,7 @@
 import { B } from '@expo/html-elements';
 import React from 'react';
 import { StyleSheet, Switch, View, TextStyle, ViewStyle } from 'react-native';
+import { useTheme } from 'ThemeProvider';
 
 type Props = {
   style?: ViewStyle;
@@ -13,10 +14,11 @@ type Props = {
 };
 
 const TitleSwitch = ({ style, titleStyle, title, value, setValue, disabled, testID }: Props) => {
+  const { theme } = useTheme();
   const outputTitle = disabled ? `${title} (Disabled)` : title;
   return (
     <View style={[styles.container, style]}>
-      <B style={[styles.title, titleStyle]}>{outputTitle}</B>
+      <B style={[styles.title, { color: theme.text.default }, titleStyle]}>{outputTitle}</B>
       <Switch
         testID={testID}
         disabled={disabled}

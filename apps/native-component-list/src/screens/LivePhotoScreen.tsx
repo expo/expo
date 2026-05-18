@@ -6,6 +6,7 @@ import { View, StyleSheet, Text } from 'react-native';
 
 import Button from '../components/Button';
 import TitledSwitch from '../components/TitledSwitch';
+import { BodyText } from '../components/BodyText';
 
 export default function LivePhotoScreen() {
   const viewRef = useRef<LivePhotoViewType>(null);
@@ -92,7 +93,7 @@ export default function LivePhotoScreen() {
         setValue={setUseDefaultGestureRecognizer}
         title="Use default gesture recognizer"
       />
-      <Text style={styles.titleStyle}>Content Fit</Text>
+      <BodyText style={styles.titleStyle}>Content Fit</BodyText>
       <SegmentedControl
         values={['contain', 'cover']}
         selectedIndex={0}

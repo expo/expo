@@ -14,6 +14,7 @@ import {
 
 import HeadingText from '../components/HeadingText';
 import { Colors } from '../constants';
+import { BodyText } from '../components/BodyText';
 
 const EXAMPLES = [
   { language: 'en', text: 'Hello world' },
@@ -169,7 +170,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
           </Picker>
         )}
 
-        <Text style={styles.controlText}>Pitch: {this.state.pitch.toFixed(2)}</Text>
+        <BodyText style={styles.controlText}>Pitch: {this.state.pitch.toFixed(2)}</BodyText>
         <View style={styles.controlRow}>
           <AmountControlButton
             onPress={this._increasePitch}
@@ -184,7 +185,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
           />
         </View>
 
-        <Text style={styles.controlText}>Rate: {this.state.rate.toFixed(2)}</Text>
+        <BodyText style={styles.controlText}>Rate: {this.state.rate.toFixed(2)}</BodyText>
         <View style={styles.controlRow}>
           <AmountControlButton
             onPress={this._increaseRate}
@@ -192,7 +193,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
             disabled={this.state.inProgress}
           />
 
-          <Text>/</Text>
+          <BodyText>/</BodyText>
           <AmountControlButton
             onPress={this._decreaseRate}
             title="Decrease"
@@ -200,7 +201,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
           />
         </View>
 
-        <Text style={styles.controlText}>Volume: {this.state.volume.toFixed(2)}</Text>
+        <BodyText style={styles.controlText}>Volume: {this.state.volume.toFixed(2)}</BodyText>
         <View style={styles.controlRow}>
           <AmountControlButton
             onPress={this._increaseVolume}
@@ -208,7 +209,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
             disabled={this.state.inProgress || this.state.volume >= 1.0}
           />
 
-          <Text>/</Text>
+          <BodyText>/</BodyText>
           <AmountControlButton
             onPress={this._decreaseVolume}
             title="Decrease"
@@ -218,7 +219,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
         {Platform.OS === 'ios' && (
           <>
             <View style={styles.separator} />
-            <Text style={styles.controlText}>useApplicationAudioSession</Text>
+            <BodyText style={styles.controlText}>useApplicationAudioSession</BodyText>
             <ApplicationAudioSessionPicker
               useApplicationAudioSession={this.state.useApplicationAudioSession}
               onSelectionChange={(useApplicationAudioSession) => {

@@ -2,6 +2,7 @@ import { type EventSubscription } from 'expo-modules-core';
 import * as Sensors from 'expo-sensors';
 import React, { useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { BodyText } from '../components/BodyText';
 
 const FAST_INTERVAL = 16;
 const SLOW_INTERVAL = 1000;
@@ -107,7 +108,7 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
     }
     return (
       <View style={styles.sensor}>
-        <Text>{this.getName()}:</Text>
+        <BodyText>{this.getName()}:</BodyText>
         {this.renderData()}
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={this._toggle} style={styles.button}>
@@ -152,9 +153,9 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
     if (!event) return null;
     const { x, y, z } = event;
     return (
-      <Text>
+      <BodyText>
         {name}: x: {round(x)} y: {round(y)} z: {round(z)}
-      </Text>
+      </BodyText>
     );
   };
   renderABGBlock = (
@@ -165,9 +166,9 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
 
     const { alpha, beta, gamma } = event;
     return (
-      <Text>
+      <BodyText>
         {name}: α: {round(alpha)} β: {round(beta)} γ: {round(gamma)}
-      </Text>
+      </BodyText>
     );
   };
   renderData = () => (
@@ -176,7 +177,9 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
       {this.renderXYZBlock('Acceleration w/gravity', this.state.data.accelerationIncludingGravity)}
       {this.renderABGBlock('Rotation', this.state.data.rotation)}
       {this.renderABGBlock('Rotation rate', this.state.data.rotationRate)}
-      <Text>Orientation: {Sensors.DeviceMotionOrientation[this.state.data.orientation]}</Text>
+      <BodyText>
+        Orientation: {Sensors.DeviceMotionOrientation[this.state.data.orientation]}
+      </BodyText>
     </View>
   );
 }
@@ -186,8 +189,8 @@ class BarometerSensor extends SensorBlock<Sensors.BarometerMeasurement> {
   getSensor = () => Sensors.Barometer;
   renderData = () => (
     <View>
-      <Text>Pressure: {this.state.data.pressure}</Text>
-      <Text>Relative Altitude: {this.state.data.relativeAltitude}</Text>
+      <BodyText>Pressure: {this.state.data.pressure}</BodyText>
+      <BodyText>Relative Altitude: {this.state.data.relativeAltitude}</BodyText>
     </View>
   );
 }
@@ -197,7 +200,7 @@ class LightSensor extends SensorBlock<Sensors.LightSensorMeasurement> {
   getSensor = () => Sensors.LightSensor;
   renderData = () => (
     <View>
-      <Text>Illuminance: {this.state.data.illuminance}</Text>
+      <BodyText>Illuminance: {this.state.data.illuminance}</BodyText>
     </View>
   );
 }
@@ -235,10 +238,10 @@ const PedometerSensor = () => {
 
   return (
     <View style={styles.sensor}>
-      <Text>Pedometer:</Text>
-      <Text>Is available: {isPedometerAvailable}</Text>
-      <Text>Steps taken in the last 24 hours: {pastStepCount}</Text>
-      <Text>Watch step count: {currentStepCount}</Text>
+      <BodyText>Pedometer:</BodyText>
+      <BodyText>Is available: {isPedometerAvailable}</BodyText>
+      <BodyText>Steps taken in the last 24 hours: {pastStepCount}</BodyText>
+      <BodyText>Watch step count: {currentStepCount}</BodyText>
     </View>
   );
 };

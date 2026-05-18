@@ -2,7 +2,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { BodyText } from '../../components/BodyText';
 
 export default function MediaLibraryCell({
   asset,
@@ -33,7 +34,7 @@ export default function MediaLibraryCell({
           description: `${Math.round(asset.duration)}s`,
           preview: (
             <View style={[styles.preview, styles.audioPreview]}>
-              <Text>Audio</Text>
+              <BodyText>Audio</BodyText>
             </View>
           ),
         };
@@ -48,7 +49,7 @@ export default function MediaLibraryCell({
       {data && (
         <View style={styles.cellFooter}>
           <FontAwesome name={data.icon as any} size={12} color="white" />
-          <Text style={styles.description}>{data.description}</Text>
+          <BodyText style={styles.description}>{data.description}</BodyText>
         </View>
       )}
     </TouchableOpacity>
@@ -82,6 +83,5 @@ const styles = StyleSheet.create({
   description: {
     paddingHorizontal: 5,
     fontSize: 12,
-    color: 'white',
   },
 });

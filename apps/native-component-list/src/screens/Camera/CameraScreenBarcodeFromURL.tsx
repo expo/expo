@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { View, Text, Button, ScrollView, StyleSheet } from 'react-native';
+import { BodyText } from '../../components/BodyText';
 
 export default function CameraScreenFromURL() {
   const [image, setImage] = useState<string | null>(null);
@@ -30,12 +31,12 @@ export default function CameraScreenFromURL() {
 
   return (
     <View style={styles.container}>
-      {!image && <Text>Select an image from the photo library</Text>}
+      {!image && <BodyText>Select an image from the photo library</BodyText>}
       <Button title="Select image" onPress={pickImage} />
       {image && <Image source={{ uri: image }} style={styles.image} />}
       {image && <Button title="Scan Image" onPress={scanImage} />}
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scollViewContent}>
-        {results && <Text>{JSON.stringify(results, null, 2)}</Text>}
+        {results && <BodyText>{JSON.stringify(results, null, 2)}</BodyText>}
       </ScrollView>
     </View>
   );

@@ -4,6 +4,7 @@ import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import usePermissions from '../../utilities/usePermissions';
+import { BodyText } from '../../components/BodyText';
 
 const forwardGeocodingAddresses = [
   '1 Hacker Way, CA',
@@ -27,7 +28,7 @@ export default function GeocodingScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Forward-Geocoding</Text>
+        <BodyText style={styles.headerText}>Forward-Geocoding</BodyText>
       </View>
       {forwardGeocodingAddresses.map((address, index) => (
         <SimpleActionDemo
@@ -38,7 +39,7 @@ export default function GeocodingScreen() {
       ))}
 
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Reverse-Geocoding</Text>
+        <BodyText style={styles.headerText}>Reverse-Geocoding</BodyText>
       </View>
       {reverseGeocodingCoords.map((coords, index) => (
         <SimpleActionDemo

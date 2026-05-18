@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Text } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
+import { BodyText } from '../components/BodyText';
 
 export default function TextScreen() {
   const linkStyle = { color: Colors.tintColor, marginVertical: 3 };
@@ -10,16 +10,16 @@ export default function TextScreen() {
   return (
     <Page>
       <Section title="Default">
-        <Text>
+        <BodyText>
           All text in React Native on Android uses the native text component and supports a bunch of
           useful properties.
-        </Text>
-        <Text style={linkStyle} onPress={() => alert('pressed!')}>
+        </BodyText>
+        <BodyText style={linkStyle} onPress={() => alert('pressed!')}>
           Press on this!
-        </Text>
-        <Text numberOfLines={1} ellipsizeMode="tail">
+        </BodyText>
+        <BodyText numberOfLines={1} ellipsizeMode="tail">
           It's easy to limit the number of lines that some text can span and ellipsize it
-        </Text>
+        </BodyText>
       </Section>
     </Page>
   );

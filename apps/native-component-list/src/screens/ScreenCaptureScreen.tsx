@@ -1,10 +1,11 @@
 import * as ScreenCapture from 'expo-screen-capture';
 import React from 'react';
-import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Platform, StyleSheet, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 import TitleSwitch from '../components/TitledSwitch';
+import { BodyText } from '../components/BodyText';
 
 function useScreenCapture(onCapture: () => void) {
   const hasPermissions = async () => {
@@ -69,9 +70,9 @@ export default function ScreenCaptureScreen() {
   return (
     <View style={styles.container}>
       <TitleSwitch title="Screen Capture Allowed" value={isEnabled} setValue={setEnabled} />
-      <Text style={styles.description}>
+      <BodyText style={styles.description}>
         Take a screenshot or attempt to record the screen to test that the image is/isn't obscured.
-      </Text>
+      </BodyText>
 
       {Platform.OS === 'ios' && (
         <>
@@ -81,17 +82,17 @@ export default function ScreenCaptureScreen() {
             setValue={setAppSwitcherProtectionEnabled}
             style={styles.switchSpacing}
           />
-          <Text style={styles.description}>
+          <BodyText style={styles.description}>
             When enabled, shows blur overlay when app is not in focus.{'\n'}
             Test by opening app switcher or going to background.
-          </Text>
+          </BodyText>
         </>
       )}
 
       <HeadingText style={styles.heading}>Screenshot Timestamps</HeadingText>
-      <Text style={styles.timestampDescription}>
+      <BodyText style={styles.timestampDescription}>
         Take a screenshot to test if the listener works.
-      </Text>
+      </BodyText>
       <FlatList
         data={timestamps}
         keyExtractor={(item) => item.getTime() + '-'}

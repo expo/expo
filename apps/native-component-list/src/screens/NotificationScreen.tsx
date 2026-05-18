@@ -3,12 +3,13 @@ import { EventSubscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React from 'react';
-import { Alert, Text, ScrollView, View, Platform } from 'react-native';
+import { Alert, ScrollView, View, Platform } from 'react-native';
 
 import { sendPushNotificationsAsync } from '../api/sendPushNotificationsAsync';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
+import { BodyText } from '../components/BodyText';
 
 const BACKGROUND_TEST_INFO = `[notification-tester app only]: To test background notification handling:\n(1) Background the app.\n(2) Send a push notification from your terminal. The push token can be found in your logs, and the command to send a notification can be found at https://docs.expo.dev/push-notifications/sending-notifications/#http2-api. On iOS, you need to include "_contentAvailable": "true" in your payload.\n(3) After receiving the notification, check the "persisted data" presented in the notification-tester app`;
 
@@ -143,10 +144,10 @@ export default class NotificationScreen extends React.Component<
 
         <HeadingText>Push Notifications</HeadingText>
         {!remotePushSupported && (
-          <Text>
+          <BodyText>
             ⚠️ Remote push notifications are not supported in the simulator, the following tests
             should warn accordingly.
-          </Text>
+          </BodyText>
         )}
         <ListButton
           onPress={this._sendNotificationAsync}

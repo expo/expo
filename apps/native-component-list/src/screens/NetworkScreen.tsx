@@ -6,6 +6,7 @@ import { ScrollView, Text, View } from 'react-native';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 import { useResolvedValue } from '../utilities/useResolvedValue';
+import { BodyText } from '../components/BodyText';
 
 interface NetworkStateEvent {
   time: Date;
@@ -58,10 +59,10 @@ export default function NetworkScreen() {
           2
         )}
       </MonoText>
-      <Text>
+      <BodyText>
         💡 <Text style={{ fontWeight: 'bold' }}>airplaneModeEnabled</Text> is only supported on
         Android. It should be <Text style={{ fontWeight: 'bold' }}>null</Text> on iOS.
-      </Text>
+      </BodyText>
       <HeadingText>Network current state:</HeadingText>
       <MonoText>{JSON.stringify(networkStateHook, null, 2)}</MonoText>
 
