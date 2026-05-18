@@ -220,24 +220,38 @@ abstract class ExpoComposeView<T : ComposeProps>(
     super.onViewRemoved(child)
     // Keep compose views alive when view is transitioning
     // e.g. pop transition from RN screens https://github.com/expo/expo/issues/45914
-    if (child != null && child in transitioningChildren) {
+    if (child != null && isViewTransitioning(child)) {
       return
     }
     recomposeScope?.invalidate()
   }
 
-  private val transitioningChildren = mutableSetOf<View>()
+  private var transitioningChildren: MutableSet<View>? = null
 
+  // The pattern to preserve the view drawing when transitioning
+  // is referred from ViewGroup source. Checkout ViewGroup's startViewTransition
   override fun startViewTransition(view: View) {
     super.startViewTransition(view)
-    transitioningChildren.add(view)
+    if (view.parent == this) {
+      val set = transitioningChildren ?: mutableSetOf<View>().also { transitioningChildren = it }
+      set.add(view)
+    }
   }
 
   override fun endViewTransition(view: View) {
     super.endViewTransition(view)
-    if (transitioningChildren.remove(view)) {
+    if (transitioningChildren?.remove(view) == true) {
       recomposeScope?.invalidate()
     }
+  }
+
+  private fun isViewTransitioning(view: View): Boolean {
+    return transitioningChildren?.contains(view) == true
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    transitioningChildren?.clear()
   }
 }
 
