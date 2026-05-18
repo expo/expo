@@ -17,7 +17,7 @@ With bundle diffing, EAS Update delivers a **bundle patch** when possible. When 
 
 ## Enable bundle diffing
 
-Bundle diffing is enabled by default. To opt out, set `updates.enableBsdiffPatchSupport` to `false` in your project's [app config](/workflow/configuration/):
+Bundle diffing is enabled by default in SDK 56 and later. To opt out, set `updates.enableBsdiffPatchSupport` to `false` in your project's [app config](/workflow/configuration/). On SDK 55, set it to `true` to opt in.
 
 ```json app.json
 {
