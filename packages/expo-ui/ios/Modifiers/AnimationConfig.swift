@@ -31,9 +31,6 @@ internal struct AnimationConfig: Record {
   private static let defaultDampingFraction: Double = 0.825
   private static let defaultBlendDuration: Double = 0.0
   private static let defaultBounce: Double = 0.0
-  private static let defaultMass: Double = 1.0
-  private static let defaultInitialVelocity: Double = 0.0
-  private static let defaultAutoreverses: Bool = true
 
   @Field var type: AnimationType = .default
   @Field var duration: Double?
@@ -41,13 +38,13 @@ internal struct AnimationConfig: Record {
   @Field var dampingFraction: Double?
   @Field var blendDuration: Double?
   @Field var bounce: Double?
-  @Field var mass: Double?
+  @Field var mass: Double = 1.0
   @Field var stiffness: Double?
   @Field var damping: Double?
-  @Field var initialVelocity: Double?
+  @Field var initialVelocity: Double = 0.0
   @Field var delay: Double?
   @Field var repeatCount: Int?
-  @Field var autoreverses: Bool?
+  @Field var autoreverses: Bool = true
 
   func toSwiftUIAnimation() -> Animation {
     var animation: Animation
@@ -84,14 +81,14 @@ internal struct AnimationConfig: Record {
         animation = .interpolatingSpring(
           duration: duration ?? Self.defaultDuration,
           bounce: bounce ?? Self.defaultBounce,
-          initialVelocity: initialVelocity ?? Self.defaultInitialVelocity
+          initialVelocity: initialVelocity
         )
       } else if let stiffness, let damping {
         animation = .interpolatingSpring(
-          mass: mass ?? Self.defaultMass,
+          mass: mass,
           stiffness: stiffness,
           damping: damping,
-          initialVelocity: initialVelocity ?? Self.defaultInitialVelocity
+          initialVelocity: initialVelocity
         )
       } else {
         animation = .interpolatingSpring
@@ -104,7 +101,7 @@ internal struct AnimationConfig: Record {
       animation = animation.delay(delay)
     }
     if let repeatCount {
-      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses ?? Self.defaultAutoreverses)
+      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
     }
 
     return animation
