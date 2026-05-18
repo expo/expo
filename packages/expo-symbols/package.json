@@ -36,8 +36,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/symbols/",
   "dependencies": {
-    "sf-symbols-typescript": "^2.0.0",
-    "@expo-google-fonts/material-symbols": "^0.4.1"
+    "@expo-google-fonts/material-symbols": "^0.4.1",
+    "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
