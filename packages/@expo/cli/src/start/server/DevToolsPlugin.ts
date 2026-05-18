@@ -1,8 +1,18 @@
+import fs from 'node:fs';
+
 import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { PluginSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import { DevToolsPluginEndpoint } from './DevToolsPluginManager';
 import { isPathInside } from '../../utils/dir';
+
+const maybeRealpath = (target: string): string => {
+  try {
+    return fs.realpathSync(target);
+  } catch {
+    return target;
+  }
+};
 
 /**
  * Class that represents a DevTools plugin with CLI and/or web extensions
@@ -27,10 +37,13 @@ export class DevToolsPlugin {
       });
     }
 
-    if (plugin.webpageRoot != null && !isPathInside(plugin.webpageRoot, plugin.packageRoot)) {
-      throw new Error(
-        `webpageRoot (${plugin.webpageRoot}) is not inside packageRoot (${plugin.packageRoot}).`
-      );
+    if (plugin.webpageRoot != null) {
+      const webpageRoot = maybeRealpath(plugin.webpageRoot);
+      if (!isPathInside(webpageRoot, plugin.packageRoot)) {
+        throw new Error(
+          `webpageRoot (${plugin.webpageRoot}) is not inside packageRoot (${plugin.packageRoot}).`
+        );
+      }
     }
   }
 
