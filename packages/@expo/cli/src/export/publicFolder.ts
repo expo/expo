@@ -7,6 +7,14 @@ import { CommandError } from '../utils/errors';
 
 const debug = require('debug')('expo:public-folder') as typeof console.log;
 
+const maybeRealpath = (target: string) => {
+  try {
+    return fs.realpathSync(target);
+  } catch {
+    return target;
+  }
+};
+
 /**
  * Resolve `EXPO_PUBLIC_FOLDER` against the project root and ensure the result
  * stays inside the project. An `EXPO_PUBLIC_FOLDER` value that escapes
@@ -15,7 +23,7 @@ const debug = require('debug')('expo:public-folder') as typeof console.log;
  * that serves or copies the public folder.
  */
 export function getPublicFolderPath(projectRoot: string): string {
-  const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+  const publicPath = maybeRealpath(path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER));
   if (!isPathInside(publicPath, projectRoot)) {
     throw new CommandError(
       'EXPO_PUBLIC_FOLDER',
