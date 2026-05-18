@@ -41,14 +41,9 @@
         {
           "type": "objc",
           "name": "ExpoModulesCore_ios_objc",
-          "path": "ios",
+          "path": "ios/ExpoModulesCoreObjC",
           "pattern": "**/*.{m,mm}",
           "headerPattern": "**/*.h",
-          "exclude": [
-            "Tests/**",
-            "Worklets/**",
-            "WorkletsAdapter/**"
-          ],
           "fileMapping": [
             {
               "from": "Core/Views/SwiftUI/SwiftUIVirtualViewSharedImpl+Private.h",
@@ -82,16 +77,8 @@
         {
           "type": "swift",
           "name": "ExpoModulesCore",
-          "path": "ios",
+          "path": "ios/ExpoModulesCore",
           "pattern": "**/*.swift",
-          "exclude": [
-            "JSI/**",
-            "Tests/**",
-            "BridgeModule/**",
-            "Views/**",
-            "Worklets/**",
-            "WorkletsAdapter/**"
-          ],
           "dependencies": [
             "Hermes",
             "React",
@@ -131,7 +118,7 @@
           "type": "objc",
           "name": "ExpoModulesWorklets_ios_objc",
           "moduleName": "ExpoModulesWorklets",
-          "path": "ios/Worklets",
+          "path": "ios/ExpoModulesWorkletsObjC",
           "pattern": "**/*.{m,mm}",
           "headerPattern": "**/*.h",
           "dependencies": [
@@ -151,7 +138,7 @@
         {
           "type": "swift",
           "name": "ExpoModulesWorklets",
-          "path": "ios/Worklets",
+          "path": "ios/ExpoModulesWorklets",
           "pattern": "**/*.swift",
           "dependencies": [
             "Hermes",
@@ -190,7 +177,7 @@
         {
           "type": "objc",
           "name": "ExpoModulesWorkletsAdapter",
-          "path": "ios/WorkletsAdapter",
+          "path": "ios/ExpoModulesWorkletsAdapter",
           "pattern": "**/*.{m,mm}",
           "headerPattern": "**/*.h",
           "dependencies": [

@@ -95,5 +95,5 @@ Pod::Spec.new do |s|
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
 
-  s.source_files = 'ios/WorkletsAdapter/**/*.{h,m,mm}'
+  s.source_files = 'ios/ExpoModulesWorkletsAdapter/**/*.{h,m,mm}'
 end

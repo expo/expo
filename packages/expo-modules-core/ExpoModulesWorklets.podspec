@@ -29,6 +29,6 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesJSI'
   s.dependency 'ExpoModulesCore'
 
-  s.source_files = 'ios/Worklets/**/*.{h,m,mm,swift,cpp}'
-  s.private_header_files = 'ios/Worklets/**/*+Private.h'
+  s.source_files = ['ios/ExpoModulesWorklets/**/*.{h,m,mm,swift,cpp}', 'ios/ExpoModulesWorkletsObjC/**/*.{h,m,mm,swift,cpp}']
+  s.private_header_files = 'ios/ExpoModulesWorkletsObjC/**/*+Private.h'
 end
