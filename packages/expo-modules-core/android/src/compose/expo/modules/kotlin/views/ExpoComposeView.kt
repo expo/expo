@@ -218,7 +218,26 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   override fun onViewRemoved(child: View?) {
     super.onViewRemoved(child)
+    // Keep compose views alive when view is transitioning
+    // e.g. pop transition from RN screens https://github.com/expo/expo/issues/45914
+    if (child != null && child in transitioningChildren) {
+      return
+    }
     recomposeScope?.invalidate()
+  }
+
+  private val transitioningChildren = mutableSetOf<View>()
+
+  override fun startViewTransition(view: View) {
+    super.startViewTransition(view)
+    transitioningChildren.add(view)
+  }
+
+  override fun endViewTransition(view: View) {
+    super.endViewTransition(view)
+    if (transitioningChildren.remove(view)) {
+      recomposeScope?.invalidate()
+    }
   }
 }
 
