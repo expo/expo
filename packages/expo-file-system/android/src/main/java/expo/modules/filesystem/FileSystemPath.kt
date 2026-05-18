@@ -21,6 +21,16 @@ import java.util.EnumSet
 import java.util.regex.Pattern
 import kotlin.io.path.moveTo
 
+internal fun validateFileSystemChildName(name: String) {
+  val invalid = name.isEmpty() ||
+    name == "." ||
+    name == ".." ||
+    name.any { it == '/' || it == '\\' }
+  if (invalid) {
+    throw UnableToCreateException("child name must be a single path segment")
+  }
+}
+
 val Uri.isContentUri
   get(): Boolean {
     return scheme == "content"
@@ -75,6 +85,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       }
 
   fun delete() {
+    validatePermission(FilePermissionService.Permission.WRITE)
     if (!file.exists()) {
       throw UnableToDeleteException("uri '${file.uri}' does not exist")
     }
@@ -134,9 +145,12 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       // TODO: Consider adding a check for asset URIs – this returns asset files of Expo Go (such as root-cert), but these are already freely available on apk mirrors ect.
       return true
     }
+    return checkPermissionForPath(javaFile.path, permission)
+  }
 
+  private fun checkPermissionForPath(path: String, permission: FilePermissionService.Permission): Boolean {
     val permissions = appContext?.filePermission?.getPathPermissions(
-      appContext?.reactContext ?: throw Exceptions.ReactContextLost(), javaFile.path
+      appContext?.reactContext ?: throw Exceptions.ReactContextLost(), path
     ) ?: EnumSet.noneOf(FilePermissionService.Permission::class.java)
     return permissions.contains(permission)
   }
@@ -176,7 +190,13 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   fun rename(newName: String) {
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
-    val newFile = File(javaFile.parent, newName)
+    validateFileSystemChildName(newName)
+    val parent = javaFile.parentFile?.canonicalFile
+      ?: throw UnableToCreateException("parent directory does not exist")
+    val newFile = File(parent, newName).canonicalFile
+    if (newFile.parentFile?.canonicalPath != parent.canonicalPath) {
+      throw UnableToCreateException("child path escapes parent directory")
+    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       javaFile.toPath().moveTo(newFile.toPath())
       uri = newFile.toUri()
