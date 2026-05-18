@@ -1,35 +1,23 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { HeaderStyleInterpolators } from '@react-navigation/stack';
+import { NativeStackNavigatorProps } from '@react-navigation/native-stack';
 import { ThemeType } from 'ThemeProvider';
 import * as React from 'react';
-import { View, Platform, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Platform, TouchableOpacity } from 'react-native';
 
-export default function getStackConfig(navigation: BottomTabNavigationProp<any>, theme: ThemeType) {
+export default function getStackConfig(
+  navigation: BottomTabNavigationProp<any>,
+  theme: ThemeType
+): Partial<NativeStackNavigatorProps> {
   return {
-    cardStyle: {
-      backgroundColor: theme.background.default,
-    },
-    screenOptions: () => ({
-      headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
-      headerStyle: {
-        backgroundColor: theme.background.default,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: theme.border.secondary,
-        ...Platform.select({
-          android: {
-            elevation: 0,
-          },
-        }),
-      },
+    screenOptions: {
+      contentStyle: { backgroundColor: theme.background.default },
+      headerStyle: { backgroundColor: theme.background.default },
       headerTintColor: theme.icon.info,
-      headerTitleStyle: {
-        color: theme.text.default,
-      },
-      headerPressColorAndroid: theme.icon.info,
+      headerTitleStyle: { color: theme.text.default },
       headerRight: () => <HeaderRightComponent navigation={navigation} theme={theme} />,
-    }),
+    },
   };
 }
 

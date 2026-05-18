@@ -1,5 +1,5 @@
 import { darkTheme, lightTheme } from '@expo/styleguide-base';
-import React, { createContext, useContext, PropsWithChildren } from 'react';
+import React, { createContext, useContext, type PropsWithChildren } from 'react';
 import { useColorScheme, Appearance } from 'react-native';
 
 export type ThemeName = 'light' | 'dark';
