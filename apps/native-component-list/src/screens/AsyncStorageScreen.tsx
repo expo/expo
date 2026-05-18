@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Updates from 'expo-updates';
 import * as React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 
 import { Page, Section } from '../components/Page';
+import { BodyText } from '../components/BodyText';
 
 const key = 'random_value';
 
@@ -38,7 +39,7 @@ function PersistExample() {
 
   return (
     <View>
-      <Text style={styles.text}>Current: {storedNumber}</Text>
+      <BodyText style={styles.text}>Current: {storedNumber}</BodyText>
       <Button title="Increment by 10" onPress={increment} />
       <Button title="Reset" onPress={clearItem} />
 
@@ -63,7 +64,6 @@ AsyncStorageScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   text: {
-    color: '#000000',
     fontSize: 20,
     textAlign: 'center',
     margin: 10,

@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 
 import Colors from '../../constants/Colors';
+import { BodyText } from '../../components/BodyText';
 
 interface Props {
   header?: React.ReactElement;
@@ -202,9 +203,12 @@ export default function Player(props: Props) {
                 setInitialScrubbingMillis(props.currentTime);
               }}
             />
-            <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
+            <BodyText
+              style={{ width: 100, textAlign: 'right' }}
+              adjustsFontSizeToFit
+              numberOfLines={1}>
               {_formatTime(props.currentTime)} / {_formatTime(props.duration)}
-            </Text>
+            </BodyText>
           </>
         )}
         {_renderReplayButton()}

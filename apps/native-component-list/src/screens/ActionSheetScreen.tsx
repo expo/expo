@@ -13,6 +13,7 @@ import {
 
 import ShowActionSheetButton from '../components/ShowActionSheetButton';
 import { Colors } from '../constants';
+import { BodyText } from '../components/BodyText';
 
 const Button: React.FunctionComponent<TouchableOpacityProps> = (props) => {
   return (
@@ -182,15 +183,15 @@ class App extends React.Component<{ showActionSheetWithOptions?: any }, State> {
   render() {
     return (
       <ScrollView style={styles.flex} contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.headerText}>
+        <BodyText style={styles.headerText}>
           {'Hello!\n\nThis is a simple example app to demonstrate @expo/react-native-action-sheet.'}
-        </Text>
+        </BodyText>
         {this._renderButtons()}
         {this._renderSelectionText()}
-        <Text style={styles.notes}>
+        <BodyText style={styles.notes}>
           Note: Icons and custom text styles are only available on Android and web. Separators can
           only be toggled on Android or web; they always show on iOS.
-        </Text>
+        </BodyText>
       </ScrollView>
     );
   }

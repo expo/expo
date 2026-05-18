@@ -23,6 +23,7 @@ import {
 import AudioInputSelector from './AudioInputSelector';
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
+import { BodyText } from '../../components/BodyText';
 
 type RecorderProps = {
   onDone?: (uri: string) => void;
@@ -199,11 +200,11 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       {/* Recording Options */}
       <View style={styles.optionsContainer}>
         <View style={styles.optionRow}>
-          <Text style={styles.optionText}>Record at Time (3s delay - iOS only)</Text>
+          <BodyText style={styles.optionText}>Record at Time (3s delay - iOS only)</BodyText>
           <Switch value={useAtTime} onValueChange={setUseAtTime} />
         </View>
         <View style={styles.optionRow}>
-          <Text style={styles.optionText}>Record for Duration (5s)</Text>
+          <BodyText style={styles.optionText}>Record for Duration (5s)</BodyText>
           <Switch value={useForDuration} onValueChange={setUseForDuration} />
         </View>
         {(useAtTime || useForDuration) && (
@@ -229,9 +230,9 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       </View>
       <View style={styles.centerer}>
         {renderRecorderButtons()}
-        <Text style={{ fontWeight: 'bold', marginVertical: 10 }}>
+        <BodyText style={{ fontWeight: 'bold', marginVertical: 10 }}>
           {_formatTime(recorderState.durationMillis / 1000)}
-        </Text>
+        </BodyText>
       </View>
       <AudioInputSelector recorder={audioRecorder} canRecord={recorderState.canRecord} />
       {maybeRenderErrorOverlay()}

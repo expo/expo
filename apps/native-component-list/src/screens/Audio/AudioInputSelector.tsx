@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import ListButton from '../../components/ListButton';
+import { BodyText } from '../../components/BodyText';
 
 type Props = {
   recorder?: AudioRecorder;
@@ -28,7 +29,7 @@ function AudioInputSelector({ recorder, canRecord }: Props) {
 
   return (
     <View>
-      <Text>Recording Inputs:</Text>
+      <BodyText>Recording Inputs:</BodyText>
       {availableInputs.length ? (
         availableInputs.map((input) => {
           const isSelected = input.uid === currentInput?.uid;
