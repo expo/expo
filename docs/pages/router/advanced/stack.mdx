@@ -342,17 +342,17 @@ Dismiss is different from `back` as it targets the closest stack and not the cur
 {/* prettier-ignore */}
 ```tsx src/app/settings.tsx
 import { Button, View } from 'react-native';
-/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+/* @info Import `useRouter` from Expo Router. */
 import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
-  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  /* @info Access the router from the `useRouter` hook. */
   const router = useRouter();
   /* @end */
 
   const handleDismiss = (count: number) => {
-    /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back. */
+    /* @info In the handler method, call `router.dismiss` to go back. */
     router.dismiss(count)
     /* @end */
   };
@@ -378,17 +378,17 @@ For example, consider the history of `/one`, `/two`, `/three` routes, where `/th
 {/* prettier-ignore */}
 ```tsx src/app/settings.tsx
 import { Button, View, Text } from 'react-native';
-/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+/* @info Import `useRouter` from Expo Router. */
 import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
-  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  /* @info Access the router from the `useRouter` hook. */
   const router = useRouter();
   /* @end */
 
   const handleDismissAll = () => {
-    /* @info In the handler method, call <CODE>router.dismissTo</CODE> to go back to a specific route. */
+    /* @info In the handler method, call `router.dismissTo` to go back to a specific route. */
     router.dismissTo('/')
     /* @end */
   };
@@ -412,17 +412,17 @@ For example, the `home` route is the first screen, and the `settings` is the las
 {/* prettier-ignore */}
 ```tsx src/app/settings.tsx
 import { Button, View, Text } from 'react-native';
-/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+/* @info Import `useRouter` from Expo Router. */
 import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
-  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  /* @info Access the router from the `useRouter` hook. */
   const router = useRouter();
   /* @end */
 
   const handleDismissAll = () => {
-    /* @info In the handler method, call <CODE>router.dismissAll</CODE> to go back to the first screen in a stack. */
+    /* @info In the handler method, call `router.dismissAll` to go back to the first screen in a stack. */
     router.dismissAll()
     /* @end */
   };
@@ -444,19 +444,19 @@ To check if it is possible to dismiss the current screen. Returns `true` if the 
 {/* prettier-ignore */}
 ```tsx src/app/settings.tsx|collapseHeight=410
 import { Button, View } from 'react-native';
-/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+/* @info Import `useRouter` from Expo Router. */
 import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
-  /* @info Access the router from <CODE>useRouter</CODE> hook. */
+  /* @info Access the router from `useRouter` hook. */
   const router = useRouter();
   /* @end */
 
   const handleDismiss = (count: number) => {
     /* @info Check if we can dismiss. */
     if (router.canDismiss()) {
-      /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back to. */
+      /* @info In the handler method, call `router.dismiss` to go back to. */
       router.dismiss(count)
       /* @end */
     }

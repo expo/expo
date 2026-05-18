@@ -224,7 +224,7 @@ type AndroidProps = {
 
 const withAndroidPlugin: ConfigPlugin<AndroidProps> = (
   config,
-  /* @info Pass an <code>options</code> object to the plugin. */ options = {}/* @end */
+  /* @info Pass an `options` object to the plugin. */ options = {}/* @end */
 ) => {
   /* @info Use the provided message or fall back to a default */
   const message = options.message || 'Hello world, from Expo plugin!';
@@ -249,7 +249,7 @@ type IosProps = {
   message?: string;
 };
 
-const withIosPlugin: ConfigPlugin<IosProps> = (config, /* @info Pass an <code>options</code> object to the plugin. */ options = {}/* @end */) => {
+const withIosPlugin: ConfigPlugin<IosProps> = (config, /* @info Pass an `options` object to the plugin. */ options = {}/* @end */) => {
    /* @info Use the provided message or fall back to a default */
   const message = options.message || 'Hello world, from Expo plugin!';
   /* @end */

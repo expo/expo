@@ -68,7 +68,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI `[scheme]://` to be used. If undefined, the `scheme` property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -121,7 +121,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
 
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+/* @info **Web only:** This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
@@ -211,12 +211,12 @@ import * as WebBrowser from 'expo-web-browser';
 
 function App() {
   useEffect(() => {
-    /* @info <strong>Android only:</strong> Start loading the default browser app in the background to improve transition time. */
+    /* @info **Android only:** Start loading the default browser app in the background to improve transition time. */
     WebBrowser.warmUpAsync();
     /* @end */
 
     return () => {
-      /* @info <strong>Android only:</strong> Cool down the browser when the component unmounts to help improve memory on low-end Android devices. */
+      /* @info **Android only:** Cool down the browser when the component unmounts to help improve memory on low-end Android devices. */
       WebBrowser.coolDownAsync();
       /* @end */
     };
@@ -238,7 +238,7 @@ import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, ResponseType } from 'expo-auth-session';
 
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+/* @info **Web only:** This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
@@ -250,13 +250,13 @@ const discovery = {
 function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      /* @info Request that the server returns an `access_token`, not all providers support this. */
       responseType: ResponseType.Token,
       /* @end */
       clientId: 'CLIENT_ID',
       scopes: ['user-read-email', 'playlist-modify-public'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI `[scheme]://` to be used. If undefined, the `scheme` property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
