@@ -6,9 +6,9 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
-
 - Added `File.json()` and `File.formData()` to satisfy `Blob` type augmentations in consumer projects. ([#45685](https://github.com/expo/expo/pull/45685) by [@mvincentong](https://github.com/mvincentong))
+
+### 🐛 Bug fixes
 
 ### 💡 Others
 
