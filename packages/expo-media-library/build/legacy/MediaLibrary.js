@@ -1,7 +1,7 @@
 import { createPermissionHook } from 'expo';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import MediaLibrary from '../ExpoMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 let loggedExpoGoWarning = false;
 if (isExpoGo && !loggedExpoGoWarning) {

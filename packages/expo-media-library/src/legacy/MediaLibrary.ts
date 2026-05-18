@@ -2,7 +2,7 @@ import { type PermissionResponse as EXPermissionResponse, createPermissionHook }
 import { UnavailabilityError, type EventSubscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-import MediaLibrary from '../ExpoMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 

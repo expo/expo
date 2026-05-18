@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Re-organize TS code ([#45953](https://github.com/expo/expo/pull/45953) by [@Wenszel](https://github.com/Wenszel))
+
 ## 56.0.6 — 2026-05-21
 
 ### 🐛 Bug fixes
