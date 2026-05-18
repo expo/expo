@@ -23,6 +23,22 @@ type ConfigPluginProps = {
       };
 };
 
+function isValidBCP47(tag: string) {
+  try {
+    return !!new Intl.Locale(tag);
+  } catch {
+    return false;
+  }
+}
+
+function assertLocale(value: unknown): asserts value is string {
+  if (typeof value !== 'string' || !isValidBCP47(value)) {
+    throw new Error(
+      `Invalid supportedLocales entry ${JSON.stringify(value)}: must be a BCP-47 locale tag.`
+    );
+  }
+}
+
 function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   const mergedConfig = { ...config.extra, ...data };
 
@@ -74,6 +90,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
       : mergedConfig.supportedLocales;
 
   if (supportedLocales) {
+    supportedLocales.forEach(assertLocale);
     config = withDangerousMod(config, [
       'android',
       (config) => {

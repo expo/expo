@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevalidate locale strings in config-plugin ([#45888](https://github.com/expo/expo/pull/45888) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 17.0.8 — 2025-12-05
