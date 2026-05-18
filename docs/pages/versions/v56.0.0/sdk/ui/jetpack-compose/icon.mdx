@@ -9,6 +9,7 @@ platforms: ['android', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
 > **info** For cross-platform usage, see the universal [`Icon`](../universal/icon) — it renders the appropriate native component per platform.
 
@@ -28,9 +29,7 @@ An icon component for rendering Material Symbol XML vector drawables in Jetpack 
 
 Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) to use the bundled icons. For a different style or custom axes, see [Custom styles](#custom-styles-via-expomaterial-symbols-cli) — no install needed.
 
-```bash
-$ npx expo install @expo/material-symbols
-```
+<Terminal cmd={['$ npx expo install @expo/material-symbols']} />
 
 ## Usage
 
@@ -89,19 +88,21 @@ export default function SizedIcon() {
 
 `@expo/material-symbols` ships the **outlined** style with default axes. When you need a different style (`rounded`, `sharp`), a filled variant, or custom weight, grade, or optical size, use its CLI to fetch specific drawables straight from Google Fonts into your project.
 
-```bash
-# Download icons by name (defaults: outlined, weight 400, 24px)
-$ npx @expo/material-symbols star home
-
-# Rounded style
-$ npx @expo/material-symbols --style rounded star home
-
-# Sharp + filled
-$ npx @expo/material-symbols --style sharp --fill favorite
-
-# Paste a URL from fonts.google.com/icons to preserve the axes you picked there
-$ npx @expo/material-symbols "https://fonts.google.com/icons?selected=Material+Symbols+Outlined:check_box:FILL@1;wght@300;GRAD@0;opsz@24"
-```
+<Terminal
+  cmd={[
+    '# Download icons by name (defaults: outlined, weight 400, 24px)',
+    '$ npx @expo/material-symbols star home',
+    '',
+    '# Rounded style',
+    '$ npx @expo/material-symbols --style rounded star home',
+    '',
+    '# Sharp + filled',
+    '$ npx @expo/material-symbols --style sharp --fill favorite',
+    '',
+    '# Paste a URL from fonts.google.com/icons to preserve the axes you picked there',
+    '$ npx @expo/material-symbols "https://fonts.google.com/icons?selected=Material+Symbols+Outlined:check_box:FILL@1;wght@300;GRAD@0;opsz@24"',
+  ]}
+/>
 
 | Option                | Description                                | Default    |
 | --------------------- | ------------------------------------------ | ---------- |
