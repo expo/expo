@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Enable bsdiff-based bundle patch downloads by default. ([#45928](https://github.com/expo/expo/pull/45928) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 56.0.12 — 2026-05-15
 
 _This version does not introduce any user-facing changes._
