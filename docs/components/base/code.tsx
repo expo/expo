@@ -70,7 +70,7 @@ export function Code({ className, children, title }: CodeProps) {
 
   useEffect(() => {
     tippyFunc('.code-annotation.with-tooltip', {
-      allowHTML: true,
+      allowHTML: false,
       theme: 'expo',
       placement: 'top',
       arrow: roundArrow,
@@ -80,7 +80,7 @@ export function Code({ className, children, title }: CodeProps) {
     });
 
     tippyFunc('.tutorial-code-annotation.with-tooltip', {
-      allowHTML: true,
+      allowHTML: false,
       theme: 'expo',
       placement: 'top',
       arrow: roundArrow,
