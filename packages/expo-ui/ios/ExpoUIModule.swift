@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import SwiftUI
 
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
@@ -37,6 +38,33 @@ public final class ExpoUIModule: Module {
     AsyncFunction("completeRefresh") { (id: String) in
       RefreshableManager.shared.completeRefresh(id: id)
     }
+
+    AsyncFunction("withAnimation") { (
+      animation: AnimationConfig?,
+      body: WorkletCallback,
+      completion: WorkletCallback?,
+      completionCriteria: AnimationCompletionCriteriaType?
+    ) in
+      let swiftUIAnimation = animation?.toSwiftUIAnimation()
+
+      if let completion {
+        if #available(iOS 17.0, tvOS 17.0, *) {
+          let criteria: SwiftUI.AnimationCompletionCriteria =
+            completionCriteria == .removed ? .removed : .logicallyComplete
+          withAnimation(swiftUIAnimation, completionCriteria: criteria) {
+            body.invoke()
+          } completion: {
+            completion.invoke()
+          }
+          return
+        }
+      }
+
+      withAnimation(swiftUIAnimation) {
+        body.invoke()
+      }
+    }
+    .runOnQueue(.main)
 
     // MARK: - Expo UI Views with AsyncFunctions
 
