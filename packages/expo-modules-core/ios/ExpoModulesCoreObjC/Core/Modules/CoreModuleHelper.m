@@ -1,4 +1,4 @@
-#import "CoreModuleHelper.h"
+#import <ExpoModulesCore/CoreModuleHelper.h>
 
 #ifdef EXPO_MODULES_CORE_VERSION
 #define STRINGIZE(x) #x

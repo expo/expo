@@ -1,12 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/BridgelessJSCallInvoker.h>
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
-#import <ExpoModulesCore/SharedObject.h>
-#import <ExpoModulesCore/SharedRef.h>
-#import <ExpoModulesCore/EventEmitter.h>
-#import <ExpoModulesCore/NativeModule.h>
+#import "ExpoModulesCoreCommonUmbrella.h"
 
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>

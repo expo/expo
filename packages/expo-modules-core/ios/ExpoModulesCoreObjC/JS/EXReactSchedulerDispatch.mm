@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import "EXReactSchedulerDispatch.h"
+#import <ExpoModulesCore/EXReactSchedulerDispatch.h>
 
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
