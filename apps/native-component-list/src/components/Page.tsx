@@ -2,6 +2,7 @@ import { H4 } from '@expo/html-elements';
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
+import { useTheme } from 'ThemeProvider';
 
 export function Page({ children }: PropsWithChildren) {
   return <View style={styles.page}>{children}</View>;
@@ -17,12 +18,16 @@ type SectionProps = PropsWithChildren<{
   gap?: number;
 }>;
 
-const Section = ({ title, children, row, gap }: SectionProps) => (
-  <View style={styles.section}>
-    <H4 style={styles.sectionHeader}>{title}</H4>
-    <View style={{ flexDirection: row ? 'row' : 'column', gap }}>{children}</View>
-  </View>
-);
+const Section = ({ title, children, row, gap }: SectionProps) => {
+  const { theme } = useTheme();
+
+  return (
+    <View style={styles.section}>
+      <H4 style={[styles.sectionHeader, { color: theme.text.default }]}>{title}</H4>
+      <View style={{ flexDirection: row ? 'row' : 'column', gap }}>{children}</View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   page: {
