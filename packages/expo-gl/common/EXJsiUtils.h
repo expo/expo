@@ -59,6 +59,22 @@ inline void setFunctionOnObject(
       runtime, jsName, jsi::Function::createFromHostFunction(runtime, jsName, 0, func));
 }
 
+// Sets `derived.__proto__ = base`, equivalent to `Object.setPrototypeOf` in
+// JS. For two constructor functions A and B, this is the static-side half of
+// `class B extends A {}` — property lookups on B fall through to A.
+inline void setObjectPrototypeOf(
+  jsi::Runtime &runtime,
+  jsi::Object &derived,
+  jsi::Object &base) {
+  jsi::Object objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
+  objectClass
+    .getPropertyAsFunction(runtime, "setPrototypeOf")
+    .callWithThis(
+      runtime,
+      objectClass,
+      {jsi::Value(runtime, derived), jsi::Value(runtime, base)});
+}
+
 inline void jsConsoleLog(jsi::Runtime &runtime, std::initializer_list<jsi::Value> args) {
   runtime.global()
       .getProperty(runtime, "console")
