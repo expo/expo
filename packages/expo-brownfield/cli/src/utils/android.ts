@@ -1,8 +1,8 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runCommand } from './commands';
 import CLIError from './error';
 import { withSpinner } from './spinner';
 import type { AndroidConfig, BuildVariant } from './types';
@@ -101,9 +101,9 @@ export const runTask = async (task: string, verbose: boolean, dryRun: boolean) =
 
   return withSpinner({
     operation: () =>
-      runCommand('./gradlew', [task], {
+      spawnAsync('./gradlew', [task], {
         cwd: path.join(process.cwd(), 'android'),
-        verbose,
+        stdio: verbose ? 'inherit' : 'pipe',
       }),
     loaderMessage: 'Running task: ' + task,
     successMessage: 'Running task: ' + task + ' succeeded',

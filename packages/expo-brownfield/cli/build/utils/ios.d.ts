@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import type { IosConfig } from './types';
 /**
  * Inspect the built brownfield framework binary and return the names of `@rpath`-linked
@@ -13,10 +14,10 @@ import type { IosConfig } from './types';
  */
 export declare const enumerateSourceBuiltDeps: (config: IosConfig, alreadyCovered: Set<string>) => Promise<string[]>;
 export declare const cleanUpArtifacts: (config: IosConfig) => Promise<void>;
-export declare const buildFramework: (config: IosConfig) => Promise<import("./types").RunCommandResult | undefined>;
+export declare const buildFramework: (config: IosConfig) => Promise<spawnAsync.SpawnResult | undefined>;
 export declare const copyXCFrameworks: (config: IosConfig, dest: string) => Promise<void>;
 export declare const createSwiftPackage: (config: IosConfig) => Promise<string>;
-export declare const createXCframework: (config: IosConfig, at: string) => Promise<import("./types").RunCommandResult | undefined>;
+export declare const createXCframework: (config: IosConfig, at: string) => Promise<spawnAsync.SpawnResult | undefined>;
 export declare const findScheme: () => string | undefined;
 export declare const findWorkspace: (dryRun: boolean) => string | undefined;
 export declare const generatePackageMetadataFile: (config: IosConfig, packagePath: string) => Promise<void>;
