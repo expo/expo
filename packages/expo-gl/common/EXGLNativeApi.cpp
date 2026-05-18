@@ -1,11 +1,16 @@
 #include "EXGLNativeApi.h"
 #include "EXGLContextManager.h"
 #include "EXGLNativeContext.h"
+#include "EXWebGLRenderer.h"
 
 using namespace expo::gl_cpp;
 
 EXGLContextId EXGLContextCreate() {
   return ContextCreate();
+}
+
+void EXGLInstallWebGLBindings(void *jsiPtr) {
+  installWebGLConstructorsAndConstants(*reinterpret_cast<jsi::Runtime *>(jsiPtr));
 }
 
 void EXGLContextPrepare(

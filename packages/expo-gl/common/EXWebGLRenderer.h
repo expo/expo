@@ -36,8 +36,19 @@ enum class EXWebGLClass {
   WebGLVertexArrayObject,
 };
 
-void ensurePrototypes(jsi::Runtime &runtime);
-void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *, glesContext, jsi::Object&& global);
+// Installs the WebGLRenderingContext and WebGL2RenderingContext constructors,
+// their numeric constants, and the inheritance chain for related interface
+// objects. Safe to call before any GL context exists; idempotent.
+void installWebGLConstructorsAndConstants(jsi::Runtime &runtime);
+
+// Installs WebGLRenderingContext and WebGL2RenderingContext instance methods
+// on their prototypes. Defers the heavier per-method binding work until a GL
+// context is created. Requires `installWebGLConstructorsAndConstants` to have
+// run; idempotent.
+void installWebGLInstanceMethods(jsi::Runtime &runtime);
+
+void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *, glesContext, jsi::Object &&global);
+
 jsi::Value createWebGLObject(
     jsi::Runtime &runtime,
     EXWebGLClass webglClass,

@@ -6,6 +6,17 @@ public final class ExpoGLModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoGL")
 
+    OnCreate {
+      guard let runtime = try? appContext?.runtime else {
+        return
+      }
+      try! runtime.execute {
+        runtime.withUnsafePointee { runtimePtr in
+          EXGLInstallWebGLBindings(runtimePtr)
+        }
+      }
+    }
+
     AsyncFunction("takeSnapshotAsync") { (contextId: UInt, options: [String: Any], promise: Promise) in
       EXGLObjectManager.shared.takeSnapshot(
         withContextId: contextId as NSNumber,
