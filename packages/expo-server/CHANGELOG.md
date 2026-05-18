@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Constrain `expo-platform` input to known values ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.9 — 2026-05-05

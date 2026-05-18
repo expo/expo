@@ -14,8 +14,7 @@ import type { PathSpec } from './path';
 export const REQUEST_HEADERS = '__expo_requestHeaders';
 
 declare let globalThis: {
-  __EXPO_RSC_CACHE__?: Map<string, any>;
-  __expo_platform_header?: string;
+  __EXPO_RSC_STORE__?: AsyncLocalStorage<RenderStore>;
   __webpack_chunk_load__: (id: string) => Promise<any>;
   __webpack_require__: (id: string) => any;
 };
@@ -85,51 +84,21 @@ type RenderStore<> = {
   context: Record<string, unknown>;
 };
 
-// TODO(EvanBacon): This can leak between platforms and runs.
-// We need to share this module between the server action module and the renderer module, per platform, and invalidate on refreshes.
-function getGlobalCacheForPlatform() {
-  // HACK: This is a workaround for the shared middleware being shared between web and native.
-  // In production the shared middleware is web-only and that causes the first version of this module
-  // to be bound to web.
-  const platform = globalThis.__expo_platform_header ?? process.env.EXPO_OS;
-  if (!globalThis.__EXPO_RSC_CACHE__) {
-    globalThis.__EXPO_RSC_CACHE__ = new Map();
-  }
-
-  if (globalThis.__EXPO_RSC_CACHE__.has(platform!)) {
-    return globalThis.__EXPO_RSC_CACHE__.get(platform!)!;
-  }
-
-  const serverCache = new AsyncLocalStorage<RenderStore>();
-
-  globalThis.__EXPO_RSC_CACHE__.set(platform!, serverCache);
-
-  return serverCache;
+// Stashed on globalThis so separately-loaded copies of this module (e.g. the renderer and a
+// server-action module loaded via Metro's ssrLoadModule) share one storage instance.
+function getRenderStorage(): AsyncLocalStorage<RenderStore> {
+  return (globalThis.__EXPO_RSC_STORE__ ??= new AsyncLocalStorage<RenderStore>());
 }
-
-let previousRenderStore: RenderStore | undefined;
-let currentRenderStore: RenderStore | undefined;
 
 /**
  * This is an internal function and not for public use.
  */
 export const runWithRenderStore = <T>(renderStore: RenderStore, fn: () => T): T => {
-  const renderStorage = getGlobalCacheForPlatform();
-  if (renderStorage) {
-    return renderStorage.run(renderStore, fn);
-  }
-  previousRenderStore = currentRenderStore;
-  currentRenderStore = renderStore;
-  try {
-    return fn();
-  } finally {
-    currentRenderStore = previousRenderStore;
-  }
+  return getRenderStorage().run(renderStore, fn);
 };
 
 export async function rerender(input: string, params?: unknown) {
-  const renderStorage = getGlobalCacheForPlatform();
-  const renderStore = renderStorage.getStore() ?? currentRenderStore;
+  const renderStore = getRenderStorage().getStore();
   if (!renderStore) {
     throw new Error('Render store is not available for rerender');
   }
@@ -139,8 +108,7 @@ export async function rerender(input: string, params?: unknown) {
 export function getContext<
   RscContext extends Record<string, unknown> = Record<string, unknown>,
 >(): RscContext {
-  const renderStorage = getGlobalCacheForPlatform();
-  const renderStore = renderStorage.getStore() ?? currentRenderStore;
+  const renderStore = getRenderStorage().getStore();
   if (!renderStore) {
     throw new Error('Render store is not available for accessing context');
   }
