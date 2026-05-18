@@ -96,3 +96,16 @@ export const fileExistsAsync = async (file: string): Promise<string | null> => {
   const stat = await fs.promises.stat(file).catch(() => null);
   return stat?.isFile() ? file : null;
 };
+
+export const maybeRealpath = async (target: string): Promise<string | null> => {
+  try {
+    return await fs.promises.realpath(target);
+  } catch {
+    return null;
+  }
+};
+
+export function isPathInside(child: string, parent: string): boolean {
+  const relative = path.relative(parent, child);
+  return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+}

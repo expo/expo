@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fileExistsAsync = void 0;
+exports.maybeRealpath = exports.fileExistsAsync = void 0;
 exports.memoize = memoize;
 exports.listFilesSorted = listFilesSorted;
 exports.listFilesInDirectories = listFilesInDirectories;
 exports.scanFilesRecursively = scanFilesRecursively;
+exports.isPathInside = isPathInside;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const MAX_SIZE = 5_000;
@@ -89,4 +90,17 @@ const fileExistsAsync = async (file) => {
     return stat?.isFile() ? file : null;
 };
 exports.fileExistsAsync = fileExistsAsync;
+const maybeRealpath = async (target) => {
+    try {
+        return await fs_1.default.promises.realpath(target);
+    }
+    catch {
+        return null;
+    }
+};
+exports.maybeRealpath = maybeRealpath;
+function isPathInside(child, parent) {
+    const relative = path_1.default.relative(parent, child);
+    return !!relative && !relative.startsWith('..') && !path_1.default.isAbsolute(relative);
+}
 //# sourceMappingURL=utils.js.map

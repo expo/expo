@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Disallow devtools plugins to point to `webpageRoot` outside of their own bounds ([#45841](https://github.com/expo/expo/pull/45841) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 3.0.25 — 2026-04-27

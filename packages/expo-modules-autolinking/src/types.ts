@@ -72,7 +72,7 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
 export interface ModuleDescriptorDevTools {
   packageName: string;
   packageRoot: string;
-  webpageRoot: string;
+  webpageRoot: string | undefined;
 }
 
 export interface ModuleDescriptorWeb {

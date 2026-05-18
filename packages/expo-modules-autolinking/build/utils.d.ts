@@ -10,3 +10,5 @@ export declare function scanFilesRecursively(parentPath: string, includeDirector
     readonly name: string;
 }, void, unknown>;
 export declare const fileExistsAsync: (file: string) => Promise<string | null>;
+export declare const maybeRealpath: (target: string) => Promise<string | null>;
+export declare function isPathInside(child: string, parent: string): boolean;
