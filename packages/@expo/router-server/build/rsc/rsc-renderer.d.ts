@@ -19,6 +19,8 @@ export type RenderRscArgs = {
     input: string;
     context: Record<string, unknown> | undefined;
     body?: ReadableStream | undefined;
+    method?: 'GET' | 'POST';
+    headers?: Record<string, string>;
     contentType?: string | undefined;
     decodedBody?: unknown;
     moduleIdCallback?: (module: {

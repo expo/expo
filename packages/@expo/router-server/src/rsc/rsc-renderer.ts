@@ -40,6 +40,8 @@ export type RenderRscArgs = {
   input: string;
   context: Record<string, unknown> | undefined;
   body?: ReadableStream | undefined;
+  method?: 'GET' | 'POST';
+  headers?: Record<string, string>;
   contentType?: string | undefined;
   decodedBody?: unknown;
   moduleIdCallback?: (module: {
@@ -197,7 +199,17 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   }
 
   const actionId = decodeActionId(input);
-  if (actionId) {
+  // CSRF preflight checks
+  // - Enforces Sec-Fetch-Site isn't "cross-site"
+  // - Otherwise, we enforce expo-platform to enforce preflight
+  const fetchSite = args.headers?.['sec-fetch-site'];
+  if (actionId && args.method !== 'POST') {
+    throw new Error(`Server action "${actionId}" rejected: Invalid method`);
+  } else if (actionId && fetchSite === 'cross-site') {
+    throw new Error(`Server action "${actionId}" rejected: Cross-site request`);
+  } else if (actionId && !fetchSite && !args.headers?.['expo-platform']) {
+    throw new Error(`Server action "${actionId}" rejected: Missing required header`);
+  } else if (actionId) {
     if (
       !opts.isExporting &&
       // @ts-ignore
@@ -224,10 +236,10 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     }
 
     return renderWithContextWithAction(context, fn, args);
+  } else {
+    // method === 'GET'
+    return renderWithContext(context, input, decodedBody);
   }
-
-  // method === 'GET'
-  return renderWithContext(context, input, decodedBody);
 }
 
 // TODO is this correct? better to use a library?

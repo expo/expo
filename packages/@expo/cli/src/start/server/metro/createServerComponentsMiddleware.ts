@@ -540,6 +540,8 @@ export function createServerComponentsMiddleware(
         context,
         config: {},
         input,
+        method,
+        headers: Object.fromEntries(headers.entries()),
         contentType,
       },
       {

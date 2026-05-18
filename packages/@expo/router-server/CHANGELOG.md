@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Reject RSC server-action invocations that aren't HTTP POST ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+- Enforce `Sec-Fetch-Site` or `expo-platform` header values ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.16 — 2026-05-05
