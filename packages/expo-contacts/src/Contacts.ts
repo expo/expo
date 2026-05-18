@@ -715,7 +715,7 @@ export async function getContactByIdAsync(
 }
 
 /**
- *  Creates a new contact and adds it to the system.
+ * Creates a new contact and adds it to the system.
  *
  * > **Note**: For Android users, the Expo Go app does not have the required `WRITE_CONTACTS` permission to write to Contacts.
  * > You will need to create a [development build](/develop/development-builds/create-a-build/) and add permission in there
