@@ -1,7 +1,17 @@
+import fs from 'node:fs';
+
 import { DevToolsPluginInfo, PluginSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import { DevToolsPluginEndpoint } from './DevToolsPluginManager';
-import { Log } from '../../log';
+import { isPathInside } from '../../utils/dir';
+
+const maybeRealpath = (target: string): string => {
+  try {
+    return fs.realpathSync(target);
+  } catch {
+    return target;
+  }
+};
 
 /**
  * Class that represents a DevTools plugin with CLI and/or web extensions
@@ -19,12 +29,20 @@ export class DevToolsPlugin {
     private plugin: DevToolsPluginInfo,
     public readonly projectRoot: string
   ) {
-    // Validate configuration schema
     const result = PluginSchema.safeParse(plugin);
     if (!result.success) {
       throw new Error(`Invalid plugin configuration: ${result.error.message}`, {
         cause: result.error,
       });
+    }
+
+    if (plugin.webpageRoot != null) {
+      const webpageRoot = maybeRealpath(plugin.webpageRoot);
+      if (!isPathInside(webpageRoot, plugin.packageRoot)) {
+        throw new Error(
+          `webpageRoot (${plugin.webpageRoot}) is not inside packageRoot (${plugin.packageRoot}).`
+        );
+      }
     }
   }
 
