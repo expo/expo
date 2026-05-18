@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "https://developer.android.com/reference/android/Manifest.permission",
-    "scrapedAt": "2024-02-23T23:18:57.858Z"
+    "scrapedAt": "2026-05-18T08:22:18.705Z"
   },
   "data": {
     "ACCEPT_HANDOVER": {
@@ -24,6 +24,17 @@
       "explanation": "If you're requesting this permission, you must also request either <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/Manifest.permission#ACCESS_COARSE_LOCATION\">ACCESS_COARSE_LOCATION</a></code> or <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/Manifest.permission#ACCESS_FINE_LOCATION\">ACCESS_FINE_LOCATION</a></code>. Requesting this permission by itself doesn't give you location access.",
       "constant": "android.permission.ACCESS_BACKGROUND_LOCATION",
       "protection": "dangerous",
+      "warning": null
+    },
+    "ACCESS_BIOMETRIC_SENSOR_STRENGTHS": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "ACCESS_BIOMETRIC_SENSOR_STRENGTHS",
+      "description": "Allows an application to retrieve the sensor security strengths of the biometric sensors.",
+      "explanation": null,
+      "constant": "android.permission.ACCESS_BIOMETRIC_SENSOR_STRENGTHS",
+      "protection": null,
       "warning": null
     },
     "ACCESS_BLOBS_ACROSS_USERS": {
@@ -68,6 +79,39 @@
       "explanation": "Alternatively, you might want <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/Manifest.permission#ACCESS_COARSE_LOCATION\">ACCESS_COARSE_LOCATION</a></code>.",
       "constant": "android.permission.ACCESS_FINE_LOCATION",
       "protection": "dangerous",
+      "warning": null
+    },
+    "ACCESS_HIDDEN_PROFILES": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "ACCESS_HIDDEN_PROFILES",
+      "description": "Allows applications to access profiles with android.content.pm.UserProperties#PROFILE_API_VISIBILITY_HIDDEN user property, e.g.",
+      "explanation": "Allows applications to access profiles with <code translate=\"no\" dir=\"ltr\">android.content.pm.UserProperties#PROFILE_API_VISIBILITY_HIDDEN</code> user property, e.g. <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/os/UserManager#USER_TYPE_PROFILE_PRIVATE\">UserManager.USER_TYPE_PROFILE_PRIVATE</a></code>.",
+      "constant": "android.permission.ACCESS_HIDDEN_PROFILES",
+      "protection": "normal",
+      "warning": null
+    },
+    "ACCESS_LAUNCHER_DATA": {
+      "apiAdded": 36.1,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "ACCESS_LAUNCHER_DATA",
+      "description": "This permission protects a content provider within home/launcher applications, enabling management of home screen metadata such as shortcut placement, launch intents, and labels.",
+      "explanation": null,
+      "constant": "android.permission.ACCESS_LAUNCHER_DATA",
+      "protection": null,
+      "warning": null
+    },
+    "ACCESS_LOCAL_NETWORK": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "ACCESS_LOCAL_NETWORK",
+      "description": "Required to be able to advertise and connect to local network devices.",
+      "explanation": null,
+      "constant": "android.permission.ACCESS_LOCAL_NETWORK",
+      "protection": "dangerous/Local Network Definition",
       "warning": null
     },
     "ACCESS_LOCATION_EXTRA_COMMANDS": {
@@ -169,6 +213,17 @@
       "protection": "dangerous",
       "warning": null
     },
+    "APPLY_PICTURE_PROFILE": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "APPLY_PICTURE_PROFILE",
+      "description": "Allows an app to apply a ERROR(/MediaQualityManager.PictureProfile) to a layer via ERROR(/MediaCodec.PARAMETER_KEY_PICTURE_PROFILE) and, additionally, system apps via ERROR(/SurfaceControl.Transaction#setPictureProfileHandle).",
+      "explanation": "Allows an app to apply a <code translate=\"no\" dir=\"ltr\"><a href=\"/\">ERROR(/MediaQualityManager.PictureProfile)</a></code> to a layer via <code translate=\"no\" dir=\"ltr\"><a href=\"/\">ERROR(/MediaCodec.PARAMETER_KEY_PICTURE_PROFILE)</a></code> and, additionally, system apps via <code translate=\"no\" dir=\"ltr\"><a href=\"/\">ERROR(/SurfaceControl.Transaction#setPictureProfileHandle)</a></code>.",
+      "constant": "android.permission.APPLY_PICTURE_PROFILE",
+      "protection": null,
+      "warning": null
+    },
     "BATTERY_STATS": {
       "apiAdded": 1,
       "apiDeprecated": null,
@@ -191,6 +246,17 @@
       "protection": "signature",
       "warning": null
     },
+    "BIND_ALTERNATIVE_MESSAGE_TRANSPORT_SERVICE": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "BIND_ALTERNATIVE_MESSAGE_TRANSPORT_SERVICE",
+      "description": "Permission needed to ensure that only the system process can bind with the AlternativeMessageTransportService.",
+      "explanation": "Permission needed to ensure that only the system process can bind with the <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/service/messaging/AlternativeMessageTransportService\">AlternativeMessageTransportService</a></code>.",
+      "constant": "android.permission.BIND_ALTERNATIVE_MESSAGE_TRANSPORT_SERVICE",
+      "protection": null,
+      "warning": null
+    },
     "BIND_APPWIDGET": {
       "apiAdded": 3,
       "apiDeprecated": null,
@@ -200,6 +266,17 @@
       "explanation": "The normal user flow is that a user picks an AppWidget to go into a particular host, thereby giving that host application access to the private data from the AppWidget app. An application that has this permission should honor that contract.",
       "constant": "android.permission.BIND_APPWIDGET",
       "protection": null,
+      "warning": null
+    },
+    "BIND_APP_FUNCTION_SERVICE": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "BIND_APP_FUNCTION_SERVICE",
+      "description": "Must be required by an AppFunctionService, to ensure that only the system can bind to it.",
+      "explanation": "Must be required by an <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/app/appfunctions/AppFunctionService\">AppFunctionService</a></code>, to ensure that only the system can bind to it.",
+      "constant": "android.permission.BIND_APP_FUNCTION_SERVICE",
+      "protection": "signature",
       "warning": null
     },
     "BIND_AUTOFILL_SERVICE": {
@@ -266,7 +343,7 @@
       "explanation": null,
       "constant": "android.permission.BIND_CHOOSER_TARGET_SERVICE",
       "protection": "signature",
-      "warning": "This constant was deprecated in API level 30. For publishing direct share targets, follow the instructions in https://developer.android.com/training/sharing/receive.html#providing-direct-share-targets instead."
+      "warning": "This constant was deprecated in API level 30. For publishing direct share targets, please follow the instructions in https://developer.android.com/training/sharing/receive.html#providing-direct-share-targets instead."
     },
     "BIND_COMPANION_DEVICE_SERVICE": {
       "apiAdded": 31,
@@ -309,6 +386,17 @@
       "description": "Must be required by a CredentialProviderService to ensure that only the system can bind to it.",
       "explanation": null,
       "constant": "android.permission.BIND_CREDENTIAL_PROVIDER_SERVICE",
+      "protection": "signature",
+      "warning": null
+    },
+    "BIND_DATA_MIGRATION_FOR_PRIVATECOMPUTE": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "BIND_DATA_MIGRATION_FOR_PRIVATECOMPUTE",
+      "description": "Allows the system to bind to an application's data migration service for Private Compute.",
+      "explanation": null,
+      "constant": "android.permission.BIND_DATA_MIGRATION_FOR_PRIVATECOMPUTE",
       "protection": "signature",
       "warning": null
     },
@@ -464,6 +552,17 @@
       "explanation": "&nbsp;SpellCheckerService) to ensure that only the system can bind to it.",
       "constant": "android.permission.BIND_TEXT_SERVICE",
       "protection": "signature",
+      "warning": null
+    },
+    "BIND_TV_AD_SERVICE": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "BIND_TV_AD_SERVICE",
+      "description": "Must be required by a android.media.tv.ad.TvAdService to ensure that only the system can bind to it.",
+      "explanation": null,
+      "constant": "android.permission.BIND_TV_AD_SERVICE",
+      "protection": "signature|privileged",
       "warning": null
     },
     "BIND_TV_INPUT": {
@@ -730,6 +829,17 @@
       "protection": null,
       "warning": null
     },
+    "CAPTURE_KEYBOARD": {
+      "apiAdded": 36.1,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "CAPTURE_KEYBOARD",
+      "description": "Allows the currently focused application to be able to consume keys before Android system get chance to process system keys and shortcuts.",
+      "explanation": null,
+      "constant": "android.permission.CAPTURE_KEYBOARD",
+      "protection": null,
+      "warning": null
+    },
     "CHANGE_COMPONENT_ENABLED_STATE": {
       "apiAdded": 1,
       "apiDeprecated": null,
@@ -895,6 +1005,17 @@
       "protection": "normal",
       "warning": null
     },
+    "DETECT_SCREEN_RECORDING": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "DETECT_SCREEN_RECORDING",
+      "description": "Allows an application to get notified when it is being recorded.",
+      "explanation": null,
+      "constant": "android.permission.DETECT_SCREEN_RECORDING",
+      "protection": "normal",
+      "warning": null
+    },
     "DIAGNOSTIC": {
       "apiAdded": 1,
       "apiDeprecated": null,
@@ -948,6 +1069,17 @@
       "explanation": null,
       "constant": "android.permission.EXECUTE_APP_ACTION",
       "protection": "internal|role",
+      "warning": null
+    },
+    "EXECUTE_APP_FUNCTIONS": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "EXECUTE_APP_FUNCTIONS",
+      "description": "Allows an application to perform actions on behalf of users inside of applications.",
+      "explanation": null,
+      "constant": "android.permission.EXECUTE_APP_FUNCTIONS",
+      "protection": "internal|privileged",
       "warning": null
     },
     "EXPAND_STATUS_BAR": {
@@ -1046,6 +1178,17 @@
       "description": "Allows a regular application to use Service.startForeground with the type \"mediaPlayback\".",
       "explanation": "Allows a regular application to use <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/app/Service#startForeground(int,%20android.app.Notification)\">Service.startForeground</a></code> with the type \"mediaPlayback\".",
       "constant": "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+      "protection": "normal|instant",
+      "warning": null
+    },
+    "FOREGROUND_SERVICE_MEDIA_PROCESSING": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "FOREGROUND_SERVICE_MEDIA_PROCESSING",
+      "description": "Allows a regular application to use Service.startForeground with the type \"mediaProcessing\".",
+      "explanation": "Allows a regular application to use <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/app/Service#startForeground(int,%20android.app.Notification)\">Service.startForeground</a></code> with the type \"mediaProcessing\".",
+      "constant": "android.permission.FOREGROUND_SERVICE_MEDIA_PROCESSING",
       "protection": "normal|instant",
       "warning": null
     },
@@ -1332,7 +1475,7 @@
       "description": "Allows an application to manage policy related to accessibility.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_ACCESSIBILITY",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_ACCOUNT_MANAGEMENT": {
@@ -1343,7 +1486,7 @@
       "description": "Allows an application to set policy related to account management.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_ACCOUNT_MANAGEMENT",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_ACROSS_USERS": {
@@ -1354,7 +1497,7 @@
       "description": "Allows an application to set device policies outside the current user that are required for securing device ownership without accessing user data.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_ACROSS_USERS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_ACROSS_USERS_FULL": {
@@ -1365,7 +1508,7 @@
       "description": "Allows an application to set device policies outside the current user.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_ACROSS_USERS_FULL",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_ACROSS_USERS_SECURITY_CRITICAL": {
@@ -1376,7 +1519,7 @@
       "description": "Allows an application to set device policies outside the current user that are critical for securing data within the current user.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_ACROSS_USERS_SECURITY_CRITICAL",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_AIRPLANE_MODE": {
@@ -1387,7 +1530,7 @@
       "description": "Allows an application to set policy related to airplane mode.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_AIRPLANE_MODE",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_APPS_CONTROL": {
@@ -1398,7 +1541,18 @@
       "description": "Allows an application to manage policy regarding modifying applications.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_APPS_CONTROL",
-      "protection": null,
+      "protection": "internal|role",
+      "warning": null
+    },
+    "MANAGE_DEVICE_POLICY_APP_FUNCTIONS": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_APP_FUNCTIONS",
+      "description": "Allows an application to manage policy related to AppFunctions.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_APP_FUNCTIONS",
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_APP_RESTRICTIONS": {
@@ -1409,7 +1563,7 @@
       "description": "Allows an application to manage application restrictions.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_APP_RESTRICTIONS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_APP_USER_DATA": {
@@ -1420,7 +1574,18 @@
       "description": "Allows an application to manage policy related to application user data.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_APP_USER_DATA",
-      "protection": null,
+      "protection": "internal|role",
+      "warning": null
+    },
+    "MANAGE_DEVICE_POLICY_ASSIST_CONTENT": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_ASSIST_CONTENT",
+      "description": "Allows an application to set policy related to sending assist content to a privileged app such as the Assistant app.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_ASSIST_CONTENT",
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_AUDIO_OUTPUT": {
@@ -1431,7 +1596,7 @@
       "description": "Allows an application to set policy related to audio output.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_AUDIO_OUTPUT",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_AUTOFILL": {
@@ -1442,7 +1607,7 @@
       "description": "Allows an application to set policy related to autofill.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_AUTOFILL",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_BACKUP_SERVICE": {
@@ -1453,7 +1618,18 @@
       "description": "Allows an application to manage backup service policy.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_BACKUP_SERVICE",
-      "protection": null,
+      "protection": "internal|role",
+      "warning": null
+    },
+    "MANAGE_DEVICE_POLICY_BLOCK_UNINSTALL": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_BLOCK_UNINSTALL",
+      "description": "Allows an application to manage policy related to block package uninstallation.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_BLOCK_UNINSTALL",
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_BLUETOOTH": {
@@ -1464,7 +1640,7 @@
       "description": "Allows an application to set policy related to bluetooth.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_BLUETOOTH",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_BUGREPORT": {
@@ -1475,7 +1651,7 @@
       "description": "Allows an application to request bugreports with user consent.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_BUGREPORT",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_CALLS": {
@@ -1486,7 +1662,7 @@
       "description": "Allows an application to manage calling policy.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_CALLS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_CAMERA": {
@@ -1497,7 +1673,18 @@
       "description": "Allows an application to set policy related to restricting a user's ability to use or enable and disable the camera.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_CAMERA",
-      "protection": null,
+      "protection": "internal|role",
+      "warning": null
+    },
+    "MANAGE_DEVICE_POLICY_CAMERA_TOGGLE": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_CAMERA_TOGGLE",
+      "description": "Allows an application to manage policy related to camera toggle.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_CAMERA_TOGGLE",
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_CERTIFICATES": {
@@ -1508,7 +1695,7 @@
       "description": "Allows an application to set policy related to certificates.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_CERTIFICATES",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_COMMON_CRITERIA_MODE": {
@@ -1519,7 +1706,18 @@
       "description": "Allows an application to manage policy related to common criteria mode.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_COMMON_CRITERIA_MODE",
-      "protection": null,
+      "protection": "internal|role",
+      "warning": null
+    },
+    "MANAGE_DEVICE_POLICY_CONTENT_PROTECTION": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_CONTENT_PROTECTION",
+      "description": "Allows an application to manage policy related to content protection.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_CONTENT_PROTECTION",
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_DEBUGGING_FEATURES": {
@@ -1530,7 +1728,7 @@
       "description": "Allows an application to manage debugging features policy.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_DEBUGGING_FEATURES",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_DEFAULT_SMS": {
@@ -1541,7 +1739,7 @@
       "description": "Allows an application to set policy related to the default sms application.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_DEFAULT_SMS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_DEVICE_IDENTIFIERS": {
@@ -1552,7 +1750,7 @@
       "description": "Allows an application to manage policy related to device identifiers.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_DEVICE_IDENTIFIERS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_DISPLAY": {
@@ -1563,7 +1761,7 @@
       "description": "Allows an application to set policy related to the display.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_DISPLAY",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_FACTORY_RESET": {
@@ -1574,7 +1772,7 @@
       "description": "Allows an application to set policy related to factory reset.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_FACTORY_RESET",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_FUN": {
@@ -1585,7 +1783,7 @@
       "description": "Allows an application to set policy related to fun.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_FUN",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_INPUT_METHODS": {
@@ -1596,7 +1794,7 @@
       "description": "Allows an application to set policy related to input methods.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_INPUT_METHODS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_INSTALL_UNKNOWN_SOURCES": {
@@ -1607,7 +1805,7 @@
       "description": "Allows an application to manage installing from unknown sources policy.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_INSTALL_UNKNOWN_SOURCES",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_KEEP_UNINSTALLED_PACKAGES": {
@@ -1618,7 +1816,7 @@
       "description": "Allows an application to set policy related to keeping uninstalled packages.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_KEEP_UNINSTALLED_PACKAGES",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_KEYGUARD": {
@@ -1626,10 +1824,10 @@
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "MANAGE_DEVICE_POLICY_KEYGUARD",
-      "description": "Allows an application to manage policy related to keyguard.",
-      "explanation": null,
+      "description": "Allows an application to manage policy related to keyguard features.",
+      "explanation": "Like whether the camera, notifications are allowed on the secure keyguard screens.",
       "constant": "android.permission.MANAGE_DEVICE_POLICY_KEYGUARD",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_LOCALE": {
@@ -1640,7 +1838,7 @@
       "description": "Allows an application to set policy related to locale.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_LOCALE",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_LOCATION": {
@@ -1651,7 +1849,7 @@
       "description": "Allows an application to set policy related to location.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_LOCATION",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_LOCK": {
@@ -1662,7 +1860,7 @@
       "description": "Allows an application to lock a profile or the device with the appropriate cross-user permission.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_LOCK",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_LOCK_CREDENTIALS": {
@@ -1673,7 +1871,7 @@
       "description": "Allows an application to set policy related to lock credentials.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_LOCK_CREDENTIALS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_LOCK_TASK": {
@@ -1684,7 +1882,18 @@
       "description": "Allows an application to manage lock task policy.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_LOCK_TASK",
-      "protection": null,
+      "protection": "internal|role",
+      "warning": null
+    },
+    "MANAGE_DEVICE_POLICY_MANAGED_SUBSCRIPTIONS": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_MANAGED_SUBSCRIPTIONS",
+      "description": "Allows an application to set policy related to subscriptions downloaded by an admin.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_MANAGED_SUBSCRIPTIONS",
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_METERED_DATA": {
@@ -1695,7 +1904,7 @@
       "description": "Allows an application to manage policy related to metered data.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_METERED_DATA",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_MICROPHONE": {
@@ -1706,7 +1915,18 @@
       "description": "Allows an application to set policy related to restricting a user's ability to use or enable and disable the microphone.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_MICROPHONE",
-      "protection": null,
+      "protection": "internal|role",
+      "warning": null
+    },
+    "MANAGE_DEVICE_POLICY_MICROPHONE_TOGGLE": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_MICROPHONE_TOGGLE",
+      "description": "Allows an application to manage policy related to microphone toggle.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_MICROPHONE_TOGGLE",
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_MOBILE_NETWORK": {
@@ -1717,7 +1937,7 @@
       "description": "Allows an application to set policy related to mobile networks.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_MOBILE_NETWORK",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_MODIFY_USERS": {
@@ -1728,7 +1948,7 @@
       "description": "Allows an application to manage policy preventing users from modifying users.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_MODIFY_USERS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_MTE": {
@@ -1739,7 +1959,7 @@
       "description": "Allows an application to manage policy related to the Memory Tagging Extension (MTE).",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_MTE",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_NEARBY_COMMUNICATION": {
@@ -1750,7 +1970,7 @@
       "description": "Allows an application to set policy related to nearby communications (e.g.",
       "explanation": "&nbsp;Beam and nearby streaming).",
       "constant": "android.permission.MANAGE_DEVICE_POLICY_NEARBY_COMMUNICATION",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_NETWORK_LOGGING": {
@@ -1761,7 +1981,7 @@
       "description": "Allows an application to set policy related to network logging.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_NETWORK_LOGGING",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_ORGANIZATION_IDENTITY": {
@@ -1772,7 +1992,7 @@
       "description": "Allows an application to manage the identity of the managing organization.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_ORGANIZATION_IDENTITY",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_OVERRIDE_APN": {
@@ -1783,7 +2003,7 @@
       "description": "Allows an application to set policy related to override APNs.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_OVERRIDE_APN",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_PACKAGE_STATE": {
@@ -1794,7 +2014,7 @@
       "description": "Allows an application to set policy related to hiding and suspending packages.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_PACKAGE_STATE",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_PHYSICAL_MEDIA": {
@@ -1805,7 +2025,7 @@
       "description": "Allows an application to set policy related to physical media.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_PHYSICAL_MEDIA",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_PRINTING": {
@@ -1816,7 +2036,7 @@
       "description": "Allows an application to set policy related to printing.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_PRINTING",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_PRIVATE_DNS": {
@@ -1827,7 +2047,7 @@
       "description": "Allows an application to set policy related to private DNS.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_PRIVATE_DNS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_PROFILES": {
@@ -1838,7 +2058,7 @@
       "description": "Allows an application to set policy related to profiles.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_PROFILES",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_PROFILE_INTERACTION": {
@@ -1849,7 +2069,7 @@
       "description": "Allows an application to set policy related to interacting with profiles (e.g.",
       "explanation": "&nbsp;Disallowing cross-profile copy and paste).",
       "constant": "android.permission.MANAGE_DEVICE_POLICY_PROFILE_INTERACTION",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_PROXY": {
@@ -1860,7 +2080,7 @@
       "description": "Allows an application to set a network-independent global HTTP proxy.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_PROXY",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_QUERY_SYSTEM_UPDATES": {
@@ -1871,7 +2091,7 @@
       "description": "Allows an application query system updates.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_QUERY_SYSTEM_UPDATES",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_RESET_PASSWORD": {
@@ -1882,7 +2102,7 @@
       "description": "Allows an application to force set a new device unlock password or a managed profile challenge on current user.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_RESET_PASSWORD",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_RESTRICT_PRIVATE_DNS": {
@@ -1893,7 +2113,7 @@
       "description": "Allows an application to set policy related to restricting the user from configuring private DNS.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_RESTRICT_PRIVATE_DNS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_RUNTIME_PERMISSIONS": {
@@ -1904,7 +2124,7 @@
       "description": "Allows an application to set the grant state of runtime permissions on packages.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_RUNTIME_PERMISSIONS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_RUN_IN_BACKGROUND": {
@@ -1915,7 +2135,7 @@
       "description": "Allows an application to set policy related to users running in the background.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_RUN_IN_BACKGROUND",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SAFE_BOOT": {
@@ -1926,7 +2146,7 @@
       "description": "Allows an application to manage safe boot policy.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SAFE_BOOT",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SCREEN_CAPTURE": {
@@ -1937,7 +2157,7 @@
       "description": "Allows an application to set policy related to screen capture.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SCREEN_CAPTURE",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SCREEN_CONTENT": {
@@ -1948,7 +2168,7 @@
       "description": "Allows an application to set policy related to the usage of the contents of the screen.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SCREEN_CONTENT",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SECURITY_LOGGING": {
@@ -1959,7 +2179,7 @@
       "description": "Allows an application to set policy related to security logging.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SECURITY_LOGGING",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SETTINGS": {
@@ -1970,7 +2190,7 @@
       "description": "Allows an application to set policy related to settings.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SETTINGS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SMS": {
@@ -1981,7 +2201,7 @@
       "description": "Allows an application to set policy related to sms.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SMS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_STATUS_BAR": {
@@ -1992,7 +2212,7 @@
       "description": "Allows an application to set policy related to the status bar.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_STATUS_BAR",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SUPPORT_MESSAGE": {
@@ -2003,7 +2223,7 @@
       "description": "Allows an application to set support messages for when a user action is affected by an active policy.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SUPPORT_MESSAGE",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SUSPEND_PERSONAL_APPS": {
@@ -2014,7 +2234,7 @@
       "description": "Allows an application to set policy related to suspending personal apps.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SUSPEND_PERSONAL_APPS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SYSTEM_APPS": {
@@ -2025,7 +2245,7 @@
       "description": "Allows an application to manage policy related to system apps.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SYSTEM_APPS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SYSTEM_DIALOGS": {
@@ -2036,7 +2256,7 @@
       "description": "Allows an application to set policy related to system dialogs.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SYSTEM_DIALOGS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_SYSTEM_UPDATES": {
@@ -2047,7 +2267,18 @@
       "description": "Allows an application to set policy related to system updates.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_SYSTEM_UPDATES",
-      "protection": null,
+      "protection": "internal|role",
+      "warning": null
+    },
+    "MANAGE_DEVICE_POLICY_THREAD_NETWORK": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_THREAD_NETWORK",
+      "description": "Allows an application to set policy related to Thread network.",
+      "explanation": "Allows an application to set policy related to <a href=\"https://www.threadgroup.org\">Thread</a> network.",
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_THREAD_NETWORK",
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_TIME": {
@@ -2058,7 +2289,7 @@
       "description": "Allows an application to manage device policy relating to time.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_TIME",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_USB_DATA_SIGNALLING": {
@@ -2069,7 +2300,7 @@
       "description": "Allows an application to set policy related to usb data signalling.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_USB_DATA_SIGNALLING",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_USB_FILE_TRANSFER": {
@@ -2080,7 +2311,7 @@
       "description": "Allows an application to set policy related to usb file transfers.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_USB_FILE_TRANSFER",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_USERS": {
@@ -2091,7 +2322,7 @@
       "description": "Allows an application to set policy related to users.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_USERS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_VPN": {
@@ -2102,7 +2333,7 @@
       "description": "Allows an application to set policy related to VPNs.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_VPN",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_WALLPAPER": {
@@ -2113,7 +2344,7 @@
       "description": "Allows an application to set policy related to the wallpaper.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_WALLPAPER",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_WIFI": {
@@ -2124,7 +2355,7 @@
       "description": "Allows an application to set policy related to Wifi.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_WIFI",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_WINDOWS": {
@@ -2135,7 +2366,7 @@
       "description": "Allows an application to set policy related to windows.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_WINDOWS",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_WIPE_DATA": {
@@ -2146,7 +2377,7 @@
       "description": "Allows an application to manage policy related to wiping data.",
       "explanation": null,
       "constant": "android.permission.MANAGE_DEVICE_POLICY_WIPE_DATA",
-      "protection": null,
+      "protection": "internal|role",
       "warning": null
     },
     "MANAGE_DOCUMENTS": {
@@ -2248,6 +2479,17 @@
       "protection": null,
       "warning": null
     },
+    "MEDIA_ROUTING_CONTROL": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MEDIA_ROUTING_CONTROL",
+      "description": "Allows an application to control the routing of media apps.",
+      "explanation": null,
+      "constant": "android.permission.MEDIA_ROUTING_CONTROL",
+      "protection": null,
+      "warning": null
+    },
     "MODIFY_AUDIO_SETTINGS": {
       "apiAdded": 1,
       "apiDeprecated": null,
@@ -2336,6 +2578,17 @@
       "protection": "normal",
       "warning": null
     },
+    "OVERRIDE_MEDIA_SESSION_OWNER": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "OVERRIDE_MEDIA_SESSION_OWNER",
+      "description": "Allows an application to override the owner of a MediaSession.",
+      "explanation": null,
+      "constant": "android.permission.OVERRIDE_MEDIA_SESSION_OWNER",
+      "protection": null,
+      "warning": null
+    },
     "OVERRIDE_WIFI_CONFIG": {
       "apiAdded": 33,
       "apiDeprecated": null,
@@ -2367,7 +2620,7 @@
       "explanation": null,
       "constant": "android.permission.PERSISTENT_ACTIVITY",
       "protection": null,
-      "warning": "This constant was deprecated in API level 15. Do not use this functionality since it will be removed in the future. Allow an application to make its activities persistent."
+      "warning": "This constant was deprecated in API level 15. This functionality will be removed in the future; please do not use. Allow an application to make its activities persistent."
     },
     "POST_NOTIFICATIONS": {
       "apiAdded": 33,
@@ -2378,6 +2631,17 @@
       "explanation": null,
       "constant": "android.permission.POST_NOTIFICATIONS",
       "protection": "dangerous",
+      "warning": null
+    },
+    "POST_PROMOTED_NOTIFICATIONS": {
+      "apiAdded": 36.1,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "POST_PROMOTED_NOTIFICATIONS",
+      "description": "Required for apps to post promoted notifications.",
+      "explanation": null,
+      "constant": "android.permission.POST_PROMOTED_NOTIFICATIONS",
+      "protection": "normal|appops",
       "warning": null
     },
     "PROCESS_OUTGOING_CALLS": {
@@ -2402,6 +2666,17 @@
       "protection": "internal|role",
       "warning": null
     },
+    "PROVIDE_PRIVATE_COMPUTE_SERVICES": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "PROVIDE_PRIVATE_COMPUTE_SERVICES",
+      "description": "Allows an application to act as Private Compute Services, which allows the application to communicate with Private Compute Core components.",
+      "explanation": null,
+      "constant": "android.permission.PROVIDE_PRIVATE_COMPUTE_SERVICES",
+      "protection": "signature|privileged",
+      "warning": null
+    },
     "PROVIDE_REMOTE_CREDENTIALS": {
       "apiAdded": 34,
       "apiDeprecated": null,
@@ -2411,6 +2686,17 @@
       "explanation": null,
       "constant": "android.permission.PROVIDE_REMOTE_CREDENTIALS",
       "protection": "signature|privileged|role",
+      "warning": null
+    },
+    "QUERY_ADVANCED_PROTECTION_MODE": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "QUERY_ADVANCED_PROTECTION_MODE",
+      "description": "Allows an application to query the device's advanced protection mode status.",
+      "explanation": null,
+      "constant": "android.permission.QUERY_ADVANCED_PROTECTION_MODE",
+      "protection": null,
       "warning": null
     },
     "QUERY_ALL_PACKAGES": {
@@ -2424,6 +2710,17 @@
       "protection": "normal",
       "warning": null
     },
+    "RANGING": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "RANGING",
+      "description": "Required to be able to range to devices using generic ranging module.",
+      "explanation": null,
+      "constant": "android.permission.RANGING",
+      "protection": "dangerous",
+      "warning": null
+    },
     "READ_ASSISTANT_APP_SEARCH_DATA": {
       "apiAdded": 33,
       "apiDeprecated": null,
@@ -2433,6 +2730,17 @@
       "explanation": null,
       "constant": "android.permission.READ_ASSISTANT_APP_SEARCH_DATA",
       "protection": null,
+      "warning": null
+    },
+    "READ_ASSIST_STRUCTURE_SCREEN_CONTENT": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "READ_ASSIST_STRUCTURE_SCREEN_CONTENT",
+      "description": "Allows an assistant application to read screen content in the AssistStructure.",
+      "explanation": null,
+      "constant": "android.permission.READ_ASSIST_STRUCTURE_SCREEN_CONTENT",
+      "protection": "normal",
       "warning": null
     },
     "READ_BASIC_PHONE_STATE": {
@@ -2468,6 +2776,17 @@
       "protection": "dangerous",
       "warning": null
     },
+    "READ_COLOR_ZONES": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "READ_COLOR_ZONES",
+      "description": "Allows an application to read the aggregated color zones on the screen for use cases like TV ambient backlight usages.",
+      "explanation": null,
+      "constant": "android.permission.READ_COLOR_ZONES",
+      "protection": null,
+      "warning": null
+    },
     "READ_CONTACTS": {
       "apiAdded": 1,
       "apiDeprecated": null,
@@ -2477,6 +2796,17 @@
       "explanation": null,
       "constant": "android.permission.READ_CONTACTS",
       "protection": "dangerous",
+      "warning": null
+    },
+    "READ_DROPBOX_DATA": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "READ_DROPBOX_DATA",
+      "description": "Allows an application to access the data in Dropbox.",
+      "explanation": null,
+      "constant": "android.permission.READ_DROPBOX_DATA",
+      "protection": null,
       "warning": null
     },
     "READ_EXTERNAL_STORAGE": {
@@ -2583,8 +2913,8 @@
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "READ_PHONE_NUMBERS",
-      "description": "Allows read access to the device's phone number(s).",
-      "explanation": "This is a subset of the capabilities granted by <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/Manifest.permission#READ_PHONE_STATE\">READ_PHONE_STATE</a></code> but is exposed to instant applications.",
+      "description": "Allows read access to the device's phone number(s), which is exposed to instant applications.",
+      "explanation": null,
       "constant": "android.permission.READ_PHONE_NUMBERS",
       "protection": "dangerous",
       "warning": null
@@ -2644,6 +2974,17 @@
       "protection": "normal",
       "warning": null
     },
+    "READ_SYSTEM_PREFERENCES": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "READ_SYSTEM_PREFERENCES",
+      "description": "Allows an application to access the Settings Preference services to read settings exposed by the system Settings app and system apps that contribute settings surfaced by the Settings app.",
+      "explanation": null,
+      "constant": "android.permission.READ_SYSTEM_PREFERENCES",
+      "protection": null,
+      "warning": null
+    },
     "READ_VOICEMAIL": {
       "apiAdded": 21,
       "apiDeprecated": null,
@@ -2686,6 +3027,17 @@
       "explanation": null,
       "constant": "android.permission.RECEIVE_MMS",
       "protection": "dangerous",
+      "warning": null
+    },
+    "RECEIVE_SENSITIVE_NOTIFICATIONS": {
+      "apiAdded": 36.1,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "RECEIVE_SENSITIVE_NOTIFICATIONS",
+      "description": "Allows apps with a NotificationListenerService to receive notifications with sensitive information",
+      "explanation": null,
+      "constant": "android.permission.RECEIVE_SENSITIVE_NOTIFICATIONS",
+      "protection": "signature|preinstalled|knownSigner|role",
       "warning": null
     },
     "RECEIVE_SMS": {
@@ -2732,13 +3084,24 @@
       "protection": "normal",
       "warning": null
     },
+    "REPOSITION_SELF_WINDOWS": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "REPOSITION_SELF_WINDOWS",
+      "description": "Allows an application to programmatically move and resize its tasks when the system is in a state that allows such operations, e.g.",
+      "explanation": "&nbsp;in a desktop-like environment. It is only extended to the <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/app/role/RoleManager#ROLE_BROWSER\">default browser</a></code> and OEM specific signature apps.",
+      "constant": "android.permission.REPOSITION_SELF_WINDOWS",
+      "protection": "signature|role",
+      "warning": null
+    },
     "REQUEST_COMPANION_PROFILE_APP_STREAMING": {
       "apiAdded": 33,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "REQUEST_COMPANION_PROFILE_APP_STREAMING",
-      "description": "Allows application to request to be associated with a virtual display capable of streaming Android applications (AssociationRequest.DEVICE_PROFILE_APP_STREAMING) by CompanionDeviceManager.",
-      "explanation": "Allows application to request to be associated with a virtual display capable of streaming Android applications (<code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/companion/AssociationRequest#DEVICE_PROFILE_APP_STREAMING\">AssociationRequest.DEVICE_PROFILE_APP_STREAMING</a></code>) by <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/companion/CompanionDeviceManager\">CompanionDeviceManager</a></code>.",
+      "description": "Allows application to request to be associated with a virtual device capable of streaming Android applications (AssociationRequest.DEVICE_PROFILE_APP_STREAMING) by CompanionDeviceManager.",
+      "explanation": "Allows application to request to be associated with a virtual device capable of streaming Android applications (<code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/companion/AssociationRequest#DEVICE_PROFILE_APP_STREAMING\">AssociationRequest.DEVICE_PROFILE_APP_STREAMING</a></code>) by <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/companion/CompanionDeviceManager\">CompanionDeviceManager</a></code>.",
       "constant": "android.permission.REQUEST_COMPANION_PROFILE_APP_STREAMING",
       "protection": null,
       "warning": null
@@ -2774,6 +3137,17 @@
       "explanation": "Allows app to request to be associated with a device via <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/companion/CompanionDeviceManager\">CompanionDeviceManager</a></code> as \"glasses\"",
       "constant": "android.permission.REQUEST_COMPANION_PROFILE_GLASSES",
       "protection": "normal",
+      "warning": null
+    },
+    "REQUEST_COMPANION_PROFILE_MEDICAL": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "REQUEST_COMPANION_PROFILE_MEDICAL",
+      "description": "Allows application to request to associate with a AssociationRequest.DEVICE_PROFILE_MEDICAL device via CompanionDeviceManager.",
+      "explanation": "Allows application to request to associate with a <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/companion/AssociationRequest#DEVICE_PROFILE_MEDICAL\">AssociationRequest.DEVICE_PROFILE_MEDICAL</a></code> device via <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/companion/CompanionDeviceManager\">CompanionDeviceManager</a></code>.",
+      "constant": "android.permission.REQUEST_COMPANION_PROFILE_MEDICAL",
+      "protection": null,
       "warning": null
     },
     "REQUEST_COMPANION_PROFILE_NEARBY_DEVICE_STREAMING": {
@@ -2886,6 +3260,17 @@
       "protection": null,
       "warning": null
     },
+    "REQUEST_OBSERVE_DEVICE_UUID_PRESENCE": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "REQUEST_OBSERVE_DEVICE_UUID_PRESENCE",
+      "description": "Allows an application to subscribe to notifications about the nearby devices' presence status change base on the UUIDs.",
+      "explanation": null,
+      "constant": "android.permission.REQUEST_OBSERVE_DEVICE_UUID_PRESENCE",
+      "protection": null,
+      "warning": null
+    },
     "REQUEST_PASSWORD_COMPLEXITY": {
       "apiAdded": 29,
       "apiDeprecated": null,
@@ -2985,6 +3370,17 @@
       "protection": null,
       "warning": null
     },
+    "SET_BIOMETRIC_DIALOG_ADVANCED": {
+      "apiAdded": 35,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "SET_BIOMETRIC_DIALOG_ADVANCED",
+      "description": "Allows an application to set the advanced features on BiometricDialog (SystemUI), including logo, logo description, and content view with more options button.",
+      "explanation": null,
+      "constant": "android.permission.SET_BIOMETRIC_DIALOG_ADVANCED",
+      "protection": null,
+      "warning": null
+    },
     "SET_DEBUG_APP": {
       "apiAdded": 1,
       "apiDeprecated": null,
@@ -3062,6 +3458,28 @@
       "protection": "normal",
       "warning": null
     },
+    "SHOW_POWER_MENU": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "SHOW_POWER_MENU",
+      "description": "Permission needed to request to show the Power Menu.",
+      "explanation": null,
+      "constant": "android.permission.SHOW_POWER_MENU",
+      "protection": null,
+      "warning": null
+    },
+    "SHOW_POWER_MENU_PRIVILEGED": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "SHOW_POWER_MENU_PRIVILEGED",
+      "description": "Permission needed to request to show the Power Menu.",
+      "explanation": null,
+      "constant": "android.permission.SHOW_POWER_MENU_PRIVILEGED",
+      "protection": null,
+      "warning": null
+    },
     "SIGNAL_PERSISTENT_PROCESSES": {
       "apiAdded": 1,
       "apiDeprecated": null,
@@ -3133,10 +3551,10 @@
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE",
-      "description": "Allows an application to subscribe to keyguard locked (i.e., showing) state.",
+      "description": "Allows an application to subscribe to device locked and keyguard locked (i.e., showing) state.",
       "explanation": null,
       "constant": "android.permission.SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE",
-      "protection": "signature|role",
+      "protection": "signature|privileged|module|role",
       "warning": null
     },
     "SYSTEM_ALERT_WINDOW": {
@@ -3169,6 +3587,17 @@
       "description": "Allows an app to turn on the screen on, e.g.",
       "explanation": "&nbsp;with <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/os/PowerManager#ACQUIRE_CAUSES_WAKEUP\">PowerManager.ACQUIRE_CAUSES_WAKEUP</a></code>.",
       "constant": "android.permission.TURN_SCREEN_ON",
+      "protection": null,
+      "warning": null
+    },
+    "TV_IMPLICIT_ENTER_PIP": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "TV_IMPLICIT_ENTER_PIP",
+      "description": "Allows an app to enter Picture-in-Picture mode when the user is not explicitly requesting it.",
+      "explanation": "This includes using <code translate=\"no\" dir=\"ltr\"><a href=\"/\">ERROR(/PictureInPictureParams.Builder#setAutoEnterEnabled)</a></code> as well as lifecycle methods such as <code translate=\"no\" dir=\"ltr\"><a href=\"/\">ERROR(/Activity#onUserLeaveHint)</a></code> and <code translate=\"no\" dir=\"ltr\"><a href=\"/\">ERROR(/Activity#onPause)</a></code> to enter PiP when the user leaves the app. This permission should only be used for certain PiP <a href=\"/training/tv/get-started/multitasking#usage-types\">usage types</a>.",
+      "constant": "android.permission.TV_IMPLICIT_ENTER_PIP",
       "protection": null,
       "warning": null
     },
@@ -3258,6 +3687,39 @@
       "explanation": "Often required in authentication to access the carrier's server and manage services of the subscriber.",
       "constant": "android.permission.USE_ICC_AUTH_WITH_DEVICE_IDENTIFIER",
       "protection": "signature|appop",
+      "warning": null
+    },
+    "USE_LOCATION_BUTTON": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "USE_LOCATION_BUTTON",
+      "description": "Allows an app use location button, which grants temporary location permission when a user clicks the button.",
+      "explanation": null,
+      "constant": "android.permission.USE_LOCATION_BUTTON",
+      "protection": "normal",
+      "warning": null
+    },
+    "USE_LOOPBACK_INTERFACE": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "USE_LOOPBACK_INTERFACE",
+      "description": "Required to be able to interact with other applications via IP packets on the loopback interface.",
+      "explanation": null,
+      "constant": "android.permission.USE_LOOPBACK_INTERFACE",
+      "protection": "normal",
+      "warning": null
+    },
+    "USE_PINNED_WINDOWING_LAYER": {
+      "apiAdded": 37,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "USE_PINNED_WINDOWING_LAYER",
+      "description": "Allows an application to use ActivityManager.AppTask.WINDOWING_LAYER_PINNED for its Tasks, typically requested via ActivityManager.AppTask.requestWindowingLayer(int, Executor, OutcomeReceiver).",
+      "explanation": "Allows an application to use <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/app/ActivityManager.AppTask#WINDOWING_LAYER_PINNED\">ActivityManager.AppTask.WINDOWING_LAYER_PINNED</a></code> for its Tasks, typically requested via <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/app/ActivityManager.AppTask#requestWindowingLayer(int,%20java.util.concurrent.Executor,%20android.os.OutcomeReceiver<java.lang.Integer,java.lang.Exception>)\">ActivityManager.AppTask.requestWindowingLayer(int, Executor, OutcomeReceiver)</a></code>.",
+      "constant": "android.permission.USE_PINNED_WINDOWING_LAYER",
+      "protection": "normal",
       "warning": null
     },
     "USE_SIP": {
@@ -3401,6 +3863,17 @@
       "explanation": null,
       "constant": "android.permission.WRITE_SYNC_SETTINGS",
       "protection": "normal",
+      "warning": null
+    },
+    "WRITE_SYSTEM_PREFERENCES": {
+      "apiAdded": 36,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "WRITE_SYSTEM_PREFERENCES",
+      "description": "Allows an application to access the Settings Preference services to write settings values exposed by the system Settings app and system apps that contribute settings surfaced in the Settings app.",
+      "explanation": null,
+      "constant": "android.permission.WRITE_SYSTEM_PREFERENCES",
+      "protection": "signature|privileged|appop",
       "warning": null
     },
     "WRITE_VOICEMAIL": {
