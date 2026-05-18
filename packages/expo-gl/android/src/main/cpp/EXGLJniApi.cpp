@@ -17,6 +17,12 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
 }
 
 JNIEXPORT void JNICALL
+Java_expo_modules_gl_cpp_EXGL_EXGLInstallWebGLBindings
+(JNIEnv *env, jclass clazz, jlong jsiPtr) {
+  EXGLInstallWebGLBindings((void *) jsiPtr);
+}
+
+JNIEXPORT void JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepare
 (JNIEnv *env, jclass clazz, jlong jsiPtr, jint exglCtxId, jobject glContext) {
   threadLocalEnv = env;
