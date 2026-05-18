@@ -12,22 +12,22 @@
   },
   "dependencies": {
     "expo": "~56.0.0-preview.12",
-    "expo-symbols": "~56.0.5",
     "expo-constants": "~56.0.11",
     "expo-font": "~56.0.4",
     "expo-linking": "~56.0.8",
     "expo-router": "~56.2.1",
     "expo-splash-screen": "~56.0.7",
     "expo-status-bar": "~56.0.4",
+    "expo-symbols": "~56.0.5",
     "expo-web-browser": "~56.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.3",
-    "react-native-worklets": "0.8.3",
     "react-native-reanimated": "4.3.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.0",
-    "react-native-web": "~0.21.0"
+    "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.8.3"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
