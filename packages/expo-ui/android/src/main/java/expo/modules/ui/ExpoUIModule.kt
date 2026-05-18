@@ -87,7 +87,7 @@ class ExpoUIModule : Module() {
         if (mainLooper.isCurrentThread) {
           state.value = newValue
         } else {
-          Handler(mainLooper).post {
+          appContext.mainQueue.launch {
             state.value = newValue
           }
         }
