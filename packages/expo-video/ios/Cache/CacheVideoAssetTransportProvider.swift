@@ -9,16 +9,17 @@ internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvid
       return nil
     }
 
-    let cachedMimeType = MediaInfo(forResourceUrl: source.url)?.mimeType
-    let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
-    let fileExtension = source.url.pathExtension.isEmpty ? cachedExtension : source.url.pathExtension
-    guard let saveFilePath = VideoAsset.pathForUrl(url: source.url, fileExtension: fileExtension) else {
-      log.warn("[expo-video] Failed to create a cache file path for the provided source with uri: \(source.url.absoluteString)")
+    guard canCache(source: source) else {
+      log.warn("[expo-video] Provided source with uri: \(source.url.absoluteString) cannot be cached. Caching will be disabled")
       return nil
     }
 
-    guard canCache(source: source) else {
-      log.warn("[expo-video] Provided source with uri: \(source.url.absoluteString) cannot be cached. Caching will be disabled")
+    let variantKey = CacheVariantIndex.storageKey(forUrl: source.url, requestHeaders: source.headers)
+    let cachedMimeType = MediaInfo(forResourceUrl: source.url, variantKey: variantKey)?.mimeType
+    let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
+    let fileExtension = source.url.pathExtension.isEmpty ? cachedExtension : source.url.pathExtension
+    guard let saveFilePath = VideoAsset.pathForUrl(url: source.url, fileExtension: fileExtension, variantKey: variantKey) else {
+      log.warn("[expo-video] Failed to create a cache file path for the provided source with uri: \(source.url.absoluteString)")
       return nil
     }
 
@@ -34,7 +35,8 @@ internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvid
       url: source.url,
       saveFilePath: saveFilePath,
       fileExtension: fileExtension,
-      urlRequestHeaders: source.headers
+      urlRequestHeaders: source.headers,
+      variantKey: variantKey
     )
 
     return VideoAssetLoadPlan(

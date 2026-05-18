@@ -11,9 +11,17 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
+import expo.modules.video.cache.CachePolicy
+import expo.modules.video.cache.CacheVariantIndex
+import expo.modules.video.cache.ExpoVideoCacheKeyFactory
 import expo.modules.video.records.VideoSource
 import expo.modules.video.managers.VideoManager
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
+import okhttp3.ResponseBody.Companion.asResponseBody
+import okio.ForwardingSource
+import okio.buffer
 
 @OptIn(UnstableApi::class)
 fun buildBaseDataSourceFactory(context: Context, videoSource: VideoSource): DataSource.Factory {
@@ -26,7 +34,11 @@ fun buildBaseDataSourceFactory(context: Context, videoSource: VideoSource): Data
 
 @OptIn(UnstableApi::class)
 fun buildOkHttpDataSourceFactory(context: Context, videoSource: VideoSource): OkHttpDataSource.Factory {
-  val client = OkHttpClient.Builder().build()
+  val clientBuilder = OkHttpClient.Builder()
+  if (videoSource.useCaching) {
+    clientBuilder.addNetworkInterceptor(buildCacheVariantRecorder(context, videoSource))
+  }
+  val client = clientBuilder.build()
 
   // If the application name has ANY non-ASCII characters, we need to strip them out. This is because using non-ASCII characters
   // in the User-Agent header can cause issues with getting the media to play.
@@ -46,10 +58,74 @@ fun buildOkHttpDataSourceFactory(context: Context, videoSource: VideoSource): Ok
 
 @OptIn(UnstableApi::class)
 fun buildCacheDataSourceFactory(context: Context, videoSource: VideoSource): DataSource.Factory {
+  val requestHeaders = videoSource.headers ?: emptyMap()
   return CacheDataSource.Factory().apply {
     setCache(VideoManager.cache.instance)
     setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+    setCacheKeyFactory(ExpoVideoCacheKeyFactory(context, requestHeaders))
     setUpstreamDataSourceFactory(buildBaseDataSourceFactory(context, videoSource))
+  }
+}
+
+@OptIn(UnstableApi::class)
+private fun buildCacheVariantRecorder(context: Context, videoSource: VideoSource): Interceptor {
+  // Captured once: the original `videoSource.uri` is what later cache reads
+  // key against, even if the network response was reached through redirects.
+  val sourceUrl = videoSource.uri?.toString()
+  val requestHeaders = videoSource.headers ?: emptyMap()
+  val normalizedRequest = requestHeaders.mapKeys { it.key.lowercase() }
+  val hasAuthorization = normalizedRequest.containsKey("authorization")
+  return Interceptor { chain ->
+    val response = chain.proceed(chain.request())
+    if (sourceUrl != null) {
+      val responseHeaders = response.headers
+        .toMultimap()
+        .mapValues { it.value.joinToString(separator = ",") }
+      val policy = CachePolicy.evaluate(responseHeaders, response.code)
+      val authorizationCoveredByVary = "authorization" in policy.varyHeaders
+      val authorizationBlocked = hasAuthorization && !authorizationCoveredByVary && !policy.allowsAuthorizedReuse
+      val storageKey = CacheVariantIndex.storageKey(context, sourceUrl, requestHeaders)
+
+      if (!policy.isCacheable || authorizationBlocked) {
+        // Drop this variant's bytes only; other variants for the same URL may
+        // still be valid. Eviction is deferred until Media3 has finished
+        // writing through the body so partial chunks don't linger.
+        return@Interceptor response.evictAfterClose { evictCacheEntry(sourceUrl, storageKey) }
+      }
+      CacheVariantIndex.recordVariant(context, sourceUrl, storageKey, requestHeaders, policy)
+    }
+    response
+  }
+}
+
+@OptIn(UnstableApi::class)
+private fun Response.evictAfterClose(onClose: () -> Unit): Response {
+  val originalBody = body ?: return this
+  val wrappedSource = object : ForwardingSource(originalBody.source()) {
+    private var fired = false
+    override fun close() {
+      try {
+        super.close()
+      } finally {
+        if (!fired) {
+          fired = true
+          onClose()
+        }
+      }
+    }
+  }
+  return newBuilder()
+    .body(wrappedSource.buffer().asResponseBody(originalBody.contentType(), originalBody.contentLength()))
+    .build()
+}
+
+@OptIn(UnstableApi::class)
+private fun evictCacheEntry(url: String, storageKey: String) {
+  val cacheKey = if (storageKey.isEmpty()) url else "$url#$storageKey"
+  try {
+    VideoManager.cache.instance.removeResource(cacheKey)
+  } catch (e: Exception) {
+    // Cache may be released or the key may not exist yet; either way nothing to evict.
   }
 }
 

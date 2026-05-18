@@ -16,7 +16,17 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   private let saveFilePath: String
   private let fileExtension: String
   private let cachedResource: CachedResource
+  /// Caller-declared request headers. Variant matching only considers these;
+  /// `URLSession` may additionally attach cookies from `HTTPCookieStorage.shared`
+  /// at request time, and those don't reach the variant index — so two
+  /// identities differing only in auto-attached cookies will not be separated.
   private let urlRequestHeaders: [String: String]?
+  private let variantKey: String
+  /// Set to `false` when the response forbids storage (e.g. `Vary: *`,
+  /// `Cache-Control: no-store`). Any data already written for this request is
+  /// evicted when the session ends.
+  private var responseAllowsStorage: Bool = true
+  private var policyEvaluated: Bool = false
   internal var onError: ((Error) -> Void)?
 
   private var cachableRequests: SynchronizedHashTable<CachableRequest> = SynchronizedHashTable()
@@ -36,11 +46,12 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     return self.saveFilePath
   }
 
-  init(url: URL, saveFilePath: String, fileExtension: String, urlRequestHeaders: [String: String]?) {
+  init(url: URL, saveFilePath: String, fileExtension: String, urlRequestHeaders: [String: String]?, variantKey: String) {
     self.url = url
     self.saveFilePath = saveFilePath
     self.fileExtension = fileExtension
     self.urlRequestHeaders = urlRequestHeaders
+    self.variantKey = variantKey
     cachedResource = CachedResource(dataFileUrl: saveFilePath, resourceUrl: url, dataPath: saveFilePath)
     super.init()
     self.session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
@@ -132,6 +143,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     didReceive response: URLResponse,
     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
   ) {
+    evaluateCachePolicy(forResponse: response)
     if let cachedDataRequest = cachableRequest(by: dataTask) {
       cachedDataRequest.response = response
       if cachedDataRequest.loadingRequest.contentInformationRequest != nil {
@@ -145,6 +157,46 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     completionHandler(.allow)
   }
 
+  private func evaluateCachePolicy(forResponse response: URLResponse) {
+    guard !policyEvaluated, let httpResponse = response as? HTTPURLResponse else {
+      return
+    }
+    policyEvaluated = true
+    var headers: [String: String] = [:]
+    for (key, value) in httpResponse.allHeaderFields {
+      if let keyString = key as? String, let valueString = value as? String {
+        headers[keyString] = valueString
+      }
+    }
+    let policy = CachePolicy.evaluate(responseHeaders: headers, statusCode: httpResponse.statusCode)
+    let normalizedRequest = (urlRequestHeaders ?? [:]).reduce(into: [String: String]()) { acc, pair in
+      acc[pair.key.lowercased()] = pair.value
+    }
+    let hasAuthorization = normalizedRequest["authorization"] != nil
+    let authorizationCoveredByVary = policy.varyHeaders.contains("authorization")
+    let authorizationBlocked = hasAuthorization && !authorizationCoveredByVary && !policy.allowsAuthorizedReuse
+
+    responseAllowsStorage = policy.isCacheable && !authorizationBlocked
+
+    // For both !isCacheable and §3.5 cases we drop just this variant's bytes;
+    // other variants for the same URL may still be valid representations.
+    if !responseAllowsStorage {
+      evictStoredFiles()
+      return
+    }
+    CacheVariantIndex.recordVariant(
+      forUrl: url,
+      storageKey: variantKey,
+      requestHeaders: urlRequestHeaders,
+      policy: policy
+    )
+  }
+
+  private func evictStoredFiles() {
+    try? FileManager.default.removeItem(atPath: saveFilePath)
+    try? FileManager.default.removeItem(atPath: saveFilePath + VideoCacheManager.mediaInfoSuffix)
+  }
+
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     guard let cachedDataRequest = cachableRequest(by: task) else {
       return
@@ -152,10 +204,14 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
     // The data shouldn't be corrupted and can be cached
     if let error = error as? URLError, error.code == URLError.cancelled || error.code == URLError.networkConnectionLost {
-      cachedDataRequest.saveData(to: cachedResource)
+      if responseAllowsStorage {
+        cachedDataRequest.saveData(to: cachedResource)
+      }
       cachedDataRequest.loadingRequest.finishLoading(with: error)
     } else if error == nil {
-      cachedDataRequest.saveData(to: cachedResource)
+      if responseAllowsStorage {
+        cachedDataRequest.saveData(to: cachedResource)
+      }
       cachedDataRequest.loadingRequest.finishLoading()
     } else {
       cachedDataRequest.loadingRequest.finishLoading(with: error)
