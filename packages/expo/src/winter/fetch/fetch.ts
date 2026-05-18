@@ -11,8 +11,13 @@ import {
 import type { FetchRequestInit, FetchRequestLike } from './fetch.types';
 
 /** Returns if `input` is a Request object */
-const isRequest = (input: any): input is FetchRequestLike =>
-  input != null && typeof input === 'object' && 'body' in input;
+const isRequest = (input: any): input is FetchRequestLike => {
+  if (input == null || typeof input !== 'object') {
+    return false;
+  } else {
+    return 'body' in input || input instanceof Request || input[Symbol.toStringTag] === 'Request';
+  }
+};
 
 // TODO(@kitten): Do we really want to use our own types for web standards?
 export async function fetch(
