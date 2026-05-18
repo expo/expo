@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
+import type { DevToolsPluginCommandParameter, DevToolsPluginInfo } from './DevToolsPlugin.schema';
 
 /**
  * Creates an MCP-compatible JSON schema for a DevTools plugin's CLI extensions.
@@ -58,6 +58,7 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
   // Track which commands use each parameter for documentation
   const parameterCommandMap: Record<string, string[]> = {};
   const parameterDescriptions: Record<string, string> = {};
+  const parameterTypes: Record<string, DevToolsPluginCommandParameter['type']> = {};
 
   for (const command of commands) {
     if (command.parameters && command.parameters.length > 0) {
@@ -67,6 +68,7 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
           commands = [];
           parameterCommandMap[param.name] = commands;
           parameterDescriptions[param.name] = param.description || '';
+          parameterTypes[param.name] = param.type;
         }
         commands.push(command.name);
       }
@@ -87,7 +89,9 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
       ? `${baseDescription} (Used by: ${commandsUsingParam})`
       : `Parameter for: ${commandsUsingParam}`;
 
-    allParameters[paramName] = z.string().optional().describe(fullDescription);
+    allParameters[paramName] = paramTypeToZod(parameterTypes[paramName]!)
+      .optional()
+      .describe(fullDescription);
   }
 
   // Build the command description with clear instructions for the LLM
@@ -108,4 +112,15 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
     .strict(); // .strict() adds additionalProperties: false
 
   return schema;
+}
+
+function paramTypeToZod(type: DevToolsPluginCommandParameter['type']) {
+  switch (type) {
+    case 'number':
+      return z.number();
+    case 'confirm':
+      return z.boolean();
+    case 'text':
+      return z.string();
+  }
 }

@@ -243,6 +243,35 @@ describe(addMcpCapabilities, () => {
     expect(spawnSpy).not.toHaveBeenCalled();
   });
 
+  it('round-trips number and confirm parameters through schema and executor', async () => {
+    const command = createCommand({
+      name: 'configure',
+      parameters: [
+        { name: 'count', type: 'number', description: 'A count' },
+        { name: 'force', type: 'confirm', description: 'Whether to force' },
+      ],
+    });
+    const plugin = createPlugin('typed-plugin', 'Typed plugin', [command]);
+    const { devServerManager } = createDevServerManager([plugin]);
+    const registerTool = jest.fn();
+    const mcpServer = { registerTool } as unknown as McpServer;
+    executeMock.mockResolvedValue([]);
+
+    await addMcpCapabilities(mcpServer, devServerManager);
+
+    const [, toolDefinition, handler] = registerTool.mock.calls[0];
+    const schema = toolDefinition.inputSchema.parameters;
+
+    expect(schema.safeParse({ command: 'configure', count: 3, force: true }).success).toBe(true);
+    expect(schema.safeParse({ command: 'configure', count: '3', force: true }).success).toBe(false);
+
+    await handler({ parameters: { command: 'configure', count: 3, force: true } });
+
+    expect(executeMock).toHaveBeenCalledWith(
+      expect.objectContaining({ command: 'configure', args: { count: 3, force: true } })
+    );
+  });
+
   it('omits CLI-only commands from the MCP schema and executor for mixed plugins', async () => {
     const mcpCommand = createCommand({
       name: 'safe-read',
