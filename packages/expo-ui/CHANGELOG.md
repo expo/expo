@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [universal] Add base styling to universal Picker on web ([#45932](https://github.com/expo/expo/pull/45932) by [@zoontek](https://github.com/zoontek))
+
 ## 56.0.8 — 2026-05-15
 
 ### 🎉 New features
