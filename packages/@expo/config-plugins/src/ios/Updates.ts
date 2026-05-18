@@ -140,12 +140,7 @@ export async function setUpdatesConfigAsync(
     delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
   }
 
-  const bsPatchSupport = getUpdatesBsdiffPatchSupportEnabled(config);
-  if (bsPatchSupport) {
-    newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = bsPatchSupport;
-  } else {
-    delete newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT];
-  }
+  newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = getUpdatesBsdiffPatchSupportEnabled(config);
 
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }

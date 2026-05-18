@@ -387,16 +387,16 @@ export async function instantiateMetroAsync(
     getMetroBundler,
   });
 
-  // Create the core middleware stack for Metro, including websocket listeners
-  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
-    metroConfig,
-    { getMetroBundler }
-  );
-
   // Get local URL to Metro bundler server (typically configured as 127.0.0.1:8081)
   const serverBaseUrl = metroBundler
     .getUrlCreator()
     .constructUrl({ scheme: 'http', hostType: 'localhost' });
+
+  // Create the core middleware stack for Metro, including websocket listeners
+  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
+    metroConfig,
+    { getMetroBundler, serverBaseUrl }
+  );
 
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features

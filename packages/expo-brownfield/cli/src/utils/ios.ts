@@ -1,5 +1,5 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -26,10 +26,10 @@ import type { IosConfig } from './types';
  *
  * Returns names without the `.framework` suffix, deduped, in `otool -L` order.
  */
-export const enumerateSourceBuiltDeps = (
+export const enumerateSourceBuiltDeps = async (
   config: IosConfig,
   alreadyCovered: Set<string>
-): string[] => {
+): Promise<string[]> => {
   const frameworkBinary = path.join(config.simulator, `${config.scheme}.framework`, config.scheme);
   if (!fs.existsSync(frameworkBinary)) {
     return [];
@@ -37,7 +37,7 @@ export const enumerateSourceBuiltDeps = (
 
   let stdout: string;
   try {
-    stdout = execSync(`otool -L "${frameworkBinary}"`, { encoding: 'utf8' });
+    ({ stdout } = await spawnAsync('otool', ['-L', frameworkBinary]));
   } catch {
     // otool failure is non-fatal — degrade gracefully and let the user catch the missing dep
     // at runtime rather than blocking the whole build.
@@ -256,7 +256,7 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
   // (e.g. `ExpoModulesJSI` from a local podspec). Without this the host app crashes at
   // runtime with `dyld: Library not loaded: @rpath/<X>.framework/<X>`.
   const alreadyCovered = collectCoveredFrameworkNames(config);
-  const sourceBuiltDeps = enumerateSourceBuiltDeps(config, alreadyCovered);
+  const sourceBuiltDeps = await enumerateSourceBuiltDeps(config, alreadyCovered);
   for (const depName of sourceBuiltDeps) {
     await withSpinner({
       operation: () => bundleSourceBuiltFramework(config, depName, dest),
@@ -437,7 +437,7 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
   // Source-built dynamic deps the brownfield framework links against (e.g. ExpoModulesJSI).
   // `copyXCFrameworks` writes their xcframeworks to disk; we need to declare matching
   // `.binaryTarget`s here so SPM consumers actually link them.
-  const sourceBuiltDepNames = enumerateSourceBuiltDeps(
+  const sourceBuiltDepNames = await enumerateSourceBuiltDeps(
     config,
     new Set([
       config.scheme,

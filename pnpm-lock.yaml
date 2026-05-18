@@ -3836,6 +3836,9 @@ importers:
       '@expo/env':
         specifier: workspace:~2.2.0
         version: link:../@expo/env
+      '@expo/spawn-async':
+        specifier: ^1.7.2
+        version: 1.7.2
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -3864,9 +3867,6 @@ importers:
       '@bacons/xcode':
         specifier: 1.0.0-alpha.29
         version: 1.0.0-alpha.29
-      '@expo/spawn-async':
-        specifier: ^1.7.2
-        version: 1.7.2
       '@types/diff':
         specifier: ^5.2.0
         version: 5.2.3

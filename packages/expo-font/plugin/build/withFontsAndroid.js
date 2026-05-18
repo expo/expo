@@ -106,7 +106,7 @@ function addFontXmlToMainApplication(config, xmlFontObjects) {
 function generateFontManagerCalls(xmlFontObjects, language) {
     const lineEnding = language === 'java' ? ';' : '';
     const indent = '    ';
-    return Object.keys(xmlFontObjects).map((family) => `${indent}ReactFontManager.getInstance().addCustomFont(this, "${family}", R.font.${resourceNameConflictAvoidancePrefix + (0, utils_1.toValidAndroidResourceName)(family)})${lineEnding}`);
+    return Object.keys(xmlFontObjects).map((family) => `${indent}ReactFontManager.getInstance().addCustomFont(this, ${JSON.stringify(family)}, R.font.${resourceNameConflictAvoidancePrefix + (0, utils_1.toValidAndroidResourceName)(family)})${lineEnding}`);
 }
 function copyFontsToDir(config, paths, inAppDestination, filenameProcessor = (filenameWithExt) => filenameWithExt) {
     return (0, config_plugins_1.withDangerousMod)(config, [

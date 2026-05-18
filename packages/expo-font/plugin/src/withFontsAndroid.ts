@@ -145,7 +145,7 @@ export function generateFontManagerCalls(
 
   return Object.keys(xmlFontObjects).map(
     (family) =>
-      `${indent}ReactFontManager.getInstance().addCustomFont(this, "${family}", R.font.${resourceNameConflictAvoidancePrefix + toValidAndroidResourceName(family)})${lineEnding}`
+      `${indent}ReactFontManager.getInstance().addCustomFont(this, ${JSON.stringify(family)}, R.font.${resourceNameConflictAvoidancePrefix + toValidAndroidResourceName(family)})${lineEnding}`
   );
 }
 
