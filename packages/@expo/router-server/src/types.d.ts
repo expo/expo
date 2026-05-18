@@ -1,1 +1,1 @@
-import '@expo/cli/ts-declarations/react-server-dom-webpack';
+import 'expo-module-scripts/types/react-server-dom-webpack.d.ts';

@@ -22,7 +22,7 @@ test.skip('throws if multiple instances of useLinking are used', () => {
   element = render(<Sample />);
 
   expect(spy).toHaveBeenCalledTimes(1);
-  expect(spy.mock.calls[0][0]).toMatch(
+  expect(spy.mock.calls[0]![0]).toMatch(
     'Looks like you have configured linking in multiple places.'
   );
 
@@ -46,7 +46,7 @@ test.skip('throws if multiple instances of useLinking are used', () => {
   );
 
   expect(spy).toHaveBeenCalledTimes(2);
-  expect(spy.mock.calls[1][0]).toMatch(
+  expect(spy.mock.calls[1]![0]).toMatch(
     'Looks like you have configured linking in multiple places.'
   );
 

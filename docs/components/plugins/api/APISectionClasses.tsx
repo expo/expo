@@ -149,7 +149,7 @@ const renderClass = (
           returnComment && (
             <div className="flex flex-col items-start">
               <div className="flex flex-row items-center gap-2">
-                <CornerDownRightIcon className="icon-sm text-icon-tertiary relative -mt-0.5 inline-block" />
+                <CornerDownRightIcon className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary" />
                 <span className={STYLES_SECONDARY}>Returns</span>
               </div>
               <div className="mt-1.5 mb-1 flex flex-col pl-6">

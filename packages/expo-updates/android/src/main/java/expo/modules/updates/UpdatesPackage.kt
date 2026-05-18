@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 
 /**
  * Defines the internal and exported modules for expo-updates, as well as the auto-setup behavior in
@@ -36,6 +37,10 @@ class UpdatesPackage : Package {
 
       override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
         UpdatesController.initialize(context, useDeveloperSupport)
+      }
+
+      override fun onDidCreateReactHost(context: Context, reactNativeHost: ReactHost) {
+        UpdatesController.instance.reactHost = WeakReference(reactNativeHost)
       }
 
       override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {

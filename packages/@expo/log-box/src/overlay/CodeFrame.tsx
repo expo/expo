@@ -197,22 +197,6 @@ function CodeFrame({
   );
 }
 
-function PlayIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      stroke="currentColor"
-      {...props}
-      role="img">
-      <polygon points="6 3 20 12 6 21 6 3" />
-    </svg>
-  );
-}
-
 function OpenIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props} role="img">

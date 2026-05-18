@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { CodedError } from 'expo-modules-core';
 import { useRef, useMemo, useImperativeHandle, } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -88,10 +89,7 @@ const ExponentCamera = ({ facing, poster, ref, ...props }) => {
             },
         ];
     }, [props.pointerEvents, native.type]);
-    return (<View style={[styles.videoWrapper, props.style]}>
-      <Video autoPlay playsInline muted poster={poster} ref={video} style={style}/>
-      {props.children}
-    </View>);
+    return (_jsxs(View, { style: [styles.videoWrapper, props.style], children: [_jsx(Video, { autoPlay: true, playsInline: true, muted: true, poster: poster, ref: video, style: style }), props.children] }));
 };
 export default ExponentCamera;
 const Video = (props) => createElement('video', { ...props });

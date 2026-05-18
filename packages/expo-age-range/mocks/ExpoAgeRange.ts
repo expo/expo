@@ -15,3 +15,7 @@ export async function requestAgeRangeAsync(opts: AgeRangeRequest): Promise<AgeRa
     activeParentalControls: [],
   };
 }
+
+export async function isEligibleForAgeFeaturesAsync(): Promise<boolean | null> {
+  return null;
+}

@@ -1,11 +1,11 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import npmPackageArg from 'npm-package-arg';
 import semver from 'semver';
 import semverRangeSubset from 'semver/ranges/subset';
 
-import { BundledNativeModules } from './bundledNativeModules';
+import type { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 import { resolveAllPackageVersionsAsync } from './resolvePackages';
 import * as Log from '../../../log';

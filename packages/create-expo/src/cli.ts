@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Spec } from 'arg';
+import type { Spec } from 'arg';
 import chalk from 'chalk';
 
 import { CLI_NAME } from './cmd';
@@ -68,9 +68,8 @@ async function run() {
     );
   }
 
-  const { AnalyticsEventPhases, AnalyticsEventTypes, flushAsync, track } = await import(
-    './telemetry'
-  );
+  const { AnalyticsEventPhases, AnalyticsEventTypes, flushAsync, track } =
+    await import('./telemetry');
   try {
     const parsed = await resolveStringOrBooleanArgsAsync(argv, rawArgsMap, {
       '--template': Boolean,

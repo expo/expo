@@ -14,13 +14,16 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapProtectedScreen = exports.validateStackPresentation = exports.appendScreenStackPropsToOptions = exports.StackScreen = exports.StackSearchBar = exports.StackHeader = void 0;
+exports.mapProtectedScreen = exports.validateStackPresentation = exports.appendScreenStackPropsToOptions = exports.StackScreen = exports.appendStackTitlePropsToOptions = exports.StackTitle = exports.StackSearchBar = exports.StackHeader = void 0;
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
 exports.StackHeader = StackHeaderComponent_1.StackHeaderComponent;
 var StackSearchBar_1 = require("./StackSearchBar");
 Object.defineProperty(exports, "StackSearchBar", { enumerable: true, get: function () { return StackSearchBar_1.StackSearchBar; } });
 __exportStar(require("./toolbar"), exports);
 __exportStar(require("./screen"), exports);
+var StackTitle_1 = require("./StackTitle");
+Object.defineProperty(exports, "StackTitle", { enumerable: true, get: function () { return StackTitle_1.StackTitle; } });
+Object.defineProperty(exports, "appendStackTitlePropsToOptions", { enumerable: true, get: function () { return StackTitle_1.appendStackTitlePropsToOptions; } });
 var StackScreen_1 = require("./StackScreen");
 Object.defineProperty(exports, "StackScreen", { enumerable: true, get: function () { return StackScreen_1.StackScreen; } });
 Object.defineProperty(exports, "appendScreenStackPropsToOptions", { enumerable: true, get: function () { return StackScreen_1.appendScreenStackPropsToOptions; } });

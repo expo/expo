@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.scanDependenciesRecursively = scanDependenciesRecursively;
 const node_module_1 = __importDefault(require("node:module"));
+const types_1 = require("./types");
 const utils_1 = require("./utils");
 const concurrency_1 = require("../concurrency");
 const utils_2 = require("../utils");
@@ -62,7 +63,7 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
             const nodeModulePath = await (0, utils_2.maybeRealpath)(originPath);
             if (nodeModulePath != null) {
                 return {
-                    source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
+                    source: types_1.DependencyResolutionSource.RECURSIVE_RESOLUTION,
                     name: dependencyName,
                     version: '',
                     path: nodeModulePath,
@@ -112,7 +113,7 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
         }
     };
     const searchResults = await recurse({
-        source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
+        source: types_1.DependencyResolutionSource.RECURSIVE_RESOLUTION,
         name: '',
         version: '',
         path: rootPath,

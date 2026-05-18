@@ -1,12 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import nativeTabsStyles from '../../assets/native-tabs.module.css';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { tabs, focusedIndex } = props;
-  const currentTab = tabs[focusedIndex];
+  const currentTab = tabs[focusedIndex]!;
   const defaultTab = useMemo(
     () => currentTab,
     // We don't specify currentTab here, as we don't want to change the default tab when focusedIndex changes
@@ -40,7 +40,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       defaultValue={defaultTab.routeKey}
       value={value}
       onValueChange={(value) => {
-        props.onTabChange(value);
+        props.onTabChange({ selectedKey: value, provenance: 0, isNativeAction: true });
       }}
       style={convertNativeTabsPropsToStyleVars(props, currentTab.options)}>
       <TabsList aria-label="Main" className={nativeTabsStyles.navigationMenuRoot}>

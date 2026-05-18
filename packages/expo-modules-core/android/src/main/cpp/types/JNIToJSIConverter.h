@@ -2,11 +2,11 @@
 
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "../JSIContext.h"
 #include "../JSharedObject.h"
 #include "../JNIUtils.h"
 #include "ObjectDeallocator.h"
-#include "../javaclasses/Collections.h"
 #include "../JavaScriptArrayBuffer.h"
 #include "../NativeArrayBuffer.h"
 #include "../concepts/jni_deref.h"
@@ -14,16 +14,7 @@
 #include "../concepts/jsi.h"
 #include "ReturnType.h"
 
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-#include <optional>
 #include <concepts>
-
-#include <react/jni/ReadableNativeMap.h>
-#include <react/jni/ReadableNativeArray.h>
-#include <react/jni/WritableNativeArray.h>
-#include <react/jni/WritableNativeMap.h>
-#include <jsi/JSIDynamic.h>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -63,11 +54,17 @@ struct RawArray {
 };
 
 template<typename T>
-inline auto unwrapJNIRef(T &&value) {
+inline auto unwrapJNIRef(
+  JNIEnv *env,
+  T &&value
+) {
   if constexpr (HasCthis<T>) {
     return value->cthis();
-  } else if constexpr (HasToStdString<T>) {
-    return value->toStdString();
+  } else if constexpr (IsJString<T>) {
+    const char *rawValue = env->GetStringUTFChars(value.get(), nullptr);
+    std::string result = rawValue;
+    env->ReleaseStringUTFChars(value.get(), rawValue);
+    return result;
   } else if constexpr (IsJBoolean<T>) {
     return static_cast<bool>(value->value());
   } else if constexpr (HasValue<T>) {
@@ -287,13 +284,13 @@ concept SimpleConversion = requires(JNIEnv *env, jsi::Runtime &rt, T value) {
 
 template<typename T>
 jsi::Value convertToJS(JNIEnv *env, jsi::Runtime &rt, T &&value) {
-  using UnwrappedType = decltype(unwrapJNIRef(std::declval<T>()));
+  using UnwrappedType = decltype(unwrapJNIRef(env, std::declval<T>()));
   using Converter = JNIToJSIConverter<UnwrappedType>;
 
   if constexpr (SimpleConversion<Converter, UnwrappedType>) {
-    return Converter::convert(env, rt, unwrapJNIRef(std::forward<T>(value)));
+    return Converter::convert(env, rt, unwrapJNIRef(env, std::forward<T>(value)));
   } else {
-    return Converter::convert(env, rt, unwrapJNIRef(value), value);
+    return Converter::convert(env, rt, unwrapJNIRef(env, value), value);
   }
 }
 

@@ -9,8 +9,8 @@ export type OverlayProps = {
 } & CommonViewModifierProps;
 declare function OverlayContent(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
-export declare function Overlay(props: OverlayProps): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
+export declare function Overlay(props: OverlayProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace Overlay {
     var Content: typeof OverlayContent;
 }

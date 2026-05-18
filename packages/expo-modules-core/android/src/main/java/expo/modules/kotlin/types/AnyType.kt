@@ -40,6 +40,6 @@ class AnyType(
 }
 
 inline fun <reified T> AnyType.inheritFrom(): Boolean {
-  val jClass = typeDescriptor.kClass.java
+  val jClass = typeDescriptor.jClass
   return T::class.java.isAssignableFrom(jClass)
 }

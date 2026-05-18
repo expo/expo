@@ -13,6 +13,6 @@ type Props = ServerContextType & {
  */
 export declare function ServerContainer({ ref, children, location, }: Props & {
     ref?: React.Ref<ServerContainerRef>;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=ServerContainer.d.ts.map

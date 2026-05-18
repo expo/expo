@@ -21,18 +21,19 @@ concurrency:
 
 jobs:
   docs:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 30000
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: 'pnpm'
@@ -40,7 +41,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-docs: 'true'
+          pnpm-docs: 'true'
           docs-api-data: 'true'
       - name: 📦 Install workspace deps
         run: pnpm install --ignore-scripts --frozen-lockfile
@@ -52,27 +53,27 @@ jobs:
       - name: 📝 Regenerate `unversioned` data for Docs
         if: steps.expo-caches.outputs.docs-api-data-hit != 'true'
         run: expotools generate-docs-api-data
-      - name: 🧶 Yarn install
+      - name: 📦 Install docs deps
         working-directory: docs
-        if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
-        run: yarn install --immutable
+        if: steps.expo-caches.outputs.pnpm-docs-hit != 'true'
+        run: pnpm install --frozen-lockfile
       - name: 🧪 Run Docs tests
         working-directory: docs
-        run: yarn test
+        run: pnpm test
       - name: 🧪 Test Cloudflare worker and routes
         working-directory: docs
-        run: yarn test:worker
+        run: pnpm test:worker
       - name: 🚨 Lint Docs website code
         working-directory: docs
         env:
           NODE_ENV: production
-        run: yarn lint --max-warnings 0
+        run: pnpm lint --max-warnings 0
       - name: 📦 Read Vale version
         id: vale-version
         working-directory: docs
         run: echo "version=$(node -p "require('./.vale-version.json').version")" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
-        uses: vale-cli/vale-action@v2.1.1
+        uses: vale-cli/vale-action@d89dee975228ae261d22c15adcd03578634d429c # v2.1.1
         with:
           version: ${{ steps.vale-version.outputs.version }}
           reporter: github-pr-check
@@ -83,18 +84,18 @@ jobs:
           reviewdog_url: https://github.com/reviewdog/reviewdog/releases/download/v0.21.0/reviewdog_0.21.0_Linux_x86_64.tar.gz
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
-        run: yarn export
+        run: pnpm export
         timeout-minutes: 20
         env:
           # NOTE(@krystofwoldrich): Missing token won't fail the build
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: 🔗 Lint pages links
         working-directory: docs
-        run: yarn lint-links --quiet
+        run: pnpm lint-links --quiet
       - name: 🚀 Deploy Docs website
         if: github.ref == 'refs/heads/main'
         id: deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

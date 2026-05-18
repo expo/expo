@@ -11,5 +11,5 @@ export interface DisclosureGroupProps extends CommonViewModifierProps {
      */
     onIsExpandedChange?: (isExpanded: boolean) => void;
 }
-export declare function DisclosureGroup(props: DisclosureGroupProps): import("react").JSX.Element;
+export declare function DisclosureGroup(props: DisclosureGroupProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

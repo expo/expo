@@ -5,6 +5,6 @@ type Props = MaterialTopTabNavigationConfig & {
     navigation: MaterialTopTabNavigationHelpers;
     descriptors: MaterialTopTabDescriptorMap;
 };
-export declare function MaterialTopTabView({ tabBar, state, navigation, descriptors, ...rest }: Props): import("react").JSX.Element;
+export declare function MaterialTopTabView({ tabBar, state, navigation, descriptors, ...rest }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=MaterialTopTabView.d.ts.map

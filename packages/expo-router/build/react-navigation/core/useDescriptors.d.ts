@@ -88,7 +88,7 @@ export declare function useDescriptors<State extends NavigationState, ActionHelp
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T;
@@ -140,7 +140,7 @@ export declare function useDescriptors<State extends NavigationState, ActionHelp
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T;

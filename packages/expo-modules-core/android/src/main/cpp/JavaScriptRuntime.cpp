@@ -5,7 +5,6 @@
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
 #include "JSIContext.h"
-#include "JSIUtils.h"
 
 namespace jsi = facebook::jsi;
 

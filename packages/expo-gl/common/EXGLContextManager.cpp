@@ -1,5 +1,7 @@
 #include "EXGLContextManager.h"
-#include <mutex>
+#include "EXGLNativeContext.h"
+#include <chrono>
+#include <thread>
 
 namespace expo {
 namespace gl_cpp {

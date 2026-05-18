@@ -1,7 +1,6 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
-import type { Reporter } from '@expo/metro/metro';
 import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
 import type {
   MixedOutput,
@@ -11,18 +10,19 @@ import type {
 } from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { FileStore } from './binary-file-store';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
-import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
-import { JSModule } from './serializer/getCssDeps';
+import type { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
@@ -56,7 +56,6 @@ export interface DefaultConfigOptions {
   }) => Module[])[];
 }
 
-let hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables
@@ -197,17 +196,6 @@ export function getDefaultConfig(
     patchMetroGraphToSupportUncachedModules();
   }
 
-  const isExotic = mode === 'exotic' || env.EXPO_USE_EXOTIC;
-
-  if (isExotic && !hasWarnedAboutExotic) {
-    hasWarnedAboutExotic = true;
-    console.log(
-      chalk.gray(
-        `\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`
-      )
-    );
-  }
-
   const reactNativePath = path.dirname(
     resolveFrom.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'
   );
@@ -311,8 +299,12 @@ export function getDefaultConfig(
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
-        /\.expo[\\/]types/,
-      ].concat(metroDefaultValues.resolver.blockList ?? []),
+        // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
+        exclusionList(['.expo/types', '.expo/web/cache']),
+        // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
+        // pattern is reapplied to normal paths during the Node crawling phase
+        /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
+      ],
     },
     cacheStores: [cacheStore],
     watcher: {
@@ -410,6 +402,8 @@ export function getDefaultConfig(
       assetRegistryPath: '@react-native/assets-registry/registry',
       // Determines the minimum version of `@babel/runtime`, so we default it to the project's installed version of `@babel/runtime`
       enableBabelRuntime: babelRuntimeVersion ?? undefined,
+      // Allows additional babelrc lookups (mostly unused). The default of `undefined` enables the project's custom Babel config without enabling babelrc/configFile discovery
+      enableBabelRCLookup: undefined,
       // hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
@@ -435,9 +429,8 @@ export function getDefaultConfig(
 
 /** Use to access the Expo Metro transformer path */
 export const unstable_transformerPath = require.resolve('./transform-worker/transform-worker');
-export const internal_supervisingTransformerPath = require.resolve(
-  './transform-worker/supervising-transform-worker'
-);
+export const internal_supervisingTransformerPath =
+  require.resolve('./transform-worker/supervising-transform-worker');
 
 // re-export for use in config files.
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };

@@ -1,8 +1,9 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
-import { SharedRef } from 'expo-modules-core/types';
+import type { SharedRef } from 'expo-modules-core/types';
 
-import { Action, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';
-import { ImageManipulatorContext } from './ImageManipulatorContext';
+import type { Action, ImageResult, SaveOptions } from './ImageManipulator.types';
+import { SaveFormat } from './ImageManipulator.types';
+import type { ImageManipulatorContext } from './ImageManipulatorContext';
 import ExpoImageManipulator from './NativeImageManipulatorModule';
 import { validateArguments } from './validators';
 

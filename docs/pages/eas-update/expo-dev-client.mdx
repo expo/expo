@@ -8,6 +8,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
@@ -16,10 +17,21 @@ import { CODE } from '~/ui/components/Text';
 
 This guide walks through the steps required to load and preview a published update inside a development build using the **Extensions** tab or constructing a specific Update URL.
 
-## Prerequisites
-
-- [Create a development build and install it](/develop/development-builds/create-a-build/) on your device or Android Emulator or iOS Simulator.
-- Make sure your development build has the [`expo-updates` library installed](/eas-update/getting-started/#configure-your-project).
+<Prerequisites>
+  <Requirement title="A development build installed">
+    [Create a development build and install it](/develop/development-builds/create-a-build/) on your
+    device, Android Emulator, or iOS Simulator.
+  </Requirement>
+  <Requirement
+    title={
+      <>
+        <CODE>expo-updates</CODE> installed
+      </>
+    }>
+    Make sure your development build has the [`expo-updates` library
+    installed](/eas-update/getting-started/#configure-your-project).
+  </Requirement>
+</Prerequisites>
 
 ## What is an Extensions tab
 

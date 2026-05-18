@@ -1,7 +1,8 @@
 'use client';
 import * as React from 'react';
 import { use } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import type { Animated } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Card } from './Card';
 import { CardA11yWrapper, type CardA11yWrapperRef } from './CardA11yWrapper';

@@ -27,11 +27,14 @@ if [[ "$1" == "--native" ]]; then
   pnpm install
 
 elif [[ "$1" == "--docs" ]]; then
-  # We can install yarn because `npm install` is cross-platform
-  require yarn || npm install -g yarn
+  # pnpm is cross-platform; install globally if missing
+  if ! command -v pnpm &>/dev/null; then
+    echo "Installing pnpm..."
+    npm install -g pnpm
+  fi
 
   # Install the dependencies
-  (cd ./docs && yarn)
+  (cd ./docs && pnpm install)
 
 elif [[ -n "$1" ]]; then
   echo "Unknown option: $1"

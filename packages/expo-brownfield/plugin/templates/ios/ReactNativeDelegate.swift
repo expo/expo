@@ -2,6 +2,20 @@ internal import Expo
 internal import React
 
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  private let turboModuleClasses: [String: AnyClass]
+  init(
+    turboModuleClasses: [String: AnyClass] = [:]
+  ) {
+    self.turboModuleClasses = turboModuleClasses
+    super.init()
+  }
+
+  @objc(getModuleClassFromName:)
+  func getModuleClass(fromName name: UnsafePointer<CChar>!) -> AnyClass? {
+    let moduleName = String(cString: name)
+    return turboModuleClasses[moduleName]
+  }
+
   // Extension point for config-plugins
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     // Needed to return the correct URL for expo-dev-client

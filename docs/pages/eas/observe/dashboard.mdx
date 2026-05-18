@@ -1,0 +1,53 @@
+---
+title: Expo Observe dashboard
+sidebar_title: Dashboard
+description: View performance metrics, filter by platform or version, and investigate individual sessions in the Expo Observe dashboard.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+The Observe dashboard provides a visual overview of your app's performance metrics. Open your project and in EAS dashboard, select [**Observe**](https://expo.dev/accounts/[account]/projects/[project]/observe) from the navigation menu.
+
+<ContentSpotlight
+  alt="The Observe dashboard showing startup metrics, release markers, and statistical breakdowns for an app."
+  src="/static/images/expo-observe/dashboard.png"
+/>
+
+## Statistical breakdowns
+
+For each metric, the dashboard displays:
+
+- **Median**: The middle value, representing typical user experience
+- **Average**: The arithmetic mean across all events
+- **Min/Max**: The fastest and slowest recorded values
+- **Percentiles (P90, P99)**: Values below which 90% or 99% of events fall, useful for identifying tail latency
+
+## Time range selection
+
+View data from the last 1 hour, 12 hours, 1 day, 3 days, 7 days, 30 days, or 60 days.
+
+## Release comparison
+
+The dashboard shows how metrics have changed between releases (for example, "+0.2s since last release"). Release markers on the chart indicate when new versions were deployed.
+
+Hover over a release marker to see an overlay of metrics for that version. Click the marker to view all events for that release.
+
+## Filtering
+
+You can filter metrics by:
+
+- **Platform**: Android or iOS
+- **App version**: Filter by native app version
+- **Update version**: Filter by OTA update version
+- **User**: View all events from a specific user
+- **Session**: View all events from a specific session
+
+## Investigating sessions
+
+When something looks off in your metrics, drill into individual sessions to see:
+
+- All events recorded during that session
+- Device information (model, OS version)
+- Session metadata
+
+This helps you understand why certain users experience slower performance, whether it's a specific device, OS version, or network condition.

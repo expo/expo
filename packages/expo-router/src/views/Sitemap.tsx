@@ -3,14 +3,17 @@
 
 import Constants from 'expo-constants';
 import React from 'react';
-import { Image, StyleSheet, Text, View, ScrollView, Platform, ViewStyle } from 'react-native';
+import type { ViewStyle } from 'react-native';
+import { Image, StyleSheet, Text, View, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NoSSR } from './NoSSR';
-import { Pressable, PressableProps } from './Pressable';
-import { useSitemap, SitemapType } from './useSitemap';
+import type { PressableProps } from './Pressable';
+import { Pressable } from './Pressable';
+import type { SitemapType } from './useSitemap';
+import { useSitemap } from './useSitemap';
 import { Link } from '../link/Link';
-import { NativeStackNavigationOptions } from '../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 
 const INDENT = 20;
 
@@ -50,7 +53,7 @@ export function getNavOptions(): NativeStackNavigationOptions {
   };
 }
 
-export function Sitemap() {
+export const Sitemap: React.FC = () => {
   // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
   // we need to ensure that the Sitemap component is not rendered on the server.
   return (
@@ -58,7 +61,7 @@ export function Sitemap() {
       <SitemapInner />
     </NoSSR>
   );
-}
+};
 
 function SitemapInner() {
   const sitemap = useSitemap();

@@ -5,7 +5,7 @@
       "name": "ExpoCalendar",
       "podName": "ExpoCalendar",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

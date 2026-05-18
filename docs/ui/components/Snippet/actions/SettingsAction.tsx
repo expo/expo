@@ -27,9 +27,9 @@ export const SettingsAction = ({ ...rest }: SnippetActionProps) => {
     <Dropdown.Dropdown
       trigger={
         <SnippetAction
-          className="min-w-[44px] px-3"
+          className="min-w-11 px-3"
           aria-label="Show settings"
-          leftSlot={<DotsVerticalIcon className="icon-md text-icon-secondary shrink-0" />}
+          leftSlot={<DotsVerticalIcon className="icon-md shrink-0 text-icon-secondary" />}
           {...rest}
         />
       }>

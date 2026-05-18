@@ -1,20 +1,30 @@
 import { requireNativeView } from 'expo';
-import { Ref } from 'react';
-import { ColorValue } from 'react-native';
+import type { Ref } from 'react';
+import type { ColorValue } from 'react-native';
 
-import { ModifierConfig, ViewEvent } from '../../types';
+import { worklets } from '../../State/optionalWorklets';
+import type { ObservableState } from '../../State/useNativeState';
+import { useWorkletProp } from '../../State/useWorkletProp';
+import { getStateId } from '../../State/utils';
+import type { ModifierConfig, ViewEvent } from '../../types';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 // region Types
 
 /**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
 export type TextFieldRef = {
   setText: (newText: string) => Promise<void>;
+  /** Clear the current text. */
+  clear: () => Promise<void>;
   focus: () => Promise<void>;
   blur: () => Promise<void>;
+  /**
+   * Programmatically set the selection range.
+   */
+  setSelection: (start: number, end: number) => Promise<void>;
 };
 
 export type TextFieldCapitalization = 'none' | 'characters' | 'words' | 'sentences';
@@ -119,8 +129,12 @@ export type TextFieldColors = {
 /** Shared props between `TextField` and `OutlinedTextField`. */
 type BaseTextFieldProps = {
   ref?: Ref<TextFieldRef>;
-  /** Initial value displayed when mounted. Uncontrolled — change `key` to reset. */
-  defaultValue?: string;
+  /**
+   * An observable state that holds the current text value. Create one with
+   * `useNativeState('initial text')`. If omitted, the field manages its own
+   * internal state.
+   */
+  value?: ObservableState<string>;
   /** If true, the text field will be focused automatically when mounted. @default false */
   autoFocus?: boolean;
   /** @default true */
@@ -133,9 +147,69 @@ type BaseTextFieldProps = {
   singleLine?: boolean;
   maxLines?: number;
   minLines?: number;
+  /**
+   * Display-time text transformation. `'password'` masks every character;
+   * `'none'` (default) leaves the buffer as-is.
+   */
+  visualTransformation?: 'password' | 'none';
+
+  /**
+   * Selection-related colors. Maps to Compose's `TextSelectionColors` via
+   * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
+   * `backgroundColor` is the highlighted-text background (typically the same
+   * tint at lower alpha so the underlying text stays readable).
+   */
+  textSelectionColors?: {
+    handleColor?: ColorValue;
+    backgroundColor?: ColorValue;
+  };
+
+  /**
+   * Observable state holding the current selection range. Create with
+   * `useNativeState({ start: 0, end: 0 })`. The field writes user-driven
+   * changes back to it, and writes from JS (or a worklet) update the
+   * cursor/selection in the field. Use `ref.setSelection(start, end)` for
+   * imperative one-shot updates.
+   */
+  selection?: ObservableState<{ start: number; end: number }>;
+
+  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  maxLength?: number;
+
+  /** Called when the selection range changes. */
+  onSelectionChange?: (selection: { start: number; end: number }) => void;
+
+  /**
+   * Text styling for the field's content. Maps to Compose's `TextStyle`.
+   */
+  textStyle?: {
+    textAlign?: 'left' | 'right' | 'center' | 'justify';
+    color?: ColorValue;
+    fontSize?: number;
+    fontFamily?: string;
+    fontWeight?:
+      | '100'
+      | '200'
+      | '300'
+      | '400'
+      | '500'
+      | '600'
+      | '700'
+      | '800'
+      | '900'
+      | 'normal'
+      | 'bold';
+    lineHeight?: number;
+    letterSpacing?: number;
+  };
   keyboardOptions?: TextFieldKeyboardOptions;
   keyboardActions?: TextFieldKeyboardActions;
-  /** A callback triggered when user types text. */
+  /**
+   * Fires whenever the text value changes. If marked with the `'worklet'`
+   * directive, runs synchronously on the UI thread; otherwise delivered
+   * asynchronously as a regular JS event. Use `onSelectionChange` (or read
+   * the `selection` observable) to react to selection-only changes.
+   */
   onValueChange?: (value: string) => void;
   /** A callback triggered when the field gains or loses focus. */
   onFocusChanged?: (focused: boolean) => void;
@@ -159,14 +233,25 @@ export type OutlinedTextFieldProps = BaseTextFieldProps & {
 
 type NativeTextFieldProps = Omit<
   BaseTextFieldProps,
-  'onValueChange' | 'onFocusChanged' | 'keyboardActions' | 'children' | 'shape'
+  | 'value'
+  | 'selection'
+  | 'onValueChange'
+  | 'onFocusChanged'
+  | 'onSelectionChange'
+  | 'keyboardActions'
+  | 'children'
+  | 'shape'
 > & {
   variant: 'filled' | 'outlined';
   colors?: TextFieldColors;
   shape?: object;
   children?: React.ReactNode;
-} & ViewEvent<'onValueChange', { value: string }> &
+  value?: number | null;
+  selection?: number | null;
+  onValueChangeSync?: number | null;
+} & ViewEvent<'onValueChange', { text: string; selection: { start: number; end: number } }> &
   ViewEvent<'onFocusChanged', { value: boolean }> &
+  ViewEvent<'onSelectionChange', { start: number; end: number }> &
   ViewEvent<'onKeyboardAction', { action: string; value: string }>;
 
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
@@ -174,20 +259,40 @@ const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNa
   'TextFieldView'
 );
 
-function transformProps(
+function useTransformedProps(
   props: TextFieldProps | OutlinedTextFieldProps,
   variant: 'filled' | 'outlined'
 ): NativeTextFieldProps {
-  const { modifiers, children, keyboardActions, onValueChange, onFocusChanged, ...restProps } =
-    props;
+  const {
+    value,
+    selection,
+    modifiers,
+    children,
+    keyboardActions,
+    onValueChange,
+    onFocusChanged,
+    onSelectionChange,
+    ...restProps
+  } = props;
+
+  const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
+  const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
+
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     variant,
     children,
-    onValueChange: onValueChange ? (event) => onValueChange(event.nativeEvent.value) : undefined,
+    value: getStateId(value),
+    selection: getStateId(selection),
+    onValueChangeSync: getStateId(workletCallback),
+    onValueChange:
+      !isWorklet && onValueChange ? (event) => onValueChange(event.nativeEvent.text) : undefined,
     onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
+    onSelectionChange: onSelectionChange
+      ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
+      : undefined,
     onKeyboardAction: keyboardActions
       ? (event) => {
           const { action, value } = event.nativeEvent;
@@ -245,7 +350,7 @@ function SupportingText(props: { children: React.ReactNode }) {
  * A Material3 `TextField`.
  */
 function TextFieldComponent(props: TextFieldProps) {
-  return <TextFieldNativeView {...transformProps(props, 'filled')} />;
+  return <TextFieldNativeView {...useTransformedProps(props, 'filled')} />;
 }
 
 TextFieldComponent.Label = Label;
@@ -260,7 +365,7 @@ TextFieldComponent.SupportingText = SupportingText;
  * A Material3 `OutlinedTextField` with a transparent background and border outline.
  */
 function OutlinedTextFieldComponent(props: OutlinedTextFieldProps) {
-  return <TextFieldNativeView {...transformProps(props, 'outlined')} />;
+  return <TextFieldNativeView {...useTransformedProps(props, 'outlined')} />;
 }
 
 OutlinedTextFieldComponent.Label = Label;
@@ -274,3 +379,6 @@ OutlinedTextFieldComponent.SupportingText = SupportingText;
 // endregion Components
 
 export { TextFieldComponent as TextField, OutlinedTextFieldComponent as OutlinedTextField };
+
+// Exported for docs api data
+export { type ObservableState };

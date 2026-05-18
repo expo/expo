@@ -247,6 +247,20 @@ describe('NativeToolbarMenu', () => {
         expect(icon.props.size).toBe(24);
       });
 
+      it('passes accessibilityLabel to root Icon as contentDescription', () => {
+        render(<NativeToolbarMenu {...defaultProps} accessibilityLabel="More options" />);
+
+        const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+        expect(icon.props.contentDescription).toBe('More options');
+      });
+
+      it('omits contentDescription when accessibilityLabel is not provided', () => {
+        render(<NativeToolbarMenu {...defaultProps} />);
+
+        const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+        expect(icon.props.contentDescription).toBeUndefined();
+      });
+
       it('renders DropdownMenu with IconButton trigger', () => {
         render(<NativeToolbarMenu {...defaultProps} />);
 
@@ -284,7 +298,7 @@ describe('NativeToolbarMenu', () => {
     it('renders nested DropdownMenu with DropdownMenuItem trigger', () => {
       renderNested();
 
-      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0];
+      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0]!;
       const nestedMenu = within(rootItems).getByTestId('DropdownMenu');
       const nestedTrigger = within(nestedMenu).getByTestId('DropdownMenu.Trigger');
       expect(within(nestedTrigger).getByTestId('DropdownMenuItem')).toBeDefined();
@@ -313,7 +327,7 @@ describe('NativeToolbarMenu', () => {
     it('forwards disabled prop', () => {
       renderNested({ disabled: true });
 
-      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0];
+      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0]!;
       const nestedTrigger = within(rootItems).getByTestId('DropdownMenu.Trigger');
       const nestedMenuItem = within(nestedTrigger).getByTestId('DropdownMenuItem');
       expect(nestedMenuItem.props.enabled).toBe(false);

@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Socket } from 'net';
+import type { Socket } from 'net';
 import { Duplex } from 'stream';
 import * as tls from 'tls';
 
@@ -14,8 +14,9 @@ import { DebugserverClient } from './client/DebugserverClient';
 import { InstallationProxyClient } from './client/InstallationProxyClient';
 import { LockdowndClient } from './client/LockdowndClient';
 import { MobileImageMounterClient } from './client/MobileImageMounterClient';
-import { ServiceClient } from './client/ServiceClient';
-import { UsbmuxdClient, UsbmuxdDevice, UsbmuxdPairRecord } from './client/UsbmuxdClient';
+import type { ServiceClient } from './client/ServiceClient';
+import type { UsbmuxdDevice, UsbmuxdPairRecord } from './client/UsbmuxdClient';
+import { UsbmuxdClient } from './client/UsbmuxdClient';
 import { CommandError } from '../../../utils/errors';
 
 export class ClientManager {

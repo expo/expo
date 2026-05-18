@@ -6,6 +6,17 @@ public final class ExpoGLModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoGL")
 
+    OnCreate {
+      guard let runtime = try? appContext?.runtime else {
+        return
+      }
+      try! runtime.execute {
+        runtime.withUnsafePointee { runtimePtr in
+          EXGLInstallWebGLBindings(runtimePtr)
+        }
+      }
+    }
+
     AsyncFunction("takeSnapshotAsync") { (contextId: UInt, options: [String: Any], promise: Promise) in
       EXGLObjectManager.shared.takeSnapshot(
         withContextId: contextId as NSNumber,
@@ -20,15 +31,19 @@ public final class ExpoGLModule: Module {
         promise.reject("E_GL_APP_CONTEXT_NOT_FOUND", "ExpoGL.createContextAsync: Unable to get the app context")
         return
       }
-      let glContext = EXGLContext(delegate: nil, runtime: runtime, fileSystem: fileSystem)
+      let glContext = EXGLContext(delegate: nil, fileSystem: fileSystem)
 
-      glContext.prepare({ success in
-        if success {
-          promise.resolve(["exglCtxId": glContext.contextId as NSNumber])
-        } else {
-          promise.reject("E_GL_CONTEXT_NOT_INITIALIZED", "ExpoGL.createContextAsync: Unexpected error occurred when initializing headless context")
+      runtime.schedule(priority: .immediate) {
+        runtime.withUnsafePointee { runtimePtr in
+          glContext.prepare(withRuntimePointer: runtimePtr, callback: { success in
+            if success {
+              promise.resolve(["exglCtxId": glContext.contextId])
+            } else {
+              promise.reject("E_GL_CONTEXT_NOT_INITIALIZED", "ExpoGL.createContextAsync: Unexpected error occurred when initializing headless context")
+            }
+          }, enableExperimentalWorkletSupport: false)
         }
-      }, andEnableExperimentalWorkletSupport: false)
+      }
     }
 
     AsyncFunction("destroyContextAsync") { (contextId: UInt, promise: Promise) in

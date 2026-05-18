@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import * as Utils from './WebCameraUtils';
 import { FacingModeToCameraType } from './WebConstants';
-import {
+import type {
   CameraReadyListener,
   CameraType,
   MountErrorListener,

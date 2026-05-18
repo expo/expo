@@ -171,7 +171,7 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
 
   return (
     <div
-      className="border-default bg-default mb-4 h-[300px] w-full overflow-hidden rounded-lg border"
+      className="mb-4 h-75 w-full overflow-hidden rounded-lg border border-default bg-default"
       data-md="diagram"
       data-md-alt={diagramAlt}>
       <style dangerouslySetInnerHTML={{ __html: nodeHandleStyles }} />

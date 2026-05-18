@@ -1,6 +1,6 @@
-import { NativeDatabase } from './NativeDatabase';
-import { SQLiteBindParams, SQLiteBindValue, NativeStatement, SQLiteVariadicBindParams, type SQLiteRunResult } from './NativeStatement';
-export { SQLiteBindParams, SQLiteBindValue, SQLiteRunResult, SQLiteVariadicBindParams };
+import type { NativeDatabase } from './NativeDatabase';
+import type { NativeStatement, SQLiteBindParams, SQLiteVariadicBindParams } from './NativeStatement';
+export type { SQLiteBindParams, SQLiteBindValue, SQLiteRunResult, SQLiteVariadicBindParams, } from './NativeStatement';
 type ValuesOf<T extends object> = T[keyof T][];
 /**
  * A prepared statement returned by [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource) or [`SQLiteDatabase.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.

@@ -1,4 +1,4 @@
-import {
+import type {
   PlayerError,
   SubtitleTrack,
   VideoPlayerStatus,

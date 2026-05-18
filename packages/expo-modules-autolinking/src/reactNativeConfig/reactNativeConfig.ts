@@ -19,10 +19,11 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { discoverExpoModuleConfigAsync, ExpoModuleConfig } from '../ExpoModuleConfig';
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { DependencyResolution } from '../dependencies';
 import {
-  DependencyResolution,
   filterMapResolutionResult,
   mergeResolutionResults,
   scanDependenciesFromRNProjectConfig,
@@ -30,6 +31,25 @@ import {
   scanDependenciesRecursively,
 } from '../dependencies';
 import { checkDependencyWebAsync } from './webResolver';
+
+const deepObjectMerge = (target: any, source: any): any => {
+  if (
+    source !== undefined &&
+    typeof target === 'object' &&
+    target != null &&
+    !Array.isArray(target) &&
+    (!target.constructor || target.constructor === Object) &&
+    typeof source === 'object' &&
+    !Array.isArray(source)
+  ) {
+    target = { ...target };
+    for (const key in source) {
+      target[key] = deepObjectMerge(target[key], source[key]);
+    }
+    return target;
+  }
+  return source !== undefined ? source : target;
+};
 
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
   const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
@@ -66,15 +86,16 @@ export async function resolveReactNativeModule(
   const modulePath = shouldUseOriginPath ? resolution.originPath : resolution.path;
 
   const libraryConfig = (await loadConfigAsync(modulePath)) as RNConfigReactNativeLibraryConfig;
-  const reactNativeConfig = {
-    ...libraryConfig?.dependency,
-    ...projectConfig?.dependencies?.[resolution.name],
-  };
-
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
     return null;
+  }
+
+  let reactNativeConfig = libraryConfig?.dependency ?? {};
+  const projectDependencyOverride = projectConfig?.dependencies?.[resolution.name];
+  if (projectDependencyOverride != null) {
+    reactNativeConfig = deepObjectMerge(reactNativeConfig, projectDependencyOverride);
   }
 
   let maybeExpoModuleConfig: ExpoModuleConfig | null | undefined;

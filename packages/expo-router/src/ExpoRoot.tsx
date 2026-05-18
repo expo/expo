@@ -1,27 +1,25 @@
 'use client';
 
-import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
-import { ExpoLinkingOptions } from './getLinkingConfig';
+import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
-import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
+import type { ServerContextType } from './global-state/serverLocationContext';
+import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
+import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
-import {
-  LinkingOptions,
-  NavigationAction,
-  StackRouter,
-  useNavigationBuilder,
-} from './react-navigation/native';
+import type { LinkingOptions, NavigationAction } from './react-navigation/native';
+import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
-import { RequireContext } from './types';
+import type { RequireContext } from './types';
 import { parseUrlUsingCustomBase } from './utils/url';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
@@ -91,6 +89,12 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
+// TODO(@ubax): Refactor onReady logic and use listeners pattern
+function onNavigationReady() {
+  handleNavigationOnReady();
+  store.onReady();
+}
+
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
@@ -157,7 +161,7 @@ function ContextNavigator({
         onUnhandledAction={onUnhandledAction}
         onStateChange={store.onStateChange}
         documentTitle={documentTitle}
-        onReady={store.onReady}>
+        onReady={onNavigationReady}>
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
             <Content />
@@ -182,7 +186,7 @@ function Content() {
   });
 
   return (
-    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
   );
 }
 

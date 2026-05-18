@@ -1,4 +1,4 @@
-import { ConfigPlugin } from '../../Plugin.types';
+import type { ConfigPlugin } from '../../Plugin.types';
 import { withPlugins } from '../withPlugins';
 
 describe(withPlugins, () => {

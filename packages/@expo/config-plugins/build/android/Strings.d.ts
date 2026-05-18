@@ -1,4 +1,4 @@
-import { ResourceItemXML, ResourceKind, ResourceXML } from './Resources';
+import type { ResourceItemXML, ResourceKind, ResourceXML } from './Resources';
 export declare function getProjectStringsXMLPathAsync(projectRoot: string, { kind }?: {
     kind?: ResourceKind;
 }): Promise<string>;

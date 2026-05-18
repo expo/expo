@@ -8,7 +8,7 @@ import type {
   ReactNavigationState,
   StoreRedirects,
 } from './types';
-import { RouteNode } from '../Route';
+import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
@@ -83,6 +83,7 @@ export const store = {
     const routeInfo = getCachedRouteInfo(state);
     storeRef.current.routeInfo = routeInfo;
   },
+  // TODO(@ubax): Refactor onReady logic as it probably should live somewhere else then store
   onReady() {
     if (!hasAttemptedToHideSplash) {
       setHasAttemptedToHideSplash(true);

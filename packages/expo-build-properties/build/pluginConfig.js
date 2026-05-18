@@ -160,6 +160,7 @@ const schema = {
                     nullable: true,
                 },
                 enableBundleCompression: { type: 'boolean', nullable: true },
+                usePrecompiledHeaders: { type: 'boolean', nullable: true },
                 buildFromSource: { type: 'boolean', nullable: true },
                 buildReactNativeFromSource: { type: 'boolean', nullable: true },
                 buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },

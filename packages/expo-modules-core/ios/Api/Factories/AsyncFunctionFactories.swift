@@ -25,6 +25,7 @@ public func AsyncFunction<R>(
     name,
     firstArgType: Void.self,
     dynamicArgumentTypes: [],
+    returnType: ~R.self,
     closure
   )
 }
@@ -40,6 +41,7 @@ public func AsyncFunction<R, A0: AnyArgument, each A: AnyArgument>(
     name,
     firstArgType: A0.self,
     dynamicArgumentTypes: buildDynamicTypes(A0.self, repeat (each A).self),
+    returnType: ~R.self,
     closure
   )
 }

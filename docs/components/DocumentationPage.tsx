@@ -75,6 +75,7 @@ export default function DocumentationPage({
       : null;
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';
+  const markdownPath = RoutesUtils.getMarkdownPath(currentPath);
   const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
   const isLatestConfigPage = currentPath.startsWith('/versions/latest/config/');
   const isAskAIEligiblePage = isLatestSdkPage || isLatestConfigPage;
@@ -324,7 +325,11 @@ export default function DocumentationPage({
         isChatExpanded={isAskAIExpanded}>
         {breadcrumbSchema && <StructuredData id="breadcrumb-list" data={breadcrumbSchema} />}
         {techArticleSchema && <StructuredData id="tech-article" data={techArticleSchema} />}
-        <DocumentationHead title={title} description={description} canonicalUrl={canonicalUrl}>
+        <DocumentationHead
+          title={title}
+          description={description}
+          canonicalUrl={canonicalUrl}
+          markdownPath={markdownPath}>
           {hideFromSearch !== true && (
             <meta
               name="docsearch:version"
@@ -341,14 +346,10 @@ export default function DocumentationPage({
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'from-default bg-linear-to-b to-transparent opacity-90'
+            'bg-linear-to-b from-default to-transparent opacity-90'
           )}
         />
-        <main
-          className={mergeClasses(
-            'mx-auto px-14 pt-10',
-            'max-lg-gutters:px-4 max-lg-gutters:pt-5'
-          )}>
+        <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>
           {version && version === 'unversioned' && (
             <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
@@ -372,6 +373,12 @@ export default function DocumentationPage({
             />
           )}
           {title && <Separator />}
+          <blockquote className="sr-only">
+            <p>
+              For the complete documentation index, see <A href="/llms.txt">llms.txt</A>. Use this
+              file to discover all available pages.
+            </p>
+          </blockquote>
           {children}
         </main>
         <Footer

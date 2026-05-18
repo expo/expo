@@ -74,7 +74,7 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
    Takes the value as a `JavaScriptValue`. Returns `undefined` value if the reference does not hold any value.
    */
   public func asValue() -> JavaScriptValue {
-    return take()?.asValue() ?? .undefined()
+    return take()?.asValue() ?? .undefined
   }
 
   /**
@@ -91,11 +91,11 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
 
 extension JavaScriptRef: JavaScriptRepresentable where T: JavaScriptRepresentable & ~Copyable {}
 extension JavaScriptRef: JSIRepresentable where T: JSIRepresentable & ~Copyable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> JavaScriptRef {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptRef {
     FatalError.unimplemented()
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return take()?.toJSIValue(in: runtime) ?? .undefined()
   }
 }

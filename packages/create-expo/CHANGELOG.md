@@ -6,11 +6,71 @@
 
 ### 🎉 New features
 
-- Generate `AGENTS.md`, `CLAUDE.md`, and `.claude/settings.json` for new projects to provide AI coding agents with Expo-specific guidance and the `expo` skills plugin. Use `--no-agents-md` to skip. ([#44618](https://github.com/expo/expo/pull/44618) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.8.0 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `picomatch@^2.3.2` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
+
+## 3.7.3 — 2026-05-07
+
+### 💡 Others
+
+- Drop automatically setting `node-linker=hoisted` for pnpm ([#45491](https://github.com/expo/expo/pull/45491) by [@kitten](https://github.com/kitten))
+
+## 3.7.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 3.7.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 3.7.0 — 2026-05-05
+
+### 🎉 New features
+
+- Generate `AGENTS.md`, `CLAUDE.md`, and `.claude/settings.json` for new projects to provide AI coding agents with Expo-specific guidance and the `expo` skills plugin. Use `--no-agents-md` to skip. ([#44618](https://github.com/expo/expo/pull/44618) by [@EvanBacon](https://github.com/EvanBacon))
+- Prompt for the Expo SDK version when scaffolding the default template. ([#45369](https://github.com/expo/expo/pull/45369) by [@brentvatne](https://github.com/brentvatne))
+
+### 💡 Others
+
+- Fixed plugin setup in `.claude/settings.json`. ([#44951](https://github.com/expo/expo/pull/44951) by [@kudo](https://github.com/kudo))
+
+## 3.6.13 - 2026-04-21
+
+### 💡 Others
+
+- Replace tar dependency logic with `multitars` package ([#44764](https://github.com/expo/expo/pull/44764) by [@kitten](https://github.com/kitten))
+- Update to `multitars@^1.0.0` ([#44774](https://github.com/expo/expo/pull/44774) by [@kitten](https://github.com/kitten))
+
+## 3.6.12 - 2026-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.11 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.10 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.9 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.8 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.7 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
 
 ## 3.6.6 — 2026-02-25
 

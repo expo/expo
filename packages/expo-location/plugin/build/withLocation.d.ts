@@ -36,6 +36,16 @@ export type Props = {
      */
     locationWhenInUsePermission?: string | false;
     /**
+     * A string to set the `NSMotionUsageDescription` permission message shown when
+     * `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time.
+     * Set to `false` to omit the key. In that case, the app must add `NSMotionUsageDescription`
+     * manually to its `Info.plist`, for example via the `infoPlist` key in `app.json`.
+     * Without this key, calling motion activity APIs on iOS will throw an exception.
+     * @default "Allow $(PRODUCT_NAME) to detect your current motion activity"
+     * @platform ios
+     */
+    motionUsagePermission?: string | false;
+    /**
      * Whether to enable location in `UIBackgroundModes`.
      * @default false
      * @platform ios
@@ -53,6 +63,13 @@ export type Props = {
      * @platform android
      */
     isAndroidForegroundServiceEnabled?: boolean;
+    /**
+     * Whether to enable the `ACTIVITY_RECOGNITION` and `com.google.android.gms.permission.ACTIVITY_RECOGNITION`
+     * permissions required for motion activity tracking via `getMotionActivityAsync` and `watchMotionActivityAsync`.
+     * @default false
+     * @platform android
+     */
+    isAndroidMotionActivityEnabled?: boolean;
     /**
      * Local path to an image for the foreground service icon. Should be a 96x96 all-white PNG with transparency.
      * @platform android

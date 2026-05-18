@@ -1,5 +1,5 @@
-import { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel, BiometricsSecurityLevel, LocalAuthenticationError } from './LocalAuthentication.types';
-export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel, BiometricsSecurityLevel, LocalAuthenticationError, };
+import type { SecurityLevel, LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult } from './LocalAuthentication.types';
+export { type LocalAuthenticationOptions, AuthenticationType, type LocalAuthenticationResult, SecurityLevel, type BiometricsSecurityLevel, type LocalAuthenticationError, } from './LocalAuthentication.types';
 /**
  * Determine whether a face or fingerprint scanner is available on the device.
  * @return Returns a promise which fulfils with a `boolean` value indicating whether a face or

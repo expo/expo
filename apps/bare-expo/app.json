@@ -41,7 +41,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
+        "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774",
       }
     },
     "runtimeVersion": "1.0.0",
@@ -91,7 +91,8 @@
         "expo-build-properties",
         {
           "android": {
-            "enableMinifyInReleaseBuilds": true
+            "enableMinifyInReleaseBuilds": true,
+            "usePrecompiledHeaders": true
           }
         }
       ],

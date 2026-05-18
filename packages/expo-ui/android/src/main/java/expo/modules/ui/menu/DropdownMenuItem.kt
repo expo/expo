@@ -3,10 +3,10 @@ package expo.modules.ui.menu
 import android.graphics.Color
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.ui.UIComposableScope
 import expo.modules.kotlin.views.FunctionalComposableScope
@@ -14,19 +14,24 @@ import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.composeOrNull
 import expo.modules.ui.findChildSlotView
-import java.io.Serializable
+import expo.modules.kotlin.views.OptimizedComposeProps
 
-class ItemPressedEvent : Record, Serializable
-
+@OptimizedRecord
 class DropdownMenuItemColors : Record {
   @Field val textColor: Color? = null
+
   @Field val leadingIconColor: Color? = null
+
   @Field val trailingIconColor: Color? = null
+
   @Field val disabledTextColor: Color? = null
+
   @Field val disabledLeadingIconColor: Color? = null
+
   @Field val disabledTrailingIconColor: Color? = null
 }
 
+@OptimizedComposeProps
 data class DropdownMenuItemProps(
   val enabled: Boolean = true,
   val elementColors: DropdownMenuItemColors = DropdownMenuItemColors(),
@@ -36,7 +41,7 @@ data class DropdownMenuItemProps(
 @Composable
 fun FunctionalComposableScope.DropdownMenuItemContent(
   props: DropdownMenuItemProps,
-  onItemPressed: (ItemPressedEvent) -> Unit
+  onItemPressed: () -> Unit
 ) {
   val textSlotView = findChildSlotView(view, "text")
   val leadingSlotView = findChildSlotView(view, "leadingIcon")
@@ -64,7 +69,7 @@ fun FunctionalComposableScope.DropdownMenuItemContent(
       { with(UIComposableScope()) { with(it) { Content() } } }
     },
     onClick = {
-      onItemPressed(ItemPressedEvent())
+      onItemPressed()
     }
   )
 }

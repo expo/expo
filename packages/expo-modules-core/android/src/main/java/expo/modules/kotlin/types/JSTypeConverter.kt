@@ -7,6 +7,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.typedarray.RawTypedArrayHolder
 import expo.modules.kotlin.types.folly.FollyDynamicExtensionConverter
+import io.github.lukmccall.pika.PIntrospectionData
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -17,7 +18,7 @@ interface JSTypeConverter<T> {
   fun convertToJS(value: Any?): Any?
   val returnType: ReturnType
 
-  class PassThroughConverter : JSTypeConverter<Any> {
+  object PassThroughConverter : JSTypeConverter<Any> {
     override fun convertToJS(value: Any?): Any? {
       return value
     }
@@ -26,7 +27,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.UNKNOWN
   }
 
-  class BundleConverter : JSTypeConverter<Bundle> {
+  object BundleConverter : JSTypeConverter<Bundle> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Bundle?>(value)
       return value?.toJSValue(JSTypeConverterProvider.DefaultContainerProvider)
@@ -36,7 +37,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.WRITEABLE_MAP
   }
 
-  class ArrayConverter : JSTypeConverter<Array<*>> {
+  object ArrayConverter : JSTypeConverter<Array<*>> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Array<*>?>(value)
       return value?.toJSValue(JSTypeConverterProvider.DefaultContainerProvider)
@@ -46,7 +47,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.WRITEABLE_ARRAY
   }
 
-  class IntArrayConverter : JSTypeConverter<IntArray> {
+  object IntArrayConverter : JSTypeConverter<IntArray> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<IntArray?>(value)
       return value?.toJSValue(JSTypeConverterProvider.DefaultContainerProvider)
@@ -56,7 +57,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.INT_ARRAY
   }
 
-  class FloatArrayConverter : JSTypeConverter<FloatArray> {
+  object FloatArrayConverter : JSTypeConverter<FloatArray> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<FloatArray?>(value)
       return value?.toJSValue(JSTypeConverterProvider.DefaultContainerProvider)
@@ -66,7 +67,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.FLOAT_ARRAY
   }
 
-  class DoubleArrayConverter : JSTypeConverter<DoubleArray> {
+  object DoubleArrayConverter : JSTypeConverter<DoubleArray> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<DoubleArray?>(value)
       return value?.toJSValue(JSTypeConverterProvider.DefaultContainerProvider)
@@ -76,7 +77,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.DOUBLE_ARRAY
   }
 
-  class BooleanArrayConverter : JSTypeConverter<BooleanArray> {
+  object BooleanArrayConverter : JSTypeConverter<BooleanArray> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<BooleanArray?>(value)
       return value?.toJSValue(JSTypeConverterProvider.DefaultContainerProvider)
@@ -86,7 +87,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.BOOLEAN_ARRAY
   }
 
-  class ByteArrayConverter : JSTypeConverter<ByteArray> {
+  object ByteArrayConverter : JSTypeConverter<ByteArray> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<ByteArray?>(value)
       return value?.let { FollyDynamicExtensionConverter.put(it) }
@@ -96,7 +97,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.STRING
   }
 
-  class MapConverter : JSTypeConverter<Map<*, *>> {
+  object MapConverter : JSTypeConverter<Map<*, *>> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Map<*, *>?>(value)
       return value?.toJSValueExperimental()
@@ -106,7 +107,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.MAP
   }
 
-  class EnumConverter : JSTypeConverter<Enum<*>> {
+  object EnumConverter : JSTypeConverter<Enum<*>> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Enum<*>?>(value)
       return value?.toJSValue()
@@ -116,17 +117,29 @@ interface JSTypeConverter<T> {
       get() = ReturnType.UNKNOWN // TODO(@lukmccall): Define proper ReturnType for Enums
   }
 
-  class RecordConverter : JSTypeConverter<Record> {
+  object RecordConverter : JSTypeConverter<Record> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Record?>(value)
-      return value?.toJSValueExperimental()
+      return value?.toJSValueExperimental(null)
     }
 
     override val returnType: ReturnType
       get() = ReturnType.MAP
   }
 
-  class URIConverter : JSTypeConverter<URI> {
+  class IntrospectableRecordConverter(
+    private val introspectableData: PIntrospectionData<Record>
+  ) : JSTypeConverter<Record> {
+    override fun convertToJS(value: Any?): Any? {
+      enforceType<Record?>(value)
+      return value?.toJSValueExperimental(introspectableData)
+    }
+
+    override val returnType: ReturnType
+      get() = ReturnType.MAP
+  }
+
+  object URIConverter : JSTypeConverter<URI> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<URI?>(value)
       return value?.toJSValue()
@@ -136,7 +149,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.STRING
   }
 
-  class URLConverter : JSTypeConverter<URL> {
+  object URLConverter : JSTypeConverter<URL> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<URL?>(value)
       return value?.toJSValue()
@@ -146,7 +159,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.STRING
   }
 
-  class AndroidUriConverter : JSTypeConverter<Uri> {
+  object AndroidUriConverter : JSTypeConverter<Uri> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Uri?>(value)
       return value?.toJSValue()
@@ -156,7 +169,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.STRING
   }
 
-  class FileConverter : JSTypeConverter<File> {
+  object FileConverter : JSTypeConverter<File> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<File?>(value)
       return value?.toJSValue()
@@ -166,7 +179,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.STRING
   }
 
-  class PairConverter : JSTypeConverter<Pair<*, *>> {
+  object PairConverter : JSTypeConverter<Pair<*, *>> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Pair<*, *>?>(value)
       return value?.toJSValue(JSTypeConverterProvider.DefaultContainerProvider)
@@ -176,7 +189,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.WRITEABLE_ARRAY
   }
 
-  class LongConverter : JSTypeConverter<Long> {
+  object LongConverter : JSTypeConverter<Long> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Long?>(value)
       return value?.toDouble()
@@ -186,7 +199,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.LONG
   }
 
-  class DurationConverter : JSTypeConverter<Duration> {
+  object DurationConverter : JSTypeConverter<Duration> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Duration?>(value)
       return value?.toDouble(DurationUnit.SECONDS)
@@ -196,7 +209,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.DOUBLE
   }
 
-  class RawTypedArrayHolderConverter : JSTypeConverter<RawTypedArrayHolder> {
+  object RawTypedArrayHolderConverter : JSTypeConverter<RawTypedArrayHolder> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<RawTypedArrayHolder?>(value)
       return value?.rawArray
@@ -206,7 +219,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.JS_TYPED_ARRAY
   }
 
-  class CollectionConverter : JSTypeConverter<Collection<*>> {
+  object CollectionConverter : JSTypeConverter<Collection<*>> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Collection<*>?>(value)
       return value?.toJSValueExperimental()
@@ -216,7 +229,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.COLLECTION
   }
 
-  class AnyConverter : JSTypeConverter<Any> {
+  object AnyConverter : JSTypeConverter<Any> {
     override fun convertToJS(value: Any?): Any? {
       return JSTypeConverterProvider.convertToJSValue(value, useExperimentalConverter = true)
     }
@@ -225,7 +238,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.UNKNOWN
   }
 
-  class FormattedRecordConverter : JSTypeConverter<FormattedRecord<*>> {
+  object FormattedRecordConverter : JSTypeConverter<FormattedRecord<*>> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<FormattedRecord<*>?>(value)
       return value?.toJSValueExperimental()

@@ -86,7 +86,7 @@ class FullscreenPlayerActivity : Activity(), VideoManagerListener {
       videoPlayer?.hasBeenDisconnectedFromVideoView() // The video player is disconnected. We are only using the ExoPlayer it contained
     }
 
-    VideoManager.registerFullscreenPlayerActivity(hashCode().toString(), this)
+    videoViewId?.let { VideoManager.registerFullscreenPlayerActivity(it, this) }
     VideoManager.registerListener(this)
     playerView.player?.let {
       val aspectRatio = calculatePiPAspectRatio(it.videoSize, playerView.width, playerView.height, videoView.contentFit)
@@ -123,7 +123,13 @@ class FullscreenPlayerActivity : Activity(), VideoManagerListener {
   override fun finish() {
     super.finish()
     didFinish = true
-    videoViewId?.let { VideoManager.getVideoView(it).attachPlayer() }
+    videoViewId?.let {
+      try {
+        VideoManager.getVideoView(it).attachPlayer()
+      } catch (e: VideoViewNotFoundException) {
+        Log.w("ExpoVideo", "VideoView $it already unmounted when finishing fullscreen — skipping attachPlayer")
+      }
+    }
 
     // Disable the exit transition
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -174,9 +180,11 @@ class FullscreenPlayerActivity : Activity(), VideoManagerListener {
       captioningChangeListener = null
     }
 
-    videoView.exitFullscreen()
+    if (::videoView.isInitialized) {
+      videoView.exitFullscreen()
+    }
     VideoManager.unregisterListener(this)
-    VideoManager.unregisterFullscreenPlayerActivity(hashCode().toString())
+    videoViewId?.let { VideoManager.unregisterFullscreenPlayerActivity(it) }
     orientationHelper?.stopOrientationEventListener()
   }
 

@@ -9,11 +9,15 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 open class CheckedChangeEvent(
   @Field open val value: Boolean = false
 ) : Record, Serializable
 
+@OptimizedRecord
 data class SwitchColors(
   @Field val checkedThumbColor: Color? = null,
   @Field val checkedTrackColor: Color? = null,
@@ -33,6 +37,7 @@ data class SwitchColors(
   @Field val disabledUncheckedIconColor: Color? = null
 ) : Record
 
+@OptimizedComposeProps
 data class SwitchProps(
   val value: Boolean = false,
   val enabled: Boolean = true,

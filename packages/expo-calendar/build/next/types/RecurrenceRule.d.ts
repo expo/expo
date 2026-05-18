@@ -1,4 +1,4 @@
-import { RecurrenceRule as ExpoCalendarRecurrenceRule } from '../Calendar';
+import type { RecurrenceRule as ExpoCalendarRecurrenceRule } from '../Calendar';
 export type RecurrenceRule = {
     /**
      * Date on which the calendar item should stop recurring; overrides `occurrence` if both are specified.

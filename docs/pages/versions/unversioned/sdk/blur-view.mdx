@@ -206,7 +206,7 @@ To blur the background of a view on Android, wrap the content to be blurred in a
 
 ### Performance
 
-The blur can be achieved efficiently only by using the [RenderNode](https://developer.android.com/reference/android/graphics/RenderNode) Android API, which was introduced in Android SDK 31 (Android 9.0). Due to this, on older versions of Android `expo-blur` uses the much less efficient [RenderScript](https://developer.android.com/guide/topics/renderscript/compute) API.
+The blur can be achieved efficiently only by using the [RenderNode](https://developer.android.com/reference/android/graphics/RenderNode) Android API, which was introduced in Android SDK 31 (Android 12.0). Due to this, on older versions of Android `expo-blur` uses the much less efficient [RenderScript](https://developer.android.com/guide/topics/renderscript/compute) API.
 If you want to avoid the performance penalty on older platforms you can use the `dimezisBlurViewSdk31Plus` [BlurMethod](#blurmethod-1)
 which will only blur on newer versions of Android and fall back to the [`none`](#blurmethod-1) on older versions.
 

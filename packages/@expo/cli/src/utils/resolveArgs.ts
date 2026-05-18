@@ -1,4 +1,5 @@
-import arg, { Spec } from 'arg';
+import type { Spec } from 'arg';
+import type arg from 'arg';
 
 import { replaceAllValues } from './array';
 import { CommandError } from './errors';

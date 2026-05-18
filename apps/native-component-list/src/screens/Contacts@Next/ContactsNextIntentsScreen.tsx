@@ -1,4 +1,4 @@
-import { Contact, ContactAccessButton } from 'expo-contacts/next';
+import { Contact, ContactAccessButton, requestPermissionsAsync } from 'expo-contacts/next';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, Text } from 'react-native';
 
@@ -8,7 +8,7 @@ export default function ContactPickersScreen() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   useEffect(() => {
-    Contact.requestPermissionsAsync();
+    requestPermissionsAsync();
   }, []);
 
   const handlePresentPicker = async () => {

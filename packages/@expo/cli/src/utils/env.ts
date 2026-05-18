@@ -271,6 +271,11 @@ class Env {
     return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
   }
 
+  /** Disable @react-navigation checks for expo-router projects */
+  get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
+    return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
+  }
+
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
   get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
     return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);

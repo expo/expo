@@ -190,7 +190,7 @@ div.tippy-box {
 
 .diff-code {
   @apply pl-4;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .diff-code-insert {

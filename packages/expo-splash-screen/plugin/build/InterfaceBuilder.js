@@ -13,9 +13,7 @@ exports.removeExisting = removeExisting;
 exports.toString = toString;
 exports.toObjectAsync = toObjectAsync;
 const crypto_1 = __importDefault(require("crypto"));
-const debug_1 = __importDefault(require("debug"));
 const xml2js_1 = require("xml2js");
-const debug = (0, debug_1.default)('expo:expo-splash-screen:ios:InterfaceBuilder');
 function createConstraint([firstItem, firstAttribute], [secondItem, secondAttribute], constant) {
     return {
         $: {
@@ -36,7 +34,6 @@ const IMAGE_ID = 'EXPO-SplashScreen';
 const CONTAINER_ID = 'EXPO-ContainerView';
 function removeImageFromSplashScreen(xml, { imageName }) {
     const mainView = xml.document.scenes[0]?.scene[0]?.objects[0]?.viewController[0]?.view[0];
-    debug(`Remove all splash screen image elements`);
     if (mainView != null) {
         if (mainView.subviews[0] != null) {
             removeExisting(mainView.subviews[0].imageView, IMAGE_ID);
@@ -180,7 +177,6 @@ function removeExisting(array, item) {
     const id = typeof item === 'string' ? item : item.$?.id;
     const existingItem = array?.findIndex((existingItem) => existingItem.$.id === id);
     if (existingItem > -1) {
-        debug(`Removing existing IB item with id ${id}, from: %O`, array);
         array.splice(existingItem, 1);
     }
     return array;

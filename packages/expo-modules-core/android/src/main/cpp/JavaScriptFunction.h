@@ -2,12 +2,10 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JSIObjectWrapper.h"
 #include "JavaScriptRuntime.h"
 #include "types/ExpectedType.h"
-
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -39,7 +37,6 @@ public:
   );
 
   std::shared_ptr<jsi::Function> get() override;
-
 
 private:
   friend HybridBase;

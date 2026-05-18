@@ -16,11 +16,11 @@ struct SliderView: ExpoSwiftUI.View {
 #if !os(tvOS)
     sliderContent
       .onAppear {
-        value = props.value ?? 0.0
+        value = clamp(props.value ?? 0.0)
       }
       .onChange(of: props.value) { newValue in
         guard !isEditing else { return }
-        value = newValue ?? 0.0
+        value = clamp(newValue ?? 0.0)
       }
       .onChange(of: value) { newValue in
         if props.value != newValue {
@@ -35,6 +35,19 @@ struct SliderView: ExpoSwiftUI.View {
   }
 
 #if !os(tvOS)
+  private func clamp(_ raw: Float) -> Float {
+    let lower = Swift.max(props.min ?? -.infinity, props.lowerLimit ?? -.infinity)
+    let upper = Swift.min(props.max ?? .infinity, props.upperLimit ?? .infinity)
+    return Swift.min(upper, Swift.max(lower, raw))
+  }
+
+  private var clampedBinding: Binding<Float> {
+    Binding(
+      get: { value },
+      set: { newValue in value = clamp(newValue) }
+    )
+  }
+
   @ViewBuilder
   private var sliderContent: some View {
     let label = props.children?.slot("label")
@@ -43,7 +56,7 @@ struct SliderView: ExpoSwiftUI.View {
 
     if let min = props.min, let max = props.max, let step = props.step {
       Slider(
-        value: $value,
+        value: clampedBinding,
         in: min...max,
         step: step,
         label: { label },
@@ -55,7 +68,7 @@ struct SliderView: ExpoSwiftUI.View {
       }
     } else if let min = props.min, let max = props.max {
       Slider(
-        value: $value,
+        value: clampedBinding,
         in: min...max,
         label: { label },
         minimumValueLabel: { minimumValueLabel },
@@ -66,7 +79,7 @@ struct SliderView: ExpoSwiftUI.View {
       }
     } else if let step = props.step {
       Slider(
-        value: $value,
+        value: clampedBinding,
         in: 0...1,
         step: step,
         label: { label },
@@ -78,7 +91,7 @@ struct SliderView: ExpoSwiftUI.View {
       }
     } else {
       Slider(
-        value: $value,
+        value: clampedBinding,
         label: { label },
         minimumValueLabel: { minimumValueLabel },
         maximumValueLabel: { maximumValueLabel }
@@ -96,6 +109,8 @@ final class SliderProps: UIBaseViewProps {
   @Field var step: Float?
   @Field var min: Float?
   @Field var max: Float?
+  @Field var lowerLimit: Float?
+  @Field var upperLimit: Float?
   var onValueChanged = EventDispatcher()
   var onEditingChanged = EventDispatcher()
 }

@@ -7,6 +7,11 @@ export type SyncSwitchProps = {
      */
     isOn: ObservableState<boolean>;
     /**
+     * A worklet callback that runs synchronously on the UI thread when the switch changes.
+     * Must be marked with the `'worklet'` directive.
+     */
+    onCheckedChangeSync?: (checked: boolean) => void;
+    /**
      * Whether the switch is enabled.
      * @default true
      */
@@ -20,5 +25,5 @@ export type SyncSwitchProps = {
  * A switch driven by observable native state.
  * Use `useNativeState(false)` to create the state.
  */
-export declare function SyncSwitch(props: SyncSwitchProps): import("react").JSX.Element;
+export declare function SyncSwitch(props: SyncSwitchProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

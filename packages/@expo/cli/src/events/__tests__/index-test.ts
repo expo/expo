@@ -1,5 +1,7 @@
 import { Writable } from 'node:stream';
 
+import { getWellKnownTemporaryLogFile } from '..';
+
 const originalConsole = globalThis.console;
 const originalStdoutDescriptor = Object.getOwnPropertyDescriptor(process, 'stdout');
 const originalStderrDescriptor = Object.getOwnPropertyDescriptor(process, 'stderr');
@@ -42,15 +44,92 @@ afterEach(() => {
 });
 
 describe('installEventLogger', () => {
+  it('activates the event logger with the well-known log path', () => {
+    const projectRoot = '/test/project';
+
+    jest.isolateModules(() => {
+      const LogStream = jest.fn().mockImplementation(() => ({
+        writable: true,
+        _writeln: jest.fn(),
+        _end: jest.fn(),
+      }));
+      jest.doMock('../stream', () => ({
+        LogStream,
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
+
+      const { installEventLogger, isEventLoggerActive } = require('..') as typeof import('..');
+
+      expect(isEventLoggerActive()).toBe(false);
+
+      installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'start'));
+
+      const nodePath = require('node:path');
+      const logFile = nodePath.join(projectRoot, '.expo', 'dev', 'logs', 'start.log');
+
+      expect(LogStream).toHaveBeenCalledWith(logFile);
+      expect(isEventLoggerActive()).toBe(true);
+    });
+  });
+
+  it('is a no-op on subsequent calls', () => {
+    jest.isolateModules(() => {
+      const LogStream = jest.fn().mockImplementation(() => ({
+        writable: true,
+        _writeln: jest.fn(),
+        _end: jest.fn(),
+      }));
+      jest.doMock('../stream', () => ({
+        LogStream,
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
+
+      const { installEventLogger } = require('..') as typeof import('..');
+
+      installEventLogger('/dev/null');
+      expect(LogStream).toHaveBeenCalledTimes(1);
+
+      // Second call with project fallback should be a no-op
+      installEventLogger('/foo');
+      expect(LogStream).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('exposes the log file path via getLogFile', () => {
+    const projectRoot = '/test/project';
+
+    jest.isolateModules(() => {
+      const mockFile = '/test/project/.expo/dev/logs/start.log';
+      jest.doMock('../stream', () => ({
+        LogStream: jest.fn().mockImplementation(() => ({
+          writable: true,
+          file: mockFile,
+          _writeln: jest.fn(),
+          _end: jest.fn(),
+        })),
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
+
+      const { installEventLogger, getLogFile } = require('..') as typeof import('..');
+
+      expect(getLogFile()).toBeUndefined();
+
+      installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'start'));
+      expect(getLogFile()).toBe(mockFile);
+    });
+  });
   it('reuses the existing stderr stream when logging events to stdout', () => {
     const stderr = createMockStream(2);
     const LogStream = jest.fn().mockImplementation(() => ({
       writable: true,
-      _write: jest.fn(),
+      _writeln: jest.fn(),
     }));
 
     jest.isolateModules(() => {
-      jest.doMock('../stream', () => ({ LogStream }));
+      jest.doMock('../stream', () => ({
+        LogStream,
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
       jest.doMock('node:tty', () => ({
         WriteStream: jest.fn(() => {
           throw new Error('TTY initialization should not run');
@@ -73,11 +152,14 @@ describe('installEventLogger', () => {
     const stdout = createMockStream(1);
     const LogStream = jest.fn().mockImplementation(() => ({
       writable: true,
-      _write: jest.fn(),
+      _writeln: jest.fn(),
     }));
 
     jest.isolateModules(() => {
-      jest.doMock('../stream', () => ({ LogStream }));
+      jest.doMock('../stream', () => ({
+        LogStream,
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
       jest.doMock('node:tty', () => ({
         WriteStream: jest.fn(() => {
           throw new Error('TTY initialization should not run');

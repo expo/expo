@@ -1,6 +1,7 @@
 import '../State/index.fx';
 
 export * from './AccessoryWidgetBackground';
+export * from './Alert';
 export * from './BottomSheet';
 export * from './Button';
 export * from './Chart';
@@ -19,6 +20,8 @@ export * from './Image';
 export * from './Label';
 export * from './LabeledContent';
 export * from './HStack';
+export * from './LazyHStack';
+export * from './LazyVStack';
 export * from './VStack';
 export * from './ZStack';
 export * from './Group';
@@ -31,16 +34,24 @@ export * from './ShareLink';
 export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
+export * from './SwipeActions';
 export * from './Text';
 export { useNativeState } from '../State/useNativeState';
 export * from './SyncToggle';
+export * from './TabView';
 export * from './Toggle';
-export * from './TextField';
+export {
+  TextField,
+  type TextFieldProps,
+  type TextFieldRef,
+  type TextFieldSelection,
+} from './TextField';
 export * from './SecureField';
 export * from './Namespace';
 export * from './GlassEffectContainer';
 export * from './ScrollView';
 export * from './Shapes';
+export * from './Mask';
 export * from './Overlay';
 export * from './Popover';
 export * from './Grid';

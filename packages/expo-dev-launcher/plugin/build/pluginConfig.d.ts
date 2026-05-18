@@ -33,6 +33,11 @@ export type PluginConfigOptions = {
      */
     launchMode?: 'most-recent' | 'launcher';
     /**
+     * Instead of navigating to launcher screen launch directly into this URL.
+     * If `launchMode` is set to `most-recent` then launcher will use the defaultLaunchURL if launching previously opened project fails.
+     */
+    defaultLaunchURL?: string;
+    /**
      * @deprecated use the `launchMode` property instead
      */
     launchModeExperimental?: 'most-recent' | 'launcher';
@@ -50,6 +55,21 @@ export type PluginConfigOptions = {
      * @default false
      */
     embeddedBundle?: boolean;
+    /**
+     * Skip the dev menu onboarding popup on first launch. Useful for E2E tests and CI
+     * builds where the onboarding overlay would block automated input.
+     *
+     * @default false
+     */
+    skipOnboarding?: boolean;
+    /**
+     * Automatically open the dev menu when the app launches. Set to `false` to suppress
+     * the auto-launch in development builds where the dev menu would interfere (E2E tests,
+     * automated UI runs).
+     *
+     * @default true
+     */
+    showMenuAtLaunch?: boolean;
 };
 /**
  * @ignore

@@ -4,15 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
+import React from 'react';
 
-import { ServerDataLoaderContext, ServerDataLoaderData } from '../loaders/ServerDataLoaderContext';
-import { ServerContainer, ServerContainerRef } from '../react-navigation/native';
+import type { ServerDataLoaderData } from '../loaders/ServerDataLoaderContext';
+import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
+import type { ServerContainerRef } from '../react-navigation/native';
+import { ServerContainer } from '../react-navigation/native';
 
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */
-export function ScrollViewStyleReset() {
+export const ScrollViewStyleReset: React.FC = () => {
   return (
     <style
       id="expo-reset"
@@ -21,7 +24,7 @@ export function ScrollViewStyleReset() {
       }}
     />
   );
-}
+};
 
 export function InnerRoot({
   children,

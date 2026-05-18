@@ -5,6 +5,7 @@ exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsCon
 exports.useRouteNode = useRouteNode;
 exports.useContextKey = useContextKey;
 exports.Route = Route;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const matchers_1 = require("./matchers");
 const sortRoutes_1 = require("./sortRoutes");
@@ -30,8 +31,6 @@ function useContextKey() {
 }
 /** Provides the matching routes and filename to the children. */
 function Route({ children, node, params }) {
-    return (<exports.LocalRouteParamsContext.Provider value={params}>
-      <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
-    </exports.LocalRouteParamsContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(exports.LocalRouteParamsContext.Provider, { value: params, children: (0, jsx_runtime_1.jsx)(CurrentRouteContext.Provider, { value: node, children: children }) }));
 }
 //# sourceMappingURL=Route.js.map

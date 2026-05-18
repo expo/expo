@@ -1,6 +1,7 @@
 import path from 'path';
 
-import { Device, getDeviceABIsAsync } from '../../start/platforms/android/adb';
+import type { Device } from '../../start/platforms/android/adb';
+import { getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
 
 // Supported ABIs for Android. see https://developer.android.com/ndk/guides/abis
@@ -64,11 +65,11 @@ export async function resolveGradlePropsAsync(
     buildType,
     flavors: parts.map((v) => v.toLowerCase()),
     apkVariantDirectory,
-    architectures: await getConnectedDeviceABIS(buildType, device, options.allArch),
+    architectures: await getConnectedDeviceABI(buildType, device, options.allArch),
   };
 }
 
-async function getConnectedDeviceABIS(
+async function getConnectedDeviceABI(
   buildType: string,
   device: Device,
   allArch?: boolean
@@ -82,6 +83,5 @@ async function getConnectedDeviceABIS(
 
   const abis = await getDeviceABIsAsync(device);
 
-  const validAbis = abis.filter((abi) => VALID_ARCHITECTURES.includes(abi));
-  return validAbis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',');
+  return abis.find((abi) => VALID_ARCHITECTURES.includes(abi)) ?? '';
 }

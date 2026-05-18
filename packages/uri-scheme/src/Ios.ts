@@ -7,7 +7,8 @@ import fs from 'fs';
 import { globSync } from 'glob';
 import * as path from 'path';
 
-import { CommandError, Options } from './Options';
+import type { Options } from './Options';
+import { CommandError } from './Options';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 

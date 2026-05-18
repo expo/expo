@@ -1,5 +1,6 @@
 import type { SQLiteRunResult } from '../NativeStatement';
-import { openDatabaseAsync, SQLiteDatabase } from '../SQLiteDatabase';
+import type { SQLiteDatabase } from '../SQLiteDatabase';
+import { openDatabaseAsync } from '../SQLiteDatabase';
 
 jest.mock('expo/devtools', () => ({
   getDevToolsPluginClientAsync: jest.fn(),

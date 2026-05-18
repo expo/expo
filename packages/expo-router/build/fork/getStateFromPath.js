@@ -300,8 +300,7 @@ const matchAgainstConfigs = (remaining, configs) => {
                 const decodedParamSegment = expo.safelyDecodeURIComponent(
                 // const decodedParamSegment = decodeURIComponent(
                 // The param segments appear every second item starting from 2 in the regex match result
-                match[(acc.pos + 1) * 2]
-                    // Remove trailing slash
+                match[(acc.pos + 1) * 2] // Remove trailing slash
                     .replace(/\/$/, ''));
                 // END FORK
                 Object.assign(acc.matchedParams, {
@@ -335,6 +334,7 @@ const matchAgainstConfigs = (remaining, configs) => {
                     const offset = numInitialSegments ? numInitialSegments - 1 : 0;
                     // START FORK
                     // const value = matchedParams[p]?.[index + offset];
+                    // TODO(@kitten): Assess which is intended, non-optional or getParamValue accepting undefined
                     const value = expo.getParamValue(p, matchedParams[p]?.[index + offset]);
                     // END FORK
                     if (value) {

@@ -1,4 +1,4 @@
-import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
+import { Component, type ComponentType, type PropsWithChildren } from 'react';
 /** Props passed to a page's `ErrorBoundary` export. */
 export type ErrorBoundaryProps = {
     /** A function that will re-render the route component by clearing the `error` state. */
@@ -18,6 +18,6 @@ export declare class Try extends Component<PropsWithChildren<{
         error: Error;
     } | null;
     retry: () => Promise<void>;
-    render(): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
+    render(): string | number | bigint | boolean | Iterable<import("react").ReactNode> | Promise<string | number | bigint | boolean | import("react").ReactPortal | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<import("react").ReactNode> | null | undefined> | import("react/jsx-runtime").JSX.Element | null | undefined;
 }
 //# sourceMappingURL=Try.d.ts.map

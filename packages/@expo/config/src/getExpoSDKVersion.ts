@@ -1,7 +1,7 @@
 import JsonFile from '@expo/json-file';
 import { resolveFrom } from '@expo/require-utils';
 
-import { ExpoConfig } from './Config.types';
+import type { ExpoConfig } from './Config.types';
 import { ConfigError } from './Errors';
 
 /**

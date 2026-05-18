@@ -1,3 +1,3 @@
-import { PluginConfigType as Props } from './pluginConfig';
+import type { PluginConfigType as Props } from './pluginConfig';
 
 export default (props: Props = {}): [string, Props] => ['expo-build-properties', props];

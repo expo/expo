@@ -6,6 +6,16 @@ import path from 'node:path';
 const BUSY_WRITE_TIMEOUT = 100;
 const HIGH_WATER_MARK = 16_387; /*16KB*/
 
+export function writeEvent(dest: LogStream, category: string, kind: string, payload: any) {
+  const timestamp = Date.now();
+  const rest = JSON.stringify(payload).slice(1);
+  const line =
+    rest.length > 1
+      ? `{"_e":"${category}:${kind}","_t":${timestamp},${rest}\n`
+      : `{"_e":"${category}:${kind}","_t":${timestamp}}\n`;
+  dest._writeln(line);
+}
+
 export class LogStream extends EventEmitter implements NodeJS.WritableStream {
   #fd = -1;
   #file: string | null = null;
@@ -19,7 +29,9 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
   #output = '';
   #len = 0;
   #lines: string[] = [];
+  #head = 0;
   #partialLine = 0;
+  #onRelease = (err: NodeJS.ErrnoException | null, written: number) => this.#release(err, written);
 
   constructor(dest: string | number) {
     super();
@@ -59,24 +71,45 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
     } else {
       this.emit('write', written);
 
-      const outputLength = Buffer.byteLength(this.#output);
-      if (outputLength > written) {
-        const output = Buffer.from(this.#output).subarray(written).toString();
-        this.#len -= this.#output.length - output.length;
-        this.#output = output;
-      } else {
+      if (written === this.#output.length) {
+        // Fast path: complete write (exact for ASCII, the common case for JSONL)
         this.#len -= this.#output.length;
         this.#output = '';
-      }
 
-      if (this.#output || this.#lines.length > this.#partialLine) {
-        this.#writeLine();
-      } else if (this.#ending) {
-        this.#writing = false;
-        this.#close();
+        if (this.#lines.length - this.#head > this.#partialLine) {
+          this.#writeLine();
+        } else if (this.#ending) {
+          this.#writing = false;
+          this.#close();
+        } else {
+          this.#writing = false;
+          if (this.#flushPending) {
+            this.emit('drain');
+          }
+        }
       } else {
-        this.#writing = false;
-        this.emit('drain');
+        // Multi-byte complete write (written > length) or partial write (written < length)
+        const outputLength = Buffer.byteLength(this.#output);
+        if (outputLength > written) {
+          const output = Buffer.from(this.#output).toString('utf8', written);
+          this.#len -= this.#output.length - output.length;
+          this.#output = output;
+        } else {
+          this.#len -= this.#output.length;
+          this.#output = '';
+        }
+
+        if (this.#output || this.#lines.length - this.#head > this.#partialLine) {
+          this.#writeLine();
+        } else if (this.#ending) {
+          this.#writing = false;
+          this.#close();
+        } else {
+          this.#writing = false;
+          if (this.#flushPending) {
+            this.emit('drain');
+          }
+        }
       }
     }
   }
@@ -99,7 +132,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
         if (this.#destroyed) {
           // do nothing when we're already closing the file
         } else if (
-          (!this.writing && this.#lines.length > this.#partialLine) ||
+          (!this.writing && this.#lines.length - this.#head > this.#partialLine) ||
           this.#flushPending
         ) {
           this.#writeLine();
@@ -122,6 +155,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
     this.#destroyed = true;
     this.#partialLine = 0;
     this.#lines.length = 0;
+    this.#head = 0;
 
     const onClose = (error?: NodeJS.ErrnoException | null) => {
       if (error) {
@@ -144,8 +178,22 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
 
   #writeLine() {
     this.#writing = true;
-    this.#output ||= this.#lines.length > this.#partialLine ? this.#lines.shift() || '' : '';
-    fs.write(this.#fd, this.#output, (err, written) => this.#release(err, written));
+    if (!this.#output) {
+      const end = this.#lines.length - this.#partialLine;
+      if (end > this.#head) {
+        this.#output = this.#lines[this.#head++] || '';
+        // Batch multiple lines into one write call below HWM, to avoid
+        // excessive syscalls after when lines accumulated during a previous write
+        while (this.#head < end && this.#output.length < HIGH_WATER_MARK) {
+          this.#output += this.#lines[this.#head++];
+        }
+        if (this.#head === this.#lines.length) {
+          this.#lines.length = 0;
+          this.#head = 0;
+        }
+      }
+    }
+    fs.write(this.#fd, this.#output, this.#onRelease);
   }
 
   _end() {
@@ -154,7 +202,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
       if (this.#opening) {
         this.once('ready', () => this._end());
       } else if (!this.#writing && this.#fd >= 0) {
-        if (this.#lines.length > this.#partialLine) {
+        if (this.#lines.length - this.#head > this.#partialLine) {
           this.#writeLine();
         } else {
           this.#close();
@@ -222,7 +270,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
       this.once('error', onError);
 
       if (!this.#writing) {
-        if (this.#lines.length > this.#partialLine || this.#output) {
+        if (this.#lines.length - this.#head > this.#partialLine || this.#output) {
           // There are complete lines or remaining output to write
           this.#writeLine();
         } else {
@@ -233,9 +281,30 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
     }
   }
 
+  _writeln(data: string): boolean {
+    this.#len += data.length;
+    if (!this.#writing && this.#lines.length === this.#head && !this.#output) {
+      // Fast path: When no write is pending, directly write the line
+      this.#writing = true;
+      this.#output = data;
+      fs.write(this.#fd, data, this.#onRelease);
+    } else {
+      this.#lines.push(data);
+      if (!this.#writing) {
+        this.#writeLine();
+      }
+    }
+    return this.#len < HIGH_WATER_MARK;
+  }
+
   _write(data: string): boolean {
     if (this.#destroyed) {
       return false;
+    }
+
+    // Fast path: For complete lines with no pending partial we can skip the work below
+    if (this.#partialLine === 0 && data.charCodeAt(data.length - 1) === 10 /*'\n'*/) {
+      return this._writeln(data);
     }
 
     this.#len += data.length;
@@ -263,7 +332,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
       this.#partialLine = 1;
     }
 
-    if (!this.#writing && this.#lines.length > this.#partialLine) {
+    if (!this.#writing && this.#lines.length - this.#head > this.#partialLine) {
       this.#writeLine();
     }
 

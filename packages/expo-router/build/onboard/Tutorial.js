@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tutorial = Tutorial;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -39,46 +40,22 @@ function Tutorial() {
             }
         }
     }, []);
-    return (<react_native_safe_area_context_1.SafeAreaView style={styles.background}>
-      <react_native_1.StatusBar barStyle="light-content"/>
-      <react_native_1.View style={styles.container}>
-        <react_native_1.View style={styles.logotypeWrapper}>
-          <react_native_1.Image style={styles.logotype} source={require('expo-router/assets/logotype.png')}/>
-        </react_native_1.View>
-        <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
-          Welcome to Expo
-        </react_native_1.Text>
-        <react_native_1.Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
-          Start by creating a file{react_native_1.Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
-          <react_native_1.Text style={{ fontWeight: '600' }}>{getRootDir()}</react_native_1.Text> directory.
-        </react_native_1.Text>
-        <react_native_1.Text>
-          <link_1.Link href="https://docs.expo.dev/router/introduction/" {...react_native_1.Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
-            <Pressable_1.Pressable>
-              {({ hovered, pressed }) => (<react_native_1.Text style={[
-                styles.link,
-                react_native_1.Platform.select({
-                    web: {
-                        transitionDuration: '200ms',
-                        marginBottom: 12,
-                    },
-                }),
-                hovered && {
-                    opacity: 0.8,
-                    textDecorationLine: 'underline',
-                },
-                pressed && {
-                    opacity: 0.8,
-                },
-            ]}>
-                  Learn more about Expo Router in the documentation.
-                </react_native_1.Text>)}
-            </Pressable_1.Pressable>
-          </link_1.Link>
-        </react_native_1.Text>
-        {canAutoTouchFile && <Button />}
-      </react_native_1.View>
-    </react_native_safe_area_context_1.SafeAreaView>);
+    return ((0, jsx_runtime_1.jsxs)(react_native_safe_area_context_1.SafeAreaView, { style: styles.background, children: [(0, jsx_runtime_1.jsx)(react_native_1.StatusBar, { barStyle: "light-content" }), (0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.container, children: [(0, jsx_runtime_1.jsx)(react_native_1.View, { style: styles.logotypeWrapper, children: (0, jsx_runtime_1.jsx)(react_native_1.Image, { style: styles.logotype, source: require('expo-router/assets/logotype.png') }) }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { role: "heading", "aria-level": 1, style: styles.title, children: "Welcome to Expo" }), (0, jsx_runtime_1.jsxs)(react_native_1.Text, { role: "heading", "aria-level": 2, style: [styles.subtitle, styles.textSecondary], children: ["Start by creating a file", react_native_1.Platform.OS !== 'web' ? '\n' : ' ', "in the", ' ', (0, jsx_runtime_1.jsx)(react_native_1.Text, { style: { fontWeight: '600' }, children: getRootDir() }), " directory."] }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { children: (0, jsx_runtime_1.jsx)(link_1.Link, { href: "https://docs.expo.dev/router/introduction/", ...react_native_1.Platform.select({ web: { target: '_blank' }, native: { asChild: true } }), children: (0, jsx_runtime_1.jsx)(Pressable_1.Pressable, { children: ({ hovered, pressed }) => ((0, jsx_runtime_1.jsx)(react_native_1.Text, { style: [
+                                        styles.link,
+                                        react_native_1.Platform.select({
+                                            web: {
+                                                transitionDuration: '200ms',
+                                                marginBottom: 12,
+                                            },
+                                        }),
+                                        hovered && {
+                                            opacity: 0.8,
+                                            textDecorationLine: 'underline',
+                                        },
+                                        pressed && {
+                                            opacity: 0.8,
+                                        },
+                                    ], children: "Learn more about Expo Router in the documentation." })) }) }) }), canAutoTouchFile && (0, jsx_runtime_1.jsx)(Button, {})] })] }));
 }
 function getRootDir() {
     const dir = process.env.EXPO_ROUTER_APP_ROOT ?? '';
@@ -91,10 +68,9 @@ function getRootDir() {
     return dir.split(/[\\/]/).pop() ?? '';
 }
 function Button() {
-    return (<Pressable_1.Pressable onPress={() => {
+    return ((0, jsx_runtime_1.jsx)(Pressable_1.Pressable, { onPress: () => {
             createEntryFileAsync();
-        }} style={styles.button}>
-      {({ pressed, hovered }) => (<react_native_1.View style={[
+        }, style: styles.button, children: ({ pressed, hovered }) => ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [
                 styles.buttonContainer,
                 hovered && {
                     backgroundColor: '#fff',
@@ -109,19 +85,14 @@ function Button() {
                             backgroundColor: '#fff',
                         },
                     }),
-            ]}>
-          <react_native_1.Text style={[
-                styles.code,
-                hovered && { color: '#000' },
-                pressed &&
-                    react_native_1.Platform.select({
-                        native: { color: '#000' },
-                    }),
-            ]}>
-            <react_native_1.Text style={styles.textSecondary}>$</react_native_1.Text> touch {`${getRootDir()}/index.tsx`}
-          </react_native_1.Text>
-        </react_native_1.View>)}
-    </Pressable_1.Pressable>);
+            ], children: (0, jsx_runtime_1.jsxs)(react_native_1.Text, { style: [
+                    styles.code,
+                    hovered && { color: '#000' },
+                    pressed &&
+                        react_native_1.Platform.select({
+                            native: { color: '#000' },
+                        }),
+                ], children: [(0, jsx_runtime_1.jsx)(react_native_1.Text, { style: styles.textSecondary, children: "$" }), " touch ", `${getRootDir()}/index.tsx`] }) })) }));
 }
 const styles = react_native_1.StyleSheet.create({
     background: {

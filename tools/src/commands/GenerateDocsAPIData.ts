@@ -9,6 +9,7 @@ import type { TypeDocOptions } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
+import { applyDocsInline, DOCS_INLINE_TAG } from '../generate-docs-api-data/docsInline';
 
 type ActionOptions = {
   packageName?: string;
@@ -23,10 +24,18 @@ const MINIFY_JSON = true;
 
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
+  'expo-ui/community/datetime-picker': ['community/datetime-picker/index.tsx', 'expo-ui'],
+  'expo-ui/community/masked-view': ['community/masked-view/index.tsx', 'expo-ui'],
+  'expo-ui/community/menu': ['community/menu/index.tsx', 'expo-ui'],
+  'expo-ui/community/picker': ['community/picker/index.tsx', 'expo-ui'],
   'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
-  'expo-ui/datetime-picker': ['datetime-picker/index.tsx', 'expo-ui'],
+  'expo-ui/community/slider': ['community/slider/index.tsx', 'expo-ui'],
 
   // Swift UI
+  'expo-ui/swift-ui/accessorywidgetbackground': [
+    'swift-ui/AccessoryWidgetBackground/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
@@ -42,6 +51,8 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/group': ['swift-ui/Group/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/host': ['swift-ui/Host/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/hstack': ['swift-ui/HStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/lazyhstack': ['swift-ui/LazyHStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/lazyvstack': ['swift-ui/LazyVStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/image': ['swift-ui/Image/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/label': ['swift-ui/Label/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/linearprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
@@ -60,9 +71,12 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/swipeactions': ['swift-ui/SwipeActions/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/tabview': ['swift-ui/TabView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
   'expo-ui/swift-ui/vstack': ['swift-ui/VStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
 
@@ -79,7 +93,12 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/card': ['jetpack-compose/Card/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/carousel': ['jetpack-compose/Carousel/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/colors': ['jetpack-compose/colors.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/dropdownmenu': ['jetpack-compose/DropdownMenu/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/exposeddropdownmenubox': [
+    'jetpack-compose/ExposedDropdownMenuBox/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/divider': ['jetpack-compose/Divider/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/dockedsearchbar': [
@@ -95,6 +114,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'jetpack-compose/HorizontalFloatingToolbar/index.tsx',
     'expo-ui',
   ],
+  'expo-ui/jetpack-compose/horizontalpager': [
+    'jetpack-compose/HorizontalPager/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/icon': ['jetpack-compose/Icon/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/iconbutton': ['jetpack-compose/IconButton/index.tsx', 'expo-ui'],
@@ -103,6 +126,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/flowrow': ['jetpack-compose/FlowRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/lazycolumn': ['jetpack-compose/LazyColumn/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/lazyrow': ['jetpack-compose/LazyRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
@@ -122,11 +146,33 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/spacer': ['jetpack-compose/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/surface': ['jetpack-compose/Surface/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/checkbox': ['jetpack-compose/Checkbox/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/snackbar': ['jetpack-compose/Snackbar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/text': ['jetpack-compose/Text/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
+
+  // Universal (cross-platform JS components)
+  'expo-ui/universal/host': ['universal/Host/index.tsx', 'expo-ui'],
+  'expo-ui/universal/column': ['universal/Column/index.tsx', 'expo-ui'],
+  'expo-ui/universal/row': ['universal/Row/index.tsx', 'expo-ui'],
+  'expo-ui/universal/text': ['universal/Text/index.tsx', 'expo-ui'],
+  'expo-ui/universal/button': ['universal/Button/index.tsx', 'expo-ui'],
+  'expo-ui/universal/scrollview': ['universal/ScrollView/index.tsx', 'expo-ui'],
+  'expo-ui/universal/switch': ['universal/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/universal/slider': ['universal/Slider/index.tsx', 'expo-ui'],
+  'expo-ui/universal/checkbox': ['universal/Checkbox/index.tsx', 'expo-ui'],
+  'expo-ui/universal/bottomsheet': ['universal/BottomSheet/index.tsx', 'expo-ui'],
+  'expo-ui/universal/fieldgroup': ['universal/FieldGroup/index.ts', 'expo-ui'],
+  'expo-ui/universal/icon': ['universal/Icon/index.tsx', 'expo-ui'],
+  'expo-ui/universal/spacer': ['universal/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/universal/textinput': ['universal/TextInput/index.tsx', 'expo-ui'],
+  'expo-ui/universal/collapsible': ['universal/Collapsible/index.tsx', 'expo-ui'],
+  'expo-ui/universal/list': ['universal/List/index.tsx', 'expo-ui'],
+  'expo-ui/universal/listitem': ['universal/ListItem/index.ts', 'expo-ui'],
+  'expo-ui/universal/picker': ['universal/Picker/index.ts', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
@@ -143,6 +189,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
+  'expo-type-information': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
@@ -200,12 +247,13 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-router': ['exports.ts'],
+  'expo-router': [['exports.ts', 'html.ts']],
   'expo-router/stack': ['stack/index.ts', 'expo-router'],
   'expo-router/link': ['link/index.ts', 'expo-router'],
   'expo-router/color': ['color/index.ts', 'expo-router'],
   'expo-router/native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-router/split-view': ['split-view/index.ts', 'expo-router'],
+  'expo-router/experimental-stack': ['layouts/experimental-stack/index.tsx', 'expo-router'],
   'expo-router/ui': ['ui/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
@@ -286,6 +334,7 @@ const executeCommand = async (
       ...Configuration.OptionDefaults.blockTags,
       '@alias',
       '@deprecated',
+      DOCS_INLINE_TAG,
       '@docsMissing',
       '@header',
       '@hideType',
@@ -316,6 +365,11 @@ const executeCommand = async (
     }
 
     const { readme, symbolIdMap, ...trimmedOutput } = output;
+
+    await applyDocsInline(trimmedOutput, {
+      packageSrcDir: entriesPath,
+      tsConfigPath,
+    });
 
     if (MINIFY_JSON) {
       const minifiedJson = filterOutKeys(filterOutKeys(trimmedOutput));

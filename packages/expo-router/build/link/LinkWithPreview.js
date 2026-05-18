@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkWithPreview = LinkWithPreview;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
@@ -87,7 +88,7 @@ function LinkWithPreview({ children, ...rest }) {
             console.warn('When you use Link.Preview, you must use Link.Trigger to specify the trigger element.');
         }
     }
-    const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
+    const trigger = react_1.default.useMemo(() => triggerElement ?? (0, jsx_runtime_1.jsx)(elements_1.LinkTrigger, { children: children }), [triggerElement, children]);
     const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     const blockPressRef = (0, react_1.useRef)(false);
@@ -96,16 +97,16 @@ function LinkWithPreview({ children, ...rest }) {
     }), [tabPath]);
     const hasPreview = !!previewElement;
     if (rest.replace) {
-        return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
+        return (0, jsx_runtime_1.jsx)(BaseExpoRouterLink_1.BaseExpoRouterLink, { children: children, ...rest });
     }
-    return (<native_1.NativeLinkPreview nextScreenId={isPad ? undefined : nextScreenId} tabPath={isPad ? undefined : tabPathValue} onWillPreviewOpen={() => {
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeLinkPreview, { nextScreenId: isPad ? undefined : nextScreenId, tabPath: isPad ? undefined : tabPathValue, onWillPreviewOpen: () => {
             if (hasPreview) {
                 blockPressRef.current = true;
                 isPreviewTapped.current = false;
                 prefetch(rest.href);
                 setIsCurrenPreviewOpen(true);
             }
-        }} onPreviewWillClose={() => {
+        }, onPreviewWillClose: () => {
             if (hasPreview) {
                 setIsCurrenPreviewOpen(false);
                 // When preview was not tapped, then we need to enable the screen stack animation
@@ -114,28 +115,20 @@ function LinkWithPreview({ children, ...rest }) {
                     setOpenPreviewKey(undefined);
                 }
             }
-        }} onPreviewDidClose={() => {
+        }, onPreviewDidClose: () => {
             blockPressRef.current = false;
             if (hasPreview && isPreviewTapped.current && isPad) {
                 router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
-        }} onPreviewTapped={() => {
+        }, onPreviewTapped: () => {
             isPreviewTapped.current = true;
             if (!isPad) {
                 router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
-        }} style={{ display: 'contents' }} disableForceFlatten>
-      <NativeMenuContext_1.NativeMenuContext value>
-        <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{
-            isVisible: isCurrentPreviewOpen,
-            href: rest.hrefForPreviewNavigation,
-            blockPressRef,
-        }}>
-          <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
-          {preview}
-          {menuElement}
-        </InternalLinkPreviewContext_1.InternalLinkPreviewContext>
-      </NativeMenuContext_1.NativeMenuContext>
-    </native_1.NativeLinkPreview>);
+        }, style: { display: 'contents' }, disableForceFlatten: true, children: (0, jsx_runtime_1.jsx)(NativeMenuContext_1.NativeMenuContext, { value: true, children: (0, jsx_runtime_1.jsxs)(InternalLinkPreviewContext_1.InternalLinkPreviewContext, { value: {
+                    isVisible: isCurrentPreviewOpen,
+                    href: rest.hrefForPreviewNavigation,
+                    blockPressRef,
+                }, children: [(0, jsx_runtime_1.jsx)(BaseExpoRouterLink_1.BaseExpoRouterLink, { ...rest, children: trigger, ref: rest.ref }), preview, menuElement] }) }) }));
 }
 //# sourceMappingURL=LinkWithPreview.js.map

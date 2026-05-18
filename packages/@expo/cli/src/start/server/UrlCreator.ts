@@ -2,7 +2,8 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
-import { GatewayInfo, getGateway, getGatewayAsync } from '../../utils/ip';
+import type { GatewayInfo } from '../../utils/ip';
+import { getGateway, getGatewayAsync } from '../../utils/ip';
 
 const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
 
@@ -97,6 +98,11 @@ export class UrlCreator {
 
   public getDefaultRouteAddress(): string {
     return this.gatewayInfo.address;
+  }
+
+  /** URL scheme configured for development-build deep links (e.g. `myapp`). `null` when unset. */
+  public getScheme(): string | null {
+    return this.defaults?.scheme ?? null;
   }
 
   /** Get the URL components from the Ngrok server URL. */

@@ -65,7 +65,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           setIsOpen(event.currentTarget.open);
         }}
         className={mergeClasses(
-          'border-default bg-default mb-3 scroll-m-4 rounded-md border p-0',
+          'mb-3 scroll-m-4 rounded-md border border-default bg-default p-0',
           '[&[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
@@ -75,12 +75,12 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
         data-md="collapsible">
         <summary
           className={mergeClasses(
-            'group bg-subtle m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md p-1.5 pr-3',
+            'group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3',
             '[details[open]>&]:rounded-b-none',
             '[&_h4]:my-0',
-            '[&_code]:bg-element [&_code]:mt-px [&_code]:inline [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug'
+            '[&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug'
           )}>
-          <div className="mt-[5px] mr-2 ml-1.5 self-baseline">
+          <div className="mt-1.25 mr-2 ml-1.5 self-baseline">
             <TriangleDownIcon
               className={mergeClasses(
                 'icon-sm text-icon-default',
@@ -102,9 +102,9 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
             onClick={() => {
               detailsRef?.current?.setAttribute('open', '');
             }}
-            className="hocus:bg-element ml-auto inline rounded-md p-1"
+            className="ml-auto inline rounded-md p-1 hocus:bg-element"
             aria-label="Permalink">
-            <PermalinkIcon className="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible" />
+            <PermalinkIcon className="invisible inline-flex icon-sm group-hover:visible group-focus-visible:visible" />
           </LinkBase>
           <div />
         </summary>

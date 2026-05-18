@@ -71,19 +71,19 @@ By default, `exp://` is replaced with `http://` when opening a URL in Expo Go. Y
 
 > **info** If you are using [Expo Router](/linking/overview/#use-expo-router-to-handle-deep-linking), you can ignore this section.
 
-You can observe links that launch your app using the [`Linking.useURL()`](/versions/latest/sdk/linking/#useurl) hook from [`expo-linking`](/versions/latest/sdk/linking/).
+You can observe links that launch your app using the [`Linking.useLinkingURL()`](/versions/latest/sdk/linking/#uselinkingurl) hook from [`expo-linking`](/versions/latest/sdk/linking/).
 
 ```tsx index.tsx
 import * as Linking from 'expo-linking';
 
 export default function Home() {
-  const url = Linking.useURL();
+  const url = Linking.useLinkingURL();
 
   return <Text>URL: {url}</Text>;
 }
 ```
 
-The `Linking.useURL()` hook works behind the scenes by following these imperative methods:
+The `Linking.useLinkingURL()` hook works behind the scenes by following these imperative methods:
 
 - The link that launched the app is initially returned using [`Linking.getInitialURL()`](/versions/latest/sdk/linking/#linkinggetinitialurl)
 - Any new links triggered while the app is already open are observed with [`Linking.addEventListener('url', callback)`](/versions/latest/sdk/linking/#linkingaddeventlistenertype-handler)
@@ -96,7 +96,7 @@ You can use the [`Linking.parse()`](/versions/latest/sdk/linking/#linkingparseur
 import * as Linking from 'expo-linking';
 
 export default function Home() {
-  const url = Linking.useURL();
+  const url = Linking.useLinkingURL();
 
   if (url) {
     const { hostname, path, queryParams } = Linking.parse(url);

@@ -1,4 +1,5 @@
-import DeviceSensor, { Listener, Subscription } from './DeviceSensor';
+import type { Listener, Subscription } from './DeviceSensor';
+import DeviceSensor from './DeviceSensor';
 export type DeviceMotionMeasurement = {
     /**
      * Device acceleration on the three axis as an object with `x`, `y`, `z` keys. Expressed in meters per second squared (m/s^2).

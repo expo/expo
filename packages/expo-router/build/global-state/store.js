@@ -89,6 +89,7 @@ exports.store = {
         const routeInfo = (0, routeInfoCache_1.getCachedRouteInfo)(state);
         exports.storeRef.current.routeInfo = routeInfo;
     },
+    // TODO(@ubax): Refactor onReady logic as it probably should live somewhere else then store
     onReady() {
         if (!hasAttemptedToHideSplash) {
             setHasAttemptedToHideSplash(true);

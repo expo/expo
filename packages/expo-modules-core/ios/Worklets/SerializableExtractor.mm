@@ -2,64 +2,30 @@
 
 #import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
 #import <ExpoModulesWorklets/SerializableExtractor.h>
-#import <ExpoModulesJSI/EXJavaScriptValue.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
-
-#if WORKLETS_ENABLED
-
-#import "EXJavaScriptSerializable+Private.h"
-#import <worklets/SharedItems/Serializable.h>
+#import <ExpoModulesWorklets/EXWorkletsProvider.h>
 
 @implementation EXSerializableExtractor
 
-+ (BOOL)isSerializable:(nonnull EXJavaScriptValue *)value
-               runtime:(nonnull EXJavaScriptRuntime *)runtime
++ (BOOL)isSerializableWithRuntimePointer:(void *)runtimePointer
+                            valuePointer:(const void *)valuePointer
 {
-  jsi::Value jsValue = [value get];
-  jsi::Runtime *rt = [runtime get];
-
-  if (!jsValue.isObject()) {
+  id<EXWorkletsProvider> provider = EXWorkletsProviderRegistry.shared;
+  if (!provider) {
     return NO;
   }
-
-  jsi::Object obj = jsValue.getObject(*rt);
-
-  return obj.hasProperty(*rt, "__serializableRef") && obj.hasNativeState(*rt);
+  return [provider isSerializableWithRuntimePointer:runtimePointer
+                                       valuePointer:valuePointer];
 }
 
-+ (nullable EXJavaScriptSerializable *)extractSerializable:(nonnull EXJavaScriptValue *)value
-                                                   runtime:(nonnull EXJavaScriptRuntime *)runtime
++ (nullable EXJavaScriptSerializable *)extractSerializableWithRuntimePointer:(void *)runtimePointer
+                                                                valuePointer:(const void *)valuePointer
 {
-  if (![self isSerializable:value runtime:runtime]) {
+  id<EXWorkletsProvider> provider = EXWorkletsProviderRegistry.shared;
+  if (!provider) {
     return nil;
   }
-
-  jsi::Value jsValue = [value get];
-  jsi::Runtime *rt = [runtime get];
-  jsi::Object obj = jsValue.getObject(*rt);
-
-  auto serializable = worklets::extractSerializableOrThrow(*rt, jsValue);
-
-  return [[EXJavaScriptSerializable alloc] initWithSerializable:serializable runtime:runtime];
+  return [provider extractSerializableWithRuntimePointer:runtimePointer
+                                            valuePointer:valuePointer];
 }
 
 @end
-
-#else
-
-@implementation EXSerializableExtractor
-
-+ (BOOL)isSerializable:(nonnull EXJavaScriptValue *)value runtime:(nonnull EXJavaScriptRuntime *)runtime
-{
-  return NO;
-}
-
-+ (nullable EXJavaScriptSerializable *)extractSerializable:(nonnull EXJavaScriptValue *)value
-                                                   runtime:(nonnull EXJavaScriptRuntime *)runtime
-{
-  return nil;
-}
-
-@end
-
-#endif

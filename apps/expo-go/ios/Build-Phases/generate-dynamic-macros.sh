@@ -278,6 +278,12 @@ EOF
     plist_set_string "$BUILD_CONSTANTS_PLIST" "API_SERVER_ENDPOINT" "https://api.expo.dev/v2/"
   fi
 
+  # Set USE_EMBEDDED_SNACK_RUNTIME if not already set
+  local use_embedded_snack=$(plist_read "$BUILD_CONSTANTS_PLIST" "USE_EMBEDDED_SNACK_RUNTIME")
+  if [[ -z "$use_embedded_snack" ]]; then
+    plist_set_bool "$BUILD_CONSTANTS_PLIST" "USE_EMBEDDED_SNACK_RUNTIME" "true"
+  fi
+
   # Set USE_GENERATED_DEFAULTS to true
   plist_set_bool "$BUILD_CONSTANTS_PLIST" "USE_GENERATED_DEFAULTS" "true"
 

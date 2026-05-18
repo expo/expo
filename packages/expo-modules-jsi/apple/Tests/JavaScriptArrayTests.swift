@@ -132,8 +132,8 @@ struct JavaScriptArrayTests {
     let array = try runtime.eval("[1, 2, 3, 4, 5]").getArray()
     try array.set(value: JavaScriptValue(runtime, "hello"), at: 0)
     try array.set(value: JavaScriptValue(runtime, true), at: 1)
-    try array.set(value: JavaScriptValue.null(), at: 2)
-    try array.set(value: JavaScriptValue.undefined(), at: 3)
+    try array.set(value: JavaScriptValue.null, at: 2)
+    try array.set(value: JavaScriptValue.undefined, at: 3)
 
     #expect(try array.getValue(at: 0).getString() == "hello")
     #expect(try array.getValue(at: 1).getBool() == true)
@@ -422,6 +422,57 @@ struct JavaScriptArrayTests {
       values.append(array[i].getString())
     }
     #expect(values == ["a", "b", "c", "d"])
+  }
+
+  // MARK: - Iteration Methods
+
+  @Test
+  func `iterate with enumerated`() throws {
+    let array = try runtime.eval("['a', 'b', 'c']").getArray()
+    var pairs: [(Int, String)] = []
+
+    for (index, value) in array.enumerated() {
+      pairs.append((index, value.getString()))
+    }
+    #expect(pairs.count == 3)
+    #expect(pairs[0] == (0, "a"))
+    #expect(pairs[1] == (1, "b"))
+    #expect(pairs[2] == (2, "c"))
+  }
+
+  @Test
+  func `filter elements`() throws {
+    let array = try runtime.eval("[1, 2, 3, 4, 5, 6]").getArray()
+    let evens = array.filter { $0.getInt() % 2 == 0 }
+    #expect(evens.count == 3)
+    #expect(evens[0].getInt() == 2)
+    #expect(evens[1].getInt() == 4)
+    #expect(evens[2].getInt() == 6)
+  }
+
+  @Test
+  func `reduce elements`() throws {
+    let array = try runtime.eval("[1, 2, 3, 4, 5]").getArray()
+    let sum = array.reduce(0) { $0 + $1.getInt() }
+    #expect(sum == 15)
+  }
+
+  @Test
+  func `forEach elements`() throws {
+    let array = try runtime.eval("[10, 20, 30]").getArray()
+    var values: [Int] = []
+
+    array.forEach { values.append($0.getInt()) }
+    #expect(values == [10, 20, 30])
+  }
+
+  @Test
+  func `forEach empty array`() throws {
+    let array = try runtime.eval("[]").getArray()
+    var count = 0
+
+    array.forEach { _ in count += 1 }
+    #expect(count == 0)
   }
 
   // MARK: - Edge Cases

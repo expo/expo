@@ -11,6 +11,10 @@ const schema = {
             enum: ['most-recent', 'launcher'],
             nullable: true,
         },
+        defaultLaunchURL: {
+            type: ['string'],
+            nullable: true,
+        },
         launchModeExperimental: {
             type: 'string',
             enum: ['most-recent', 'launcher'],
@@ -21,6 +25,14 @@ const schema = {
             nullable: true,
         },
         embeddedBundle: {
+            type: 'boolean',
+            nullable: true,
+        },
+        skipOnboarding: {
+            type: 'boolean',
+            nullable: true,
+        },
+        showMenuAtLaunch: {
             type: 'boolean',
             nullable: true,
         },
@@ -45,6 +57,18 @@ const schema = {
                     type: 'boolean',
                     nullable: true,
                 },
+                defaultLaunchURL: {
+                    type: 'string',
+                    nullable: true,
+                },
+                skipOnboarding: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                showMenuAtLaunch: {
+                    type: 'boolean',
+                    nullable: true,
+                },
             },
             nullable: true,
         },
@@ -66,6 +90,18 @@ const schema = {
                     nullable: true,
                 },
                 embeddedBundle: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                defaultLaunchURL: {
+                    type: 'string',
+                    nullable: true,
+                },
+                skipOnboarding: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                showMenuAtLaunch: {
                     type: 'boolean',
                     nullable: true,
                 },

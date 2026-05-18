@@ -1,7 +1,8 @@
 'use client';
 
 import Constants from 'expo-constants';
-import { ComponentType, Fragment, useEffect } from 'react';
+import type { ComponentType } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Platform } from 'react-native';
 
 import { getRouteInfoFromState } from './getRouteInfoFromState';
@@ -15,11 +16,12 @@ import {
 import type { ReactNavigationState, StoreRedirects } from './types';
 import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
 import { routePatternToRegex } from '../fork/getStateFromPath-forks';
-import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
+import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
+import { getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
 import { useNavigationContainerRef } from '../react-navigation/native';
-import { RequireContext } from '../types';
+import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 

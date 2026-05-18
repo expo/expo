@@ -228,6 +228,19 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
   enableBundleCompression?: boolean;
 
   /**
+   * Enable precompiled headers (PCH) for Android native builds.
+   * When enabled, creates a custom CMakeLists.txt with PCH support for all autolinked
+   * native libraries, significantly speeding up C++ compilation by pre-compiling
+   * commonly used React Native headers.
+   *
+   * > **Note:** This feature is experimental and might not work with all native libraries.
+   *
+   * @default false
+   * @experimental
+   */
+  usePrecompiledHeaders?: boolean;
+
+  /**
    * Enable building React Native from source. Turning this on will significantly increase the build times.
    * @deprecated Use `buildReactNativeFromSource` instead.
    * @default false
@@ -348,6 +361,7 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * Override the default iOS "Deployment Target" version in the following projects:
    *  - in CocoaPods projects,
    *  - `PBXNativeTarget` with "com.apple.product-type.application" `productType` in the app project.
+   * @deprecated use built-in `ios.deploymentTarget` property instead (SDK 56 and greater).
    */
   deploymentTarget?: string;
 
@@ -744,6 +758,7 @@ const schema: JSONSchema<PluginConfigType> = {
           nullable: true,
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
+        usePrecompiledHeaders: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },

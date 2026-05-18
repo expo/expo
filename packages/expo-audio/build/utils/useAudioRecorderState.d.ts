@@ -1,5 +1,5 @@
-import { RecorderState } from '../Audio.types';
-import { AudioRecorder } from '../AudioModule.types';
+import type { RecorderState } from '../Audio.types';
+import type { AudioRecorder } from '../AudioModule.types';
 /**
  * Hook that provides real-time recording state updates for an `AudioRecorder`.
  *

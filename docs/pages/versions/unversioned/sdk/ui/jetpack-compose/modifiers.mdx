@@ -3,7 +3,7 @@ title: Modifiers
 description: Jetpack Compose layout modifiers for @expo/ui components.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -370,6 +370,30 @@ Makes the component respond to click events.
 import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 
 <Button modifiers={[clickable(() => console.log('Clicked!'))]}>Clickable</Button>;
+```
+
+### `combinedClickable(handlers, options?)`
+
+Makes the component respond to both short-tap and long-press gestures. Wraps Compose's `Modifier.combinedClickable`. Useful for opening a [`DropdownMenu`](./dropdownmenu.mdx) on long-press while keeping a separate short-tap action on the same view.
+
+| Parameter              | Type         | Description                                              |
+| ---------------------- | ------------ | -------------------------------------------------------- |
+| `handlers.onClick`     | `() => void` | Optional callback invoked on a short tap.                |
+| `handlers.onLongClick` | `() => void` | Optional callback invoked on a long press.               |
+| `options.indication`   | `boolean`    | Whether to show a ripple indication. Defaults to `true`. |
+
+```tsx
+import { combinedClickable } from '@expo/ui/jetpack-compose/modifiers';
+
+<Text
+  modifiers={[
+    combinedClickable({
+      onClick: () => console.log('Tapped'),
+      onLongClick: () => setMenuExpanded(true),
+    }),
+  ]}>
+  Long-press me
+</Text>;
 ```
 
 ### `selectable(selected, handler)`

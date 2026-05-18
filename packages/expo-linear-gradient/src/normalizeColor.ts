@@ -5,7 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ColorValue, processColor } from 'react-native';
+import type { ColorValue } from 'react-native';
+import { processColor } from 'react-native';
 
 const isWebColor = (color: string): boolean =>
   color === 'currentcolor' ||

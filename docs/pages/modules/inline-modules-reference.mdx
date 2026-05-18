@@ -5,7 +5,7 @@ description: A reference of Expo inline modules.
 
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 
-> **warning** Inline modules are [experimental](/more/release-statuses/#experimental). The API is subject to breaking changes.
+> **warning** Inline modules are [experimental](/more/release-statuses/#experimental) and available in Expo SDK 56 and later. The API is subject to breaking changes.
 
 Inline modules let you write native module code (Kotlin and Swift) directly in your Expo project directory,
 without creating a separate Expo module package. Expo discovers these files automatically and includes them in the build.
@@ -29,7 +29,7 @@ When defined, enables inline modules functionality in Expo CLI and Expo Modules 
 
 <PaddedAPIBox header="expo.experiments.inlineModules.watchedDirectories">
 Configures in which directories the inline modules can be created.
- 
+
 ```json app.json
 {
   "expo": {
