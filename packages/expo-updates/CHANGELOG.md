@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Enable bsdiff-based bundle patch downloads by default.
+
 ## 56.0.12 — 2026-05-15
 
 _This version does not introduce any user-facing changes._

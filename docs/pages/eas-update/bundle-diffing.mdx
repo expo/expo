@@ -9,7 +9,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **important** Bundle diffing is in [**beta**](/more/release-statuses/#beta) and may have limitations. See [Current limitations](#current-limitations) for details.
 
-Enable bundle diffing to let EAS Update deliver a **bundle patch** when possible. When you publish a new update, EAS Update can generate a smaller file containing only the differences between the bundle currently running on the device and the new bundle. This often reduces update download size significantly.
+With bundle diffing, EAS Update delivers a **bundle patch** when possible. When you publish a new update, EAS Update can generate a smaller file containing only the differences between the bundle currently running on the device and the new bundle. This often reduces update download size significantly.
 
 <Prerequisites>
   <Requirement title="Expo SDK 55 or later">Your app must be on Expo SDK 55 or later.</Requirement>
@@ -17,13 +17,13 @@ Enable bundle diffing to let EAS Update deliver a **bundle patch** when possible
 
 ## Enable bundle diffing
 
-In your project's [app config](/workflow/configuration/), set `updates.enableBsdiffPatchSupport` to `true`:
+Bundle diffing is enabled by default. To opt out, set `updates.enableBsdiffPatchSupport` to `false` in your project's [app config](/workflow/configuration/):
 
 ```json app.json
 {
   "expo": {
     "updates": {
-      "enableBsdiffPatchSupport": true
+      "enableBsdiffPatchSupport": false
     }
   }
 }
