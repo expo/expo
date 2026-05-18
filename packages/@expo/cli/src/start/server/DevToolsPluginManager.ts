@@ -7,7 +7,7 @@ export const DevToolsPluginEndpoint = '/_expo/plugins';
 interface AutolinkingPlugin {
   packageName: string;
   packageRoot: string;
-  webpageRoot: string;
+  webpageRoot: string | undefined;
 }
 
 export interface DevToolsPlugin extends AutolinkingPlugin {
