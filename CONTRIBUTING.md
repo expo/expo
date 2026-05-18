@@ -181,7 +181,7 @@ To keep CI green, please make sure of the following:
 
 ### If you edited the docs directory:
 
-  - Any change to the current SDK version should also be in the unversioned copy as well. The current docs SDK version is defined in [`docs/package.json`](./docs/package.json), and the versioning workflow is described in [docs/README.md](./docs/README.md#update-latest-version-of-api-reference-docs). Example:
+  - Any changes to docs for the current SDK version should also be applied to the unversioned copy. The current docs SDK version is defined in [`docs/package.json`](./docs/package.json), and the versioning workflow is described in [docs/README.md](./docs/README.md#update-latest-version-of-api-reference-docs). Example:
     - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
     - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
   - You don't need to run the docs tests locally. Just ensure the links you include aren't broken, the format is correct, and the changes are following our [writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
