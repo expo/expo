@@ -3,7 +3,6 @@ declare global {
     var __EXPO_REFETCH_RSC__: undefined | (() => void);
     var __EXPO_REFETCH_ROUTE__: undefined | (() => void);
     var __EXPO_REFETCH_ROUTE_NO_CACHE__: undefined | (() => void);
-    var __expo_platform_header: undefined | string;
     /**
      * Data injected by a server data loader for the current route.
      */

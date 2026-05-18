@@ -475,20 +475,6 @@ export function createServerComponentsMiddleware(
     return renderer;
   }
 
-  const rscRenderContext = new Map<string, any>();
-
-  function getRscRenderContext(platform: string) {
-    // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
-    if (rscRenderContext.has(platform)) {
-      return rscRenderContext.get(platform)!;
-    }
-
-    const context = {};
-
-    rscRenderContext.set(platform, context);
-    return context;
-  }
-
   async function renderRscToReadableStream(
     {
       input,
@@ -524,10 +510,7 @@ export function createServerComponentsMiddleware(
       assert(body, 'Server request must be provided when method is POST (server actions)');
     }
 
-    const context = getRscRenderContext(platform);
-
-    context['__expo_requestHeaders'] = headers;
-
+    const context = { __expo_requestHeaders: headers };
     const { renderRsc } = await getRscRendererAsync(platform);
 
     return renderRsc(
