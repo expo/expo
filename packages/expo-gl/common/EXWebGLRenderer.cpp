@@ -123,6 +123,14 @@ std::string getConstructorName(EXWebGLClass value) {
   }
 }
 
+void attachClass(
+    jsi::Runtime &runtime,
+    EXWebGLClass webglClass,
+    std::function<void(EXWebGLClass webglClass)> installPrototypes) {
+  jsi::PropNameID name = jsi::PropNameID::forUtf8(runtime, getConstructorName(webglClass));
+  installPrototypes(webglClass);
+}
+
 // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Inheritance#setting_teachers_prototype_and_constructor_reference
 //
 // Below implementation is equivalent of `class WebGLBuffer extends WebGLObject {}`
@@ -202,28 +210,8 @@ void installWebGLConstructorsAndConstants(jsi::Runtime &runtime) {
   inheritFromJsObject(EXWebGLClass::WebGLRenderingContext);
   installConstantsOnConstructor(EXWebGLClass::WebGLRenderingContext);
 
-  // Make WebGL2RenderingContext extend WebGLRenderingContext on both sides,
-  // matching the WebGL spec and what `class WebGL2RenderingContext extends
-  // WebGLRenderingContext {}` would produce. Saves duplicating constants and
-  // WebGL1 methods on the WebGL2 prototype, and gives `instanceof
-  // WebGLRenderingContext` the right answer for WebGL2 instances.
-  auto webglRenderingContext =
-    runtime.global()
-      .getProperty(
-        runtime,
-        jsi::PropNameID::forUtf8(runtime, getConstructorName(EXWebGLClass::WebGLRenderingContext)))
-      .asObject(runtime);
-  jsClassExtend(
-    runtime,
-    webglRenderingContext,
-    jsi::PropNameID::forUtf8(runtime, getConstructorName(EXWebGLClass::WebGL2RenderingContext)));
-  jsi::Object webgl2RenderingContext =
-    runtime.global()
-      .getProperty(
-        runtime,
-        jsi::PropNameID::forUtf8(runtime, getConstructorName(EXWebGLClass::WebGL2RenderingContext)))
-      .asObject(runtime);
-  setObjectPrototypeOf(runtime, webgl2RenderingContext, webglRenderingContext);
+  inheritFromJsObject(EXWebGLClass::WebGL2RenderingContext);
+  installConstantsOnConstructor(EXWebGLClass::WebGL2RenderingContext);
 
   // Configure rest of WebGL objects
   inheritFromJsObject(EXWebGLClass::WebGLObject);
@@ -267,9 +255,8 @@ void installWebGLInstanceMethods(jsi::Runtime &runtime) {
   installConstants(runtime, webglPrototype);
   installWebGLMethods(runtime, webglPrototype);
 
-  // Constants and WebGL1 methods reach the WebGL2 prototype via inheritance;
-  // only the WebGL2-exclusive methods need installing here.
   auto webgl2Prototype = getRenderingContextPrototype(runtime, EXWebGLClass::WebGL2RenderingContext);
+  installConstants(runtime, webgl2Prototype);
   installWebGL2Methods(runtime, webgl2Prototype);
 }
 
@@ -288,17 +275,15 @@ void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &gl) {
 #undef NATIVE_METHOD
 }
 
-// Installs only WebGL2-exclusive methods. WebGL1 methods reach WebGL2
-// instances via the prototype chain (WebGL2RenderingContext.prototype
-// inherits from WebGLRenderingContext.prototype).
 void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &gl) {
-#define NATIVE_METHOD(name) ;
-#define NATIVE_WEBGL2_METHOD(name) setFunctionOnObject(runtime, gl, #name, method::glNativeMethod_##name);
+#define CREATE_METHOD(name) setFunctionOnObject(runtime, gl, #name, method::glNativeMethod_##name);
 
+#define NATIVE_METHOD(name) CREATE_METHOD(name)
+#define NATIVE_WEBGL2_METHOD(name) CREATE_METHOD(name)
 #include "EXWebGLMethods.def"
-
 #undef NATIVE_WEBGL2_METHOD
 #undef NATIVE_METHOD
+#undef CREATE_METHOD
 }
 
 } // namespace gl_cpp
