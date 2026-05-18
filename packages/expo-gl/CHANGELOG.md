@@ -8,8 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- Install `WebGLRenderingContext` and `WebGL2RenderingContext` globals and their numeric constants at module init so libraries that read them before any GL context is created no longer crash. ([#45865](https://github.com/expo/expo/pull/45865) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
 
 ## 55.0.14 — 2026-05-13

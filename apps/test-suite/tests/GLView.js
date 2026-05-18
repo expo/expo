@@ -10,7 +10,7 @@ export const name = 'GLView';
 const style = { width: 200, height: 200 };
 
 export async function test(
-  { it, xit, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
+  { it, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
   { setPortalChild, cleanupPortal }
 ) {
   let instance = null;
@@ -45,40 +45,24 @@ export async function test(
   }
 
   describe('GLView', () => {
-    // Regression test for https://github.com/expo/expo/issues/44637 — the
-    // WebGLRenderingContext / WebGL2RenderingContext globals and their numeric
-    // constants must exist before any GL context is created so module-level
-    // code (e.g. `enum X { LINEAR = WebGL2RenderingContext.LINEAR }`) doesn't
-    // crash at app startup. This `describe` must run before any GLView is
-    // mounted in this file so the assertions reflect the at-launch state, not
-    // the state after `createWebGLRenderer` has run.
-    describe('global bindings (no context created)', () => {
-      // `__EXGLContexts` is populated by `createWebGLRenderer`, so its
-      // presence means another test (or earlier mount) already ran the lazy
-      // install path and these assertions no longer prove the at-launch
-      // behavior. Skip them instead of asserting on tainted state.
-      const itAtLaunch =
-        Platform.OS === 'web' || globalThis.__EXGLContexts === undefined ? it : xit;
+    it('gets a valid context', async () => {
+      const context = await getContextAsync();
+      expect(
+        context instanceof WebGLRenderingContext || context instanceof WebGL2RenderingContext
+      ).toBe(true);
+    });
 
-      itAtLaunch('exposes the WebGLRenderingContext constructor on globalThis', () => {
-        expect(typeof WebGLRenderingContext).toBe('function');
-      });
+    it('takes a snapshot', async () => {
+      await getContextAsync();
 
-      itAtLaunch('exposes the WebGL2RenderingContext constructor on globalThis', () => {
-        expect(typeof WebGL2RenderingContext).toBe('function');
-      });
-
-      itAtLaunch('exposes GL constants as static members of WebGLRenderingContext', () => {
-        expect(WebGLRenderingContext.COLOR_BUFFER_BIT).toBe(0x4000);
-        expect(WebGLRenderingContext.TEXTURE_2D).toBe(0x0de1);
-        expect(WebGLRenderingContext.NEAREST).toBe(0x2600);
-        expect(WebGLRenderingContext.LINEAR).toBe(0x2601);
-      });
-
-      itAtLaunch('exposes GL constants as static members of WebGL2RenderingContext', () => {
-        expect(WebGL2RenderingContext.NEAREST).toBe(0x2600);
-        expect(WebGL2RenderingContext.LINEAR).toBe(0x2601);
-      });
+      const snapshot = await instance.takeSnapshotAsync({ format: 'png' });
+      expect(snapshot).toBeDefined();
+      if (Platform.OS === 'web') {
+        expect(snapshot.uri instanceof Blob).toBe(true);
+      } else {
+        expect(snapshot.uri).toMatch(/^file:\/\//);
+        expect(snapshot.localUri).toMatch(/^file:\/\//);
+      }
     });
 
     describe('context', () => {
@@ -98,27 +82,6 @@ export async function test(
       gl_FragColor = texture2D(texture, vec2(uv.x, uv.y));
     }
         `;
-
-      it('gets a valid context', async () => {
-        const context = await getContextAsync();
-        expect(
-          context instanceof WebGLRenderingContext || context instanceof WebGL2RenderingContext
-        ).toBe(true);
-      });
-
-      it('takes a snapshot', async () => {
-        await getContextAsync();
-
-        const snapshot = await instance.takeSnapshotAsync({ format: 'png' });
-        expect(snapshot).toBeDefined();
-        if (Platform.OS === 'web') {
-          expect(snapshot.uri instanceof Blob).toBe(true);
-        } else {
-          expect(snapshot.uri).toMatch(/^file:\/\//);
-          expect(snapshot.localUri).toMatch(/^file:\/\//);
-        }
-      });
-
       it('has Expo methods', async () => {
         const context = await getContextAsync();
         expect(typeof context.endFrameEXP).toBe('function');

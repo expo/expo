@@ -8,7 +8,6 @@ public class EXGL {
     SoLoader.loadLibrary("expo-gl");
   }
   public static native int EXGLContextCreate();
-  public static native void EXGLInstallWebGLBindings(long jsCtxPtr);
   public static native void EXGLContextPrepare(long jsCtxPtr, int exglCtxId, Object glContext);
   public static native void EXGLContextPrepareWorklet(int exglCtxId);
 

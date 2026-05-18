@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.util.SparseArray
 import android.view.View
 import expo.modules.interfaces.camera.CameraViewInterface
-import expo.modules.gl.cpp.EXGL
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.runtime.MainRuntime
 
 private class InvalidCameraViewException :
   CodedException("Provided view tag don't point to valid instance of the camera view")
@@ -25,16 +23,6 @@ class GLModule : Module() {
   private val mGLContextMap = SparseArray<GLContext>()
   override fun definition() = ModuleDefinition {
     Name("ExpoGL")
-
-    OnCreate {
-      val runtime = appContext.runtime as? MainRuntime ?: return@OnCreate
-      val jsRuntimePointer = runtime.reactContext?.javaScriptContextHolder?.get() ?: 0L
-      if (jsRuntimePointer != 0L) {
-        runtime.schedule {
-          EXGL.EXGLInstallWebGLBindings(jsRuntimePointer)
-        }
-      }
-    }
 
     AsyncFunction("destroyObjectAsync") { exglObjId: Int ->
       val glObject = mGLObjects[exglObjId]

@@ -28,11 +28,6 @@ typedef unsigned int EXGLObjectId;
 
 EXGLContextId EXGLContextCreate();
 
-// [JS thread] Install the `WebGLRenderingContext` / `WebGL2RenderingContext`
-// global constructors and their numeric constants so they are reachable from
-// JS before any GL context is created. `runtime` is a raw `jsi::Runtime *`.
-void EXGLInstallWebGLBindings(void *runtime);
-
 #ifdef __cplusplus
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at

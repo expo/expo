@@ -37,14 +37,8 @@ void installConstants(jsi::Runtime &runtime, jsi::Object &gl);
 void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &gl);
 void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &gl);
 
-void createWebGLRenderer(
-  jsi::Runtime &runtime,
-  EXGLContext *ctx,
-  glesContext viewport,
-  jsi::Object &&global
-) {
-  installWebGLConstructorsAndConstants(runtime);
-  installWebGLInstanceMethods(runtime);
+void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, glesContext viewport, jsi::Object&& global) {
+  ensurePrototypes(runtime);
   jsi::Object gl = ctx->supportsWebGL2
     ? createWebGLObject(
           runtime, EXWebGLClass::WebGL2RenderingContext, {static_cast<double>(ctx->ctxId)})
@@ -172,14 +166,7 @@ void jsClassExtend(jsi::Runtime &runtime, jsi::Object &baseClass, jsi::PropNameI
       });
 }
 
-static jsi::Object getRenderingContextPrototype(jsi::Runtime &runtime, EXWebGLClass classEnum) {
-  return runtime.global()
-    .getProperty(runtime, jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)))
-    .asObject(runtime)
-    .getPropertyAsObject(runtime, "prototype");
-}
-
-void installWebGLConstructorsAndConstants(jsi::Runtime &runtime) {
+void ensurePrototypes(jsi::Runtime &runtime) {
   if (runtime.global().hasProperty(runtime, "WebGLRenderingContext")) {
     return;
   }
@@ -188,30 +175,35 @@ void installWebGLConstructorsAndConstants(jsi::Runtime &runtime) {
   auto evalBuffer = std::make_shared<jsi::StringBuffer>(evalStubConstructors);
   runtime.evaluateJavaScript(evalBuffer, "expo-gl");
 
-  jsi::Object objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
-  auto inheritFromJsObject = [&runtime, &objectClass](EXWebGLClass classEnum) {
+  auto inheritFromJsObject = [&runtime](EXWebGLClass classEnum) {
+    auto objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
     jsClassExtend(
         runtime, objectClass, jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)));
   };
 
-  auto installConstantsOnConstructor = [&runtime](EXWebGLClass classEnum) {
-    auto constructor =
-      runtime.global()
-        .getProperty(runtime, jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)))
-        .asObject(runtime);
-    // Per the WebGL spec, GL_* numeric constants are exposed both as static
-    // members of the interface (e.g. WebGLRenderingContext.LINEAR) and on the
-    // prototype (e.g. gl.LINEAR). Only the static members are needed before
-    // a context is created; the prototype copy is deferred to
-    // `installWebGLInstanceMethods` to keep module-init cheap.
-    installConstants(runtime, constructor);
-  };
+  // configure WebGLRenderingContext
+  {
+    inheritFromJsObject(EXWebGLClass::WebGLRenderingContext);
+    auto prototype =
+        runtime.global()
+            .getProperty(runtime, jsi::PropNameID::forUtf8(runtime, getConstructorName(EXWebGLClass::WebGLRenderingContext)))
+            .asObject(runtime)
+            .getPropertyAsObject(runtime, "prototype");
+    installConstants(runtime, prototype);
+    installWebGLMethods(runtime, prototype);
+  }
 
-  inheritFromJsObject(EXWebGLClass::WebGLRenderingContext);
-  installConstantsOnConstructor(EXWebGLClass::WebGLRenderingContext);
-
-  inheritFromJsObject(EXWebGLClass::WebGL2RenderingContext);
-  installConstantsOnConstructor(EXWebGLClass::WebGL2RenderingContext);
+  // configure WebGL2RenderingContext
+  {
+    inheritFromJsObject(EXWebGLClass::WebGL2RenderingContext);
+    auto prototype =
+        runtime.global()
+            .getProperty(runtime, jsi::PropNameID::forUtf8(runtime, getConstructorName(EXWebGLClass::WebGL2RenderingContext)))
+            .asObject(runtime)
+            .getPropertyAsObject(runtime, "prototype");
+    installConstants(runtime, prototype);
+    installWebGL2Methods(runtime, prototype);
+  }
 
   // Configure rest of WebGL objects
   inheritFromJsObject(EXWebGLClass::WebGLObject);
@@ -243,21 +235,6 @@ void installWebGLConstructorsAndConstants(jsi::Runtime &runtime) {
   inheritFromWebGLObject(EXWebGLClass::WebGLSync);
   inheritFromWebGLObject(EXWebGLClass::WebGLTransformFeedback);
   inheritFromWebGLObject(EXWebGLClass::WebGLVertexArrayObject);
-}
-
-void installWebGLInstanceMethods(jsi::Runtime &runtime) {
-  if (runtime.global().hasProperty(runtime, "__EXGLPrototypeReady")) {
-    return;
-  }
-  runtime.global().setProperty(runtime, "__EXGLPrototypeReady", true);
-
-  auto webglPrototype = getRenderingContextPrototype(runtime, EXWebGLClass::WebGLRenderingContext);
-  installConstants(runtime, webglPrototype);
-  installWebGLMethods(runtime, webglPrototype);
-
-  auto webgl2Prototype = getRenderingContextPrototype(runtime, EXWebGLClass::WebGL2RenderingContext);
-  installConstants(runtime, webgl2Prototype);
-  installWebGL2Methods(runtime, webgl2Prototype);
 }
 
 void installConstants(jsi::Runtime &runtime, jsi::Object &gl) {
