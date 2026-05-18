@@ -42,6 +42,7 @@ export * from './RadioButton';
 export * from './Surface';
 export { type TextProps, Text } from './Text';
 export * from './Tooltip';
+export * from './LoadingIndicator';
 export * from './AnimatedVisibility';
 export * from './Box';
 export * from './Row';

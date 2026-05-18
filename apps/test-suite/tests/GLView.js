@@ -106,6 +106,24 @@ export async function test(
         ).toBe(true);
       });
 
+      it('WebGL2 contexts inherit from WebGLRenderingContext', async () => {
+        if (Platform.OS === 'web') {
+          // On web the context comes from the browser's `canvas.getContext`,
+          // and despite what the WebIDL spec calls for, browser engines
+          // (Chrome, Safari, and historically Firefox) all expose WebGL2
+          // contexts whose prototype chain does not include
+          // WebGLRenderingContext. This test verifies expo-gl's native
+          // inheritance fix, not browser behavior.
+          return;
+        }
+        const context = await getContextAsync();
+        // Per the WebGL spec WebGL2RenderingContext extends
+        // WebGLRenderingContext, so a WebGL2 instance must satisfy both
+        // `instanceof` checks.
+        expect(context instanceof WebGL2RenderingContext).toBe(true);
+        expect(context instanceof WebGLRenderingContext).toBe(true);
+      });
+
       it('takes a snapshot', async () => {
         await getContextAsync();
 

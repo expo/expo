@@ -103,6 +103,8 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     readableStream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     writableStream(): WritableStream<Uint8Array<ArrayBufferLike>>;
     arrayBuffer(): Promise<ArrayBuffer>;
+    json(): Promise<any>;
+    formData(): ReturnType<Response['formData']>;
     stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     slice(start?: number, end?: number, contentType?: string): Blob;
     /**
