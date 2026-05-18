@@ -10,7 +10,7 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Terminal } from '~/ui/components/Snippet';
 
-A platform-native icon. On Android, it renders a Material Symbol XML vector drawable supplied through [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) (other XML vector drawable assets aren't officially supported). On iOS, it renders an [SF Symbol](https://developer.apple.com/sf-symbols/).
+A platform-native icon. On Android, it renders a Material Symbol XML vector drawable (recommended source: [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols)). On iOS, it renders an [SF Symbol](https://developer.apple.com/sf-symbols/).
 
 > **Note:** `Icon` does not render on web.
 
@@ -18,7 +18,7 @@ A platform-native icon. On Android, it renders a Material Symbol XML vector draw
 
 <APIInstallSection />
 
-Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) to use the bundled icons on Android. For a different style or custom axes, see [Custom styles](/versions/latest/sdk/ui/jetpack-compose/icon/#custom-styles-via-expomaterial-symbols-cli) — no install needed.
+Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) to use the bundled icons on Android. For a different style or custom axes, see [Custom styles on the Jetpack Compose Icon page](/versions/latest/sdk/ui/jetpack-compose/icon/#custom-styles-via-expomaterial-symbols-cli) — no install needed.
 
 <Terminal cmd={['$ npx expo install @expo/material-symbols']} />
 
