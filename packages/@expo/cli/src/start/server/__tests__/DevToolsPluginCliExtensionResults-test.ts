@@ -50,4 +50,39 @@ describe('DevToolsPluginCliExtensionResults', () => {
       expect(valueToTest.getOutput()).toEqual(elements);
     });
   });
+
+  describe('output truncation', () => {
+    it('truncates output once accumulated length exceeds MAX_STRING_LENGTH and stops accepting more', () => {
+      jest.isolateModules(() => {
+        jest.doMock('node:buffer', () => ({
+          constants: { MAX_STRING_LENGTH: 100 },
+        }));
+        const {
+          DevToolsPluginCliExtensionResults: Results,
+        } = require('../DevToolsPluginCliExtensionResults');
+
+        const onOutput = jest.fn();
+        const results = new Results(onOutput);
+        results.append('a'.repeat(80));
+        expect(results.isTruncated()).toBe(false);
+
+        // Pushes total to 110 > 100 cap → truncation triggers.
+        results.append('b'.repeat(30));
+        expect(results.isTruncated()).toBe(true);
+
+        const output = results.getOutput();
+        expect(output[output.length - 1].text).toMatch(/Output truncated/);
+        expect(onOutput).toHaveBeenLastCalledWith([
+          expect.objectContaining({ text: expect.stringMatching(/Output truncated/) }),
+        ]);
+
+        // Subsequent appends are no-ops; output length and isTruncated stay put.
+        const lengthBefore = results.getOutput().length;
+        const onOutputCalls = onOutput.mock.calls.length;
+        results.append('c'.repeat(10));
+        expect(results.getOutput()).toHaveLength(lengthBefore);
+        expect(onOutput.mock.calls).toHaveLength(onOutputCalls);
+      });
+    });
+  });
 });

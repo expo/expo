@@ -8,6 +8,20 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
     );
   });
 
+  it('should reject an entryPoint that escapes packageRoot', () => {
+    const pluginDescriptor = {
+      ...PLUGIN_DESCRIPTOR,
+      cliExtensions: {
+        commands: [COMMAND],
+        description: 'Test Plugin',
+        entryPoint: '../../etc/passwd',
+      },
+    };
+    expect(() => new DevToolsPluginCliExtensionExecutor(pluginDescriptor, PROJECT_ROOT)).toThrow(
+      /escapes packageRoot/
+    );
+  });
+
   describe('validation', () => {
     it('should validate that the command exists in the extension', async () => {
       const pluginDescriptor = {
@@ -61,6 +75,25 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
           args: { invalidParam: 'value' },
         })
       ).toThrow();
+    });
+
+    it('should reject parameter values whose type does not match the declared type', () => {
+      const pluginDescriptor = {
+        ...PLUGIN_DESCRIPTOR,
+        cliExtensions: {
+          commands: [COMMAND_WITH_PARAMS],
+          description: 'Test Plugin',
+          entryPoint: 'index.js',
+        },
+      };
+      const executor = new DevToolsPluginCliExtensionExecutor(pluginDescriptor, PROJECT_ROOT);
+      // param1 is declared text → string; param2 is declared number. Pass number for both.
+      expect(() =>
+        executor.validate({
+          command: 'test-command',
+          args: { param1: 42 as any, param2: 42 },
+        })
+      ).toThrow(/expected string \(declared "text"\), got number/);
     });
   });
 

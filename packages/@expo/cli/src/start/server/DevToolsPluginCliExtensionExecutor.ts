@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
 import path from 'path';
 
 import {
@@ -7,6 +7,7 @@ import {
   DevToolsPluginOutput,
 } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionResults } from './DevToolsPluginCliExtensionResults';
+import { isPathInside } from '../../utils/dir';
 
 const DEFAULT_TIMEOUT_MS = 10_000; // 10 seconds
 
@@ -25,6 +26,8 @@ const DEFAULT_TIMEOUT_MS = 10_000; // 10 seconds
  *  - Provides structured output with exit codes and error states
  */
 export class DevToolsPluginCliExtensionExecutor {
+  private readonly resolvedEntryPoint: string;
+
   constructor(
     private plugin: DevToolsPluginInfo,
     private projectRoot: string,
@@ -35,6 +38,15 @@ export class DevToolsPluginCliExtensionExecutor {
     if (!this.plugin.cliExtensions?.entryPoint) {
       throw new Error(`Plugin ${this.plugin.packageName} has no CLI extensions`);
     }
+    // Reject entryPoints that escape packageRoot (e.g. "../../other-pkg/dist/cli.js").
+    const resolved = path.resolve(this.plugin.packageRoot, this.plugin.cliExtensions.entryPoint);
+    if (!isPathInside(resolved, this.plugin.packageRoot)) {
+      throw new Error(
+        `Plugin ${this.plugin.packageName} entryPoint "${this.plugin.cliExtensions.entryPoint}" ` +
+          `escapes packageRoot (${this.plugin.packageRoot}); must be a relative path inside the package.`
+      );
+    }
+    this.resolvedEntryPoint = resolved;
   }
 
   public validate({ command, args }: Omit<DevToolsPluginExecutorArguments, 'metroServerOrigin'>) {
@@ -52,12 +64,20 @@ export class DevToolsPluginCliExtensionExecutor {
       );
     }
 
-    const argsKeys = Object.keys(args ?? {});
+    const argsObj = (args ?? {}) as Record<string, unknown>;
     for (const param of commandElement.parameters ?? []) {
-      const found = argsKeys.find((key) => key === param.name);
-      if (!found) {
+      if (!Object.prototype.hasOwnProperty.call(argsObj, param.name)) {
         throw new Error(
           `Parameter "${param.name}" not found in command "${command}" of plugin ${this.plugin.packageName}`
+        );
+      }
+      // Enforce declared parameter type; don't rely on upstream Zod validation alone.
+      const expected =
+        param.type === 'confirm' ? 'boolean' : param.type === 'number' ? 'number' : 'string';
+      const actual = typeof argsObj[param.name];
+      if (actual !== expected) {
+        throw new Error(
+          `Parameter "${param.name}" of "${command}" expected ${expected} (declared "${param.type}"), got ${actual}.`
         );
       }
     }
@@ -78,27 +98,50 @@ export class DevToolsPluginCliExtensionExecutor {
     onOutput,
   }: DevToolsPluginExecutorArguments): Promise<DevToolsPluginOutput> => {
     this.validate({ command, args });
-    return new Promise<DevToolsPluginOutput>(async (resolve) => {
-      // Set up the command and its arguments
-      const tool = path.join(this.plugin.packageRoot, this.plugin.cliExtensions!.entryPoint);
-      const child = this.spawnFunc(
-        'node',
-        [tool, command, `${JSON.stringify(args)}`, `${metroServerOrigin}`],
-        {
-          cwd: this.projectRoot,
-          env: { ...process.env },
-        }
-      );
-
+    return new Promise<DevToolsPluginOutput>((resolve) => {
       let finished = false;
+      let timeout: ReturnType<typeof setTimeout> | undefined;
       const pluginResults = new DevToolsPluginCliExtensionResults(onOutput);
 
+      // process.execPath instead of 'node' so the child can't be redirected by a PATH shim.
+      let child: ChildProcessWithoutNullStreams;
+      try {
+        child = this.spawnFunc(
+          process.execPath,
+          [this.resolvedEntryPoint, command, `${JSON.stringify(args)}`, `${metroServerOrigin}`],
+          {
+            cwd: this.projectRoot,
+            env: { ...process.env },
+          }
+        );
+      } catch (err: any) {
+        // spawn can throw synchronously; resolve with an error result instead of hanging.
+        pluginResults.append(err?.toString?.() ?? String(err), 'error');
+        resolve(pluginResults.getOutput());
+        return;
+      }
+
+      const finishOnTruncation = () => {
+        if (pluginResults.isTruncated() && !finished) {
+          finished = true;
+          if (timeout) clearTimeout(timeout);
+          child.kill('SIGKILL');
+          resolve(pluginResults.getOutput());
+        }
+      };
+
       // Collect output/error data
-      child.stdout.on('data', (data) => pluginResults.append(data.toString()));
-      child.stderr.on('data', (data) => pluginResults.append(data.toString(), 'error'));
+      child.stdout.on('data', (data) => {
+        pluginResults.append(data.toString());
+        finishOnTruncation();
+      });
+      child.stderr.on('data', (data) => {
+        pluginResults.append(data.toString(), 'error');
+        finishOnTruncation();
+      });
 
       // Setup timeout
-      const timeout = setTimeout(() => {
+      timeout = setTimeout(() => {
         if (!finished) {
           finished = true;
           child.kill('SIGKILL');
@@ -109,7 +152,7 @@ export class DevToolsPluginCliExtensionExecutor {
 
       child.on('close', (code: number) => {
         if (finished) return;
-        clearTimeout(timeout);
+        if (timeout) clearTimeout(timeout);
         finished = true;
         pluginResults.exit(code);
         resolve(pluginResults.getOutput());
@@ -117,7 +160,7 @@ export class DevToolsPluginCliExtensionExecutor {
 
       child.on('error', (err: Error) => {
         if (finished) return;
-        clearTimeout(timeout);
+        if (timeout) clearTimeout(timeout);
         finished = true;
         pluginResults.append(err.toString(), 'error');
         resolve(pluginResults.getOutput());
