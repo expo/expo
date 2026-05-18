@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo/fetch` not respecting its own `NativeRequest` as `RequestInit` inputs ([#45958](https://github.com/expo/expo/pull/45958) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.0-preview.12 — 2026-05-15
