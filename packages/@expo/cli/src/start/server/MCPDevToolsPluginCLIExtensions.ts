@@ -1,4 +1,5 @@
 import type { DevServerManager } from './DevServerManager';
+import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import type { McpServer } from './MCP';
@@ -12,17 +13,28 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
 
   for (const plugin of plugins) {
     if (plugin.cliExtensions) {
-      const commands = (plugin.cliExtensions.commands ?? []).filter((p) =>
+      const mcpCommands = (plugin.cliExtensions.commands ?? []).filter((p) =>
         p.environments?.includes('mcp')
       );
-      if (commands.length === 0) {
+      if (mcpCommands.length === 0) {
         continue;
       }
 
-      const schema = createMCPDevToolsExtensionSchema(plugin);
+      // Build an MCP-scoped descriptor so the schema enum and the executor's
+      // existence check both reject commands that were not declared MCP-enabled.
+      const mcpPlugin: DevToolsPluginInfo = {
+        packageName: plugin.packageName,
+        packageRoot: plugin.packageRoot,
+        cliExtensions: {
+          ...plugin.cliExtensions,
+          commands: mcpCommands,
+        },
+      };
+
+      const schema = createMCPDevToolsExtensionSchema(mcpPlugin);
 
       debug(
-        `Installing MCP CLI extension for plugin: ${plugin.packageName} - found ${commands.length} commands`
+        `Installing MCP CLI extension for plugin: ${plugin.packageName} - found ${mcpCommands.length} commands`
       );
 
       mcpServer.registerTool(
@@ -41,7 +53,7 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
               .getJsInspectorBaseUrl();
 
             const results = await new DevToolsPluginCliExtensionExecutor(
-              plugin,
+              mcpPlugin,
               devServerManager.projectRoot
             ).execute({ command, args, metroServerOrigin });
 
