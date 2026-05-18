@@ -36,14 +36,14 @@ class EventRepository(context: Context) {
         ContentUris.appendId(builder, eEndDate)
         builder.build()
       }
-      val selection = buildSelectionForEventsQuery(eStartDate, eEndDate, calendars)
+      val (selection, selectionArgs) = buildSelectionForEventsQuery(eStartDate, eEndDate, calendars)
       val sortOrder = "${CalendarContract.Instances.BEGIN} ASC"
 
       val cursor = contentResolver.query(
         uri,
         findEventsQueryParameters,
         selection,
-        null,
+        selectionArgs,
         sortOrder
       )
 
@@ -204,21 +204,30 @@ class EventRepository(context: Context) {
   }
 }
 
-private fun buildSelectionForEventsQuery(startDateMillis: Long, endDateMillis: Long, calendars: List<String>): String {
+private fun buildSelectionForEventsQuery(
+  startDateMillis: Long,
+  endDateMillis: Long,
+  calendars: List<String>
+): Pair<String, Array<String>> {
   val selectionConditions = mutableListOf(
-    "${CalendarContract.Instances.BEGIN} >= $startDateMillis",
-    "${CalendarContract.Instances.END} <= $endDateMillis",
-    "${CalendarContract.Instances.VISIBLE} = 1"
+    "${CalendarContract.Instances.BEGIN} >= ?",
+    "${CalendarContract.Instances.END} <= ?",
+    "${CalendarContract.Instances.VISIBLE} = ?"
+  )
+  val selectionArgs = mutableListOf(
+    startDateMillis.toString(),
+    endDateMillis.toString(),
+    "1"
   )
 
   if (calendars.isNotEmpty()) {
-    val calendarQuery = calendars.joinToString(" OR ") { calendar ->
-      "${CalendarContract.Instances.CALENDAR_ID} = '$calendar'"
-    }
-    selectionConditions += calendarQuery
+    val placeholders = calendars.joinToString(",") { "?" }
+    selectionConditions += "${CalendarContract.Instances.CALENDAR_ID} IN ($placeholders)"
+    selectionArgs += calendars
   }
 
-  return selectionConditions
+  val selection = selectionConditions
     .joinToString(" AND ") { condition -> "($condition)" }
     .let { expr -> "($expr)" }
+  return selection to selectionArgs.toTypedArray()
 }
