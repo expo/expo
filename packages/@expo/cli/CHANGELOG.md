@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Restrict `/message` client commands ([#45858](https://github.com/expo/expo/pull/45858) by [@kitten](https://github.com/kitten)
+
 ### 💡 Others
 
 ## 54.0.24 — 2026-04-27

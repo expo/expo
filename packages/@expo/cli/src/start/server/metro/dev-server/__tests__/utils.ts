@@ -11,10 +11,16 @@ export function withMetroServer(projectRoot = '/project'): {
   metro: ReturnType<typeof createMetroMiddleware>;
   server: ReturnType<typeof createServer> & {
     fetch: (url: string, init?: RequestInit) => Promise<Response>;
-    connect: (url: string) => WebSocket;
+    connect: (url: string, options?: ClientOptions) => WebSocket;
   };
 } {
-  const metro = createMetroMiddleware({ projectRoot });
+  const metro = createMetroMiddleware(
+    { projectRoot },
+    {
+      serverBaseUrl: 'http://localhost',
+    }
+  );
+
   const server = createServer(metro.middleware);
 
   const closeServer = promisify(server.close.bind(server));
@@ -53,7 +59,7 @@ export function withMetroServer(projectRoot = '/project'): {
 
         Object.defineProperty(server, 'connect', {
           value: (url = '', options?: ClientOptions) =>
-            new WebSocket(`ws://${hostname}:${address.port}${url}`),
+            new WebSocket(`ws://${hostname}:${address.port}${url}`, options),
         });
 
         resolve();

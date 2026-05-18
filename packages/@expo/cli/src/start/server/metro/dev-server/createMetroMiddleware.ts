@@ -10,13 +10,20 @@ import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { openInEditorAsync } from '../../../../utils/editor';
 
+interface MetroMiddlewareOptions {
+  serverBaseUrl: string;
+}
+
 interface StackFrame {
   file: string;
   lineNumber?: number | undefined;
 }
 
-export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
-  const messages = createMessagesSocket({ logger: Log });
+export function createMetroMiddleware(
+  metroConfig: Pick<MetroConfig, 'projectRoot'>,
+  options: MetroMiddlewareOptions
+) {
+  const messages = createMessagesSocket({ logger: Log, serverBaseUrl: options.serverBaseUrl });
   const events = createEventsSocket(messages);
 
   const middleware = connect()
