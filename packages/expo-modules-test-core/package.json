@@ -32,10 +32,10 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core",
   "dependencies": {
     "@types/node": "^22.14.0",
-    "expo-type-information": "workspace:^0.0.2",
     "glob": "^13.0.0",
     "prettier": "^3.8.3",
     "xml-js": "^1.6.11",
-    "yaml": "^2.8.3"
+    "yaml": "^2.8.3",
+    "expo-type-information": "workspace:^0.0.2"
   }
 }

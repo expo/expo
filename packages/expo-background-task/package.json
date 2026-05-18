@@ -34,8 +34,8 @@
     "expo-task-manager": "workspace:~56.0.9"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
     "expo": "workspace:*",
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
