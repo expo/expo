@@ -222,7 +222,7 @@ extension ExpoSwiftUI {
     public override func didMoveToWindow() {
       super.didMoveToWindow()
 
-      if window != nil, let parentController = reactViewController() {
+      if window != nil, let parentController = ReactView.parentController(of: self) {
         #if !os(macOS)
         if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
           // Swift automatically adds the hostingController in the correct place when the parentController

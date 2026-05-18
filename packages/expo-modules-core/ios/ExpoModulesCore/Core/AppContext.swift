@@ -1,4 +1,3 @@
-@preconcurrency internal import React
 import ExpoModulesJSI
 
 /**
@@ -45,14 +44,6 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
-
-  /**
-   React bridge of the context's app. Can be `nil` when the bridge
-   hasn't been propagated to the bridge modules yet,
-   or when the app context is "bridgeless" (for example in native unit tests).
-   */
-  @objc
-  internal weak var reactBridge: RCTBridge?
 
   /**
    RCTHost wrapper. This is set by ``ExpoReactNativeFactory`` in `didInitializeRuntime`.
@@ -127,10 +118,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @objc
   public var appIdentifier: String? {
-    guard let moduleRegistry = reactBridge?.moduleRegistry else {
-      return nil
-    }
-    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
+    guard let hostWrapper else { return nil }
+    return "\(abs(ObjectIdentifier(hostWrapper as AnyObject).hashValue))"
   }
 
   /**
@@ -267,11 +256,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    Provides access to the image loader from legacy module registry.
    */
   public var imageLoader: EXImageLoaderInterface? {
-    guard let loader = hostWrapper?.findModule(withName: "RCTImageLoader", lazilyLoadIfNecessary: true) as? RCTImageLoader else {
+    let module = hostWrapper?.findModule(withName: "RCTImageLoader", lazilyLoadIfNecessary: true)
+    guard let loader = ImageLoader(forReactModule: module) else {
       log.warn("Unable to get the RCTImageLoader module.")
       return nil
     }
-    return ImageLoader(rctImageLoader: loader)
+    return loader
   }
 
   /**
@@ -671,7 +661,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
     } else {
       DispatchQueue.main.async {
-        RCTTriggerReloadCommandListeners(reason)
+        ReactReloadCommand.trigger(withReason: reason)
       }
     }
   }
