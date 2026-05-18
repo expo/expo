@@ -324,7 +324,7 @@ Widget.updateSnapshot({
 
 #### Deep linking from widgets
 
-NoUse the `widgetURL` modifier from `@expo/ui/swift-ui/modifiers` to make the widget open a single URL when tapped. If you need multiple tappable links, use [`Link`](./ui/swift-ui/link.mdx) inside the widget layout.
+Use the `widgetURL` modifier from `@expo/ui/swift-ui/modifiers` to make the widget open a single URL when tapped. If you need multiple tappable links, use [`Link`](./ui/swift-ui/link.mdx) inside the widget layout.
 
 ```tsx
 import { Text, VStack } from '@expo/ui/swift-ui';
@@ -405,7 +405,7 @@ export default createWidget('ThemeWidget', ThemeWidget);
 
 Add a `configuration` object to a widget in your app config to expose options in the widget gallery. The selected values are passed to the widget component in [`WidgetEnvironment`](#widgetenvironment).
 
-```json
+```json app.json
 {
   "expo": {
     "plugins": [
@@ -640,11 +640,11 @@ async function startDeliveryTracking() {
 pushToStartSubscription.remove();
 ```
 
-The push-to-start token and per-activity push token are APNs tokens, not Expo push tokens. Send them to your server and use Apple's ActivityKit APNs endpoint to start, update, or end Live Activities remotely. `expo-widgets` exposes the tokens and renders the content state; it does not send APNs requests for you.
+The push-to-start token and per-activity push token are APNs tokens, not Expo push tokens. Send them to your server and use Apple's ActivityKit APNs endpoint to start, update, or end Live Activities remotely. `expo-widgets` exposes the tokens and renders the content state and it does not send APNs requests for you.
 
 Use these APNs headers for ActivityKit pushes:
 
-```sh
+```text
 apns-push-type: liveactivity
 apns-topic: <your app bundle identifier>.push-type.liveactivity
 apns-priority: 10
