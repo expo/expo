@@ -13,6 +13,10 @@ import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 
 export function AccountModal() {
   const theme = useExpoTheme();
+  const [headerOverride, setHeaderOverride] = React.useState<{
+    title?: string;
+    onBack?: () => void;
+  } | null>(null);
 
   const { data, loading, error, refetch } = useHome_CurrentUserActorQuery({
     fetchPolicy: 'cache-and-network',
@@ -86,7 +90,7 @@ export function AccountModal() {
 
   return (
     <View flex="1" style={{ backgroundColor: theme.background.screen }}>
-      <ModalHeader />
+      <ModalHeader title={headerOverride?.title} onBack={headerOverride?.onBack} />
       <CappedWidthContainerView>
         {data?.meUserActor?.accounts ? (
           <LoggedInAccountView accounts={data.meUserActor.accounts} />
@@ -95,6 +99,7 @@ export function AccountModal() {
             refetch={async () => {
               await refetch();
             }}
+            onHeaderOverride={setHeaderOverride}
           />
         )}
       </CappedWidthContainerView>

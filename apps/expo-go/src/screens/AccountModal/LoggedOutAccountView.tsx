@@ -6,6 +6,8 @@ import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import url from 'url';
 
+import { NativeLoginView } from './NativeLoginView';
+import FeatureFlags from '../../FeatureFlags';
 import ApolloClient from '../../api/ApolloClient';
 import Config from '../../api/Config';
 import {
@@ -18,11 +20,14 @@ import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
 import hasSessionSecret from '../../utils/hasSessionSecret';
 
+type HeaderConfig = { title?: string; onBack?: () => void } | null;
+
 type Props = {
   refetch: () => Promise<void>;
+  onHeaderOverride: (config: HeaderConfig) => void;
 };
 
-export function LoggedOutAccountView({ refetch }: Props) {
+export function LoggedOutAccountView({ refetch, onHeaderOverride }: Props) {
   const dispatch = useDispatch();
   const [isAuthenticating, setIsAuthenticating] = React.useState(false);
   const [isFinishedAuthenticating, setIsFinishedAuthenticating] = React.useState(false);
@@ -68,12 +73,49 @@ export function LoggedOutAccountView({ refetch }: Props) {
     };
   }, []);
 
+  const finishLogin = React.useCallback(
+    async (sessionSecret: string) => {
+      const viewerPrimaryAccountNameResult = await ApolloClient.query<
+        Home_ViewerPrimaryAccountNameQuery,
+        Home_ViewerPrimaryAccountNameQueryVariables
+      >({
+        query: Home_ViewerPrimaryAccountNameDocument,
+        fetchPolicy: 'network-only',
+        context: {
+          headers: { 'expo-session': sessionSecret },
+        },
+      });
+
+      if (
+        viewerPrimaryAccountNameResult.errors &&
+        viewerPrimaryAccountNameResult.errors.length > 0
+      ) {
+        throw viewerPrimaryAccountNameResult.errors[0];
+      }
+
+      const primaryAccountName =
+        viewerPrimaryAccountNameResult.data.meUserActor?.primaryAccount.name;
+      if (!primaryAccountName) {
+        throw new Error('Logged in user must have a primary account');
+      }
+
+      dispatch(SessionActions.setSession({ sessionSecret }));
+      setAccountName(primaryAccountName);
+      setIsFinishedAuthenticating(true);
+    },
+    [dispatch, setAccountName]
+  );
+
   const _handleSignInPress = async () => {
     await _handleAuthentication('login');
   };
 
   const _handleSignUpPress = async () => {
     await _handleAuthentication('signup');
+  };
+
+  const _handleSSOPress = async () => {
+    await _handleAuthentication('sso-login');
   };
 
   const _handleAuthentication = async (urlPath: string) => {
@@ -110,39 +152,7 @@ export function LoggedOutAccountView({ refetch }: Props) {
         }
 
         const sessionSecret = decodeURIComponent(encodedSessionSecret);
-
-        const viewerPrimaryAccountNameResult = await ApolloClient.query<
-          Home_ViewerPrimaryAccountNameQuery,
-          Home_ViewerPrimaryAccountNameQueryVariables
-        >({
-          query: Home_ViewerPrimaryAccountNameDocument,
-          fetchPolicy: 'network-only',
-          context: {
-            headers: { 'expo-session': sessionSecret },
-          },
-        });
-
-        if (
-          viewerPrimaryAccountNameResult.errors &&
-          viewerPrimaryAccountNameResult.errors.length > 0
-        ) {
-          throw viewerPrimaryAccountNameResult.errors[0];
-        }
-
-        const primaryAccountName =
-          viewerPrimaryAccountNameResult.data.meUserActor?.primaryAccount.name;
-        if (!primaryAccountName) {
-          throw new Error('Logged in user must have a primary account');
-        }
-
-        dispatch(
-          SessionActions.setSession({
-            sessionSecret,
-          })
-        );
-
-        setAccountName(primaryAccountName);
-        setIsFinishedAuthenticating(true);
+        await finishLogin(sessionSecret);
       }
     } catch (e: any) {
       // TODO(wschurman): Put this into Sentry
@@ -152,6 +162,18 @@ export function LoggedOutAccountView({ refetch }: Props) {
       setIsAuthenticating(false);
     }
   };
+
+  if (FeatureFlags.ENABLE_NATIVE_LOGIN_FORM) {
+    return (
+      <NativeLoginView
+        onLoginSuccess={finishLogin}
+        onSSO={_handleSSOPress}
+        onSignUp={_handleSignUpPress}
+        isWebFlowInFlight={isAuthenticating}
+        onHeaderOverride={onHeaderOverride}
+      />
+    );
+  }
 
   return (
     <View padding="medium">
