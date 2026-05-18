@@ -24,6 +24,14 @@
   return self;
 }
 
++ (nullable instancetype)imageLoaderForReactModule:(nullable id)module
+{
+  if (![module isKindOfClass:[RCTImageLoader class]]) {
+    return nil;
+  }
+  return [[self alloc] initWithRCTImageLoader:(RCTImageLoader *)module];
+}
+
 - (void)loadImageForURL:(NSURL *)imageURL
       completionHandler:(EXImageLoaderCompletionBlock)completionHandler
 {

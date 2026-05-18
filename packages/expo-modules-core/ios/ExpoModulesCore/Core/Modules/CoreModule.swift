@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-internal import React
 import Foundation
 import ExpoModulesJSI
 
@@ -107,7 +106,7 @@ internal final class CoreModule: Module {
         validAttributes[propName] = true
       }
       for eventName in viewDefinition.getSupportedEventNames() {
-        guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {
+        guard let normalizedEventName = ReactEventName.normalizeInput(eventName) else {
           continue
         }
         directEventTypes[normalizedEventName] = [
