@@ -1,0 +1,15 @@
+{
+  "name": "swiftpm-tester",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Minimal iOS app that consumes Expo packages via SwiftPM (no CocoaPods).",
+  "dependencies": {
+    "expo": "workspace:*",
+    "expo-battery": "workspace:*",
+    "expo-brightness": "workspace:*",
+    "expo-haptics": "workspace:*",
+    "expo-keep-awake": "workspace:*",
+    "expo-network": "workspace:*",
+    "expo-system-ui": "workspace:*"
+  }
+}

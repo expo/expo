@@ -1593,6 +1593,30 @@ importers:
         specifier: workspace:*
         version: link:../../packages/babel-preset-expo
 
+  apps/swiftpm-tester:
+    dependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../../packages/expo
+      expo-battery:
+        specifier: workspace:*
+        version: link:../../packages/expo-battery
+      expo-brightness:
+        specifier: workspace:*
+        version: link:../../packages/expo-brightness
+      expo-haptics:
+        specifier: workspace:*
+        version: link:../../packages/expo-haptics
+      expo-keep-awake:
+        specifier: workspace:*
+        version: link:../../packages/expo-keep-awake
+      expo-network:
+        specifier: workspace:*
+        version: link:../../packages/expo-network
+      expo-system-ui:
+        specifier: workspace:*
+        version: link:../../packages/expo-system-ui
+
   apps/test-suite:
     dependencies:
       '@expo/html-elements':

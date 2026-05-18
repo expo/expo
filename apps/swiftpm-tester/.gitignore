@@ -1,0 +1,7 @@
+node_modules/
+*.log
+ios/build/
+ios/DerivedData/
+ios/SwiftpmTester.xcodeproj/xcuserdata/
+ios/SwiftpmTester.xcodeproj/project.xcworkspace/xcuserdata/
+.DS_Store
