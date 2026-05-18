@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Keep `ExpoComposeView` content visible during parent view transitions (e.g., `react-native-screens` pop navigation). ([#45942](https://github.com/expo/expo/pull/45942) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 56.0.9 — 2026-05-15
