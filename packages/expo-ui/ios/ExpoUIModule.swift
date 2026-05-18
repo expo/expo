@@ -58,12 +58,6 @@ public final class ExpoUIModule: Module {
           }
           return
         }
-        #if DEBUG
-        log.warn(
-          "withAnimation completion callback requires iOS 17 or tvOS 17. " +
-          "The animation will still run, but the completion callback will not be invoked on this OS version."
-        )
-        #endif
       }
 
       withAnimation(swiftUIAnimation) {

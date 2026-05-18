@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Added `withAnimation(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's `withAnimation(_:_:)`. ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `withAnimation(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's [`withAnimation(_:_:)`](https://developer.apple.com/documentation/swiftui/withanimation(_:_:)). ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
