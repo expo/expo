@@ -218,10 +218,8 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       throw new Error('Experimental support for React Server Functions is not enabled');
     }
 
-    const args = Array.isArray(decodedBody) ? decodedBody : [];
-
+    const actionArgs = Array.isArray(decodedBody) ? decodedBody : [];
     const chunkInfo = serverConfig[actionId];
-
     if (!chunkInfo) {
       throw new Error(`Could not find server action "${actionId}" in the server config.`);
     }
@@ -231,15 +229,25 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
 
     // Import module.
     const mod: any = globalThis.__webpack_require__(chunkInfo.id);
-    const fn = chunkInfo.name === '*' ? chunkInfo.name : mod[chunkInfo.name] || mod;
 
-    if (!fn) {
+    let fn: ((...args: unknown[]) => unknown) | undefined;
+    if (mod == null || (typeof mod !== 'object' && typeof mod !== 'function')) {
+      fn = undefined;
+    } else if (chunkInfo.name === '*' || chunkInfo.name === '') {
+      fn = mod.__esModule === true && Object.hasOwn(mod, 'default') ? mod.default : mod;
+    } else if (Object.hasOwn(mod, chunkInfo.name)) {
+      fn = mod[chunkInfo.name];
+    } else {
+      fn = undefined;
+    }
+
+    if (typeof fn !== 'function') {
       throw new Error(
         `Could not find server action: ${actionId}. Module: ${JSON.stringify(chunkInfo, null, 2)}`
       );
     }
 
-    return renderWithContextWithAction(context, fn, args);
+    return renderWithContextWithAction(context, fn, actionArgs);
   } else {
     // method === 'GET'
     return renderWithContext(context, input, decodedBody);
