@@ -74,7 +74,7 @@ function getSSRManifest(
 
 // The import map allows us to use external modules from different bundling contexts.
 type ImportMap = {
-  router: () => Promise<typeof import('./router/expo-definedRouter')>;
+  router: () => Promise<import('./router').RouterModule>;
 };
 
 export async function renderRscWithImportsAsync(

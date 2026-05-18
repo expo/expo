@@ -9,8 +9,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import type { ReactNode } from 'react';
 
-import type { PathSpec } from './path';
-
 export const REQUEST_HEADERS = '__expo_requestHeaders';
 
 declare let globalThis: {
@@ -25,7 +23,7 @@ type Config = any;
 type Elements = Record<string, ReactNode>;
 
 export type BuildConfig = {
-  pathname: string | PathSpec; // TODO drop support for string?
+  pathname: string;
   isStatic?: boolean | undefined;
   entries?: {
     input: string;
@@ -76,7 +74,7 @@ export type EntriesDev = {
 export type EntriesPrd = EntriesDev & {
   loadConfig: () => Promise<Config>;
   loadModule: (id: string) => Promise<unknown>;
-  dynamicHtmlPaths: [pathSpec: PathSpec, htmlHead: string][];
+  dynamicHtmlPaths: [pathname: string, htmlHead: string][];
   publicIndexHtml: string;
 };
 

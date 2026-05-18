@@ -6,6 +6,7 @@
  */
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { resolveRouterModule, type RouterModule } from '@expo/router-server/build/rsc/router';
 import type { EntriesDev } from '@expo/router-server/build/rsc/server';
 import assert from 'assert';
 import { getRscMiddleware } from 'expo-server/private';
@@ -65,9 +66,7 @@ export function createServerComponentsMiddleware(
     routerOptions: Record<string, any>;
   }
 ) {
-  const routerModule = useClientRouter
-    ? require.resolve('@expo/router-server/build/rsc/router/noopRouter')
-    : require.resolve('@expo/router-server/build/rsc/router/expo-definedRouter');
+  const routerModule = resolveRouterModule(useClientRouter);
 
   const rscMiddleware = getRscMiddleware({
     config: {},
@@ -308,9 +307,7 @@ export function createServerComponentsMiddleware(
       return routerCache.get(platform)!;
     }
 
-    const router = await ssrLoadModule<
-      typeof import('@expo/router-server/build/rsc/router/expo-definedRouter')
-    >(
+    const router = await ssrLoadModule<RouterModule>(
       routerModule,
       {
         environment: 'react-server',
