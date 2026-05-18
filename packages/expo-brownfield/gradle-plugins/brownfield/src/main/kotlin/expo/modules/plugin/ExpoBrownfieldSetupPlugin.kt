@@ -25,41 +25,20 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   }
 
   /**
-   * In `--fused` mode (CLI passes `-Pbrownfield.fused=true`), the fat AAR built by the
-   * `:<library>-fused` sibling deliberately excludes a handful of Expo modules whose
-   * classes reference resources from EXTERNAL Maven deps (ExoPlayer for `expo-video`,
-   * CameraX for `expo-camera`, etc.) — AGP Fused Library's `rewriteClasses` can't
-   * resolve those references and fails. The skip-list lives in
-   * `templates/android/fused/build.gradle.kts` (`externalResourceExpoProjects`).
+   * In `--fused` mode, strips entries from the autolinking-generated
+   * `ExpoModulesPackageList.kt` for modules excluded from the fat AAR, so the host
+   * app doesn't hit `NoClassDefFoundError` at load time.
    *
-   * The autolinking-generated `ExpoModulesPackageList.kt` on the `:expo` project still
-   * references the skipped modules' Package / Module / Service classes by FQN. The fat
-   * AAR carries that file's compiled output, so when the host app loads it the static
-   * initializer hits a `NoClassDefFoundError` for the skipped classes.
-   *
-   * Workaround: hook the `:expo:generatePackagesList` task with a `doLast` that, when
-   * fused mode is active, strips every line in the generated file matching the skipped
-   * modules' package prefixes. Inert in default (non-fused) builds.
-   *
-   * MIRROR: the prefixes here correspond to the Gradle project names in
-   * `externalResourceExpoProjects` (in the fused template). Keep them aligned.
-   * Extend at invocation time via `-Pbrownfield.fused.strip-packages=foo.,bar.`.
-   *
-   * @param brownfieldProject The brownfield library project.
+   * Strip prefixes are passed via `-Pbrownfield.fused.strip-packages=foo.,bar.`.
+   * Inert in non-fused builds.
    */
   private fun setupFusedModeStripping(brownfieldProject: Project) {
     if (brownfieldProject.findProperty("brownfield.fused") != "true") return
 
     val expoProject = brownfieldProject.rootProject.findProject(":expo") ?: return
 
-    // Empty by default — heavy modules (expo-video, expo-camera, expo-image,
-    // expo-maps, ...) now fuse into the fat AAR via the transitive-AAR
-    // enumeration in the fused template, so their classes ARE present and the
-    // autolinking references in ExpoModulesPackageList.kt resolve cleanly. The
-    // strip hook stays in place as a safety net for any module the user
-    // explicitly skips via `-Pbrownfield.fused.skip=...` — pair that with
-    // `-Pbrownfield.fused.strip-packages=...` listing the package prefixes to
-    // strip so the runtime doesn't crash on a dangling reference.
+    // Empty by default; opt-in via `-Pbrownfield.fused.strip-packages=...` when
+    // pairing with `-Pbrownfield.fused.skip=...` to drop dangling references.
     val defaultStripPrefixes = emptySet<String>()
     val extraStrip =
       (brownfieldProject.findProperty("brownfield.fused.strip-packages") as? String)

@@ -16,8 +16,7 @@ internal fun setupPrebuiltsCopying(rootProject: Project) {
     // In `--fused` mode the user is publishing a single fat AAR via Fused Library that
     // already merges every Expo module's classes/resources/jni inside it — the
     // per-module mavenLocal/remote re-publish loop below would emit redundant
-    // coordinates next to the fat AAR. Skip the whole setup when the CLI sets this
-    // property (`-Pbrownfield.fused=true`).
+    // coordinates next to the fat AAR. Skip.
     if (rootProject.findProperty("brownfield.fused") == "true") {
       return@afterEvaluate
     }
