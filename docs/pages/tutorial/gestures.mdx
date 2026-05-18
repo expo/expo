@@ -184,7 +184,7 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
         <Animated.Image
           source={stickerSource}
           resizeMode="contain"
-          style={/* @tutinfo Modify the <CODE>style</CODE> prop on the <CODE>Animated.Image</CODE> to pass the <CODE>imageStyle</CODE>. */[imageStyle, { width: imageSize, height: imageSize }]/* @end */}
+          style={/* @tutinfo Modify the <CODE>style</CODE> prop on the <CODE>Animated.Image</CODE> to pass the <CODE>imageStyle</CODE>. */[{ width: imageSize, height: imageSize }, imageStyle]/* @end */}
         />
       /* @tutinfo */
       </GestureDetector>
@@ -326,7 +326,7 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
           <Animated.Image
             source={stickerSource}
             resizeMode="contain"
-            style={[imageStyle, { width: imageSize, height: imageSize }]}
+            style={[{ width: imageSize, height: imageSize }, imageStyle]}
           />
         </GestureDetector>
       </Animated.View>
