@@ -31,8 +31,9 @@ import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
-import { copyPublicFolderAsync } from '../publicFolder';
-import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
+import { copyPublicFolderAsync, getPublicFolderPath } from '../publicFolder';
+import type { BundleAssetWithFileHashes, ExportAssetMap } from '../saveAssets';
+import { persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 
@@ -143,7 +144,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
     // Copy public folder for dom components only if
     hasDomComponents
       ? copyPublicFolderAsync(
-          path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER),
+          getPublicFolderPath(projectRoot),
           path.join(domComponentProxyOutputDir, DOM_COMPONENTS_BUNDLE_DIR)
         )
       : null,

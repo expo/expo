@@ -4,7 +4,7 @@ import path from 'path';
 
 import { TEMPLATES } from '../../customize/templates';
 import { appendLinkToHtml, appendScriptsToHtml } from '../../export/html';
-import { env } from '../../utils/env';
+import { getPublicFolderPath } from '../../export/publicFolder';
 
 /**
  * Create a static HTML for SPA styled websites.
@@ -34,9 +34,9 @@ export async function createTemplateHtmlFromExpoConfigAsync(
 
 function getFileFromLocalPublicFolder(
   projectRoot: string,
-  { publicFolder, filePath }: { publicFolder: string; filePath: string }
+  { filePath }: { filePath: string }
 ): string | null {
-  const localFilePath = path.resolve(projectRoot, publicFolder, filePath);
+  const localFilePath = path.resolve(getPublicFolderPath(projectRoot), filePath);
   if (!fs.existsSync(localFilePath)) {
     return null;
   }
@@ -46,8 +46,6 @@ function getFileFromLocalPublicFolder(
 /** Attempt to read the `index.html` from the local project before falling back on the template `index.html`. */
 async function getTemplateIndexHtmlAsync(projectRoot: string): Promise<string> {
   let filePath = getFileFromLocalPublicFolder(projectRoot, {
-    // TODO: Maybe use the app.json override.
-    publicFolder: env.EXPO_PUBLIC_FOLDER,
     filePath: 'index.html',
   });
   if (!filePath) {
