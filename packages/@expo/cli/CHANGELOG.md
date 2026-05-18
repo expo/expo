@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add `/_expo/open` middleware for programmatically resolving deep links and disambiguation pages for the running dev server. ([#45804](https://github.com/expo/expo/pull/45804) by [@EvanBacon](https://github.com/EvanBacon))
+- Upgrade react-native-tvos to the correct version on install/fix. ([#45816](https://github.com/expo/expo/pull/45816) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
