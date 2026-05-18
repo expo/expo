@@ -1,7 +1,7 @@
 import path from 'path';
 
 import type { ExtraDependencies, ModuleDescriptorDevTools, PackageRevision } from '../types';
-import { isPathInside } from '../utils';
+import { isPathInside, maybeRealpath } from '../utils';
 
 export async function resolveModuleAsync(
   packageName: string,
@@ -15,20 +15,22 @@ export async function resolveModuleAsync(
   return {
     packageName,
     packageRoot: revision.path,
-    webpageRoot: resolveWebpageRoot(revision.path, devtoolsConfig.webpageRoot),
+    webpageRoot: await resolveWebpageRoot(revision.path, devtoolsConfig.webpageRoot),
     cliExtensions: devtoolsConfig.cliExtensions,
   };
 }
 
-function resolveWebpageRoot(
+async function resolveWebpageRoot(
   packageRoot: string,
-  configured: string | undefined
-): string | undefined {
-  if (!configured) {
+  configuredWebpageRoot: string | undefined
+): Promise<string | undefined> {
+  if (!configuredWebpageRoot) {
     return undefined;
   }
-  const joined = path.join(packageRoot, configured);
-  return isPathInside(joined, packageRoot) ? joined : undefined;
+  const resolvedWebpageRoot = path.resolve(packageRoot, configuredWebpageRoot);
+  // NOTE(@kitten): Failing realpath-ing, typically due to ENOENT, results in the original value
+  const webpageRoot = (await maybeRealpath(resolvedWebpageRoot)) ?? resolvedWebpageRoot;
+  return isPathInside(webpageRoot, packageRoot) ? webpageRoot : undefined;
 }
 
 export async function resolveExtraBuildDependenciesAsync(
