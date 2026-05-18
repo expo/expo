@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import ExpoModulesWorkletsObjC
 
 /**
  A protocol for all serializable types from react-native-worklets.

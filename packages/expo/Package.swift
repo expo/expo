@@ -4,61 +4,28 @@ import Foundation
 
 // MARK: - Autolinking JSON Model Types
 
-/// Root structure returned by `expo-modules-autolinking resolve --json --platform apple`.
+/// Root structure returned by `expo-modules-autolinking resolve --json --platform apple --swiftpm`.
 struct ExpoAutolinkingResult: Decodable {
   let modules: [ExpoModule]
-  let coreFeatures: [String]
-  let extraDependencies: [ExpoExtraDependency]
-  let configuration: ExpoConfiguration?
 }
 
-/// A resolved Expo module descriptor for Apple platforms.
+/// A resolved Expo module descriptor for Apple platforms (SwiftPM mode).
 struct ExpoModule: Decodable {
   let packageName: String
   let packageVersion: String
-  let pods: [ExpoModulePod]
-  let swiftModuleNames: [String]
-  let flags: ExpoModuleFlags?
-  let modules: [ExpoModuleClass]
-  let appDelegateSubscribers: [String]
-  let reactDelegateHandlers: [String]
-  let debugOnly: Bool
-  let coreFeatures: [String]?
+  let swiftPackage: ExpoModuleSwiftPackage?
 }
 
-struct ExpoModulePod: Decodable {
-  let podName: String
-  let podspecDir: String
-}
-
-struct ExpoModuleFlags: Decodable {
-  let inhibitWarnings: Bool?
-
-  enum CodingKeys: String, CodingKey {
-    case inhibitWarnings = "inhibit_warnings"
-  }
-}
-
-struct ExpoModuleClass: Decodable {
-  let name: String?
-  let `class`: String
-}
-
-struct ExpoExtraDependency: Decodable {
-  let name: String
-  let version: String?
-  let path: String?
-}
-
-struct ExpoConfiguration: Decodable {
-  let buildFromSource: [String]?
+struct ExpoModuleSwiftPackage: Decodable {
+  let packageName: String
+  let packagePath: String
+  let productNames: [String]
 }
 
 // MARK: - Resolver
 
 /// Finds the absolute path to `node` by checking common installation locations.
 func findNodePath() -> String {
-  // Check well-known paths where node is typically installed.
   let candidates = [
     "/usr/local/bin/node",        // Homebrew (Intel Mac), manual installs
     "/opt/homebrew/bin/node",     // Homebrew (Apple Silicon)
@@ -70,8 +37,7 @@ func findNodePath() -> String {
     }
   }
 
-  // Fall back to asking the user's default shell to resolve it.
-  // This picks up nvm, fnm, volta, asdf, etc.
+  // Fall back to asking the user's default shell — picks up nvm, fnm, volta, asdf, etc.
   let shell = ProcessInfo.processInfo.environment["SHELL"] ?? "/bin/zsh"
   let probe = Process()
   probe.executableURL = URL(fileURLWithPath: shell)
@@ -93,13 +59,13 @@ func findNodePath() -> String {
   fatalError("Could not find node. Install Node.js or set the NODE_BINARY environment variable.")
 }
 
-/// Resolves Expo modules by running the `expo-modules-autolinking` CLI.
+/// Resolves Expo modules by running `expo-modules-autolinking` in SwiftPM mode.
 func resolveExpoModules(projectRoot: String, exclude: [String] = []) throws -> ExpoAutolinkingResult {
   let nodePath = ProcessInfo.processInfo.environment["NODE_BINARY"] ?? findNodePath()
 
   let packageDir = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent() // expo/
-    .deletingLastPathComponent() // /
+    .deletingLastPathComponent() // packages/
 
   let cliBin = packageDir
     .appendingPathComponent("expo-modules-autolinking")
@@ -107,7 +73,10 @@ func resolveExpoModules(projectRoot: String, exclude: [String] = []) throws -> E
     .appendingPathComponent("expo-modules-autolinking.js")
     .path
 
-  var arguments = [cliBin, "resolve", "--json", "--platform", "apple", "--project-root", projectRoot]
+  var arguments = [
+    cliBin, "resolve", "--json", "--platform", "apple", "--swiftpm",
+    "--project-root", projectRoot,
+  ]
   for name in exclude {
     arguments.append(contentsOf: ["--exclude", name])
   }
@@ -134,62 +103,88 @@ func resolveExpoModules(projectRoot: String, exclude: [String] = []) throws -> E
   return try JSONDecoder().decode(ExpoAutolinkingResult.self, from: data)
 }
 
-// MARK: - Resolve and build the package
+// MARK: - Resolve
 
 // TODO: The project root should be passed from the consuming app's Package.swift.
-// For now, we derive it relative to this file's location in the expo repo.
+// For now, derive it relative to this file's location in the expo repo.
 let projectRoot = URL(fileURLWithPath: #filePath)
   .deletingLastPathComponent() // packages/expo/
   .deletingLastPathComponent() // packages/
-  .deletingLastPathComponent() // /
+  .deletingLastPathComponent() // repo root
   .appendingPathComponent("apps")
-  .appendingPathComponent("bare-expo")
+  .appendingPathComponent("swiftpm-tester")
   .path
 
 let resolved = try resolveExpoModules(projectRoot: projectRoot)
 
-// Map resolved modules to SwiftPM package dependencies.
-// The podspecDir points to the module's iOS source directory,
-// so we go up one level to find the package root containing Package.swift.
-let moduleDependencies: [Package.Dependency] = resolved.modules.compactMap { module in
-  guard let podspecDir = module.pods.first?.podspecDir else { return nil }
-  let packagePath = URL(fileURLWithPath: podspecDir).deletingLastPathComponent().path
-  return .package(path: packagePath)
+let resolvedSwiftPackages: [ExpoModuleSwiftPackage] = resolved.modules.compactMap { $0.swiftPackage }
+
+let moduleDependencies: [Package.Dependency] = resolvedSwiftPackages.map { pkg in
+  .package(name: pkg.packageName, path: pkg.packagePath)
 }
 
-// Collect the SwiftPM product names (based on pod names) for the target dependency list.
-let moduleTargetDependencies: [Target.Dependency] = resolved.modules.compactMap { module in
-  guard let pod = module.pods.first else {
-    return nil
-  }
-  let sourceUrl = URL(fileURLWithPath: pod.podspecDir).deletingLastPathComponent()
-  let hasPackageSwift = FileManager.default.fileExists(
-    atPath: sourceUrl.appendingPathComponent("Package.swift").path
-  )
-  if !hasPackageSwift {
-    return nil
-  }
-  return .product(name: pod.podName, package: module.packageName)
+let moduleTargetDependencies: [Target.Dependency] = resolvedSwiftPackages.flatMap { pkg in
+  pkg.productNames.map { .product(name: $0, package: pkg.packageName) }
 }
 
-// MARK: - debugging
+// MARK: - React precompile flags
+//
+// Mirrors the flags in `expo-modules-core/Package.swift`. Required here because
+// `ExpoObjC`'s sources transitively import `<React/...>` headers via the
+// `ExpoModulesCoreObjC` umbrella, and Clang module-building re-parses those
+// headers in the importing target's compile environment.
 
-let dependencies: [Package.Dependency] = resolved.modules.compactMap { module in
-  guard let podspecDir = module.pods.first?.podspecDir else {
-    return nil
-  }
-  let sourceUrl = URL(fileURLWithPath: podspecDir).deletingLastPathComponent()
-  let hasPackageSwift = FileManager.default.fileExists(
-    atPath: sourceUrl.appendingPathComponent("Package.swift").path
-  )
-  if !hasPackageSwift {
-    return nil
-  }
-  print("DUPA #2", module.packageName, module.packageVersion, sourceUrl.path)
-  return .package(name: module.packageName, path: sourceUrl.path)
-}
+let reactNativeVersion = "0.85.3"
+let hermesVersion = "0.16.0"
+let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
+let precompileCacheDir = URL(fileURLWithPath: "\(packageDir)/../precompile/.cache").standardized.path
+let expoModulesCoreCppDir = URL(fileURLWithPath: "\(packageDir)/../expo-modules-core/common/cpp").standardized.path
+let reactSliceDir = "ios-arm64_x86_64-simulator"
+let reactDebugDir = "\(precompileCacheDir)/react/\(reactNativeVersion)/debug"
+let reactReleaseDir = "\(precompileCacheDir)/react/\(reactNativeVersion)/release"
+let rndDebugDir = "\(precompileCacheDir)/react-native-dependencies/\(reactNativeVersion)/debug"
+let rndReleaseDir = "\(precompileCacheDir)/react-native-dependencies/\(reactNativeVersion)/release"
+let hermesDebugDir = "\(precompileCacheDir)/hermes/\(hermesVersion)/debug/destroot/Library/Frameworks/universal"
+let hermesReleaseDir = "\(precompileCacheDir)/hermes/\(hermesVersion)/release/destroot/Library/Frameworks/universal"
 
-print("DUPA #3", dependencies)
+// `ExpoModulesCoreCommonUmbrella.h` is reached via the
+// `ExpoModulesCoreObjC` umbrella; its includes need the sibling cpp dirs.
+let cppHeaderFlags: [String] = [
+  "-I", expoModulesCoreCppDir,
+  "-I", "\(expoModulesCoreCppDir)/JSI",
+  "-I", "\(expoModulesCoreCppDir)/fabric",
+]
+
+let reactDebugFlags: [String] = [
+  "-ivfsoverlay", "\(reactDebugDir)/React-VFS.yaml",
+  "-iframework", "\(reactDebugDir)/React.xcframework/\(reactSliceDir)",
+  "-iframework", "\(rndDebugDir)/ReactNativeDependencies.xcframework/\(reactSliceDir)",
+  "-iframework", "\(hermesDebugDir)/hermesvm.xcframework/\(reactSliceDir)",
+  "-I", "\(reactDebugDir)/React.xcframework/Headers",
+  "-I", "\(reactDebugDir)/React.xcframework/React_Core",
+  "-I", "\(reactDebugDir)/React.xcframework/Headers/React_RCTAppDelegate",
+  "-I", "\(rndDebugDir)/ReactNativeDependencies.xcframework/Headers",
+  "-I", "\(precompileCacheDir)/hermes/\(hermesVersion)/debug/destroot/include",
+] + cppHeaderFlags
+let reactReleaseFlags: [String] = [
+  "-ivfsoverlay", "\(reactReleaseDir)/React-VFS.yaml",
+  "-iframework", "\(reactReleaseDir)/React.xcframework/\(reactSliceDir)",
+  "-iframework", "\(rndReleaseDir)/ReactNativeDependencies.xcframework/\(reactSliceDir)",
+  "-iframework", "\(hermesReleaseDir)/hermesvm.xcframework/\(reactSliceDir)",
+  "-I", "\(reactReleaseDir)/React.xcframework/Headers",
+  "-I", "\(reactReleaseDir)/React.xcframework/React_Core",
+  "-I", "\(reactReleaseDir)/React.xcframework/Headers/React_RCTAppDelegate",
+  "-I", "\(rndReleaseDir)/ReactNativeDependencies.xcframework/Headers",
+  "-I", "\(precompileCacheDir)/hermes/\(hermesVersion)/release/destroot/include",
+] + cppHeaderFlags
+let swiftReactDebugFlags = reactDebugFlags.flatMap { ["-Xcc", $0] }
+  + ["-F", "\(reactDebugDir)/React.xcframework/\(reactSliceDir)"]
+  + ["-F", "\(rndDebugDir)/ReactNativeDependencies.xcframework/\(reactSliceDir)"]
+  + ["-F", "\(hermesDebugDir)/hermesvm.xcframework/\(reactSliceDir)"]
+let swiftReactReleaseFlags = reactReleaseFlags.flatMap { ["-Xcc", $0] }
+  + ["-F", "\(reactReleaseDir)/React.xcframework/\(reactSliceDir)"]
+  + ["-F", "\(rndReleaseDir)/ReactNativeDependencies.xcframework/\(reactSliceDir)"]
+  + ["-F", "\(hermesReleaseDir)/hermesvm.xcframework/\(reactSliceDir)"]
 
 // MARK: - Return package
 
@@ -203,17 +198,17 @@ let package = Package(
   products: [
     .library(name: "Expo", targets: ["Expo", "ExpoObjC"])
   ],
-  dependencies: [
-    .package(name: "expo-modules-core", path: "../expo-modules-core"),
-  ] + dependencies,
+  dependencies: moduleDependencies,
   targets: [
     .target(
       name: "Expo",
-      dependencies: [
-        "ExpoObjC",
-        .product(name: "ExpoModulesCore", package: "expo-modules-core"),
-      ] + moduleTargetDependencies,
+      dependencies: ["ExpoObjC"] + moduleTargetDependencies,
       path: "ios/Expo",
+      swiftSettings: [
+        .unsafeFlags(["-Xcc", "-fmodules"]),
+        .unsafeFlags(swiftReactDebugFlags, .when(configuration: .debug)),
+        .unsafeFlags(swiftReactReleaseFlags, .when(configuration: .release)),
+      ]
     ),
     .target(
       name: "ExpoObjC",
@@ -222,11 +217,22 @@ let package = Package(
       ],
       path: "ios/ExpoObjC",
       publicHeadersPath: "include",
+      cSettings: [
+        .unsafeFlags(["-fmodules"]),
+        .unsafeFlags(reactDebugFlags, .when(configuration: .debug)),
+        .unsafeFlags(reactReleaseFlags, .when(configuration: .release)),
+      ],
+      cxxSettings: [
+        .unsafeFlags(["-fmodules"]),
+        .unsafeFlags(reactDebugFlags, .when(configuration: .debug)),
+        .unsafeFlags(reactReleaseFlags, .when(configuration: .release)),
+      ]
     ),
     .testTarget(
       name: "ExpoTests",
       dependencies: ["Expo"],
       path: "ios/Tests",
     ),
-  ]
+  ],
+  cxxLanguageStandard: .cxx20
 )
