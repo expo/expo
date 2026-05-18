@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
 import { Page } from '../../components/Page';
+import { BodyText } from '../../components/BodyText';
 
 type ArrayBufferExampleData = {
   key: string;
@@ -77,7 +78,7 @@ type ArrayBufferExampleItemProps = {
 function ArrayBufferExampleItem({ example, result, onEvaluate }: ArrayBufferExampleItemProps) {
   return (
     <View>
-      <Text>{example.title}</Text>
+      <BodyText>{example.title}</BodyText>
       <View>
         <MonoText>{example.code}</MonoText>
         {!result && <Button title="Evaluate" onPress={() => onEvaluate(example)} />}

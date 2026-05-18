@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, Text } from 'react-native';
 
 import Button from '../../components/Button';
+import { BodyText } from '../../components/BodyText';
 
 export default function ContactPickersScreen() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -53,9 +54,9 @@ export default function ContactPickersScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.status}>
+      <BodyText style={styles.status}>
         {selectedContact ? `Selected contact ID: ${selectedContact.id}` : 'No contact selected'}
-      </Text>
+      </BodyText>
       <View style={styles.buttons}>
         <Button title="Contact.presentCreateForm()" onPress={handlePresentCreateForm} />
         <Button title="Contact.presentPicker()" onPress={handlePresentPicker} />
@@ -82,7 +83,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   status: {
     marginBottom: 20,

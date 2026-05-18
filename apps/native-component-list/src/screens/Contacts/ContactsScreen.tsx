@@ -16,6 +16,7 @@ import { Colors } from '../../constants';
 import { optionalRequire } from '../../navigation/routeBuilder';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
+import { BodyText } from '../../components/BodyText';
 
 export const ContactsScreens = [
   {
@@ -219,7 +220,7 @@ function ContactsView({ navigation }: Props) {
 
                 setSelectedContact(contact);
               }}>
-              <Text>Select a contact</Text>
+              <BodyText>Select a contact</BodyText>
             </TouchableOpacity>
 
             {selectedContact && <MonoText>{JSON.stringify(selectedContact, null, 2)}</MonoText>}

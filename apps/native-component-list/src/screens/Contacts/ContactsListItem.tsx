@@ -1,8 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as React from 'react';
-import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { StyleSheet, TouchableHighlight, View } from 'react-native';
 
 import Colors from '../../constants/Colors';
+import { BodyText } from '../../components/BodyText';
 
 export default function ContactsListItem(props: {
   contactId: string;
@@ -20,10 +21,14 @@ export default function ContactsListItem(props: {
     <TouchableHighlight underlayColor={Colors.listItemTouchableHighlight} onPress={onPress}>
       <View style={styles.container}>
         <View>
-          <Text style={styles.title}>{name}</Text>
-          {subtitle && <Text style={styles.link}>{subtitle}</Text>}
+          <BodyText style={styles.title}>{name}</BodyText>
+          {subtitle && (
+            <BodyText color="secondary" style={styles.link}>
+              {subtitle}
+            </BodyText>
+          )}
         </View>
-        {isMe && <Text style={styles.subtitle}>me</Text>}
+        {isMe && <BodyText style={styles.subtitle}>me</BodyText>}
         <Ionicons size={24} color={Colors.tabIconDefault} name="arrow-forward" />
       </View>
     </TouchableHighlight>

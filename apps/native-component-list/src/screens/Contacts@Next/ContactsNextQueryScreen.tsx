@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput } from 'react-native';
 
 import Button from '../../components/Button';
+import { BodyText } from '../../components/BodyText';
 
 export default function ContactsManager() {
   const [contacts, setContacts] = useState<PartialContactDetails<[ContactField.FULL_NAME]>[]>([]);
@@ -100,7 +101,9 @@ export default function ContactsManager() {
             {item.fullName}
           </Text>
         )}
-        ListEmptyComponent={<Text style={{ padding: 20, textAlign: 'center' }}>No contacts</Text>}
+        ListEmptyComponent={
+          <BodyText style={{ padding: 20, textAlign: 'center' }}>No contacts</BodyText>
+        }
       />
     </View>
   );

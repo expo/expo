@@ -174,7 +174,6 @@ CalendarsScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.greyBackground,
     paddingHorizontal: 10,
     paddingVertical: 16,
     flex: 1,

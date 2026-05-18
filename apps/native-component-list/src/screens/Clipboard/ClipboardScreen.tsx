@@ -1,13 +1,14 @@
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
-import { Text, ScrollView, StyleSheet, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Alert } from 'react-native';
 
 import ClipboardListenerDemo from './ClipboardListenerDemo';
 import ImagePreview from './ImagePreview';
 import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
 import { ActionFunction, Platform } from '../../components/FunctionDemo/index.types';
 import { isCurrentPlatformSupported } from '../../components/FunctionDemo/utils';
+import { BodyText } from '../../components/BodyText';
 
 const withSupportedPlatforms = (platforms: Platform[], action: ActionFunction): ActionFunction =>
   isCurrentPlatformSupported(platforms)
@@ -191,9 +192,9 @@ const FUNCTIONS_DESCRIPTIONS = [
 function ClipboardScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text>
+      <BodyText>
         Hint: Try copying/pasting between this screen and other apps: e.g. Web browser and Notes app
-      </Text>
+      </BodyText>
       {FUNCTIONS_DESCRIPTIONS.map((props, idx) => (
         <FunctionDemo
           key={idx}
