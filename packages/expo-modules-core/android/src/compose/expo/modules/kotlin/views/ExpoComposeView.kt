@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.annotation.UiThread
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
@@ -226,32 +227,33 @@ abstract class ExpoComposeView<T : ComposeProps>(
     recomposeScope?.invalidate()
   }
 
-  private var transitioningChildren: MutableSet<View>? = null
+  // Children currently animating out via startViewTransition. While a view is in this set,
+  // onViewRemoved skips invalidating the recompose scope so the child's compose subtree
+  // stays alive for the duration of the transition. Mirrors ViewGroup.mTransitioningViews.
+  private val transitioningChildren: MutableSet<View> = mutableSetOf()
 
-  // The pattern to preserve the view drawing when transitioning
-  // is referred from ViewGroup source. Checkout ViewGroup's startViewTransition
   override fun startViewTransition(view: View) {
     super.startViewTransition(view)
     if (view.parent == this) {
-      val set = transitioningChildren ?: mutableSetOf<View>().also { transitioningChildren = it }
-      set.add(view)
+      transitioningChildren.add(view)
     }
   }
 
   override fun endViewTransition(view: View) {
     super.endViewTransition(view)
-    if (transitioningChildren?.remove(view) == true) {
+    if (transitioningChildren.remove(view) && view.parent != this) {
       recomposeScope?.invalidate()
     }
   }
 
+  @UiThread
   private fun isViewTransitioning(view: View): Boolean {
-    return transitioningChildren?.contains(view) == true
+    return transitioningChildren.contains(view)
   }
 
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
-    transitioningChildren?.clear()
+    transitioningChildren.clear()
   }
 }
 
