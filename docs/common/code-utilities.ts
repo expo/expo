@@ -102,7 +102,12 @@ export function cleanCopyValue(value: string, version?: string) {
 }
 
 export function escapeHtml(text: string) {
-  return text.replace(/"/g, '&quot;');
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 export function replaceXmlCommentsWithAnnotations(value: string) {
