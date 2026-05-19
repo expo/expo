@@ -135,7 +135,7 @@ const ensureFileInRootDirectory = async (root: string, file: string): Promise<st
     file = await fs.promises.realpath(file);
     // Cannot be accessed using Metro's server API, we need to move the file
     // into the project root and try again.
-    if (!isPathInside(file, root)) {
+    if (isPathInside(file, root)) {
       return file;
     } else {
       return null;
