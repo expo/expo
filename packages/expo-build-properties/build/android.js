@@ -293,7 +293,7 @@ function updateAndroidSettingsGradle({ contents, buildFromSource, }) {
     return newContents;
 }
 const withAndroidPrecompiledHeaders = (config, props) => {
-    if (!props.android?.usePrecompiledHeaders) {
+    if (!props.android?.usePrecompiledHeaders && process.env.EXPO_USE_PRECOMPILED_HEADERS !== '1') {
         return config;
     }
     config = (0, config_plugins_1.withAppBuildGradle)(config, (config) => {

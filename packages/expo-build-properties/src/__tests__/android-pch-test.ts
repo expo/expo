@@ -1,4 +1,22 @@
-import { updateBuildGradleForPCH } from '../android';
+import { updateBuildGradleForPCH, withAndroidPrecompiledHeaders } from '../android';
+
+const mockWithAppBuildGradle = jest.fn().mockImplementation((config) => config);
+
+jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
+  const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
+  return {
+    ...plugins,
+    withAppBuildGradle: mockWithAppBuildGradle,
+  };
+});
+
+jest.mock('@expo/config-plugins/build/plugins/withDangerousMod', () => {
+  const mod = jest.requireActual('@expo/config-plugins/build/plugins/withDangerousMod');
+  return {
+    ...mod,
+    withDangerousMod: jest.fn().mockImplementation((config) => config),
+  };
+});
 
 const TEMPLATE_BUILD_GRADLE = `\
 apply plugin: "com.android.application"
@@ -37,6 +55,39 @@ dependencies {
     implementation("com.facebook.react:react-android")
 }
 `;
+
+describe(withAndroidPrecompiledHeaders, () => {
+  const mockConfig = { name: 'test', slug: 'test' } as any;
+
+  afterEach(() => {
+    delete process.env.EXPO_USE_PRECOMPILED_HEADERS;
+    mockWithAppBuildGradle.mockClear();
+  });
+
+  it('should skip when neither config nor env var is set', () => {
+    withAndroidPrecompiledHeaders(mockConfig, { android: {} });
+    expect(mockWithAppBuildGradle).not.toHaveBeenCalled();
+  });
+
+  it('should apply when usePrecompiledHeaders is true in config', () => {
+    withAndroidPrecompiledHeaders(mockConfig, {
+      android: { usePrecompiledHeaders: true },
+    });
+    expect(mockWithAppBuildGradle).toHaveBeenCalled();
+  });
+
+  it('should apply when EXPO_USE_PRECOMPILED_HEADERS env var is set to 1', () => {
+    process.env.EXPO_USE_PRECOMPILED_HEADERS = '1';
+    withAndroidPrecompiledHeaders(mockConfig, { android: {} });
+    expect(mockWithAppBuildGradle).toHaveBeenCalled();
+  });
+
+  it('should skip when EXPO_USE_PRECOMPILED_HEADERS env var is not 1', () => {
+    process.env.EXPO_USE_PRECOMPILED_HEADERS = '0';
+    withAndroidPrecompiledHeaders(mockConfig, { android: {} });
+    expect(mockWithAppBuildGradle).not.toHaveBeenCalled();
+  });
+});
 
 describe(updateBuildGradleForPCH, () => {
   it('should add externalNativeBuild block inside android section', () => {
