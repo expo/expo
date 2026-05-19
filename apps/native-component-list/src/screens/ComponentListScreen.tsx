@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, NavigationAction, useLinkBuilder, useLinkProps } from '@react-navigation/native';
+import { useObserve } from 'expo-observe';
 import React from 'react';
 import {
   FlatList,
@@ -111,10 +112,12 @@ function LinkButton({
 
 export default function ComponentListScreen(props: Props) {
   const { theme } = useTheme();
+  const { markInteractive } = useObserve();
 
   React.useEffect(() => {
     StatusBar.setHidden(false);
-  }, []);
+    markInteractive();
+  }, [markInteractive]);
 
   const { width } = useWindowDimensions();
   const isMobile = width <= 640;

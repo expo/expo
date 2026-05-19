@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Checkbox } from 'expo-checkbox';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
+import { useObserve } from 'expo-observe';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -46,6 +47,7 @@ function ListItem({
 
 export default function SelectScreen({ navigation }) {
   const { theme } = useTheme();
+  const { markInteractive } = useObserve();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [modules, setModules] = useState<Module[]>([]);
   const [footerHeight, setFooterHeight] = useState(0);
@@ -53,6 +55,14 @@ export default function SelectScreen({ navigation }) {
   const onFooterLayout = useCallback((e) => {
     setFooterHeight(e.nativeEvent.layout.height);
   }, []);
+
+  const hasMarkedInteractive = useRef(false);
+  useEffect(() => {
+    if (modules.length > 0 && !hasMarkedInteractive.current) {
+      hasMarkedInteractive.current = true;
+      markInteractive();
+    }
+  }, [modules, markInteractive]);
 
   useEffect(() => {
     AsyncStorage.getItem(SELECTION_STORAGE_KEY).then((value) => {

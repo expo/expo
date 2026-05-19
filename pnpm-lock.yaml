@@ -992,6 +992,9 @@ importers:
       expo-notifications:
         specifier: workspace:*
         version: link:../../packages/expo-notifications
+      expo-observe:
+        specifier: workspace:*
+        version: link:../../packages/expo-observe
       expo-print:
         specifier: workspace:*
         version: link:../../packages/expo-print
@@ -1700,6 +1703,9 @@ importers:
       expo-notifications:
         specifier: workspace:*
         version: link:../../packages/expo-notifications
+      expo-observe:
+        specifier: workspace:*
+        version: link:../../packages/expo-observe
       expo-screen-orientation:
         specifier: workspace:*
         version: link:../../packages/expo-screen-orientation

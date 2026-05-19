@@ -109,6 +109,7 @@
     "expo-navigation-bar": "workspace:*",
     "expo-network": "workspace:*",
     "expo-notifications": "workspace:*",
+    "expo-observe": "workspace:*",
     "expo-print": "workspace:*",
     "expo-processing": "workspace:*",
     "expo-screen-capture": "workspace:*",
