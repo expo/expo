@@ -1,4 +1,5 @@
 import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+declare function escapeString(value: string): string;
 declare function osascriptSpawnAsync(script: string | string[], opts?: SpawnOptions): Promise<SpawnResult>;
 declare function isAppRunningAsync(appName: string): Promise<boolean>;
 declare function safeIdOfAppAsync(appName: string): Promise<string | null>;
@@ -13,4 +14,4 @@ declare function openTerminalToSpecificFolderAsync(dir: string, inTab?: boolean)
 declare function openFolderInTerminalAppAsync(dir: string, inTab?: boolean): Promise<SpawnResult>;
 /** @deprecated */
 declare function osascriptExecAsync(script: string | string[], opts?: SpawnOptions): Promise<string>;
-export { chooseAppAsync, chooseEditorAppAsync, chooseTerminalAppAsync, osascriptExecAsync as execAsync, isAppRunningAsync, openFinderToFolderAsync, openFolderInTerminalAppAsync, openInAppAsync, openInEditorAsync, openItermToSpecificFolderAsync, openTerminalToSpecificFolderAsync, safeIdOfAppAsync, osascriptSpawnAsync as spawnAsync, };
+export { chooseAppAsync, chooseEditorAppAsync, chooseTerminalAppAsync, escapeString, osascriptExecAsync as execAsync, isAppRunningAsync, openFinderToFolderAsync, openFolderInTerminalAppAsync, openInAppAsync, openInEditorAsync, openItermToSpecificFolderAsync, openTerminalToSpecificFolderAsync, safeIdOfAppAsync, osascriptSpawnAsync as spawnAsync, };
