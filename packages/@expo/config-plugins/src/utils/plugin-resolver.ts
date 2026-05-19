@@ -39,7 +39,8 @@ export function resolvePluginForModule(
     if (pluginPackageFile) {
       return { isPluginFile: true, filePath: pluginPackageFile };
     }
-    const packageMainEntry = resolveFrom(projectRoot, pluginReference);
+    // Skip the extension/index probes — Node's resolver (step 4) handles `main`.
+    const packageMainEntry = resolveFrom(projectRoot, pluginReference, { extensions: [] });
     if (packageMainEntry) {
       return { isPluginFile: false, filePath: packageMainEntry };
     }
