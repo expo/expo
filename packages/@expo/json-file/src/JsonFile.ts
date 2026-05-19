@@ -19,6 +19,7 @@ type Options<TJSONObject extends JSONObject> = {
   jsonParseErrorDefault?: TJSONObject;
   cantReadFileDefault?: TJSONObject;
   ensureDir?: boolean;
+  mode?: fs.Mode;
   default?: TJSONObject;
   json5?: boolean;
   space?: number;
@@ -30,6 +31,7 @@ const DEFAULT_OPTIONS = {
   jsonParseErrorDefault: undefined,
   cantReadFileDefault: undefined,
   ensureDir: false,
+  mode: undefined,
   default: undefined,
   json5: false,
   space: 2,
@@ -280,7 +282,7 @@ function write<TJSONObject extends JSONObject>(
     throw new JsonFileError(`Couldn't JSON.stringify object for file: ${file}`, e);
   }
   const data = addNewLineAtEOF ? `${json}\n` : json;
-  writeFileAtomicSync(file, data);
+  writeFileAtomicSync(file, data, { mode: options?.mode });
   return object;
 }
 
@@ -306,7 +308,7 @@ async function writeAsync<TJSONObject extends JSONObject>(
     throw new JsonFileError(`Couldn't JSON.stringify object for file: ${file}`, e);
   }
   const data = addNewLineAtEOF ? `${json}\n` : json;
-  await writeFileAtomic(file, data);
+  await writeFileAtomic(file, data, { mode: options?.mode });
   return object;
 }
 

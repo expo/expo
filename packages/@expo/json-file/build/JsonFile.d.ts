@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 export type JSONValue = boolean | number | string | null | JSONArray | JSONObject;
 export interface JSONArray extends Array<JSONValue> {
 }
@@ -10,6 +11,7 @@ type Options<TJSONObject extends JSONObject> = {
     jsonParseErrorDefault?: TJSONObject;
     cantReadFileDefault?: TJSONObject;
     ensureDir?: boolean;
+    mode?: fs.Mode;
     default?: TJSONObject;
     json5?: boolean;
     space?: number;

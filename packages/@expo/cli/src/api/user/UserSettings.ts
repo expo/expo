@@ -46,10 +46,14 @@ export function getSettingsFilePath(): string {
   return path.join(getExpoHomeDirectory(), 'state.json');
 }
 
+// state.json holds the auth session secret, so restrict it to the owner only.
+const SETTINGS_FILE_MODE = 0o600;
+
 /** Get a new JsonFile instance pointed towards the settings file */
 export function getSettings(): JsonFile<UserSettingsData> {
   return new JsonFile<UserSettingsData>(getSettingsFilePath(), {
     ensureDir: true,
+    mode: SETTINGS_FILE_MODE,
     jsonParseErrorDefault: {},
     // This will ensure that an error isn't thrown if the file doesn't exist.
     cantReadFileDefault: {},
@@ -65,10 +69,7 @@ export function getSession() {
 }
 
 export async function setSessionAsync(sessionData?: SessionData) {
-  await getSettings().setAsync('auth', sessionData, {
-    default: {},
-    ensureDir: true,
-  });
+  await getSettings().setAsync('auth', sessionData, { default: {} });
 }
 
 /**

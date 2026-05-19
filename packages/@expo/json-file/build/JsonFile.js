@@ -47,6 +47,7 @@ const DEFAULT_OPTIONS = {
     jsonParseErrorDefault: undefined,
     cantReadFileDefault: undefined,
     ensureDir: false,
+    mode: undefined,
     default: undefined,
     json5: false,
     space: 2,
@@ -242,7 +243,7 @@ function write(file, object, options) {
         throw new JsonFileError_1.default(`Couldn't JSON.stringify object for file: ${file}`, e);
     }
     const data = addNewLineAtEOF ? `${json}\n` : json;
-    (0, writeAtomic_1.writeFileAtomicSync)(file, data);
+    (0, writeAtomic_1.writeFileAtomicSync)(file, data, { mode: options?.mode });
     return object;
 }
 async function writeAsync(file, object, options) {
@@ -265,7 +266,7 @@ async function writeAsync(file, object, options) {
         throw new JsonFileError_1.default(`Couldn't JSON.stringify object for file: ${file}`, e);
     }
     const data = addNewLineAtEOF ? `${json}\n` : json;
-    await (0, writeAtomic_1.writeFileAtomic)(file, data);
+    await (0, writeAtomic_1.writeFileAtomic)(file, data, { mode: options?.mode });
     return object;
 }
 function setSync(file, key, value, options) {
