@@ -57,7 +57,7 @@ export function resolveHrefStringWithSegments(
   // Collapse leading slashes so a scheme-relative `//host/...` href — whether
   // smuggled in directly or produced by URL resolution above — cannot route
   // navigation cross-origin.
-  return href.replace(/^\/{2,}/, '/');
+  return href.replace(/^\/+/, '/');
 }
 
 function createQualifiedPathname(
