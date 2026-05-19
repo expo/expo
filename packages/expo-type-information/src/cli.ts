@@ -7,9 +7,9 @@ import { generateModuleTypesCommand } from './commands/generateModuleTypesComman
 import { generateViewTypesCommand } from './commands/generateViewTypesCommand';
 import { inlineModulesInterfaceCommand } from './commands/inlineModulesInterfaceCommand';
 import { moduleInterfaceCommand } from './commands/moduleInterfaceCommand';
+import { preprocessFileCommand } from './commands/preprocessFileCommand';
 import { shortModuleInterfaceCommand } from './commands/shortModuleInterfaceCommand';
 import { typeInformationCommand } from './commands/typeInformationCommand';
-import { preprocessFileCommand } from './commands/preprocessFileCommand';
 
 async function main(args: string[]) {
   if (!isSourceKittenInstalled()) {

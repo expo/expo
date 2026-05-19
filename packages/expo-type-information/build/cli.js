@@ -8,9 +8,9 @@ const generateModuleTypesCommand_1 = require("./commands/generateModuleTypesComm
 const generateViewTypesCommand_1 = require("./commands/generateViewTypesCommand");
 const inlineModulesInterfaceCommand_1 = require("./commands/inlineModulesInterfaceCommand");
 const moduleInterfaceCommand_1 = require("./commands/moduleInterfaceCommand");
+const preprocessFileCommand_1 = require("./commands/preprocessFileCommand");
 const shortModuleInterfaceCommand_1 = require("./commands/shortModuleInterfaceCommand");
 const typeInformationCommand_1 = require("./commands/typeInformationCommand");
-const preprocessFileCommand_1 = require("./commands/preprocessFileCommand");
 async function main(args) {
     if (!(0, commandUtils_1.isSourceKittenInstalled)()) {
         console.error('Sourcekitten not found! Install it like so: brew install sourcekitten');
