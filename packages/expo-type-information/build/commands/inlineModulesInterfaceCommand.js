@@ -102,6 +102,7 @@ async function inlineModulesInterfaceCommand(cli) {
         if (!parsedArgs) {
             return;
         }
+        (0, commandUtils_1.maybePrepareOutputDirectory)(parsedArgs?.realOutputPath);
         const { appJsonPath, watcher } = parsedArgs;
         if (!appJsonPath) {
             return;
