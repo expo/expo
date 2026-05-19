@@ -305,9 +305,9 @@ export async function getErrorOverlayHtmlAsync({
     isDisabled: false,
     logs: [log],
   };
-  const html = `<html><head><style>#root,body,html{height:100%;background-color:black}body{overflow:hidden}#root{display:flex}</style></head><body><div id="root"></div><script id="_expo-static-error" type="application/json">${JSON.stringify(
-    logBoxContext
-  )}</script></body></html>`;
+  // Escape `<` so error contents like `</script>` cannot break out of the embedded JSON block.
+  const serializedLogBox = JSON.stringify(logBoxContext).replace(/</g, '\\u003c');
+  const html = `<html><head><style>#root,body,html{height:100%;background-color:black}body{overflow:hidden}#root{display:flex}</style></head><body><div id="root"></div><script id="_expo-static-error" type="application/json">${serializedLogBox}</script></body></html>`;
 
   // TODO: We could reuse the pre-built DOM Log Box from @expo/log-box
   const errorOverlayEntry = await createMetroEndpointAsync(
@@ -328,7 +328,8 @@ export async function getErrorOverlayHtmlAsync({
     }
   );
 
-  const htmlWithJs = html.replace('</body>', `<script src=${errorOverlayEntry}></script></body>`);
+  const escapedSrc = errorOverlayEntry.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  const htmlWithJs = html.replace('</body>', `<script src="${escapedSrc}"></script></body>`);
   return htmlWithJs;
 }
 
