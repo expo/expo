@@ -29,7 +29,16 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
    * `ExpoModulesPackageList.kt` for modules excluded from the fat AAR, so the host
    * app doesn't hit `NoClassDefFoundError` at load time.
    *
-   * Strip prefixes are passed via `-Pbrownfield.fused.strip-packages=foo.,bar.`.
+   * Variant-aware: on the RELEASE sibling build (CLI passes
+   * `-Pbrownfield.fused.variant=release`), dev-only Expo modules
+   * (`expo-dev-menu` / `-launcher` / `-client`) are excluded from the fat AAR by
+   * the fused template's `devOnlySkipProjects` set, so this strips their
+   * `ExpoModulesPackageList` references too. On the DEBUG sibling build, dev
+   * modules ARE included, so no stripping is needed.
+   *
+   * Extra prefixes can be passed via `-Pbrownfield.fused.strip-packages=foo.,bar.`
+   * to handle ad-hoc skip-list additions.
+   *
    * Inert in non-fused builds.
    */
   private fun setupFusedModeStripping(brownfieldProject: Project) {
@@ -37,9 +46,23 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
     val expoProject = brownfieldProject.rootProject.findProject(":expo") ?: return
 
-    // Empty by default; opt-in via `-Pbrownfield.fused.strip-packages=...` when
-    // pairing with `-Pbrownfield.fused.skip=...` to drop dangling references.
-    val defaultStripPrefixes = emptySet<String>()
+    // Strip prefixes that mirror the `devOnlySkipProjects` set in the release
+    // fused sibling. Kept in sync manually — if you add a module to the release
+    // skip list in `templates/android/fused/build.gradle.kts`, add its package
+    // prefix here too.
+    val fusedVariant =
+      (brownfieldProject.findProperty("brownfield.fused.variant") as? String)?.lowercase()
+    val variantStripPrefixes: Set<String> =
+      if (fusedVariant == "release") {
+        setOf(
+          "expo.modules.devmenu.",
+          "expo.modules.devlauncher.",
+          "expo.modules.devclient.",
+          "expo.interfaces.devmenu.",
+        )
+      } else {
+        emptySet()
+      }
     val extraStrip =
       (brownfieldProject.findProperty("brownfield.fused.strip-packages") as? String)
         ?.split(',')
@@ -47,7 +70,9 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
         ?.filter { it.isNotEmpty() }
         ?.toSet()
         ?: emptySet()
-    val stripPrefixes = defaultStripPrefixes + extraStrip
+    val stripPrefixes = variantStripPrefixes + extraStrip
+
+    if (stripPrefixes.isEmpty()) return
 
     // `:expo` is already evaluated (forced by `evaluationDependsOn(":expo")` at the
     // top of `apply`), so we read the task directly — no afterEvaluate needed.
@@ -72,7 +97,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
           .joinToString("\n")
       outputFile.writeText(stripped)
       expoProject.logger.lifecycle(
-        "brownfield.fused: stripped ExpoModulesPackageList entries matching ${stripPrefixes.joinToString(", ")}"
+        "brownfield.fused[${fusedVariant ?: "?"}]: stripped ExpoModulesPackageList entries matching ${stripPrefixes.joinToString(", ")}"
       )
     }
   }

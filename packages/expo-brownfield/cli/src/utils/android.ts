@@ -14,13 +14,16 @@ export const buildPublishingTask = (
 ): string => {
   const repositoryName = repository === 'MavenLocal' ? repository : `${repository}Repository`;
   const task = `publishBrownfield${variant}PublicationTo${repositoryName}`;
-  // In `--fused` mode only the fused sibling subproject should publish — every other
-  // expo module subproject also has this publication on its own setup plugin and would
-  // publish redundant per-module AARs next to the fat AAR. The `:project:task` form
-  // restricts Gradle to that one subproject. `-Pbrownfield.fused=true` (passed in
-  // `runTask`) additionally short-circuits the publish plugin's prebuilts re-publish loop.
+  // In `--fused` mode each variant has its own sibling Gradle subproject (AGP
+  // fused-library is single-variant per module). Route the task to the matching
+  // sibling — `:<lib>-fused-release` for Release, `:<lib>-fused-debug` for Debug.
+  // `--fused --all` is handled upstream by emitting both Release and Debug task
+  // names; this function sees them one at a time.
+  // `-Pbrownfield.fused=true` (passed in `runTask`'s extraGradleArgs) short-circuits
+  // the publish plugin's per-module re-publish loop.
   if (fusedOpts.fused) {
-    return `:${fusedOpts.library}-fused:${task}`;
+    const siblingSuffix = variant === 'Debug' ? 'debug' : 'release';
+    return `:${fusedOpts.library}-fused-${siblingSuffix}:${task}`;
   }
   return task;
 };
@@ -112,7 +115,18 @@ export const runTask = async (
   dryRun: boolean,
   extraGradleArgs: string[] = []
 ) => {
-  const args = [task, ...extraGradleArgs];
+  // For fused tasks (path starts with `:<lib>-fused-<variant>:`), forward the
+  // variant as a Gradle property so `setupFusedModeStripping` in the
+  // brownfield-setup plugin applies the right strip prefixes — strip dev-module
+  // refs from the generated `ExpoModulesPackageList.kt` on release builds, no-op
+  // on debug. Each fused-mode task runs in its own Gradle invocation, so the
+  // property is correctly scoped per-task.
+  const fusedVariantMatch = task.match(/:[^:]+-fused-(release|debug):/);
+  const perTaskArgs = fusedVariantMatch
+    ? [...extraGradleArgs, `-Pbrownfield.fused.variant=${fusedVariantMatch[1]}`]
+    : extraGradleArgs;
+
+  const args = [task, ...perTaskArgs];
   if (dryRun) {
     console.log(`./gradlew ${args.join(' ')}`);
     return;
