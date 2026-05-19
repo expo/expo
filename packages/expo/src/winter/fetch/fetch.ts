@@ -30,7 +30,11 @@ export async function fetch(
   const signal = init?.signal ?? (initFromRequest ? input.signal : undefined);
   const redirect = init?.redirect ?? (initFromRequest ? input.redirect : undefined);
   const method = init?.method ?? (initFromRequest ? input.method : undefined);
-  const credentials = init?.credentials ?? (initFromRequest ? input.credentials : undefined);
+
+  let credentials = init?.credentials ?? (initFromRequest ? input.credentials : undefined);
+  if (credentials === 'same-origin') {
+    credentials = 'include';
+  }
 
   let headers = normalizeHeadersInit(
     init?.headers ?? (initFromRequest ? input.headers : undefined)
