@@ -342,6 +342,18 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<LoadingIndicatorProps>("LoadingIndicatorView") {
+      Content { props ->
+        LoadingIndicatorContent(props)
+      }
+    }
+
+    ExpoUIView<ContainedLoadingIndicatorProps>("ContainedLoadingIndicatorView") {
+      Content { props ->
+        ContainedLoadingIndicatorContent(props)
+      }
+    }
+
     ExpoUIView<LinearProgressIndicatorProps>("LinearProgressIndicatorView") {
       Content { props ->
         LinearProgressIndicatorContent(props)

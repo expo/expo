@@ -54,4 +54,10 @@ describe(isMatchingOrigin, () => {
       false
     );
   });
+
+  it('treats a malformed Origin header as untrusted', () => {
+    expect(isMatchingOrigin({ headers: { origin: 'not-a-url' } }, 'http://127.0.0.1:8181')).toBe(
+      false
+    );
+  });
 });

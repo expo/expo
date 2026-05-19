@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- [cli] Write private key into owner-only permissions file ([#45880](https://github.com/expo/expo/pull/45880) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Enable bsdiff-based bundle patch downloads by default. ([#45928](https://github.com/expo/expo/pull/45928) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.12 — 2026-05-15
 

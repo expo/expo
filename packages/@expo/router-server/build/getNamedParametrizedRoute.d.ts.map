@@ -1,0 +1,1 @@
+{"version":3,"file":"getNamedParametrizedRoute.d.ts","sourceRoot":"","sources":["../src/getNamedParametrizedRoute.ts"],"names":[],"mappings":"AA0CA,wBAAgB,yBAAyB,CAAC,KAAK,EAAE,MAAM,GAAG;IACxD,uBAAuB,EAAE,MAAM,CAAC;IAChC,SAAS,EAAE,MAAM,CAAC,MAAM,EAAE,MAAM,CAAC,CAAC;IAClC,sFAAsF;IACtF,YAAY,EAAE,GAAG,CAAC,MAAM,CAAC,CAAC;CAC3B,CA6DA;AAcD,wBAAgB,cAAc,CAAC,KAAK,EAAE,MAAM;;;;EAgB3C"}

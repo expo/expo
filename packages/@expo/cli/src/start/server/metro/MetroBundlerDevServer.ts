@@ -68,6 +68,8 @@ import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
 import { getFreePortAsync } from '../../../utils/port';
+import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
+import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
 import { evalMetroAndWrapFunctions, evalMetroNoHandling } from '../getStaticRenderFunctions';
@@ -83,6 +85,7 @@ import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddle
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { OpenHostSupportEntry, OpenMiddleware, OpenPlatform } from '../middleware/OpenMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import type { ExpoMetroOptions } from '../middleware/metroOptions';
@@ -95,6 +98,7 @@ import {
   getMetroDirectBundleOptions,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
+import { createInfoHandler, createOpen } from '../middleware/openHandlers';
 import type { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
@@ -1377,6 +1381,49 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         },
       });
       middleware.use(deepLinkMiddleware.getHandler());
+
+      const getHostSupport = (platform: OpenPlatform): OpenHostSupportEntry => {
+        if (platform === 'ios' && process.platform !== 'darwin') {
+          return {
+            canOpen: false,
+            reason: `iOS simulators require macOS with Xcode installed; this dev server is running on ${process.platform}.`,
+          };
+        }
+        return { canOpen: true };
+      };
+
+      // Read all dev-server state live — pressing `s` in the terminal toggles `isDevClient`
+      // and the scheme, and `expo-dev-client` can be installed mid-run (re-resolved by
+      // isRedirectPageEnabled on every call).
+      const openMiddleware = new OpenMiddleware(this.projectRoot, {
+        serverBaseUrl,
+        getHostSupport,
+        getInfo: createInfoHandler({
+          urlCreator: this.getUrlCreator(),
+          getIsDevClient: () => this.isDevClient,
+          getIsRedirectPageEnabled: () => this.isRedirectPageEnabled(),
+          getAppId: async (platform) => {
+            if (platform === 'web') return null;
+            const resolver =
+              platform === 'ios'
+                ? new AppleAppIdResolver(this.projectRoot)
+                : new AndroidAppIdResolver(this.projectRoot);
+            try {
+              return await resolver.getAppIdAsync();
+            } catch {
+              // Surfacing the error would block the dry-run; consumers can detect the missing id
+              // from `appId: null` and prompt the user to configure ios.bundleIdentifier /
+              // android.package.
+              return null;
+            }
+          },
+        }),
+        open: createOpen({
+          getIsDevClient: () => this.isDevClient,
+          openPlatformAsync: (target, resolver) => this.openPlatformAsync(target, resolver),
+        }),
+      });
+      middleware.use(openMiddleware.getHandler());
 
       const domComponentRenderer = createDomComponentsMiddleware(
         { projectRoot: this.projectRoot },

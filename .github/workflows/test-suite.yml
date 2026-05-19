@@ -102,6 +102,7 @@ jobs:
             "packages/expo-modules-core/**/ios/**",
             "packages/expo-modules-autolinking/**/ios/**",
             "packages/expo/**/ios/**",
+            "packages/expo-app-metrics/**",
             "packages/expo-constants/**/ios/**",
             "packages/expo-crypto/**/ios/**",
             "packages/expo-file-system/**/ios/**",

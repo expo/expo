@@ -1,9 +1,8 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runCommand } from './commands';
 import { XCFramework } from './constants';
 import CLIError from './error';
 import {
@@ -26,10 +25,10 @@ import type { IosConfig } from './types';
  *
  * Returns names without the `.framework` suffix, deduped, in `otool -L` order.
  */
-export const enumerateSourceBuiltDeps = (
+export const enumerateSourceBuiltDeps = async (
   config: IosConfig,
   alreadyCovered: Set<string>
-): string[] => {
+): Promise<string[]> => {
   const frameworkBinary = path.join(config.simulator, `${config.scheme}.framework`, config.scheme);
   if (!fs.existsSync(frameworkBinary)) {
     return [];
@@ -37,7 +36,7 @@ export const enumerateSourceBuiltDeps = (
 
   let stdout: string;
   try {
-    stdout = execSync(`otool -L "${frameworkBinary}"`, { encoding: 'utf8' });
+    ({ stdout } = await spawnAsync('otool', ['-L', frameworkBinary]));
   } catch {
     // otool failure is non-fatal — degrade gracefully and let the user catch the missing dep
     // at runtime rather than blocking the whole build.
@@ -130,7 +129,7 @@ const bundleSourceBuiltFramework = async (
     return true;
   }
 
-  await runCommand('xcodebuild', args, { verbose: config.verbose });
+  await spawnAsync('xcodebuild', args, { stdio: config.verbose ? 'inherit' : 'pipe' });
   return true;
 };
 
@@ -184,7 +183,7 @@ export const buildFramework = async (config: IosConfig) => {
   }
 
   return withSpinner({
-    operation: () => runCommand('xcodebuild', args, { verbose: config.verbose }),
+    operation: () => spawnAsync('xcodebuild', args, { stdio: config.verbose ? 'inherit' : 'pipe' }),
     loaderMessage: 'Compiling framework...',
     successMessage: 'Compiling framework succeeded',
     errorMessage: 'Compiling framework failed',
@@ -256,7 +255,7 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
   // (e.g. `ExpoModulesJSI` from a local podspec). Without this the host app crashes at
   // runtime with `dyld: Library not loaded: @rpath/<X>.framework/<X>`.
   const alreadyCovered = collectCoveredFrameworkNames(config);
-  const sourceBuiltDeps = enumerateSourceBuiltDeps(config, alreadyCovered);
+  const sourceBuiltDeps = await enumerateSourceBuiltDeps(config, alreadyCovered);
   for (const depName of sourceBuiltDeps) {
     await withSpinner({
       operation: () => bundleSourceBuiltFramework(config, depName, dest),
@@ -333,7 +332,7 @@ export const createXCframework = async (config: IosConfig, at: string) => {
   }
 
   return withSpinner({
-    operation: () => runCommand('xcodebuild', args, { verbose: config.verbose }),
+    operation: () => spawnAsync('xcodebuild', args, { stdio: config.verbose ? 'inherit' : 'pipe' }),
     loaderMessage: 'Packaging framework into an XCFramework...',
     successMessage: 'Packaging framework into an XCFramework succeeded',
     errorMessage: 'Packaging framework into an XCFramework failed',
@@ -437,7 +436,7 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
   // Source-built dynamic deps the brownfield framework links against (e.g. ExpoModulesJSI).
   // `copyXCFrameworks` writes their xcframeworks to disk; we need to declare matching
   // `.binaryTarget`s here so SPM consumers actually link them.
-  const sourceBuiltDepNames = enumerateSourceBuiltDeps(
+  const sourceBuiltDepNames = await enumerateSourceBuiltDeps(
     config,
     new Set([
       config.scheme,
@@ -484,7 +483,7 @@ export const getSupportedPlatforms = async (config: IosConfig): Promise<string[]
   const args = ['-workspace', config.workspace, '-scheme', config.scheme, '-showBuildSettings'];
 
   try {
-    const { stdout } = await runCommand('xcodebuild', args, { verbose: false });
+    const { stdout } = await spawnAsync('xcodebuild', args);
     const regex = /^\s*IPHONEOS_DEPLOYMENT_TARGET = (.+)$/m;
     const value = regex.exec(stdout)?.[1]?.trim();
     if (value) {

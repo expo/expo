@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `recyclingKey` not clearing cached `placeholderImage`, causing stale blurhash placeholders in recycled list cells. ([#44762](https://github.com/expo/expo/pull/44762) by [@simonronec](https://github.com/simonronec))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-06

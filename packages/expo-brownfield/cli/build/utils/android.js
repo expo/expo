@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runTask = exports.processTasks = exports.processRepositories = exports.printAndroidConfig = exports.findBrownfieldLibrary = exports.buildPublishingTask = void 0;
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const commands_1 = require("./commands");
 const error_1 = __importDefault(require("./error"));
 const spinner_1 = require("./spinner");
 const buildPublishingTask = (variant, repository) => {
@@ -93,9 +93,9 @@ const runTask = async (task, verbose, dryRun) => {
         return;
     }
     return (0, spinner_1.withSpinner)({
-        operation: () => (0, commands_1.runCommand)('./gradlew', [task], {
+        operation: () => (0, spawn_async_1.default)('./gradlew', [task], {
             cwd: node_path_1.default.join(process.cwd(), 'android'),
-            verbose,
+            stdio: verbose ? 'inherit' : 'pipe',
         }),
         loaderMessage: 'Running task: ' + task,
         successMessage: 'Running task: ' + task + ' succeeded',

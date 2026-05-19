@@ -6,13 +6,17 @@
 
 ### 🎉 New features
 
+- [iOS] Added `withAnimation(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's [`withAnimation(_:_:)`](https://developer.apple.com/documentation/swiftui/withanimation(_:_:)). ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `LoadingIndicator` and `ContainedLoadingIndicator` components. ([#41169](https://github.com/expo/expo/pull/41169) by [@suveshmoza](https://github.com/suveshmoza))
 
 ### 🐛 Bug fixes
 
 - [iOS] Unmount `BottomSheet` when it is dismissed. ([#45846](https://github.com/expo/expo/pull/45846) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
+
+- [universal] Add base styling to universal Picker on web ([#45932](https://github.com/expo/expo/pull/45932) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.8 — 2026-05-15
 
@@ -38,6 +42,9 @@ _This version does not introduce any user-facing changes._
 - Make `ChartView` public. ([#45674](https://github.com/expo/expo/pull/45674) by [@jakex7](https://github.com/jakex7))
 - Added `@expo/ui/community/menu`, a drop-in replacement for `@react-native-menu/menu`. ([#45670](https://github.com/expo/expo/pull/45670) by [@vonovak](https://github.com/vonovak))
 - [android] Added Compose `combinedClickable` modifier. ([#45670](https://github.com/expo/expo/pull/45670) by [@vonovak](https://github.com/vonovak))
+- [universal] Added `Collapsible`, `List`, `ListItem`, and `Picker` components. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
+- [universal] Added `snapPoints` prop on `BottomSheet` and `colorScheme` / `layoutDirection` props on `Host`. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] `background(color, { animationSpec })` accepts an optional `animationSpec` and wraps the color in `animateColorAsState` so changes between renders animate smoothly. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -337,7 +344,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#42571](https://github.com/expo/expo/pull/42571) by [@shubh73](https://github.com/shubh73))
 - Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
-- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
+- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo/pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
 
 ## 55.0.0-beta.3 — 2026-01-27
 

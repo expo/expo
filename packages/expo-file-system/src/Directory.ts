@@ -46,7 +46,6 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
    * @returns An array of `Directory` and `File` instances.
    */
   override list(): (Directory | File)[] {
-    // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
     return super
       .listAsRecords()
       .map(({ isDirectory, uri }) => (isDirectory ? new Directory(uri) : new File(uri)));
@@ -60,7 +59,6 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
   }
 
   createFile(name: string, mimeType: string | null): File {
-    // Wrapping with the JS child class for additional, JS-only methods.
     return new File(super.createFile(name, mimeType).uri);
   }
 
