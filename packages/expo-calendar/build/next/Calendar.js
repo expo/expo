@@ -217,13 +217,25 @@ export const getCalendarPermissions = InternalExpoCalendar.getCalendarPermission
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
  */
-export const requestRemindersPermissions = InternalExpoCalendar.requestRemindersPermissions;
+export async function requestRemindersPermissions() {
+    if (!InternalExpoCalendar.requestRemindersPermissions) {
+        throw new UnavailabilityError('Calendar', 'requestRemindersPermissions');
+    }
+    return await InternalExpoCalendar.requestRemindersPermissions();
+}
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
  */
-export const getRemindersPermissions = InternalExpoCalendar.getRemindersPermissions;
+export async function getRemindersPermissions() {
+    if (!InternalExpoCalendar.getRemindersPermissions) {
+        throw new UnavailabilityError('Calendar', 'getRemindersPermissions');
+    }
+    return InternalExpoCalendar.getRemindersPermissions();
+}
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
@@ -255,6 +267,7 @@ export const useCalendarPermissions = createPermissionHook({
  * ```ts
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
+ * @platform ios
  */
 export const useRemindersPermissions = createPermissionHook({
     getMethod: getRemindersPermissions,

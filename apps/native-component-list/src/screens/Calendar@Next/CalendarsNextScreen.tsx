@@ -4,11 +4,11 @@ import {
   CalendarAccessLevel,
   createCalendar,
   EntityTypes,
-  ExpoCalendar,
   getCalendars,
   presentPicker,
+  requestRemindersPermissions,
   useCalendarPermissions,
-  useRemindersPermissions,
+  type ExpoCalendar,
 } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -56,24 +56,33 @@ const CalendarRow = (props: {
 
 export default function CalendarsNextScreen({ navigation }: { navigation: StackNavigation }) {
   const [, askForCalendarPermissions] = useCalendarPermissions();
-  const [, askForReminderPermissions] = useRemindersPermissions();
 
   const [calendars, setCalendars] = useState<ExpoCalendar[]>([]);
 
   const findCalendars = async () => {
     try {
-      const calendarGranted = (await askForCalendarPermissions()).granted;
+      const calendarPermission = await askForCalendarPermissions();
+      const calendarGranted = calendarPermission.granted;
       const reminderGranted =
-        Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
-      if (calendarGranted && reminderGranted) {
-        const eventCalendars = (await getCalendars(EntityTypes.EVENT)) as unknown as any[];
-        const reminderCalendars = (
-          Platform.OS === 'ios' ? await getCalendars(EntityTypes.REMINDER) : []
-        ) as any[];
-        setCalendars([...eventCalendars, ...reminderCalendars]);
+        Platform.OS === 'ios' ? (await requestRemindersPermissions()).granted : true;
+
+      if (!calendarGranted || !reminderGranted) {
+        Alert.alert('Calendar permission not granted', JSON.stringify(calendarPermission, null, 2));
+        return;
       }
-    } catch (e) {
-      console.log('error', e);
+
+      const eventCalendars = (await getCalendars(EntityTypes.EVENT)) as unknown as any[];
+      const reminderCalendars = (
+        Platform.OS === 'ios' ? await getCalendars(EntityTypes.REMINDER) : []
+      ) as any[];
+      const nextCalendars = [...eventCalendars, ...reminderCalendars];
+      setCalendars(nextCalendars);
+
+      if (nextCalendars.length === 0) {
+        Alert.alert('No calendars found');
+      }
+    } catch (e: any) {
+      Alert.alert('Could not find calendars', e.message);
     }
   };
 
@@ -177,7 +186,10 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
 
   return (
     <View style={styles.container}>
-      <Button onPress={findCalendars} title="Find my Calendars" />
+      <View style={styles.topActions}>
+        <Button onPress={findCalendars} title="Find my Calendars" style={styles.actionButton} />
+        <Button onPress={addCalendar} title="Add New Calendar" style={styles.actionButton} />
+      </View>
     </View>
   );
 }
@@ -201,5 +213,12 @@ const styles = StyleSheet.create({
   },
   topButton: {
     marginBottom: 8,
+  },
+  topActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionButton: {
+    flex: 1,
   },
 });

@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [next] Mark reminders permissions as iOS-specific ([#46005](https://github.com/expo/expo/pull/46005) by [@Wenszel](https://github.com/Wenszel))
 - [next] Remove legacy exports ([#45739](https://github.com/expo/expo/pull/45739) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others

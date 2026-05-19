@@ -93,13 +93,15 @@ export declare const getCalendarPermissions: (writeOnly?: boolean) => Promise<Pe
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
  */
-export declare const requestRemindersPermissions: () => Promise<PermissionResponse>;
+export declare function requestRemindersPermissions(): Promise<PermissionResponse>;
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
  */
-export declare const getRemindersPermissions: () => Promise<PermissionResponse>;
+export declare function getRemindersPermissions(): Promise<PermissionResponse>;
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
@@ -132,6 +134,7 @@ export declare const useCalendarPermissions: (options?: import("expo-modules-cor
  * ```ts
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
+ * @platform ios
  */
 export declare const useRemindersPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 //# sourceMappingURL=Calendar.d.ts.map
