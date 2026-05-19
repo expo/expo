@@ -52,8 +52,8 @@ const ScrollViewNativeView: React.ComponentType<ScrollViewProps> = requireNative
 /**
  * SwiftUI `ScrollView` wrapper. To control scroll position, pair this with the
  * `scrollPosition(state, { onChange })` modifier and a `useNativeState`-backed
- * id. Write `state.value = targetId` for an instant scroll, or
- * `state.setValueAnimated(targetId)` for an animated one.
+ * id. Write `state.value = targetId` for an instant scroll, or wrap the write
+ * in `withAnimation(...)` from `@expo/ui/swift-ui` for an animated one.
  */
 export function ScrollView(props: ScrollViewProps) {
   const { modifiers, ...restProps } = props;

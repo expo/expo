@@ -12,12 +12,14 @@ import { Platform } from 'react-native';
 
 import { wrapNativeEvent, type PagerViewProps } from './types';
 import { worklets } from '../../State/optionalWorklets';
-import { useNativeState, writeStateOnUI } from '../../State/useNativeState';
+import { useNativeState, type ObservableState } from '../../State/useNativeState';
 import { Group } from '../../swift-ui/Group';
 import { Host } from '../../swift-ui/Host';
 import { LazyHStack } from '../../swift-ui/LazyHStack';
 import { RNHostView } from '../../swift-ui/RNHostView';
 import { ScrollView, type ScrollGeometry, type ScrollPhase } from '../../swift-ui/ScrollView';
+import { Animation } from '../../swift-ui/modifiers/animation';
+import { withAnimation } from '../../swift-ui/withAnimation';
 import {
   containerRelativeFrame,
   id,
@@ -49,10 +51,12 @@ function phaseToPageState(phase: ScrollPhase): 'idle' | 'dragging' | 'settling' 
  * single source of truth: an `ObservableState` bound through the
  * `scrollPosition` modifier drives initial placement, user-swipe writeback,
  * and imperative `setPage` / `setPageWithoutAnimation`. The animated path
- * uses `state.setValueAnimated(...)` which wraps the write in SwiftUI's
- * `withAnimation`. Requires iOS 17+. Continuous progress (`onPageScroll`) and
- * scroll state (`onPageScrollStateChanged`) require iOS 18+ — on iOS 17 the
- * pager still works but those specific events do not fire.
+ * routes the write through `withAnimation` so the state mutation lands inside
+ * SwiftUI's animation transaction; if `react-native-worklets` isn't
+ * installed, `setPage` falls back to a non-animated jump. Requires iOS 17+.
+ * Continuous progress (`onPageScroll`) and scroll state
+ * (`onPageScrollStateChanged`) require iOS 18+ — on iOS 17 the pager still
+ * works but those specific events do not fire.
  */
 export function PagerView(props: PagerViewProps) {
   const {
@@ -120,12 +124,26 @@ export function PagerView(props: PagerViewProps) {
       setPage: (page: number) => {
         const clamped = clampPage(page);
         if (clamped == null) return;
-        writeStateOnUI(activePageState, String(clamped), { animated: true });
+        const nextId = String(clamped);
+        // `withAnimation` needs `react-native-worklets` to ship the body to
+        // the UI runtime. Without it, fall back to a non-animated jump rather
+        // than throwing — the page still changes, just instantly.
+        if (worklets) {
+          // `Animation.default` (not `null`) — SwiftUI treats `withAnimation(nil)`
+          // as an explicit "disable animation", so we must pass an actual
+          // animation to get the default paging behavior.
+          withAnimation(Animation.default, () => {
+            'worklet';
+            (activePageState as any).setValue({ value: nextId });
+          });
+        } else {
+          writePageOnUI(activePageState, nextId);
+        }
       },
       setPageWithoutAnimation: (page: number) => {
         const clamped = clampPage(page);
         if (clamped == null) return;
-        writeStateOnUI(activePageState, String(clamped));
+        writePageOnUI(activePageState, String(clamped));
       },
       setScrollEnabled: setScrollEnabledState,
     }),
@@ -234,5 +252,20 @@ function warnIfPreIOS18ScrollCallbacksDropped(
         `and will not fire on iOS ${Platform.Version}. Guard with Platform.Version or ` +
         `provide a fallback for older iOS targets.`
     );
+  }
+}
+
+// Routes the page-id write to the UI runtime when worklets are available so
+// SwiftUI observes the change on the same thread it diffs from. Without
+// worklets, falls back to a JS-thread write — the dev warning from
+// `defineValueProperty` will fire, but the page still changes.
+function writePageOnUI(state: ObservableState<string | null>, nextId: string): void {
+  if (worklets) {
+    worklets.scheduleOnUI(() => {
+      'worklet';
+      (state as any).setValue({ value: nextId });
+    });
+  } else {
+    state.value = nextId;
   }
 }

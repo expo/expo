@@ -43,12 +43,6 @@ public final class ExpoUIModule: Module {
       Function("setOnChange") { (state: ObservableState, callback: WorkletCallback?) in
         state.onChange = callback
       }
-
-      Function("setValueAnimated") { (state: ObservableState, wrapper: [String: Any]) in
-        withAnimation {
-          state.value = wrapper["value"]
-        }
-      }
     }
 
     // MARK: - Module Functions
