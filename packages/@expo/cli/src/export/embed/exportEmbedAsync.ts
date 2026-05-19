@@ -88,10 +88,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       // Copy the eager bundleOutput and assets to the new locations.
       await removeAsync(options.bundleOutput);
 
-      copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
+      await copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
 
       if (eagerBundleOptions.options.assetsDest && options.assetsDest) {
-        copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
+        await copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
       }
 
       console.log('info: Copied output to binary:', options.bundleOutput);
