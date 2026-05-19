@@ -7,6 +7,8 @@ declare module 'react-native' {
   ) => React.ReactElement<P>;
 
   type DisplayValue = ReactNative.FlexStyle['display'] | 'inline-flex';
+  type OverflowValue = 'auto' | 'hidden' | 'scroll' | 'visible';
+  type WebDimensionValue = ReactNative.DimensionValue | string;
 
   type WebRole =
     | ReactNative.Role
@@ -95,18 +97,43 @@ declare module 'react-native' {
   }
 
   export interface ViewProps extends WebAccessibilityProps {
+    dir?: string;
     role?: WebRole;
   }
 
   export interface ImageStyle {
     display?: DisplayValue;
+    height?: WebDimensionValue;
+    width?: WebDimensionValue;
+    overflowX?: OverflowValue;
+    overflowY?: OverflowValue;
+    paddingLeft?: WebDimensionValue;
+    paddingRight?: WebDimensionValue;
+    paddingTop?: WebDimensionValue;
+    paddingBottom?: WebDimensionValue;
   }
 
   export interface TextStyle {
     display?: DisplayValue;
+    height?: WebDimensionValue;
+    width?: WebDimensionValue;
+    overflowX?: OverflowValue;
+    overflowY?: OverflowValue;
+    paddingLeft?: WebDimensionValue;
+    paddingRight?: WebDimensionValue;
+    paddingTop?: WebDimensionValue;
+    paddingBottom?: WebDimensionValue;
   }
 
   export interface ViewStyle {
     display?: DisplayValue;
+    height?: WebDimensionValue;
+    width?: WebDimensionValue;
+    overflowX?: OverflowValue;
+    overflowY?: OverflowValue;
+    paddingLeft?: WebDimensionValue;
+    paddingRight?: WebDimensionValue;
+    paddingTop?: WebDimensionValue;
+    paddingBottom?: WebDimensionValue;
   }
 }

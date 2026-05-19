@@ -1,14 +1,20 @@
 import versions from '~/public/static/constants/versions.json';
 
 export function getRedirectPath(redirectPath: string): string {
-  // index.html is no longer a thing in our docs
+  // Collapse leading slashes so the path can't become a protocol-relative
+  // URL when assigned to window.location.href downstream.
+  redirectPath = redirectPath.replace(/^\/+/, '/');
+
+  // index.html is no longer a thing in our docs. Anchor to end of string so
+  // a repeated segment (e.g. /index.html/x/index.html) can't strip the first
+  // occurrence and leave a protocol-relative `//x/...` path behind.
   if (pathIncludesIndexHtml(redirectPath)) {
-    redirectPath = redirectPath.replace('index.html', '');
+    redirectPath = redirectPath.replace(/index\.html$/, '');
   }
 
   // Remove the .html extension if it is included in the path
   if (pathIncludesHtmlExtension(redirectPath)) {
-    redirectPath = redirectPath.replace('.html', '');
+    redirectPath = redirectPath.replace(/\.html$/, '');
   }
 
   // Unsure why this is happening, but sometimes URLs end up with /null in

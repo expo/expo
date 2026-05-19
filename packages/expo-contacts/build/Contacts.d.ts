@@ -611,12 +611,15 @@ export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Prom
 export declare function getContactByIdAsync(id: string, fields?: FieldType[]): Promise<ExistingContact | undefined>;
 /**
  * Creates a new contact and adds it to the system.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.create()` from `expo-contacts/next` instead.
+ *
  * > **Note**: For Android users, the Expo Go app does not have the required `WRITE_CONTACTS` permission to write to Contacts.
- * > You will need to create a [development build](/develop/development-builds/create-a-build/) and add permission in there manually to use this method.
+ * > You will need to create a [development build](/develop/development-builds/create-a-build/) and add permission in there
+ * > manually to use this method.
+ *
  * @param contact A contact with the changes you wish to persist. The `id` parameter will not be used.
  * @param containerId @tag-ios The container that will parent the contact.
  * @return A promise that fulfills with ID of the new system contact.
+ *
  * @example
  * ```js
  * const contact = {
@@ -626,6 +629,7 @@ export declare function getContactByIdAsync(id: string, fields?: FieldType[]): P
  * };
  * const contactId = await Contacts.addContactAsync(contact);
  * ```
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.create()` from `expo-contacts/next` instead.
  */
 export declare function addContactAsync(contact: Contact, containerId?: string): Promise<string>;
 /**

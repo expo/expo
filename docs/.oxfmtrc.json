@@ -6,9 +6,6 @@
   "bracketSameLine": true,
   "trailingComma": "es5",
   "arrowParens": "avoid",
-  "sortTailwindcss": {
-    "functions": ["mergeClasses"]
-  },
   "sortImports": {
     "groups": [
       ["builtin", "external"],

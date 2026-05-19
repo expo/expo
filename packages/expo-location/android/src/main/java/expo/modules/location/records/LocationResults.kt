@@ -9,10 +9,32 @@ import android.os.PersistableBundle
 import android.util.Log
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.ConversionException
 import expo.modules.location.LocationModule
 import java.io.Serializable
-import expo.modules.kotlin.types.OptimizedRecord
+
+@OptimizedRecord
+internal class MotionActivityStateRecord(
+  @Field var detected: Boolean,
+  @Field var confidence: MotionActivityConfidence
+) : Record, Serializable
+
+@OptimizedRecord
+internal class MotionActivitiesRecord(
+  @Field var automotive: MotionActivityStateRecord,
+  @Field var cycling: MotionActivityStateRecord,
+  @Field var running: MotionActivityStateRecord,
+  @Field var walking: MotionActivityStateRecord,
+  @Field var stationary: MotionActivityStateRecord,
+  @Field var unknown: MotionActivityStateRecord
+) : Record, Serializable
+
+@OptimizedRecord
+internal class MotionActivityObjectRecord(
+  @Field var activities: MotionActivitiesRecord,
+  @Field var timestamp: Double
+) : Record, Serializable
 
 @OptimizedRecord
 internal class PermissionRequestResponse(

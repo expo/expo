@@ -1,7 +1,7 @@
 import { Platform } from 'expo-modules-core';
 
 import { DEFAULT_DEBOUNCE_MS, Directory, File } from '../..';
-import { FileSystemWatcher } from '../FileSystemWatcher';
+import { FileSystemWatcher } from '../internal/FileSystemWatcher';
 
 jest.mock('../ExpoFileSystem', () => {
   const mock = require('../../mocks/FileSystem');
@@ -239,7 +239,9 @@ describeNative('File.watch and Directory.watch', () => {
 describeWebLike('FileSystemWatcher web fallback', () => {
   it('warns and returns a no-op subscription', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const { FileSystemWatcher: WebFileSystemWatcher } = require('../FileSystemWatcher.web');
+    const {
+      FileSystemWatcher: WebFileSystemWatcher,
+    } = require('../internal/FileSystemWatcher.web');
 
     const subscription = new WebFileSystemWatcher(
       'file:///mock/cache/web.txt',

@@ -52,6 +52,18 @@ test('adds forward slash to end of path', () => {
   expect(newPath).toEqual('/more/expo-cli/');
 });
 
+test('collapses protocol-relative leading slashes so the path stays same-origin', () => {
+  expect(getRedirectPath('//attacker.example/docs')).toEqual('/attacker.example/docs/');
+});
+
+test('does not let repeated index.html segments produce a protocol-relative path', () => {
+  expect(getRedirectPath('/index.html/attacker.example/index.html')).not.toMatch(/^\/\//);
+});
+
+test('does not let repeated .html segments produce a protocol-relative path', () => {
+  expect(getRedirectPath('/.html/attacker.example/.html')).not.toMatch(/^\/\//);
+});
+
 test('redirects old versions to latest', () => {
   const redirectPath = '/versions/v50.0.0/sdk/camera/';
   const newPath = getRedirectPath(redirectPath);

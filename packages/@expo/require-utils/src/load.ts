@@ -190,7 +190,11 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
 
     if (mapPath) {
       inputCode = stripSourceMappingURL(code);
-      // NOTE This needs to be a plain absolute path because Node rejects file: URLs
+      // NOTE(@kitten): This needs to be a plain absolute path because Node rejects file: URLs
+      // On Windows, it additionally needs to be a URL.pathname-like format (POSIX with a leading slash)
+      if (path.sep !== '/') {
+        mapPath = `/${mapPath.replaceAll(path.sep, '/')}`;
+      }
       inputCode += `\n//# sourceMappingURL=${mapPath}`;
 
       priorSourceMapsState = getSourceMapsState();

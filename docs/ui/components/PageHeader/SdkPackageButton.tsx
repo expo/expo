@@ -23,13 +23,13 @@ export const SdkPackageButton = ({ label, Icon, tooltip, href }: SdkPackageButto
           aria-label={label}>
           <div className="flex items-center gap-1.5">
             <Icon className="icon-sm text-icon-secondary" />
-            <FOOTNOTE crawlable={false} theme="secondary" className="max-md-gutters:hidden">
+            <FOOTNOTE crawlable={false} theme="secondary" className="max-md:hidden">
               {label}
             </FOOTNOTE>
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px]">
+      <Tooltip.Content sideOffset={8} className="max-w-75">
         <FOOTNOTE>{tooltip}</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>

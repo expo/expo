@@ -20,6 +20,7 @@ import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
 import { id, scrollPosition } from './scrollPosition';
+import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { widgetAccentedRenderingMode, widgetURL } from './widgets';
 
@@ -1376,6 +1377,7 @@ export type BuiltInModifier =
   | ReturnType<typeof listStyle>
   | ReturnType<typeof contentTransition>
   | ReturnType<typeof resizable>
+  | ReturnType<typeof symbolEffect>
   | ReturnType<typeof widgetAccentedRenderingMode>
   | ReturnType<typeof widgetURL>
   | ReturnType<typeof containerBackground>;
@@ -1426,6 +1428,7 @@ export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
 export * from './scrollPosition';
+export * from './symbolEffect';
 export * from './widgets';
 export type {
   TimingAnimationParams,

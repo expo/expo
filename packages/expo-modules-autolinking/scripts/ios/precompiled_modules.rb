@@ -80,6 +80,7 @@ module Expo
     @warned_no_prebuilt_react = false
     @target_platform = nil
     @xcframework_slice_cache = nil
+    @status_cache = {}                  # Hash: pod_name -> resolve_prebuilt_status result
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -124,6 +125,7 @@ module Expo
 
       def build_from_source=(patterns)
         @build_from_source_patterns = (patterns || []).map { |p| Regexp.new("^#{p}$") }
+        @status_cache = {}
       end
 
       def target_platform=(platform)
@@ -135,6 +137,7 @@ module Expo
         @claimed_vendored_frameworks = nil
         @framework_owner_map = nil
         @xcframework_slice_cache = nil
+        @status_cache = {}
       end
 
       # Checks if a pod is configured to be built from source via buildFromSource.
@@ -541,7 +544,7 @@ module Expo
 
         log_linking_status(spec.name, true, default_tarball)
 
-        spec.source = { :http => URI::File.build(path: default_tarball).to_s, :flatten => false }
+        spec.source = { :http => local_file_uri(default_tarball), :flatten => false }
         spec.vendored_frameworks = build_vendored_paths(product_name, pod_info, spec.name)
 
         extra_fw_paths = framework_search_paths_for_skipped_deps(spec.name, pod_info)
@@ -579,7 +582,7 @@ module Expo
         spec_json = JSON.parse(spec.to_pretty_json)
 
         # Override source to local tarball
-        spec_json['source'] = { 'http' => URI::File.build(path: default_tarball).to_s, 'flatten' => false }
+        spec_json['source'] = { 'http' => local_file_uri(default_tarball), 'flatten' => false }
         spec_json['vendored_frameworks'] = build_vendored_paths(product_name, pod_info, spec.name)
 
         # Clear source-build attributes
@@ -906,6 +909,14 @@ module Expo
       # Returns true when the prebuilt React.xcframework is in use.
       def prebuilt_react_active?
         ENV['RCT_USE_PREBUILT_RNCORE'] == '1'
+      end
+
+      # Builds a `file://` URI for a local filesystem path, percent-encoding
+      # any non-ASCII characters so paths with Unicode segments (e.g. emoji or
+      # accented characters) don't trip URI::File.build's RFC 3986 path
+      # validation.
+      def local_file_uri(path)
+        URI::File.build(path: URI::DEFAULT_PARSER.escape(path)).to_s
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -1810,6 +1821,11 @@ module Expo
       # A pod may use a prebuilt xcframework only when its own prebuilt artifact
       # exists and every local Expo dependency also uses prebuilt.
       def resolve_prebuilt_status(pod_name, visiting = Set.new)
+        return _resolve_prebuilt_status_uncached(pod_name, visiting) unless visiting.empty?
+        @status_cache[pod_name] ||= _resolve_prebuilt_status_uncached(pod_name, visiting)
+      end
+
+      def _resolve_prebuilt_status_uncached(pod_name, visiting)
         return { available: false, reason: :build_from_source } if build_from_source?(pod_name)
         return { available: true } if visiting.include?(pod_name)
 

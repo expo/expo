@@ -20,7 +20,7 @@ export function Textarea({ characterLimit, className, onChange, ...rest }: Props
           }
         }}
         className={mergeClasses(
-          'border-default bg-default text-default placeholder:text-icon-tertiary my-2.5 block h-12 w-full rounded-sm border p-4 leading-5 shadow-xs',
+          'my-2.5 block h-12 w-full rounded-sm border border-default bg-default p-4 leading-5 text-default shadow-xs placeholder:text-icon-tertiary',
           className
         )}
         {...rest}

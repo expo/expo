@@ -9,6 +9,8 @@ import { getExpoWebsiteBaseUrl } from '../endpoint';
 import { UserQuery, type Actor } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
 
+const debug = require('debug')('expo:api:user') as typeof console.log;
+
 let currentUser: Actor | undefined;
 
 export const ANONYMOUS_USERNAME = 'anonymous';
@@ -83,6 +85,14 @@ export async function browserLoginAsync({ sso = false }): Promise<void> {
 }
 
 export async function logoutAsync(): Promise<void> {
+  const sessionSecret = getSession()?.sessionSecret;
+  if (sessionSecret) {
+    try {
+      await fetchAsync('auth/logout', { method: 'POST' });
+    } catch (error) {
+      debug('Failed to invalidate session secret on server:', error);
+    }
+  }
   currentUser = undefined;
   await Promise.all([
     fs.rm(getDevelopmentCodeSigningDirectory(), { recursive: true, force: true }),

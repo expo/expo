@@ -12,16 +12,12 @@ export type RouteProps = {
   hash: string;
 };
 
-export function getComponentIds(path: string): readonly string[] {
-  const pathItems = path.split('/').filter(Boolean);
-  const idSet = new Set<string>();
-  for (let index = 0; index <= pathItems.length; ++index) {
-    const id = [...pathItems.slice(0, index), 'layout'].join('/');
-    idSet.add(id);
-  }
-  idSet.add([...pathItems, 'page'].join('/'));
-  return Array.from(idSet);
-}
+export {
+  getComponentIds,
+  mintComponentId,
+  type ComponentIdKind,
+  type ComponentIds,
+} from './idMinting';
 
 export function getInputString(path: string): string {
   if (!path.startsWith('/')) {

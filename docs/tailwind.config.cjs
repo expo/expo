@@ -22,6 +22,13 @@ module.exports = {
     './node_modules/@expo/styleguide-cookie-consent/dist/**/*.{js,ts,jsx,tsx}',
   ],
   ...getExpoTheme({
+    screens: {
+      sm: '468px',
+      md: '788px',
+      lg: '1008px',
+      xl: '1328px',
+      '2xl': '1572px',
+    },
     backgroundColor: {
       'launch-party-red': '#D22323',
       'launch-party-blue': '#006CFF',

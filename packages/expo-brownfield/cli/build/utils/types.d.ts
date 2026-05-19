@@ -1,12 +1,4 @@
 export type Platform = 'android' | 'ios';
-export interface RunCommandOptions {
-    cwd?: string;
-    env?: Record<string, string>;
-    verbose?: boolean;
-}
-export interface RunCommandResult {
-    stdout: string;
-}
 export interface WithSpinnerParams<T> {
     operation: () => Promise<T>;
     loaderMessage: string;

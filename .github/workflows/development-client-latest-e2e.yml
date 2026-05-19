@@ -11,6 +11,7 @@ concurrency:
 
 jobs:
   detox_latest_e2e:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -74,7 +75,7 @@ jobs:
           path: packages/expo-dev-client/artifacts
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
-        if: failure()
+        if: failure() && github.repository == 'expo/expo'
         with:
           webhook: ${{ secrets.slack_webhook_dev_client }}
           channel: '#dev-clients'

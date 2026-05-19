@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 
-import { type AnimatedValue } from './animation';
+import { type AnimatedValue, type AnimationSpec } from './animation';
 import { createModifier, createModifierWithEventListener } from './createModifier';
 export { type ExpoModifier, type ModifierConfig } from '../../types';
 export {
@@ -142,9 +142,12 @@ export const offset = (x: number, y: number) => createModifier('offset', { x, y 
 
 /**
  * Sets the background color.
+ * Pass an `animationSpec` to smoothly animate between colors when the prop changes (backed by `animateColorAsState`).
  * @param color - A color string (hex, e.g., `'#FF0000'`).
+ * @param options.animationSpec - Optional spec — animate between color changes.
  */
-export const background = (color: ColorValue) => createModifier('background', { color });
+export const background = (color: ColorValue, options?: { animationSpec?: AnimationSpec }) =>
+  createModifier('background', { color, animationSpec: options?.animationSpec });
 
 /**
  * Adds a border around the view.

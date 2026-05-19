@@ -20,7 +20,7 @@ import { removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
-import { copyPublicFolderAsync } from '../publicFolder';
+import { copyPublicFolderAsync, getPublicFolderPath } from '../publicFolder';
 import type { ExportAssetMap } from '../saveAssets';
 import { persistMetroFilesAsync } from '../saveAssets';
 import type { Options } from './resolveOptions';
@@ -67,7 +67,7 @@ export async function exportStandaloneServerAsync(
     apiRoutesOnly: true,
   });
 
-  const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+  const publicPath = getPublicFolderPath(projectRoot);
 
   // Copy over public folder items
   await copyPublicFolderAsync(publicPath, serverOutput);

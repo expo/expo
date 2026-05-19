@@ -365,6 +365,11 @@ export function withExtendedResolver(
     },
   ];
 
+  const skipMetroMainFieldOverride = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
+  const useExpoUnstableWebModule = env.EXPO_UNSTABLE_WEB_MODAL;
+  const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
+  const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
+
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
     function requestDevMockProdReact(
@@ -618,7 +623,7 @@ export function withExtendedResolver(
       const doReplaceStrict = (from: string, to: string | undefined) =>
         doReplace(from, to, { throws: true });
 
-      if (env.EXPO_UNSTABLE_WEB_MODAL) {
+      if (useExpoUnstableWebModule) {
         const webModalModule = doReplace(
           'expo-router/build/layouts/_web-modal.js',
           'expo-router/build/layouts/ExperimentalModalStack.js'
@@ -629,7 +634,7 @@ export function withExtendedResolver(
         }
       }
 
-      if (!env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK) {
+      if (!disableReactNavigationCheck) {
         // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
         if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
           const filePath = context.originModulePath;
@@ -722,7 +727,7 @@ export function withExtendedResolver(
         );
         if (hmrModule) return hmrModule;
 
-        if (env.EXPO_UNSTABLE_LOG_BOX) {
+        if (useExpoUnstableLogBox) {
           const logBoxModule = doReplace(
             'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
             '@expo/log-box/swap-rn-logbox.js'
@@ -806,7 +811,7 @@ export function withExtendedResolver(
       } else {
         // Non-server changes
 
-        if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
+        if (!skipMetroMainFieldOverride && platform && platform in preferredMainFields) {
           context.mainFields = preferredMainFields[platform]!;
         }
       }

@@ -251,7 +251,6 @@ export interface ExpoAppMetricsModuleType {
      * @param options Optional body, attributes, and severity overrides.
      */
     logEvent(name: string, options?: LogEventOptions): void;
-    getStoredEntries(): Promise<Metric[]>;
     clearStoredEntries(): Promise<void>;
     /**
      * Returns all sessions across the current and historical entries,

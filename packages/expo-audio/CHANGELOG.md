@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.7 — 2026-05-15
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.6 — 2026-05-13
 
 _This version does not introduce any user-facing changes._

@@ -10,6 +10,27 @@
 
 ### 💡 Others
 
+## 56.0.10 — 2026-05-19
+
+### 💡 Others
+
+- Validate/sanitize config-plugin inputs more comprehensively ([#45884](https://github.com/expo/expo/pull/45884) by [@kitten](https://github.com/kitten))
+
+## 56.0.9 — 2026-05-15
+
+### 🎉 New features
+
+- Use shared JS runtime. ([#45781](https://github.com/expo/expo/pull/45781) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- Fix Live Activity multiple evaluations. ([#45675](https://github.com/expo/expo/pull/45675) by [@nkopylov](https://github.com/nkopylov))
+- Fix module precompile. ([#45715](https://github.com/expo/expo/pull/45715) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.8 — 2026-05-13
 
 ### 🎉 New features

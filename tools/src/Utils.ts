@@ -2,6 +2,7 @@ import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/
 import chalk from 'chalk';
 import { glob, GlobOptions } from 'glob';
 import ora from 'ora';
+import { stripVTControlCharacters } from 'util';
 
 import { EXPO_DIR } from './Constants';
 
@@ -139,6 +140,10 @@ export function arrayize<T>(value: T | T[]): T[] {
     return value;
   }
   return value != null ? [value] : [];
+}
+
+export function sanitizeTerminalOutput(input: string): string {
+  return stripVTControlCharacters(input).replace(/[\x00-\x08\x0B-\x1F\x7F-\x9F]/g, '');
 }
 
 /**

@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   detox_e2e:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     strategy:
       matrix:

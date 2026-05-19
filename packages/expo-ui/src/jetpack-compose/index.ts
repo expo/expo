@@ -49,6 +49,7 @@ export {
   type HorizontalPagerProps,
 } from './HorizontalPager';
 export * from './SearchBar';
+export * from './Snackbar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
 export * from './FloatingActionButton';
@@ -57,6 +58,7 @@ export * from './RadioButton';
 export * from './Surface';
 export { type TextProps, Text } from './Text';
 export * from './Tooltip';
+export * from './LoadingIndicator';
 
 export * from './AnimatedVisibility';
 export * from './Box';

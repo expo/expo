@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.5 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Prevalidate locale strings in config-plugin ([#45888](https://github.com/expo/expo/pull/45888) by [@kitten](https://github.com/kitten))
+
 ## 56.0.4 — 2026-05-13
 
 ### 💡 Others
