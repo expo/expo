@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class RNHostViewProps: UIBaseViewProps {
+internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContents: Bool = false
 }
 

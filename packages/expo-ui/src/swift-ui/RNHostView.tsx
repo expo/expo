@@ -1,11 +1,8 @@
 import { requireNativeView } from 'expo';
 
-import { createViewModifierEventListener } from './modifiers/utils';
-import { type CommonViewModifierProps } from './types';
-
 const RNHostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHostView');
 
-export interface RNHostViewProps extends CommonViewModifierProps {
+export type RNHostViewProps = {
   /**
    * When `true`, the RNHost will update its size in the React Native view tree to match the children's size.
    * When `false`, the RNHost will use the size of the parent SwiftUI View.
@@ -17,15 +14,12 @@ export interface RNHostViewProps extends CommonViewModifierProps {
    * The RN View to be hosted.
    */
   children: React.ReactElement;
-}
+};
 
 export function RNHostView(props: RNHostViewProps) {
-  const { modifiers, ...restProps } = props;
   return (
     <RNHostNativeView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}
+      {...props}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
       key={props.matchContents ? 'matchContents' : 'noMatchContents'}
