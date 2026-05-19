@@ -14,6 +14,7 @@ export * from './Icon';
 export * from './List';
 export * from './ListItem';
 export * from './Picker';
+export * from './RNHostView';
 export * from './Spacer';
 export * from './State';
 export { TextInput, type TextInputProps, type TextInputRef } from './TextInput';
