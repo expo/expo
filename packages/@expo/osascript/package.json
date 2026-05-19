@@ -36,7 +36,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@expo/spawn-async": "^1.7.2"
+    "@expo/spawn-async": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

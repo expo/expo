@@ -99,7 +99,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@expo/cli": "workspace:*",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@types/react": "~19.2.0",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",

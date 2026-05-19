@@ -69,7 +69,7 @@
     "@expo/env": "workspace:~2.2.0",
     "@expo/json-file": "workspace:~10.1.0",
     "@expo/metro": "~56.0.0",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@jridgewell/gen-mapping": "^0.3.13",
     "@jridgewell/remapping": "^2.3.5",
     "@jridgewell/sourcemap-codec": "^1.5.5",

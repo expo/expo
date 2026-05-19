@@ -38,7 +38,7 @@
   "devDependencies": {
     "@expo/config-plugins": "workspace:*",
     "@expo/plist": "workspace:*",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@types/prompts": "^2.0.6",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
