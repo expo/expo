@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `tintColor` in `loadAsync`/`useImage` requiring API 26.
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-19
