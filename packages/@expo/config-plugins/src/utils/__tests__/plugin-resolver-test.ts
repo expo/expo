@@ -3,6 +3,7 @@ import * as path from 'path';
 import {
   moduleNameIsDirectFileReference,
   moduleNameIsPackageReference,
+  resolveConfigPluginFunction,
   resolvePluginForModule,
 } from '../plugin-resolver';
 
@@ -66,6 +67,13 @@ describe('plugin resolver', () => {
         });
       });
 
+      it('./localTsPlugin module path resolves the TypeScript file', () => {
+        expect(resolvePluginForModule(projectRoot, './localTsPlugin')).toStrictEqual({
+          filePath: `${projectRoot}/localTsPlugin.ts`,
+          isPluginFile: false,
+        });
+      });
+
       it('./node_modules/test-plugin/lib/commonjs/index.js direct file path', () => {
         expect(
           resolvePluginForModule(projectRoot, './node_modules/test-plugin/lib/commonjs/index.js')
@@ -113,6 +121,17 @@ describe('plugin resolver', () => {
           isPluginFile: false,
         });
       });
+    });
+  });
+
+  describe(resolveConfigPluginFunction, () => {
+    const projectRoot = path.resolve(__dirname, 'fixtures');
+
+    it('loads and transpiles a TypeScript plugin entry', () => {
+      const plugin = resolveConfigPluginFunction(projectRoot, 'test-lib-ts');
+      expect(typeof plugin).toBe('function');
+      const input = { name: 'app' };
+      expect(plugin(input)).toBe(input);
     });
   });
 });
