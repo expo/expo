@@ -14,6 +14,16 @@ import java.util.EnumSet
 import java.util.regex.Pattern
 import kotlin.io.path.moveTo
 
+internal fun validateFileSystemChildName(name: String) {
+  val invalid = name.isEmpty() ||
+    name == "." ||
+    name == ".." ||
+    name.any { it == '/' || it == '\\' }
+  if (invalid) {
+    throw UnableToCreateException("child name must be a single path segment")
+  }
+}
+
 val Uri.isContentUri get(): Boolean {
   return scheme == "content"
 }
@@ -58,6 +68,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
 
   fun delete() {
+    validatePermission(Permission.WRITE)
     if (!file.exists()) {
       throw UnableToDeleteException("uri '${file.uri}' does not exist")
     }
@@ -156,15 +167,29 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   fun rename(newName: String) {
     validateType()
     validatePermission(Permission.WRITE)
-    val newFile = File(javaFile.parent, newName)
+    validateFileSystemChildName(newName)
+    val parent = javaFile.parentFile
+      ?: throw UnableToCreateException("parent directory does not exist")
+    val parentCanonicalPath = parent.canonicalPath
+    val newFile = File(parent, newName)
+    if (newFile.canonicalFile.parentFile?.canonicalPath != parentCanonicalPath) {
+      throw UnableToCreateException("child path escapes parent directory")
+    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       javaFile.toPath().moveTo(newFile.toPath())
-      uri = newFile.toUri()
     } else {
       javaFile.copyTo(newFile)
       javaFile.delete()
-      uri = newFile.toUri()
     }
+    uri = renamedUri(newName)
+  }
+
+  private fun renamedUri(newName: String): Uri {
+    val currentUri = uri.toString()
+    val currentPath = currentUri.trimEnd('/')
+    val parentUri = currentUri.substring(0, currentPath.lastIndexOf('/') + 1)
+    val renamedUri = Uri.withAppendedPath(Uri.parse(parentUri), newName).toString()
+    return Uri.parse(if (this is FileSystemDirectory) "$renamedUri/" else renamedUri)
   }
 
   val modificationTime: Long? get() {

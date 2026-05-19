@@ -2,6 +2,7 @@ package expo.modules.filesystem
 
 import android.net.Uri
 import expo.modules.interfaces.filesystem.Permission
+import java.io.File
 
 class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   fun validatePath() {
@@ -76,15 +77,31 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   fun createFile(mimeType: String?, fileName: String): FileSystemFile {
     validateType()
     validatePermission(Permission.WRITE)
-    val newFile = file.createFile(mimeType ?: "text/plain", fileName) ?: throw UnableToCreateException("file could not be created")
+    validateChildTarget(fileName)
+    val newFile = file.createFile(mimeType ?: "text/plain", fileName)
+      ?: throw UnableToCreateException("file could not be created")
     return FileSystemFile(newFile.uri)
   }
 
   fun createDirectory(fileName: String): FileSystemDirectory {
     validateType()
     validatePermission(Permission.WRITE)
-    val newDirectory = file.createDirectory(fileName) ?: throw UnableToCreateException("directory could not be created")
+    validateChildTarget(fileName)
+    val newDirectory = file.createDirectory(fileName)
+      ?: throw UnableToCreateException("directory could not be created")
     return FileSystemDirectory(newDirectory.uri)
+  }
+
+  private fun validateChildTarget(fileName: String) {
+    validateFileSystemChildName(fileName)
+    if (uri.isContentUri || uri.isAssetUri) {
+      return
+    }
+    val parent = javaFile.canonicalFile
+    val child = File(parent, fileName).canonicalFile
+    if (child.parentFile?.canonicalPath != parent.canonicalPath) {
+      throw UnableToCreateException("child path escapes parent directory")
+    }
   }
 
   // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
