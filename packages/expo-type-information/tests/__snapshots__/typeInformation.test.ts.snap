@@ -34,11 +34,11 @@ export type TestRecordClass = {
 };
 
 export enum TestEnum {
-  simpleCase,
-  multipleCases1,
-  multipleCases2,
-  caseWithArgs1,
-  caseWithArgs2
+  simpleCase = 'simpleCase',
+  multipleCases1 = 'multipleCases1',
+  multipleCases2 = 'multipleCases2',
+  caseWithArgs1 = 'caseWithArgs1',
+  caseWithArgs2 = 'caseWithArgs2'
 }
 
 export declare class TestClassWithConstructor {
@@ -298,11 +298,11 @@ export type TestRecordClass = {
 };
 
 export enum TestEnum {
-  simpleCase,
-  multipleCases1,
-  multipleCases2,
-  caseWithArgs1,
-  caseWithArgs2
+  simpleCase = 'simpleCase',
+  multipleCases1 = 'multipleCases1',
+  multipleCases2 = 'multipleCases2',
+  caseWithArgs1 = 'caseWithArgs1',
+  caseWithArgs2 = 'caseWithArgs2'
 }
 
 export declare class TestClassWithConstructor {
@@ -387,11 +387,11 @@ export type TestRecordClass = {
 
 
 export enum TestEnum {
-    simpleCase,
-    multipleCases1,
-    multipleCases2,
-    caseWithArgs1,
-    caseWithArgs2
+    simpleCase = "simpleCase",
+    multipleCases1 = "multipleCases1",
+    multipleCases2 = "multipleCases2",
+    caseWithArgs1 = "caseWithArgs1",
+    caseWithArgs2 = "caseWithArgs2"
 }
 
 
@@ -454,11 +454,11 @@ exports[`Same generated mock file JS 1`] = `
  *  */
 export var TestEnum;
 (function (TestEnum) {
-    TestEnum[TestEnum["simpleCase"] = 0] = "simpleCase";
-    TestEnum[TestEnum["multipleCases1"] = 1] = "multipleCases1";
-    TestEnum[TestEnum["multipleCases2"] = 2] = "multipleCases2";
-    TestEnum[TestEnum["caseWithArgs1"] = 3] = "caseWithArgs1";
-    TestEnum[TestEnum["caseWithArgs2"] = 4] = "caseWithArgs2";
+    TestEnum["simpleCase"] = "simpleCase";
+    TestEnum["multipleCases1"] = "multipleCases1";
+    TestEnum["multipleCases2"] = "multipleCases2";
+    TestEnum["caseWithArgs1"] = "caseWithArgs1";
+    TestEnum["caseWithArgs2"] = "caseWithArgs2";
 })(TestEnum || (TestEnum = {}));
 export function SimpleFunction(a, b) { return 0; }
 export function TestUntypedFunction() { return ""; }
@@ -517,11 +517,11 @@ export type TestRecordClass = {
 };
 
 export enum TestEnum {
-  simpleCase,
-  multipleCases1,
-  multipleCases2,
-  caseWithArgs1,
-  caseWithArgs2
+  simpleCase = 'simpleCase',
+  multipleCases1 = 'multipleCases1',
+  multipleCases2 = 'multipleCases2',
+  caseWithArgs1 = 'caseWithArgs1',
+  caseWithArgs2 = 'caseWithArgs2'
 }
 
 export declare class TestClassWithConstructor {
