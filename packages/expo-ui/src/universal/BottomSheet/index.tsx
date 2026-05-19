@@ -1,7 +1,7 @@
+import { useColorScheme } from 'react-native';
 import { Drawer } from 'vaul';
 
 import type { BottomSheetProps, SnapPoint } from './types';
-import { useColorScheme } from 'react-native';
 
 // Visually-hidden style for the screen-reader-only Drawer.Title.
 const visuallyHiddenStyle: React.CSSProperties = {
