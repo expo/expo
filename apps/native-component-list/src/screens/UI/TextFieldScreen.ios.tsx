@@ -40,7 +40,7 @@ export default function TextFieldScreen() {
     return () => {
       username.onChange = null;
     };
-  });
+  }, []);
   const imperativeText = useNativeState('Select me!');
   const imperativeSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
   const [imperativeSelDisplay, setImperativeSelDisplay] = React.useState<TextFieldSelection>({
