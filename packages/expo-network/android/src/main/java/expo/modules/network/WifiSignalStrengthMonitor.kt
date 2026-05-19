@@ -70,7 +70,7 @@ internal class WifiSignalStrengthMonitor(
   }
 
   fun getStrengthForLegacy(): Int {
-    if (!hasWifiConnectionInfoPerms()) {
+    if (!hasWifiStatePermission()) {
       Log.e(TAG, "expo-network does not have permission to get info about Wi-Fi connection!")
       return getErrorValue()
     }
@@ -109,19 +109,12 @@ internal class WifiSignalStrengthMonitor(
     }
   }
 
-  private fun hasWifiConnectionInfoPerms(): Boolean {
+  private fun hasWifiStatePermission(): Boolean {
     val ctx = contextRef.get() ?: return false
-    return (
-      ContextCompat.checkSelfPermission(
-        ctx,
-        Manifest.permission.ACCESS_WIFI_STATE
-      ) == PackageManager.PERMISSION_GRANTED
-      ) && (
-      ContextCompat.checkSelfPermission(
-        ctx,
-        Manifest.permission.ACCESS_FINE_LOCATION
-      ) == PackageManager.PERMISSION_GRANTED
-      )
+    return ContextCompat.checkSelfPermission(
+      ctx,
+      Manifest.permission.ACCESS_WIFI_STATE
+    ) == PackageManager.PERMISSION_GRANTED
   }
 
   private fun hasNetworkStatePermission(): Boolean {

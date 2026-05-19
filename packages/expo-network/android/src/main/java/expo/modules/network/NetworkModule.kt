@@ -72,7 +72,6 @@ class NetworkModule : Module() {
         networkCallback
       )
 
-      // Initialize the monitors here in case they're tapped for one-time signal strength requests
       cellSignalStrengthMonitor = CellSignalStrengthMonitor(context, ::emitCellSignalStrength)
       cellSignalStrengthMonitor?.register()
 
