@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Pass original env to Expo / Community CLI sub-commands ([#45834](https://github.com/expo/expo/pull/45834) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.18.3 — 2026-05-19

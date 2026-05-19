@@ -11,6 +11,7 @@ exports.getExpoCNGPatchSourcesAsync = getExpoCNGPatchSourcesAsync;
 exports.getExpoAutolinkingIosSourcesAsync = getExpoAutolinkingIosSourcesAsync;
 exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
 exports.getConfigPluginProps = getConfigPluginProps;
+const env_1 = require("@expo/env");
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
@@ -214,7 +215,7 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
     try {
         const reasons = ['expoAutolinkingAndroid'];
         const results = [];
-        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', 'android', '--json'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', 'android', '--json'], { cwd: projectRoot, env: (0, env_1.getOriginalEnv)() });
         const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
         for (const module of config.modules) {
             for (const project of module.projects) {
@@ -283,7 +284,7 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options, expoAutol
     try {
         const reasons = ['expoAutolinkingIos'];
         const results = [];
-        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', platform, '--json'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', platform, '--json'], { cwd: projectRoot, env: (0, env_1.getOriginalEnv)() });
         const config = JSON.parse(stdout);
         for (const module of config.modules) {
             for (const pod of module.pods) {
