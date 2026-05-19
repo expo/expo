@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-19
+
+### 💡 Others
+
 - Constrain `expo-platform` input to known values ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
 
 ## 56.0.2 — 2026-05-13

@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.9 — 2026-05-19
+
+### 🎉 New features
+
 - [iOS][android] Added `onChange` listener to `useNativeState`. ([#45961](https://github.com/expo/expo/pull/45961) by [@nishan](https://github.com/intergalacticspacehighway))
 - Allow writing to native state from the JS thread. ([#45901](https://github.com/expo/expo/pull/45901) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `withAnimation(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's [`withAnimation(_:_:)`](<https://developer.apple.com/documentation/swiftui/withanimation(_:_:)>). ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
