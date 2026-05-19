@@ -12,7 +12,7 @@ import { Platform } from 'react-native';
 
 import { wrapNativeEvent, type PagerViewProps } from './types';
 import { worklets } from '../../State/optionalWorklets';
-import { useNativeState, type ObservableState } from '../../State/useNativeState';
+import { useNativeState } from '../../State/useNativeState';
 import { Group } from '../../swift-ui/Group';
 import { Host } from '../../swift-ui/Host';
 import { LazyHStack } from '../../swift-ui/LazyHStack';
@@ -145,13 +145,13 @@ export function PagerView(props: PagerViewProps) {
             (activePageState as any).setValue({ value: nextId });
           });
         } else {
-          writePageOnUI(activePageState, nextId);
+          (activePageState as any).setValue({ value: nextId });
         }
       },
       setPageWithoutAnimation: (page: number) => {
         const clamped = clampPage(page);
         if (clamped == null) return;
-        writePageOnUI(activePageState, String(clamped));
+        (activePageState as any).setValue({ value: String(clamped) });
       },
       setScrollEnabled: setScrollEnabledState,
     }),
@@ -263,17 +263,3 @@ function warnIfPreIOS18ScrollCallbacksDropped(
   }
 }
 
-// Routes the page-id write to the UI runtime when worklets are available so
-// SwiftUI observes the change on the same thread it diffs from. Without
-// worklets, falls back to a JS-thread write — the dev warning from
-// `defineValueProperty` will fire, but the page still changes.
-function writePageOnUI(state: ObservableState<string | null>, nextId: string): void {
-  if (worklets) {
-    worklets.scheduleOnUI(() => {
-      'worklet';
-      (state as any).setValue({ value: nextId });
-    });
-  } else {
-    state.value = nextId;
-  }
-}

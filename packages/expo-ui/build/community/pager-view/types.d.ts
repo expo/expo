@@ -75,12 +75,7 @@ export type PagerViewProps = ViewProps & {
      * is the index of the leading visible page; `offset` is the fractional
      * progress toward the next page in the `[0, 1)` range.
      *
-     * **iOS 18+ only** (Android works at any version, built on
-     * `onScrollGeometryChange`). On iOS 17 the prop attaches but the callback
-     * never fires. A `__DEV__`-mode warning logs only when the app actually
-     * runs on iOS 17, so a developer testing exclusively on newer iOS
-     * simulators will not see the gap until shipping to a device on iOS 17.
-     * Guard call sites with `Platform.Version` if you support iOS 17.
+     * **iOS 18+ only.**
      */
     onPageScroll?: (event: PagerViewOnPageScrollEvent) => void;
     /**
@@ -92,20 +87,12 @@ export type PagerViewProps = ViewProps & {
      * Fires when the scroll state changes between `idle`, `dragging`,
      * and `settling`.
      *
-     * **iOS 18+ only** (Android works at any version, synthesized from
-     * Compose's drag interactions plus `isScrollInProgress`). On iOS 17 the
-     * prop attaches but the callback never fires. A `__DEV__`-mode warning
-     * logs only when the app actually runs on iOS 17, so a developer
-     * testing exclusively on newer iOS simulators will not see the gap
-     * until shipping to a device on iOS 17. Guard call sites with
-     * `Platform.Version` if you support iOS 17.
+     * **iOS 18+ only.**
      */
     onPageScrollStateChanged?: (event: PageScrollStateChangedEvent) => void;
     /**
      * Pages of the pager. Each child is treated as a separate page and
      * stretched to fill the pager. Each child should have a stable `key`.
-     * Children are forwarded to a native host on each platform, so plain
-     * React Native views can be passed directly.
      */
     children?: ReactNode;
 };
@@ -116,12 +103,8 @@ export type PagerViewProps = ViewProps & {
 export type PagerViewRef = {
     /**
      * Animate the pager to the given page index. Out-of-range indices are
-     * silently ignored.
-     *
-     * On iOS, the animation requires `react-native-worklets` to be installed
-     * (the page mutation is dispatched into SwiftUI's `withAnimation`
-     * transaction via a worklet). If `react-native-worklets` isn't
-     * installed, `setPage` falls back to a non-animated jump.
+     * silently ignored. On iOS the animation requires `react-native-worklets`;
+     * without it, `setPage` falls back to a non-animated jump.
      */
     setPage: (selectedPage: number) => void;
     /**
