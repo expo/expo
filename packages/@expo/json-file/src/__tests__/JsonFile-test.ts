@@ -102,6 +102,14 @@ describe('async', () => {
     await expect(file.readAsync()).resolves.toEqual(testObject);
   });
 
+  it(`writes JSON with the requested file mode`, async () => {
+    const file = new JsonFile(testFilename, { ensureDir: true, mode: 0o600 });
+
+    await file.writeAsync(testObject);
+
+    expect((await fs.promises.stat(testFilename)).mode & 0o777).toBe(0o600);
+  });
+
   it(`rewrite async`, async () => {
     vol.fromJSON({ [testFilename]: loadFixture('test.json') });
 
@@ -242,6 +250,14 @@ describe('sync', () => {
     file.write(testObject);
     expect(fs.existsSync(testFilename)).toBe(true);
     expect(file.read()).toEqual(testObject);
+  });
+
+  it(`writes JSON with the requested file mode`, () => {
+    const file = new JsonFile(testFilename, { ensureDir: true, mode: 0o600 });
+
+    file.write(testObject);
+
+    expect(fs.statSync(testFilename).mode & 0o777).toBe(0o600);
   });
 
   it(`rewrite async`, () => {
