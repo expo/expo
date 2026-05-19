@@ -43,21 +43,22 @@ export function resolveFrom(
     }
   }
 
-  // (2.2) check against `/index` paths if we've disabled Node resolution
-  if (skipNodePath && !isJSON && resolveType === ResolveType.DIR) {
+  const isFileSpecifier = /^\.\.?(?:$|[/\\])/.test(moduleId) || path.isAbsolute(moduleId);
+
+  // (2.2) check against `/index` paths if we've disabled Node resolution or if we're resolving a relative path directly
+  if ((isFileSpecifier || skipNodePath) && !isJSON && resolveType === ResolveType.DIR) {
     resolved = path.join(resolved, 'index');
     for (let ext of exts) {
       ext = ext[0] !== '.' ? `.${ext}` : ext;
       const withExt = resolved + ext;
       if (resolveTypeSync(withExt) === ResolveType.FILE) {
+        // NOTE(@kitten): Like above, we don't resolve symlinks when we're not in a node_modules resolution path
         return withExt;
       }
     }
   }
 
-  // NOTE: We allow file specifier (relative paths) to be passed in
   // We won't need to continue with Node resolution if we're only resolving paths
-  const isFileSpecifier = /^\.\.?(?:$|[/\\])/.test(moduleId) || path.isAbsolute(moduleId);
   if (isFileSpecifier) {
     return null;
   }
