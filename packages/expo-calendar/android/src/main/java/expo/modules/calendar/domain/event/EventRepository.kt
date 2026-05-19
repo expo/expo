@@ -221,7 +221,7 @@ private fun buildSelectionForEventsQuery(
   )
 
   if (calendars.isNotEmpty()) {
-    val placeholders = calendars.joinToString(",") { "?" }
+    val placeholders = Array(calendars.size) { "?" }.joinToString(",")
     selectionConditions += "${CalendarContract.Instances.CALENDAR_ID} IN ($placeholders)"
     selectionArgs += calendars
   }
