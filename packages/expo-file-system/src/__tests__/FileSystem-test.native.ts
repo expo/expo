@@ -1,5 +1,6 @@
 import { DownloadTask, File, Directory, Paths, UploadTask } from '../..';
 import { __resetMockFileSystem } from '../../mocks/FileSystem';
+import { FileMode } from '../File.types';
 
 beforeEach(() => {
   __resetMockFileSystem();
@@ -188,6 +189,21 @@ describe('expo-file-system behavioral mock', () => {
     expect(children[0].uri).toBe(file.uri);
   });
 
+  it('Directory.info returns child names, size, and deterministic metadata', () => {
+    const dir = new Directory(Paths.cache, 'info-dir');
+    dir.create();
+    const creationTime = dir.info().creationTime;
+    dir.createFile('a.txt', null).write('abc');
+    dir.createFile('b.txt', null).write('de');
+
+    expect(dir.info()).toMatchObject({
+      exists: true,
+      files: ['a.txt', 'b.txt'],
+      size: 5,
+      creationTime,
+    });
+  });
+
   it('File.write(string) and File.text() roundtrip utf-8', async () => {
     const file = new File(Paths.cache, 'hello.txt');
     file.write('hello world');
@@ -215,6 +231,37 @@ describe('expo-file-system behavioral mock', () => {
     const file = new File(Paths.cache, 'encoded.txt');
     file.write(Buffer.from('hello').toString('base64'), { encoding: 'base64' });
     expect(file.textSync()).toBe('hello');
+  });
+
+  it('File metadata uses deterministic timestamps that reset with the mock filesystem', () => {
+    const file = new File(Paths.cache, 'metadata.txt');
+    expect(file.size).toBe(0);
+    expect(file.type).toBe('');
+    expect(file.modificationTime).toBeNull();
+    expect(file.lastModified).toBeNull();
+    expect(file.creationTime).toBeNull();
+
+    file.create();
+    const creationTime = file.creationTime;
+    expect(creationTime).toEqual(expect.any(Number));
+    expect(creationTime).toBeGreaterThan(0);
+    expect(file.modificationTime).toBe(creationTime);
+
+    file.write('hello');
+    expect(file.size).toBe(5);
+    expect(file.creationTime).toBe(creationTime);
+    expect(file.modificationTime).toBeGreaterThan(creationTime!);
+    expect(file.lastModified).toBe(file.modificationTime);
+    expect(file.info()).toMatchObject({
+      size: 5,
+      creationTime,
+      modificationTime: file.modificationTime,
+    });
+
+    __resetMockFileSystem();
+    const resetFile = new File(Paths.cache, 'metadata.txt');
+    resetFile.create();
+    expect(resetFile.creationTime).toBe(creationTime);
   });
 
   it('File.move updates this.uri and removes the source', async () => {
@@ -304,6 +351,97 @@ describe('expo-file-system behavioral mock', () => {
     expect(result.uri).toContain('downloads/out.bin');
     expect(result.exists).toBe(true);
     expect(result.textSync()).toBe('mock:https://example.com/foo.bin');
+  });
+
+  describe('FileMode handling', () => {
+    function encode(contents: string): Uint8Array {
+      return new TextEncoder().encode(contents);
+    }
+
+    function makeFile(name: string, contents = 'hello'): File {
+      const file = new File(Paths.cache, name);
+      file.create();
+      file.write(contents);
+      return file;
+    }
+
+    it('FileMode.ReadOnly rejects writes', () => {
+      const file = makeFile('readonly.txt');
+      const handle = file.open(FileMode.ReadOnly);
+      expect(() => handle.writeBytes(new Uint8Array([1, 2, 3]))).toThrow();
+      handle.close();
+    });
+
+    it('FileMode.WriteOnly rejects reads', () => {
+      const file = makeFile('writeonly.txt');
+      const handle = file.open(FileMode.WriteOnly);
+      expect(() => handle.readBytes(1)).toThrow();
+      handle.close();
+    });
+
+    it('FileMode.Append positions the cursor at end of file', () => {
+      const file = makeFile('append.txt', 'abc');
+      const handle = file.open(FileMode.Append);
+      handle.writeBytes(encode('def'));
+      handle.close();
+      expect(file.textSync()).toBe('abcdef');
+    });
+
+    it('FileMode.Truncate wipes existing contents on open', () => {
+      const file = makeFile('truncate.txt', 'will-be-wiped');
+      const handle = file.open(FileMode.Truncate);
+      handle.writeBytes(encode('fresh'));
+      handle.close();
+      expect(file.textSync()).toBe('fresh');
+    });
+
+    it('preserves the stored mime type across write() and Truncate opens', () => {
+      const dir = new Directory(Paths.cache, 'typed');
+      dir.create();
+      const file = dir.createFile('x.txt', 'text/plain');
+      expect(file.type).toBe('text/plain');
+
+      file.write('hello');
+      expect(file.type).toBe('text/plain');
+
+      const handle = file.open(FileMode.Truncate);
+      handle.writeBytes(encode('fresh'));
+      handle.close();
+      expect(file.type).toBe('text/plain');
+    });
+
+    it('FileMode.ReadWrite is the default and allows both', () => {
+      const file = makeFile('rw.txt', 'seed');
+      const handle = file.open();
+      expect(handle.readBytes(4)).toEqual(encode('seed'));
+      handle.writeBytes(encode('!'));
+      handle.close();
+      expect(file.textSync()).toBe('seed!');
+    });
+
+    it('tracks offset and size while the handle is open', () => {
+      const file = makeFile('handle-metadata.txt', 'abc');
+      const handle = file.open(FileMode.ReadOnly);
+      expect(handle.offset).toBe(0);
+      expect(handle.size).toBe(3);
+      handle.readBytes(2);
+      expect(handle.offset).toBe(2);
+      handle.close();
+      expect(handle.offset).toBeNull();
+      expect(handle.size).toBeNull();
+    });
+
+    it('honors offset writes and appends when offset is past the file size', () => {
+      const file = makeFile('offset-writes.txt', 'abcd');
+      const handle = file.open(FileMode.ReadWrite);
+      handle.offset = 1;
+      handle.writeBytes(encode('Z'));
+      expect(handle.offset).toBe(2);
+      handle.offset = 99;
+      handle.writeBytes(encode('!'));
+      handle.close();
+      expect(file.textSync()).toBe('aZcd!');
+    });
   });
 });
 
