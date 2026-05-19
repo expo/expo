@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Added missing permission check to `delete()` in the next-gen File System API. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+- [Android] Fixed path traversal vulnerability in `createFile`, `createDirectory`, and `rename` that allowed escaping the parent directory. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 ## 55.0.21 — 2026-05-19
