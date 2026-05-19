@@ -30,8 +30,7 @@ const program = new Command(packageJSON.name)
   * @returns {Promise<Record<string, any>>}
   */
 async function fetchSchemaAsync(version) {
-  const url = `http://exp.host/--/api/v2/project/configuration/schema/${version}`;
-
+  const url = `https://exp.host/--/api/v2/project/configuration/schema/${version}`;
   const response = await fetch(url);
   const data = await response.json();
 
