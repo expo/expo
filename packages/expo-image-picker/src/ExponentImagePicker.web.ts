@@ -97,7 +97,7 @@ function openFileBrowserAsync({
   capture = false,
   allowsMultipleSelection = false,
   base64,
-  exif,
+  exif = false,
 }: OpenFileBrowserOptions): Promise<ImagePickerResult> {
   const parsedMediaTypes = parseMediaTypes(mediaTypes);
   const mediaTypeFormat = createMediaTypeFormat(parsedMediaTypes);
@@ -256,7 +256,7 @@ async function readFile(
       fileSize: targetFile.size,
       file: targetFile,
       ...(metadata.duration !== undefined && { duration: metadata.duration }),
-      ...(options.exif && { exif: exif ?? null }),
+      ...(options.exif && mimeType.startsWith('image/') && { exif: exif ?? null }),
       ...(base64 && { base64 }),
     };
   } catch (error) {

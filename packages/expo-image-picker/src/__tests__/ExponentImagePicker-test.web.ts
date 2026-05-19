@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { Platform } from 'expo-modules-core';
 
 import ExponentImagePicker from '../ExponentImagePicker';
+import { readExifFromFileAsync } from '../ExponentImagePicker.web.exif';
 
 describe('ExponentImagePicker', () => {
   if (!Platform.isDOMAvailable) {
@@ -27,6 +28,21 @@ describe('ExponentImagePicker', () => {
             }
 
             element.onload(new Event('load'));
+          }, 10);
+        }
+
+        if (element.tagName === 'VIDEO') {
+          setTimeout(() => {
+            if (!(element instanceof HTMLVideoElement) || !element.onloadedmetadata) {
+              return;
+            }
+
+            Object.defineProperties(element, {
+              videoWidth: { configurable: true, value: 1920 },
+              videoHeight: { configurable: true, value: 1080 },
+              duration: { configurable: true, value: 42 },
+            });
+            element.onloadedmetadata(new Event('loadedmetadata'));
           }, 10);
         }
         return element;
@@ -139,6 +155,27 @@ describe('ExponentImagePicker', () => {
       expect(pickerResult.canceled).toBe(false);
       expect(pickerResult.assets?.[0]).not.toHaveProperty('exif');
     });
+
+    it(`does not include EXIF metadata for videos when requested`, async () => {
+      const user = userEvent.setup();
+      const file = getTestVideoFile('video-no-exif');
+      const pickerPromise = ExponentImagePicker.launchImageLibraryAsync({
+        exif: true,
+        mediaTypes: ['videos'],
+      });
+      const fileInput = getFileInput();
+
+      await user.upload(fileInput, file);
+
+      const pickerResult = await pickerPromise;
+      expect(pickerResult.canceled).toBe(false);
+      expect(pickerResult.assets?.[0]).toMatchObject({
+        type: 'video',
+        mimeType: 'video/mp4',
+        duration: 42,
+      });
+      expect(pickerResult.assets?.[0]).not.toHaveProperty('exif');
+    });
   });
 
   describe('launchCameraAsync', () => {
@@ -165,6 +202,23 @@ describe('ExponentImagePicker', () => {
       expect(asset?.exif?.GPSLongitude).toBeCloseTo(77.2, 6);
     });
   });
+
+  describe('readExifFromFileAsync', () => {
+    it(`parses PNG eXIf payloads`, async () => {
+      const exif = await readExifFromFileAsync(getTestExifFile('png', createPngWithExifData()));
+      expectTestExifFixture(exif);
+    });
+
+    it(`parses WebP EXIF chunks`, async () => {
+      const exif = await readExifFromFileAsync(getTestExifFile('webp', createWebPWithExifData()));
+      expectTestExifFixture(exif);
+    });
+
+    it(`parses TIFF EXIF payloads`, async () => {
+      const exif = await readExifFromFileAsync(getTestExifFile('tiff', createTiffWithExifData()));
+      expectTestExifFixture(exif);
+    });
+  });
 });
 
 function getTestImageFile(name = 'hello') {
@@ -179,6 +233,35 @@ function getTestImageFileWithExif(name = 'hello') {
     type: 'image/jpeg',
     lastModified: new Date('2026-04-28T10:08:00.000+05:30').getTime(),
   });
+}
+
+function getTestExifFile(extension: 'png' | 'webp' | 'tiff', contents: Uint8Array) {
+  const mimeType =
+    extension === 'png' ? 'image/png' : extension === 'webp' ? 'image/webp' : 'image/tiff';
+
+  return new File([contents], `fixture.${extension}`, {
+    type: mimeType,
+    lastModified: new Date('2026-04-28T10:08:00.000+05:30').getTime(),
+  });
+}
+
+function getTestVideoFile(name = 'video') {
+  return new File(['video'], `${name}.mp4`, {
+    type: 'video/mp4',
+    lastModified: new Date('2026-04-28T10:08:00.000+05:30').getTime(),
+  });
+}
+
+function expectTestExifFixture(exif: Record<string, any> | null | undefined) {
+  expect(exif).toMatchObject({
+    Make: 'ExpoCam',
+    Model: 'Web Picker',
+    Orientation: 6,
+    DateTimeOriginal: '2026:04:28 10:08:00',
+    GPSAltitude: 150,
+  });
+  expect(exif?.GPSLatitude).toBeCloseTo(28.6, 6);
+  expect(exif?.GPSLongitude).toBeCloseTo(77.2, 6);
 }
 
 type TestIfdEntry = {
@@ -235,6 +318,52 @@ class ByteWriter {
 }
 
 function createJpegWithExifData(): Uint8Array {
+  const tiffData = createTiffWithExifData();
+  const exifPayload = Uint8Array.from([...asciiBytes('Exif'), 0, 0, ...Array.from(tiffData)]);
+  const app1Length = exifPayload.length + 2;
+
+  return Uint8Array.from([
+    0xff,
+    0xd8,
+    0xff,
+    0xe1,
+    (app1Length >> 8) & 0xff,
+    app1Length & 0xff,
+    ...Array.from(exifPayload),
+    0xff,
+    0xd9,
+  ]);
+}
+
+function createPngWithExifData(): Uint8Array {
+  const exifPayload = createTiffWithExifData();
+  return Uint8Array.from([
+    0x89,
+    0x50,
+    0x4e,
+    0x47,
+    0x0d,
+    0x0a,
+    0x1a,
+    0x0a,
+    ...createPngChunk('eXIf', exifPayload),
+    ...createPngChunk('IEND', new Uint8Array()),
+  ]);
+}
+
+function createWebPWithExifData(): Uint8Array {
+  const exifPayload = createTiffWithExifData();
+  const exifChunk = createRiffChunk('EXIF', exifPayload);
+  const riffPayload = Uint8Array.from([...asciiBytes('WEBP'), ...Array.from(exifChunk)]);
+
+  return Uint8Array.from([
+    ...asciiBytes('RIFF'),
+    ...toUint32LEBytes(riffPayload.length),
+    ...Array.from(riffPayload),
+  ]);
+}
+
+function createTiffWithExifData(): Uint8Array {
   const writer = new ByteWriter();
 
   writer.pushBytes([0x49, 0x49]);
@@ -277,21 +406,7 @@ function createJpegWithExifData(): Uint8Array {
   ]);
   writer.patchUint32LE(ifd0.pointerOffsets[0x8825], gpsIfdOffset);
 
-  const tiffData = writer.toUint8Array();
-  const exifPayload = Uint8Array.from([...asciiBytes('Exif'), 0, 0, ...Array.from(tiffData)]);
-  const app1Length = exifPayload.length + 2;
-
-  return Uint8Array.from([
-    0xff,
-    0xd8,
-    0xff,
-    0xe1,
-    (app1Length >> 8) & 0xff,
-    app1Length & 0xff,
-    ...Array.from(exifPayload),
-    0xff,
-    0xd9,
-  ]);
+  return writer.toUint8Array();
 }
 
 function writeIfd(writer: ByteWriter, entries: TestIfdEntry[]) {
@@ -400,6 +515,36 @@ function rationalEntry(tag: number, values: [number, number][]): TestIfdEntry {
 
 function asciiBytes(value: string): number[] {
   return Array.from(value, (character) => character.charCodeAt(0));
+}
+
+function createPngChunk(type: string, payload: Uint8Array): number[] {
+  return [
+    ...toUint32BEBytes(payload.length),
+    ...asciiBytes(type),
+    ...Array.from(payload),
+    0,
+    0,
+    0,
+    0,
+  ];
+}
+
+function createRiffChunk(type: string, payload: Uint8Array): number[] {
+  const bytes = [...asciiBytes(type), ...toUint32LEBytes(payload.length), ...Array.from(payload)];
+
+  if (payload.length % 2 !== 0) {
+    bytes.push(0);
+  }
+
+  return bytes;
+}
+
+function toUint32BEBytes(value: number): number[] {
+  return [(value >> 24) & 0xff, (value >> 16) & 0xff, (value >> 8) & 0xff, value & 0xff];
+}
+
+function toUint32LEBytes(value: number): number[] {
+  return [value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, (value >> 24) & 0xff];
 }
 
 function pushUint32LE(bytes: number[], value: number) {

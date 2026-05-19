@@ -118,29 +118,57 @@ const GPS_IFD_POINTER = 0x8825;
 const INTEROPERABILITY_IFD_POINTER = 0xa005;
 const BYTE_ORDER_BIG_ENDIAN = 0x4d4d;
 const BYTE_ORDER_LITTLE_ENDIAN = 0x4949;
+const NEEDS_MORE_DATA = Symbol('expo-image-picker-exif-needs-more-data');
+const INITIAL_EXIF_READ_BYTES = 64 * 1024;
+const MAX_EXIF_READ_BYTES = 1024 * 1024;
 export async function readExifFromFileAsync(file) {
-    const buffer = await readBlobAsArrayBufferAsync(file);
-    return readExifFromBuffer(buffer);
-}
-function readExifFromBuffer(buffer) {
-    const view = new DataView(buffer);
-    if (isJpeg(view)) {
-        return normalizeExifData(parseJpegExif(view));
-    }
-    if (isPng(view)) {
-        return normalizeExifData(parsePngExif(view));
-    }
-    if (isWebP(view)) {
-        return normalizeExifData(parseWebPExif(view));
-    }
-    if (isTiff(view)) {
-        return normalizeExifData(parseTiffExif(view, 0, view.byteLength));
+    const maxBytesToRead = Math.min(file.size, MAX_EXIF_READ_BYTES);
+    for (const bytesToRead of getExifReadSizes(maxBytesToRead)) {
+        const buffer = await readBlobAsArrayBufferAsync(file, bytesToRead);
+        const exif = readExifFromBuffer(buffer, bytesToRead >= file.size);
+        if (exif !== NEEDS_MORE_DATA) {
+            return exif;
+        }
     }
     return null;
 }
-async function readBlobAsArrayBufferAsync(blob) {
+function readExifFromBuffer(buffer, isCompleteBuffer) {
+    const view = new DataView(buffer);
+    if (isJpeg(view)) {
+        const exif = parseJpegExif(view, isCompleteBuffer);
+        return exif === NEEDS_MORE_DATA ? NEEDS_MORE_DATA : normalizeExifData(exif);
+    }
+    if (isPng(view)) {
+        const exif = parsePngExif(view, isCompleteBuffer);
+        return exif === NEEDS_MORE_DATA ? NEEDS_MORE_DATA : normalizeExifData(exif);
+    }
+    if (isWebP(view)) {
+        const exif = parseWebPExif(view, isCompleteBuffer);
+        return exif === NEEDS_MORE_DATA ? NEEDS_MORE_DATA : normalizeExifData(exif);
+    }
+    if (isTiff(view)) {
+        const exif = parseTiffExif(view, 0, view.byteLength, isCompleteBuffer);
+        return exif === NEEDS_MORE_DATA ? NEEDS_MORE_DATA : normalizeExifData(exif);
+    }
+    return null;
+}
+function getExifReadSizes(maxBytesToRead) {
+    if (maxBytesToRead <= 0) {
+        return [];
+    }
+    const sizes = new Set();
+    let nextSize = Math.min(INITIAL_EXIF_READ_BYTES, maxBytesToRead);
+    while (nextSize < maxBytesToRead) {
+        sizes.add(nextSize);
+        nextSize = Math.min(nextSize * 4, maxBytesToRead);
+    }
+    sizes.add(maxBytesToRead);
+    return Array.from(sizes);
+}
+async function readBlobAsArrayBufferAsync(blob, bytesToRead = blob.size) {
+    const slice = blob.slice(0, bytesToRead);
     if (typeof blob.arrayBuffer === 'function') {
-        return await blob.arrayBuffer();
+        return await slice.arrayBuffer();
     }
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -153,7 +181,7 @@ async function readBlobAsArrayBufferAsync(blob) {
                 reject(new Error('Failed to read the selected media metadata.'));
             }
         };
-        reader.readAsArrayBuffer(blob);
+        reader.readAsArrayBuffer(slice);
     });
 }
 function isJpeg(view) {
@@ -179,7 +207,7 @@ function isTiff(view) {
     }
     return view.getUint16(2, littleEndian) === 42;
 }
-function parseJpegExif(view) {
+function parseJpegExif(view, isCompleteBuffer) {
     let offset = 2;
     while (offset + 4 <= view.byteLength) {
         if (view.getUint8(offset) !== 0xff) {
@@ -197,19 +225,19 @@ function parseJpegExif(view) {
         const segmentDataLength = segmentLength - 2;
         const segmentEnd = segmentStart + segmentDataLength;
         if (segmentEnd > view.byteLength) {
-            break;
+            return isCompleteBuffer ? null : NEEDS_MORE_DATA;
         }
         if (marker === 0xe1) {
-            const exif = parseExifPayload(view, segmentStart, segmentDataLength);
+            const exif = parseExifPayload(view, segmentStart, segmentDataLength, isCompleteBuffer);
             if (exif != null) {
                 return exif;
             }
         }
         offset += segmentLength + 2;
     }
-    return null;
+    return isCompleteBuffer ? null : NEEDS_MORE_DATA;
 }
-function parsePngExif(view) {
+function parsePngExif(view, isCompleteBuffer) {
     let offset = 8;
     while (offset + 12 <= view.byteLength) {
         const chunkLength = view.getUint32(offset, false);
@@ -217,16 +245,20 @@ function parsePngExif(view) {
         const chunkDataOffset = offset + 8;
         const chunkEnd = chunkDataOffset + chunkLength;
         if (chunkEnd + 4 > view.byteLength) {
-            break;
+            return isCompleteBuffer ? null : NEEDS_MORE_DATA;
         }
         if (chunkType === 'eXIf') {
-            return parseExifPayload(view, chunkDataOffset, chunkLength);
+            return parseExifPayload(view, chunkDataOffset, chunkLength, isCompleteBuffer);
+        }
+        if (chunkType === 'IEND') {
+            return null;
         }
         offset = chunkEnd + 4;
     }
-    return null;
+    return isCompleteBuffer ? null : NEEDS_MORE_DATA;
 }
-function parseWebPExif(view) {
+function parseWebPExif(view, isCompleteBuffer) {
+    const riffLength = view.byteLength >= 8 ? view.getUint32(4, true) + 8 : view.byteLength;
     let offset = 12;
     while (offset + 8 <= view.byteLength) {
         const chunkType = readAscii(view, offset, 4);
@@ -234,27 +266,27 @@ function parseWebPExif(view) {
         const chunkDataOffset = offset + 8;
         const paddedLength = chunkLength + (chunkLength % 2);
         if (chunkDataOffset + paddedLength > view.byteLength) {
-            break;
+            return isCompleteBuffer ? null : NEEDS_MORE_DATA;
         }
         if (chunkType === 'EXIF') {
-            return parseExifPayload(view, chunkDataOffset, chunkLength);
+            return parseExifPayload(view, chunkDataOffset, chunkLength, isCompleteBuffer);
         }
         offset = chunkDataOffset + paddedLength;
     }
-    return null;
+    return isCompleteBuffer || offset >= riffLength ? null : NEEDS_MORE_DATA;
 }
-function parseExifPayload(view, payloadOffset, payloadLength) {
+function parseExifPayload(view, payloadOffset, payloadLength, isCompleteBuffer) {
     if (payloadLength < 8) {
         return null;
     }
     if (payloadLength >= 6 && readAscii(view, payloadOffset, 4) === 'Exif') {
-        return parseTiffExif(view, payloadOffset + 6, payloadLength - 6);
+        return parseTiffExif(view, payloadOffset + 6, payloadLength - 6, isCompleteBuffer);
     }
-    return parseTiffExif(view, payloadOffset, payloadLength);
+    return parseTiffExif(view, payloadOffset, payloadLength, isCompleteBuffer);
 }
-function parseTiffExif(view, tiffOffset, tiffLength) {
+function parseTiffExif(view, tiffOffset, tiffLength, isCompleteBuffer) {
     if (tiffLength < 8 || tiffOffset + tiffLength > view.byteLength) {
-        return null;
+        return isCompleteBuffer ? null : NEEDS_MORE_DATA;
     }
     const byteOrder = view.getUint16(tiffOffset, false);
     const littleEndian = byteOrder === BYTE_ORDER_LITTLE_ENDIAN
@@ -268,19 +300,25 @@ function parseTiffExif(view, tiffOffset, tiffLength) {
     const rawExif = {};
     const tiffEnd = tiffOffset + tiffLength;
     const visited = new Set();
+    let needsMoreData = false;
     const parseIfd = (relativeOffset, tags, scope) => {
-        if (relativeOffset <= 0) {
+        if (relativeOffset <= 0 || needsMoreData) {
             return;
         }
         const absoluteOffset = tiffOffset + relativeOffset;
         const visitKey = `${scope}:${relativeOffset}`;
-        if (visited.has(visitKey) || absoluteOffset + 2 > tiffEnd) {
+        if (visited.has(visitKey)) {
+            return;
+        }
+        if (absoluteOffset + 2 > tiffEnd) {
+            needsMoreData = !isCompleteBuffer;
             return;
         }
         visited.add(visitKey);
         const entryCount = view.getUint16(absoluteOffset, littleEndian);
         const afterEntries = absoluteOffset + 2 + entryCount * 12;
         if (afterEntries + 4 > tiffEnd) {
+            needsMoreData = !isCompleteBuffer;
             return;
         }
         const childIfds = [];
@@ -305,10 +343,17 @@ function parseTiffExif(view, tiffOffset, tiffLength) {
                 continue;
             }
             const tagName = tags[tagId] ?? `Tag_0x${tagId.toString(16).toUpperCase().padStart(4, '0')}`;
-            const value = readTagValue(view, entryOffset, tiffOffset, tiffEnd, littleEndian);
+            const value = readTagValue(view, entryOffset, tiffOffset, tiffEnd, littleEndian, isCompleteBuffer);
+            if (value === NEEDS_MORE_DATA) {
+                needsMoreData = true;
+                return;
+            }
             if (value != null) {
                 rawExif[tagName] = value;
             }
+        }
+        if (needsMoreData) {
+            return;
         }
         for (const childIfd of childIfds) {
             parseIfd(childIfd.offset, childIfd.tags, childIfd.scope);
@@ -322,6 +367,9 @@ function parseTiffExif(view, tiffOffset, tiffLength) {
     };
     const firstIfdOffset = view.getUint32(tiffOffset + 4, littleEndian);
     parseIfd(firstIfdOffset, TIFF_TAGS, 'tiff');
+    if (needsMoreData) {
+        return NEEDS_MORE_DATA;
+    }
     return Object.keys(rawExif).length > 0 ? rawExif : null;
 }
 function readOffsetValue(view, entryOffset, littleEndian) {
@@ -334,7 +382,7 @@ function readOffsetValue(view, entryOffset, littleEndian) {
         ? view.getUint16(entryOffset + 8, littleEndian)
         : view.getUint32(entryOffset + 8, littleEndian);
 }
-function readTagValue(view, entryOffset, tiffOffset, tiffEnd, littleEndian) {
+function readTagValue(view, entryOffset, tiffOffset, tiffEnd, littleEndian, isCompleteBuffer) {
     const type = view.getUint16(entryOffset + 2, littleEndian);
     const count = view.getUint32(entryOffset + 4, littleEndian);
     const unitSize = getUnitSize(type);
@@ -344,7 +392,7 @@ function readTagValue(view, entryOffset, tiffOffset, tiffEnd, littleEndian) {
     const totalSize = unitSize * count;
     const valueOffset = totalSize <= 4 ? entryOffset + 8 : tiffOffset + view.getUint32(entryOffset + 8, littleEndian);
     if (valueOffset < tiffOffset || valueOffset + totalSize > tiffEnd) {
-        return null;
+        return isCompleteBuffer ? null : NEEDS_MORE_DATA;
     }
     switch (type) {
         case 1:

@@ -1,6 +1,7 @@
 type RawExifValue = number | number[] | string | Uint8Array;
 
 type TagDictionary = Record<number, string>;
+type ExifParseResult = Record<string, RawExifValue> | null | typeof NEEDS_MORE_DATA;
 
 const TIFF_TAGS: TagDictionary = {
   0x00fe: 'NewSubfileType',
@@ -127,34 +128,76 @@ const INTEROPERABILITY_IFD_POINTER = 0xa005;
 
 const BYTE_ORDER_BIG_ENDIAN = 0x4d4d;
 const BYTE_ORDER_LITTLE_ENDIAN = 0x4949;
+const NEEDS_MORE_DATA = Symbol('expo-image-picker-exif-needs-more-data');
+const INITIAL_EXIF_READ_BYTES = 64 * 1024;
+const MAX_EXIF_READ_BYTES = 1024 * 1024;
 
 export async function readExifFromFileAsync(file: Blob): Promise<Record<string, any> | null> {
-  const buffer = await readBlobAsArrayBufferAsync(file);
-  return readExifFromBuffer(buffer);
-}
+  const maxBytesToRead = Math.min(file.size, MAX_EXIF_READ_BYTES);
 
-function readExifFromBuffer(buffer: ArrayBuffer): Record<string, any> | null {
-  const view = new DataView(buffer);
+  for (const bytesToRead of getExifReadSizes(maxBytesToRead)) {
+    const buffer = await readBlobAsArrayBufferAsync(file, bytesToRead);
+    const exif = readExifFromBuffer(buffer, bytesToRead >= file.size);
 
-  if (isJpeg(view)) {
-    return normalizeExifData(parseJpegExif(view));
-  }
-  if (isPng(view)) {
-    return normalizeExifData(parsePngExif(view));
-  }
-  if (isWebP(view)) {
-    return normalizeExifData(parseWebPExif(view));
-  }
-  if (isTiff(view)) {
-    return normalizeExifData(parseTiffExif(view, 0, view.byteLength));
+    if (exif !== NEEDS_MORE_DATA) {
+      return exif;
+    }
   }
 
   return null;
 }
 
-async function readBlobAsArrayBufferAsync(blob: Blob): Promise<ArrayBuffer> {
+function readExifFromBuffer(
+  buffer: ArrayBuffer,
+  isCompleteBuffer: boolean
+): Record<string, any> | null | typeof NEEDS_MORE_DATA {
+  const view = new DataView(buffer);
+
+  if (isJpeg(view)) {
+    const exif = parseJpegExif(view, isCompleteBuffer);
+    return exif === NEEDS_MORE_DATA ? NEEDS_MORE_DATA : normalizeExifData(exif);
+  }
+  if (isPng(view)) {
+    const exif = parsePngExif(view, isCompleteBuffer);
+    return exif === NEEDS_MORE_DATA ? NEEDS_MORE_DATA : normalizeExifData(exif);
+  }
+  if (isWebP(view)) {
+    const exif = parseWebPExif(view, isCompleteBuffer);
+    return exif === NEEDS_MORE_DATA ? NEEDS_MORE_DATA : normalizeExifData(exif);
+  }
+  if (isTiff(view)) {
+    const exif = parseTiffExif(view, 0, view.byteLength, isCompleteBuffer);
+    return exif === NEEDS_MORE_DATA ? NEEDS_MORE_DATA : normalizeExifData(exif);
+  }
+
+  return null;
+}
+
+function getExifReadSizes(maxBytesToRead: number): number[] {
+  if (maxBytesToRead <= 0) {
+    return [];
+  }
+
+  const sizes = new Set<number>();
+  let nextSize = Math.min(INITIAL_EXIF_READ_BYTES, maxBytesToRead);
+
+  while (nextSize < maxBytesToRead) {
+    sizes.add(nextSize);
+    nextSize = Math.min(nextSize * 4, maxBytesToRead);
+  }
+
+  sizes.add(maxBytesToRead);
+  return Array.from(sizes);
+}
+
+async function readBlobAsArrayBufferAsync(
+  blob: Blob,
+  bytesToRead = blob.size
+): Promise<ArrayBuffer> {
+  const slice = blob.slice(0, bytesToRead);
+
   if (typeof blob.arrayBuffer === 'function') {
-    return await blob.arrayBuffer();
+    return await slice.arrayBuffer();
   }
 
   return new Promise((resolve, reject) => {
@@ -167,7 +210,7 @@ async function readBlobAsArrayBufferAsync(blob: Blob): Promise<ArrayBuffer> {
         reject(new Error('Failed to read the selected media metadata.'));
       }
     };
-    reader.readAsArrayBuffer(blob);
+    reader.readAsArrayBuffer(slice);
   });
 }
 
@@ -205,7 +248,7 @@ function isTiff(view: DataView): boolean {
   return view.getUint16(2, littleEndian) === 42;
 }
 
-function parseJpegExif(view: DataView): Record<string, RawExifValue> | null {
+function parseJpegExif(view: DataView, isCompleteBuffer: boolean): ExifParseResult {
   let offset = 2;
 
   while (offset + 4 <= view.byteLength) {
@@ -230,11 +273,11 @@ function parseJpegExif(view: DataView): Record<string, RawExifValue> | null {
     const segmentEnd = segmentStart + segmentDataLength;
 
     if (segmentEnd > view.byteLength) {
-      break;
+      return isCompleteBuffer ? null : NEEDS_MORE_DATA;
     }
 
     if (marker === 0xe1) {
-      const exif = parseExifPayload(view, segmentStart, segmentDataLength);
+      const exif = parseExifPayload(view, segmentStart, segmentDataLength, isCompleteBuffer);
       if (exif != null) {
         return exif;
       }
@@ -243,10 +286,10 @@ function parseJpegExif(view: DataView): Record<string, RawExifValue> | null {
     offset += segmentLength + 2;
   }
 
-  return null;
+  return isCompleteBuffer ? null : NEEDS_MORE_DATA;
 }
 
-function parsePngExif(view: DataView): Record<string, RawExifValue> | null {
+function parsePngExif(view: DataView, isCompleteBuffer: boolean): ExifParseResult {
   let offset = 8;
 
   while (offset + 12 <= view.byteLength) {
@@ -256,20 +299,25 @@ function parsePngExif(view: DataView): Record<string, RawExifValue> | null {
     const chunkEnd = chunkDataOffset + chunkLength;
 
     if (chunkEnd + 4 > view.byteLength) {
-      break;
+      return isCompleteBuffer ? null : NEEDS_MORE_DATA;
     }
 
     if (chunkType === 'eXIf') {
-      return parseExifPayload(view, chunkDataOffset, chunkLength);
+      return parseExifPayload(view, chunkDataOffset, chunkLength, isCompleteBuffer);
+    }
+
+    if (chunkType === 'IEND') {
+      return null;
     }
 
     offset = chunkEnd + 4;
   }
 
-  return null;
+  return isCompleteBuffer ? null : NEEDS_MORE_DATA;
 }
 
-function parseWebPExif(view: DataView): Record<string, RawExifValue> | null {
+function parseWebPExif(view: DataView, isCompleteBuffer: boolean): ExifParseResult {
+  const riffLength = view.byteLength >= 8 ? view.getUint32(4, true) + 8 : view.byteLength;
   let offset = 12;
 
   while (offset + 8 <= view.byteLength) {
@@ -279,42 +327,44 @@ function parseWebPExif(view: DataView): Record<string, RawExifValue> | null {
     const paddedLength = chunkLength + (chunkLength % 2);
 
     if (chunkDataOffset + paddedLength > view.byteLength) {
-      break;
+      return isCompleteBuffer ? null : NEEDS_MORE_DATA;
     }
 
     if (chunkType === 'EXIF') {
-      return parseExifPayload(view, chunkDataOffset, chunkLength);
+      return parseExifPayload(view, chunkDataOffset, chunkLength, isCompleteBuffer);
     }
 
     offset = chunkDataOffset + paddedLength;
   }
 
-  return null;
+  return isCompleteBuffer || offset >= riffLength ? null : NEEDS_MORE_DATA;
 }
 
 function parseExifPayload(
   view: DataView,
   payloadOffset: number,
-  payloadLength: number
-): Record<string, RawExifValue> | null {
+  payloadLength: number,
+  isCompleteBuffer: boolean
+): ExifParseResult {
   if (payloadLength < 8) {
     return null;
   }
 
   if (payloadLength >= 6 && readAscii(view, payloadOffset, 4) === 'Exif') {
-    return parseTiffExif(view, payloadOffset + 6, payloadLength - 6);
+    return parseTiffExif(view, payloadOffset + 6, payloadLength - 6, isCompleteBuffer);
   }
 
-  return parseTiffExif(view, payloadOffset, payloadLength);
+  return parseTiffExif(view, payloadOffset, payloadLength, isCompleteBuffer);
 }
 
 function parseTiffExif(
   view: DataView,
   tiffOffset: number,
-  tiffLength: number
-): Record<string, RawExifValue> | null {
+  tiffLength: number,
+  isCompleteBuffer: boolean
+): ExifParseResult {
   if (tiffLength < 8 || tiffOffset + tiffLength > view.byteLength) {
-    return null;
+    return isCompleteBuffer ? null : NEEDS_MORE_DATA;
   }
 
   const byteOrder = view.getUint16(tiffOffset, false);
@@ -332,16 +382,22 @@ function parseTiffExif(
   const rawExif: Record<string, RawExifValue> = {};
   const tiffEnd = tiffOffset + tiffLength;
   const visited = new Set<string>();
+  let needsMoreData = false;
 
   const parseIfd = (relativeOffset: number, tags: TagDictionary, scope: string): void => {
-    if (relativeOffset <= 0) {
+    if (relativeOffset <= 0 || needsMoreData) {
       return;
     }
 
     const absoluteOffset = tiffOffset + relativeOffset;
     const visitKey = `${scope}:${relativeOffset}`;
 
-    if (visited.has(visitKey) || absoluteOffset + 2 > tiffEnd) {
+    if (visited.has(visitKey)) {
+      return;
+    }
+
+    if (absoluteOffset + 2 > tiffEnd) {
+      needsMoreData = !isCompleteBuffer;
       return;
     }
     visited.add(visitKey);
@@ -350,6 +406,7 @@ function parseTiffExif(
     const afterEntries = absoluteOffset + 2 + entryCount * 12;
 
     if (afterEntries + 4 > tiffEnd) {
+      needsMoreData = !isCompleteBuffer;
       return;
     }
 
@@ -379,11 +436,27 @@ function parseTiffExif(
       }
 
       const tagName = tags[tagId] ?? `Tag_0x${tagId.toString(16).toUpperCase().padStart(4, '0')}`;
-      const value = readTagValue(view, entryOffset, tiffOffset, tiffEnd, littleEndian);
+      const value = readTagValue(
+        view,
+        entryOffset,
+        tiffOffset,
+        tiffEnd,
+        littleEndian,
+        isCompleteBuffer
+      );
+
+      if (value === NEEDS_MORE_DATA) {
+        needsMoreData = true;
+        return;
+      }
 
       if (value != null) {
         rawExif[tagName] = value;
       }
+    }
+
+    if (needsMoreData) {
+      return;
     }
 
     for (const childIfd of childIfds) {
@@ -400,6 +473,10 @@ function parseTiffExif(
 
   const firstIfdOffset = view.getUint32(tiffOffset + 4, littleEndian);
   parseIfd(firstIfdOffset, TIFF_TAGS, 'tiff');
+
+  if (needsMoreData) {
+    return NEEDS_MORE_DATA;
+  }
 
   return Object.keys(rawExif).length > 0 ? rawExif : null;
 }
@@ -426,8 +503,9 @@ function readTagValue(
   entryOffset: number,
   tiffOffset: number,
   tiffEnd: number,
-  littleEndian: boolean
-): RawExifValue | null {
+  littleEndian: boolean,
+  isCompleteBuffer: boolean
+): RawExifValue | null | typeof NEEDS_MORE_DATA {
   const type = view.getUint16(entryOffset + 2, littleEndian);
   const count = view.getUint32(entryOffset + 4, littleEndian);
   const unitSize = getUnitSize(type);
@@ -441,7 +519,7 @@ function readTagValue(
     totalSize <= 4 ? entryOffset + 8 : tiffOffset + view.getUint32(entryOffset + 8, littleEndian);
 
   if (valueOffset < tiffOffset || valueOffset + totalSize > tiffEnd) {
-    return null;
+    return isCompleteBuffer ? null : NEEDS_MORE_DATA;
   }
 
   switch (type) {

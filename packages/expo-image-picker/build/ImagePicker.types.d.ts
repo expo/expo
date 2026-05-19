@@ -557,7 +557,7 @@ export type OpenFileBrowserOptions = {
     /**
      * Whether to also include the EXIF data for the selected image.
      */
-    exif: boolean;
+    exif?: boolean;
 };
 /**
  * @hidden

@@ -1,4 +1,5 @@
-import { PermissionStatus, Platform } from 'expo-modules-core';
+import { PermissionStatus } from 'expo';
+import { Platform } from 'expo-modules-core';
 import { readExifFromFileAsync } from './ExponentImagePicker.web.exif';
 import { CameraType } from './ImagePicker.types';
 import { parseMediaTypes } from './utils';
@@ -65,7 +66,7 @@ function permissionGrantedResponse() {
  * Opens a file browser dialog or camera on supported platforms and returns the selected files.
  * Handles both single and multiple file selection.
  */
-function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelection = false, base64, exif, }) {
+function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelection = false, base64, exif = false, }) {
     const parsedMediaTypes = parseMediaTypes(mediaTypes);
     const mediaTypeFormat = createMediaTypeFormat(parsedMediaTypes);
     const input = document.createElement('input');
@@ -204,7 +205,7 @@ async function readFile(targetFile, options) {
             fileSize: targetFile.size,
             file: targetFile,
             ...(metadata.duration !== undefined && { duration: metadata.duration }),
-            ...(options.exif && { exif: exif ?? null }),
+            ...(options.exif && mimeType.startsWith('image/') && { exif: exif ?? null }),
             ...(base64 && { base64 }),
         };
     }
