@@ -4144,7 +4144,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: b9e20c2a3af26f4ab10646359777205bbad1fdac
   RNGestureHandler: c84901d120acdae2f6f27b5889a7cf144e64e6ec
   RNReanimated: a1b89be9f4b3f85c708900d0a167cd22d869a198
-  RNScreens: b612be2401172d6666143db20a0f70f638c4619b
+  RNScreens: 75d04ea58bd7a8e8ac60b7968d0382aa71631a7d
   RNSVG: 04044c3abcf177fd674a1a3d13097efa1adebcbe
   RNWorklets: edcd0af162eba9fb81af89a4761f1af35086d1cc
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
