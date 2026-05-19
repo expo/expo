@@ -83,6 +83,7 @@ describe('AbortSignal patch', () => {
 
     expect(signal.aborted).toBe(true);
     expect(listener).toHaveBeenCalledTimes(1);
+    expect(signal.reason).toBeInstanceOf(DOMException);
     expect(signal.reason.name).toBe('TimeoutError');
   });
 

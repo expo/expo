@@ -20,7 +20,7 @@ function timeout(milliseconds: number): AbortSignal {
   validateTimeout(milliseconds);
 
   const controller = new AbortController();
-  const reason = createError('TimeoutError', 'The signal timed out.');
+  const reason = new DOMException('The signal timed out.', 'TimeoutError');
   let remaining = milliseconds;
 
   const schedule = () => {
@@ -102,7 +102,7 @@ function validateAbortSignal(signal: AbortSignal): void {
 function getAbortReason(signal: AbortSignal): unknown {
   return 'reason' in signal
     ? signal.reason
-    : createError('AbortError', 'The operation was aborted.');
+    : new DOMException('The operation was aborted.', 'AbortError');
 }
 
 function abortWithReason(controller: AbortController, reason: unknown): void {
@@ -116,12 +116,6 @@ function abortWithReason(controller: AbortController, reason: unknown): void {
       });
     } catch {}
   }
-}
-
-function createError(name: string, message: string): Error {
-  const error = new Error(message);
-  error.name = name;
-  return error;
 }
 
 function defineAbortSignalStatic(

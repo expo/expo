@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `AbortSignal.timeout` and `AbortSignal.any` to the native Winter runtime.
+- Added `AbortSignal.timeout`, `AbortSignal.any`, and `DOMException` to the native runtime. ([#45441](https://github.com/expo/expo/pull/45441) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
