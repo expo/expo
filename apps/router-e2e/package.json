@@ -29,6 +29,7 @@
     "start:native-navigation": "E2E_ROUTER_SRC=native-navigation expo start",
     "ios:native-navigation": "E2E_ROUTER_SRC=native-navigation expo run:ios",
     "android:native-navigation": "E2E_ROUTER_JS_ENGINE=hermes E2E_ROUTER_SRC=native-navigation expo run:android",
+    "export:native-navigation": "EXPO_ATLAS=1 E2E_ROUTER_JS_ENGINE=hermes E2E_ROUTER_SRC=native-navigation expo export",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
     "start:web-modal": "E2E_ROUTER_SRC=web-modal E2E_ROUTER_JS_ENGINE=hermes EXPO_WEB_DEV_HYDRATE=1 expo start",
     "export:web-modal": "E2E_ROUTER_SRC=web-modal E2E_ROUTER_JS_ENGINE=hermes expo export -p web",

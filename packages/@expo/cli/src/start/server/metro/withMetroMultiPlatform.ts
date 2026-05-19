@@ -369,6 +369,7 @@ export function withExtendedResolver(
   const useExpoUnstableWebModule = env.EXPO_UNSTABLE_WEB_MODAL;
   const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
   const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
+  const disableNativeTabsMaterialSymbols = env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
@@ -631,6 +632,19 @@ export function withExtendedResolver(
         if (webModalModule) {
           debug('Using `_unstable-web-modal` implementation.');
           return webModalModule;
+        }
+      }
+
+      if (disableNativeTabsMaterialSymbols && platform === 'android') {
+        const materialIconConverterModule = doReplace(
+          'expo-router/build/native-tabs/utils/materialIconConverter.android.js',
+          'expo-router/build/native-tabs/utils/materialIconConverter-not-implemented.js'
+        );
+        if (materialIconConverterModule) {
+          debug(
+            'Disabling md support in NativeTabs to tree-shake `expo-symbols` from the Android bundle.'
+          );
+          return materialIconConverterModule;
         }
       }
 
