@@ -4,10 +4,12 @@ import { use, useCallback, useEffect, useRef } from 'react';
 import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';
 import { isInitialized } from './init';
 import { optionalRouter } from './router';
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 type MarkInteractive = (typeof AppMetrics)['markInteractive'];
 
 export function useObserveForRouter(): MarkInteractive | null {
+  const initialized = isInitialized();
   const storage = use(ObserveRouterIntegrationContext);
   const isMounted = useRef(true);
   const route = optionalRouter?.useRoute();
@@ -15,13 +17,11 @@ export function useObserveForRouter(): MarkInteractive | null {
   const routeInfo = optionalRouter?.useCurrentRouteInfo();
   const { pathname, params: routeParams } = routeInfo ?? {};
 
-  const initializedAtMount = useRef(isInitialized());
-  if (initializedAtMount.current !== isInitialized()) {
-    throw new Error(
-      "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
-        "Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
-    );
-  }
+  useAssertValueDoesNotChange(
+    initialized,
+    "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
+      "Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
+  );
 
   const screenId = route?.key;
   const prevScreenId = useRef(screenId);
@@ -113,5 +113,5 @@ export function useObserveForRouter(): MarkInteractive | null {
     [screenId, navigation, pathname, storage, routeParams]
   );
 
-  return initializedAtMount.current ? markInteractive : null;
+  return initialized ? markInteractive : null;
 }
