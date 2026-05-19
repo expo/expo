@@ -43,10 +43,19 @@ data class UpdatesConfiguration(
   val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
   val enableBsdiffPatchSupport: Boolean,
   val disableAntiBrickingMeasures: Boolean,
+  val maxUpdatesToKeep: Int = UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_DEFAULT_VALUE,
   val hasUpdatesOverride: Boolean,
 
   private val cachedOverrideMap: Map<String, Any>?
 ) {
+  init {
+    if (maxUpdatesToKeep < UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_MIN_VALUE) {
+      throw AssertionError(
+        "UpdatesConfiguration failed to initialize: maxUpdatesToKeep must be >= $UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_MIN_VALUE"
+      )
+    }
+  }
+
   enum class CheckAutomaticallyConfiguration {
     NEVER {
       override fun toJSString() = "NEVER"
@@ -128,6 +137,7 @@ data class UpdatesConfiguration(
       ?: context?.getMetadataValue("expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT")
       ?: true,
     disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap),
+    maxUpdatesToKeep = getMaxUpdatesToKeep(context, overrideMap),
     hasUpdatesOverride = configOverride != null
   )
 
@@ -159,6 +169,7 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE = "enableExpoUpdatesProtocolCompatibilityMode"
     const val UPDATES_CONFIGURATION_DISABLE_ANTI_BRICKING_MEASURES = "disableAntiBrickingMeasures"
     const val UPDATES_CONFIGURATION_ENABLE_BSDIFF_PATCH_SUPPORT = "enableBsdiffPatchSupport"
+    const val UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_KEY = "maxUpdatesToKeep"
 
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_METADATA = "codeSigningMetadata"
@@ -166,12 +177,20 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS = "codeSigningAllowUnsignedManifests"
 
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
+    private const val UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_DEFAULT_VALUE = 2
+    private const val UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_MIN_VALUE = 2
 
     const val UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL = "file:fingerprint"
     private const val FINGERPRINT_FILE_NAME = "fingerprint"
 
     private fun getDisableAntiBrickingMeasures(context: Context?, overrideMap: Map<String, Any>?): Boolean {
       return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_DISABLE_ANTI_BRICKING_MEASURES) ?: context?.getMetadataValue("expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES") ?: false
+    }
+
+    private fun getMaxUpdatesToKeep(context: Context?, overrideMap: Map<String, Any>?): Int {
+      return overrideMap?.readValueCheckingType<Int>(UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_KEY)
+        ?: context?.getMetadataValue("expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP")
+        ?: UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_DEFAULT_VALUE
     }
 
     private fun getHasEmbeddedUpdate(

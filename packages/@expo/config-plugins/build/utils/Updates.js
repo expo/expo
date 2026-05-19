@@ -18,6 +18,7 @@ exports.getUpdatesCodeSigningCertificate = getUpdatesCodeSigningCertificate;
 exports.getUpdatesCodeSigningMetadata = getUpdatesCodeSigningMetadata;
 exports.getUpdatesCodeSigningMetadataStringified = getUpdatesCodeSigningMetadataStringified;
 exports.getUpdatesEnabled = getUpdatesEnabled;
+exports.getUpdatesMaxUpdatesToKeep = getUpdatesMaxUpdatesToKeep;
 exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
@@ -182,6 +183,9 @@ function getUpdatesBsdiffPatchSupportEnabled(config) {
 }
 function getUpdatesTimeout(config) {
   return config.updates?.fallbackToCacheTimeout ?? 0;
+}
+function getUpdatesMaxUpdatesToKeep(config) {
+  return config.updates?.maxUpdatesToKeep;
 }
 function getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion) {
   if (config.updates?.checkAutomatically === 'ON_ERROR_RECOVERY') {

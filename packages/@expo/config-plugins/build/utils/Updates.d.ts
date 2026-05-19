@@ -22,6 +22,7 @@ export declare function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updat
 export declare function getUpdatesUseEmbeddedUpdate(config: Pick<ExpoConfigUpdates, 'updates'>): boolean;
 export declare function getUpdatesBsdiffPatchSupportEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean;
 export declare function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number;
+export declare function getUpdatesMaxUpdatesToKeep(config: Pick<ExpoConfigUpdates, 'updates'>): number | undefined;
 export declare function getUpdatesCheckOnLaunch(config: Pick<ExpoConfigUpdates, 'updates'>, expoUpdatesPackageVersion?: string | null): 'NEVER' | 'ERROR_RECOVERY_ONLY' | 'ALWAYS' | 'WIFI_ONLY';
 export declare function getUpdatesCodeSigningCertificate(projectRoot: string, config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;
 export declare function getUpdatesCodeSigningMetadata(config: Pick<ExpoConfigUpdates, 'updates'>): NonNullable<ExpoConfigUpdates['updates']>['codeSigningMetadata'];

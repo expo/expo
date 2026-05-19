@@ -8,154 +8,170 @@ import EXManifests
 
 class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
   override class func spec() {
-    var config: UpdatesConfig!
-    var database: UpdatesDatabase!
-    var update1: Update!
-    var update2: Update!
-    var update3: Update!
-    var update4: Update!
-    var update5: Update!
-    var selectionPolicy: ReaperSelectionPolicy!
-    
-    beforeEach {
-      let runtimeVersion = "1.0"
-      let scopeKey = "dummyScope"
-      config = try! UpdatesConfig.config(fromDictionary: [
+    let runtimeVersion = "1.0"
+
+    func createUpdate(
+      commitTime: TimeInterval,
+      scopeKey: String = "dummyScope",
+      branchName: String? = nil,
+      status: UpdateStatus = .StatusReady
+    ) -> Update {
+      let config = try! UpdatesConfig.config(fromDictionary: [
         UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
-        UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope1",
+        UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
         UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
       ])
-      database = UpdatesDatabase()
-      update1 = Update(
-        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: config,
-        database: database,
-        updateId: UUID(),
-        scopeKey: scopeKey,
-        commitTime: Date(timeIntervalSince1970: 1608667851),
-        runtimeVersion: runtimeVersion,
-        keep: true,
-        status: .StatusReady,
-        isDevelopmentMode: false,
-        assetsFromManifest: [],
-        url: URL(string: "https://example.com"),
-        requestHeaders: [:]
-      )
-      update2 = Update(
-        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: config,
-        database: database,
-        updateId: UUID(),
-        scopeKey: scopeKey,
-        commitTime: Date(timeIntervalSince1970: 1608667852),
-        runtimeVersion: runtimeVersion,
-        keep: true,
-        status: .StatusReady,
-        isDevelopmentMode: false,
-        assetsFromManifest: [],
-        url: URL(string: "https://example.com"),
-        requestHeaders: [:]
-      )
-      update3 = Update(
-        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: config,
-        database: database,
-        updateId: UUID(),
-        scopeKey: scopeKey,
-        commitTime: Date(timeIntervalSince1970: 1608667853),
-        runtimeVersion: runtimeVersion,
-        keep: true,
-        status: .StatusReady,
-        isDevelopmentMode: false,
-        assetsFromManifest: [],
-        url: URL(string: "https://example.com"),
-        requestHeaders: [:]
-      )
-      update4 = Update(
-        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: config,
-        database: database,
-        updateId: UUID(),
-        scopeKey: scopeKey,
-        commitTime: Date(timeIntervalSince1970: 1608667854),
-        runtimeVersion: runtimeVersion,
-        keep: true,
-        status: .StatusReady,
-        isDevelopmentMode: false,
-        assetsFromManifest: [],
-        url: URL(string: "https://example.com"),
-        requestHeaders: [:]
-      )
-      update5 = Update(
-        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: config,
-        database: database,
-        updateId: UUID(),
-        scopeKey: scopeKey,
-        commitTime: Date(timeIntervalSince1970: 1608667855),
-        runtimeVersion: runtimeVersion,
-        keep: true,
-        status: .StatusReady,
-        isDevelopmentMode: false,
-        assetsFromManifest: [],
-        url: URL(string: "https://example.com"),
-        requestHeaders: [:]
-      )
-      
-      selectionPolicy = ReaperSelectionPolicyFilterAware()
-    }
-    
-    describe("selection") {
-      it("updates to delete - only one update") {
-        expect(selectionPolicy.updatesToDelete(withLaunchedUpdate: update1, updates: [update1], filters: nil).count) == 0
+      var manifestJSON: [String: Any] = [:]
+      if let branchName = branchName {
+        manifestJSON["metadata"] = ["branchName": branchName]
       }
-      
-      it("updates to delete - older updates") {
-        let updatesToDelete = selectionPolicy.updatesToDelete(withLaunchedUpdate: update3, updates: [update1, update2, update3], filters: nil)
+      return Update(
+        manifest: ManifestFactory.manifest(forManifestJSON: manifestJSON),
+        config: config,
+        database: UpdatesDatabase(),
+        updateId: UUID(),
+        scopeKey: scopeKey,
+        commitTime: Date(timeIntervalSince1970: commitTime),
+        runtimeVersion: runtimeVersion,
+        keep: true,
+        status: status,
+        isDevelopmentMode: false,
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
+      )
+    }
+
+    describe("updates to delete") {
+      it("should keep launched update and one older update by default") {
+        let update1 = createUpdate(commitTime: 1608667851)
+        let update2 = createUpdate(commitTime: 1608667852)
+        let launchedUpdate = createUpdate(commitTime: 1608667853)
+        let selectionPolicy = ReaperSelectionPolicyFilterAware()
+
+        let updatesToDelete = selectionPolicy.updatesToDelete(
+          withLaunchedUpdate: launchedUpdate,
+          updates: [update1, update2, launchedUpdate],
+          filters: nil
+        )
+
+        expect(updatesToDelete.count) == 1
+        expect(updatesToDelete.contains(update1)) == true
+        expect(updatesToDelete.contains(update2)) == false
+        expect(updatesToDelete.contains(launchedUpdate)) == false
+      }
+
+      it("should keep configured max updates when older updates exist") {
+        let update1 = createUpdate(commitTime: 1608667851)
+        let update2 = createUpdate(commitTime: 1608667852)
+        let update3 = createUpdate(commitTime: 1608667853)
+        let launchedUpdate = createUpdate(commitTime: 1608667854)
+        let selectionPolicy = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 3)
+
+        let updatesToDelete = selectionPolicy.updatesToDelete(
+          withLaunchedUpdate: launchedUpdate,
+          updates: [update1, update2, update3, launchedUpdate],
+          filters: nil
+        )
+
         expect(updatesToDelete.count) == 1
         expect(updatesToDelete.contains(update1)) == true
         expect(updatesToDelete.contains(update2)) == false
         expect(updatesToDelete.contains(update3)) == false
+        expect(updatesToDelete.contains(launchedUpdate)) == false
       }
-      
-      it("updates to delete - newer updates") {
-        let updatesToDelete = selectionPolicy.updatesToDelete(withLaunchedUpdate: update1, updates: [update1, update2], filters: nil)
-        expect(updatesToDelete.count) == 0
+
+      it("should reject maxUpdatesToKeep below two") {
+        expect {
+          _ = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 1)
+        }.to(raiseException())
       }
-      
-      it("updates to delete - older and newer updates") {
-        let updatesToDelete = selectionPolicy.updatesToDelete(withLaunchedUpdate: update4, updates: [update1, update2, update3, update4, update5], filters: nil)
-        expect(updatesToDelete.count) == 2
-        expect(updatesToDelete.contains(update1)) == true
-        expect(updatesToDelete.contains(update2)) == true
-      }
-      
-      it("updates to delete - different scope key") {
-        let configDifferentScope = try! UpdatesConfig.config(fromDictionary: [
-          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
-          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "differentScopeKey",
-          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
-        ])
-        let update4DifferentScope = Update(
-          manifest: update4.manifest,
-          config: configDifferentScope,
-          database: database,
-          updateId: update4.updateId,
-          scopeKey: "differentScopeKey",
-          commitTime: update4.commitTime,
-          runtimeVersion: update4.runtimeVersion,
-          keep: true,
-          status: update4.status,
-          isDevelopmentMode: false,
-          assetsFromManifest: [],
-          url: URL(string: "https://example.com"),
-          requestHeaders: [:]
+
+      it("should not delete newer updates") {
+        let launchedUpdate = createUpdate(commitTime: 1608667851)
+        let newerUpdate = createUpdate(commitTime: 1608667852)
+        let selectionPolicy = ReaperSelectionPolicyFilterAware()
+
+        let updatesToDelete = selectionPolicy.updatesToDelete(
+          withLaunchedUpdate: launchedUpdate,
+          updates: [launchedUpdate, newerUpdate],
+          filters: nil
         )
-        
-        let updatesToDelete = selectionPolicy.updatesToDelete(withLaunchedUpdate: update4DifferentScope, updates: [update1, update2, update3, update4DifferentScope], filters: nil)
+
         expect(updatesToDelete.count) == 0
       }
 
+      it("should prefer older updates matching manifest filters") {
+        let oldestMatchingUpdate = createUpdate(commitTime: 1608667851, branchName: "rollout")
+        let olderDefaultUpdate = createUpdate(commitTime: 1608667852, branchName: "default")
+        let nextNewestMatchingUpdate = createUpdate(commitTime: 1608667853, branchName: "rollout")
+        let newestDefaultUpdate = createUpdate(commitTime: 1608667854, branchName: "default")
+        let launchedUpdate = createUpdate(commitTime: 1608667855, branchName: "rollout")
+        let selectionPolicy = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 3)
+
+        let updatesToDelete = selectionPolicy.updatesToDelete(
+          withLaunchedUpdate: launchedUpdate,
+          updates: [oldestMatchingUpdate, olderDefaultUpdate, nextNewestMatchingUpdate, newestDefaultUpdate, launchedUpdate],
+          filters: ["branchname": "rollout"]
+        )
+
+        expect(updatesToDelete.count) == 2
+        expect(updatesToDelete.contains(oldestMatchingUpdate)) == false
+        expect(updatesToDelete.contains(olderDefaultUpdate)) == true
+        expect(updatesToDelete.contains(nextNewestMatchingUpdate)) == false
+        expect(updatesToDelete.contains(newestDefaultUpdate)) == true
+        expect(updatesToDelete.contains(launchedUpdate)) == false
+      }
+
+      it("should fill remaining retained slots with newest older updates") {
+        let matchingUpdate = createUpdate(commitTime: 1608667851, branchName: "rollout")
+        let olderDefaultUpdate = createUpdate(commitTime: 1608667852, branchName: "default")
+        let newerDefaultUpdate = createUpdate(commitTime: 1608667853, branchName: "default")
+        let launchedUpdate = createUpdate(commitTime: 1608667854, branchName: "rollout")
+        let selectionPolicy = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 3)
+
+        let updatesToDelete = selectionPolicy.updatesToDelete(
+          withLaunchedUpdate: launchedUpdate,
+          updates: [matchingUpdate, olderDefaultUpdate, newerDefaultUpdate, launchedUpdate],
+          filters: ["branchname": "rollout"]
+        )
+
+        expect(updatesToDelete.count) == 1
+        expect(updatesToDelete.contains(matchingUpdate)) == false
+        expect(updatesToDelete.contains(olderDefaultUpdate)) == true
+        expect(updatesToDelete.contains(newerDefaultUpdate)) == false
+        expect(updatesToDelete.contains(launchedUpdate)) == false
+      }
+
+      it("should not delete updates from other scopes") {
+        let update1 = createUpdate(commitTime: 1608667851)
+        let update2 = createUpdate(commitTime: 1608667852)
+        let launchedUpdate = createUpdate(commitTime: 1608667853, scopeKey: "differentScopeKey")
+        let selectionPolicy = ReaperSelectionPolicyFilterAware()
+
+        let updatesToDelete = selectionPolicy.updatesToDelete(
+          withLaunchedUpdate: launchedUpdate,
+          updates: [update1, update2, launchedUpdate],
+          filters: nil
+        )
+
+        expect(updatesToDelete.count) == 0
+      }
+
+      it("should not delete embedded updates") {
+        let embeddedUpdate = createUpdate(commitTime: 1608667851, status: .StatusEmbedded)
+        let olderUpdate = createUpdate(commitTime: 1608667852)
+        let launchedUpdate = createUpdate(commitTime: 1608667853)
+        let selectionPolicy = ReaperSelectionPolicyFilterAware()
+
+        let updatesToDelete = selectionPolicy.updatesToDelete(
+          withLaunchedUpdate: launchedUpdate,
+          updates: [embeddedUpdate, olderUpdate, launchedUpdate],
+          filters: nil
+        )
+
+        expect(updatesToDelete.count) == 0
+      }
     }
   }
 }

@@ -15,6 +15,7 @@ import {
   getUpdatesCodeSigningMetadata,
   getUpdatesRequestHeaders,
   getUpdatesEnabled,
+  getUpdatesMaxUpdatesToKeep,
   getUpdatesTimeout,
   getUpdatesBsdiffPatchSupportEnabled,
   getUpdatesUseEmbeddedUpdate,
@@ -34,6 +35,7 @@ export enum Config {
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
   DISABLE_ANTI_BRICKING_MEASURES = 'EXUpdatesDisableAntiBrickingMeasures',
   ENABLE_BSDIFF_PATCH_SUPPORT = 'EXUpdatesEnableBsdiffPatchSupport',
+  MAX_UPDATES_TO_KEEP = 'EXUpdatesMaxUpdatesToKeep',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -141,6 +143,13 @@ export async function setUpdatesConfigAsync(
   }
 
   newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = getUpdatesBsdiffPatchSupportEnabled(config);
+
+  const maxUpdatesToKeep = getUpdatesMaxUpdatesToKeep(config);
+  if (maxUpdatesToKeep !== undefined) {
+    newExpoPlist[Config.MAX_UPDATES_TO_KEEP] = maxUpdatesToKeep;
+  } else {
+    delete newExpoPlist[Config.MAX_UPDATES_TO_KEEP];
+  }
 
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }

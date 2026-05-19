@@ -30,6 +30,7 @@ struct UpdatesConfigTests {
     #expect(config.enableBsdiffPatchSupport == true)
     #expect(config.runtimeVersion == "fake-version-1")
     #expect(config.hasEmbeddedUpdate == true)
+    #expect(config.maxUpdatesToKeep == 2)
   }
 
   @Test
@@ -45,6 +46,7 @@ struct UpdatesConfigTests {
       UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://google.com",
       UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["Foo": "Bar"],
       UpdatesConfig.EXUpdatesConfigEnableBsdiffPatchSupportKey: false,
+      UpdatesConfig.EXUpdatesConfigMaxUpdatesToKeepKey: 5,
     ]
 
     guard let configNSDictionary = NSDictionary(contentsOfFile: configPlistPath) as? [String: Any] else {
@@ -64,6 +66,18 @@ struct UpdatesConfigTests {
     #expect(config.enableBsdiffPatchSupport == false)
     #expect(config.runtimeVersion == "overridden")
     #expect(config.hasEmbeddedUpdate == true)
+    #expect(config.maxUpdatesToKeep == 5)
+  }
+
+  @Test
+  func `should reject maxUpdatesToKeep below two`() throws {
+    #expect(throws: (any Error).self) {
+      try UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        UpdatesConfig.EXUpdatesConfigMaxUpdatesToKeepKey: 1
+      ])
+    }
   }
 
   // MARK: - normalizedURLOrigin

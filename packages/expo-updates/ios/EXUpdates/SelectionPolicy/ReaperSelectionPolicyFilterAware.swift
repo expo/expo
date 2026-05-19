@@ -4,25 +4,38 @@
 
 /**
  * A ReaperSelectionPolicy which chooses which updates to delete taking into account manifest filters
- * originating from the server. If an older update is available, it will choose to keep one older
- * update in addition to the one currently running, preferring updates that match the same filters
- * if available.
+ * originating from the server. If older updates are available, it will choose to keep up to
+ * `maxUpdatesToKeep - 1` older updates in addition to the one currently running, preferring
+ * updates that match the same filters if available.
  *
  * Uses `commitTime` to determine ordering of updates.
  *
- * Chooses only to delete updates who scope matches that of `launchedUpdate`.
+ * Chooses only to delete updates whose scope matches that of `launchedUpdate`.
  */
 @objc(EXUpdatesReaperSelectionPolicyFilterAware)
 @objcMembers
 public final class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPolicy {
+  private let maxUpdatesToKeep: Int
+
+  public override init() {
+    self.maxUpdatesToKeep = 2
+  }
+
+  public init(maxUpdatesToKeep: Int) {
+    self.maxUpdatesToKeep = maxUpdatesToKeep
+
+    if maxUpdatesToKeep < 2 {
+      NSException.init(
+        name: .invalidArgumentException,
+        reason: "Cannot initialize ReaperSelectionPolicyFilterAware with maxUpdatesToKeep < 2"
+      )
+      .raise()
+    }
+  }
+
   public func updatesToDelete(withLaunchedUpdate launchedUpdate: Update, updates: [Update], filters: [String: Any]?) -> [Update] {
     var updatesToDelete: [Update] = []
-
-    // keep the launched update and one other, the next newest, to be safe and make rollbacks faster
-    // keep the next newest update that matches all the manifest filters, unless no other updates do
-    // in which case, keep the next newest across all updates
-    var nextNewestUpdate: Update?
-    var nextNewestUpdateMatchingFilters: Update?
+    var olderUpdates: [Update] = []
 
     for update in updates {
       guard let launchedUpdateScopeKey = launchedUpdate.scopeKey,
@@ -37,31 +50,26 @@ public final class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPo
 
       if launchedUpdate.commitTime.compare(update.commitTime) == .orderedDescending {
         updatesToDelete.append(update)
-
-        if let nextNewestUpdateInner = nextNewestUpdate,
-          update.commitTime.compare(nextNewestUpdateInner.commitTime) == .orderedDescending {
-          nextNewestUpdate = update
-        } else {
-          nextNewestUpdate = update
-        }
-
-        if SelectionPolicies.doesUpdate(update, matchFilters: filters) {
-          if let nextNewestUpdateMatchingFiltersInner = nextNewestUpdateMatchingFilters,
-            update.commitTime.compare(nextNewestUpdateMatchingFiltersInner.commitTime) == .orderedDescending {
-            nextNewestUpdateMatchingFilters = update
-          } else {
-            nextNewestUpdateMatchingFilters = update
-          }
-        }
+        olderUpdates.append(update)
       }
     }
 
-    if let nextNewestUpdateMatchingFilters = nextNewestUpdateMatchingFilters {
-      updatesToDelete.remove(nextNewestUpdateMatchingFilters)
-    } else if let nextNewestUpdate = nextNewestUpdate {
-      updatesToDelete.remove(nextNewestUpdate)
+    let maxOlderUpdatesToKeep = maxUpdatesToKeep - 1
+    var olderUpdatesToKeep = olderUpdates
+      .filter { SelectionPolicies.doesUpdate($0, matchFilters: filters) }
+      .sorted { $0.commitTime.compare($1.commitTime) == .orderedDescending }
+      .prefix(maxOlderUpdatesToKeep)
+      .map { $0 }
+
+    if olderUpdatesToKeep.count < maxOlderUpdatesToKeep {
+      olderUpdatesToKeep.append(contentsOf: olderUpdates
+        .filter { !olderUpdatesToKeep.contains($0) }
+        .sorted { $0.commitTime.compare($1.commitTime) == .orderedDescending }
+        .prefix(maxOlderUpdatesToKeep - olderUpdatesToKeep.count))
     }
-    return updatesToDelete
+
+    updatesToDelete.removeAll { olderUpdatesToKeep.contains($0) }
+    return updatesToDelete.filter { $0.status != .StatusEmbedded }
   }
 }
 

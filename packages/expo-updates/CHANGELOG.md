@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `updates.maxUpdatesToKeep` to configure update cache retention. (by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - [cli] Write private key into owner-only permissions file ([#45880](https://github.com/expo/expo/pull/45880) by [@kitten](https://github.com/kitten))

@@ -52,6 +52,7 @@ describe('Android Updates config', () => {
         checkAutomatically: 'ON_ERROR_RECOVERY',
         useEmbeddedUpdate: false,
         enableBsdiffPatchSupport: true,
+        maxUpdatesToKeep: 5,
         codeSigningCertificate: 'hello',
         codeSigningMetadata: {
           alg: 'rsa-v1_5-sha256',
@@ -139,6 +140,12 @@ describe('Android Updates config', () => {
     );
     expect(bsdiffPatchSupport).toHaveLength(1);
     expect(bsdiffPatchSupport[0].$['android:value']).toMatch('true');
+
+    const maxUpdatesToKeep = mainApplication['meta-data'].filter(
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP'
+    );
+    expect(maxUpdatesToKeep).toHaveLength(1);
+    expect(maxUpdatesToKeep[0].$['android:value']).toMatch('5');
 
     const runtimeVersion = mainApplication['meta-data']?.filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
