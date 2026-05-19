@@ -17,15 +17,17 @@ jest.mock('expo-app-metrics', () => ({
 jest.mock('../integrations/expo-router', () => ({
   __esModule: true,
   useObserveForRouter: jest.fn(),
+  isExpoRouterInitialized: jest.fn(() => true),
 }));
 
 const mockUseObserveForRouter = routerIntegration.useObserveForRouter as jest.Mock;
+const isExpoRouterInitializedMock = routerIntegration.isExpoRouterInitialized as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('useObserve', () => {
+describe(useObserve, () => {
   it('returns the router-scoped markInteractive when useObserveForRouter resolves to a function', () => {
     const routerScoped = jest.fn();
     mockUseObserveForRouter.mockReturnValue(routerScoped);
@@ -43,14 +45,13 @@ describe('useObserve', () => {
     expect(result.current.markInteractive).toBe(AppMetrics.markInteractive);
   });
 
-  it('calls useObserveForRouter unconditionally on every render', () => {
-    mockUseObserveForRouter.mockReturnValue(null);
+  it('falls back to AppMetrics.markInteractive when router is not initialized', () => {
+    isExpoRouterInitializedMock.mockReturnValue(false);
 
-    const { rerender } = renderHook(() => useObserve());
-    expect(mockUseObserveForRouter).toHaveBeenCalledTimes(1);
+    const { result } = renderHook(() => useObserve());
 
-    rerender(undefined);
-    expect(mockUseObserveForRouter).toHaveBeenCalledTimes(2);
+    expect(result.current.markInteractive).toBe(AppMetrics.markInteractive);
+    expect(mockUseObserveForRouter).not.toHaveBeenCalled();
   });
 
   it('returns an object with exactly one own key (markInteractive)', () => {
