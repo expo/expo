@@ -81,6 +81,10 @@ class ExpoUIModule : Module() {
       Function("setValue") { state: ObservableState, wrapper: Map<String, Any?> ->
         state.value = wrapper["value"]
       }
+
+      Function("setOnChange") { state: ObservableState, callback: WorkletCallback? ->
+        state.onChange = callback
+      }
     }
 
     //region Views use expo-modules-core DSL for uncommon features

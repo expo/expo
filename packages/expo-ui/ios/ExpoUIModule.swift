@@ -31,6 +31,10 @@ public final class ExpoUIModule: Module {
       Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
         state.value = wrapper["value"]
       }
+
+      Function("setOnChange") { (state: ObservableState, callback: WorkletCallback?) in
+        state.onChange = callback
+      }
     }
 
     // MARK: - Module Functions

@@ -11,11 +11,20 @@ import expo.modules.kotlin.sharedobjects.SharedObject
  */
 class ObservableState(initialValue: Any? = null) : SharedObject() {
   private val _state: MutableState<Any?> = mutableStateOf(initialValue)
+  internal var onChange: WorkletCallback? = null
+  private var isNotifying = false
 
   var value: Any?
     get() = _state.value
     set(v) {
       _state.value = v
+      if (isNotifying) return
+      isNotifying = true
+      try {
+        onChange?.invoke(v)
+      } finally {
+        isNotifying = false
+      }
     }
 
   @Suppress("UNCHECKED_CAST")
