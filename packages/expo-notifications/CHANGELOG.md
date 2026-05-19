@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [android] Apply bundled `proguard-rules.pro` via `consumerProguardFiles` so the `-keep class expo.modules.notifications.**` rule is added to consumer apps' R8 pass; without it, classes that are serialized to `SharedPreferences` (e.g. `NotificationRequest`, trigger subclasses) get obfuscated and `getAllScheduledNotificationsAsync()` silently returns `[]` while scheduled notifications never fire in release builds. ([#45974](https://github.com/expo/expo/pull/45974) by [@jiunshinn](https://github.com/jiunshinn))
+- [android] Apply bundled `proguard-rules.pro` via `consumerProguardFiles` so the `-keep class expo.modules.notifications.**` rule is added to consumer apps' R8 pass. ([#45974](https://github.com/expo/expo/pull/45974) by [@jiunshinn](https://github.com/jiunshinn))
 
 ### 💡 Others
 
