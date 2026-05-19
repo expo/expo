@@ -143,9 +143,14 @@ class AssetLegacyDelegate(
       width = width
         ?: throw AssetPropertyNotFoundException("Width"),
       uri = mediaStoreToAssetAdapter.transformUri(mediaStoreItem.data)
-        ?: throw AssetPropertyNotFoundException("Uri")
+        ?: throw AssetPropertyNotFoundException("Uri"),
+      isFavorite = false
     )
   }
+
+  override suspend fun getFavorite(): Boolean = false
+
+  override suspend fun setFavorite(isFavorite: Boolean) = Unit
 
   override suspend fun getMimeType(): MimeType {
     return contentResolver.getType(contentUri)?.let { MimeType(it) }

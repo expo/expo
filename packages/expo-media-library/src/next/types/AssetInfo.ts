@@ -10,5 +10,5 @@ export type AssetInfo = {
   duration: number | null;
   creationTime: number | null;
   modificationTime: number | null;
-  isFavorite?: boolean;
+  isFavorite: boolean;
 };

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] Add `getFavorite()`/`setFavorite()` ([#45768](https://github.com/expo/expo/pull/45768) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
