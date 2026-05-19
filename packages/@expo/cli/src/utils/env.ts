@@ -54,7 +54,9 @@ class Env {
 
   /** local directory to the universe repo for testing locally */
   get EXPO_UNIVERSE_DIR() {
-    return string('EXPO_UNIVERSE_DIR', '');
+    // Read from the pre-dotenv env — this is a filesystem path used by internal
+    // tooling; a project `.env` overriding it could redirect file access.
+    return getOriginalEnvValue('EXPO_UNIVERSE_DIR') || '';
   }
 
   /** @deprecated Default Webpack host string */
@@ -114,7 +116,8 @@ class Env {
    * This is useful for browser editors that require custom proxy URLs.
    */
   get EXPO_PACKAGER_PROXY_URL(): string {
-    return string('EXPO_PACKAGER_PROXY_URL', '');
+    // Read from the pre-dotenv env — overrides dev server URL served to clients.
+    return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL') || '';
   }
 
   /**
@@ -159,7 +162,9 @@ class Env {
    * @internal
    */
   get EXPO_OVERRIDE_METRO_CONFIG(): string | undefined {
-    return process.env.EXPO_OVERRIDE_METRO_CONFIG?.trim() || undefined;
+    // Read from the pre-dotenv env — this path is `require()`d as Metro config,
+    // so a project `.env` overriding it would execute attacker code in-process.
+    return getOriginalEnvValue('EXPO_OVERRIDE_METRO_CONFIG')?.trim() || undefined;
   }
 
   /**
@@ -228,7 +233,7 @@ class Env {
 
   /** Internal key used to pass eager bundle data from the CLI to the native run scripts during `npx expo run` commands. */
   get __EXPO_EAGER_BUNDLE_OPTIONS() {
-    return string('__EXPO_EAGER_BUNDLE_OPTIONS', '');
+    return getOriginalEnvValue('__EXPO_EAGER_BUNDLE_OPTIONS') || '';
   }
 
   /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */

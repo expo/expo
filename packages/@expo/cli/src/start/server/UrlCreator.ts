@@ -1,3 +1,4 @@
+import { getOriginalEnvValue } from '@expo/env';
 import assert from 'assert';
 import { URL } from 'url';
 
@@ -195,7 +196,9 @@ function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>)
 
 /** @deprecated */
 function getProxyUrl(): string | undefined {
-  return process.env.EXPO_PACKAGER_PROXY_URL;
+  // Read from the pre-dotenv env — overriding this would redirect connected dev
+  // clients through an attacker-controlled URL.
+  return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL');
 }
 
 // TODO: Drop the undocumented env variables:
