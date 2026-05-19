@@ -60,7 +60,7 @@ describe(withAndroidPrecompiledHeaders, () => {
   const mockConfig = { name: 'test', slug: 'test' } as any;
 
   afterEach(() => {
-    delete process.env.EXPO_USE_PRECOMPILED_HEADERS;
+    delete process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS;
     mockWithAppBuildGradle.mockClear();
   });
 
@@ -76,14 +76,14 @@ describe(withAndroidPrecompiledHeaders, () => {
     expect(mockWithAppBuildGradle).toHaveBeenCalled();
   });
 
-  it('should apply when EXPO_USE_PRECOMPILED_HEADERS env var is set to 1', () => {
-    process.env.EXPO_USE_PRECOMPILED_HEADERS = '1';
+  it('should apply when EXPO_USE_ANDROID_PRECOMPILED_HEADERS env var is set to 1', () => {
+    process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS = '1';
     withAndroidPrecompiledHeaders(mockConfig, { android: {} });
     expect(mockWithAppBuildGradle).toHaveBeenCalled();
   });
 
-  it('should skip when EXPO_USE_PRECOMPILED_HEADERS env var is not 1', () => {
-    process.env.EXPO_USE_PRECOMPILED_HEADERS = '0';
+  it('should skip when EXPO_USE_ANDROID_PRECOMPILED_HEADERS env var is not 1', () => {
+    process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS = '0';
     withAndroidPrecompiledHeaders(mockConfig, { android: {} });
     expect(mockWithAppBuildGradle).not.toHaveBeenCalled();
   });
