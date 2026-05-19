@@ -41,6 +41,13 @@ export function resolveFrom(
     }
   }
 
+  // NOTE: We allow file specifier (relative paths) to be passed in
+  // We won't need to continue with Node resolution if we're only resolving paths
+  const isFileSpecifier = /^\.\.?(?:$|[/\\])/.test(moduleId) || path.isAbsolute(moduleId);
+  if (isFileSpecifier) {
+    return null;
+  }
+
   // (3) if we're not following symlinks, we try to resolve against `node_modules` folders unresolved
   if (!followSymlinks || skipNodePath) {
     const resolvedDir = path.resolve(fromDirectory);
