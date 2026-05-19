@@ -1,8 +1,12 @@
 import { useImperativeHandle, useRef } from 'react';
-import { TextInput as RNTextInput } from 'react-native';
+import { TextInput as RNTextInput, StyleSheet, useColorScheme } from 'react-native';
 
 import { useNativeState } from '../State';
 import type { TextInputProps } from './types';
+
+const styles = StyleSheet.create({
+  darkInput: { color: '#fff' },
+});
 
 export function TextInput({
   ref,
@@ -41,6 +45,7 @@ export function TextInput({
   onSelectionChange,
   selectTextOnFocus,
 }: TextInputProps) {
+  const isDark = useColorScheme() === 'dark';
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = value ?? fallback;
@@ -93,7 +98,12 @@ export function TextInput({
       returnKeyType={returnKeyType}
       enterKeyHint={enterKeyHint}
       cursorColor={cursorColor}
-      style={[style, textStyle, textAlign && textAlign !== 'auto' ? { textAlign } : null]}
+      style={[
+        isDark && styles.darkInput,
+        style,
+        textStyle,
+        textAlign && textAlign !== 'auto' ? { textAlign } : null,
+      ]}
       onSubmitEditing={onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined}
       onFocus={onFocus ? () => onFocus() : undefined}
       onBlur={onBlur ? () => onBlur() : undefined}
