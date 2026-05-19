@@ -10,13 +10,15 @@ const withSettingsGradlePlugin: ConfigPlugin<PluginConfig> = (config, pluginConf
   });
 };
 
-// The fused sibling Gradle subproject (sourceless, applies `com.android.fused-library`)
-// is always emitted so it can be targeted on demand by `expo-brownfield build:android --fused`.
-// It's idle in default mode — no tasks run, nothing is built.
+// Two fused sibling Gradle subprojects (sourceless, applies `com.android.fused-library`)
+// are always emitted — one per variant — so each can be targeted on demand by
+// `expo-brownfield build:android --fused --release` / `--debug` / `--all`. They're
+// idle in default mode — no tasks run, nothing is built.
 const getBrownfieldIncludeStatement = (libraryName: string) => {
   return [
     `include ':${libraryName}'`,
-    `include ':${libraryName}-fused'`,
+    `include ':${libraryName}-fused-release'`,
+    `include ':${libraryName}-fused-debug'`,
     '',
   ].join('\n');
 };

@@ -13,15 +13,19 @@ const withProjectFilesPlugin = (config, pluginConfig) => {
         const brownfieldPath = node_path_1.default.join(pluginConfig.projectRoot, `android/${pluginConfig.libraryName}`);
         const brownfieldMainPath = node_path_1.default.join(brownfieldPath, 'src/main/');
         const brownfieldSourcesPath = node_path_1.default.join(brownfieldMainPath, pluginConfig.packagePath);
-        // The fused sibling sits next to the brownfield library so AGP's
+        // The fused siblings sit next to the brownfield library so AGP's
         // `com.android.fused-library` plugin can `include(project(":<expoModule>"))` from
-        // the same Gradle build. It carries no sources — only an `include()` list. Built
-        // only when the user opts in via `expo-brownfield build:android --fused`.
-        const fusedPath = node_path_1.default.join(pluginConfig.projectRoot, `android/${pluginConfig.libraryName}-fused`);
+        // the same Gradle build. Two siblings — one per variant — because AGP fused-library
+        // is single-variant per module by design. Each carries no sources, only an
+        // `include()` list. Only assembled when the user opts in via
+        // `expo-brownfield build:android --fused` (+ `--debug`/`--release`/`--all`).
+        const fusedReleasePath = node_path_1.default.join(pluginConfig.projectRoot, `android/${pluginConfig.libraryName}-fused-release`);
+        const fusedDebugPath = node_path_1.default.join(pluginConfig.projectRoot, `android/${pluginConfig.libraryName}-fused-debug`);
         // Create directory for the brownfield library sources
         // (and all intermediate directories)
         (0, common_1.mkdir)(brownfieldSourcesPath, true);
-        (0, common_1.mkdir)(fusedPath, true);
+        (0, common_1.mkdir)(fusedReleasePath, true);
+        (0, common_1.mkdir)(fusedDebugPath, true);
         // Add files from templates to the brownfield library:
         // - AndroidManifest.xml
         // - BrownfieldActivity.kt
@@ -51,14 +55,25 @@ const withProjectFilesPlugin = (config, pluginConfig) => {
         });
         (0, utils_1.createFileFromTemplate)('proguard-rules.pro', brownfieldPath);
         (0, utils_1.createFileFromTemplate)('consumer-rules.pro', brownfieldPath);
-        // Emit the fused sibling's build.gradle.kts. The template lives at
-        // packages/expo-brownfield/plugin/templates/android/fused/build.gradle.kts.
-        // It is only assembled when the user runs `expo-brownfield build:android --fused`.
-        (0, utils_1.createFileFromTemplateAs)(node_path_1.default.join('fused', 'build.gradle.kts'), fusedPath, 'build.gradle.kts', {
+        // Emit the fused siblings' build.gradle.kts files. Same template at
+        // packages/expo-brownfield/plugin/templates/android/fused/build.gradle.kts —
+        // `fusedVariant` is the only difference: substituted as "release" or "debug",
+        // the script then branches on `isReleaseVariant` for the few places the two
+        // siblings differ (dev-only skip, namespace suffix, publication name).
+        const fusedTemplate = node_path_1.default.join('fused', 'build.gradle.kts');
+        const fusedBaseVars = {
             packageId: pluginConfig.package,
             groupId: pluginConfig.group,
             version: pluginConfig.version,
             libraryName: pluginConfig.libraryName,
+        };
+        (0, utils_1.createFileFromTemplateAs)(fusedTemplate, fusedReleasePath, 'build.gradle.kts', {
+            ...fusedBaseVars,
+            fusedVariant: 'release',
+        });
+        (0, utils_1.createFileFromTemplateAs)(fusedTemplate, fusedDebugPath, 'build.gradle.kts', {
+            ...fusedBaseVars,
+            fusedVariant: 'debug',
         });
         // Adjust ReactNativeHostManager and BrownfieldActivity to initialize dev menu
         if ((0, common_1.checkPlugin)(config, 'expo-dev-menu')) {

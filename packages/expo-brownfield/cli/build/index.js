@@ -17,7 +17,7 @@ program
     .option('-d, --debug', 'build debug variant')
     .option('-r, --release', 'build release variant')
     .option('-a, --all', 'build both debug and release variants')
-    .option('--fused', 'publish a single fat AAR with every Expo module merged in via AGP Fused Library; release-only (AGP fused-library is single-variant)')
+    .option('--fused', 'publish a single fat AAR per variant via AGP Fused Library')
     .option('--verbose', 'forward all output to the terminal')
     .option('-l, --library <library>', 'name of the brownfield library')
     .option('-t, --task <task...>', 'publishing task to be run (multiple can be passed)')

@@ -10,10 +10,7 @@ const ios_1 = require("./ios");
 const precompiled_1 = require("./precompiled");
 const resolveBuildConfigAndroid = (options) => {
     const fused = !!options.fused;
-    if (fused && (options.debug || options.all)) {
-        throw new Error('`--fused` only supports release builds. Drop `--debug`/`--all` or run without `--fused`.');
-    }
-    const variant = fused ? 'Release' : resolveVariant(options);
+    const variant = resolveVariant(options);
     const library = resolveLibrary(options);
     return {
         ...resolveCommonConfig(options),
@@ -84,7 +81,14 @@ const resolveLibrary = (options) => {
 };
 const resolveTaskArray = (options, variant, fusedOpts) => {
     const tasks = options.task ?? [];
-    const repoTasks = (options.repository ?? []).map((repo) => (0, android_1.buildPublishingTask)(variant, repo, fusedOpts));
+    const repositories = options.repository ?? [];
+    // Each fused sibling is single-variant (AGP fused-library constraint), so
+    // `--fused --all` expands into separate `Debug` and `Release` task invocations
+    // — each runs against the matching sibling (`:<lib>-fused-debug` or
+    // `:<lib>-fused-release`). Default (non-fused) `--all` continues to use AGP's
+    // built-in multi-variant publishing in a single task.
+    const variantsForRepoTasks = fusedOpts.fused && variant === 'All' ? ['Debug', 'Release'] : [variant];
+    const repoTasks = repositories.flatMap((repo) => variantsForRepoTasks.map((v) => (0, android_1.buildPublishingTask)(v, repo, fusedOpts)));
     return Array.from(new Set([...tasks, ...repoTasks]));
 };
 const resolveVariant = (options) => {
