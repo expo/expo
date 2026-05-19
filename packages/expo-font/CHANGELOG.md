@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Sanitize values in web font loader and Android config plugin ([#45887](https://github.com/expo/expo/pull/45887) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 56.0.4 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- [android] include xml-fonts in the `getLoadedFonts()` list ([#43860](https://github.com/expo/expo/pull/43860) by [@vonovak](https://github.com/vonovak))
 
 ## 56.0.3 — 2026-05-06
 

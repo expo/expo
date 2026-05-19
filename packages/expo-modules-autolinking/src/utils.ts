@@ -95,6 +95,11 @@ export const maybeRealpath = async (target: string): Promise<string | null> => {
   }
 };
 
+export function isPathInside(child: string, parent: string): boolean {
+  const relative = path.relative(parent, child);
+  return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+}
+
 export type PackageJson = Record<string, unknown> & {
   name?: string;
   version?: string;

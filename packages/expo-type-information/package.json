@@ -1,6 +1,6 @@
 {
   "name": "expo-type-information",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
     "react-native",
     "expo",
@@ -32,7 +32,7 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "commander": "^12.1.0",
-    "prettier": "^3.0.3",
+    "prettier": "^3.8.3",
     "yaml": "^2.3.2",
     "typescript": "~6.0.3"
   },

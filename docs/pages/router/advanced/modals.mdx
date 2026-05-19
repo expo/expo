@@ -61,7 +61,7 @@ export default function Layout() {
       <Stack.Screen
         name="modal"
         options={{
-          /* @info Set the <CODE>presentation</CODE> mode to <CODE>modal</CODE> for the modal route. */
+          /* @info Set the `presentation` mode to `modal` for the modal route. */
           presentation: 'modal',
           /* @end */
         }}
@@ -82,7 +82,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Text>Home screen</Text>
-      /* @info Use the <CODE>Link</CODE> component to navigate to the modal screen. The <CODE>href</CODE> prop is the route name of the modal screen. */
+      /* @info Use the `Link` component to navigate to the modal screen. The `href` prop is the route name of the modal screen. */
       <Link href="/modal" style={styles.link}>
         Open modal
       </Link>
@@ -136,18 +136,18 @@ A modal loses its previous context when it is the current screen in the navigato
 
 {/* prettier-ignore */}
 ```tsx src/app/modal.tsx
-import { Link, /* @info Import the <CODE>router</CODE> object which is used to navigate imperatively. */ router /* @end */} from 'expo-router';
+import { Link, /* @info Import the `router` object which is used to navigate imperatively. */ router /* @end */} from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function Modal() {
-  /* @info Use <CODE>router.canGoBack()</CODE> to check if the modal is presented as a standalone screen. If the screen was reloaded or navigated to directly, then the modal should be presented as a full screen. You may need to change the UI to account for this. */
+  /* @info Use `router.canGoBack()` to check if the modal is presented as a standalone screen. If the screen was reloaded or navigated to directly, then the modal should be presented as a full screen. You may need to change the UI to account for this. */
   const isPresented = router.canGoBack();
   /* @end */
 
   return (
     <View style={styles.container}>
       <Text>Modal screen</Text>
-      /* @info On web, use <CODE>../</CODE> as a simple way to navigate to the root. This is not analogous to <CODE>goBack</CODE>.*/
+      /* @info On web, use `../` as a simple way to navigate to the root. This is not analogous to `goBack`.*/
       {isPresented && <Link href="../">Dismiss modal</Link>}
       /* @end */
     </View>
@@ -176,7 +176,7 @@ export default function Modal() {
   return (
     <View style={styles.container}>
       <Text>Modal screen</Text>
-      /* @info Use <CODE>Platform.OS</CODE> to check if the current platform is iOS and then use <CODE>StatusBar</CODE> component to change the appearance. */
+      /* @info Use `Platform.OS` to check if the current platform is iOS and then use `StatusBar` component to change the appearance. */
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
       /* @end */
     </View>
@@ -226,7 +226,7 @@ export default function Layout() {
       <Stack.Screen
         name="modal"
         options={{
-          /* @info Set the <CODE>presentation</CODE> mode to <CODE>formSheet</CODE>. */
+          /* @info Set the `presentation` mode to `formSheet`. */
           presentation: 'formSheet',
           /* @end */
         }}
@@ -352,7 +352,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 export default function Modal() {
   return (
-    /* @info Using <CODE>flex: 1</CODE> fills the available space within the sheet. */
+    /* @info Using `flex: 1` fills the available space within the sheet. */
     <View style={styles.container}>
       /* @end */
       <Text>Modal content</Text>

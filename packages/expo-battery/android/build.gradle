@@ -13,12 +13,3 @@ android {
     versionName '56.0.3'
   }
 }
-
-dependencies {
-  api "androidx.legacy:legacy-support-v4:1.0.0"
-
-  if (project.findProject(':expo-modules-test-core')) {
-    testImplementation project(':expo-modules-test-core')
-  }
-  testImplementation "org.robolectric:robolectric:4.16"
-}

@@ -6,7 +6,8 @@ import type { LoadedRoute, RouteNode } from './Route';
 import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
-import { useCurrentRouteInfo } from './hooks';
+// Direct import to prevent a require cycle
+import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
@@ -410,10 +411,12 @@ function AnalyticsListeners({
   const hasBlurredRef = React.useRef(true);
   const routeInfo = useCurrentRouteInfo();
 
+  const isFocused = navigation.isFocused();
+
   if (isFirstRenderRef.current) {
     isFirstRenderRef.current = false;
-    if (routeInfo) {
-      unstable_navigationEvents.emit('pageWillRender', {
+    if (routeInfo && !isFocused) {
+      unstable_navigationEvents.emit('pagePreloaded', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
         screenId,
@@ -434,16 +437,18 @@ function AnalyticsListeners({
     return () => {};
   }, [routeInfo?.params, routeInfo?.pathname, screenId]);
 
-  const isFocused = navigation.isFocused();
-
-  if (isFocused && routeInfo) {
-    unstable_navigationEvents.emit('pageFocused', {
-      pathname: routeInfo.pathname,
-      params: routeInfo.params,
-      screenId,
-    });
-    hasBlurredRef.current = false;
-  }
+  // Emit `pageFocused` from an effect — not during render — so it fires after the
+  // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
+  useEffect(() => {
+    if (isFocused && routeInfo && hasBlurredRef.current) {
+      unstable_navigationEvents.emit('pageFocused', {
+        pathname: routeInfo.pathname,
+        params: routeInfo.params,
+        screenId,
+      });
+      hasBlurredRef.current = false;
+    }
+  }, [isFocused, routeInfo?.pathname, routeInfo?.params, screenId]);
 
   useEffect(() => {
     if (routeInfo) {

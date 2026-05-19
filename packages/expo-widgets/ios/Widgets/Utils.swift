@@ -20,7 +20,7 @@ func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [W
   return entries.compactMap(\.self)
 }
 
-func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
+public func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
   var props: [String: Any] = ["message": message]
   if let stack {
     props["stack"] = stack
@@ -28,46 +28,32 @@ func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
   return ["type": "RedBoxView", "props": props]
 }
 
-func evaluateLayout(
+public func evaluateLayout(
   layout: String,
   props: [String: Any],
   environment: [String: Any]
-) -> [String: Any]? {
-  guard let context = createWidgetContext(layout: layout) else {
-    return nil
+) -> [String: Any] {
+  switch evaluateWidgetLayout(layout: layout, props: props, environment: environment) {
+  case .success(let result):
+    return result
+  case .failure(let error):
+    print("[ExpoWidgets] Layout evaluation failed: \(error.message)")
+    return createRedBox(message: error.message)
   }
-
-  let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [props, environment]
-  )
-  if let exception = context.exception {
-    print("[ExpoWidgets] Layout evaluation failed: \(exception)")
-    return createRedBox(message: exception.toString())
-  }
-  return result?.toObject() as? [String: Any]
 }
 
 func getLiveActivityNodes(forName name: String, props: String = "{}", environment: [String: Any]) -> [String: Any] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
   let propsData = props.data(using: .utf8)
   let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] } ?? [:]
-  guard let context = createWidgetContext(layout: layout) else {
-    return [:]
+
+  switch evaluateWidgetLayout(layout: layout, props: propsDict, environment: environment) {
+  case .success(let result):
+    return result
+  case .failure(let error):
+    print("[ExpoWidgets] Layout evaluation failed: \(error.message)")
+    return ["banner": createRedBox(message: error.message)]
   }
-
-  var widgetEnvironment = environment
-  widgetEnvironment["timestamp"] = Int(Date.now.timeIntervalSince1970 * 1000)
-
-  let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [propsDict, environment]
-  )
-
-  if let exception = context.exception {
-    print("[ExpoWidgets] Layout evaluation failed: \(exception)")
-    return ["banner": createRedBox(message: exception.toString())]
-  }
-
-  return result?.toObject() as? [String: Any] ?? [:]
 }
 
 func getLiveActivityUrl(forName name: String) -> URL? {
@@ -77,7 +63,7 @@ func getLiveActivityUrl(forName name: String) -> URL? {
   return URL(string: urlString)
 }
 
-func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any] {
+public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any] {
   var env: [String: Any] = [
     "showsContainerBackground": environment.showsWidgetContainerBackground,
     "widgetFamily": environment.widgetFamily.description,

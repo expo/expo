@@ -4,7 +4,9 @@ exports.generateMocksForFileCommand = generateMocksForFileCommand;
 const commandUtils_1 = require("./commandUtils");
 const mockgen_1 = require("../mockgen");
 function generateMocksForFileCommand(cli) {
-    return (0, commandUtils_1.addCommonOptions)(cli.command('generate-mocks-for-file')).action(async (options) => {
+    return (0, commandUtils_1.addCommonOptions)(cli.command('generate-mocks-for-file'))
+        .description('generates mocks for a given Expo module.')
+        .action(async (options) => {
         const parsedArgs = await (0, commandUtils_1.parseCommandArguments)(options);
         if (!parsedArgs) {
             return;

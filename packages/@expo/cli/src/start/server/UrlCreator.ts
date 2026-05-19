@@ -100,6 +100,11 @@ export class UrlCreator {
     return this.gatewayInfo.address;
   }
 
+  /** URL scheme configured for development-build deep links (e.g. `myapp`). `null` when unset. */
+  public getScheme(): string | null {
+    return this.defaults?.scheme ?? null;
+  }
+
   /** Get the URL components from the Ngrok server URL. */
   private getTunnelUrlComponents(options: Pick<CreateURLOptions, 'scheme'>): UrlComponents | null {
     const tunnelUrl = this.bundlerInfo.getTunnelUrl?.();

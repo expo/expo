@@ -7,21 +7,21 @@ internal import ExpoModulesJSI_Cxx
  */
 internal protocol JSIRepresentable: JavaScriptRepresentable, Sendable, ~Copyable {
   /**
-   Creates an instance of this type from the given `facebook.jsi.Value` in `facebook.jsi.Runtime`.
+   Creates an instance of this type from the given `facebook.jsi.Value` in `facebook.jsi.IRuntime`.
    */
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> Self
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Self
   /**
    Creates a JSI value representing this value in the given JSI runtime.
    */
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value
 }
 
 internal extension JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> Self {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Self {
     FatalError.unimplemented()
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     FatalError.unimplemented()
   }
 }
@@ -29,11 +29,11 @@ internal extension JSIRepresentable {
 // MARK: - Implementations
 
 extension Bool: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> Bool {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Bool {
     return value.getBool()
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return facebook.jsi.Value(self)
   }
 }
@@ -41,19 +41,19 @@ extension Bool: JSIRepresentable {
 internal protocol JSIRepresentableNumber: JSIRepresentable {}
 
 extension JSIRepresentableNumber {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> Int where Self: FixedWidthInteger {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Int where Self: FixedWidthInteger {
     return Int(value.getNumber())
   }
 
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> Double where Self: BinaryFloatingPoint {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Double where Self: BinaryFloatingPoint {
     return value.getNumber()
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value where Self: FixedWidthInteger {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value where Self: FixedWidthInteger {
     return facebook.jsi.Value(Double(self))
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value where Self: BinaryFloatingPoint {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value where Self: BinaryFloatingPoint {
     return facebook.jsi.Value(Double(self))
   }
 }
@@ -74,30 +74,30 @@ extension Float64: JSIRepresentableNumber {}
 extension CGFloat: JSIRepresentableNumber {}
 
 extension String: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> String {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> String {
     return String(value.getString(runtime).utf8(runtime))
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return facebook.jsi.Value(runtime, facebook.jsi.String.createFromUtf8(runtime, std.string(self)))
   }
 }
 
 extension Optional: JSIRepresentable where Wrapped: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> Self {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Self {
     if value.isNull() || value.isUndefined() {
       return nil
     }
     return Wrapped.fromJSIValue(value, in: runtime)
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return self?.toJSIValue(in: runtime) ?? .null()
   }
 }
 
 extension Array: JSIRepresentable where Element: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> Array<Element> {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Array<Element> {
     let jsiArray = value.getObject(runtime).getArray(runtime)
     let size = jsiArray.size(runtime)
     var result: Self = []
@@ -110,7 +110,7 @@ extension Array: JSIRepresentable where Element: JSIRepresentable {
     return result
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     let jsiArray = facebook.jsi.Array(runtime, count)
 
     for index in 0..<count {
@@ -121,7 +121,7 @@ extension Array: JSIRepresentable where Element: JSIRepresentable {
 }
 
 extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> Dictionary<Key, Value> {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Dictionary<Key, Value> {
     let object = value.getObject(runtime)
     let propertyNames = object.getPropertyNames(runtime)
     let size = propertyNames.size(runtime)
@@ -137,7 +137,7 @@ extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresenta
     return result
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     let object = facebook.jsi.Object(runtime)
 
     for (key, value) in self {

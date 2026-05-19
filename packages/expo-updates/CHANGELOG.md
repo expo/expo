@@ -8,7 +8,35 @@
 
 ### 🐛 Bug fixes
 
+- [cli] Write private key into owner-only permissions file ([#45880](https://github.com/expo/expo/pull/45880) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Enable bsdiff-based bundle patch downloads by default. ([#45928](https://github.com/expo/expo/pull/45928) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.12 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [Android] Fix app restart when not using `ReactApplication` ([#45660](https://github.com/expo/expo/pull/45660) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 56.0.10 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `picomatch@^4.0.4` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
 
 ## 56.0.7 — 2026-05-11
 

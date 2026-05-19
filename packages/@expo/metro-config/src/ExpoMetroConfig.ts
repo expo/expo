@@ -16,9 +16,9 @@ import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { FileStore } from './binary-file-store';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
-import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
@@ -429,9 +429,8 @@ export function getDefaultConfig(
 
 /** Use to access the Expo Metro transformer path */
 export const unstable_transformerPath = require.resolve('./transform-worker/transform-worker');
-export const internal_supervisingTransformerPath = require.resolve(
-  './transform-worker/supervising-transform-worker'
-);
+export const internal_supervisingTransformerPath =
+  require.resolve('./transform-worker/supervising-transform-worker');
 
 // re-export for use in config files.
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };

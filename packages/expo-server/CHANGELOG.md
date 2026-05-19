@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+- Constrain `expo-platform` input to known values ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
+
+## 56.0.2 — 2026-05-13
+
+### 💡 Others
+
+- Add guards for `AbortController` state for `vendor/http` conversion ([#45676](https://github.com/expo/expo/pull/45676) by [@kitten](https://github.com/kitten))
+
 ## 56.0.1 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

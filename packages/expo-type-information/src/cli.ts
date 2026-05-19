@@ -26,12 +26,11 @@ async function main(args: string[]) {
   shortModuleInterfaceCommand(cli);
   generateMocksForFileCommand(cli);
 
-  const otherCommands = cli.command('other').description('internal or very specific commands');
+  const otherCommands = cli.command('other').description('Internal or very specific commands');
   typeInformationCommand(otherCommands);
   generateModuleTypesCommand(otherCommands);
   generateViewTypesCommand(otherCommands);
   generateJsxIntrinsics(otherCommands);
-
   await cli.parseAsync(args, { from: 'user' });
 }
 

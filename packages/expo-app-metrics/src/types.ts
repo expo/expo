@@ -280,7 +280,6 @@ export interface ExpoAppMetricsModuleType {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
-  getStoredEntries(): Promise<Metric[]>;
   clearStoredEntries(): Promise<void>;
   /**
    * Returns all sessions across the current and historical entries,
@@ -311,15 +310,12 @@ export interface ExpoAppMetricsModuleType {
 
   /**
    * @private This API is unstable and may change without notice.
-   * @platform android
    */
   addCustomMetricToSession(metric: Metric): Promise<void>;
   /**
-   * Returns the current main session, including its metrics. Resolves to
-   * `null` if the session row hasn't been persisted yet.
+   * Returns the current main session, including its metrics.
    *
    * @private This API is unstable and may change without notice.
-   * @platform android
    */
   getMainSession(): Promise<MainSession | null>;
 }

@@ -87,7 +87,7 @@ function CardContent({ enabled, layout, style, ...rest }) {
         setFill(width === layout.width && height === layout.height);
         return unsubscribe;
     }, [layout.height, layout.width]);
-    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { ...rest, pointerEvents: "box-none", style: [enabled && fill ? styles.page : styles.card, style] }));
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { ...rest, style: [styles.boxNone, enabled && fill ? styles.page : styles.card, style] }));
 }
 const styles = react_native_1.StyleSheet.create({
     page: {
@@ -96,6 +96,9 @@ const styles = react_native_1.StyleSheet.create({
     card: {
         flex: 1,
         overflow: 'hidden',
+    },
+    boxNone: {
+        pointerEvents: 'box-none',
     },
 });
 //# sourceMappingURL=CardContent.js.map

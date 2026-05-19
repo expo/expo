@@ -103,11 +103,10 @@ export default function App() {
   });
   /* @end */
 
-  /* @info See <a href="/develop/user-interface/fonts/#wait-for-fonts-to-load"> Waiting for fonts to Load section</a> for more information on how to display a splash screen when fonts are loaded. */
+  // See the "Waiting for fonts to load" section at /develop/user-interface/fonts/#wait-for-fonts-to-load for more information on how to display a splash screen when fonts are loaded.
   if (!fontsLoaded) {
     return null;
   }
-  /* @end */
 
   return (
     <View style={styles.container}>

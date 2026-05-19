@@ -94,7 +94,9 @@ function appendStackTitlePropsToOptions(options, props) {
         ...options,
         ...titleOptions,
         headerLargeTitle: props.large,
-        headerTitleAlign: flattenedStyle?.textAlign,
+        ...(flattenedStyle?.textAlign !== undefined
+            ? { headerTitleAlign: flattenedStyle.textAlign }
+            : {}),
         headerTitleStyle: {
             ...flattenedStyle,
             ...(flattenedStyle?.fontWeight

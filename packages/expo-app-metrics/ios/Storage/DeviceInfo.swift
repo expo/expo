@@ -1,4 +1,5 @@
 import SystemConfiguration
+import UIKit
 
 /**
  Provides some basic informations about the device.
@@ -9,10 +10,19 @@ public struct DeviceInfo: Codable, Equatable, Sendable {
   public let systemName: String
   public let systemVersion: String
 
-  static let current: DeviceInfo = {
-    return MainActor.runSynchronously {
-      let device = UIDevice.current
+  nonisolated(unsafe) private static var _current: DeviceInfo?
 
+  static var current: DeviceInfo {
+    // Memoized lazily, but NOT via `static let` — a `dispatch_once`-backed cache deadlocks if a
+    // worker actor enters this init from off-main and `dispatch_sync`s to main while main is
+    // simultaneously waiting on a separate `dispatch_once` whose initializer transitively needs
+    // `DeviceInfo.current`. Concurrent first-callers race through `runSynchronously`, which
+    // serializes them on main and produces identical snapshots; last-writer-wins is fine.
+    if let cached = _current {
+      return cached
+    }
+    let snapshot = MainActor.runSynchronously {
+      let device = UIDevice.current
       return DeviceInfo(
         modelName: getDeviceModelName(device: device),
         modelIdentifier: getDeviceModelIdentifier() ?? device.model,
@@ -20,7 +30,9 @@ public struct DeviceInfo: Codable, Equatable, Sendable {
         systemVersion: device.systemVersion
       )
     }
-  }()
+    _current = snapshot
+    return snapshot
+  }
 }
 
 /**

@@ -1,8 +1,11 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesCore/Platform.h>
+
 NS_ASSUME_NONNULL_BEGIN
+
+@class UIGestureRecognizer;
+@class UIView;
 
 @interface ExpoUITouchHandlerHelper : NSObject
 

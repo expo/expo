@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.1.1 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- Fix source-map original file remapping in `evalModule` for Windows ([#45793](https://github.com/expo/expo/pull/45793) by [@kitten](https://github.com/kitten))
+
 ## 56.1.0 — 2026-05-08
 
 ### 🎉 New features

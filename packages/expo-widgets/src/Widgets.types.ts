@@ -46,7 +46,7 @@ export type WidgetFamily =
   | 'accessoryRectangular'
   | 'accessoryInline';
 
-export type WidgetEnvironment = {
+export type WidgetEnvironment<T extends object | undefined = undefined> = {
   /**
    * The date of this timeline entry.
    */
@@ -92,6 +92,11 @@ export type WidgetEnvironment = {
    * @platform iOS 26+
    */
   levelOfDetail?: LevelOfDetail;
+  /**
+   * Widget configuration parameters.
+   * @platform iOS 17+
+   */
+  configuration: T;
 };
 
 export type LiveActivityEnvironment = {

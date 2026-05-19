@@ -84,12 +84,6 @@ export function BottomSheet(props: BottomSheetProps) {
   } = props;
   const { width } = useWindowDimensions();
 
-  // Two-state pattern for animated close:
-  // - isMounted: whether the native sheet tree exists in the React tree
-  // - isPresented: passed to native isPresented prop (controls SwiftUI animation)
-  // On close: isPresented→false (native animates out) → onIsPresentedChange fires → isMounted→false (unmount)
-  // On open: isMounted→true + isPresented→true (mount + native animates in)
-  const [isMounted, setIsMounted] = useState(indexProp >= 0);
   const [isPresented, setIsPresented] = useState(indexProp >= 0);
   const [currentIndex, setCurrentIndex] = useState(Math.max(indexProp, 0));
   // Ref mirrors currentIndex for use in handleDetentChange without adding it as a useCallback dep
@@ -129,7 +123,6 @@ export function BottomSheet(props: BottomSheetProps) {
       fireCloseCallbacks();
     } else if (indexProp >= 0) {
       closedRef.current = false;
-      setIsMounted(true);
       setIsPresented(true);
       const clampedIndex = Math.min(indexProp, detents.length - 1);
       setCurrentIndex(clampedIndex);
@@ -141,7 +134,6 @@ export function BottomSheet(props: BottomSheetProps) {
     (presented: boolean) => {
       if (!presented) {
         setIsPresented(false);
-        setIsMounted(false);
         fireCloseCallbacks();
       }
     },
@@ -169,7 +161,6 @@ export function BottomSheet(props: BottomSheetProps) {
       }
       const clampedIndex = Math.min(Math.max(index, 0), detents.length - 1);
       closedRef.current = false;
-      setIsMounted(true);
       setIsPresented(true);
       currentIndexRef.current = clampedIndex;
       setCurrentIndex(clampedIndex);
@@ -223,14 +214,6 @@ export function BottomSheet(props: BottomSheetProps) {
       enablePanDownToClose,
     ]
   );
-
-  if (!isMounted) {
-    return (
-      <BottomSheetInternalContext.Provider value={internalContextValue}>
-        <BottomSheetContext.Provider value={methods}>{null}</BottomSheetContext.Provider>
-      </BottomSheetInternalContext.Provider>
-    );
-  }
 
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>

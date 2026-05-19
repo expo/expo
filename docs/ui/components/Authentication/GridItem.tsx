@@ -20,7 +20,7 @@ export const GridItem = ({
   <A
     href={href}
     className={mergeClasses(
-      'group border-default flex flex-col items-center justify-center gap-1.5 rounded-md border p-6 shadow-xs transition-all',
+      'group flex flex-col items-center justify-center gap-1.5 rounded-md border border-default p-6 shadow-xs transition-all',
       'hocus:scale-105 hocus:shadow-md'
     )}
     isStyled>

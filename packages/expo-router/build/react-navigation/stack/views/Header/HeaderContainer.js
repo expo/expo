@@ -13,7 +13,7 @@ function HeaderContainer({ mode, scenes, layout, getPreviousScene, getFocusedRou
     const focusedRoute = getFocusedRoute();
     const parentHeaderBack = (0, react_1.use)(elements_1.HeaderBackContext);
     const { buildHref } = (0, native_1.useLinkBuilder)();
-    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { pointerEvents: "box-none", style: style, children: scenes.slice(-2).map((scene, i, self) => {
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [styles.boxNone, style], children: scenes.slice(-2).map((scene, i, self) => {
             if ((mode === 'screen' && i !== self.length - 1) || !scene) {
                 return null;
             }
@@ -78,13 +78,19 @@ function HeaderContainer({ mode, scenes, layout, getPreviousScene, getFocusedRou
                                 height,
                             });
                         }
-                        : undefined, pointerEvents: isFocused ? 'box-none' : 'none', "aria-hidden": !isFocused, style: 
-                    // Avoid positioning the focused header absolutely
-                    // Otherwise accessibility tools don't seem to be able to find it
-                    (mode === 'float' && !isFocused) || headerTransparent ? styles.header : null, children: header !== undefined ? header(props) : (0, jsx_runtime_1.jsx)(Header_1.Header, { ...props }) }) }, scene.descriptor.route.key));
+                        : undefined, "aria-hidden": !isFocused, style: [
+                        {
+                            pointerEvents: isFocused ? 'box-none' : 'none',
+                        }, // Avoid positioning the focused header absolutely
+                        // Otherwise accessibility tools don't seem to be able to find it
+                        (mode === 'float' && !isFocused) || headerTransparent ? styles.header : null,
+                    ], children: header !== undefined ? header(props) : (0, jsx_runtime_1.jsx)(Header_1.Header, { ...props }) }) }, scene.descriptor.route.key));
         }) }));
 }
 const styles = react_native_1.StyleSheet.create({
+    boxNone: {
+        pointerEvents: 'box-none',
+    },
     header: {
         position: 'absolute',
         top: 0,

@@ -73,7 +73,6 @@ export function Screen(props: Props) {
         <NavigationProvider route={route} navigation={navigation}>
           <View
             ref={headerRef}
-            pointerEvents="box-none"
             onLayout={(e) => {
               const { height } = e.nativeEvent.layout;
 
@@ -105,6 +104,7 @@ const styles = StyleSheet.create({
   },
   header: {
     zIndex: 1,
+    pointerEvents: 'box-none',
   },
   absolute: {
     position: 'absolute',

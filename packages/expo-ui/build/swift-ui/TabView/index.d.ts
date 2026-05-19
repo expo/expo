@@ -1,5 +1,5 @@
-import { type CommonViewModifierProps } from '../types';
 import { Tab } from './Tab';
+import { type CommonViewModifierProps } from '../types';
 export type TabViewProps = {
     /**
      * The selected tab (controlled mode). Pair with `onSelectionChange`.

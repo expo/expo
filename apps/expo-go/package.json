@@ -4,6 +4,11 @@
   "main": "index.js",
   "private": true,
   "description": "The Expo Go app",
+  "scripts": {
+    "download-snack-runtime": "node scripts/download-snack-runtime.js",
+    "check-snack-runtime-deps": "node scripts/check-snack-runtime-deps.js",
+    "bump-snack-runtime-deps": "node scripts/bump-snack-runtime-deps.js"
+  },
   "author": "Expo",
   "license": "MIT",
   "dependencies": {
@@ -84,7 +89,7 @@
     "react-native-reanimated": "4.3.1",
     "react-native-safe-area-context": "5.7.0",
     "react-native-svg": "15.15.4",
-    "react-native-screens": "4.25.0",
+    "react-native-screens": "4.25.1",
     "react-native-view-shot": "4.0.3",
     "react-native-webview": "13.16.1",
     "react-native-worklets": "0.8.3"

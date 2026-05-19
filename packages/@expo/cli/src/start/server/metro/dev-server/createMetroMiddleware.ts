@@ -14,6 +14,7 @@ import { openInEditorAsync } from '../../../../utils/editor';
 
 interface MetroMiddlewareOptions {
   getMetroBundler(): MetroBundler;
+  serverBaseUrl: string;
 }
 
 interface StackFrame {
@@ -25,7 +26,7 @@ export function createMetroMiddleware(
   metroConfig: Pick<MetroConfig, 'projectRoot'>,
   options: MetroMiddlewareOptions
 ) {
-  const messages = createMessagesSocket({ logger: Log });
+  const messages = createMessagesSocket({ logger: Log, serverBaseUrl: options.serverBaseUrl });
   const events = createEventsSocket(messages);
 
   const middleware = connect()

@@ -12,18 +12,18 @@ export function PageLink({ route, isActive }: NavigationRenderProps) {
   return (
     <A
       className={mergeClasses(
-        'bg-default mx-1 my-4 flex items-center rounded-md px-1.5 py-2 shadow-xs',
+        'mx-1 my-4 flex items-center rounded-md bg-default px-1.5 py-2 shadow-xs',
         'dark:bg-element'
       )}
       href={route.href}>
       <i
         className={mergeClasses(
-          'text-icon-secondary invisible mr-2 size-1 shrink-0 rounded-full',
+          'invisible mr-2 size-1 shrink-0 rounded-full text-icon-secondary',
           isActive && 'visible'
         )}
       />
       <CALLOUT
-        className={mergeClasses('text-secondary', isActive && 'text-default font-medium')}
+        className={mergeClasses('text-secondary', isActive && 'font-medium text-default')}
         tag="span">
         {route.sidebarTitle ?? route.name}
       </CALLOUT>

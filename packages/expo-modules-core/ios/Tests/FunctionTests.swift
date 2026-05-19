@@ -46,6 +46,30 @@ struct FunctionTests {
       let version: Int
     }
 
+    struct TestDecodable: Decodable, Equatable, AnyArgument {
+      let name: String
+      let version: Int
+      static func getDynamicType() -> any AnyDynamicType {
+        return DynamicCodableType<TestDecodable>()
+      }
+    }
+
+    struct TestDecodableNested: Decodable, Equatable, AnyArgument {
+      let id: Int
+      let inner: TestDecodable
+      static func getDynamicType() -> any AnyDynamicType {
+        return DynamicCodableType<TestDecodableNested>()
+      }
+    }
+
+    enum TestDecodableDirection: String, Decodable, AnyArgument {
+      case north
+      case south
+      static func getDynamicType() -> any AnyDynamicType {
+        return DynamicCodableType<TestDecodableDirection>()
+      }
+    }
+
     init() {
       appContext = AppContext.create()
 
@@ -130,6 +154,18 @@ struct FunctionTests {
 
         Function("returnEncodable") {
           return TestEncodable(name: "Expo SDK", version: 55)
+        }
+
+        Function("withDecodable") { (input: TestDecodable) -> String in
+          return "\(input.name) v\(input.version)"
+        }
+
+        Function("withNestedDecodable") { (input: TestDecodableNested) -> String in
+          return "\(input.id):\(input.inner.name) v\(input.inner.version)"
+        }
+
+        Function("withDecodableEnum") { (direction: TestDecodableDirection) -> String in
+          return direction.rawValue
         }
 
         Function("withSharedObject") {
@@ -345,6 +381,33 @@ struct FunctionTests {
       #expect(result.getObject().getPropertyNames().contains("version"))
       #expect(try result.getObject().getProperty("name").asString() == "Expo SDK")
       #expect(try result.getObject().getProperty("version").asInt() == 55)
+    }
+
+    @Test
+    func `accepts a Decodable struct argument`() throws {
+      let result = try runtime.eval("expo.modules.TestModule.withDecodable({name: 'Expo SDK', version: 55})")
+      #expect(try result.asString() == "Expo SDK v55")
+    }
+
+    @Test
+    func `accepts a nested Decodable struct argument`() throws {
+      let result = try runtime.eval("""
+        expo.modules.TestModule.withNestedDecodable({id: 7, inner: {name: 'Expo SDK', version: 55}})
+      """)
+      #expect(try result.asString() == "7:Expo SDK v55")
+    }
+
+    @Test
+    func `accepts a Decodable enum argument`() throws {
+      let result = try runtime.eval("expo.modules.TestModule.withDecodableEnum('north')")
+      #expect(try result.asString() == "north")
+    }
+
+    @Test
+    func `throws when a Decodable argument is missing a required field`() throws {
+      #expect(throws: (any Error).self) {
+        try runtime.eval("expo.modules.TestModule.withDecodable({name: 'Expo SDK'})")
+      }
     }
 
     @Test

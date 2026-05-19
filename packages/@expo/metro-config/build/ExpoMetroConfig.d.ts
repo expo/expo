@@ -1,7 +1,7 @@
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import { FileStore } from './binary-file-store';
 import { INTERNAL_CALLSITES_REGEX } from './customizeFrame';
-import { FileStore } from './file-store';
 export interface DefaultConfigOptions {
     /** @deprecated */
     mode?: 'exotic';

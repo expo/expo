@@ -2,6 +2,7 @@
 
 package expo.modules.ui
 
+import android.os.Looper
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
@@ -39,6 +40,7 @@ import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
 import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
 import expo.modules.ui.menu.ExposedDropdownMenuContent
 import expo.modules.ui.menu.ExposedDropdownMenuProps
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
@@ -79,14 +81,28 @@ class ExpoUIModule : Module() {
       }
 
       Function("setValue") { state: ObservableState, wrapper: Map<String, Any?> ->
-        state.value = wrapper["value"]
+        val newValue = wrapper["value"]
+        val mainLooper = Looper.getMainLooper()
+        // Update state on the UI thread
+        if (mainLooper.isCurrentThread) {
+          state.value = newValue
+        } else {
+          appContext.mainQueue.launch {
+            state.value = newValue
+          }
+        }
+      }
+
+      Function("setOnChange") { state: ObservableState, callback: WorkletCallback? ->
+        state.onChange = callback
       }
     }
 
     //region Views use expo-modules-core DSL for uncommon features
 
     View(HostView::class) {
-      Events("onLayoutContent")
+      // See ShadowNodeSyncFlush.kt for why onExpoUISyncFlush is needed.
+      Events("onLayoutContent", "onExpoUISyncFlush")
 
       OnViewDidUpdateProps { view ->
         view.onViewDidUpdateProps()
@@ -123,7 +139,10 @@ class ExpoUIModule : Module() {
       colorScheme.toTokenMap()
     }
 
-    View(RNHostView::class)
+    View(RNHostView::class) {
+      // See ShadowNodeSyncFlush.kt for why this internal phantom event is needed.
+      Events("onExpoUISyncFlush")
+    }
 
     View(SlotView::class) {
       Events("onSlotEvent")
@@ -135,6 +154,8 @@ class ExpoUIModule : Module() {
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)
     View(RichTooltipView::class)
+    // Class-based view so SnackbarHostView can read its styling via findChildOfType
+    View(SnackbarView::class)
 
     //endregion Views use expo-modules-core DSL for uncommon features
 
@@ -333,6 +354,18 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         DropdownMenuItemContent(props) { onItemPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<LoadingIndicatorProps>("LoadingIndicatorView") {
+      Content { props ->
+        LoadingIndicatorContent(props)
+      }
+    }
+
+    ExpoUIView<ContainedLoadingIndicatorProps>("ContainedLoadingIndicatorView") {
+      Content { props ->
+        ContainedLoadingIndicatorContent(props)
       }
     }
 
@@ -589,6 +622,14 @@ class ExpoUIModule : Module() {
     ExpoUIView<AnimatedVisibilityProps>("AnimatedVisibilityView") {
       Content { props ->
         AnimatedVisibilityContent(props)
+      }
+    }
+
+    ExpoUIView<SnackbarHostProps>("SnackbarHostView") {
+      val showSnackbar by AsyncFunction<SnackbarShowOptions>()
+
+      Content { props ->
+        SnackbarHostContent(props, showSnackbar)
       }
     }
 

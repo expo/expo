@@ -17,8 +17,8 @@ export function Tab({ title, onClick, isSelected, type }: Props) {
     <ButtonBase
       onClick={onClick}
       className={mergeClasses(
-        'hocus:bg-hover items-center gap-1.5 rounded-md border border-transparent px-3 py-1.5 text-left',
-        isSelected && 'border-default bg-default border shadow-xs'
+        'items-center gap-1.5 rounded-md border border-transparent px-3 py-1.5 text-left hocus:bg-hover',
+        isSelected && 'border border-default bg-default shadow-xs'
       )}>
       {type === 'directory' ? <FolderIcon className="icon-sm text-icon-tertiary" /> : null}
       {type === 'file' ? <FileCode01Icon className="icon-sm text-icon-tertiary" /> : null}

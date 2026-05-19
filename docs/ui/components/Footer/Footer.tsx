@@ -57,25 +57,25 @@ export const Footer = ({
       className={mergeClasses(
         'flex flex-col gap-10 px-14 pb-10',
         title ? 'pt-10' : 'pt-6',
-        'max-lg-gutters:px-4 max-lg-gutters:pb-12'
+        'max-lg:px-4 max-lg:pb-12'
       )}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
             'flex gap-4',
-            'max-xl-gutters:flex-col-reverse',
-            'max-lg-gutters:flex-row',
-            'max-md-gutters:flex-col-reverse'
+            'max-xl:flex-col-reverse',
+            'max-lg:flex-row',
+            'max-md:flex-col-reverse'
           )}
           data-nosnippet>
           {previousPage ? (
             <LinkBase
               href={previousPage.href}
               className={mergeClasses(
-                'border-default flex w-full items-center gap-3 rounded-md border border-solid px-4 py-3 transition',
+                'flex w-full items-center gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
-              <ArrowLeftIcon className="text-icon-secondary shrink-0" />
+              <ArrowLeftIcon className="shrink-0 text-icon-secondary" />
               <div>
                 <FOOTNOTE theme="secondary">
                   Previous{previousPage.section ? ` (${previousPage.section})` : ''}
@@ -90,7 +90,7 @@ export const Footer = ({
             <LinkBase
               href={nextPage.href}
               className={mergeClasses(
-                'border-default flex w-full items-center justify-between gap-3 rounded-md border border-solid px-4 py-3 transition',
+                'flex w-full items-center justify-between gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
               <div>
@@ -99,15 +99,14 @@ export const Footer = ({
                 </FOOTNOTE>
                 <P weight="medium">{nextPage.sidebarTitle ?? nextPage.name}</P>
               </div>
-              <ArrowRightIcon className="text-icon-secondary shrink-0" />
+              <ArrowRightIcon className="shrink-0 text-icon-secondary" />
             </LinkBase>
           ) : (
             <div className="w-full" />
           )}
         </div>
       )}
-      <div
-        className={mergeClasses('flex flex-row justify-between gap-4', 'max-md-gutters:flex-col')}>
+      <div className={mergeClasses('flex flex-row justify-between gap-4', 'max-md:flex-col')}>
         <div>
           <PageVote />
           <UL className="mt-0! ml-0! flex-1 list-none!">
@@ -119,12 +118,12 @@ export const Footer = ({
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
             <LlmsTxtLink fullVersionHref={llmsFullHref} fullVersionLabel={llmsFullLabel} />
             {!isDev && shouldShowModifiedDate && modificationDate && (
-              <LI className="text-quaternary! mt-4! text-xs!">
+              <LI className="mt-4! text-xs! text-quaternary!">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
               </LI>
             )}
             {isDev && shouldShowModifiedDate && (
-              <LI className="text-quaternary! mt-4! text-xs!">
+              <LI className="mt-4! text-xs! text-quaternary!">
                 Last updated data is not available in dev mode
               </LI>
             )}

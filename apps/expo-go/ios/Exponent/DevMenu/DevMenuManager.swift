@@ -22,6 +22,11 @@ public class DevMenuManager: NSObject {
   var window: DevMenuWindow?
   var fabWindow: DevMenuFABWindow?
   private var isNavigatingHome = false
+  private var didHandleInitialContentAppear = false
+
+  /// True when the current Snack session is a lesson or playground.
+  /// Forces the FAB to stay visible even if the user disabled the preference.
+  @objc var isLessonLikeSession: Bool = false
 
   override init() {
     super.init()
@@ -125,8 +130,14 @@ public class DevMenuManager: NSObject {
 
   @objc func goHome() {
     isNavigatingHome = true
+    isLessonLikeSession = false
     fabWindow?.setVisible(false, animated: false)
     EXKernel.sharedInstance().switchTasks()
+  }
+
+  /// Hides the FAB immediately. Used during app reload to avoid jank.
+  @objc func hideFAB() {
+    fabWindow?.setVisible(false, animated: false)
   }
 
   func togglePerformanceMonitor() {
@@ -201,7 +212,7 @@ public class DevMenuManager: NSObject {
         }
       }
 
-      let shouldShow = DevMenuPreferences.showFloatingActionButton
+      let shouldShow = (DevMenuPreferences.showFloatingActionButton || self.isLessonLikeSession)
         && !self.isVisible
         && self.hasActiveApp
         && !self.isNavigatingHome
@@ -268,17 +279,17 @@ public class DevMenuManager: NSObject {
   }
 
   @objc private func handleContentDidAppear() {
-    NotificationCenter.default.removeObserver(
-      self,
-      name: Notification.Name("RCTContentDidAppearNotification"),
-      object: nil
-    )
-
-    if shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch {
-      openMenu()
-    } else {
-      updateFABVisibility()
+    // Onboarding / auto-launch should only run once per process. The FAB visibility
+    // update must run on every app load so the FAB picks up the new session state
+    // (e.g. switching between lessons).
+    if !didHandleInitialContentAppear {
+      didHandleInitialContentAppear = true
+      if shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch {
+        openMenu()
+        return
+      }
     }
+    updateFABVisibility()
   }
 
   private func bundleDisplayName() -> String {

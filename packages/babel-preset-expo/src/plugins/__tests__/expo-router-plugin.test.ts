@@ -135,7 +135,7 @@ process.env.EXPO_ROUTER_APP_ROOT;`;
 "../../app";`);
 });
 
-it(`uses custom app entry`, () => {
+it(`uses custom absolute app entry inside the project`, () => {
   process.env.NODE_ENV = 'development';
 
   const options = {
@@ -145,7 +145,7 @@ it(`uses custom app entry`, () => {
       engine: 'hermes',
       projectRoot: '/foo/bar',
       platform: 'ios',
-      routerRoot: '/random/value',
+      routerRoot: '/foo/bar/random/value',
     }),
   };
 
@@ -159,16 +159,65 @@ process.env.EXPO_ROUTER_ABS_APP_ROOT;
 process.env.EXPO_ROUTER_APP_ROOT;`;
 
   // EXPO_ROUTER_APP_ROOT is computed relative to the file being transformed
-  // From /foo/bar/node_modules/expo-router/ to /random/value = ../../../../random/value
+  // From /foo/bar/node_modules/expo-router/ to /foo/bar/random/value = ../../random/value
   expect(babel.transform(sourceCode, options)!.code).toEqual(`
 // EXPO_PROJECT_ROOT
 "/foo/bar";
 // EXPO_ROUTER_ABS_APP_ROOT
-"/random/value";
+"/foo/bar/random/value";
 // EXPO_ROUTER_APP_ROOT
-"../../../../random/value";`);
+"../../random/value";`);
 
   expect(getConfig).toHaveBeenCalledTimes(0);
+});
+
+it(`silently sanitizes a routerRoot that escapes the project root`, () => {
+  process.env.NODE_ENV = 'development';
+
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      projectRoot: '/foo/bar',
+      platform: 'ios',
+      // Absolute path outside the project root — `@expo/cli` rejects this loudly,
+      // but the babel preset silently falls back to the default to avoid producing
+      // broken module specifiers if any caller bypasses that validation.
+      routerRoot: '/random/value',
+    }),
+  };
+
+  const sourceCode = `
+// EXPO_ROUTER_ABS_APP_ROOT
+process.env.EXPO_ROUTER_ABS_APP_ROOT;
+// EXPO_ROUTER_APP_ROOT
+process.env.EXPO_ROUTER_APP_ROOT;`;
+
+  expect(babel.transform(sourceCode, options)!.code).toEqual(`
+// EXPO_ROUTER_ABS_APP_ROOT
+"/foo/bar/app";
+// EXPO_ROUTER_APP_ROOT
+"../../app";`);
+});
+
+it(`silently sanitizes a routerRoot that traverses out of the project root`, () => {
+  process.env.NODE_ENV = 'development';
+
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      projectRoot: '/foo/bar',
+      platform: 'ios',
+      routerRoot: '../sibling/app',
+    }),
+  };
+
+  expect(babel.transform(`process.env.EXPO_ROUTER_ABS_APP_ROOT;`, options)!.code).toEqual(
+    `"/foo/bar/app";`
+  );
 });
 
 it(`uses custom relative app entry`, () => {

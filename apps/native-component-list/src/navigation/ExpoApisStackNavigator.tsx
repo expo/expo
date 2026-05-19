@@ -1,6 +1,7 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
+import { isRunningInExpoGo } from 'expo';
 import * as React from 'react';
 
 import { optionalRequire } from './routeBuilder';
@@ -75,14 +76,17 @@ export const ScreensList: ScreenConfig[] = [
     name: 'ActionSheet',
     options: { title: 'Action Sheet' },
   },
-  // TODO: fix this, module not available in Expo Go
-  // {
-  //   getComponent() {
-  //     return optionalRequire(() => require('../screens/AgeRangeScreen'));
-  //   },
-  //   name: 'AgeRange',
-  //   options: { title: 'Age Range' },
-  // },
+  ...(isRunningInExpoGo()
+    ? []
+    : [
+        {
+          getComponent() {
+            return optionalRequire(() => require('../screens/AgeRangeScreen'));
+          },
+          name: 'AgeRange',
+          options: { title: 'Age Range' },
+        },
+      ]),
   {
     getComponent() {
       return optionalRequire(() => require('../screens/AppearanceScreen'));

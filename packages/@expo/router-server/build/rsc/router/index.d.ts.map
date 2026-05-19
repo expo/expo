@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/rsc/router/index.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,UAAU,EAAE,MAAM,WAAW,CAAC;AAE5C,2EAA2E;AAC3E,MAAM,MAAM,YAAY,GAAG;IACzB,OAAO,EAAE,CAAC,eAAe,CAAC,EAAE,GAAG,KAAK,UAAU,CAAC;CAChD,CAAC;AAEF;;;;;GAKG;AACH,wBAAgB,mBAAmB,CAAC,UAAU,EAAE,OAAO,GAAG,MAAM,CAE/D"}

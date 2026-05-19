@@ -13,34 +13,32 @@ export const Logo = ({ subgroup }: Props) => (
       className="flex flex-row items-center gap-2 decoration-0 outline-offset-1 select-none"
       href="https://expo.dev">
       <WordMarkLogo
-        className={mergeClasses('text-default mt-px h-5 w-[72px]', 'max-md-gutters:hidden')}
+        className={mergeClasses('mt-px h-5 w-18 text-default', 'max-md:hidden')}
         title="Expo"
       />
       <LogoIcon
-        className={mergeClasses('icon-lg text-default mr-1.5 hidden', 'max-md-gutters:flex')}
+        className={mergeClasses('mr-1.5 hidden icon-lg text-default', 'max-md:flex')}
         title="Expo"
       />
     </LinkBase>
     <LinkBase
       className="flex flex-row items-center gap-2 decoration-0 outline-offset-1 select-none"
       href="/">
-      <div className="bg-palette-blue4 flex size-6 items-center justify-center rounded-sm">
+      <div className="flex size-6 items-center justify-center rounded-sm bg-palette-blue4">
         <DocumentationIcon className="icon-sm" />
       </div>
       <span
         className={mergeClasses(
-          'text-default text-lg font-medium select-none',
-          subgroup && 'max-md-gutters:hidden'
+          'text-lg font-medium text-default select-none',
+          subgroup && 'max-md:hidden'
         )}>
         Docs
       </span>
     </LinkBase>
     {subgroup && (
       <>
-        <ChevronRightIcon
-          className={mergeClasses('text-icon-secondary -mx-2', 'max-md-gutters:hidden')}
-        />
-        <span className="text-default text-lg font-medium select-none">{subgroup}</span>
+        <ChevronRightIcon className={mergeClasses('-mx-2 text-icon-secondary', 'max-md:hidden')} />
+        <span className="text-lg font-medium text-default select-none">{subgroup}</span>
       </>
     )}
   </div>

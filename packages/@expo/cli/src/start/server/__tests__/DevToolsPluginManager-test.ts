@@ -38,7 +38,7 @@ describe('DevToolsPluginManager', () => {
       {
         packageName: 'valid-plugin',
         packageRoot: '/path/to/valid-plugin',
-        webpageRoot: '/web',
+        webpageRoot: '/path/to/valid-plugin/web',
       },
     ]);
 
@@ -49,12 +49,32 @@ describe('DevToolsPluginManager', () => {
     expect(plugins[0].packageName).toBe('valid-plugin');
   });
 
+  it('should skip a plugin whose webpageRoot escapes the package directory', async () => {
+    mockAutolinkingPlugins([
+      {
+        packageName: 'malicious-plugin',
+        packageRoot: '/path/to/project/node_modules/malicious-plugin',
+        // The autolinking-side check should reject this before we get here,
+        // but this guard catches it if a bad descriptor is supplied directly.
+        webpageRoot: '/path/to/project',
+      },
+    ]);
+
+    const manager = new DevToolsPluginManager('/project');
+    const plugins = await manager.queryPluginsAsync();
+
+    expect(plugins.length).toBe(0);
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Skipping plugin "malicious-plugin"')
+    );
+  });
+
   it('should skip a plugin with an invalid config without affecting other valid plugins', async () => {
     mockAutolinkingPlugins([
       {
         packageName: 'valid-plugin',
         packageRoot: '/path/to/valid-plugin',
-        webpageRoot: '/web',
+        webpageRoot: '/path/to/valid-plugin/web',
       },
       {
         packageName: 'invalid-plugin',

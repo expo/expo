@@ -1,5 +1,6 @@
-import { spawn, spawnSync } from 'node:child_process';
-import { unlinkSync } from 'node:fs';
+import spawnAsync from '@expo/spawn-async';
+import { spawnSync } from 'node:child_process';
+import { globSync, unlinkSync } from 'node:fs';
 import { basename } from 'node:path';
 
 const scriptArgs = process.argv.slice(2);
@@ -18,43 +19,34 @@ const eslintArgs = [
   ...scriptArgs,
 ];
 
-/** Run a command asynchronously, capturing all output. */
-function runAsync(cmd, args) {
-  return new Promise(resolve => {
-    const chunks = [];
-    const proc = spawn(cmd, args, {
-      stdio: ['ignore', 'pipe', 'pipe'],
-      shell: true,
-    });
-    proc.stdout.on('data', d => chunks.push(d));
-    proc.stderr.on('data', d => chunks.push(d));
-    proc.on('close', status => {
-      resolve({ status, output: Buffer.concat(chunks).toString() });
-    });
-  });
+/**
+ * Run a command and capture all output
+ * spawnAsync rejects on non-zero exit, so we fold the rejection back into a plain result the report code can branch on.
+ */
+async function runAsync(cmd, args) {
+  const result = await spawnAsync(cmd, args, {
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).catch(error => error);
+  return { status: result.status, output: result.stdout + result.stderr };
 }
 
-/** Run eslint synchronously (with cache-clear retry on fatal error). */
-function runEslint() {
-  const { status, stderr } = spawnSync('eslint', eslintArgs, {
+/** Run eslint with a cache-clear retry on fatal error. */
+async function runEslint() {
+  let result = await spawnAsync('eslint', eslintArgs, {
     stdio: ['inherit', 'inherit', 'pipe'],
-    shell: true,
-  });
+  }).catch(error => error);
 
-  // If ESLint fails with a fatal error, the cache may be stale. Clear it and retry once.
-  if (status === 2) {
+  if (result.status === 2) {
     console.error('ESLint exited with fatal error, clearing cache and retrying...');
     try {
       unlinkSync(CACHE_LOCATION);
     } catch {}
-    const retry = spawnSync('eslint', eslintArgs, {
+    result = await spawnAsync('eslint', eslintArgs, {
       stdio: ['inherit', 'inherit', 'pipe'],
-      shell: true,
-    });
-    return { status: retry.status, stderr: retry.stderr };
+    }).catch(error => error);
   }
 
-  return { status, stderr };
+  return { status: result.status, stderr: result.stderr };
 }
 
 /**
@@ -113,7 +105,8 @@ if (oxfmtChangedFiles !== null && oxfmtChangedFiles.length === 0) {
 } else if (oxfmtChangedFiles !== null) {
   oxfmtPromise = runAsync('oxfmt', ['--check', ...oxfmtChangedFiles]);
 } else {
-  oxfmtPromise = runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
+  const mdxFiles = globSync('**/*.mdx', { cwd: process.cwd() });
+  oxfmtPromise = runAsync('oxfmt', ['--check', process.cwd(), ...mdxFiles]);
 }
 
 let oxlintPromise;
@@ -129,10 +122,11 @@ if (oxlintChangedFiles !== null && oxlintChangedFiles.length === 0) {
   oxlintPromise = runAsync('oxlint', oxlintArgs);
 }
 const tscPromise = runAsync('tsc', ['--noEmit', '--pretty']);
-const eslintResult = runEslint();
+const eslintPromise = runEslint();
 const oxfmtResult = await oxfmtPromise;
 const oxlintResult = await oxlintPromise;
 const tscResult = await tscPromise;
+const eslintResult = await eslintPromise;
 
 /** Rebase annotation file paths from cwd-relative to repo-root-relative for GitHub Actions. */
 const workingDir = basename(process.cwd());
@@ -187,8 +181,8 @@ if (tscResult.status !== 0) {
   console.log('\x1b[32m✓ tsc\x1b[0m');
 }
 
-if (eslintResult.stderr?.byteLength > 0) {
-  console.error(`\x1b[31m${eslintResult.stderr.toString()}\x1b[0m`);
+if (eslintResult.stderr?.length > 0) {
+  console.error(`\x1b[31m${eslintResult.stderr}\x1b[0m`);
 }
 
 if (eslintResult.status !== 0) {

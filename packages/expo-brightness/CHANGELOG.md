@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-13
+
+### 💡 Others
+
 - Updated permission hooks and permission type imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.3 — 2026-05-06

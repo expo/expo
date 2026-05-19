@@ -4,6 +4,24 @@
 # canonical slice metadata and the Info.plist writer used by both scripts so
 # the manifest is produced from a single place.
 
+# resolve_pods_root PACKAGE_DIR
+# Sets PODS_ROOT, preferring an explicit value (e.g. from CocoaPods build phase)
+# over a fallback to bare-expo under EXPO_ROOT_DIR. Exits if PODS_ROOT doesn't exist.
+resolve_pods_root() {
+  local package_dir="$1"
+
+  if [[ -z "${PODS_ROOT:-}" ]]; then
+    : "${EXPO_ROOT_DIR:=$(cd "${package_dir}/../../.." && pwd)}"
+    PODS_ROOT="${EXPO_ROOT_DIR}/apps/bare-expo/ios/Pods"
+  fi
+  if [[ ! -d "$PODS_ROOT" ]]; then
+    echo "error: PODS_ROOT does not exist: $PODS_ROOT" >&2
+    echo "       Run \`pod install\` in apps/bare-expo/ios first, or set PODS_ROOT explicitly." >&2
+    exit 1
+  fi
+  PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
+}
+
 # All slice IDs known to the xcframework, mapped to their plist metadata.
 # CocoaPods reads Info.plist at `pod install` time and generates a per-slice
 # copy script; any slice missing from this table will be skipped by
