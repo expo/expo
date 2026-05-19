@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - [Internal] Align config-plugin resolution support to `@expo/config` using `@expo/reqire-utils` ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
+- [Internal] Drop `resolve-from` for `@expo/require-utils` ([#45990](https://github.com/expo/expo/pull/45990) by [@kitten](https://github.com/kitten))
 
 ## 56.0.6 — 2026-05-19
 
