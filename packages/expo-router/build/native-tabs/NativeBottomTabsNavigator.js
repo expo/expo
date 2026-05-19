@@ -51,7 +51,7 @@ const children_1 = require("../utils/children");
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
 exports.NativeTabsContext = react_2.default.createContext(false);
-function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, labelStyle, iconColor, blurEffect, backgroundColor, badgeBackgroundColor, indicatorColor, badgeTextColor, shadowColor, screenListeners, ...rest }) {
+function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, labelStyle, iconColor, blurEffect, backgroundColor, badgeBackgroundColor, indicatorColor, badgeTextColor, shadowColor, rippleColor, disableIndicator, labelVisibilityMode, screenListeners, ...rest }) {
     if ((0, react_2.use)(exports.NativeTabsContext)) {
         throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
     }
@@ -81,6 +81,10 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
             indicatorColor,
             badgeTextColor,
             shadowColor,
+            rippleColor,
+            disableIndicator,
+            labelVisibilityMode,
+            tintColor: rest.tintColor,
         },
     });
     const { routes } = state;

@@ -1,6 +1,5 @@
 import type { TabsScreenAppearanceAndroid, TabsScreenAppearanceIOS } from 'react-native-screens';
 
-import type { BuildAndroidAppearanceArgs } from './appearance.types';
 import type { NativeTabOptions } from './types';
 
 export function createStandardAppearanceFromOptions(
@@ -16,7 +15,7 @@ export function createScrollEdgeAppearanceFromOptions(
 }
 
 export function createAndroidScreenAppearance(
-  _args: BuildAndroidAppearanceArgs
+  _options: NativeTabOptions
 ): TabsScreenAppearanceAndroid {
   return {} as TabsScreenAppearanceAndroid;
 }
