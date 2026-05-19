@@ -108,6 +108,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
     const newCalendar = {
       title: 'cool new calendar',
       color: '#c0ff33',
+      entityType: EntityTypes.EVENT,
       ...sourceDetails,
       name: 'coolNewCalendar',
       accessLevel: CalendarAccessLevel.OWNER,
@@ -186,10 +187,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
 
   return (
     <View style={styles.container}>
-      <View style={styles.topActions}>
-        <Button onPress={findCalendars} title="Find my Calendars" style={styles.actionButton} />
-        <Button onPress={addCalendar} title="Add New Calendar" style={styles.actionButton} />
-      </View>
+      <Button onPress={findCalendars} title="Find my Calendars" style={styles.topButton} />
     </View>
   );
 }
@@ -213,12 +211,5 @@ const styles = StyleSheet.create({
   },
   topButton: {
     marginBottom: 8,
-  },
-  topActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  actionButton: {
-    flex: 1,
   },
 });
