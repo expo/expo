@@ -35,7 +35,7 @@
     "@expo/ui": "workspace:~56.0.9"
   },
   "devDependencies": {
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",

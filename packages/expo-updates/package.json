@@ -40,7 +40,7 @@
   "dependencies": {
     "@expo/code-signing-certificates": "^0.0.6",
     "@expo/plist": "workspace:^0.6.0",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "arg": "^4.1.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
