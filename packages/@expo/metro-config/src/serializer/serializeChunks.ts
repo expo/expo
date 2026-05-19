@@ -253,26 +253,35 @@ export class Chunk {
   }
 
   hasAbsolutePath(absolutePath: string): boolean {
-    return [...this.deps].some((module) => module.path === absolutePath);
+    for (const dep of this.deps) {
+      if (dep.path === absolutePath) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  getAsyncChunkTargets(chunks: Chunk[]): Set<Chunk> {
+  private _asyncTargets?: Set<Chunk>;
+
+  getAsyncChunkTargets(chunkByPath: Map<string, Chunk>): Set<Chunk> {
+    if (this._asyncTargets) {
+      return this._asyncTargets;
+    }
     const targets = new Set<Chunk>();
-    if (this.options.includeAsyncPaths) return targets;
-    this.deps.forEach((module) => {
-      module.dependencies.forEach((dependency) => {
-        if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
-          const chunkContainingModule = chunks.find((chunk) =>
-            chunk.hasAbsolutePath(dependency.absolutePath)
-          );
+    this._asyncTargets = targets;
+    if (this.options.includeAsyncPaths) {
+      return targets;
+    }
+    for (const module of this.deps) {
+      for (const dep of module.dependencies.values()) {
+        if (isResolvedDependency(dep) && dep.data.data.asyncType) {
+          const target = chunkByPath.get(dep.absolutePath);
           // NOTE(kitten): Chunk merges can leave async imports pointing at non-async
           // (entry/vendor) chunks; those are loaded eagerly so we skip them here.
-          if (chunkContainingModule?.isAsync) {
-            targets.add(chunkContainingModule);
-          }
+          if (target?.isAsync) targets.add(target);
         }
-      });
-    });
+      }
+    }
     return targets;
   }
 

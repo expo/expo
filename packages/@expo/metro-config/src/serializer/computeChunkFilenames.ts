@@ -7,7 +7,7 @@ interface TopologicalSet {
 }
 
 /** Tarjan's SCC partition, exposing lazy transitive reachability per chunk */
-const makeTopologicalSet = (chunks: Chunk[]): TopologicalSet => {
+const makeTopologicalSet = (chunks: Chunk[], chunksByPath: Map<string, Chunk>): TopologicalSet => {
   const discoveryIndex = new Map<Chunk, number>();
   const lowLink = new Map<Chunk, number>();
   const onPath = new Set<Chunk>();
@@ -22,7 +22,7 @@ const makeTopologicalSet = (chunks: Chunk[]): TopologicalSet => {
     path.push(node);
     onPath.add(node);
 
-    for (const neighbor of node.getAsyncChunkTargets(chunks)) {
+    for (const neighbor of node.getAsyncChunkTargets(chunksByPath)) {
       if (!discoveryIndex.has(neighbor)) {
         visit(neighbor);
         lowLink.set(node, Math.min(lowLink.get(node)!, lowLink.get(neighbor)!));
@@ -44,8 +44,11 @@ const makeTopologicalSet = (chunks: Chunk[]): TopologicalSet => {
     }
   };
 
-  for (const chunk of chunks) {
-    if (!discoveryIndex.has(chunk)) visit(chunk);
+  for (let idx = 0; idx < chunks.length; idx++) {
+    const chunk = chunks[idx]!;
+    if (!discoveryIndex.has(chunk)) {
+      visit(chunk);
+    }
   }
 
   const _closureCache = new Map<Set<Chunk>, Set<Chunk>>();
@@ -57,7 +60,7 @@ const makeTopologicalSet = (chunks: Chunk[]): TopologicalSet => {
     const closure = new Set<Chunk>(group);
     _closureCache.set(group, closure);
     for (const member of group) {
-      for (const target of member.getAsyncChunkTargets(chunks)) {
+      for (const target of member.getAsyncChunkTargets(chunksByPath)) {
         const transitiveGroup = groupOf.get(target)!;
         if (transitiveGroup === group) continue;
         for (const reachable of collect(transitiveGroup)) {
@@ -106,6 +109,18 @@ const makeIntrinsics = (serializerConfig: Partial<SerializerConfigT>): Intrinsic
   return intrinsics;
 };
 
+const makeChunkByPathLookupMap = (chunks: Chunk[]): Map<string, Chunk> => {
+  const chunkByPath = new Map<string, Chunk>();
+  for (const chunk of chunks) {
+    for (const module of chunk.deps) {
+      if (!chunkByPath.has(module.path)) {
+        chunkByPath.set(module.path, chunk);
+      }
+    }
+  }
+  return chunkByPath;
+};
+
 /** Precompute each chunk's emitted filename.
  *
  * Hashes each chunk's intrinsic source combined with the intrinsics of all
@@ -122,7 +137,8 @@ export function precomputeChunkFilenames(
   }
 
   const intrinsics = makeIntrinsics(serializerConfig);
-  const topology = makeTopologicalSet(chunks);
+  const chunksByPath = makeChunkByPathLookupMap(chunks);
+  const topology = makeTopologicalSet(chunksByPath);
 
   const filenames = new Map<Chunk, string>();
   for (const chunk of chunks) {
