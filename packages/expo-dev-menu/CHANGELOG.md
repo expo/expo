@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add `setShowsAtLaunch`/`getShowsAtLaunch` to `DevMenuManager` so preferences can be toggled at runtime and applied immediately. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add `setShowsAtLaunch`/`getShowsAtLaunch` to `DevMenuManager` so preferences can be toggled at runtime and applied immediately. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@gabrieldonadel](https://github.com/gabrieldonadel)) ([#46000](https://github.com/expo/expo/pull/46000) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
