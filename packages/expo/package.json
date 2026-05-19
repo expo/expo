@@ -91,7 +91,7 @@
     "babel-preset-expo": "~55.0.22",
     "expo-asset": "~55.0.17",
     "expo-constants": "~55.0.16",
-    "expo-file-system": "~55.0.20",
+    "expo-file-system": "~55.0.21",
     "expo-font": "~55.0.8",
     "expo-keep-awake": "~55.0.8",
     "expo-modules-autolinking": "55.0.23",

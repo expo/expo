@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.35 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.34 — 2026-05-15
 
 _This version does not introduce any user-facing changes._

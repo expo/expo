@@ -30,7 +30,7 @@
     "expo-crypto": "~55.0.15",
     "expo-device": "~55.0.17",
     "expo-eas-client": "~55.0.5",
-    "expo-file-system": "~55.0.20",
+    "expo-file-system": "~55.0.21",
     "expo-gl": "~55.0.14",
     "expo-haptics": "~55.0.14",
     "expo-image-manipulator": "~55.0.16",
