@@ -28,7 +28,7 @@ export function resolveFrom(
 
   const resolved = path.resolve(fromDirectory, moduleId);
   // (1) check direct path / exact match
-  if (fs.existsSync(resolved)) {
+  if (isResolvableSync(resolved)) {
     return resolved;
   }
 
@@ -36,7 +36,7 @@ export function resolveFrom(
   for (let ext of exts) {
     ext = ext[0] !== '.' ? `.${ext}` : ext;
     const withExt = resolved + ext;
-    if (fs.existsSync(withExt)) {
+    if (isResolvableSync(withExt)) {
       return withExt;
     }
   }
@@ -48,14 +48,14 @@ export function resolveFrom(
     for (const modulesDir of moduleDirs) {
       const candidate = path.join(modulesDir, moduleId);
       // (3.1) direct match
-      if (fs.existsSync(candidate)) {
+      if (isResolvableSync(candidate)) {
         return candidate;
       }
       // (3.2) check against match with extensions
       for (let ext of exts) {
         ext = ext[0] !== '.' ? `.${ext}` : ext;
         const candidateWithExt = candidate + ext;
-        if (fs.existsSync(candidateWithExt)) {
+        if (isResolvableSync(candidateWithExt)) {
           return followSymlinks ? maybeResolve(candidateWithExt) : candidateWithExt;
         }
       }
@@ -77,6 +77,30 @@ function nativeResolveFrom(fromDirectory: string, moduleId: string): string | nu
     });
   } catch {
     return null;
+  }
+}
+
+function isRealpathFileSync(target: string): boolean {
+  try {
+    const realpath = fs.realpathSync(target);
+    return !!fs.lstatSync(realpath, { throwIfNoEntry: false })?.isFile();
+  } catch {
+    return false;
+  }
+}
+
+function isResolvableSync(target: string): boolean {
+  try {
+    const stat = fs.lstatSync(target, { throwIfNoEntry: false });
+    if (stat?.isSymbolicLink()) {
+      return isRealpathFileSync(target);
+    } else if (stat?.isFile()) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch {
+    return false;
   }
 }
 
