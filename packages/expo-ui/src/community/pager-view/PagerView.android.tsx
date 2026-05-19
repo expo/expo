@@ -40,8 +40,8 @@ export function PagerView(props: PagerViewProps) {
   const [scrollEnabledState, setScrollEnabledState] = useState(scrollEnabled);
   // Keep local state in sync with the prop so consumers can drive it
   // declaratively — matches upstream `react-native-pager-view`'s contract.
-  // The imperative `setScrollEnabled` still works for callers that want to
-  // toggle without re-rendering.
+  // The imperative `setScrollEnabled` reuses this setter, so it does trigger
+  // a re-render — unlike upstream's UIManager-direct path.
   useEffect(() => {
     setScrollEnabledState(scrollEnabled);
   }, [scrollEnabled]);
@@ -191,9 +191,17 @@ function buildOnPageScrollHandler(
 function borderRadiusShape(style: PagerViewProps['style'], rtl: boolean): BuiltinShape | undefined {
   const flat = StyleSheet.flatten(style) as Record<string, unknown> | undefined;
   if (!flat) return undefined;
+  // Compose's `RoundedCornerShape` takes `Dp` (numeric), so we can only honor
+  // numeric border-radius values here. RN also accepts strings like `'50%'`
+  // and CSS-in-JS libs may emit them; those are dropped (no clip) — `__DEV__`
+  // warns once so this isn't silent.
   const num = (key: string): number | undefined => {
     const v = flat[key];
-    return typeof v === 'number' && v > 0 ? v : undefined;
+    if (typeof v === 'number') return v > 0 ? v : undefined;
+    if (__DEV__ && typeof v === 'string') {
+      warnAboutStringBorderRadiusOnce(key, v);
+    }
+    return undefined;
   };
   const uniform = num('borderRadius');
   // Physical keys (LTR-relative) and logical keys (writing-direction-relative)
@@ -221,4 +229,16 @@ function borderRadiusShape(style: PagerViewProps['style'], rtl: boolean): Builti
     return Shapes.RoundedCorner(uniform);
   }
   return undefined;
+}
+
+let didWarnStringBorderRadius = false;
+function warnAboutStringBorderRadiusOnce(key: string, value: string): void {
+  if (didWarnStringBorderRadius) return;
+  didWarnStringBorderRadius = true;
+  console.warn(
+    `[expo-ui PagerView] ${key}: ${JSON.stringify(value)} — string border-radius values ` +
+      `aren't supported on the Android pager (Jetpack Compose's RoundedCornerShape requires ` +
+      `numeric Dp values). The corner radius is being dropped, so the pager won't clip. ` +
+      `Use a numeric pixel value, or omit the style key.`
+  );
 }

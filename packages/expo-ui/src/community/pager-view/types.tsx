@@ -84,10 +84,12 @@ export type PagerViewProps = ViewProps & {
    * is the index of the leading visible page; `offset` is the fractional
    * progress toward the next page in the `[0, 1)` range.
    *
-   * **Platform requirements**: Android has no minimum version. iOS 18+
-   * (built on `onScrollGeometryChange`); on earlier iOS versions the prop
-   * attaches but the callback never fires — a dev-mode warning is logged
-   * so the silent degradation is visible.
+   * **iOS 18+ only** (Android works at any version, built on
+   * `onScrollGeometryChange`). On iOS 17 the prop attaches but the callback
+   * never fires. A `__DEV__`-mode warning logs only when the app actually
+   * runs on iOS 17, so a developer testing exclusively on newer iOS
+   * simulators will not see the gap until shipping to a device on iOS 17.
+   * Guard call sites with `Platform.Version` if you support iOS 17.
    */
   onPageScroll?: (event: PagerViewOnPageScrollEvent) => void;
   /**
@@ -99,11 +101,13 @@ export type PagerViewProps = ViewProps & {
    * Fires when the scroll state changes between `idle`, `dragging`,
    * and `settling`.
    *
-   * **Platform requirements**: Android has no minimum version, and
-   * synthesizes the state from Compose's drag interactions plus
-   * `isScrollInProgress`. iOS 18+ (built on `onScrollPhaseChange`); on
-   * earlier iOS versions the prop attaches but the callback never fires —
-   * a dev-mode warning is logged so the silent degradation is visible.
+   * **iOS 18+ only** (Android works at any version, synthesized from
+   * Compose's drag interactions plus `isScrollInProgress`). On iOS 17 the
+   * prop attaches but the callback never fires. A `__DEV__`-mode warning
+   * logs only when the app actually runs on iOS 17, so a developer
+   * testing exclusively on newer iOS simulators will not see the gap
+   * until shipping to a device on iOS 17. Guard call sites with
+   * `Platform.Version` if you support iOS 17.
    */
   onPageScrollStateChanged?: (event: PageScrollStateChangedEvent) => void;
   /**
@@ -123,6 +127,11 @@ export type PagerViewRef = {
   /**
    * Animate the pager to the given page index. Out-of-range indices are
    * silently ignored.
+   *
+   * On iOS, the animation requires `react-native-worklets` to be installed
+   * (the page mutation is dispatched into SwiftUI's `withAnimation`
+   * transaction via a worklet). If `react-native-worklets` isn't
+   * installed, `setPage` falls back to a non-animated jump.
    */
   setPage: (selectedPage: number) => void;
   /**
@@ -130,8 +139,13 @@ export type PagerViewRef = {
    */
   setPageWithoutAnimation: (selectedPage: number) => void;
   /**
-   * Imperatively enable or disable user scrolling. Equivalent to the
-   * `scrollEnabled` prop, but useful when toggling without re-rendering.
+   * Imperatively enable or disable user scrolling — convenient when
+   * toggling from a non-React context like a ref-based gesture handler.
+   * Equivalent to setting the `scrollEnabled` prop.
+   *
+   * > Unlike upstream `react-native-pager-view` (which calls UIManager
+   * > directly), this triggers a re-render of `PagerView` so the new
+   * > flag flows through to the native view via props.
    */
   setScrollEnabled: (scrollEnabled: boolean) => void;
 };

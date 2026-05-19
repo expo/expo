@@ -18,9 +18,8 @@ import {
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
-import { useScrollGeometryChange } from './onScrollGeometryChange';
-import { onScrollPhaseChange } from './onScrollPhaseChange';
 import { progressViewStyle } from './progressViewStyle';
+import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
@@ -1452,8 +1451,7 @@ export * from './presentationModifiers';
 export * from './environment';
 export * from './scrollPosition';
 export * from './symbolEffect';
-export * from './onScrollPhaseChange';
-export * from './onScrollGeometryChange';
+export * from './scrollObservation';
 export * from './widgets';
 export type {
   TimingAnimationParams,

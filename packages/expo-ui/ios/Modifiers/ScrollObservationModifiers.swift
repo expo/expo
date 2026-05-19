@@ -4,12 +4,10 @@ import ExpoModulesCore
 import SwiftUI
 
 internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
-  /// Set when the consumer passes a worklet callback. The modifier invokes
-  /// the worklet synchronously on the UI runtime for per-frame work that must
-  /// not pay JS-thread dispatch cost.
+  // Set when the consumer passes a worklet callback. The modifier invokes the worklet
+  // synchronously on the UI runtime for per-frame work that must not pay JS-thread dispatch cost.
   @Field var workletCallback: WorkletCallback?
-  /// Async event path used when no worklet is provided. Fires on the JS
-  /// thread via the global modifier event dispatcher.
+  // Async event path used when no worklet is provided. Fires on the JS thread via the global modifier event dispatcher.
   var eventDispatcher: EventDispatcher?
 
   init() {}
@@ -25,9 +23,6 @@ internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
         .onScrollGeometryChange(for: ScrollGeometryPayload.self) { ScrollGeometryPayload($0) }
         action: { [workletCallback, eventDispatcher] _, payload in
           let geometry = payload.dictionary
-          // Mutually exclusive: the JS factory wires one path at a time.
-          // Skipping the regular dispatcher when a worklet is attached
-          // avoids the per-frame async JS event.
           if let workletCallback {
             workletCallback.invoke(arguments: [geometry])
           } else {
@@ -40,9 +35,45 @@ internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
   }
 }
 
-/// Equatable transform of `ScrollGeometry` so `.onScrollGeometryChange` only
-/// fires when an observed dimension actually changes. Also the shared shape
-/// emitted to JS by both `onScrollGeometryChange` and `onScrollPhaseChange`.
+internal struct OnScrollPhaseChangeModifier: ViewModifier, Record {
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
+
+  func body(content: Content) -> some View {
+    if #available(iOS 18.0, tvOS 18.0, *) {
+      content.onScrollPhaseChange { [eventDispatcher] _, newPhase, context in
+        eventDispatcher?([
+          "onScrollPhaseChange": [
+            "phase": Self.phaseString(newPhase),
+            "geometry": ScrollGeometryPayload(context.geometry).dictionary
+          ]
+        ])
+      }
+    } else {
+      content
+    }
+  }
+
+  @available(iOS 18.0, tvOS 18.0, *)
+  private static func phaseString(_ phase: ScrollPhase) -> String {
+    return switch phase {
+    case .idle: "idle"
+    case .tracking: "tracking"
+    case .interacting: "interacting"
+    case .animating: "animating"
+    case .decelerating: "decelerating"
+    @unknown default: "idle"
+    }
+  }
+}
+
+// Equatable transform of `ScrollGeometry`. Shared between the two modifiers above.
 internal struct ScrollGeometryPayload: Equatable {
   let contentOffsetX: CGFloat
   let contentOffsetY: CGFloat

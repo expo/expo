@@ -18,8 +18,6 @@ import { Host } from '../../swift-ui/Host';
 import { LazyHStack } from '../../swift-ui/LazyHStack';
 import { RNHostView } from '../../swift-ui/RNHostView';
 import { ScrollView, type ScrollGeometry, type ScrollPhase } from '../../swift-ui/ScrollView';
-import { Animation } from '../../swift-ui/modifiers/animation';
-import { withAnimation } from '../../swift-ui/withAnimation';
 import {
   containerRelativeFrame,
   id,
@@ -30,6 +28,8 @@ import {
   scrollTargetLayout,
   useScrollGeometryChange,
 } from '../../swift-ui/modifiers';
+import { Animation } from '../../swift-ui/modifiers/animation';
+import { withAnimation } from '../../swift-ui/withAnimation';
 
 function phaseToPageState(phase: ScrollPhase): 'idle' | 'dragging' | 'settling' {
   switch (phase) {
@@ -75,8 +75,6 @@ export function PagerView(props: PagerViewProps) {
   const [scrollEnabledState, setScrollEnabledState] = useState(scrollEnabled);
   // Keep local state in sync with the prop so consumers can drive it
   // declaratively — matches upstream `react-native-pager-view`'s contract.
-  // The imperative `setScrollEnabled` still works for callers that want to
-  // toggle without re-rendering.
   useEffect(() => {
     setScrollEnabledState(scrollEnabled);
   }, [scrollEnabled]);

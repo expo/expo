@@ -1,1 +1,1 @@
-{"version":3,"file":"PagerView.d.ts","sourceRoot":"","sources":["../../../src/community/pager-view/PagerView.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;;;GAIG;AACH,wBAAgB,SAAS,CAAC,MAAM,EAAE,cAAc,GAAG,IAAI,CAItD"}
+{"version":3,"file":"PagerView.d.ts","sourceRoot":"","sources":["../../../src/community/pager-view/PagerView.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;;;GAIG;AACH,wBAAgB,SAAS,CAAC,MAAM,EAAE,cAAc,GAAG,KAAK,CAIvD"}
