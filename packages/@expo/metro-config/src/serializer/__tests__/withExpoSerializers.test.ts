@@ -758,7 +758,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-0b3b05dfd72525874c3b666ed3231144.js",
+        "_expo/static/js/web/index-94948be0883c5c5ec85126a6f3367b2c.js",
         "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
@@ -766,7 +766,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-0b3b05dfd72525874c3b666ed3231144.js",
+          "filename": "_expo/static/js/web/index-94948be0883c5c5ec85126a6f3367b2c.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -850,7 +850,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-8cc83f2e616cdd8e531ae27d9127c263.js",
+        "_expo/static/js/web/index-1207f92ecd83de62d121a586b7d1a023.js",
         "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
@@ -858,7 +858,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-8cc83f2e616cdd8e531ae27d9127c263.js",
+          "filename": "_expo/static/js/web/index-1207f92ecd83de62d121a586b7d1a023.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -951,7 +951,7 @@ describe('serializes', () => {
     });
 
     expect(artifacts.map((art) => art.filename)).toEqual([
-      '_expo/static/js/web/index-95c9198c40034f849b6c9f8b62d0bd22.js',
+      '_expo/static/js/web/index-bdef585f35abb73ade9d9bf09663cd76.js',
       '_expo/static/js/web/index-25b349d9df4cf37e2ce96f19a911e4eb.js',
       '_expo/static/js/web/[foo]-b99e2a64404cca4d65e32984620b7bf1.js',
       '_expo/static/js/web/{foo}-d032e4cf31d79b9563f18fce5c4d4da8.js',
@@ -1014,7 +1014,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-2f681759ccdffed0c24df6bd62adc744.js",
+        "_expo/static/js/web/index-e1fb337e6686dcaff5b891611f2351c2.js",
         "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
@@ -1022,7 +1022,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-2f681759ccdffed0c24df6bd62adc744.js",
+          "filename": "_expo/static/js/web/index-e1fb337e6686dcaff5b891611f2351c2.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1144,7 +1144,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-ab51a54090935dbdd8a8f1ab4caa8eca.js",
+        "_expo/static/js/web/index-1a945ad9d39624147643462e65d5c9a5.js",
         "_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js",
         "_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js",
         "_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
@@ -1156,7 +1156,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-ab51a54090935dbdd8a8f1ab4caa8eca.js",
+          "filename": "_expo/static/js/web/index-1a945ad9d39624147643462e65d5c9a5.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1485,6 +1485,67 @@ describe('serializes', () => {
     // The entire chain should be invalidated.
     expect(artifacts[0].filename).not.toEqual(artifacts2[0].filename);
     expect(artifacts[1].filename).not.toEqual(artifacts2[1].filename);
+  });
+
+  it(`invalidates parent chunk when a transitive async chunk changes`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `import('./math');`,
+      'math.js': `import('./util');`,
+      'util.js': `export const u = 'before';`,
+    });
+
+    const artifacts2 = await serializeSplitAsync({
+      'index.js': `import('./math');`,
+      'math.js': `import('./util');`,
+      'util.js': `export const u = 'after';`,
+    });
+
+    const byOrigin = (a: SerialAsset[]) =>
+      Object.fromEntries(a.map((art) => [art.originFilename, art]));
+    const a = byOrigin(artifacts);
+    const b = byOrigin(artifacts2);
+
+    expect(a['util.js'].filename).not.toEqual(b['util.js'].filename);
+    expect(a['math.js'].filename).not.toEqual(b['math.js'].filename);
+    expect(a['index.js'].filename).not.toEqual(b['index.js'].filename);
+  });
+
+  it(`invalidates both branches of a diamond when the shared leaf changes`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `import('./a'); import('./b');`,
+      'a.js': `import('./leaf'); export const a = 'a';`,
+      'b.js': `import('./leaf'); export const b = 'b';`,
+      'leaf.js': `export const leaf = 'before';`,
+    });
+
+    const artifacts2 = await serializeSplitAsync({
+      'index.js': `import('./a'); import('./b');`,
+      'a.js': `import('./leaf'); export const a = 'a';`,
+      'b.js': `import('./leaf'); export const b = 'b';`,
+      'leaf.js': `export const leaf = 'after';`,
+    });
+
+    const byOrigin = (a: SerialAsset[]) =>
+      Object.fromEntries(a.map((art) => [art.originFilename, art]));
+    const before = byOrigin(artifacts);
+    const after = byOrigin(artifacts2);
+
+    expect(before['leaf.js'].filename).not.toEqual(after['leaf.js'].filename);
+    expect(before['a.js'].filename).not.toEqual(after['a.js'].filename);
+    expect(before['b.js'].filename).not.toEqual(after['b.js'].filename);
+    expect(before['index.js'].filename).not.toEqual(after['index.js'].filename);
+  });
+
+  it(`parent chunk source references the child chunk's actual filename`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `import('./math');`,
+      'math.js': `import('./util'); export const m = 1;`,
+      'util.js': `export const u = 2;`,
+    });
+
+    const byOrigin = Object.fromEntries(artifacts.map((art) => [art.originFilename, art] as const));
+    expect(byOrigin['index.js'].source).toContain(byOrigin['math.js'].filename);
+    expect(byOrigin['math.js'].source).toContain(byOrigin['util.js'].filename);
   });
 
   describe('client references', () => {
