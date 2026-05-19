@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Upgrade react-native-screens to 4.25.1 ([#45965](https://github.com/expo/expo/pull/45965) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Always use HTTP POST when invoking RSC server actions ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
@@ -79,6 +81,7 @@ _This version does not introduce any user-facing changes._
 
 - Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
 - Move `pointerEvents` from component prop to style property in react-navigation views. ([#45519](https://github.com/expo/expo/pull/45519) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 56.1.0 — 2026-05-07
 
 ### 🎉 New features
