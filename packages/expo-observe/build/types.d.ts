@@ -51,7 +51,26 @@ export type Config = {
     integrations?: IntegrationsConfig;
 };
 export interface IntegrationsConfig {
+    /**
+     * Enables the `expo-router` integration, which records navigation metrics
+     * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
+     *
+     * Requires `expo-router` to be installed.
+     *
+     * @default false
+     */
     'expo-router'?: boolean;
+    /**
+     * Enables the `@react-navigation/native` integration, which records
+     * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
+     *
+     * Requires `@react-navigation/native` to be installed and the app tree
+     * to be wrapped in `<ObserveNavigationContainer>` instead of the stock
+     * `<NavigationContainer>`.
+     *
+     * @default false
+     */
+    'react-navigation'?: boolean;
 }
 export interface ExpoObserveModuleType {
     dispatchEvents(): Promise<void>;
