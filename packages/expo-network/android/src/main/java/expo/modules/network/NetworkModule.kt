@@ -126,7 +126,6 @@ class NetworkModule : Module() {
         Log.e(TAG, "expo-network cannot observe internet reachability, too many callbacks registered!", e)
       }
 
-      // Initialize the monitors here in case they're tapped for one-time signal strength requests
       cellSignalStrengthMonitor = CellSignalStrengthMonitor(context, ::emitCellSignalStrength)
       cellSignalStrengthMonitor?.register()
 
