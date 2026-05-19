@@ -28,6 +28,10 @@ export interface LaunchProps {
   launchActivity: string;
 }
 
+function resolveCustomLaunchActivity(packageName: string, mainActivity: string): string {
+  return mainActivity.startsWith('.') ? `${packageName}${mainActivity}` : mainActivity;
+}
+
 async function getMainActivityAsync(projectRoot: string): Promise<string> {
   const filePath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);
   const androidManifest = await AndroidConfig.Manifest.readAndroidManifestAsync(filePath);
@@ -55,7 +59,7 @@ export async function resolveLaunchPropsAsync(
 
   const launchActivity =
     customAppId && customAppId !== packageName
-      ? `${customAppId}/${packageName}${mainActivity}`
+      ? `${customAppId}/${resolveCustomLaunchActivity(packageName, mainActivity)}`
       : `${packageName}/${mainActivity}`;
 
   return {
