@@ -39,10 +39,10 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
             }) + '.css'));
             if (cssMetadata.externalImports) {
                 for (const external of cssMetadata.externalImports) {
-                    let source = `<link rel="stylesheet" href="${external.url}"`;
+                    let source = `<link rel="stylesheet" href="${escapeHtmlAttribute(external.url)}"`;
                     // TODO: How can we do this for local css imports?
                     if (external.media) {
-                        source += `media="${external.media}"`;
+                        source += ` media="${escapeHtmlAttribute(external.media)}"`;
                     }
                     // TODO: supports attribute
                     source += '>';
@@ -110,5 +110,8 @@ function fileNameFromContents({ filepath, src }) {
 }
 function getFileName(module) {
     return path_1.default.basename(module).replace(/\.[^.]+$/, '');
+}
+function escapeHtmlAttribute(value) {
+    return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 //# sourceMappingURL=getCssDeps.js.map
