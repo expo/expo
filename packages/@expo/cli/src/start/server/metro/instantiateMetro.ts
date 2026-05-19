@@ -330,7 +330,7 @@ export async function instantiateMetroAsync(
     });
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
-    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+    middleware.use('/_expo/debugger', createJsInspectorMiddleware({ serverBaseUrl }));
 
     // TODO(cedric): `enhanceMiddleware` is deprecated, but is currently used to unify the middleware stacks
     // See: https://github.com/facebook/metro/commit/22e85fde85ec454792a1b70eba4253747a2587a9
