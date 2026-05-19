@@ -56,6 +56,16 @@ export default function TextFieldScreen() {
 
   const TextFieldComponent = outlined ? OutlinedTextField : TextField;
 
+  React.useEffect(() => {
+    fieldValue.onChange = (newValue) => {
+      'worklet';
+      console.log('Value changed to:', newValue);
+    };
+    return () => {
+      fieldValue.onChange = null;
+    };
+  }, []);
+
   const sharedProps = {
     ref: textRef,
     value: fieldValue,

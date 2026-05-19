@@ -24,6 +24,7 @@ import {
   tag,
   buttonStyle,
   foregroundStyle,
+  textFieldStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
@@ -31,6 +32,15 @@ export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
 
   const username = useNativeState('johndoe');
+  React.useEffect(() => {
+    username.onChange = (newUsername) => {
+      'worklet';
+      console.log('Username changed to:', newUsername);
+    };
+    return () => {
+      username.onChange = null;
+    };
+  });
   const imperativeText = useNativeState('Select me!');
   const imperativeSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
   const [imperativeSelDisplay, setImperativeSelDisplay] = React.useState<TextFieldSelection>({
@@ -62,7 +72,7 @@ export default function TextFieldScreen() {
           <TextField
             text={username}
             placeholder="Username"
-            modifiers={[autocorrectionDisabled()]}
+            modifiers={[autocorrectionDisabled(), textFieldStyle('plain')]}
             onTextChange={(v) => console.log('username:', v)}
           />
           <TextField
