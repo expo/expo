@@ -62,6 +62,7 @@ describe('expo-file-system new API', () => {
     expect(typeof file.moveSync).toBe('function');
     expect(typeof file.text).toBe('function');
     expect(typeof file.write).toBe('function');
+    expect(typeof file.writeSync).toBe('function');
     expect(typeof file.json).toBe('function');
     expect(typeof file.formData).toBe('function');
   });
@@ -120,6 +121,15 @@ describe('expo-file-system new API', () => {
 
     await expect(file.copy(destination)).resolves.toBeUndefined();
     await expect(file.move(destination, { overwrite: true })).resolves.toBeUndefined();
+  });
+
+  it('File.write returns a promise and File.writeSync stays synchronous', async () => {
+    const file = new File(Paths.cache, 'test.txt');
+
+    expect(file.write('hello')).toBeInstanceOf(Promise);
+    const result = await file.write('hello');
+    expect(result).toBeUndefined();
+    expect(file.writeSync('hello')).toBeUndefined();
   });
 
   it('Directory copy and move return promises', async () => {
@@ -204,32 +214,53 @@ describe('expo-file-system behavioral mock', () => {
     });
   });
 
-  it('File.write(string) and File.text() roundtrip utf-8', async () => {
+  it('File.writeSync(string) and File.text() roundtrip utf-8', async () => {
     const file = new File(Paths.cache, 'hello.txt');
-    file.write('hello world');
+    file.writeSync('hello world');
     expect(file.textSync()).toBe('hello world');
     await expect(file.text()).resolves.toBe('hello world');
   });
 
-  it('File.write(Uint8Array) and File.bytes() roundtrip byte-for-byte', async () => {
+  it('File.write(string) and File.text() roundtrip utf-8', async () => {
+    const file = new File(Paths.cache, 'hello_async.txt');
+    await file.write('hello world');
+    expect(file.textSync()).toBe('hello world');
+    await expect(file.text()).resolves.toBe('hello world');
+  });
+
+  it('File.writeSync(Uint8Array) and File.bytes() roundtrip byte-for-byte', async () => {
     const file = new File(Paths.cache, 'bin.dat');
     const payload = new Uint8Array([1, 2, 3, 4, 5]);
-    file.write(payload);
+    file.writeSync(payload);
     expect(Array.from(file.bytesSync())).toEqual([1, 2, 3, 4, 5]);
     await expect(file.bytes()).resolves.toEqual(payload);
   });
 
-  it('File.write with append option appends to existing bytes', () => {
+  it('File.writeSync with append option appends to existing bytes', () => {
     const file = new File(Paths.cache, 'log.txt');
-    file.write('a');
-    file.write('b', { append: true });
-    file.write('c', { append: true });
+    file.writeSync('a');
+    file.writeSync('b', { append: true });
+    file.writeSync('c', { append: true });
     expect(file.textSync()).toBe('abc');
   });
 
-  it('File.write with base64 encoding decodes before storing', () => {
+  it('File.write with append option appends to existing bytes', async () => {
+    const file = new File(Paths.cache, 'log_async.txt');
+    await file.write('a');
+    await file.write('b', { append: true });
+    await file.write('c', { append: true });
+    expect(file.textSync()).toBe('abc');
+  });
+
+  it('File.writeSync with base64 encoding decodes before storing', () => {
     const file = new File(Paths.cache, 'encoded.txt');
-    file.write(Buffer.from('hello').toString('base64'), { encoding: 'base64' });
+    file.writeSync(Buffer.from('hello').toString('base64'), { encoding: 'base64' });
+    expect(file.textSync()).toBe('hello');
+  });
+
+  it('File.write with base64 encoding decodes before storing', async () => {
+    const file = new File(Paths.cache, 'encoded_async.txt');
+    await file.write(Buffer.from('hello').toString('base64'), { encoding: 'base64' });
     expect(file.textSync()).toBe('hello');
   });
 
@@ -266,7 +297,7 @@ describe('expo-file-system behavioral mock', () => {
 
   it('File.move updates this.uri and removes the source', async () => {
     const source = new File(Paths.cache, 'source.txt');
-    source.write('payload');
+    source.writeSync('payload');
     const originalUri = source.uri;
 
     const destDir = new Directory(Paths.cache, 'moved');
@@ -285,7 +316,7 @@ describe('expo-file-system behavioral mock', () => {
 
   it('File.copy leaves the source intact and copies contents', async () => {
     const source = new File(Paths.cache, 'copy-src.txt');
-    source.write('original');
+    source.writeSync('original');
 
     const dest = new File(Paths.cache, 'copy-dest.txt');
     await source.copy(dest);
@@ -295,7 +326,7 @@ describe('expo-file-system behavioral mock', () => {
     expect(dest.textSync()).toBe('original');
 
     // Writing to the copy must not mutate the source.
-    dest.write('mutated');
+    dest.writeSync('mutated');
     expect(source.textSync()).toBe('original');
     expect(dest.textSync()).toBe('mutated');
   });
@@ -303,9 +334,9 @@ describe('expo-file-system behavioral mock', () => {
   it('Directory.delete removes the directory and all descendants', () => {
     const dir = new Directory(Paths.cache, 'doomed');
     dir.create();
-    dir.createFile('a.txt', null).write('a');
+    dir.createFile('a.txt', null).writeSync('a');
     const inner = dir.createDirectory('inner');
-    inner.createFile('b.txt', null).write('b');
+    inner.createFile('b.txt', null).writeSync('b');
 
     dir.delete();
 
