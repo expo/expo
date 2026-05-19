@@ -78,16 +78,7 @@ export async function isPackageInstalledAsync(
   androidPackage: string
 ): Promise<boolean> {
   const packages = await getServer().runAsync(
-    adbArgs(
-      device.pid,
-      'shell',
-      'pm',
-      'list',
-      'packages',
-      '--user',
-      env.EXPO_ADB_USER,
-      androidPackage
-    )
+    adbShellArgs(device.pid, 'pm', 'list', 'packages', '--user', env.EXPO_ADB_USER, androidPackage)
   );
 
   const lines = packages.split(/\r?\n/);
@@ -115,8 +106,7 @@ export async function launchActivityAsync(
     url?: string;
   }
 ) {
-  const args: string[] = [
-    'shell',
+  const command: string[] = [
     'am',
     'start',
     // FLAG_ACTIVITY_SINGLE_TOP -- If set, the activity will not be launched if it is already running at the top of the history stack.
@@ -128,10 +118,10 @@ export async function launchActivityAsync(
   ];
 
   if (url) {
-    args.push('-d', url);
+    command.push('-d', url);
   }
 
-  return openAsync(adbArgs(device.pid, ...args));
+  return openAsync(adbShellArgs(device.pid, ...command));
 }
 
 /**
@@ -147,17 +137,7 @@ export async function openUrlAsync(
   }
 ) {
   return openAsync(
-    adbArgs(
-      device.pid,
-      'shell',
-      'am',
-      'start',
-      '-a',
-      'android.intent.action.VIEW',
-      '-d',
-      // ADB requires ampersands to be escaped.
-      url.replace(/&/g, String.raw`\&`)
-    )
+    adbShellArgs(device.pid, 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url)
   );
 }
 
@@ -188,7 +168,7 @@ export async function getPackageInfoAsync(
   device: DeviceContext,
   { appId }: { appId: string }
 ): Promise<string> {
-  return await getServer().runAsync(adbArgs(device.pid, 'shell', 'dumpsys', 'package', appId));
+  return await getServer().runAsync(adbShellArgs(device.pid, 'dumpsys', 'package', appId));
 }
 
 /** Install an app on a connected device. */
@@ -207,6 +187,18 @@ export function adbArgs(pid: Device['pid'], ...options: string[]): string[] {
   }
 
   return args.concat(options);
+}
+
+/**
+ * `adb shell` concatenates trailing args and runs the result through `sh -c` on
+ * the device, so unquoted metacharacters in tainted tokens execute on-device.
+ */
+export function adbShellArgs(pid: Device['pid'], ...command: string[]): string[] {
+  return adbArgs(pid, 'shell', ...command.map(shellQuote));
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
 }
 
 // TODO: This is very expensive for some operations.
@@ -359,8 +351,9 @@ export async function getPropertyDataForDeviceAsync(
   device: DeviceContext,
   prop?: string
 ): Promise<DeviceProperties> {
-  // @ts-ignore
-  const propCommand = adbArgs(...[device.pid, 'shell', 'getprop', prop].filter(Boolean));
+  const propCommand = prop
+    ? adbShellArgs(device.pid, 'getprop', prop)
+    : adbShellArgs(device.pid, 'getprop');
   try {
     // Prevent reading as UTF8.
     const results = await getServer().getFileOutputAsync(propCommand);
