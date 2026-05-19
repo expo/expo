@@ -6021,6 +6021,9 @@ importers:
       babel-jest:
         specifier: ^29.2.1
         version: 29.7.0(@babel/core@7.29.0)
+      expo:
+        specifier: '*'
+        version: link:../expo
       jest-environment-jsdom:
         specifier: ^29.2.1
         version: 29.7.0
