@@ -86,17 +86,27 @@ export function PagerView(props: PagerViewProps) {
   // this current across page add/remove without an effect.
   const pageCountRef = useRef(0);
 
+  // Clamp `initialPage` against the child count snapshotted on first render —
+  // matches Android's `coerceIn` behavior. Out-of-range initials would
+  // otherwise produce an id that matches no `Group`, leaving
+  // `.scrollPosition(id:)` silently stuck at 0 with a bogus `lastSelectedPageRef`.
+  const [clampedInitialPage] = useState(() => {
+    const count = Children.count(children);
+    if (count === 0) return 0;
+    return Math.max(0, Math.min(count - 1, initialPage));
+  });
+
   // Single source of truth for the active page id — bound to SwiftUI's
   // `.scrollPosition(id:)` via the `scrollPosition` modifier. JS writes drive
   // imperative navigation; SwiftUI writebacks (user swipes) update us so
   // `onPageSelected` fires uniformly for both directions.
   const activePageState = useNativeState<string | null>(
-    initialPage > 0 ? String(initialPage) : null
+    clampedInitialPage > 0 ? String(clampedInitialPage) : null
   );
 
   // Dedup against the last fired page — the writeback fires for both user
   // swipes and our own imperative writes.
-  const lastSelectedPageRef = useRef(initialPage);
+  const lastSelectedPageRef = useRef(clampedInitialPage);
 
   const handleScrolledIDChange = (newId: string | null) => {
     if (newId == null) return;
