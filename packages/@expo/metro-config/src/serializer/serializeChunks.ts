@@ -286,7 +286,7 @@ export class Chunk {
   }
 
   private getComputedPathsForAsyncDependencies(
-    chunks: Chunk[],
+    chunksByPath: Map<string, Chunk>,
     filenamesByChunk: Map<Chunk, string>
   ) {
     const baseUrl = getBaseUrlOption(this.graph, this.options);
@@ -299,9 +299,7 @@ export class Chunk {
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
         if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
-          const chunkContainingModule = chunks.find((chunk) =>
-            chunk.hasAbsolutePath(dependency.absolutePath)
-          );
+          const chunkContainingModule = chunksByPath.get(dependency.absolutePath);
           assert(
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
@@ -378,13 +376,13 @@ export class Chunk {
     serializerConfig: Partial<SerializerConfigT>,
     {
       debugId,
-      chunks,
+      chunksByPath,
       filenamesByChunk,
       filename,
       preModules,
     }: {
       debugId: string;
-      chunks: Chunk[];
+      chunksByPath: Map<string, Chunk>;
       filenamesByChunk: Map<Chunk, string>;
       filename: string;
       preModules: Set<Module>;
@@ -393,7 +391,10 @@ export class Chunk {
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
       sourceMapUrl: this.getAdjustedSourceMapUrl(filename) ?? undefined,
-      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(chunks, filenamesByChunk),
+      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(
+        chunksByPath,
+        filenamesByChunk
+      ),
       debugId,
       preModules,
     });
@@ -406,7 +407,7 @@ export class Chunk {
 
   async serializeToAssetsAsync(
     serializerConfig: Partial<SerializerConfigT>,
-    chunks: Chunk[],
+    chunksByPath: Map<string, Chunk>,
     filenamesByChunk: Map<Chunk, string>,
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
@@ -427,7 +428,7 @@ export class Chunk {
     }
 
     const jsCode = this.serializeToCode(serializerConfig, {
-      chunks,
+      chunksByPath,
       filenamesByChunk,
       filename: outputFile,
       debugId,
@@ -828,6 +829,18 @@ function createRuntimeChunk(
   chunks.add(runtimeChunk);
 }
 
+function makeChunkByPathLookupMap(chunks: Set<Chunk>): Map<string, Chunk> {
+  const chunkByPath = new Map<string, Chunk>();
+  for (const chunk of chunks) {
+    for (const module of chunk.deps) {
+      if (!chunkByPath.has(module.path)) {
+        chunkByPath.set(module.path, chunk);
+      }
+    }
+  }
+  return chunkByPath;
+}
+
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
@@ -836,24 +849,30 @@ async function serializeChunksAsync(
 ) {
   const jsAssets: SerialAsset[] = [];
 
-  const chunksArray = [...chunks.values()];
-  const filenamesByChunk = precomputeChunkFilenames(
-    chunksArray,
+  const chunksByPath = makeChunkByPathLookupMap(chunks);
+  const filenamesByChunk = precomputeChunkFilenames({
+    chunks,
+    chunksByPath,
     serializerConfig,
-    recomputeChunkNames
-  );
-  await Promise.all(
-    chunksArray.map(async (chunk) => {
-      jsAssets.push(
-        ...(await chunk.serializeToAssetsAsync(
-          serializerConfig,
-          chunksArray,
-          filenamesByChunk,
-          options
-        ))
-      );
-    })
-  );
+    recomputeChunkNames,
+  });
 
+  const serializeTasks: Promise<unknown>[] = [];
+  for (const chunk of chunks) {
+    serializeTasks.push(
+      (async () => {
+        jsAssets.push(
+          ...(await chunk.serializeToAssetsAsync(
+            serializerConfig,
+            chunksByPath,
+            filenamesByChunk,
+            options
+          ))
+        );
+      })()
+    );
+  }
+
+  await Promise.all(serializeTasks);
   return jsAssets;
 }

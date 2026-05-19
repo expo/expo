@@ -7,7 +7,10 @@ interface TopologicalSet {
 }
 
 /** Tarjan's SCC partition, exposing lazy transitive reachability per chunk */
-const makeTopologicalSet = (chunks: Chunk[], chunksByPath: Map<string, Chunk>): TopologicalSet => {
+const makeTopologicalSet = (
+  chunks: Set<Chunk>,
+  chunksByPath: Map<string, Chunk>
+): TopologicalSet => {
   const discoveryIndex = new Map<Chunk, number>();
   const lowLink = new Map<Chunk, number>();
   const onPath = new Set<Chunk>();
@@ -44,8 +47,7 @@ const makeTopologicalSet = (chunks: Chunk[], chunksByPath: Map<string, Chunk>): 
     }
   };
 
-  for (let idx = 0; idx < chunks.length; idx++) {
-    const chunk = chunks[idx]!;
+  for (const chunk of chunks) {
     if (!discoveryIndex.has(chunk)) {
       visit(chunk);
     }
@@ -109,38 +111,37 @@ const makeIntrinsics = (serializerConfig: Partial<SerializerConfigT>): Intrinsic
   return intrinsics;
 };
 
-const makeChunkByPathLookupMap = (chunks: Chunk[]): Map<string, Chunk> => {
-  const chunkByPath = new Map<string, Chunk>();
-  for (const chunk of chunks) {
-    for (const module of chunk.deps) {
-      if (!chunkByPath.has(module.path)) {
-        chunkByPath.set(module.path, chunk);
-      }
-    }
-  }
-  return chunkByPath;
-};
+interface PrecomputeChunkFilenamesInput {
+  chunks: Set<Chunk>;
+  chunksByPath: Map<string, Chunk>;
+  serializerConfig: Partial<SerializerConfigT>;
+  recomputeChunkNames: boolean;
+}
 
 /** Precompute each chunk's emitted filename.
  *
  * Hashes each chunk's intrinsic source combined with the intrinsics of all
  * its transitively reachabl async chunks.
  */
-export function precomputeChunkFilenames(
-  chunks: Chunk[],
-  serializerConfig: Partial<SerializerConfigT>,
-  recomputeChunkNames: boolean
-): Map<Chunk, string> {
+export function precomputeChunkFilenames({
+  chunks,
+  chunksByPath,
+  serializerConfig,
+  recomputeChunkNames,
+}: PrecomputeChunkFilenamesInput): Map<Chunk, string> {
+  const filenames = new Map<Chunk, string>();
+
   // When not exporting, chunk.getFilename ignores its input
   if (!recomputeChunkNames) {
-    return new Map(chunks.map((chunk) => [chunk, chunk.name]));
+    for (const chunk of chunks) {
+      filenames.set(chunk, chunk.name);
+    }
+    return filenames;
   }
 
   const intrinsics = makeIntrinsics(serializerConfig);
-  const chunksByPath = makeChunkByPathLookupMap(chunks);
-  const topology = makeTopologicalSet(chunksByPath);
+  const topology = makeTopologicalSet(chunks, chunksByPath);
 
-  const filenames = new Map<Chunk, string>();
   for (const chunk of chunks) {
     const parts = [intrinsics.getSource(chunk)];
     for (const candidate of topology.getReachable(chunk)) {
