@@ -77,11 +77,14 @@ open class SharedObject: AnySharedObject {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
-    guard let jsValue = getJavaScriptValue() else {
-      log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-      return
-    }
-    runtime.schedule {
+    runtime.schedule { [weak appContext, sharedObjectId] in
+      guard let appContext else {
+        return
+      }
+      guard let jsValue = appContext.sharedObjectRegistry.toJavaScriptValue(sharedObjectId: sharedObjectId) else {
+        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+        return
+      }
       dispatch(event: event, payload: payload, to: jsValue, in: runtime)
     }
   }
@@ -101,12 +104,12 @@ open class SharedObject: AnySharedObject {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
-    guard let jsValue = getJavaScriptValue() else {
-      log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-      return
-    }
-    runtime.schedule { [weak appContext] in
+    runtime.schedule { [weak appContext, sharedObjectId] in
       guard let appContext else {
+        return
+      }
+      guard let jsValue = appContext.sharedObjectRegistry.toJavaScriptValue(sharedObjectId: sharedObjectId) else {
+        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
         return
       }
       do {
