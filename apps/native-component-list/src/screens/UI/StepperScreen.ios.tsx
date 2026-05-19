@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    // borderBottomColor: '#e1e5e9',
+    borderBottomColor: '#e1e5e9',
   },
   sectionTitle: {
     fontSize: 18,
