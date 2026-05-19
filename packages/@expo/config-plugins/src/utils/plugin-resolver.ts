@@ -111,32 +111,15 @@ export function resolveConfigPluginFunctionWithInfo(projectRoot: string, pluginR
   try {
     result = loadModuleSync(pluginFile);
   } catch (error) {
-    const learnMoreLink = 'Learn more: https://docs.expo.dev/guides/config-plugins/';
-
-    let underlyingError: string;
-    let stack: string | undefined;
-
-    if (error instanceof Error) {
-      const errorWithCode = error as Error & { code?: string };
-      underlyingError = `${errorWithCode.message} ${errorWithCode.code ?? ''}`;
-      stack = errorWithCode.stack;
-    } else {
-      underlyingError = String(error);
-    }
-
-    let errorMessage = `Unable to resolve a valid config plugin for ${pluginReference}.\n`;
-
+    let message = error instanceof Error ? error.message : String(error);
+    // Don't clobber `loadModuleSync`'s code-framed error
     if (!isPluginFile && !moduleNameIsDirectFileReference(pluginReference)) {
-      errorMessage += `• No "app.plugin.{js,cjs,mjs,ts,cts,mts}" file found in ${pluginReference}: config plugins are typically exported from an "${pluginFileName}" file in the package root.\n`;
+      message += `\n\nNo "app.plugin.{js,cjs,mjs,ts,cts,mts}" file was found in "${pluginReference}", so the package's main entry was loaded instead. Config plugins are typically exported from an "${pluginFileName}" file in the package root.\nLearn more: https://docs.expo.dev/guides/config-plugins/`;
     }
 
-    errorMessage += `• main export of ${pluginReference} does not appear to be a config plugin: the following error was thrown when importing ${pluginFile}: ${underlyingError}\n`;
-    errorMessage += `Verify that ${pluginReference} includes a config plugin. If it does not, then remove the entry from plugins in your app config file. ${learnMoreLink}`;
-
-    const pluginError = new PluginError(errorMessage, 'INVALID_PLUGIN_IMPORT');
-
-    if (stack) {
-      pluginError.stack = stack;
+    const pluginError = new PluginError(message, 'INVALID_PLUGIN_IMPORT');
+    if (error instanceof Error && error.stack) {
+      pluginError.stack = error.stack;
     }
     throw pluginError;
   }
