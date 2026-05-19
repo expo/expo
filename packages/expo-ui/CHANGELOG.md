@@ -25,6 +25,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Unmount `BottomSheet` when it is dismissed. ([#45846](https://github.com/expo/expo/pull/45846) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Apply `modifiers` prop on `Host` instead of silently dropping it. ([#45872](https://github.com/expo/expo/pull/45872) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
