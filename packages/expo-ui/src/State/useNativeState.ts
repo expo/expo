@@ -2,8 +2,6 @@ import { requireNativeModule } from 'expo';
 import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
 import { useRef } from 'react';
 
-import { worklets } from './optionalWorklets';
-
 const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
@@ -12,9 +10,11 @@ const ExpoUI = requireNativeModule('ExpoUI');
  */
 export type ObservableState<T> = SharedObject & {
   /**
-   * The current value. Reads are safe from any thread; prefer writing from a worklet
-   * so the update runs on the native UI thread. Updating state from the JS thread
-   * might show a development warning.
+   * The current value.
+   *
+   * Writes from a UI worklet are synchronous and immediately readable. Writes
+   * from the JS thread are scheduled to the UI thread asynchronously, the new value is not readable until the update has been
+   * applied. Prefer writing from a worklet when you need synchronous updates
    */
   value: T;
 };
@@ -41,19 +41,11 @@ type NativeObservableState = {
  * Adds a `value` property that delegates to the native `getValue`/`setValue` functions.
  */
 function defineValueProperty(state: NativeObservableState): void {
-  let warnedOnJSWrite = false;
   Object.defineProperty(state, 'value', {
     get() {
       return state.getValue();
     },
     set(v: unknown) {
-      if (__DEV__ && !warnedOnJSWrite && worklets && !worklets.isUIRuntime()) {
-        warnedOnJSWrite = true;
-        console.warn(
-          'ObservableState.value was set from the JS thread, the result may be unexpected. ' +
-            'Use a worklet to update the state.'
-        );
-      }
       state.setValue({ value: v });
     },
   });

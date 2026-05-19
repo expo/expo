@@ -29,7 +29,15 @@ public final class ExpoUIModule: Module {
       }
 
       Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
-        state.value = wrapper["value"]
+        let newValue = wrapper["value"]
+        // Update state on the UI thread
+        if Thread.isMainThread {
+          state.value = newValue
+        } else {
+          DispatchQueue.main.async {
+            state.value = newValue
+          }
+        }
       }
     }
 

@@ -5,9 +5,11 @@ import { type SharedObject } from 'expo-modules-core';
  */
 export type ObservableState<T> = SharedObject & {
     /**
-     * The current value. Reads are safe from any thread; prefer writing from a worklet
-     * so the update runs on the native UI thread. Updating state from the JS thread
-     * might show a development warning.
+     * The current value.
+     *
+     * Writes from a UI worklet are synchronous and immediately readable. Writes
+     * from the JS thread are scheduled to the UI thread asynchronously, the new value is not readable until the update has been
+     * applied. Prefer writing from a worklet when you need synchronous updates
      */
     value: T;
 };
