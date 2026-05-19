@@ -65,6 +65,12 @@ class AudioModule : Module() {
   private val allPlayables: Sequence<Playable>
     get() = players.values.asSequence() + playlists.values.asSequence()
 
+  private val allLockScreenPlayables: Sequence<LockScreenPlayable>
+    get() = sequence {
+      yieldAll(players.values)
+      yieldAll(playlists.values)
+    }
+
   private val ringerModeReceiver = RingerModeReceiver {
     if (playsInSilentMode) return@RingerModeReceiver
     appContext.mainQueue.launch {
@@ -235,9 +241,9 @@ class AudioModule : Module() {
         recorder.useForegroundService = allowsBackgroundRecording
       }
 
-      players.values.forEach { player ->
-        player.serviceConnection.playsInSilentMode = playsInSilentMode
-        player.serviceConnection.playbackServiceBinder?.service?.playsInSilentMode = playsInSilentMode
+      allLockScreenPlayables.forEach { playable ->
+        playable.serviceConnection.playsInSilentMode = playsInSilentMode
+        playable.serviceConnection.playbackServiceBinder?.service?.playsInSilentMode = playsInSilentMode
       }
 
       if (!shouldPlayInSilentMode()) {
@@ -868,7 +874,28 @@ class AudioModule : Module() {
         }
       }
 
+      Function("setActiveForLockScreen") { ref: AudioPlaylist, active: Boolean, metadata: Metadata?, options: AudioLockScreenOptions? ->
+        runOnMain {
+          ref.setActiveForLockScreen(active, metadata, options)
+        }
+      }
+
+      Function("updateLockScreenMetadata") { ref: AudioPlaylist, metadata: Metadata ->
+        runOnMain {
+          ref.updateLockScreenMetadata(metadata)
+        }
+      }
+
+      Function("clearLockScreenControls") { ref: AudioPlaylist ->
+        runOnMain {
+          ref.clearLockScreenControls()
+        }
+      }
+
       Function("destroy") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.clearLockScreenControls()
+        }
         playlists.remove(playlist.id)
       }
     }
