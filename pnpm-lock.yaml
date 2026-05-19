@@ -3699,7 +3699,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-crypto
       expo-linking:
-        specifier: workspace:~56.0.8
+        specifier: workspace:~56.0.9
         version: link:../expo-linking
       expo-web-browser:
         specifier: workspace:~56.0.4
@@ -5135,7 +5135,7 @@ importers:
         specifier: workspace:^56.0.5
         version: link:../expo-image
       expo-linking:
-        specifier: workspace:^56.0.8
+        specifier: workspace:^56.0.9
         version: link:../expo-linking
       expo-server:
         specifier: workspace:^56.0.3
