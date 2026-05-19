@@ -19,7 +19,7 @@ export function useObserveForRouter(): MarkInteractive | null {
   if (initializedAtMount.current !== isInitialized()) {
     throw new Error(
       "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
-        'Call `ExpoObserve.configure({ disableRouterIntegration })` once at startup before any screen mounts.'
+        "Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
     );
   }
 
