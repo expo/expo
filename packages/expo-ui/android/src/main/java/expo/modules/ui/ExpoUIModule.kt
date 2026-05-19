@@ -92,6 +92,10 @@ class ExpoUIModule : Module() {
           }
         }
       }
+
+      Function("setOnChange") { state: ObservableState, callback: WorkletCallback? ->
+        state.onChange = callback
+      }
     }
 
     //region Views use expo-modules-core DSL for uncommon features

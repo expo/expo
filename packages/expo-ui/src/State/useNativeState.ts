@@ -2,6 +2,8 @@ import { requireNativeModule } from 'expo';
 import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
 import { useRef } from 'react';
 
+import { worklets } from './optionalWorklets';
+
 const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
@@ -17,6 +19,32 @@ export type ObservableState<T> = SharedObject & {
    * applied. Prefer writing from a worklet when you need synchronous updates
    */
   value: T;
+
+  /**
+   * A single listener invoked on the native UI runtime whenever the value changes
+   * (after iOS `didSet` and Android's setter). Assigning replaces the previous
+   * listener; assign `null` to clear. The initial value does not fire `onChange`.
+   *
+   * The callback must be a worklet so it can run synchronously on the UI thread.
+   * Attach it inside `useEffect` and clear it in the cleanup so the listener
+   * lifecycle matches the component lifecycle.
+   *
+   * @example
+   * ```tsx
+   * const state = useNativeState(0);
+   *
+   * useEffect(() => {
+   *   state.onChange = (value) => {
+   *     'worklet';
+   *     console.log('changed to', value);
+   *   };
+   *   return () => {
+   *     state.onChange = null;
+   *   };
+   * }, []);
+   * ```
+   */
+  onChange: { listener(value: T): void }['listener'] | null;
 };
 
 /**
@@ -28,6 +56,7 @@ export function useNativeState<T>(initialValue: T): ObservableState<T> {
   return useReleasingSharedObject(() => {
     const state = new ExpoUI.ObservableState({ value: initialValueRef.current });
     defineValueProperty(state);
+    defineOnChangeProperty(state);
     return state;
   }, []) as ObservableState<T>;
 }
@@ -35,6 +64,7 @@ export function useNativeState<T>(initialValue: T): ObservableState<T> {
 type NativeObservableState = {
   getValue(): unknown;
   setValue(v: { value: unknown }): void;
+  setOnChange(callback: object | null): void;
 };
 
 /**
@@ -47,6 +77,44 @@ function defineValueProperty(state: NativeObservableState): void {
     },
     set(v: unknown) {
       state.setValue({ value: v });
+    },
+  });
+}
+
+/**
+ * Adds an `onChange` property that wraps the user's worklet function as a
+ * `WorkletCallback` SharedObject before handing it to native. The cached
+ * function (not the SharedObject) is what the getter returns, so reading
+ * `state.onChange` gives back what the user assigned.
+ */
+function defineOnChangeProperty(state: NativeObservableState): void {
+  let currentFn: ((value: unknown) => void) | null = null;
+  Object.defineProperty(state, 'onChange', {
+    get() {
+      return currentFn;
+    },
+    set(fn: ((value: unknown) => void) | null | undefined) {
+      if (!fn) {
+        currentFn = null;
+        state.setOnChange(null);
+        return;
+      }
+      if (!worklets) {
+        throw new Error(
+          "ObservableState.onChange requires the 'react-native-worklets' package, which couldn't be loaded. " +
+            'Install react-native-worklets and rebuild the native app, then assign onChange again.'
+        );
+      }
+      if (!worklets.isWorkletFunction(fn)) {
+        throw new Error(
+          'ObservableState.onChange must be a worklet so it can run on the UI runtime when the native value changes. ' +
+            "Add the 'worklet' directive as the first statement in your callback: " +
+            "state.onChange = (value) => { 'worklet'; ... };"
+        );
+      }
+      currentFn = fn;
+      const callback = new ExpoUI.WorkletCallback(worklets.createSerializable(fn));
+      state.setOnChange(callback);
     },
   });
 }
