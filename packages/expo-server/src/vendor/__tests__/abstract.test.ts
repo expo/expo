@@ -106,6 +106,217 @@ describe(createRequestHandler, () => {
     expect(response.headers.get('Set-Cookie')).toBe('hello=world, foo=bar');
   });
 
+  describe('API route priority', () => {
+    it('GET to an API route returns API response, not HTML from catch-all', async () => {
+      const manifest: Manifest = {
+        htmlRoutes: [
+          {
+            file: '[...missing].js',
+            page: '/[...missing]',
+            namedRegex: /^\/(?<missing>.+?)\/?$/,
+            routeKeys: { missing: 'missing' },
+          },
+        ],
+        apiRoutes: [
+          {
+            file: 'api/[...path]+api.js',
+            page: '/api/[...path]',
+            namedRegex: /^\/api\/(?<path>.+?)\/?$/,
+            routeKeys: { path: 'path' },
+          },
+        ],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+      };
+
+      const apiModule = { GET: jest.fn(async () => Response.json({ ok: true })) };
+      const getApiRoute = jest.fn(async () => apiModule);
+
+      const handler = createRequestHandler({
+        getRoutesManifest: jest.fn(async () => manifest),
+        getHtml: jest.fn(async () => '<html>catch-all page</html>'),
+        getApiRoute,
+        getMiddleware: jest.fn(),
+        getLoaderData: jest.fn(),
+      });
+
+      const response = await handler(new Request('http://localhost/api/locations'));
+
+      expect(getApiRoute).toHaveBeenCalled();
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Content-Type')).toBe('application/json');
+      expect(await response.json()).toEqual({ ok: true });
+    });
+
+    it('POST to an API route returns API response when HTML routes exist', async () => {
+      const manifest: Manifest = {
+        htmlRoutes: [
+          {
+            file: '[...missing].js',
+            page: '/[...missing]',
+            namedRegex: /^\/(?<missing>.+?)\/?$/,
+            routeKeys: { missing: 'missing' },
+          },
+        ],
+        apiRoutes: [
+          {
+            file: 'api/[...path]+api.js',
+            page: '/api/[...path]',
+            namedRegex: /^\/api\/(?<path>.+?)\/?$/,
+            routeKeys: { path: 'path' },
+          },
+        ],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+      };
+
+      const apiModule = { POST: jest.fn(async () => Response.json({ created: true })) };
+      const getApiRoute = jest.fn(async () => apiModule);
+
+      const handler = createRequestHandler({
+        getRoutesManifest: jest.fn(async () => manifest),
+        getHtml: jest.fn(async () => '<html>catch-all page</html>'),
+        getApiRoute,
+        getMiddleware: jest.fn(),
+        getLoaderData: jest.fn(),
+      });
+
+      const response = await handler(
+        new Request('http://localhost/api/locations', { method: 'POST' })
+      );
+
+      expect(getApiRoute).toHaveBeenCalled();
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ created: true });
+    });
+
+    it('GET to a non-API path still returns HTML from catch-all', async () => {
+      const manifest: Manifest = {
+        htmlRoutes: [
+          {
+            file: '[...missing].js',
+            page: '/[...missing]',
+            namedRegex: /^\/(?<missing>.+?)\/?$/,
+            routeKeys: { missing: 'missing' },
+          },
+        ],
+        apiRoutes: [
+          {
+            file: 'api/[...path]+api.js',
+            page: '/api/[...path]',
+            namedRegex: /^\/api\/(?<path>.+?)\/?$/,
+            routeKeys: { path: 'path' },
+          },
+        ],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+      };
+
+      const getApiRoute = jest.fn();
+
+      const handler = createRequestHandler({
+        getRoutesManifest: jest.fn(async () => manifest),
+        getHtml: jest.fn(async () => '<html>page content</html>'),
+        getApiRoute,
+        getMiddleware: jest.fn(),
+        getLoaderData: jest.fn(),
+      });
+
+      const response = await handler(new Request('http://localhost/about'));
+
+      expect(getApiRoute).not.toHaveBeenCalled();
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Content-Type')).toBe('text/html');
+      expect(await response.text()).toBe('<html>page content</html>');
+    });
+
+    it('returns 405 for unsupported non-GET/HEAD method on API route', async () => {
+      const manifest: Manifest = {
+        htmlRoutes: [],
+        apiRoutes: [
+          {
+            file: 'api/data+api.js',
+            page: '/api/data',
+            namedRegex: /^\/api\/data\/?$/,
+            routeKeys: {},
+          },
+        ],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+      };
+
+      const apiModule = { GET: jest.fn(async () => Response.json({ ok: true })) };
+
+      const handler = createRequestHandler({
+        getRoutesManifest: jest.fn(async () => manifest),
+        getHtml: jest.fn(),
+        getApiRoute: jest.fn(async () => apiModule),
+        getMiddleware: jest.fn(),
+        getLoaderData: jest.fn(),
+      });
+
+      const response = await handler(
+        new Request('http://localhost/api/data', { method: 'DELETE' })
+      );
+
+      expect(response.status).toBe(405);
+    });
+
+    it('co-located page+api: GET returns HTML, POST returns API response', async () => {
+      const manifest: Manifest = {
+        htmlRoutes: [
+          {
+            file: 'matching-route/alpha.js',
+            page: '/matching-route/alpha',
+            namedRegex: /^\/matching-route\/alpha\/?$/,
+            routeKeys: {},
+          },
+        ],
+        apiRoutes: [
+          {
+            file: 'matching-route/alpha+api.js',
+            page: '/matching-route/alpha',
+            namedRegex: /^\/matching-route\/alpha\/?$/,
+            routeKeys: {},
+          },
+        ],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+      };
+
+      // API only exports POST — mirrors the real co-located pattern
+      const apiModule = { POST: jest.fn(async () => Response.json({ foo: 'bar' })) };
+
+      const handler = createRequestHandler({
+        getRoutesManifest: jest.fn(async () => manifest),
+        getHtml: jest.fn(async () => '<html><div data-testid="alpha-text">Alpha</div></html>'),
+        getApiRoute: jest.fn(async () => apiModule),
+        getMiddleware: jest.fn(),
+        getLoaderData: jest.fn(),
+      });
+
+      // GET falls through to HTML because API module has no GET handler
+      const getResponse = await handler(
+        new Request('http://localhost/matching-route/alpha')
+      );
+      expect(getResponse.status).toBe(200);
+      expect(getResponse.headers.get('Content-Type')).toBe('text/html');
+      expect(await getResponse.text()).toMatch(/alpha-text/);
+
+      // POST hits the API handler
+      const postResponse = await handler(
+        new Request('http://localhost/matching-route/alpha', { method: 'POST' })
+      );
+      expect(postResponse.status).toBe(200);
+      expect(await postResponse.json()).toEqual({ foo: 'bar' });
+    });
+  });
+
   describe('loader requests', () => {
     it('returns loader data as JSON for a route with loader', async () => {
       const manifest: Manifest = {

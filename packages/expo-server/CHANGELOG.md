@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed API routes (`+api.ts`) being shadowed by catch-all page routes for GET/HEAD requests by checking API routes first with method-aware fallthrough. by [@tyrauber](https://github.com/tyrauber)
+
 ### 💡 Others
 
 - Constrain `expo-platform` input to known values ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
