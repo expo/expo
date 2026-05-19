@@ -1,3 +1,8 @@
+/**
+ * Based on React Native's DOMException integration tests
+ * https://github.com/facebook/react-native/blob/f5bd86c31105bb6a994acb03c8149bd7ee03dac6/packages/react-native/src/private/webapis/errors/__tests__/DOMException-itest.js
+ */
+
 describe('DOMException', () => {
   const errorCodes = [
     ['INDEX_SIZE_ERR', 1],

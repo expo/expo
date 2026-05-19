@@ -5,8 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * Fork of React Native's DOMException implementation
- * https://github.com/facebook/react-native/blob/2fb7a63570429a85cd869b29e4a470b963234147/packages/react-native/src/private/webapis/errors/DOMException.js
+ * Forked from React Native's DOMException implementation
+ * https://github.com/facebook/react-native/blob/f5bd86c31105bb6a994acb03c8149bd7ee03dac6/packages/react-native/src/private/webapis/errors/DOMException.js
  */
 
 const ERROR_NAME_TO_ERROR_CODE_MAP: Record<string, number> = {
