@@ -2168,6 +2168,9 @@ importers:
       '@expo/plist':
         specifier: workspace:^0.6.0
         version: link:../plist
+      '@expo/require-utils':
+        specifier: workspace:^56.1.1
+        version: link:../require-utils
       '@expo/sdk-runtime-versions':
         specifier: ^1.0.0
         version: 1.0.0

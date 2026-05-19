@@ -57,6 +57,7 @@
     "@expo/config-types": "workspace:^56.0.4",
     "@expo/json-file": "workspace:~10.1.0",
     "@expo/plist": "workspace:^0.6.0",
+    "@expo/require-utils": "workspace:^56.1.1",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
