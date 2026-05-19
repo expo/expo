@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.17):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.24):
+  - Expo (55.0.25):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -63,15 +63,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (55.0.34):
+  - expo-dev-client (55.0.35):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (55.0.35):
+  - expo-dev-launcher (55.0.36):
     - EXManifests
-    - expo-dev-launcher/Main (= 55.0.35)
+    - expo-dev-launcher/Main (= 55.0.36)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -100,7 +100,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (55.0.35):
+  - expo-dev-launcher/Main (55.0.36):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -131,7 +131,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (55.0.35):
+  - expo-dev-launcher/Tests (55.0.36):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -166,7 +166,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (55.0.35):
+  - expo-dev-launcher/Unsafe (55.0.36):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -196,8 +196,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu (55.0.29):
-    - expo-dev-menu/Main (= 55.0.29)
+  - expo-dev-menu (55.0.30):
+    - expo-dev-menu/Main (= 55.0.30)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -220,7 +220,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu-interface (55.0.2)
-  - expo-dev-menu/Main (55.0.29):
+  - expo-dev-menu/Main (55.0.30):
     - EXManifests
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -246,7 +246,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/Tests (55.0.29):
+  - expo-dev-menu/Tests (55.0.30):
     - ExpoModulesTestCore
     - hermes-engine
     - Nimble
@@ -272,7 +272,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/UITests (55.0.29):
+  - expo-dev-menu/UITests (55.0.30):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.24):
+  - Expo/Tests (55.0.25):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -328,7 +328,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAppleAuthentication (55.0.13):
     - ExpoModulesCore
-  - ExpoAppMetrics (0.2.1):
+  - ExpoAppMetrics (0.2.2):
     - ExpoModulesCore
     - EXUpdatesInterface
     - hermes-engine
@@ -352,7 +352,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoAppMetrics/Tests (0.2.1):
+  - ExpoAppMetrics/Tests (0.2.2):
     - ExpoModulesCore
     - EXUpdatesInterface
     - hermes-engine
@@ -397,9 +397,9 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (55.0.13):
     - ExpoModulesCore
-  - ExpoBrownfield (55.0.23):
+  - ExpoBrownfield (55.0.24):
     - ExpoModulesCore
-  - ExpoCalendar (55.0.14):
+  - ExpoCalendar (55.0.15):
     - ExpoModulesCore
   - ExpoCamera (55.0.18):
     - ExpoModulesCore
@@ -424,9 +424,9 @@ PODS:
     - ExpoModulesCore
   - ExpoDomWebView (55.0.6):
     - ExpoModulesCore
-  - ExpoFileSystem (55.0.20):
+  - ExpoFileSystem (55.0.21):
     - ExpoModulesCore
-  - ExpoFont (55.0.7):
+  - ExpoFont (55.0.8):
     - ExpoModulesCore
   - ExpoGL (55.0.14):
     - ExpoModulesCore
@@ -490,7 +490,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalAuthentication (55.0.14):
     - ExpoModulesCore
-  - ExpoLocalization (55.0.14):
+  - ExpoLocalization (55.0.15):
     - ExpoModulesCore
   - ExpoLocation (55.1.10):
     - ExpoModulesCore
@@ -582,7 +582,7 @@ PODS:
   - ExpoNotifications/Tests (55.0.23):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoObserve (0.2.1):
+  - ExpoObserve (0.2.2):
     - EASClient
     - ExpoAppMetrics
     - ExpoModulesCore
@@ -607,7 +607,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoObserve/Tests (0.2.1):
+  - ExpoObserve/Tests (0.2.2):
     - EASClient
     - ExpoAppMetrics
     - ExpoModulesCore
@@ -634,15 +634,15 @@ PODS:
     - Yoga
   - ExpoPrint (55.0.15):
     - ExpoModulesCore
-  - ExpoRouter (55.0.14):
+  - ExpoRouter (55.0.15):
     - ExpoModulesCore
     - RNScreens
-  - ExpoRouter/Tests (55.0.14):
+  - ExpoRouter/Tests (55.0.15):
     - ExpoModulesCore
     - RNScreens
   - ExpoScreenCapture (55.0.14):
     - ExpoModulesCore
-  - ExpoScreenOrientation (55.0.15):
+  - ExpoScreenOrientation (55.0.16):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -681,7 +681,7 @@ PODS:
     - ExpoModulesCore
   - ExpoStoreReview (55.0.14):
     - ExpoModulesCore
-  - ExpoSymbols (55.0.8):
+  - ExpoSymbols (55.0.9):
     - ExpoModulesCore
   - ExpoSystemUI (55.0.18):
     - ExpoModulesCore
@@ -694,7 +694,7 @@ PODS:
     - UMAppLoader
   - ExpoTrackingTransparency (55.0.14):
     - ExpoModulesCore
-  - ExpoUI (55.0.16):
+  - ExpoUI (55.0.17):
     - ExpoModulesCore
     - React-RCTFabric
   - ExpoVideo (55.0.17):
@@ -705,7 +705,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (55.0.2)
   - EXStructuredHeaders/Tests (55.0.2)
-  - EXUpdates (55.0.22):
+  - EXUpdates (55.0.23):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -733,7 +733,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - EXUpdates/Tests (55.0.22):
+  - EXUpdates/Tests (55.0.23):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -3941,15 +3941,15 @@ SPEC CHECKSUMS:
   EXConstants: 255fd9f72f94bfccaed1d161edac04a552baa8d9
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 76895246689cf0e6eec1dcfc729a91b719d065e5
-  Expo: ff34168d490d9ebe8ce8f3ed4fc9150eaf454fb5
-  expo-dev-client: da28e5546862df5122a259b5782ce2c716bca9db
-  expo-dev-launcher: 565e0d9c3ab33a70bbeaf869ce8f98c6b80e88ca
-  expo-dev-menu: 25fb27e97ec055e6b5c1429c4c8c8c5a9d714e27
+  Expo: ed6f879422b0a8d792ddb243493699dc64fcacfe
+  expo-dev-client: bf9d0038fe9677508db5fefa8dbdadca489e975c
+  expo-dev-launcher: fad2b4e50584f616574c70aa6b27b900ede6a974
+  expo-dev-menu: 762550b04f9cddc7748cbb3ec170b954299f083d
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: 57085c932002dc44588442b3cb7ad424f7de2890
   ExpoAppIntegrity: 9fd00a7e48bd94dd4dc838f933b8fdd628ee6dab
   ExpoAppleAuthentication: 9e3a40e8f9d95d23d980956f6dbf0b6c0302940b
-  ExpoAppMetrics: 2747a8ba53b55fbc1306a39fdae1ec1d23202ce0
+  ExpoAppMetrics: a61145bd69ecd3e8e2a05366dea2f6e621b498e6
   ExpoAsset: 9d035bcc19d8688e9ddb2c579c50c8f83824188e
   ExpoAudio: bb9b02133e7ed48b18a58a5fad9a7a90289fa94d
   ExpoBackgroundFetch: 4dd716c5d8a3b9d92f180b370167afa78cc6c0a6
@@ -3958,8 +3958,8 @@ SPEC CHECKSUMS:
   ExpoBlob: 882fa24430fdfdc8e7dc90cf0b90e1e4c7d0e6c5
   ExpoBlur: 08afa305ca20b1adb0b580fd3b09a38b64ce8804
   ExpoBrightness: 80dc3bd175cb30c56075ec5d9dac18984bc9b688
-  ExpoBrownfield: 51afa55df1fed3d5222bb5c18253ae67008186f0
-  ExpoCalendar: 8c535db6cc831ae56358501712566df056b40ad9
+  ExpoBrownfield: 62f070c15f169d3edb8ef48cfb5f65ca81479c06
+  ExpoCalendar: 35fbfc6748b60c843a66c6628d5353efd19085f9
   ExpoCamera: 121fa3cac27c3e32cdb35225e664503c8a450a51
   ExpoCameraBarcodeScanning: 70dd5cb0467b15001d93f29ec721f8289aad3193
   ExpoCellular: 109862658315190acad24b669408133ec2fe496f
@@ -3969,8 +3969,8 @@ SPEC CHECKSUMS:
   ExpoDevice: 4222df617805ab621af774ab53f279d5db1b4325
   ExpoDocumentPicker: c218333e865c586f255b26eec640635f03e12485
   ExpoDomWebView: 317a0d188cfdb850fc6fd2a43a2fc132dfd171ee
-  ExpoFileSystem: 8d40e561cc4435c9026ca55ebb6f53f4c16a4546
-  ExpoFont: 94161a5527201e499f02c3d4397ae56f8734eea9
+  ExpoFileSystem: e02760a89e2636b1463bb1eb17d9ef6fb6b1d5b0
+  ExpoFont: 21550be2946ea5bbf50f1a20b31facd19ba4150c
   ExpoGL: e4d8568bd034206c75513d125ff8fb29d526aa9e
   ExpoGlassEffect: af1a6b9990c5ab3f99daf5d2aa4f9ef0f054d776
   ExpoHaptics: 18a4632ae8de62130208c76ba2bb0a0a144e99b3
@@ -3983,7 +3983,7 @@ SPEC CHECKSUMS:
   ExpoLinking: 3f7bc30ae456e03e272f6b4ee74f89a58bee63fc
   ExpoLivePhoto: 167aea4a45cea2d17461fdbe808bf6e6717e68f8
   ExpoLocalAuthentication: 164ca63e0c012afcaa2d4a35c07e103439a227fc
-  ExpoLocalization: bcfd9e03bb78b22eae5027520761cfb9fa687033
+  ExpoLocalization: 017a9123b7b6b2d908c41c01d4527ec706151274
   ExpoLocation: 8487594f5d775c8670e37e1bc643fb1ee57e3d06
   ExpoLogBox: 81d123959f6f1fc9926e4298bbc439c31b1b07ad
   ExpoMailComposer: 36f14c0e067e4efc5a4f0c56c6e6e412e565f602
@@ -3995,11 +3995,11 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: 15b132dcc38f95c14ba445efc336c806d48884a2
   ExpoNetwork: 07e4f287bcf4df56f62021332c571beeb1791ea6
   ExpoNotifications: 46b51dab5457ef72d90fafed40b67cbf54789a20
-  ExpoObserve: 1c3369d38e86f7b3bad4ab0cf5cee16803fdfcd0
+  ExpoObserve: 2abadffb0dd01ad0b28a16caba9415cfc462523d
   ExpoPrint: 9b7c11d2ca148d0ec5a1af2bde9cc62b3734794e
-  ExpoRouter: 919e0a336da42aa250c3b0cb5f64a1292c295521
+  ExpoRouter: fec27e395a62bf5e6407119e15eaa15e5b926aba
   ExpoScreenCapture: 74e1f8d6aea183f712a1fbffdfb2b46c66fed0e9
-  ExpoScreenOrientation: 1060425cc9ec43f4a3932615161b76182aa462e2
+  ExpoScreenOrientation: 5dfc631587ce69fbe985f6a17ec0d2120ae1e7bc
   ExpoSecureStore: 49c8b5e467e359051eee6fb67a8988f93476df2b
   ExpoSensors: 921ae00281f7698c271155b992165f60df9efa3e
   ExpoSharing: c0676d82a649a423966e23644ea82524ead8b345
@@ -4008,16 +4008,16 @@ SPEC CHECKSUMS:
   ExpoSplashScreen: 506ede2502df2b6c21d92e2337ad77efbc9f4126
   ExpoSQLite: a3417024b938525205bb45933672f802f805aa77
   ExpoStoreReview: 445327b097c1eede598b9a2ee69d382544d423f2
-  ExpoSymbols: 836992c5a19899da8c95cf8af3469bdbf5080738
+  ExpoSymbols: cba65054b7ebee6c2ee8dc51e7c37718ba28323d
   ExpoSystemUI: cac603a35feeac95fd81c5983e42b18c6e818826
   ExpoTaskManager: a96e89e2ee76c423f1634fd078cb76540217b708
   ExpoTrackingTransparency: dd1a8a79f2ce277569cfcc5adac6fcec1a9c6e09
-  ExpoUI: e7ad02e0e90e9296436edf96c527283af4d9cf6f
+  ExpoUI: 5c04357ca035630bd94dc2fdb6bc4de193f1c5c5
   ExpoVideo: ea84566ae0ad3766b3fd7266529febafd80ebc38
   ExpoVideoThumbnails: 3895bb7fda854a71a3a5161b38dbeaee11c01456
   ExpoWebBrowser: 3159d7ac0906b972675cdcb7b755036d6a87e426
   EXStructuredHeaders: 93ad4f31a2eec124428675e28aca11de243ee1e4
-  EXUpdates: 99ffb1a7e0a3b67635a37a4c87171fce19d8c40e
+  EXUpdates: 4166b69aa217185f8d8d565a04fba78f1fc08c0f
   EXUpdatesInterface: 33cfb4116f9ddd0ee1732484248495d4fece9744
   FBLazyVector: 427fa1856a481856091061293ce865a75aa4f20f
   hermes-engine: 1566042511e927d64254f2efe08ae744a5eb9a00
