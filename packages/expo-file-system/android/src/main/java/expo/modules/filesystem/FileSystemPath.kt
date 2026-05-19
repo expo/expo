@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
-import androidx.core.net.toUri
 import expo.modules.filesystem.unifiedfile.AssetFile
 import expo.modules.filesystem.unifiedfile.ContentProviderFile
 import expo.modules.filesystem.fsops.DestinationSpec
@@ -191,20 +190,30 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     validateFileSystemChildName(newName)
-    val parent = javaFile.parentFile?.canonicalFile
+    val parent = javaFile.parentFile
       ?: throw UnableToCreateException("parent directory does not exist")
-    val newFile = File(parent, newName).canonicalFile
-    if (newFile.parentFile?.canonicalPath != parent.canonicalPath) {
+    // Use canonical paths only for containment checks, so symlinks and aliases cannot escape the parent.
+    val parentCanonicalPath = parent.canonicalPath
+    val newFile = File(parent, newName)
+    if (newFile.canonicalFile.parentFile?.canonicalPath != parentCanonicalPath) {
       throw UnableToCreateException("child path escapes parent directory")
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       javaFile.toPath().moveTo(newFile.toPath())
-      uri = newFile.toUri()
     } else {
       javaFile.copyTo(newFile)
       javaFile.delete()
-      uri = newFile.toUri()
     }
+    uri = renamedUri(newName)
+  }
+
+  private fun renamedUri(newName: String): Uri {
+    // Preserve the original URI spelling; canonical paths can rewrite /data/user/0 to /data/data.
+    val currentUri = uri.toString()
+    val currentPath = currentUri.trimEnd('/')
+    val parentUri = currentUri.substring(0, currentPath.lastIndexOf('/') + 1)
+    val renamedUri = Uri.withAppendedPath(Uri.parse(parentUri), newName).toString()
+    return Uri.parse(if (this is FileSystemDirectory) "$renamedUri/" else renamedUri)
   }
 
   val modificationTime: Long?
