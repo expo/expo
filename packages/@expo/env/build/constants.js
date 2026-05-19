@@ -264,6 +264,9 @@ function isLocalEnvKey(name) {
     case 'SSL_KEY_FILE':
     case 'REACT_NATIVE_PACKAGER_HOSTNAME':
       return true;
+    // NOTE(@kitten): Used to override where hermesc is found, not safe to read from .env
+    case 'REACT_NATIVE_OVERRIDE_HERMES_DIR':
+      return true;
     default:
       return false;
   }
