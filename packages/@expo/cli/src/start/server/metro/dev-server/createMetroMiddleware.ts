@@ -8,6 +8,7 @@ import { compression } from './compression';
 import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
+import { isPathInside } from '../../../../utils/dir';
 import { openInEditorAsync } from '../../../../utils/editor';
 import { shouldThrottleRemoteDevCall } from '../../../../utils/net';
 
@@ -134,7 +135,7 @@ const ensureFileInRootDirectory = async (root: string, file: string): Promise<st
     file = await fs.promises.realpath(file);
     // Cannot be accessed using Metro's server API, we need to move the file
     // into the project root and try again.
-    if (!path.relative(root, file).startsWith('..' + path.sep)) {
+    if (!isPathInside(file, root)) {
       return file;
     } else {
       return null;

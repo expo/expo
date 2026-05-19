@@ -18,6 +18,7 @@
 - Persist `~/.expo/state.json` with owner-only file permissions ([#45873](https://github.com/expo/expo/pull/45873) by [@kitten](https://github.com/kitten))
 - Limit payload sizes and recorded entries for network debugger CDP state ([#45864](https://github.com/expo/expo/pull/45864) by [@kitten](https://github.com/kitten))
 - Add missing origin check to JS inspector middleware and add throttle to dev commands ([#45863](https://github.com/expo/expo/pull/45863) by [@kitten](https://github.com/kitten))
+- Replace inaccurate file-in-root checks with utility ([#45856](https://github.com/expo/expo/pull/45856) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
