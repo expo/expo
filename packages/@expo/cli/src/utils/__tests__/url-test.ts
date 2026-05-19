@@ -17,19 +17,6 @@ describe(validateUrl, () => {
   });
 });
 
-describe(isUrlOk, () => {
-  it(`returns false when the URL returns non-200`, async () => {
-    const scope = nock('http://example.com').get('/').reply(504, '');
-    expect(await isUrlOk('http://example.com')).toBe(false);
-    expect(scope.isDone()).toBe(true);
-  });
-  it(`returns true when the URL returns 200`, async () => {
-    const scope = nock('http://example.com').get('/').reply(200, '');
-    expect(await isUrlOk('http://example.com')).toBe(true);
-    expect(scope.isDone()).toBe(true);
-  });
-});
-
 describe(stripPort, () => {
   // Used in the manifest handler when the Expo Go app requests the given hostname to use.
   it(`removes the port from a host string`, async () => {

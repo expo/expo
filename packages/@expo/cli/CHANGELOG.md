@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- [Internal] Isolate `expo-session` requests to Expo API and update `resolveTemplate ([#45875](https://github.com/expo/expo/pull/45875) by [@kitten](https://github.com/kitten))
+
 ## 54.0.24 — 2026-04-27
 
 ### 🐛 Bug fixes
