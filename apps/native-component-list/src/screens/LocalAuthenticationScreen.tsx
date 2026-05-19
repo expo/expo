@@ -3,8 +3,9 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { BiometricsSecurityLevel } from 'expo-local-authentication';
 import { Platform } from 'expo-modules-core';
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 
@@ -76,7 +77,7 @@ const LocalAuthenticationScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.capabilitiesContainer}>
-        <Text>Device capabilities:</Text>
+        <BodyText>Device capabilities:</BodyText>
         <MonoText textStyle={styles.monoText}>
           {JSON.stringify(
             {
@@ -92,12 +93,12 @@ const LocalAuthenticationScreen = () => {
       </View>
       <View>
         {waiting ? (
-          <Text>Waiting for authentication...</Text>
+          <BodyText>Waiting for authentication...</BodyText>
         ) : (
           <View>
             {Platform.OS === 'android' && (
               <View style={styles.button}>
-                <Text>Authentication security level</Text>
+                <BodyText>Authentication security level</BodyText>
                 <SegmentedControl
                   values={securityLevels}
                   selectedIndex={securityLevelIndex}
@@ -129,7 +130,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
   },
   capabilitiesContainer: {
     paddingBottom: 30,

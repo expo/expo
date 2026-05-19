@@ -8,7 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- Fix FAB resizing on label disappearance ([#45869](https://github.com/expo/expo/pull/45869) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
+
+## 56.0.11 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.9 — 2026-05-13
 

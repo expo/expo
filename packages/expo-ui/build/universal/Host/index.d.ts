@@ -1,22 +1,9 @@
-import { type ViewProps } from 'react-native';
-type HostProps = {
-    ignoreSafeArea?: 'all' | 'keyboard';
-    layoutDirection?: 'leftToRight' | 'rightToLeft';
-    matchContents?: boolean | {
-        horizontal?: boolean;
-        vertical?: boolean;
-    };
-    onLayoutContent?: (event: {
-        nativeEvent: {
-            width: number;
-            height: number;
-        };
-    }) => void;
-    useViewportSizeMeasurement?: boolean;
-};
+import type { UniversalHostProps } from './types';
 /**
  * A bridging container that hosts SwiftUI views on iOS and Jetpack Compose views on Android.
+ * On platforms without a native UI-toolkit binding (web, RN fallback), renders a plain `View`.
+ * The `colorScheme`, `layoutDirection`, and `matchContents` props are accepted for API parity but have no effect.
  */
-export declare function Host({ children, ignoreSafeArea, layoutDirection, matchContents, onLayout, onLayoutContent, style, useViewportSizeMeasurement, ...rest }: ViewProps & HostProps): import("react/jsx-runtime").JSX.Element;
-export {};
+export declare function Host({ children, ignoreSafeArea, layoutDirection, matchContents, onLayout, onLayoutContent, style, useViewportSizeMeasurement, colorScheme: _colorScheme, ...rest }: UniversalHostProps): import("react/jsx-runtime").JSX.Element;
+export type { UniversalHostProps } from './types';
 //# sourceMappingURL=index.d.ts.map

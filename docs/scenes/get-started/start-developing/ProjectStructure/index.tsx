@@ -18,15 +18,15 @@ export function ProjectStructure() {
   const [selected, setSelected] = useState('app');
 
   return (
-    <div className="border-default text-default overflow-hidden rounded-md border">
-      <div className="border-default bg-subtle flex border-b p-3 pl-4">
+    <div className="overflow-hidden rounded-md border border-default text-default">
+      <div className="flex border-b border-default bg-subtle p-3 pl-4">
         <HEADLINE>Files</HEADLINE>
       </div>
-      <div className="max-md-gutters:grid-cols-1 grid grid-cols-[250px_minmax(0,_1fr)]">
+      <div className="grid grid-cols-[250px_minmax(0,1fr)] max-md:grid-cols-1">
         <div
           className={mergeClasses(
-            'border-default flex flex-col gap-1 border-r p-3',
-            'max-md-gutters:border-b max-md-gutters:border-r-0'
+            'flex flex-col gap-1 border-r border-default p-3',
+            'max-md:border-r-0 max-md:border-b'
           )}>
           <Tab
             title="src/app"

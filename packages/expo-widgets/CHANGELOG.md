@@ -6,6 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.10 — 2026-05-19
+
+### 💡 Others
+
+- Validate/sanitize config-plugin inputs more comprehensively ([#45884](https://github.com/expo/expo/pull/45884) by [@kitten](https://github.com/kitten))
+
+## 56.0.9 — 2026-05-15
+
+### 🎉 New features
+
 - Use shared JS runtime. ([#45781](https://github.com/expo/expo/pull/45781) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes

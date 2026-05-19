@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 56.0.5 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Install `WebGLRenderingContext` and `WebGL2RenderingContext` globals and their numeric constants at module init so libraries that read them before any GL context is created no longer crash. ([#45865](https://github.com/expo/expo/pull/45865) by [@tsapeta](https://github.com/tsapeta))
+- Make `WebGL2RenderingContext` inherit from `WebGLRenderingContext`, matching the WebGL spec. `gl2 instanceof WebGLRenderingContext` now returns `true` for WebGL2 contexts, and shared constants and methods are no longer duplicated on the WebGL2 prototype. ([#45871](https://github.com/expo/expo/pull/45871) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.4 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

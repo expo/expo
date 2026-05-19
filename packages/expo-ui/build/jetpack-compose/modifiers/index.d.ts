@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { type AnimatedValue } from './animation';
+import { type AnimatedValue, type AnimationSpec } from './animation';
 export { type ExpoModifier, type ModifierConfig } from '../../types';
 export { animated, spring, tween, snap, keyframes, type AnimationSpec, type AnimatedValue, } from './animation';
 export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
@@ -82,9 +82,13 @@ export declare const imePadding: () => import("./createModifier").ModifierConfig
 export declare const offset: (x: number, y: number) => import("./createModifier").ModifierConfig;
 /**
  * Sets the background color.
+ * Pass an `animationSpec` to smoothly animate between colors when the prop changes (backed by `animateColorAsState`).
  * @param color - A color string (hex, e.g., `'#FF0000'`).
+ * @param options.animationSpec - Optional spec — animate between color changes.
  */
-export declare const background: (color: ColorValue) => import("./createModifier").ModifierConfig;
+export declare const background: (color: ColorValue, options?: {
+    animationSpec?: AnimationSpec;
+}) => import("./createModifier").ModifierConfig;
 /**
  * Adds a border around the view.
  * @param borderWidth - Border width in dp.

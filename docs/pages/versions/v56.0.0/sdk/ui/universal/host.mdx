@@ -1,7 +1,7 @@
 ---
 title: Host
 description: A cross-platform Host component that wraps universal @expo/ui content.
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
 platforms: ['android', 'ios', 'web', 'expo-go']
 ---
@@ -120,6 +120,22 @@ export default function IgnoreSafeAreaExample() {
   return (
     <Host ignoreSafeArea="all">
       <Text>Extends behind the notch and home indicator</Text>
+    </Host>
+  );
+}
+```
+
+### Forcing a color scheme
+
+Use `colorScheme` to override the appearance of descendant native views. Pass `'light'` or `'dark'` to force one, or omit it to follow the device setting. Android and iOS only &mdash; ignored on web.
+
+```tsx HostColorSchemeExample.tsx
+import { Host, Button } from '@expo/ui';
+
+export default function HostColorSchemeExample() {
+  return (
+    <Host colorScheme="dark" style={{ flex: 1 }}>
+      <Button label="Always dark" onPress={() => {}} />
     </Host>
   );
 }

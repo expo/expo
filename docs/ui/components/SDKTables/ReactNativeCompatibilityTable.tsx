@@ -40,13 +40,13 @@ export const ReactNativeCompatibilityTable = () => {
                     onClick={() => {
                       setIsTooltipOpen(!isTooltipOpen);
                     }}
-                    className="text-icon-secondary hover:text-icon-default focus:ring-link active:text-icon-default inline-flex items-center justify-center rounded-full p-1 focus:ring-2 focus:ring-offset-1 focus:outline-none">
+                    className="inline-flex items-center justify-center rounded-full p-1 text-icon-secondary hover:text-icon-default focus:ring-2 focus:ring-link focus:ring-offset-1 focus:outline-none active:text-icon-default">
                     <InfoCircleDuotoneIcon className="icon-xs" />
                   </button>
                 </Tooltip.Trigger>
                 <Tooltip.Content
                   side="top"
-                  className="max-w-[300px]"
+                  className="max-w-75"
                   sideOffset={8}
                   collisionPadding={{ left: 16, right: 16 }}>
                   <FOOTNOTE>

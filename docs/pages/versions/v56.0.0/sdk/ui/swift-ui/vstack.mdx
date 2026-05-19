@@ -8,14 +8,17 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`Column`](../universal/column) — it renders the appropriate native component per platform.
 
 Expo UI VStack matches the official SwiftUI [VStack API](https://developer.apple.com/documentation/swiftui/vstack) and arranges its children vertically.
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/vstack/ios-light.webp"
-  darkSource="/static/images/expo-ui/vstack/ios-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/vstack/ios-light.webp"
+  darkSrc="/static/images/expo-ui/vstack/ios-dark.webp"
   alt="Four numbered colored rounded squares stacked vertically in a VStack"
 />
 

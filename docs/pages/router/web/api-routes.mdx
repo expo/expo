@@ -674,7 +674,7 @@ import path from 'node:path';
 import { createRequestHandler } from 'expo-server/adapter/netlify';
 
 export default createRequestHandler({
-  /* @info Points to the root <CODE>dist/</CODE> (output) directory */
+  /* @info Points to the root `dist/` (output) directory */
   build: path.join(__dirname, '../../dist/server'),
   /* @end */
 });
@@ -753,7 +753,7 @@ Create a server entry file. All requests will be delegated through this middlewa
 const { createRequestHandler } = require('expo-server/adapter/vercel');
 
 module.exports = createRequestHandler({
-  /* @info Points to the root <CODE>dist/</CODE> (output) directory */
+  /* @info Points to the root `dist/` (output) directory */
   build: require('path').join(__dirname, '../dist/server'),
   /* @end */
 });

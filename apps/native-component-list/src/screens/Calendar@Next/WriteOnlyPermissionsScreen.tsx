@@ -6,8 +6,9 @@ import {
   useCalendarPermissions,
 } from 'expo-calendar/next';
 import { type ReactNode, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
 
@@ -22,7 +23,9 @@ function Step({ number, title, description, children }: StepProps) {
   return (
     <View style={styles.step}>
       <HeadingText>{`${number}. ${title}`}</HeadingText>
-      <Text style={styles.description}>{description}</Text>
+      <BodyText color="secondary" style={styles.description}>
+        {description}
+      </BodyText>
       {children}
     </View>
   );
@@ -107,10 +110,10 @@ export default function WriteOnlyPermissionsScreen() {
   return (
     <ScrollView style={styles.container}>
       <HeadingText>Write-Only Permissions</HeadingText>
-      <Text style={styles.intro}>
+      <BodyText style={styles.intro}>
         Follow these steps on iOS 17+ to verify that write-only calendar permissions can create
         events without first granting full calendar access.
-      </Text>
+      </BodyText>
 
       <Step
         number={1}
@@ -180,14 +183,12 @@ const styles = StyleSheet.create({
   },
   intro: {
     marginBottom: 16,
-    color: '#444',
   },
   step: {
     marginBottom: 18,
   },
   description: {
     marginBottom: 12,
-    color: '#666',
   },
   button: {
     marginBottom: 8,

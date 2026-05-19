@@ -5,6 +5,7 @@ import { type EventSubscription } from 'expo-modules-core';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import MonoText from '../components/MonoText';
 
 const {
@@ -154,9 +155,9 @@ export default class AppleAuthenticationScreen extends React.Component<object, S
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContainer}>
         <View style={styles.credentialStateContainer}>
           {this.state.credentialState && (
-            <Text style={styles.credentialStateText}>
+            <BodyText style={styles.credentialStateText}>
               {CREDENTIAL_MESSAGES[this.state.credentialState]}
-            </Text>
+            </BodyText>
           )}
         </View>
         <View style={styles.buttonContainer}>
@@ -169,7 +170,7 @@ export default class AppleAuthenticationScreen extends React.Component<object, S
           />
         </View>
         <View style={styles.controlsContainer}>
-          <Text style={styles.controlsText}>Button Style:</Text>
+          <BodyText style={styles.controlsText}>Button Style:</BodyText>
           <View style={styles.controlsButtonsContainer}>
             <Button
               title={`${AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle.WHITE]}`}
@@ -190,7 +191,7 @@ export default class AppleAuthenticationScreen extends React.Component<object, S
           </View>
         </View>
         <View style={styles.controlsContainer}>
-          <Text style={styles.controlsText}>Button Type:</Text>
+          <BodyText style={styles.controlsText}>Button Type:</BodyText>
           <View style={styles.controlsButtonsContainer}>
             <Button
               title={`${AppleAuthenticationButtonType[AppleAuthenticationButtonType.SIGN_IN]}`}
@@ -207,9 +208,9 @@ export default class AppleAuthenticationScreen extends React.Component<object, S
           </View>
         </View>
         <View style={styles.controlsContainer}>
-          <Text style={styles.controlsText}>
+          <BodyText style={styles.controlsText}>
             Button Corner Radius: {this.state.cornerRadius.toFixed(2)}
-          </Text>
+          </BodyText>
           <Slider
             minimumValue={0}
             maximumValue={20}

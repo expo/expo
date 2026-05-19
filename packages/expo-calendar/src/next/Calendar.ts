@@ -344,8 +344,6 @@ export {
   MonthOfTheYear,
   ReminderStatus,
   SourceType,
-  createEventInCalendarAsync,
-  openEventInCalendarAsync,
 } from '../Calendar';
 
 /**

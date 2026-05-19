@@ -6,6 +6,21 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.0-preview.13 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Fix `expo/fetch` not respecting its own `NativeRequest` as `RequestInit` inputs ([#45958](https://github.com/expo/expo/pull/45958) by [@kitten](https://github.com/kitten))
+- Accept `credentials: 'same-origin'` in `expo/fetch` mirroring `include` ([#45958](https://github.com/expo/expo/pull/45958) by [@kitten](https://github.com/kitten))
+
+## 56.0.0-preview.12 — 2026-05-15
+
+### 🎉 New features
+
 - Implement `Response.clone()` on `expo/fetch`, and throw the spec's `TypeError` when a body is read twice. ([#45740](https://github.com/expo/expo/pull/45740) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes

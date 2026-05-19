@@ -29,7 +29,7 @@ export const expoLogin: Command = async (argv) => {
       `npx expo login`,
       [
         `-u, --username <string>  Username`,
-        `-p, --password <string>  Password`,
+        `-p, --password <string>  Password ("-" for stdin)`,
         `--otp <string>           One-time password from your 2FA device`,
         `-s, --sso                Log in with SSO`,
         `-b, --browser            Log in with a browser`,
@@ -38,13 +38,27 @@ export const expoLogin: Command = async (argv) => {
     );
   }
 
+  const password = args['--password'] === '-' ? await readWordFromStdin() : args['--password'];
+
   const { showLoginPromptAsync } = await import('../api/user/actions.js');
   return showLoginPromptAsync({
     // Parsed options
     username: args['--username'],
-    password: args['--password'],
+    password,
     otp: args['--otp'],
     sso: !!args['--sso'],
     browser: !!args['--browser'],
   }).catch(logCmdError);
 };
+
+export async function readWordFromStdin(): Promise<string> {
+  let buffer = '';
+  for await (const chunk of process.stdin) {
+    buffer += chunk;
+    const newlineIndex = buffer.indexOf('\n');
+    if (newlineIndex !== -1) {
+      return buffer.slice(0, newlineIndex).replace(/\r$/, '');
+    }
+  }
+  return buffer;
+}

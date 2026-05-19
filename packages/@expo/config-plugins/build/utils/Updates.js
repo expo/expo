@@ -178,7 +178,7 @@ function getUpdatesBsdiffPatchSupportEnabled(config) {
   if (config.updates?.enableBsdiffPatchSupport !== undefined) {
     return config.updates.enableBsdiffPatchSupport;
   }
-  return false;
+  return true;
 }
 function getUpdatesTimeout(config) {
   return config.updates?.fallbackToCacheTimeout ?? 0;

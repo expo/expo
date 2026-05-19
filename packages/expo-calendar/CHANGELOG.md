@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [next] Remove legacy exports ([#45739](https://github.com/expo/expo/pull/45739) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
+
+## 56.0.6 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- [Android] Add missing escaping of `calendarIds` filter input ([#45951](https://github.com/expo/expo/pull/45951) by [@kitten](https://github.com/kitten))
 
 ## 56.0.5 — 2026-05-13
 

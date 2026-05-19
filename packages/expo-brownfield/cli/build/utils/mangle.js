@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.__testing = exports.isManglingUpToDate = exports.runMangle = void 0;
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const commands_1 = require("./commands");
 const MANGLING_DEFINES_KEY = 'MANGLING_DEFINES';
 const MANGLED_SPECS_CHECKSUM_KEY = 'MANGLED_SPECS_CHECKSUM';
 const BUILD_DIR_NAME = 'build';
@@ -79,14 +79,15 @@ const buildPodTargets = async (podsProjectPath, podTargetLabels, options) => {
     for (const target of podTargetLabels) {
         const args = ['-target', target, ...sharedArgs];
         try {
-            const { stdout } = await (0, commands_1.runCommand)('xcodebuild', args, {
+            const { stdout } = await (0, spawn_async_1.default)('xcodebuild', args, {
                 cwd: podsDir,
-                verbose: options.verbose,
+                stdio: options.verbose ? 'inherit' : 'pipe',
             });
             node_fs_1.default.appendFileSync(logPath, `\n=== xcodebuild ${args.join(' ')} ===\n${stdout}`);
         }
         catch (error) {
-            node_fs_1.default.appendFileSync(logPath, `\n=== xcodebuild ${args.join(' ')} (FAILED) ===\n${error instanceof Error ? error.message : String(error)}`);
+            const detail = error.stderr ?? String(error);
+            node_fs_1.default.appendFileSync(logPath, `\n=== xcodebuild ${args.join(' ')} (FAILED) ===\n${detail}`);
             throw new Error(`expo-brownfield: failed to build pod target '${target}' for symbol mangling. ` +
                 `This usually means a Swift module couldn't compile against the current Pod xcconfigs. ` +
                 `Inspect the full xcodebuild output at: ${logPath}`);
@@ -130,7 +131,7 @@ const runNm = async (binaries, flags) => {
     if (binaries.length === 0) {
         return [];
     }
-    const { stdout } = await (0, commands_1.runCommand)('nm', [flags, ...binaries], { verbose: false });
+    const { stdout } = await (0, spawn_async_1.default)('nm', [flags, ...binaries]);
     return stdout.split('\n').filter((line) => line.length > 0);
 };
 const extractClasses = (lines) => {

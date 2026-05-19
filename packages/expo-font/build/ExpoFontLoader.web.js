@@ -165,8 +165,12 @@ function getStyleElement() {
     styleElement.id = ID;
     return styleElement;
 }
+const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
 export function _createWebFontTemplate(fontFamily, resource) {
-    return `@font-face{font-family:"${fontFamily}";src:url("${resource.uri}");font-display:${resource.display || FontDisplay.AUTO}}`;
+    const display = typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)
+        ? resource.display
+        : FontDisplay.AUTO;
+    return `@font-face{font-family:${JSON.stringify(fontFamily)};src:url(${JSON.stringify(resource.uri)});font-display:${display}}`;
 }
 function _createWebStyle(fontFamily, resource) {
     const fontStyle = _createWebFontTemplate(fontFamily, resource);

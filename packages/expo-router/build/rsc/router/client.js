@@ -92,7 +92,13 @@ const InnerRouter = ({ routerData }) => {
             return initialRoute;
         });
     }, []);
-    const componentIds = (0, common_js_1.getComponentIds)(route.path);
+    // TODO: Mint IDs from the active RouteNode's `contextKey` (via expo-router's
+    // RouterStore) so they're group-aware and canonical. Today they're URL-derived
+    // and omit `(group)` segments — the server's iterating resolver bridges this via
+    // optional-group regex matching, but the asymmetry should go away if/when the
+    // canonical-ID convention needs to include groups (e.g. signed skip tokens).
+    const { layouts, page } = (0, common_js_1.getComponentIds)(route.path);
+    const componentIds = [...layouts, page];
     //  const refetchRoute = () => {
     //   const loc = parseRoute(new URL(getHref()));
     //   const input = getInputString(loc.path);
@@ -112,7 +118,8 @@ const InnerRouter = ({ routerData }) => {
         (0, react_1.startTransition)(() => {
             setRoute(route);
         });
-        const componentIds = (0, common_js_1.getComponentIds)(route.path);
+        const { layouts, page } = (0, common_js_1.getComponentIds)(route.path);
+        const componentIds = [...layouts, page];
         if (checkCache &&
             componentIds.every((id) => {
                 const cachedLoc = cachedRef.current[id];
@@ -137,7 +144,8 @@ const InnerRouter = ({ routerData }) => {
         });
     }, [refetch, routerData]);
     const prefetchRoute = (0, react_1.useCallback)((route) => {
-        const componentIds = (0, common_js_1.getComponentIds)(route.path);
+        const { layouts, page } = (0, common_js_1.getComponentIds)(route.path);
+        const componentIds = [...layouts, page];
         const shouldSkip = routerData[0];
         const skip = getSkipList(shouldSkip, componentIds, route, cachedRef.current);
         if (componentIds.every((id) => skip.includes(id))) {

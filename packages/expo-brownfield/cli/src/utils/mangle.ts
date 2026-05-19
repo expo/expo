@@ -1,7 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'node:fs';
 import path from 'node:path';
-
-import { runCommand } from './commands';
 
 export interface MangleContext {
   podsProjectPath: string;
@@ -95,18 +94,14 @@ const buildPodTargets = async (
   for (const target of podTargetLabels) {
     const args = ['-target', target, ...sharedArgs];
     try {
-      const { stdout } = await runCommand('xcodebuild', args, {
+      const { stdout } = await spawnAsync('xcodebuild', args, {
         cwd: podsDir,
-        verbose: options.verbose,
+        stdio: options.verbose ? 'inherit' : 'pipe',
       });
       fs.appendFileSync(logPath, `\n=== xcodebuild ${args.join(' ')} ===\n${stdout}`);
     } catch (error) {
-      fs.appendFileSync(
-        logPath,
-        `\n=== xcodebuild ${args.join(' ')} (FAILED) ===\n${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
+      const detail = (error as Error & { stderr?: string }).stderr ?? String(error);
+      fs.appendFileSync(logPath, `\n=== xcodebuild ${args.join(' ')} (FAILED) ===\n${detail}`);
       throw new Error(
         `expo-brownfield: failed to build pod target '${target}' for symbol mangling. ` +
           `This usually means a Swift module couldn't compile against the current Pod xcconfigs. ` +
@@ -157,7 +152,7 @@ const runNm = async (binaries: string[], flags: string): Promise<string[]> => {
   if (binaries.length === 0) {
     return [];
   }
-  const { stdout } = await runCommand('nm', [flags, ...binaries], { verbose: false });
+  const { stdout } = await spawnAsync('nm', [flags, ...binaries]);
   return stdout.split('\n').filter((line) => line.length > 0);
 };
 

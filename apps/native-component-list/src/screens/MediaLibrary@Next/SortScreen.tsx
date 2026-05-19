@@ -179,7 +179,6 @@ const SortScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fafafa',
     paddingTop: 20,
   },
   status: {

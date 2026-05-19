@@ -67,6 +67,7 @@ public final class ImageView: ExpoView {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
         sdImageView.image = nil
+        placeholderImage = nil
       }
     }
   }
@@ -150,7 +151,11 @@ public final class ImageView: ExpoView {
       return
     }
     if isViewEmpty {
-      displayPlaceholderIfNecessary()
+      if placeholderImage != nil {
+        displayPlaceholderIfNecessary()
+      } else {
+        loadPlaceholderIfNecessary()
+      }
     }
     guard let source = bestSource else {
       displayPlaceholderIfNecessary()
@@ -347,17 +352,9 @@ public final class ImageView: ExpoView {
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
-    let path: String? = {
-      // .path() on iOS 16 would remove the leading slash, but it doesn't on tvOS 16 🙃
-      // It also crashes with EXC_BREAKPOINT when parsing data:image uris
-      // manually drop the leading slash below iOS 16
-      if let path = source.uri?.path {
-        return String(path.dropFirst())
-      }
-      return nil
-    }()
+    let path = localAssetName(from: source.uri)
 
-    if let path, !path.isEmpty, let local = UIImage(named: path) {
+    if let path, let local = UIImage(named: path) {
       renderSourceImage(local)
       return true
     }
@@ -840,4 +837,21 @@ public final class ImageView: ExpoView {
     return interaction as? ImageAnalysisInteraction
   }
 #endif
+}
+
+func localAssetName(from url: URL?) -> String? {
+  guard let url, url.scheme == nil else {
+    return nil
+  }
+
+  var path = url.path
+  guard !path.isEmpty else {
+    return nil
+  }
+
+  if path.hasPrefix("/") {
+    path.removeFirst()
+  }
+
+  return path.isEmpty ? nil : path
 }

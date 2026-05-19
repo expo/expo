@@ -18,6 +18,7 @@ import {
 import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
+import { assertSafeSPMIdentifier } from './SPMIdentifier';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -251,6 +252,7 @@ export const Frameworks = {
    * @returns Full path to the shared xcframework
    */
   getSharedSPMDepFrameworkPath: (productName: string, buildType: BuildFlavor): string => {
+    assertSafeSPMIdentifier(productName, 'productName');
     return path.join(
       Frameworks.getSharedSPMDepsRoot(),
       productName,

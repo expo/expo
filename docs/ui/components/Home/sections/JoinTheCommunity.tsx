@@ -23,10 +23,10 @@ export function JoinTheCommunity() {
       <div
         className={mergeClasses(
           'my-4 inline-grid w-full grid-cols-2 gap-x-8 gap-y-1.5',
-          'border-default rounded-lg border p-3 shadow-xs',
-          'max-xl-gutters:grid-cols-1',
-          'max-lg-gutters:grid-cols-2',
-          'max-md-gutters:grid-cols-1'
+          'rounded-lg border border-default p-3 shadow-xs',
+          'max-xl:grid-cols-1',
+          'max-lg:grid-cols-2',
+          'max-md:grid-cols-1'
         )}>
         <CommunityGridCell
           title="Discord and Forums"
@@ -68,7 +68,7 @@ export function JoinTheCommunity() {
           title="X"
           description="Follow Expo on X for news and updates."
           link="https://x.com/expo"
-          icon={<XLogoIcon className="text-palette-white size-7!" />}
+          icon={<XLogoIcon className="size-7! text-palette-white" />}
           iconClassName="bg-[#000000]"
         />
         <CommunityGridCell
@@ -113,7 +113,7 @@ function CommunityGridCell({
     <A
       href={link}
       className={mergeClasses(
-        'bg-default relative flex min-h-[30px] items-center justify-between gap-3 overflow-hidden rounded-lg p-2 pr-3 transition',
+        'relative flex min-h-7.5 items-center justify-between gap-3 overflow-hidden rounded-lg bg-default p-2 pr-3 transition',
         'hocus:bg-element hocus:opacity-100',
         className
       )}
@@ -134,7 +134,7 @@ function CommunityGridCell({
           {description}
         </CALLOUT>
       </div>
-      <ArrowUpRightIcon className="text-icon-tertiary shrink-0 self-center" />
+      <ArrowUpRightIcon className="shrink-0 self-center text-icon-tertiary" />
     </A>
   );
 }

@@ -1,4 +1,5 @@
 import type { EventSubscription } from 'expo-modules-core';
+import type { SharedStateChangeEvent } from './ExpoBrownfieldStateModule.types';
 /**
  * Gets the value of shared state for a given key.
  *
@@ -25,7 +26,7 @@ export declare function deleteSharedState(key: string): void;
  * @param callback The callback to be called when the shared state changes.
  * @returns A subscription object that can be used to remove the listener.
  */
-export declare function addSharedStateListener<T = any>(key: string, callback: (value: T | undefined) => void): EventSubscription;
+export declare function addSharedStateListener<T = any>(key: string, callback: (event: SharedStateChangeEvent<T> | undefined) => void): EventSubscription;
 /**
  * Hook to observe and set the value of shared state for a given key.
  * Provides a synchronous API similar to `useState`.

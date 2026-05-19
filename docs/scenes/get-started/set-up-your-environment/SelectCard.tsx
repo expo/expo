@@ -27,13 +27,13 @@ export function SelectCard({
     <ButtonBase onClick={onClick}>
       <div
         className={mergeClasses(
-          'border-default flex w-[250px] flex-col overflow-hidden rounded-lg border shadow-xs transition-all',
+          'flex w-62.5 flex-col overflow-hidden rounded-lg border border-default shadow-xs transition-all',
           'hocus:scale-[102%] hocus:shadow-sm'
         )}>
         <div
           className={mergeClasses(
-            'border-default border-b',
-            isSelected ? 'from-palette-blue3 to-palette-blue4 bg-linear-to-b' : 'bg-subtle'
+            'border-b border-default',
+            isSelected ? 'bg-linear-to-b from-palette-blue3 to-palette-blue4' : 'bg-subtle'
           )}>
           <picture className="relative flex h-full w-auto items-end">
             {themeName !== 'light' && (
@@ -55,7 +55,7 @@ export function SelectCard({
             <div className="relative">
               <div
                 className={mergeClasses(
-                  'bg-default size-5 rounded-full border',
+                  'size-5 rounded-full border bg-default',
                   isSelected ? 'border-palette-blue9' : 'border-default'
                 )}
               />

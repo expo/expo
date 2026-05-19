@@ -126,11 +126,11 @@ class OpenTelemetryTest {
 
   @Test
   fun `toOTMetric falls back to expo_unknown when category mismatches a known name`() {
-    // The pair (frameRate, timeToInteractive) is not in the map, so even though
+    // `xyz` is not a known category, so even though
     // `timeToInteractive` is a known metric name under `appStartup`, it falls back.
     assertEquals(
       "expo.unknown.timeToInteractive",
-      nameFor(MetricCategory.FrameRate.categoryName, AppStartupMetric.TimeToInteractive.metricName)
+      nameFor("xyz", AppStartupMetric.TimeToInteractive.metricName)
     )
   }
 

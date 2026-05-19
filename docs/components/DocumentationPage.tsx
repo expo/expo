@@ -346,14 +346,10 @@ export default function DocumentationPage({
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'from-default bg-linear-to-b to-transparent opacity-90'
+            'bg-linear-to-b from-default to-transparent opacity-90'
           )}
         />
-        <main
-          className={mergeClasses(
-            'mx-auto px-14 pt-10',
-            'max-lg-gutters:px-4 max-lg-gutters:pt-5'
-          )}>
+        <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>
           {version && version === 'unversioned' && (
             <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}

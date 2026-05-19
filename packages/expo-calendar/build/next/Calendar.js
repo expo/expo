@@ -229,7 +229,7 @@ export const getRemindersPermissions = InternalExpoCalendar.getRemindersPermissi
  * @returns An array of Source objects representing the sources found.
  */
 export const getSourcesSync = InternalExpoCalendar.getSourcesSync;
-export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, createEventInCalendarAsync, openEventInCalendarAsync, } from '../Calendar';
+export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, } from '../Calendar';
 /**
  * Check or request permissions to access the user's calendars.
  * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact

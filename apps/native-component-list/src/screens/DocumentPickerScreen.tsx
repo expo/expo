@@ -1,7 +1,8 @@
 import * as DocumentPicker from 'expo-document-picker';
 import React from 'react';
-import { Alert, FlatList, Image, Platform, Text, useWindowDimensions, View } from 'react-native';
+import { Alert, FlatList, Image, Platform, useWindowDimensions, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import TitleSwitch from '../components/TitledSwitch';
 
@@ -90,21 +91,21 @@ export default function DocumentPickerScreen() {
                   style={{ width: 100, height: 100 }}
                 />
               ) : null}
-              <Text numberOfLines={1} ellipsizeMode="middle">
+              <BodyText numberOfLines={1} ellipsizeMode="middle">
                 {document.name} ({document.size! / 1000} KB)
-              </Text>
+              </BodyText>
               {document.base64 ? (
-                <Text numberOfLines={1} ellipsizeMode="middle">
+                <BodyText numberOfLines={1} ellipsizeMode="middle">
                   Base64: {document.base64.slice(0, 50)}...
-                </Text>
+                </BodyText>
               ) : null}
-              <Text numberOfLines={1} ellipsizeMode="middle">
+              <BodyText numberOfLines={1} ellipsizeMode="middle">
                 URI: {document.uri}
-              </Text>
-              <Text numberOfLines={1} ellipsizeMode="middle">
+              </BodyText>
+              <BodyText numberOfLines={1} ellipsizeMode="middle">
                 MimeType: {document.mimeType}
-              </Text>
-              <Text>Last Modified: {document.lastModified}</Text>
+              </BodyText>
+              <BodyText>Last Modified: {document.lastModified}</BodyText>
             </View>
           );
         }}

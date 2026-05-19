@@ -10,7 +10,7 @@ export function Content({ children, className, sideOffset = 4, ...rest }: Toolti
       <TooltipPrimitive.Content
         sideOffset={sideOffset}
         className={mergeClasses(
-          'dark-theme bg-palette-gray2 text-default relative z-[101] flex flex-col rounded-md px-3 py-1.5 shadow-md',
+          'dark-theme relative z-101 flex flex-col rounded-md bg-palette-gray2 px-3 py-1.5 text-default shadow-md',
           'data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade',
           className
         )}

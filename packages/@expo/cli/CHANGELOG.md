@@ -8,9 +8,41 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.1.6 — 2026-05-19
+
+### 🎉 New features
+
+- Add `/_expo/open` middleware for programmatically resolving deep links and disambiguation pages for the running dev server. ([#45804](https://github.com/expo/expo/pull/45804) by [@EvanBacon](https://github.com/EvanBacon))
+- Upgrade react-native-tvos to the correct version on install/fix. ([#45816](https://github.com/expo/expo/pull/45816) by [@douglowder](https://github.com/douglowder))
+- Accept `expo login -p -` argument to read password from stdin ([#45877](https://github.com/expo/expo/pull/45877) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Restrict `/message` client commands ([#45858](https://github.com/expo/expo/pull/45858) by [@kitten](https://github.com/kitten)
+- Enforce `routerRoot` to be within `projectRoot` to prevent unexpected errors ([#45892](https://github.com/expo/expo/pull/45892) by [@kitten](https://github.com/kitten))
+- Fix containment check in tar extraction to cover parallel folders with same prefix ([#45882](https://github.com/expo/expo/pull/45882) by [@kitten](https://github.com/kitten))
+- Forward the request HTTP method to the RSC renderer ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+- Add validation to check `EXPO_PUBLIC_FOLDER` is in project root ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
+- Fix launching Android activity when activity name is fully specified ([#45773](https://github.com/expo/expo/pull/45773) by [@sebryu](https://github.com/sebryu))
+
+### 💡 Others
+
+- [Internal] Use `resolveRouterModule` helper for RSC router module resolution ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+- [Internal] Remove RSC render context ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
+
+## 56.1.5 — 2026-05-15
+
+### 🐛 Bug fixes
+
 - Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
 - Fix long project paths overflowing the dev server interstitial page by making the path scroll horizontally. ([#45808](https://github.com/expo/expo/pull/45808) by [@EvanBacon](https://github.com/EvanBacon))
 - Serve an unsigned Expo Go manifest instead of failing with HTTP 500 when `expo start` is unauthenticated in a non-interactive shell. ([#45809](https://github.com/expo/expo/pull/45809) by [@EvanBacon](https://github.com/EvanBacon))
+- Add troubleshooting guide link to simulator boot failure errors. ([#43786](https://github.com/expo/expo/pull/43786) by [@kadikraman](https://github.com/kadikraman))
+- Disallow devtools plugins to point to `webpageRoot` outside of their own bounds ([#45841](https://github.com/expo/expo/pull/45841) by [@kitten](https://github.com/kitten))
+- Pre-filter MCP-exposed commands to exclude ones marked as CLI-only ([#45845](https://github.com/expo/expo/pull/45845) by [@kitten](https://github.com/kitten))
+- Tighten checks on MCP plugins and ran commands ([#45845](https://github.com/expo/expo/pull/45845) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
