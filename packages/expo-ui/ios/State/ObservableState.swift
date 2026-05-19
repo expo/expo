@@ -18,6 +18,7 @@ internal class ObservableState: SharedObject, ObservableObject {
 
   @Published var value: Any? {
     didSet {
+      // Skip re-invoking onChange if state.value was written from inside onChange.
       guard !isNotifying else { return }
       isNotifying = true
       defer { isNotifying = false }

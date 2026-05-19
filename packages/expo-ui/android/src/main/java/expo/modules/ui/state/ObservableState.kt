@@ -18,6 +18,7 @@ class ObservableState(initialValue: Any? = null) : SharedObject() {
     get() = _state.value
     set(v) {
       _state.value = v
+      // Skip re-invoking onChange if state.value was written from inside onChange.
       if (isNotifying) return
       isNotifying = true
       try {
