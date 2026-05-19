@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed `recyclingKey` not clearing cached `placeholderImage`, causing stale blurhash placeholders in recycled list cells. ([#44762](https://github.com/expo/expo/pull/44762) by [@simonronec](https://github.com/simonronec))
+- [iOS] Fixed loading Xcode asset catalog images by resource name. ([#45686](https://github.com/expo/expo/pull/45686) by [@mvincentong](https://github.com/mvincentong))
 
 ### 💡 Others
 
