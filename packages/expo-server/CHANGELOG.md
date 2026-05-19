@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure middleware handlers are applied to loader routes ([#45870](https://github.com/expo/expo/pull/45870) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-19

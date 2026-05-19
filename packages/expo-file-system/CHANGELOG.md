@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
 - `File.write()` is now asynchronous and returns a Promise. Use `File.writeSync()` for synchronous behavior. ([#45992](https://github.com/expo/expo/pull/45992) by [@wh201906](https://github.com/wh201906))
 
 ### 🎉 New features
@@ -21,6 +22,9 @@
 ### 🐛 Bug fixes
 
 - Fixed the jest mock's `FileSystemFileHandle` to honor `FileMode` string values (`'r'`, `'w'`, `'wa'`, `'wt'`, `'rw'`) instead of the obsolete name table, expose handle and file metadata, and match the documented default mode for `content://` URIs. The dispatch is now exhaustive over `FileMode`, so future enum additions fail to compile in the mock. (by [@radko93](https://github.com/radko93))
+- [Android] Added missing permission checks to `delete()` and `openHandle()` in the next-gen File System API. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+- [Android] Fixed path traversal vulnerability in `createFile`, `createDirectory`, and `rename` that allowed escaping the parent directory. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+- [Android] Fixed `Paths.cache` and `Paths.document` pointing to wrong directory in Expo Go. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 

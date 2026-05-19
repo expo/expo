@@ -85,6 +85,10 @@ class Env {
   get EXPO_NO_QR_CODE(): boolean {
     return boolish('EXPO_NO_QR_CODE', false);
   }
+  /** Resolve application IDs from Expo app config before native files in `expo start`. */
+  get EXPO_RUN_PREFER_APP_CONFIG_ID(): boolean {
+    return boolish('EXPO_RUN_PREFER_APP_CONFIG_ID', false);
+  }
   /** The React Metro port that's baked into react-native scripts and tools. */
   get RCT_METRO_PORT() {
     return int('RCT_METRO_PORT', 0);

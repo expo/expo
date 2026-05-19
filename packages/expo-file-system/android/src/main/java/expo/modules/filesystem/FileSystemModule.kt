@@ -21,6 +21,12 @@ class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
+  private val filesDirectory: File
+    get() = appContext.persistentFilesDirectory
+
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory
+
   private val downloadStore = DownloadTaskStore()
 
   private fun writeToFile(
@@ -52,11 +58,11 @@ class FileSystemModule : Module() {
     Events("downloadProgress")
 
     Constant("documentDirectory") {
-      Uri.fromFile(context.filesDir).toString() + "/"
+      Uri.fromFile(filesDirectory).toString() + "/"
     }
 
     Constant("cacheDirectory") {
-      Uri.fromFile(context.cacheDir).toString() + "/"
+      Uri.fromFile(cacheDirectory).toString() + "/"
     }
 
     Constant("bundleDirectory") {
@@ -64,11 +70,11 @@ class FileSystemModule : Module() {
     }
 
     Property("totalDiskSpace") {
-      File(context.filesDir.path).totalSpace
+      filesDirectory.totalSpace
     }
 
     Property("availableDiskSpace") {
-      File(context.filesDir.path).freeSpace
+      filesDirectory.freeSpace
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUUID: String? ->

@@ -163,6 +163,24 @@ it('makes an authenticated request with session secret', async () => {
   expect(await fetchAsync('get-me', { method: 'GET' })).toMatchObject({ status: 200 });
 });
 
+it('does not attach Expo credentials to absolute non-Expo URLs', async () => {
+  jest.mocked(getAccessToken).mockClear().mockReturnValue('my-access-token');
+  jest.mocked(getSession).mockClear().mockReturnValue({
+    sessionSecret: 'my-secret-token',
+    userId: '',
+    username: '',
+    currentConnection: 'Username-Password-Authentication',
+  });
+
+  nock('https://api.github.com')
+    .matchHeader('authorization', (val) => !val)
+    .matchHeader('expo-session', (val) => !val)
+    .get('/repos/expo/expo')
+    .reply(200, '{}');
+
+  expect(await fetchAsync('https://api.github.com/repos/expo/expo')).toMatchObject({ status: 200 });
+});
+
 it('only uses access token when both authentication methods are available', async () => {
   jest.mocked(getAccessToken).mockClear().mockReturnValue('my-access-token');
   jest.mocked(getSession).mockClear().mockReturnValue({

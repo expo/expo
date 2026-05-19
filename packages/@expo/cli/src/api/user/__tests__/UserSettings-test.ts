@@ -73,6 +73,14 @@ describe(setSessionAsync, () => {
     const contents = await fs.promises.readFile(getSettingsFilePath(), 'utf8');
     expect(JSON.parse(contents)).toMatchObject({ auth: authStub });
   });
+
+  it('stores session data in a private file', async () => {
+    await setSessionAsync(authStub);
+
+    const fileMode = (await fs.promises.stat(getSettingsFilePath())).mode & 0o777;
+
+    expect(fileMode).toBe(0o600);
+  });
 });
 
 describe(getAccessToken, () => {

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Implement converters for `JavaScriptRepresentable` to prevent crashes on iOS 17 and 16. ([#45950](https://github.com/expo/expo/pull/45950) by [@behenate](https://github.com/behenate))
+  
 ### 💡 Others
 
 ## 56.0.6 — 2026-05-19

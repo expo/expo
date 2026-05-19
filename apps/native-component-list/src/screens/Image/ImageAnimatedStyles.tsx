@@ -53,7 +53,6 @@ export default function ImageAnimatedStyles() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   text: {
     flexShrink: 1,

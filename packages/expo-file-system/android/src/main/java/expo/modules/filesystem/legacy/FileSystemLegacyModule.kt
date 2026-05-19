@@ -80,6 +80,10 @@ fun slashifyFilePath(path: String?): String? {
 open class FileSystemLegacyModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
+  private val filesDirectory: File
+    get() = appContext.persistentFilesDirectory
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory
   private var client: OkHttpClient? = null
   private var dirPermissionsRequest: Promise? = null
   private val taskHandlers: MutableMap<String, TaskHandler> = HashMap()
@@ -90,11 +94,11 @@ open class FileSystemLegacyModule : Module() {
     Name("ExponentFileSystem")
 
     Constant("documentDirectory") {
-      Uri.fromFile(context.filesDir).toString() + "/"
+      Uri.fromFile(filesDirectory).toString() + "/"
     }
 
     Constant("cacheDirectory") {
-      Uri.fromFile(context.cacheDir).toString() + "/"
+      Uri.fromFile(cacheDirectory).toString() + "/"
     }
 
     Constant("bundleDirectory") {
@@ -108,8 +112,8 @@ open class FileSystemLegacyModule : Module() {
 
     OnCreate {
       try {
-        ensureDirExists(context.filesDir)
-        ensureDirExists(context.cacheDir)
+        ensureDirExists(filesDirectory)
+        ensureDirExists(cacheDirectory)
       } catch (e: Exception) {
         e.printStackTrace()
       }

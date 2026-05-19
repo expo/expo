@@ -1,8 +1,9 @@
 import { Picker, PickerProps, PickerIOS } from '@react-native-picker/picker';
 import { Platform } from 'expo-modules-core';
 import * as React from 'react';
-import { Text, Button } from 'react-native';
+import { Button } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import { ScrollPage, Section } from '../components/Page';
 
 export default function PickerScreen() {
@@ -98,7 +99,7 @@ function GenericPicker(props: React.PropsWithChildren<PickerProps>) {
         <Picker.Item label="Swift" value="swift" />
         {props.children}
       </Picker>
-      <Text>Selected: {value}</Text>
+      <BodyText>Selected: {value}</BodyText>
     </>
   );
 }
@@ -119,7 +120,7 @@ function FocusPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
         <Picker.Item label="Objective C" value="objc" />
         <Picker.Item label="Swift" value="swift" />
       </Picker>
-      <Text>Selected: {value}</Text>
+      <BodyText>Selected: {value}</BodyText>
 
       <Button title="Focus" onPress={() => pickerRef.current?.focus()} />
     </>
@@ -137,7 +138,7 @@ function GenericPickerIOS(props: PickerProps) {
         <Picker.Item label="Swift" value="swift" />
         {props.children}
       </PickerIOS>
-      <Text>Selected: {String(value)}</Text>
+      <BodyText>Selected: {String(value)}</BodyText>
     </>
   );
 }

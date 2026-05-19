@@ -1,15 +1,16 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+
+import { BodyText } from '../components/BodyText';
 
 export default function DrawerLayoutAndroidScreen() {
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <Text>Only available on Android</Text>
+      <BodyText>Only available on Android</BodyText>
     </View>
   );
 }

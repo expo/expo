@@ -1,10 +1,18 @@
 import type { ComponentProps, SyntheticEvent } from 'react';
-import { StyleSheet, Text, unstable_createElement, View, type ViewProps } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  unstable_createElement,
+  useColorScheme,
+  View,
+  type TextProps,
+  type ViewProps,
+} from 'react-native';
 
 import type { CollapsibleProps } from './types';
 
 const Details = (
-  props: Omit<ComponentProps<'details'>, 'style'> & { style?: ViewProps['style'] }
+  props: Omit<ComponentProps<'details'>, 'style'> & { style?: TextProps['style'] }
 ) => unstable_createElement('details', props);
 
 const Summary = (
@@ -16,6 +24,8 @@ const Summary = (
  * header. Controlled via `isOpen` + `onOpenChange`.
  */
 export function Collapsible({ isOpen, onOpenChange, label = '', children }: CollapsibleProps) {
+  const isDark = useColorScheme() === 'dark';
+
   return (
     <Details
       open={isOpen}
@@ -25,9 +35,9 @@ export function Collapsible({ isOpen, onOpenChange, label = '', children }: Coll
           onOpenChange(nextOpen);
         }
       }}
-      style={styles.container}>
+      style={[styles.container, isDark && styles.darkText]}>
       <Summary style={styles.summary}>
-        <Text>{label}</Text>
+        <Text style={isDark && styles.darkText}>{label}</Text>
       </Summary>
       <View style={styles.content}>{children}</View>
     </Details>
@@ -52,6 +62,9 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 16,
     paddingBottom: 12,
+  },
+  darkText: {
+    color: '#fff',
   },
 });
 

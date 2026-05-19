@@ -11,6 +11,7 @@ import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { openInEditorAsync } from '../../../../utils/editor';
+import { shouldThrottleRemoteDevCall } from '../../../../utils/net';
 
 interface MetroMiddlewareOptions {
   getMetroBundler(): MetroBundler;
@@ -99,6 +100,11 @@ function createMetroOpenStackFrameMiddleware(
     if (!file) {
       res.statusCode = 400;
       return res.end('Open stack frame requires target file to be in server root');
+    }
+
+    if (shouldThrottleRemoteDevCall()) {
+      res.statusCode = 429;
+      return res.end();
     }
 
     try {

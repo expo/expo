@@ -51,11 +51,15 @@
     "stacktrace-js": "^2.0.2"
   },
   "peerDependencies": {
+    "expo": "*",
     "react-native": "*",
     "@react-native/jest-preset": "^0.85.0",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
   "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    },
     "react-server-dom-webpack": {
       "optional": true
     }

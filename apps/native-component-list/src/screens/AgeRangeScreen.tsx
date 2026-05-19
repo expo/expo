@@ -2,6 +2,7 @@ import * as AgeRange from 'expo-age-range';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
@@ -74,10 +75,10 @@ export default function AgeRangeScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <HeadingText style={styles.heading}>Age Range API</HeadingText>
 
-      <Text style={styles.description}>
+      <BodyText color="secondary" style={styles.description}>
         Request the user's age range with directly configurable (iOS) thresholds. This example uses
         thresholds at 13, 16, and 18 years old.
-      </Text>
+      </BodyText>
 
       {Platform.OS === 'ios' && (
         <Text style={styles.warning}>Note: This API requires iOS 26.0 or later.</Text>
@@ -115,7 +116,6 @@ export default function AgeRangeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   contentContainer: {
     padding: 16,
@@ -125,7 +125,6 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: Colors.secondaryText,
     marginBottom: 12,
     lineHeight: 20,
   },

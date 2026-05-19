@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [universal] Fix universal components dark theme ([#45969](https://github.com/expo/expo/pull/45969) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 ## 56.0.9 — 2026-05-19

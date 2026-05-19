@@ -16,7 +16,18 @@ internal protocol JSIRepresentable: JavaScriptRepresentable, Sendable, ~Copyable
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value
 }
 
-internal extension JSIRepresentable {
+extension JSIRepresentable {
+  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+    guard let jsiRuntime = value.runtime else {
+      FatalError.runtimeLost()
+    }
+    return Self.fromJSIValue(value.pointee, in: jsiRuntime.pointee)
+  }
+
+  public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
+    return JavaScriptValue(runtime, toJSIValue(in: runtime.pointee))
+  }
+
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> Self {
     FatalError.unimplemented()
   }

@@ -1,7 +1,8 @@
 import { Picker, type PickerProps, type PickerRef } from '@expo/ui/community/picker';
 import React, { useRef, useState } from 'react';
-import { Button, Platform, Text } from 'react-native';
+import { Button, Platform } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import { ScrollPage, Section } from '../../components/Page';
 
 const monospace = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
@@ -77,7 +78,7 @@ function StyledPicker() {
           enabled={false}
         />
       </Picker>
-      <Text>Selected: {value}</Text>
+      <BodyText>Selected: {value}</BodyText>
     </>
   );
 }
@@ -103,7 +104,7 @@ function RefPicker() {
         <Picker.Item label="Objective C" value="objc" />
         <Picker.Item label="Swift" value="swift" />
       </Picker>
-      <Text>Selected: {value}</Text>
+      <BodyText>Selected: {value}</BodyText>
     </>
   );
 }
@@ -119,7 +120,7 @@ function GenericPicker(props: Partial<PickerProps>) {
         <Picker.Item label="Objective C" value="objc" />
         <Picker.Item label="Swift" value="swift" />
       </Picker>
-      <Text>Selected: {value}</Text>
+      <BodyText>Selected: {value}</BodyText>
     </>
   );
 }
