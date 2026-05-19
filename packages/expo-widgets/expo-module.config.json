@@ -4,6 +4,6 @@
     "modules": ["WidgetsModule"]
   },
   "android": {
-    "modules": ["expo.modules.widgets.WidgetsModule"]
+    "modules": ["expo.modules.widgets.WidgetsModule", "expo.modules.widgets.ui.WidgetsUIModule"]
   }
 }

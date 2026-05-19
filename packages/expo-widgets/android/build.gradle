@@ -33,6 +33,13 @@ android {
 }
 
 dependencies {
+  if (findProject(':expo-ui') != null) {
+    implementation project(':expo-ui')
+  } else {
+    implementation 'expo.modules.ui:expo.modules.ui:+'
+  }
+  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
+  implementation 'androidx.compose.ui:ui-android:1.10.6'
   api 'androidx.glance:glance:1.2.0-rc01'
   api 'androidx.glance:glance-appwidget:1.2.0-rc01'
 }
