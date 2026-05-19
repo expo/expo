@@ -126,6 +126,7 @@ class NetworkModule : Module() {
         Log.e(TAG, "expo-network cannot observe internet reachability, too many callbacks registered!", e)
       }
 
+      // Initialize the monitors here in case they're tapped for one-time signal strength requests
       cellSignalStrengthMonitor = CellSignalStrengthMonitor(context, ::emitCellSignalStrength)
       cellSignalStrengthMonitor?.register()
 
@@ -151,11 +152,11 @@ class NetworkModule : Module() {
     }
 
     AsyncFunction("getCellSignalStrengthAsync") {
-      return@AsyncFunction cellSignalStrengthMonitor?.getCurrentStrength() ?: INVALID_SIGNAL_STRENGTH
+      return@AsyncFunction cellSignalStrengthMonitor?.getValue() ?: INVALID_SIGNAL_STRENGTH
     }
 
     AsyncFunction("getWifiSignalStrengthAsync") {
-      return@AsyncFunction wifiSignalStrengthMonitor?.getCurrentStrength() ?: INVALID_SIGNAL_STRENGTH
+      return@AsyncFunction wifiSignalStrengthMonitor?.getValue() ?: INVALID_SIGNAL_STRENGTH
     }
 
     AsyncFunction("getNetworkStateAsync") {

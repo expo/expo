@@ -1,78 +1,92 @@
 package expo.modules.network
 
 import android.Manifest
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.telephony.CellSignalStrength
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import java.lang.ref.WeakReference
+import kotlin.math.roundToInt
 
-private val TAG = WifiSignalStrengthMonitor::class.java.simpleName
+private val TAG = WifiSignalStrengthMonitor::class.simpleName
 private const val CONNECTIVITY_CHANGE_DELAY_MS = 150L
 
 internal class WifiSignalStrengthMonitor(
-  private val context: Context,
+  context: Context,
   private val connectivityManager: ConnectivityManager,
-  private val onStrengthChanged: (Int) -> Unit
-) {
+  onStrengthChanged: (Int) -> Unit
+) : Monitor<Int>(onStrengthChanged) {
+  private val contextRef = WeakReference(context)
   private val wifiManager: WifiManager =
     context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
-  private val handler = Handler(Looper.getMainLooper())
-  private var pendingUpdate: Runnable? = null
-
-  private fun delayedUpdate() {
-    pendingUpdate?.let { handler.removeCallbacks(it) }
-    val runnable = Runnable { onStrengthChanged(getCurrentStrength()) }
-    pendingUpdate = runnable
-    handler.postDelayed(runnable, CONNECTIVITY_CHANGE_DELAY_MS)
-  }
-
   private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-    override fun onAvailable(network: Network) {
-      delayedUpdate()
+    // Per docs calling getStrengthFromCapabilities() from onAvailable()
+    // may lead to a race condition
+
+    override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
+      delayedUpdate(
+        getStrength(networkCapabilities),
+        CONNECTIVITY_CHANGE_DELAY_MS
+      )
     }
 
     override fun onLost(network: Network) {
-      delayedUpdate()
-    }
-
-    override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
-      delayedUpdate()
-    }
-  }
-
-  @Suppress("DEPRECATION")
-  private val broadcastReceiver = object : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-      if (intent.action == ConnectivityManager.CONNECTIVITY_ACTION) {
-        delayedUpdate()
-      }
+      // No worries about race condition because we're not using
+      // ConnectivityManager methods
+      delayedUpdate(
+        CellSignalStrength.SIGNAL_STRENGTH_NONE_OR_UNKNOWN,
+        CONNECTIVITY_CHANGE_DELAY_MS
+      )
     }
   }
 
-  fun getCurrentStrength(): Int {
-    if (!hasWifiStatePermission()) {
-      Log.e(TAG, "Not permitted to get Wi-Fi signal strength!")
-      return INVALID_SIGNAL_STRENGTH
+  fun getStrength(capabilities: NetworkCapabilities): Int {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      getStrengthFromCapabilities(capabilities)
+    } else {
+      getStrengthForLegacy()
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  fun getStrengthFromCapabilities(capabilities: NetworkCapabilities): Int {
+    val transportInfo = capabilities.transportInfo ?: return getErrorValue()
+    if (transportInfo !is WifiInfo) {
+      Log.e(TAG, "expo-network requested info about Wi-Fi networks but get transport info of type: " + transportInfo::class.simpleName)
+      return getErrorValue()
     }
 
-    @Suppress("DEPRECATION")
-    val wifiInfo = wifiManager.connectionInfo
-      ?: return CellSignalStrength.SIGNAL_STRENGTH_NONE_OR_UNKNOWN
+    return getStrengthFromInfo(transportInfo)
+  }
 
-    @Suppress("DEPRECATION")
+  fun getStrengthForLegacy(): Int {
+    if (!hasWifiConnectionInfoPerms()) {
+      Log.e(TAG, "expo-network does not have permission to get info about Wi-Fi connection!")
+      return getErrorValue()
+    }
+
+    try {
+      val wifiInfo = wifiManager.connectionInfo
+        ?: return CellSignalStrength.SIGNAL_STRENGTH_NONE_OR_UNKNOWN
+
+      return getStrengthFromInfo(wifiInfo)
+    } catch (e: Exception) {
+      Log.e(TAG, "expo-network encountered an error while trying to retrieve Wi-Fi connection info!", e)
+      return getErrorValue()
+    }
+  }
+
+  fun getStrengthFromInfo(wifiInfo: WifiInfo): Int {
     val rssi = wifiInfo.rssi
 
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -82,7 +96,12 @@ internal class WifiSignalStrengthMonitor(
       if (maxSignalLevel == CellSignalStrength.SIGNAL_STRENGTH_GREAT) {
         qualityRating
       } else {
-        Math.round((qualityRating / maxSignalLevel.toFloat()) * CellSignalStrength.SIGNAL_STRENGTH_GREAT)
+        if (maxSignalLevel <= 0) {
+          Log.w(TAG, "Invalid max signal level: $maxSignalLevel. Returning raw signal level: $qualityRating")
+          qualityRating
+        } else {
+          ((qualityRating / maxSignalLevel.toFloat()) * CellSignalStrength.SIGNAL_STRENGTH_GREAT).roundToInt()
+        }
       }
     } else {
       @Suppress("DEPRECATION")
@@ -90,44 +109,53 @@ internal class WifiSignalStrengthMonitor(
     }
   }
 
-  private fun hasWifiStatePermission(): Boolean {
+  private fun hasWifiConnectionInfoPerms(): Boolean {
+    val ctx = contextRef.get() ?: return false
+    return (
+      ContextCompat.checkSelfPermission(
+        ctx,
+        Manifest.permission.ACCESS_WIFI_STATE
+      ) == PackageManager.PERMISSION_GRANTED
+      ) && (
+      ContextCompat.checkSelfPermission(
+        ctx,
+        Manifest.permission.ACCESS_FINE_LOCATION
+      ) == PackageManager.PERMISSION_GRANTED
+      )
+  }
+
+  private fun hasNetworkStatePermission(): Boolean {
+    val ctx = contextRef.get() ?: return false
     return ContextCompat.checkSelfPermission(
-      context,
-      Manifest.permission.ACCESS_WIFI_STATE
+      ctx,
+      Manifest.permission.ACCESS_NETWORK_STATE
     ) == PackageManager.PERMISSION_GRANTED
   }
 
-  fun register() {
+  override fun register() {
+    // Permission required for registerNetworkCallback()
+    if (!hasNetworkStatePermission()) {
+      Log.e(TAG, "expo-network does not have permission to monitor Wi-Fi signal strength!")
+      return
+    }
+
     val wifiNetworkRequest = NetworkRequest.Builder()
       .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
       .build()
+
     try {
       connectivityManager.registerNetworkCallback(wifiNetworkRequest, networkCallback)
     } catch (e: RuntimeException) {
-      Log.e(TAG, "Failed to register Wi-Fi network callback!", e)
-    }
-
-    @Suppress("DEPRECATION")
-    val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      context.registerReceiver(broadcastReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
-    } else {
-      @Suppress("DEPRECATION")
-      context.registerReceiver(broadcastReceiver, filter)
+      Log.e(TAG, "expo-network failed to register Wi-Fi network callback because the app already has too many callbacks registered!", e)
     }
   }
 
-  fun unregister() {
-    pendingUpdate?.let { handler.removeCallbacks(it) }
-    pendingUpdate = null
-    try {
-      context.unregisterReceiver(broadcastReceiver)
-    } catch (e: IllegalArgumentException) {
-      // Receiver was not registered
-    }
+  override fun getErrorValue(): Int = INVALID_SIGNAL_STRENGTH
+
+  override fun internalUnregister() {
     try {
       connectivityManager.unregisterNetworkCallback(networkCallback)
-    } catch (e: IllegalArgumentException) {
+    } catch (_: Exception) {
       // Callback was not registered
     }
   }
