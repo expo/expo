@@ -4,10 +4,9 @@ import ExpoModulesCore
 import SwiftUI
 
 internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
-  // Set when the consumer passes a worklet callback. The modifier invokes the worklet
-  // synchronously on the UI runtime for per-frame work that must not pay JS-thread dispatch cost.
+  // Worklet path: synchronous invocation on the UI runtime (no JS-thread dispatch).
   @Field var workletCallback: WorkletCallback?
-  // Async event path used when no worklet is provided. Fires on the JS thread via the global modifier event dispatcher.
+  // JS-thread path: async event via the global modifier event dispatcher.
   var eventDispatcher: EventDispatcher?
 
   init() {}
@@ -73,7 +72,6 @@ internal struct OnScrollPhaseChangeModifier: ViewModifier, Record {
   }
 }
 
-// Equatable transform of `ScrollGeometry`. Shared between the two modifiers above.
 internal struct ScrollGeometryPayload: Equatable {
   let contentOffsetX: CGFloat
   let contentOffsetY: CGFloat

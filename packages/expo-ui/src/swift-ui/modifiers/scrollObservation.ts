@@ -39,8 +39,6 @@ import { createModifier, createModifierWithEventListener } from './createModifie
  */
 export function useScrollGeometryChange(callback?: (geometry: ScrollGeometry) => void) {
   const isWorklet = !!callback && !!worklets?.isWorkletFunction?.(callback);
-  // Always called so the hook order is stable across renders. Returns null
-  // when no worklet callback is provided.
   const workletCallback = useWorkletProp(
     isWorklet ? callback : undefined,
     'onScrollGeometryChange'

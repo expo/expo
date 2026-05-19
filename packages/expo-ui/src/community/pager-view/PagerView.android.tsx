@@ -38,17 +38,13 @@ export function PagerView(props: PagerViewProps) {
 
   const pagerRef = useRef<HorizontalPagerHandle>(null);
   const [scrollEnabledState, setScrollEnabledState] = useState(scrollEnabled);
-  // Keep local state in sync with the prop so consumers can drive it
-  // declaratively — matches upstream `react-native-pager-view`'s contract.
-  // The imperative `setScrollEnabled` reuses this setter, so it does trigger
-  // a re-render — unlike upstream's UIManager-direct path.
   useEffect(() => {
     setScrollEnabledState(scrollEnabled);
   }, [scrollEnabled]);
 
-  // Synthesize pager-view's `idle | dragging | settling` state machine from
-  // Compose's raw signals: `isScrollInProgress` (true while dragging or
-  // animating to a snap target) plus drag interactions (start/stop/cancel).
+  // Synthesize pager-view's `idle | dragging | settling` from Compose's raw
+  // signals: `isScrollInProgress` (drag or snap-animation in flight) plus
+  // drag interactions (start/stop/cancel).
   const isScrollInProgressRef = useRef(false);
   const isDraggingRef = useRef(false);
   const lastEmittedScrollStateRef = useRef<'idle' | 'dragging' | 'settling' | null>(null);
@@ -85,10 +81,8 @@ export function PagerView(props: PagerViewProps) {
     [onPageScroll]
   );
 
-  // RN's `borderRadius` on the host View doesn't reliably clip Compose drawing,
-  // so translate it into a Compose `clip` modifier that bounds the pager's
-  // canvas. iOS doesn't need this — CALayer's `cornerRadius` + `masksToBounds`
-  // already clip the SwiftUI tree.
+  // RN's `borderRadius` on the host View doesn't reliably clip Compose's draw
+  // pass — translate it into a Compose `clip` modifier instead.
   const pagerModifiers = [fillMaxSize()];
   const cornerShape = borderRadiusShape(style, layoutDirection === 'rtl');
   if (cornerShape) {
@@ -140,10 +134,9 @@ export function PagerView(props: PagerViewProps) {
   );
 }
 
-// Compose reports `(currentPage, fraction in [-0.5, 0.5))` around the
-// currently-snapped page; pager-view reports `(position, offset in [0, 1))`
-// anchored at the leading page. Translate by re-anchoring negative fractions
-// onto the previous page.
+// Compose's `(currentPage, fraction ∈ [-0.5, 0.5))` is anchored to the snapped
+// page; pager-view's `(position, offset ∈ [0, 1))` is anchored to the leading
+// page. Re-anchor negative fractions onto the previous page.
 function composePageToPageScroll(
   currentPage: number,
   currentPageOffsetFraction: number
@@ -155,12 +148,8 @@ function composePageToPageScroll(
   return { position: currentPage - 1, offset: 1 + currentPageOffsetFraction };
 }
 
-/**
- * Returns the right `HorizontalPager.onPageScroll` handler for the user's
- * callback. If the user passed a worklet, the wrapper is also a worklet so
- * the per-frame mapping runs on the UI runtime; otherwise the wrapper is a
- * regular JS function.
- */
+// Mirrors the worklet-ness of the user's callback so the per-frame mapping
+// stays on the UI runtime when the user is also on it.
 function buildOnPageScrollHandler(
   userOnPageScroll: NonNullable<PagerViewProps['onPageScroll']>
 ): (currentPage: number, currentPageOffsetFraction: number) => void {
@@ -179,22 +168,14 @@ function buildOnPageScrollHandler(
   };
 }
 
-/**
- * Translates RN border-radius style keys into a Compose `RoundedCornerShape`.
- * Accepts uniform `borderRadius` and the four physical-corner keys; both
- * physical (`borderTopLeftRadius` etc.) and logical (`borderTopStartRadius`
- * etc.) keys map onto Compose's start/end edges, with start/end swapped under
- * RTL so visual layout matches the parent. Asymmetric radii fall back to
- * uniform when only `borderRadius` is set. Returns `undefined` when there is
- * no clipping to apply.
- */
+// Translates RN border-radius style keys to a Compose `RoundedCornerShape`.
+// Physical (`borderTopLeftRadius`) and logical (`borderTopStartRadius`) keys
+// collapse onto Compose's start/end edges, swapped under RTL.
 function borderRadiusShape(style: PagerViewProps['style'], rtl: boolean): BuiltinShape | undefined {
   const flat = StyleSheet.flatten(style) as Record<string, unknown> | undefined;
   if (!flat) return undefined;
-  // Compose's `RoundedCornerShape` takes `Dp` (numeric), so we can only honor
-  // numeric border-radius values here. RN also accepts strings like `'50%'`
-  // and CSS-in-JS libs may emit them; those are dropped (no clip) — `__DEV__`
-  // warns once so this isn't silent.
+  // Compose `RoundedCornerShape` only takes Dp (numeric); RN's string values
+  // like `'50%'` are dropped — `__DEV__` warns once so the no-clip isn't silent.
   const num = (key: string): number | undefined => {
     const v = flat[key];
     if (typeof v === 'number') return v > 0 ? v : undefined;
@@ -204,8 +185,6 @@ function borderRadiusShape(style: PagerViewProps['style'], rtl: boolean): Builti
     return undefined;
   };
   const uniform = num('borderRadius');
-  // Physical keys (LTR-relative) and logical keys (writing-direction-relative)
-  // collapse onto start/end. In RTL, physical-left maps to end and right to start.
   const topLeft = num('borderTopLeftRadius');
   const topRight = num('borderTopRightRadius');
   const bottomLeft = num('borderBottomLeftRadius');
