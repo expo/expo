@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add check for committed `*.local` env files ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
+
+- Pass original env to Expo sub-command ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
