@@ -17,6 +17,7 @@
 ### 💡 Others
 
 - Use `osascript.escapeString` utility in `open.ts` ([#45890](https://github.com/expo/expo/pull/45890) by [@kitten](https://github.com/kitten))
+- [Internal] Isolate `expo-session` requests to Expo API and update `resolveTemplate ([#45875](https://github.com/expo/expo/pull/45875) by [@kitten](https://github.com/kitten))
 
 ## 56.1.6 — 2026-05-19
 
