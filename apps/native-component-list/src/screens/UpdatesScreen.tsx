@@ -1,9 +1,9 @@
 import * as Updates from 'expo-updates';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
+import { ScrollView, StyleSheet, View, Alert } from 'react-native';
 
-import Button from '../components/Button';
 import { BodyText } from '../components/BodyText';
+import Button from '../components/Button';
 
 export default function UpdatesScreen() {
   const getRandomColor = () => {

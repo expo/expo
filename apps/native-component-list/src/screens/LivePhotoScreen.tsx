@@ -4,9 +4,9 @@ import { LivePhotoAsset, LivePhotoView, ContentFit, LivePhotoViewType } from 'ex
 import { useRef, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import TitledSwitch from '../components/TitledSwitch';
-import { BodyText } from '../components/BodyText';
 
 export default function LivePhotoScreen() {
   const viewRef = useRef<LivePhotoViewType>(null);

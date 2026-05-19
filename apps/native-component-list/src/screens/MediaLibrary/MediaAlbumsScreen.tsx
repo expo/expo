@@ -11,8 +11,8 @@ import {
   View,
 } from 'react-native';
 
-import MonoText from '../../components/MonoText';
 import { BodyText } from '../../components/BodyText';
+import MonoText from '../../components/MonoText';
 
 interface State {
   includeSmartAlbums: boolean;

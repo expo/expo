@@ -12,9 +12,9 @@ import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
-import { BodyText } from '../components/BodyText';
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
 const LAST_FETCH_DATE_KEY = 'background-fetch-date';

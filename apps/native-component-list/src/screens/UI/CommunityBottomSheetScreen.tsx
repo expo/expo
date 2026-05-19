@@ -7,6 +7,7 @@ import BottomSheet, {
 import { useRef, useState } from 'react';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import { BodyText } from '../../components/BodyText';
 
 function SheetControls({ snapCount = 0 }: { snapCount?: number }) {

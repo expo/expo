@@ -11,10 +11,10 @@ import {
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import HeadingText from '../../components/HeadingText';
 import ListButton from '../../components/ListButton';
 import Colors from '../../constants/Colors';
-import { BodyText } from '../../components/BodyText';
 
 export const sfx1: AudioSource = {
   uri: 'https://cdn.freesound.org/previews/370/370182_6430986-hq.mp3',

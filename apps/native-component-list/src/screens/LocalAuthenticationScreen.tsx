@@ -5,9 +5,9 @@ import { Platform } from 'expo-modules-core';
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
-import { BodyText } from '../components/BodyText';
 
 const enrolledLevelMap = {
   0: 'None',

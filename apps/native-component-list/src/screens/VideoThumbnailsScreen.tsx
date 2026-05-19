@@ -1,6 +1,7 @@
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import React, { useState } from 'react';
 import { StyleSheet, Button, View, Image } from 'react-native';
+
 import { BodyText } from '../components/BodyText';
 
 export default function VideoThumbnailsScreen() {

@@ -1,10 +1,10 @@
 import * as Location from 'expo-location';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import usePermissions from '../../utilities/usePermissions';
-import { BodyText } from '../../components/BodyText';
 
 const forwardGeocodingAddresses = [
   '1 Hacker Way, CA',

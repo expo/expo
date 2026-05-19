@@ -8,6 +8,7 @@ import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-
 
 import * as ContactUtils from './ContactUtils';
 import ContactsList from './ContactsList';
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
@@ -16,7 +17,6 @@ import { Colors } from '../../constants';
 import { optionalRequire } from '../../navigation/routeBuilder';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
-import { BodyText } from '../../components/BodyText';
 
 export const ContactsScreens = [
   {

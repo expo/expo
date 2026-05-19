@@ -2,6 +2,7 @@ import { type EventSubscription } from 'expo-modules-core';
 import * as Sensors from 'expo-sensors';
 import React, { useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { BodyText } from '../components/BodyText';
 
 const FAST_INTERVAL = 16;

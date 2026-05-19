@@ -2,10 +2,10 @@ import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Alert, Platform, ScrollView, TextInput, View, Switch, StyleSheet } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import ListButton from '../components/ListButton';
 import Colors from '../constants/Colors';
 import { useResolvedValue } from '../utilities/useResolvedValue';
-import { BodyText } from '../components/BodyText';
 
 export default function SecureStoreScreen() {
   const [isAvailable, error] = useResolvedValue(SecureStore.isAvailableAsync);

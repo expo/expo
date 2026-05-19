@@ -6,9 +6,9 @@ import * as TaskManager from 'expo-task-manager';
 import React, { useEffect } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
-import { BodyText } from '../components/BodyText';
 
 const BACKGROUND_TASK_IDENTIFIER = 'background-task';
 const LAST_TASK_DATE_KEY = 'background-task-date';

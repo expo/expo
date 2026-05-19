@@ -15,8 +15,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import Colors from '../../constants/Colors';
 import { BodyText } from '../../components/BodyText';
+import Colors from '../../constants/Colors';
 
 interface Props {
   header?: React.ReactElement;

@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View, useColorScheme } from 'react-native';
+
 import { BodyText } from '../components/BodyText';
 
 export default function AppearanceScreen() {

@@ -1,9 +1,9 @@
 import Slider from '@react-native-community/slider';
 import * as React from 'react';
 
+import { BodyText } from '../components/BodyText';
 import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
-import { BodyText } from '../components/BodyText';
 
 export default function SliderScreen() {
   const [value, setValue] = React.useState(0.5);

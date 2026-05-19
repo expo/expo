@@ -2,8 +2,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as React from 'react';
 import { StyleSheet, TouchableHighlight, View } from 'react-native';
 
-import Colors from '../../constants/Colors';
 import { BodyText } from '../../components/BodyText';
+import Colors from '../../constants/Colors';
 
 export default function ContactsListItem(props: {
   contactId: string;

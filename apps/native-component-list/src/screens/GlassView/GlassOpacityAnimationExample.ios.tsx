@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+
 import { BodyText } from '../../components/BodyText';
 
 const AnimatedGlassView = Animated.createAnimatedComponent(GlassView);

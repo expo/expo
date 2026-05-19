@@ -2,8 +2,8 @@ import { Picker, type PickerProps, type PickerRef } from '@expo/ui/community/pic
 import React, { useRef, useState } from 'react';
 import { Button, Platform } from 'react-native';
 
-import { ScrollPage, Section } from '../../components/Page';
 import { BodyText } from '../../components/BodyText';
+import { ScrollPage, Section } from '../../components/Page';
 
 const monospace = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
 const serif = Platform.select({ ios: 'Georgia', android: 'serif', default: 'serif' });

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { DrawerLayoutAndroid, View, Platform } from 'react-native';
 
-import TitleSwitch from '../components/TitledSwitch';
 import { BodyText } from '../components/BodyText';
+import TitleSwitch from '../components/TitledSwitch';
 
 export default function DrawerLayoutAndroidScreen() {
   const [isRight, setRight] = React.useState(false);

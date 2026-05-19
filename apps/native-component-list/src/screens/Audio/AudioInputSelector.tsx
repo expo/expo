@@ -2,8 +2,8 @@ import { AudioRecorder, RecordingInput } from 'expo-audio';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import ListButton from '../../components/ListButton';
 import { BodyText } from '../../components/BodyText';
+import ListButton from '../../components/ListButton';
 
 type Props = {
   recorder?: AudioRecorder;

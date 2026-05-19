@@ -3,8 +3,8 @@ import * as Updates from 'expo-updates';
 import * as React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
-import { Page, Section } from '../components/Page';
 import { BodyText } from '../components/BodyText';
+import { Page, Section } from '../components/Page';
 
 const key = 'random_value';
 

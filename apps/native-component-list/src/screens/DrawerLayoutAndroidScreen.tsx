@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+
 import { BodyText } from '../components/BodyText';
 
 export default function DrawerLayoutAndroidScreen() {

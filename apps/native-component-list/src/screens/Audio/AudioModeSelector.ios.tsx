@@ -2,9 +2,9 @@ import { setAudioModeAsync, AudioMode } from 'expo-audio';
 import React from 'react';
 import { PixelRatio, Switch, View } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import ListButton from '../../components/ListButton';
-import { BodyText } from '../../components/BodyText';
 
 export default function AudioModeSelector() {
   const [state, setState] = React.useState<{

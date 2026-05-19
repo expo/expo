@@ -3,8 +3,8 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { ScrollView, SafeAreaView } from 'react-native';
 
-import ListButton from '../components/ListButton';
 import { BodyText } from '../components/BodyText';
+import ListButton from '../components/ListButton';
 
 interface State {
   orientation?: ScreenOrientation.Orientation;

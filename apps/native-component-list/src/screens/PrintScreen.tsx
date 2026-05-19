@@ -3,8 +3,8 @@ import * as Print from 'expo-print';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
-import ListButton from '../components/ListButton';
 import { BodyText } from '../components/BodyText';
+import ListButton from '../components/ListButton';
 
 interface State {
   selectedPrinter?: Print.Printer;

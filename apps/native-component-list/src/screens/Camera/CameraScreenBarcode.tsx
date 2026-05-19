@@ -2,6 +2,7 @@ import { CameraView, ScanningResult, ScanningOptions } from 'expo-camera';
 import Checkbox from 'expo-checkbox';
 import { useEffect, useState } from 'react';
 import { View, Button, StyleSheet } from 'react-native';
+
 import { BodyText } from '../../components/BodyText';
 
 export default function CameraScreenNextBarcode() {

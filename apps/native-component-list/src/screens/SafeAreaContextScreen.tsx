@@ -7,8 +7,8 @@ import {
   SafeAreaInsetsContext,
 } from 'react-native-safe-area-context';
 
-import HeadingText from '../components/HeadingText';
 import { BodyText } from '../components/BodyText';
+import HeadingText from '../components/HeadingText';
 
 export default function SafeAreaContextScreen({
   navigation,

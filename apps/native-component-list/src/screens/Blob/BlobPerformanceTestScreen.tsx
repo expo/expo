@@ -3,10 +3,10 @@ import { Blob as ExpoBlob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
 import { Page } from '../../components/Page';
-import { BodyText } from '../../components/BodyText';
 
 type PerformanceTestData = {
   key: string;

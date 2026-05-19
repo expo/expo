@@ -2,8 +2,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
 import { Image, Platform, Animated, ScrollView, StyleSheet, View } from 'react-native';
 
-import MonoText from '../components/MonoText';
 import { BodyText } from '../components/BodyText';
+import MonoText from '../components/MonoText';
 
 // https://github.com/expo/expo/issues/10599
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);

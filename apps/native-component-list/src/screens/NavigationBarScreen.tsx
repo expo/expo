@@ -2,9 +2,9 @@ import { NavigationBar, NavigationBarStyle } from 'expo-navigation-bar';
 import * as React from 'react';
 import { Platform, ScrollView } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
-import { BodyText } from '../components/BodyText';
 
 export default function NavigationBarScreen() {
   return (

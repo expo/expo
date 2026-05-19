@@ -27,11 +27,11 @@ import {
   DimensionValue,
 } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 import SimpleActionDemo from '../components/SimpleActionDemo';
-import { BodyText } from '../components/BodyText';
 
 FileSystemScreen.navigationOptions = {
   title: 'FileSystem',

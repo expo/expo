@@ -2,9 +2,9 @@ import { AudioSource, useAudioPlaylist, useAudioPlaylistStatus } from 'expo-audi
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import HeadingText from '../../components/HeadingText';
 import Colors from '../../constants/Colors';
-import { BodyText } from '../../components/BodyText';
 
 const INITIAL_SOURCES: AudioSource[] = [
   require('../../../assets/sounds/polonez.mp3'),

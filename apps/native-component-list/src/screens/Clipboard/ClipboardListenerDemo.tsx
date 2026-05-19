@@ -2,10 +2,10 @@ import * as Clipboard from 'expo-clipboard';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import { isCurrentPlatformSupported } from '../../components/FunctionDemo/utils';
 import HeadingText from '../../components/HeadingText';
 import MonoTextWithCountdown from '../../components/MonoTextWithCountdown';
-import { BodyText } from '../../components/BodyText';
 
 export default function ClipboardListenerDemo() {
   const isSupported = useMemo(() => isCurrentPlatformSupported(['ios', 'android']), []);

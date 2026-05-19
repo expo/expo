@@ -1,7 +1,7 @@
 import { B } from '@expo/html-elements';
+import { useTheme } from 'ThemeProvider';
 import React from 'react';
 import { StyleSheet, Switch, View, TextStyle, ViewStyle } from 'react-native';
-import { useTheme } from 'ThemeProvider';
 
 type Props = {
   style?: ViewStyle;

@@ -3,8 +3,8 @@ import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { Button } from 'react-native';
 
-import { ScrollPage, Section } from '../components/Page';
 import { BodyText } from '../components/BodyText';
+import { ScrollPage, Section } from '../components/Page';
 
 export default function PickerScreen() {
   // TODO: PickerIOS

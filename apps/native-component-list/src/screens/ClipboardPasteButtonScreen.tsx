@@ -3,6 +3,7 @@ import { ClipboardPasteButton, TextPasteEvent, ImagePasteEvent } from 'expo-clip
 import React from 'react';
 import { Text, View, StyleSheet, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+
 import { BodyText } from '../components/BodyText';
 
 const available = Clipboard.isPasteButtonAvailable;

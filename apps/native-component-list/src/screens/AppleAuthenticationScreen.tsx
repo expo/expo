@@ -5,8 +5,8 @@ import { type EventSubscription } from 'expo-modules-core';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import MonoText from '../components/MonoText';
 import { BodyText } from '../components/BodyText';
+import MonoText from '../components/MonoText';
 
 const {
   AppleAuthenticationButtonStyle,

@@ -3,10 +3,10 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 import { useResolvedValue } from '../utilities/useResolvedValue';
-import { BodyText } from '../components/BodyText';
 
 interface NetworkStateEvent {
   time: Date;

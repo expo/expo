@@ -4,6 +4,7 @@ import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-nati
 import { runOnJS } from 'react-native-worklets';
 import 'react-native-reanimated';
 import { WorkletsTester } from 'worklets-tester';
+
 import { BodyText } from '../../components/BodyText';
 
 installOnUIRuntime();

@@ -1,6 +1,6 @@
+import { type ThemeType, useTheme } from 'ThemeProvider';
 import { PropsWithChildren } from 'react';
 import { StyleSheet, Text, TextProps, View } from 'react-native';
-import { type ThemeType, useTheme } from 'ThemeProvider';
 
 type Props = PropsWithChildren<TextProps> & {
   color?: keyof ThemeType['text'];

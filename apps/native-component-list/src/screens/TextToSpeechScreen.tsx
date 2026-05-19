@@ -12,9 +12,9 @@ import {
   View,
 } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import HeadingText from '../components/HeadingText';
 import { Colors } from '../constants';
-import { BodyText } from '../components/BodyText';
 
 const EXAMPLES = [
   { language: 'en', text: 'Hello world' },

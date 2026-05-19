@@ -1,5 +1,5 @@
-import { Text, type TextProps } from 'react-native';
 import { useTheme, type ThemeType } from 'ThemeProvider';
+import { Text, type TextProps } from 'react-native';
 
 type Props = TextProps & {
   color?: keyof ThemeType['text'];

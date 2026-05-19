@@ -1,9 +1,9 @@
 import { Contact, ContactAccessButton, requestPermissionsAsync } from 'expo-contacts/next';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, Text } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 
-import Button from '../../components/Button';
 import { BodyText } from '../../components/BodyText';
+import Button from '../../components/Button';
 
 export default function ContactPickersScreen() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);

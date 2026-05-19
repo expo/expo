@@ -1,5 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import { Image, StyleSheet, View } from 'react-native';
+
 import { BodyText } from '../components/BodyText';
 
 interface ItemType {

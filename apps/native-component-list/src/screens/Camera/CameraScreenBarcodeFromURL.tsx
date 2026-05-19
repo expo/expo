@@ -2,7 +2,8 @@ import { BarcodeScanningResult, Camera } from 'expo-camera';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { View, Text, Button, ScrollView, StyleSheet } from 'react-native';
+import { View, Button, ScrollView, StyleSheet } from 'react-native';
+
 import { BodyText } from '../../components/BodyText';
 
 export default function CameraScreenFromURL() {

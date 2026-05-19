@@ -2,8 +2,8 @@ import { Slider } from '@expo/ui/community/slider';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
-import { Page } from '../../components/Page';
 import { BodyText } from '../../components/BodyText';
+import { Page } from '../../components/Page';
 
 const RANGES = [
   { label: '0 – 1', min: 0, max: 1 },

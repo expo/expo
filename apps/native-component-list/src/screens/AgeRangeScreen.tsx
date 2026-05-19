@@ -2,11 +2,11 @@ import * as AgeRange from 'expo-age-range';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
-import { BodyText } from '../components/BodyText';
 
 export default function AgeRangeScreen() {
   const [result, setResult] = useState<string | null>(null);

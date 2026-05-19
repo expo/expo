@@ -2,10 +2,10 @@ import * as ScreenCapture from 'expo-screen-capture';
 import React from 'react';
 import { FlatList, Platform, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 import TitleSwitch from '../components/TitledSwitch';
-import { BodyText } from '../components/BodyText';
 
 function useScreenCapture(onCapture: () => void) {
   const hasPermissions = async () => {

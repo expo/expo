@@ -3,10 +3,10 @@ import { Pedometer } from 'expo-sensors';
 import * as React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import ListButton from '../components/ListButton';
 import usePermissions from '../utilities/usePermissions';
 import { useResolvedValue } from '../utilities/useResolvedValue';
-import { BodyText } from '../components/BodyText';
 
 function usePedometer({ isActive }: { isActive: boolean }): Pedometer.PedometerResult | null {
   const [data, setData] = React.useState<Pedometer.PedometerResult | null>(null);

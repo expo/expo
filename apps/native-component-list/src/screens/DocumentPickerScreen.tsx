@@ -2,9 +2,9 @@ import * as DocumentPicker from 'expo-document-picker';
 import React from 'react';
 import { Alert, FlatList, Image, Platform, useWindowDimensions, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import TitleSwitch from '../components/TitledSwitch';
-import { BodyText } from '../components/BodyText';
 
 export default function DocumentPickerScreen() {
   const { width } = useWindowDimensions();

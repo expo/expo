@@ -3,15 +3,15 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FoundationIcons from '@expo/vector-icons/Foundation';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useTheme } from 'ThemeProvider';
 import * as Font from 'expo-font';
 import { RenderToImageResult } from 'expo-font';
 import { Image } from 'expo-image';
 import { useState, useEffect, Fragment } from 'react';
 import { Platform, ScrollView, StyleSheet, View, Image as CoreImage } from 'react-native';
 
-import { Page, Section } from '../components/Page';
 import { BodyText } from '../components/BodyText';
-import { useTheme } from 'ThemeProvider';
+import { Page, Section } from '../components/Page';
 
 const round = (num: number) => Math.round(num * 100) / 100;
 

@@ -5,10 +5,10 @@ import { ScrollView, StyleSheet, Alert } from 'react-native';
 
 import ClipboardListenerDemo from './ClipboardListenerDemo';
 import ImagePreview from './ImagePreview';
+import { BodyText } from '../../components/BodyText';
 import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
 import { ActionFunction, Platform } from '../../components/FunctionDemo/index.types';
 import { isCurrentPlatformSupported } from '../../components/FunctionDemo/utils';
-import { BodyText } from '../../components/BodyText';
 
 const withSupportedPlatforms = (platforms: Platform[], action: ActionFunction): ActionFunction =>
   isCurrentPlatformSupported(platforms)

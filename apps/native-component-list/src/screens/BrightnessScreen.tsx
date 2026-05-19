@@ -1,12 +1,12 @@
 import Slider from '@react-native-community/slider';
 import * as Brightness from 'expo-brightness';
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import { useResolvedValue } from '../utilities/useResolvedValue';
-import { BodyText } from '../components/BodyText';
 
 const brightnessTypes: string[] = ['Brightness', 'SystemBrightness'];
 

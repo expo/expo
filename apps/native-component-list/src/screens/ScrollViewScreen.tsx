@@ -1,4 +1,5 @@
 import { H3 } from '@expo/html-elements';
+import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
 import {
   Platform,
@@ -14,7 +15,6 @@ import {
 
 import Button from '../components/Button';
 import TitleSwitch from '../components/TitledSwitch';
-import { useTheme } from 'ThemeProvider';
 
 export default function ScrollViewScreen() {
   const { theme } = useTheme();

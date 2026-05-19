@@ -2,6 +2,7 @@ import { installOnUIRuntime } from 'expo';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { runOnJS, runOnUI } from 'react-native-worklets';
+
 import 'react-native-reanimated';
 import { BodyText } from '../../components/BodyText';
 

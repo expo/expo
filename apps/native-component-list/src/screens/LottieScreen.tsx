@@ -3,6 +3,7 @@ import { Picker } from '@react-native-picker/picker';
 import LottieView from 'lottie-react-native';
 import React from 'react';
 import { Animated, Button, Platform, ScrollView, StyleSheet, Switch, View } from 'react-native';
+
 import { BodyText } from '../components/BodyText';
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);

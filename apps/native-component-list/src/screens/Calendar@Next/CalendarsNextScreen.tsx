@@ -17,7 +17,6 @@ import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
 import ListButton from '../../components/ListButton';
 import MonoText from '../../components/MonoText';
-import Colors from '../../constants/Colors';
 
 type StackNavigation = StackNavigationProp<{
   RemindersNext: { calendar: ExpoCalendar };

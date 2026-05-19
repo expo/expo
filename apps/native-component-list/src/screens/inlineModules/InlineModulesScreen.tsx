@@ -2,10 +2,10 @@ import { requireNativeModule, requireNativeView } from 'expo';
 import { useState } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
 import { Page } from '../../components/Page';
-import { BodyText } from '../../components/BodyText';
 
 const SimpleModule = requireNativeModule('SimpleModule');
 const TestView = requireNativeView('TestView');

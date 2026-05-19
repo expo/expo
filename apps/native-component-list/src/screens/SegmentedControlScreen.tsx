@@ -4,6 +4,7 @@ import SegmentedControl, {
 } from '@react-native-segmented-control/segmented-control';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, NativeSyntheticEvent } from 'react-native';
+
 import { BodyText } from '../components/BodyText';
 
 // This example is a copy from https://github.com/react-native-community/segmented-control/blob/master/example

@@ -6,11 +6,11 @@ import {
   useCalendarPermissions,
 } from 'expo-calendar/next';
 import { type ReactNode, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
-import { BodyText } from '../../components/BodyText';
 
 type StepProps = {
   number: number;

@@ -4,10 +4,10 @@ import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
-import { BodyText } from '../components/BodyText';
 
 export default function TaskManagerScreen(props: {
   navigation: StackNavigationProp<{

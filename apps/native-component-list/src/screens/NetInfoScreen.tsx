@@ -4,7 +4,6 @@ import { ScrollView, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
-import Colors from '../constants/Colors';
 
 interface ConnectionEvent {
   time: Date;

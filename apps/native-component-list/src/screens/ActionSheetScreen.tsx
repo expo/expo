@@ -11,9 +11,9 @@ import {
   View,
 } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import ShowActionSheetButton from '../components/ShowActionSheetButton';
 import { Colors } from '../constants';
-import { BodyText } from '../components/BodyText';
 
 const Button: React.FunctionComponent<TouchableOpacityProps> = (props) => {
   return (

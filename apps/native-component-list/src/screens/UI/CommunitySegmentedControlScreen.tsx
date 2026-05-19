@@ -3,6 +3,7 @@ import SegmentedControl, {
 } from '@expo/ui/community/segmented-control';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+
 import { BodyText } from '../../components/BodyText';
 
 // Adapted from https://github.com/react-native-community/segmented-control/blob/master/example
