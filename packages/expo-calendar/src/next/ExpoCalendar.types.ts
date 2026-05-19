@@ -27,7 +27,7 @@ export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & Presen
 
 export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
-export type AddEventWithFormOptions = {
+export type AddEventWithFormOptions = PresentationOptions & {
   title?: string;
   startDate?: Date | string;
   endDate?: Date | string;
@@ -204,7 +204,6 @@ export declare class ExpoCalendar {
   /**
    * Presents the system-provided dialog to create a new event in this calendar, pre-filled with the provided data.
    * Requires at minimum write-only calendar permission.
-   * @platform ios
    */
   addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult>;
 

@@ -498,7 +498,10 @@ export async function test(t) {
       t.it('creates an event via UI', async () => {
         const eventData = createEventData();
         await alertAndWaitForResponse('Please confirm the event creation dialog.');
-        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+        const result = await calendar.addEventWithForm({
+          ...eventData,
+          ...dontStartNewTask,
+        });
         if (Platform.OS === 'ios') {
           t.expect(result.action).toBe('saved');
           t.expect(typeof result.id).toBe('string');
