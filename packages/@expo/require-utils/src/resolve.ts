@@ -73,6 +73,13 @@ export function resolveFrom(
       // (3.1) direct match
       if (resolveType === ResolveType.FILE) {
         return candidate;
+      } else if (resolveType === ResolveType.ENOENT) {
+        // Optimization: If the directory itself doesn't exist, there's no point in us continuing
+        // to check for more files in this directory
+        const dirname = path.dirname(candidate);
+        if (dirname !== modulesDir && !fs.existsSync(dirname)) {
+          continue;
+        }
       }
       // (3.2) check against match with extensions
       for (let ext of exts) {
