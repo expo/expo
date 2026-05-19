@@ -62,7 +62,7 @@ internal class WifiSignalStrengthMonitor(
   fun getStrengthFromCapabilities(capabilities: NetworkCapabilities): Int {
     val transportInfo = capabilities.transportInfo ?: return getErrorValue()
     if (transportInfo !is WifiInfo) {
-      Log.e(TAG, "expo-network requested info about Wi-Fi networks but get transport info of type: " + transportInfo::class.simpleName)
+      Log.e(TAG, "expo-network requested info about Wi-Fi networks but got transport info of type: " + transportInfo::class.simpleName)
       return getErrorValue()
     }
 
@@ -98,14 +98,14 @@ internal class WifiSignalStrengthMonitor(
       } else {
         if (maxSignalLevel <= 0) {
           Log.w(TAG, "Invalid max signal level: $maxSignalLevel. Returning raw signal level: $qualityRating")
-          qualityRating
-        } else {
-          ((qualityRating / maxSignalLevel.toFloat()) * CellSignalStrength.SIGNAL_STRENGTH_GREAT).roundToInt()
+          return qualityRating
         }
+
+        ((qualityRating / maxSignalLevel.toFloat()) * CellSignalStrength.SIGNAL_STRENGTH_GREAT).roundToInt()
       }
     } else {
       @Suppress("DEPRECATION")
-      WifiManager.calculateSignalLevel(rssi, CellSignalStrength.SIGNAL_STRENGTH_GREAT + 1)
+      (WifiManager.calculateSignalLevel(rssi, CellSignalStrength.SIGNAL_STRENGTH_GREAT + 1))
     }
   }
 
