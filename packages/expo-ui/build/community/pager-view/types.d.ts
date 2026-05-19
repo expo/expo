@@ -114,7 +114,10 @@ export type PagerViewRef = {
     /**
      * Imperatively enable or disable user scrolling — convenient when
      * toggling from a non-React context like a ref-based gesture handler.
-     * Equivalent to setting the `scrollEnabled` prop.
+     *
+     * > **Note:** If the `scrollEnabled` prop is also provided, subsequent
+     * > prop changes win and reset the value set imperatively. To use the
+     * > imperative path exclusively, omit the prop.
      *
      * > Unlike upstream `react-native-pager-view` (which calls UIManager
      * > directly), this triggers a re-render of `PagerView` so the new

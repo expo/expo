@@ -3,6 +3,7 @@ import {
   isValidElement,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -75,14 +76,19 @@ export function PagerView(props: PagerViewProps) {
     setScrollEnabledState(scrollEnabled);
   }, [scrollEnabled]);
 
+  const validChildren = useMemo(
+    () => Children.toArray(children).filter((c): c is ReactElement => isValidElement(c)),
+    [children]
+  );
+  const pageCount = validChildren.length;
   const pageCountRef = useRef(0);
+  pageCountRef.current = pageCount;
 
   // Clamp on first render — out-of-range initials produce an id that matches
   // no `Group`, leaving `.scrollPosition(id:)` silently stuck at 0.
   const [clampedInitialPage] = useState(() => {
-    const count = Children.count(children);
-    if (count === 0) return 0;
-    return Math.max(0, Math.min(count - 1, initialPage));
+    if (pageCount === 0) return 0;
+    return Math.max(0, Math.min(pageCount - 1, initialPage));
   });
 
   const activePageState = useNativeState<string | null>(
@@ -93,13 +99,19 @@ export function PagerView(props: PagerViewProps) {
   // writes; dedup against this ref so `onPageSelected` fires once per change.
   const lastSelectedPageRef = useRef(clampedInitialPage);
 
+  // Read the latest `onPageSelected` through a ref so the shrink-clamp effect
+  // doesn't need it in deps (and won't re-run / double-fire on callback
+  // identity changes).
+  const onPageSelectedRef = useRef(onPageSelected);
+  onPageSelectedRef.current = onPageSelected;
+
   const handleScrolledIDChange = (newId: string | null) => {
     if (newId == null) return;
     const page = parseInt(newId, 10);
     if (!Number.isFinite(page)) return;
     if (page !== lastSelectedPageRef.current) {
       lastSelectedPageRef.current = page;
-      onPageSelected?.(wrapNativeEvent({ position: page }));
+      onPageSelectedRef.current?.(wrapNativeEvent({ position: page }));
     }
   };
 
@@ -110,6 +122,30 @@ export function PagerView(props: PagerViewProps) {
     if (count === 0 || !Number.isFinite(page)) return null;
     return Math.max(0, Math.min(count - 1, page));
   };
+
+  // Bypasses the public `value` setter on JS-thread writes — its dev warning
+  // is aimed at user code; our own imperative API is an intentional JS-thread
+  // writer. Inside a worklet we use `activePageState.value = …` directly,
+  // which routes through the SharedObject prototype installed by `index.fx`.
+  const writePageFromJS = (id: string) => {
+    (activePageState as unknown as { setValue(v: { value: string }): void }).setValue({
+      value: id,
+    });
+  };
+
+  // Re-anchor when the page count drops past the current selection. Matches
+  // Android, where Compose's `PagerState` clamps `currentPage` to the new
+  // max and `settledPage` fires the corresponding event. Without this on
+  // iOS, `.scrollPosition(id:)` silently no-ops on the missing id and the
+  // pager visually drifts without firing `onPageSelected`.
+  useLayoutEffect(() => {
+    if (pageCount === 0) return;
+    if (lastSelectedPageRef.current < pageCount) return;
+    const clamped = pageCount - 1;
+    lastSelectedPageRef.current = clamped;
+    writePageFromJS(String(clamped));
+    onPageSelectedRef.current?.(wrapNativeEvent({ position: clamped }));
+  }, [pageCount]);
 
   useImperativeHandle(
     ref,
@@ -125,16 +161,16 @@ export function PagerView(props: PagerViewProps) {
           // SwiftUI's default paging animation.
           withAnimation(Animation.default, () => {
             'worklet';
-            (activePageState as any).setValue({ value: nextId });
+            activePageState.value = nextId;
           });
         } else {
-          (activePageState as any).setValue({ value: nextId });
+          writePageFromJS(nextId);
         }
       },
       setPageWithoutAnimation: (page: number) => {
         const clamped = clampPage(page);
         if (clamped == null) return;
-        (activePageState as any).setValue({ value: String(clamped) });
+        writePageFromJS(String(clamped));
       },
       setScrollEnabled: setScrollEnabledState,
     }),
@@ -153,16 +189,13 @@ export function PagerView(props: PagerViewProps) {
       )
     : null;
 
-  const pages = Children.toArray(children)
-    .filter((child): child is ReactElement => isValidElement(child))
-    .map((child, index) => (
-      <Group
-        key={child.key ?? String(index)}
-        modifiers={[containerRelativeFrame({ axes: 'horizontal' }), id(String(index))]}>
-        <RNHostView>{child}</RNHostView>
-      </Group>
-    ));
-  pageCountRef.current = pages.length;
+  const pages = validChildren.map((child, index) => (
+    <Group
+      key={child.key ?? String(index)}
+      modifiers={[containerRelativeFrame({ axes: 'horizontal' }), id(String(index))]}>
+      <RNHostView>{child}</RNHostView>
+    </Group>
+  ));
 
   // Toggle the flag rather than splicing the modifier in/out — SwiftUI diffs
   // modifiers by position, so a shifting array resets the ScrollView's content.
@@ -233,4 +266,3 @@ function warnIfPreIOS18ScrollCallbacksDropped(
     );
   }
 }
-

@@ -1,4 +1,3 @@
-import '../State/index.fx';
 import './MaterialSymbolsAssetsTransformer.fx';
 
 export * from './AlertDialog';

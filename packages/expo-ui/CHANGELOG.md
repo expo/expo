@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Added `@expo/ui/community/pager-view` — a drop-in replacement for `react-native-pager-view`. ([#45499](https://github.com/expo/expo/pull/45499) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `textStyle` option to `font` modifier in `@expo/ui/swift-ui` for iOS Dynamic Type scaling. ([#46007](https://github.com/expo/expo/pull/46007) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🐛 Bug fixes
@@ -41,7 +42,6 @@
 - [universal] Added `matchContents`, `layoutDirection`, `onLayoutContent`, `useViewportSizeMeasurement`, and `ignoreSafeArea` support to the universal `Host`. ([#45776](https://github.com/expo/expo/pull/45776) by [@zoontek](https://github.com/zoontek))
 - [iOS] Added `symbolEffect` modifier. ([#45727](https://github.com/expo/expo/pull/45727) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `Alert` component wrapping SwiftUI's `.alert(_:isPresented:actions:message:)` modifier, with `Alert.Trigger`, `Alert.Actions`, and optional `Alert.Message` slots. Mirrors the existing `ConfirmationDialog` shape so it composes the same way with `Button` actions and `isPresented` bindings. ([#45700](https://github.com/expo/expo/pull/45700) by [@ramonclaudio](https://github.com/ramonclaudio))
-- Added `@expo/ui/community/pager-view` — a drop-in replacement for `react-native-pager-view`. ([#45499](https://github.com/expo/expo/pull/45499) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 

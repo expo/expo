@@ -2,6 +2,10 @@ import { requireNativeModule } from 'expo';
 import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
 import { useRef } from 'react';
 
+// Side-effect: installs SharedObject support in the worklet runtime so
+// `state.value` reads/writes from a worklet work for deep-path consumers
+// that import `useNativeState` without going through `useWorkletProp`.
+import './index.fx';
 import { worklets } from './optionalWorklets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
