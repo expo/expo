@@ -261,14 +261,22 @@ export class FileSystemFile {
     const existing = store.get(key);
     const now = nextMockTimestamp();
     const createdAt = existing?.exists ? (existing.createdAt ?? now) : now;
+    const type = existing?.type ?? null;
     if (options.append) {
       const prior = existing?.bytes ?? new Uint8Array(0);
       const merged = new Uint8Array(prior.length + bytes.length);
       merged.set(prior, 0);
       merged.set(bytes, prior.length);
-      store.set(key, { kind: 'file', bytes: merged, exists: true, createdAt, modifiedAt: now });
+      store.set(key, {
+        kind: 'file',
+        bytes: merged,
+        type,
+        exists: true,
+        createdAt,
+        modifiedAt: now,
+      });
     } else {
-      store.set(key, { kind: 'file', bytes, exists: true, createdAt, modifiedAt: now });
+      store.set(key, { kind: 'file', bytes, type, exists: true, createdAt, modifiedAt: now });
     }
   }
 
@@ -452,6 +460,7 @@ export class FileSystemFileHandle {
         store.set(key, {
           kind: 'file',
           bytes: new Uint8Array(0),
+          type: entry?.type ?? null,
           exists: true,
           createdAt: entry?.createdAt ?? nextMockTimestamp(),
           modifiedAt: nextMockTimestamp(),

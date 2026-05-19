@@ -395,6 +395,21 @@ describe('expo-file-system behavioral mock', () => {
       expect(file.textSync()).toBe('fresh');
     });
 
+    it('preserves the stored mime type across write() and Truncate opens', () => {
+      const dir = new Directory(Paths.cache, 'typed');
+      dir.create();
+      const file = dir.createFile('x.txt', 'text/plain');
+      expect(file.type).toBe('text/plain');
+
+      file.write('hello');
+      expect(file.type).toBe('text/plain');
+
+      const handle = file.open(FileMode.Truncate);
+      handle.writeBytes(encode('fresh'));
+      handle.close();
+      expect(file.type).toBe('text/plain');
+    });
+
     it('FileMode.ReadWrite is the default and allows both', () => {
       const file = makeFile('rw.txt', 'seed');
       const handle = file.open();
