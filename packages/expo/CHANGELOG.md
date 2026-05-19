@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.25 — 2026-05-19
+
+### 🐛 Bug fixes
+
 - Fix `expo/fetch` not respecting its own `NativeRequest` as `RequestInit` inputs ([#45958](https://github.com/expo/expo/pull/45958) by [@kitten](https://github.com/kitten))
 - Accept `credentials: 'same-origin'` in `expo/fetch` mirroring `include` ([#45958](https://github.com/expo/expo/pull/45958) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 55.0.24 — 2026-05-13
 

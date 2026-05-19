@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.23 — 2026-05-19
+
+### 🐛 Bug fixes
+
 - [Android] Fix app restart when not using `ReactApplication` ([#45660](https://github.com/expo/expo/pull/45660) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [cli] Write private key into owner-only permissions file ([#45880](https://github.com/expo/expo/pull/45880) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 55.0.22 — 2026-05-13
 

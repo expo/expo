@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix containment check in tar extraction to cover parallel folders with same prefix ([#45882](https://github.com/expo/expo/pull/45882) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 3.6.15 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Fix containment check in tar extraction to cover parallel folders with same prefix ([#45882](https://github.com/expo/expo/pull/45882) by [@kitten](https://github.com/kitten))
 
 ## 3.6.14 — 2026-05-13
 

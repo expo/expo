@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.15 — 2026-05-19
+
+### 🐛 Bug fixes
+
 - Add missing HTML attribute sanitization to vendored react-helmet-async ([#45851](https://github.com/expo/expo/pull/45851) by [@kitten](https://github.com/kitten))
 - Always use HTTP POST when invoking RSC server actions ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
 

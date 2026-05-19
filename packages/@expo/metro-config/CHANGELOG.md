@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.22 — 2026-05-19
+
+### 💡 Others
+
 - Bump to `postcss@^8.5.14` ([#45629](https://github.com/expo/expo/pull/45629) by [@kitten](https://github.com/kitten))
 
 ## 55.0.21 — 2026-05-13

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Disallow devtools plugins to point to `webpageRoot` outside of their own bounds ([#45841](https://github.com/expo/expo/pull/45841) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 55.0.23 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Disallow devtools plugins to point to `webpageRoot` outside of their own bounds ([#45841](https://github.com/expo/expo/pull/45841) by [@kitten](https://github.com/kitten))
 
 ## 55.0.22 — 2026-05-13
 

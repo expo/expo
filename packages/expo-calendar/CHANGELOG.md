@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Add missing escaping of `calendarIds` filter input ([#45951](https://github.com/expo/expo/pull/45951) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 55.0.15 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- [Android] Add missing escaping of `calendarIds` filter input ([#45951](https://github.com/expo/expo/pull/45951) by [@kitten](https://github.com/kitten))
 
 ## 55.0.14 — 2026-04-09
 
