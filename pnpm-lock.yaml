@@ -2186,9 +2186,6 @@ importers:
       glob:
         specifier: ^13.0.0
         version: 13.0.6
-      resolve-from:
-        specifier: ^5.0.0
-        version: 5.0.0
       semver:
         specifier: ^7.5.4
         version: 7.7.4
