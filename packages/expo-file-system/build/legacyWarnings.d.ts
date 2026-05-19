@@ -12,7 +12,7 @@ export declare function readAsStringAsync(fileUri: string, options?: ReadingOpti
  */
 export declare function getContentUriAsync(fileUri: string): Promise<string>;
 /**
- * @deprecated Use `new File().write()` or import this method from `expo-file-system/legacy`. This method will throw in runtime.
+ * @deprecated Use `await new File().write()` or `new File().writeSync()` or import this method from `expo-file-system/legacy`. This method will throw in runtime.
  */
 export declare function writeAsStringAsync(fileUri: string, contents: string, options?: WritingOptions): Promise<void>;
 /**
