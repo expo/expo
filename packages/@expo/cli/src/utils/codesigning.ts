@@ -61,8 +61,15 @@ export function getDevelopmentCodeSigningDirectory(): string {
   return path.join(getExpoHomeDirectory(), 'codesigning');
 }
 
+function assertBasenameValue(input: string): void {
+  if (!input || input === '.' || input === '..' || input !== path.basename(input)) {
+    throw new CommandError('Invalid EAS project ID for development code signing cache');
+  }
+}
+
 function getProjectDevelopmentCodeSigningInfoFile<T extends JSONObject>(defaults: T) {
   function getFile(easProjectId: string): JsonFile<T> {
+    assertBasenameValue(easProjectId);
     const filePath = path.join(
       getDevelopmentCodeSigningDirectory(),
       easProjectId,
