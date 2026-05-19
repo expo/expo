@@ -27,20 +27,26 @@ const asDevice = (device: Partial<Device>): Device => device as Device;
 const device = asDevice({ name: 'Pixel 5', pid: '123' });
 
 describe(openUrlAsync, () => {
-  it(`escapes & in the url`, async () => {
+  it(`quotes the url`, async () => {
     await openUrlAsync(device, { url: 'acme://foo?bar=1&baz=2' });
     expect(getServer().runAsync).toHaveBeenCalledWith([
       '-s',
       '123',
       'shell',
-      'am',
-      'start',
-      '-a',
-      'android.intent.action.VIEW',
-      '-d',
-      // Ensure this is escaped
-      'acme://foo?bar=1\\&baz=2',
+      "'am'",
+      "'start'",
+      "'-a'",
+      "'android.intent.action.VIEW'",
+      "'-d'",
+      "'acme://foo?bar=1&baz=2'",
     ]);
+  });
+
+  it(`neutralizes shell-injection attempts in the url`, async () => {
+    await openUrlAsync(device, { url: 'acme://x; reboot' });
+    expect(getServer().runAsync).toHaveBeenCalledWith(
+      expect.arrayContaining(["'acme://x; reboot'"])
+    );
   });
 });
 
@@ -64,12 +70,12 @@ describe(launchActivityAsync, () => {
       '-s',
       '123',
       'shell',
-      'am',
-      'start',
-      '-f',
-      '0x20000000',
-      '-n',
-      'dev.bacon.app/.MainActivity',
+      "'am'",
+      "'start'",
+      "'-f'",
+      "'0x20000000'",
+      "'-n'",
+      "'dev.bacon.app/.MainActivity'",
     ]);
   });
   it(`launches activity with url`, async () => {
@@ -82,15 +88,24 @@ describe(launchActivityAsync, () => {
       '-s',
       '123',
       'shell',
-      'am',
-      'start',
-      '-f',
-      '0x20000000',
-      '-n',
-      'dev.expo.custom.appid/dev.bacon.app.MainActivity',
-      '-d',
-      'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081',
+      "'am'",
+      "'start'",
+      "'-f'",
+      "'0x20000000'",
+      "'-n'",
+      "'dev.expo.custom.appid/dev.bacon.app.MainActivity'",
+      "'-d'",
+      "'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081'",
     ]);
+  });
+  it(`neutralizes shell-injection attempts in the launch activity`, async () => {
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('...');
+    await launchActivityAsync(device, {
+      launchActivity: 'dev.bacon.app/.MainActivity; reboot',
+    });
+    expect(getServer().runAsync).toHaveBeenCalledWith(
+      expect.arrayContaining(["'dev.bacon.app/.MainActivity; reboot'"])
+    );
   });
 });
 
@@ -110,17 +125,24 @@ describe(isPackageInstalledAsync, () => {
       '-s',
       '123',
       'shell',
-      'pm',
-      'list',
-      'packages',
-      '--user',
-      '0',
-      'com.google.android.youtube',
+      "'pm'",
+      "'list'",
+      "'packages'",
+      "'--user'",
+      "'0'",
+      "'com.google.android.youtube'",
     ]);
   });
   it(`returns false when a package is not isntalled`, async () => {
     jest.mocked(getServer().runAsync).mockResolvedValueOnce('');
     expect(await isPackageInstalledAsync(device, 'com.google.android.youtube')).toBe(false);
+  });
+  it(`neutralizes shell-injection attempts in the package name`, async () => {
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('');
+    await isPackageInstalledAsync(device, 'com.google.android.youtube; reboot');
+    expect(getServer().runAsync).toHaveBeenCalledWith(
+      expect.arrayContaining(["'com.google.android.youtube; reboot'"])
+    );
   });
 });
 
