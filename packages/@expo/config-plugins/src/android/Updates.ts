@@ -23,6 +23,7 @@ import {
   getUpdatesCodeSigningMetadataStringified,
   getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
+  getUpdatesMaxUpdatesToKeep,
   getUpdatesTimeout,
   getUpdateUrl,
   getUpdatesBsdiffPatchSupportEnabled,
@@ -42,6 +43,7 @@ export enum Config {
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
   DISABLE_ANTI_BRICKING_MEASURES = 'expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES',
   BSDIFF_PATCH_SUPPORT = 'expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT',
+  MAX_UPDATES_TO_KEEP = 'expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -202,6 +204,17 @@ export async function setUpdatesConfigAsync(
     Config.BSDIFF_PATCH_SUPPORT,
     getUpdatesBsdiffPatchSupportEnabled(config) ? 'true' : 'false'
   );
+
+  const maxUpdatesToKeep = getUpdatesMaxUpdatesToKeep(config);
+  if (maxUpdatesToKeep !== undefined) {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.MAX_UPDATES_TO_KEEP,
+      String(maxUpdatesToKeep)
+    );
+  } else {
+    removeMetaDataItemFromMainApplication(mainApplication, Config.MAX_UPDATES_TO_KEEP);
+  }
 
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }

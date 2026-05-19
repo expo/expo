@@ -29,6 +29,7 @@ public enum UpdatesConfigError: Error, Sendable, LocalizedError {
   case ExpoUpdatesConfigPlistError
   case ExpoUpdatesConfigMissingURLError
   case ExpoUpdatesMissingRuntimeVersionError
+  case ExpoUpdatesInvalidMaxUpdatesToKeepError
 
   public var errorDescription: String? {
     switch self {
@@ -38,6 +39,8 @@ public enum UpdatesConfigError: Error, Sendable, LocalizedError {
       return "Config for expo-updates missing URL"
     case .ExpoUpdatesMissingRuntimeVersionError:
       return "Config for expo-updates missing runtime version"
+    case .ExpoUpdatesInvalidMaxUpdatesToKeepError:
+      return "Config for expo-updates max updates to keep must be at least 2"
     }
   }
 }
@@ -81,6 +84,7 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey = "EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode"
   public static let EXUpdatesConfigDisableAntiBrickingMeasures = "EXUpdatesDisableAntiBrickingMeasures"
   public static let EXUpdatesConfigEnableBsdiffPatchSupportKey = "EXUpdatesEnableBsdiffPatchSupport"
+  public static let EXUpdatesConfigMaxUpdatesToKeepKey = "EXUpdatesMaxUpdatesToKeep"
 
   public static let EXUpdatesConfigCheckOnLaunchValueAlways = "ALWAYS"
   public static let EXUpdatesConfigCheckOnLaunchValueWifiOnly = "WIFI_ONLY"
@@ -104,6 +108,7 @@ public final class UpdatesConfig: NSObject {
   public let hasEmbeddedUpdate: Bool
   public let originalHasEmbeddedUpdate: Bool
   public let disableAntiBrickingMeasures: Bool
+  public let maxUpdatesToKeep: Int
   public let hasUpdatesOverride: Bool
 
   private let cachedConfigDictionary: [String: Any]
@@ -124,6 +129,7 @@ public final class UpdatesConfig: NSObject {
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool,
     enableBsdiffPatchSupport: Bool,
     disableAntiBrickingMeasures: Bool,
+    maxUpdatesToKeep: Int,
     hasUpdatesOverride: Bool
   ) {
     self.cachedConfigDictionary = cachedConfigDictionary
@@ -141,6 +147,7 @@ public final class UpdatesConfig: NSObject {
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
     self.enableBsdiffPatchSupport = enableBsdiffPatchSupport
     self.disableAntiBrickingMeasures = disableAntiBrickingMeasures
+    self.maxUpdatesToKeep = maxUpdatesToKeep
     self.hasUpdatesOverride = hasUpdatesOverride
   }
 
@@ -291,6 +298,7 @@ public final class UpdatesConfig: NSObject {
 
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
     let enableBsdiffPatchSupport = config.optionalValue(forKey: EXUpdatesConfigEnableBsdiffPatchSupportKey) ?? true
+    let maxUpdatesToKeep = try getMaxUpdatesToKeep(fromDictionary: config)
 
     return UpdatesConfig(
       cachedConfigDictionary: config,
@@ -308,6 +316,7 @@ public final class UpdatesConfig: NSObject {
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode,
       enableBsdiffPatchSupport: enableBsdiffPatchSupport,
       disableAntiBrickingMeasures: getDisableAntiBrickingMeasures(fromDictionary: config),
+      maxUpdatesToKeep: maxUpdatesToKeep,
       hasUpdatesOverride: configOverride != nil
     )
   }
@@ -370,6 +379,29 @@ public final class UpdatesConfig: NSObject {
 
   private static func getDisableAntiBrickingMeasures(fromDictionary config: [String: Any]) -> Bool {
     return config.optionalValue(forKey: EXUpdatesConfigDisableAntiBrickingMeasures) ?? false
+  }
+
+  private static func getMaxUpdatesToKeep(fromDictionary config: [String: Any]) throws -> Int {
+    let maxUpdatesToKeep = config.optionalValue(forKey: EXUpdatesConfigMaxUpdatesToKeepKey).let { (it: Any) in
+      // The only way I can figure out how to detect numbers is to do a is NSNumber (is any Numeric didn't work).
+      // This might be able to change when we switch out the plist decoder above
+      // swiftlint:disable:next legacy_objc_type
+      if let it = it as? NSNumber {
+        return it.intValue
+      }
+      if let it = it as? String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .none
+        return formatter.number(from: it)?.intValue
+      }
+      return nil
+    } ?? 2
+
+    guard maxUpdatesToKeep >= 2 else {
+      throw UpdatesConfigError.ExpoUpdatesInvalidMaxUpdatesToKeepError
+    }
+
+    return maxUpdatesToKeep
   }
 
   private static func getHasEmbeddedUpdate(

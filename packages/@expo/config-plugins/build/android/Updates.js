@@ -77,6 +77,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["CODE_SIGNING_METADATA"] = "expo.modules.updates.CODE_SIGNING_METADATA";
   Config["DISABLE_ANTI_BRICKING_MEASURES"] = "expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES";
   Config["BSDIFF_PATCH_SUPPORT"] = "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT";
+  Config["MAX_UPDATES_TO_KEEP"] = "expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP";
   return Config;
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
@@ -163,6 +164,12 @@ async function setUpdatesConfigAsync(projectRoot, config, androidManifest, expoU
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES);
   }
   (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.BSDIFF_PATCH_SUPPORT, (0, _Updates().getUpdatesBsdiffPatchSupportEnabled)(config) ? 'true' : 'false');
+  const maxUpdatesToKeep = (0, _Updates().getUpdatesMaxUpdatesToKeep)(config);
+  if (maxUpdatesToKeep !== undefined) {
+    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.MAX_UPDATES_TO_KEEP, String(maxUpdatesToKeep));
+  } else {
+    (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.MAX_UPDATES_TO_KEEP);
+  }
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }
 async function setVersionsConfigAsync(projectRoot, config, androidManifest) {

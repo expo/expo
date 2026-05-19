@@ -180,6 +180,10 @@ export interface ExpoConfig {
      * Whether to enable support for downloading and applying bundle diffs using bsdiff. Defaults to false.
      */
     enableBsdiffPatchSupport?: boolean;
+    /**
+     * Maximum number of updates to keep cached on the device, including the currently launched update. Must be at least 2. Defaults to 2.
+     */
+    maxUpdatesToKeep?: number;
   };
   /**
    * Provide per-locale values for System Dialog prompts such as Permissions Boxes, and create Localizable.strings file to localize (for example) push notifications. Platform-specific locale strings should be nested under `ios` and `android` keys.

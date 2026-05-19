@@ -13,7 +13,8 @@ export declare enum Config {
     CODE_SIGNING_CERTIFICATE = "expo.modules.updates.CODE_SIGNING_CERTIFICATE",
     CODE_SIGNING_METADATA = "expo.modules.updates.CODE_SIGNING_METADATA",
     DISABLE_ANTI_BRICKING_MEASURES = "expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES",
-    BSDIFF_PATCH_SUPPORT = "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT"
+    BSDIFF_PATCH_SUPPORT = "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+    MAX_UPDATES_TO_KEEP = "expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP"
 }
 export declare const withUpdates: ConfigPlugin;
 export declare function applyRuntimeVersionFromConfigAsync(config: ExportedConfigWithProps<ResourceXML>, stringsJSON: ResourceXML): Promise<ResourceXML>;

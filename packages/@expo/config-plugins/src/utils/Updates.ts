@@ -159,6 +159,12 @@ export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): n
   return config.updates?.fallbackToCacheTimeout ?? 0;
 }
 
+export function getUpdatesMaxUpdatesToKeep(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): number | undefined {
+  return config.updates?.maxUpdatesToKeep;
+}
+
 export function getUpdatesCheckOnLaunch(
   config: Pick<ExpoConfigUpdates, 'updates'>,
   expoUpdatesPackageVersion?: string | null

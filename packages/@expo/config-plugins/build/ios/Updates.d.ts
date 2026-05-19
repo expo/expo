@@ -12,7 +12,8 @@ export declare enum Config {
     CODE_SIGNING_CERTIFICATE = "EXUpdatesCodeSigningCertificate",
     CODE_SIGNING_METADATA = "EXUpdatesCodeSigningMetadata",
     DISABLE_ANTI_BRICKING_MEASURES = "EXUpdatesDisableAntiBrickingMeasures",
-    ENABLE_BSDIFF_PATCH_SUPPORT = "EXUpdatesEnableBsdiffPatchSupport"
+    ENABLE_BSDIFF_PATCH_SUPPORT = "EXUpdatesEnableBsdiffPatchSupport",
+    MAX_UPDATES_TO_KEEP = "EXUpdatesMaxUpdatesToKeep"
 }
 export declare const withUpdates: ConfigPlugin;
 /**

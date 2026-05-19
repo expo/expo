@@ -54,6 +54,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["CODE_SIGNING_METADATA"] = "EXUpdatesCodeSigningMetadata";
   Config["DISABLE_ANTI_BRICKING_MEASURES"] = "EXUpdatesDisableAntiBrickingMeasures";
   Config["ENABLE_BSDIFF_PATCH_SUPPORT"] = "EXUpdatesEnableBsdiffPatchSupport";
+  Config["MAX_UPDATES_TO_KEEP"] = "EXUpdatesMaxUpdatesToKeep";
   return Config;
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
@@ -133,6 +134,12 @@ async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdates
     delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
   }
   newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = (0, _Updates().getUpdatesBsdiffPatchSupportEnabled)(config);
+  const maxUpdatesToKeep = (0, _Updates().getUpdatesMaxUpdatesToKeep)(config);
+  if (maxUpdatesToKeep !== undefined) {
+    newExpoPlist[Config.MAX_UPDATES_TO_KEEP] = maxUpdatesToKeep;
+  } else {
+    delete newExpoPlist[Config.MAX_UPDATES_TO_KEEP];
+  }
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }
 async function setVersionsConfigAsync(projectRoot, config, expoPlist) {
