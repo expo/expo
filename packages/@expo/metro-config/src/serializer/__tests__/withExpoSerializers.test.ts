@@ -1548,6 +1548,36 @@ describe('serializes', () => {
     expect(byOrigin['math.js'].source).toContain(byOrigin['util.js'].filename);
   });
 
+  it(`mutually async-importing chunks invalidate each other and reference each other's actual filenames`, async () => {
+    const sources = (aBody: string) => ({
+      'index.js': `import('./a');`,
+      'a.js': `import('./b'); export const a = ${JSON.stringify(aBody)};`,
+      'b.js': `import('./a'); export const b = 'b';`,
+    });
+
+    const artifacts = await serializeSplitAsync(sources('before'));
+    const artifactsRepeat = await serializeSplitAsync(sources('before'));
+    const artifactsChanged = await serializeSplitAsync(sources('after'));
+
+    const byOrigin = (a: SerialAsset[]) =>
+      Object.fromEntries(a.map((art) => [art.originFilename, art]));
+    const first = byOrigin(artifacts);
+    const repeat = byOrigin(artifactsRepeat);
+    const changed = byOrigin(artifactsChanged);
+
+    // Deterministic: identical sources produce identical filenames.
+    expect(first['a.js'].filename).toEqual(repeat['a.js'].filename);
+    expect(first['b.js'].filename).toEqual(repeat['b.js'].filename);
+
+    // Cycle members cross-invalidate: changing only `a` shifts `b`'s filename too.
+    expect(first['a.js'].filename).not.toEqual(changed['a.js'].filename);
+    expect(first['b.js'].filename).not.toEqual(changed['b.js'].filename);
+
+    // Each member's emitted bundle references the other's actual filename.
+    expect(first['a.js'].source).toContain(first['b.js'].filename);
+    expect(first['b.js'].source).toContain(first['a.js'].filename);
+  });
+
   describe('client references', () => {
     it(`bundles with client references`, async () => {
       const artifacts = await serializeSplitAsync(
