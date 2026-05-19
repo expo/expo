@@ -36,7 +36,9 @@ export type ObservableState<T> = SharedObject & {
      * }, []);
      * ```
      */
-    onChange: ((value: T) => void) | null;
+    onChange: {
+        listener(value: T): void;
+    }['listener'] | null;
 };
 /**
  * Creates an observable native state that is automatically cleaned up when the

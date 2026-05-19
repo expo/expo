@@ -44,7 +44,7 @@ export type ObservableState<T> = SharedObject & {
    * }, []);
    * ```
    */
-  onChange: ((value: T) => void) | null;
+  onChange: { listener(value: T): void }['listener'] | null;
 };
 
 /**
