@@ -34,7 +34,7 @@ export function BottomSheet({
   snapPoints,
   testID,
 }: BottomSheetProps) {
-  const colorScheme = useColorScheme();
+  const isDark = useColorScheme() === 'dark';
   const vaulSnapPoints = snapPoints?.length ? snapPoints.map(snapPointToVaul) : undefined;
   const hasSnapPoints = vaulSnapPoints != null;
 
@@ -50,7 +50,7 @@ export function BottomSheet({
         <Drawer.Content
           style={{
             ...contentStyle,
-            ...(colorScheme === 'dark' && { backgroundColor: '#000' }),
+            ...(isDark && { backgroundColor: '#000' }),
             // Snap-points mode: vaul translates the drawer by `viewport - snapHeight`.
             // The drawer has to fill the viewport or it gets pushed off-screen.
             ...(hasSnapPoints ? snapPointContentStyle : noSnapPointContentStyle),

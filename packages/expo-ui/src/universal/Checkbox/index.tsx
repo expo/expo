@@ -39,7 +39,7 @@ const NativeCheckbox = (
  * A toggle control that represents a checked or unchecked state.
  */
 export function Checkbox({ value, onValueChange, label, disabled = false, testID }: CheckboxProps) {
-  const colorScheme = useColorScheme();
+  const isDark = useColorScheme() === 'dark';
 
   return (
     <View role="label" aria-disabled={disabled} style={[styles.label, disabled && styles.disabled]}>
@@ -50,7 +50,7 @@ export function Checkbox({ value, onValueChange, label, disabled = false, testID
         data-testid={testID}
         style={styles.cursorInherit}
       />
-      {label != null && <Text style={colorScheme === 'dark' && styles.darkText}>{label}</Text>}
+      {label != null && <Text style={isDark && styles.darkText}>{label}</Text>}
     </View>
   );
 }

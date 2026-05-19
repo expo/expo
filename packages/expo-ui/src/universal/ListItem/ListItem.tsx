@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import { extractListItemSlots } from './ListItemSlots';
 import type { ListItemProps } from './types';
@@ -25,6 +25,8 @@ export function ListItem(props: ListItemProps) {
     supportingText,
     testID,
   } = props;
+
+  const isDark = useColorScheme() === 'dark';
   const slots = extractListItemSlots(children);
   const leading = slots.leading ?? leadingProp;
   const trailing = slots.trailing ?? trailingProp;
@@ -34,7 +36,7 @@ export function ListItem(props: ListItemProps) {
     <Pressable onPress={onPress} style={styles.row} testID={testID}>
       {leading != null ? <View style={styles.slot}>{leading}</View> : null}
       <View style={styles.main}>
-        <Text>{slots.headline}</Text>
+        <Text style={isDark && styles.darkText}>{slots.headline}</Text>
         {supporting != null ? renderSupporting(supporting) : null}
       </View>
       {trailing != null ? <View style={styles.slot}>{trailing}</View> : null}
@@ -66,6 +68,9 @@ const styles = StyleSheet.create({
   supportingText: {
     fontSize: 13,
     color: '#6b7280',
+  },
+  darkText: {
+    color: '#fff',
   },
 });
 
