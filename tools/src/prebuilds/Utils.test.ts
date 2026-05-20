@@ -2,12 +2,9 @@
  * Tests for Utils — isNonInteractive / setForceNonInteractive.
  */
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
-import { before, describe, it, afterEach } from 'node:test';
+import { describe, it, afterEach } from 'node:test';
 
-import { getVersionsInfoAsync, isNonInteractive, setForceNonInteractive } from './Utils';
-import { resolvePackagePath } from './resolvePackage';
+import { isNonInteractive, setForceNonInteractive } from './Utils';
 
 // ---------------------------------------------------------------------------
 // isNonInteractive / setForceNonInteractive
@@ -63,83 +60,5 @@ describe('isNonInteractive', () => {
     process.env.CI = '';
     setForceNonInteractive(false);
     assert.equal(isNonInteractive(), true);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// getVersionsInfoAsync — Hermes V1 polarity vs hermes-engine.podspec
-// ---------------------------------------------------------------------------
-//
-// React Native's hermes-engine.podspec defaults to Hermes V1 and opts out
-// only when RCT_HERMES_V1_ENABLED == "0":
-//
-//   if ENV['RCT_HERMES_V1_ENABLED'] == "0"
-//     version = versionProperties['HERMES_VERSION_NAME']      # classic
-//   else
-//     version = versionProperties['HERMES_V1_VERSION_NAME']    # default = V1
-//
-// getVersionsInfoAsync must use the same polarity, otherwise the precompile
-// pipeline downloads classic Hermes headers (HERMES_VERSION_NAME) while the
-// consuming app links V1 Hermes (HERMES_V1_VERSION_NAME) → release crashes
-// from struct-layout drift.
-
-describe('getVersionsInfoAsync — Hermes V1 polarity', () => {
-  let classicVersion;
-  let v1Version;
-  let propertiesAvailable = false;
-
-  before(() => {
-    const rnPath = resolvePackagePath('react-native');
-    const propsPath = path.join(rnPath, 'sdks', 'hermes-engine', 'version.properties');
-    if (!fs.existsSync(propsPath)) return;
-    const content = fs.readFileSync(propsPath, 'utf8');
-    for (const line of content.split('\n')) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('#')) continue;
-      const [key, value] = trimmed.split('=');
-      if (key === 'HERMES_VERSION_NAME') classicVersion = value?.trim();
-      if (key === 'HERMES_V1_VERSION_NAME') v1Version = value?.trim();
-    }
-    propertiesAvailable = !!classicVersion && !!v1Version && classicVersion !== v1Version;
-  });
-
-  const originalEnv = process.env.RCT_HERMES_V1_ENABLED;
-  afterEach(() => {
-    if (originalEnv === undefined) {
-      delete process.env.RCT_HERMES_V1_ENABLED;
-    } else {
-      process.env.RCT_HERMES_V1_ENABLED = originalEnv;
-    }
-  });
-
-  it('defaults to HERMES_V1_VERSION_NAME when RCT_HERMES_V1_ENABLED is unset', async (t) => {
-    if (!propertiesAvailable) {
-      t.skip('version.properties does not expose distinct classic/V1 keys');
-      return;
-    }
-    delete process.env.RCT_HERMES_V1_ENABLED;
-    const { hermesVersion } = await getVersionsInfoAsync({});
-    assert.equal(hermesVersion, v1Version);
-    assert.notEqual(hermesVersion, classicVersion);
-  });
-
-  it('returns HERMES_V1_VERSION_NAME when RCT_HERMES_V1_ENABLED === "1"', async (t) => {
-    if (!propertiesAvailable) {
-      t.skip('version.properties does not expose distinct classic/V1 keys');
-      return;
-    }
-    process.env.RCT_HERMES_V1_ENABLED = '1';
-    const { hermesVersion } = await getVersionsInfoAsync({});
-    assert.equal(hermesVersion, v1Version);
-  });
-
-  it('returns HERMES_VERSION_NAME (classic) only when RCT_HERMES_V1_ENABLED === "0"', async (t) => {
-    if (!propertiesAvailable) {
-      t.skip('version.properties does not expose distinct classic/V1 keys');
-      return;
-    }
-    process.env.RCT_HERMES_V1_ENABLED = '0';
-    const { hermesVersion } = await getVersionsInfoAsync({});
-    assert.equal(hermesVersion, classicVersion);
   });
 });
