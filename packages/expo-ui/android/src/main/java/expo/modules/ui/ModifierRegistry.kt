@@ -82,12 +82,12 @@ typealias ModifierFactory = @Composable (ModifierType, ComposableScope?, AppCont
 // region Modifier Params
 
 @OptimizedRecord
-internal data class PaddingAllParams(
+data class PaddingAllParams(
   @Field val all: Int = 0
 ) : Record
 
 @OptimizedRecord
-internal data class PaddingParams(
+data class PaddingParams(
   @Field val start: Int = 0,
   @Field val top: Int = 0,
   @Field val end: Int = 0,
@@ -95,48 +95,48 @@ internal data class PaddingParams(
 ) : Record
 
 @OptimizedRecord
-internal data class SizeParams(
+data class SizeParams(
   @Field val width: Int = 0,
   @Field val height: Int = 0
 ) : Record
 
 @OptimizedRecord
-internal data class FillMaxSizeParams(
+data class FillMaxSizeParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
 @OptimizedRecord
-internal data class FillMaxWidthParams(
+data class FillMaxWidthParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
 @OptimizedRecord
-internal data class FillMaxHeightParams(
+data class FillMaxHeightParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
 @OptimizedRecord
-internal data class WidthParams(
+data class WidthParams(
   @Field val width: Int = 0
 ) : Record
 
 @OptimizedRecord
-internal data class HeightParams(
+data class HeightParams(
   @Field val height: Int = 0
 ) : Record
 
 @OptimizedRecord
-internal data class WrapContentWidthParams(
+data class WrapContentWidthParams(
   @Field val alignment: AlignmentType? = null
 ) : Record
 
 @OptimizedRecord
-internal data class WrapContentHeightParams(
+data class WrapContentHeightParams(
   @Field val alignment: AlignmentType? = null
 ) : Record
 
 @OptimizedRecord
-internal data class DefaultMinSizeParams(
+data class DefaultMinSizeParams(
   @Field val minWidth: Float? = null,
   @Field val minHeight: Float? = null
 ) : Record
@@ -148,7 +148,7 @@ internal data class OffsetParams(
 ) : Record
 
 @OptimizedRecord
-internal data class BackgroundParams(
+data class BackgroundParams(
   @Field val color: Color? = null
 ) : Record
 
@@ -218,7 +218,7 @@ internal data class AlignParams(
 ) : Record
 
 @OptimizedRecord
-internal data class TestIDParams(
+data class TestIDParams(
   @Field val testID: String? = null
 ) : Record
 
