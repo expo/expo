@@ -2,7 +2,7 @@ import { buildRoutePattern } from '../routeName';
 
 describe('buildRoutePattern', () => {
   it('returns undefined when segments is undefined', () => {
-    expect(buildRoutePattern(undefined)).toBeUndefined();
+    expect(buildRoutePattern(undefined)).toBeNull();
   });
 
   it.each([

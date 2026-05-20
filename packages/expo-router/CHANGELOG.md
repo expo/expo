@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- Add `segments` to `unstable_navigationEvents` page events `pagePreloaded`, `pageFocused`, `pageBlurred`, `pageRemoved`
+- Add `segments` to `unstable_navigationEvents` page events `pagePreloaded`, `pageFocused`, `pageBlurred`, `pageRemoved` ([#46019](https://github.com/expo/expo/pull/46019) by [@Ubax](https://github.com/Ubax))
 
 ## 56.2.2 — 2026-05-19
 
