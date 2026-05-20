@@ -413,8 +413,10 @@ export async function withPreparedSingleFile<T>(
       ? await mergeFileContents(input.inputFileAbsolutePaths)
       : input.fileContent;
 
-  const preprocessedContent = shouldPreprocessFile ? preprocessSwiftFile(fileContent) : fileContent;
-  return withTempFile(preprocessedContent, fn);
+  if (shouldPreprocessFile) {
+    return withTempFile(preprocessSwiftFile(fileContent), fn);
+  }
+  return withTempFile(fileContent, fn);
 }
 
 /**

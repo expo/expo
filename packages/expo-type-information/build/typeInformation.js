@@ -150,8 +150,10 @@ async function withPreparedSingleFile({ input, typeInference }, fn) {
     const fileContent = input.type === 'file'
         ? await mergeFileContents(input.inputFileAbsolutePaths)
         : input.fileContent;
-    const preprocessedContent = shouldPreprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent) : fileContent;
-    return withTempFile(preprocessedContent, fn);
+    if (shouldPreprocessFile) {
+        return withTempFile((0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent), fn);
+    }
+    return withTempFile(fileContent, fn);
 }
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
