@@ -11,16 +11,16 @@ Native build times can slow down your development workflow. Expo provides prebui
 **Most projects don't need to do anything** — prebuilt Expo Modules are enabled automatically in new and existing projects with a supported SDK version.
 
 - **Android**: enabled by default since SDK 53.
-- **iOS**: enabled by default in SDK 56+. In SDK 55, enabled by default only on EAS Build — set `EXPO_USE_PRECOMPILED_MODULES=1` in your shell to opt in for local builds.
+- **iOS**: enabled by default in SDK 56+. In SDK 55, enabled by default only on EAS Build — set `EAS_USE_PRECOMPILED_MODULES=1` in your shell to opt in for local builds.
 
 <Collapsible summary="Disabling on iOS">
 
-Set `EXPO_USE_PRECOMPILED_MODULES` to `0`. For local builds, export the env var in your shell.
+Set `EAS_USE_PRECOMPILED_MODULES` to `0`. For local builds, export the env var in your shell.
 
 For EAS Build, create an [EAS environment variable](/eas/environment-variables/manage/):
 
 <Terminal
-  cmd={['$ eas env:create --name EXPO_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext']}
+  cmd={['$ eas env:create --name EAS_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext']}
 />
 
 The CLI will prompt you to select which environment(s) (`development`, `preview`, `production`) the variable applies to.
