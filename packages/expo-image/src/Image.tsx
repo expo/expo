@@ -2,7 +2,7 @@
 
 import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
-import { StyleSheet, type ImageStyle, type TextStyle, type View } from 'react-native';
+import { StyleSheet, processColor, type ImageStyle, type TextStyle, type View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 import type {
@@ -246,7 +246,10 @@ export class Image extends React.PureComponent<ImageProps> {
     options?: ImageLoadOptions
   ): Promise<ImageRef> {
     const resolvedSource = resolveSource(source) as ImageSource;
-    return await ImageModule.loadAsync(resolvedSource, options);
+    const resolvedOptions = options?.tintColor
+      ? { ...options, tintColor: processColor(options.tintColor) as number }
+      : options;
+    return await ImageModule.loadAsync(resolvedSource, resolvedOptions);
   }
 
   render() {
