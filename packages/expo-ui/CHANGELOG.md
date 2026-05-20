@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [universal] Fix universal components dark theme ([#45969](https://github.com/expo/expo/pull/45969) by [@zoontek](https://github.com/zoontek))
+- [universal] Fix `BottomSheet` behavior by making `Host` optional, and fix Android exit animation. ([#46031](https://github.com/expo/expo/pull/46031) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
