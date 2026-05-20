@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
 });
 
 /**
- * Hosts React Native views inside SwiftUI or Jetpack Compose views.
+ * Hosts React Native views inside Jetpack Compose or SwiftUI views.
  */
 export function RNHostView({
   children,

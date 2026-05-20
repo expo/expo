@@ -177,6 +177,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/universal/list': ['universal/List/index.tsx', 'expo-ui'],
   'expo-ui/universal/listitem': ['universal/ListItem/index.ts', 'expo-ui'],
   'expo-ui/universal/picker': ['universal/Picker/index.ts', 'expo-ui'],
+  'expo-ui/universal/rnhostview': ['universal/RNHostView/index.tsx', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {

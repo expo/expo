@@ -45,6 +45,7 @@ export type HostProps = {
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
 } & CommonViewModifierProps;
 
 const HostNativeView: React.ComponentType<

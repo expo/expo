@@ -1,10 +1,11 @@
-import { Column, ModalBottomSheet } from '@expo/ui/jetpack-compose';
+import { Column, Host, ModalBottomSheet, type ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import {
   fillMaxHeight,
   padding,
   testID as testIDModifier,
   type ModifierConfig,
 } from '@expo/ui/jetpack-compose/modifiers';
+import { useEffect, useRef, useState } from 'react';
 
 import type { BottomSheetProps, SnapPoint } from './types';
 
@@ -38,21 +39,43 @@ export function BottomSheet({
   testID,
   modifiers,
 }: BottomSheetProps) {
-  if (!isPresented) return null;
+  const sheetRef = useRef<ModalBottomSheetRef>(null);
+  const [mount, setMount] = useState(isPresented);
+
+  useEffect(() => {
+    if (isPresented) {
+      setMount(true);
+      return;
+    }
+    let cancelled = false;
+    sheetRef.current?.hide().then(() => {
+      if (!cancelled) setMount(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isPresented]);
+
+  if (!mount) {
+    return null;
+  }
 
   const contentModifiers: ModifierConfig[] = [padding(16, showDragIndicator ? 0 : 16, 16, 0)];
   if (shouldFillMaxHeight(snapPoints)) contentModifiers.push(fillMaxHeight());
   if (testID) contentModifiers.push(testIDModifier(testID));
 
   return (
-    <ModalBottomSheet
-      onDismissRequest={onDismiss}
-      showDragHandle={showDragIndicator}
-      skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
-      modifiers={modifiers}>
-      {/* When the drag handle is hidden, add top padding so content doesn't crop against the top edge of the sheet. */}
-      <Column modifiers={contentModifiers}>{children}</Column>
-    </ModalBottomSheet>
+    <Host style={{ position: 'absolute' }} pointerEvents="none">
+      <ModalBottomSheet
+        ref={sheetRef}
+        onDismissRequest={onDismiss}
+        showDragHandle={showDragIndicator}
+        skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
+        modifiers={modifiers}>
+        {/* When the drag handle is hidden, add top padding so content doesn't crop against the top edge of the sheet. */}
+        <Column modifiers={contentModifiers}>{children}</Column>
+      </ModalBottomSheet>
+    </Host>
   );
 }
 

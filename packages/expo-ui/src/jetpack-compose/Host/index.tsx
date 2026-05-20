@@ -64,6 +64,7 @@ export type HostProps = {
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
 } & PrimitiveBaseProps;
 
 type NativeHostProps = Omit<HostProps, 'colorScheme'> & {
