@@ -6,14 +6,63 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [universal] Fix universal components dark theme ([#45969](https://github.com/expo/expo/pull/45969) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+## 56.0.9 — 2026-05-19
+
+### 🎉 New features
+
+- [iOS][android] Added `onChange` listener to `useNativeState`. ([#45961](https://github.com/expo/expo/pull/45961) by [@nishan](https://github.com/intergalacticspacehighway))
+- Allow writing to native state from the JS thread. ([#45901](https://github.com/expo/expo/pull/45901) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `withAnimation(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's [`withAnimation(_:_:)`](<https://developer.apple.com/documentation/swiftui/withanimation(_:_:)>). ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
+- [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `LoadingIndicator` and `ContainedLoadingIndicator` components. ([#41169](https://github.com/expo/expo/pull/41169) by [@suveshmoza](https://github.com/suveshmoza))
+
+### 🐛 Bug fixes
+
+- [iOS] Unmount `BottomSheet` when it is dismissed. ([#45846](https://github.com/expo/expo/pull/45846) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Apply `modifiers` prop on `Host` instead of silently dropping it. ([#45872](https://github.com/expo/expo/pull/45872) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+### 💡 Others
+
+- [universal] Add base styling to universal Picker on web ([#45932](https://github.com/expo/expo/pull/45932) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.8 — 2026-05-15
+
+### 🎉 New features
+
+- [universal] Added `matchContents`, `layoutDirection`, `onLayoutContent`, `useViewportSizeMeasurement`, and `ignoreSafeArea` support to the universal `Host`. ([#45776](https://github.com/expo/expo/pull/45776) by [@zoontek](https://github.com/zoontek))
+- [iOS] Added `symbolEffect` modifier. ([#45727](https://github.com/expo/expo/pull/45727) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `Alert` component wrapping SwiftUI's `.alert(_:isPresented:actions:message:)` modifier, with `Alert.Trigger`, `Alert.Actions`, and optional `Alert.Message` slots. Mirrors the existing `ConfirmationDialog` shape so it composes the same way with `Button` actions and `isPresented` bindings. ([#45700](https://github.com/expo/expo/pull/45700) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+### 💡 Others
+
+- Fixed precompile xcframework warning. ([#45762](https://github.com/expo/expo/pull/45762) by [@kudo](https://github.com/kudo))
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-13
+
+### 🎉 New features
+
 - Added `@expo/ui/community/slider`, a drop-in replacement for `@react-native-community/slider`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
 - Make `ChartView` public. ([#45674](https://github.com/expo/expo/pull/45674) by [@jakex7](https://github.com/jakex7))
+- Added `@expo/ui/community/menu`, a drop-in replacement for `@react-native-menu/menu`. ([#45670](https://github.com/expo/expo/pull/45670) by [@vonovak](https://github.com/vonovak))
+- [android] Added Compose `combinedClickable` modifier. ([#45670](https://github.com/expo/expo/pull/45670) by [@vonovak](https://github.com/vonovak))
+- [universal] Added `Collapsible`, `List`, `ListItem`, and `Picker` components. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
+- [universal] Added `snapPoints` prop on `BottomSheet` and `colorScheme` / `layoutDirection` props on `Host`. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] `background(color, { animationSpec })` accepts an optional `animationSpec` and wraps the color in `animateColorAsState` so changes between renders animate smoothly. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Fix `useNativeState` recreating the `ObservableState` when initial value changes; the seed is now captured once via `useRef`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
+- [Android] Fix layout shift in `Host` with `matchContents`. ([#45775](https://github.com/expo/expo/pull/45775) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 56.0.5 — 2026-05-11
 
@@ -77,6 +126,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44216](https://github.com/expo/expo/pull/44216) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `scrollPosition` and `id` modifiers for tracking and scrolling to view-aligned targets in `ScrollView` and other scrollable containers (iOS 17+). ([#44652](https://github.com/expo/expo/pull/44652) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Added `@expo/ui/datetimepicker` — an Android and iOS `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`. ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `SwipeActions` component. ([#44689](https://github.com/expo/expo/pull/44689) by [@yousofabouhalawa](https://github.com/yousofabouhalawa))
 - [swift-ui] Added `LazyHStack` and `LazyVStack`. ([#44612](https://github.com/expo/expo/pull/44612) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Added `LazyRow` component and `onVisibilityChanged` modifier. ([#44615](https://github.com/expo/expo/pull/44615) by [@kudo](https://github.com/kudo))
 - Added universal components. ([#44601](https://github.com/expo/expo/pull/44601) by [@kudo](https://github.com/kudo))
@@ -105,6 +155,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Moved `DateTimePicker` to `@expo/ui/community/datetime-picker`. The old `@expo/ui/datetimepicker` export still works but logs a deprecation warning in development. ([@vonovak](https://github.com/vonovak)) ([#45211](https://github.com/expo/expo/pull/45211) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `extraProps` to `SlotView` for passing metadata to SwiftUI slot consumers. ([#44689](https://github.com/expo/expo/pull/45287) by [@yousofabouhalawa](https://github.com/yousofabouhalawa))
 - [jetpack-compose] Use view hash code as key for `Children`. ([#44521](https://github.com/expo/expo/pull/44521) by [@kudo](https://github.com/kudo))
 - Refactored `ComposableScope` and allow extensibility. ([#44698](https://github.com/expo/expo/pull/44698) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Reuse `HorizontalAlignment` converter in `LazyColumn`. ([#44755](https://github.com/expo/expo/pull/44755) by [@kudo](https://github.com/kudo))
@@ -306,7 +357,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#42571](https://github.com/expo/expo/pull/42571) by [@shubh73](https://github.com/shubh73))
 - Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
-- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
+- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo/pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
 
 ## 55.0.0-beta.3 — 2026-01-27
 

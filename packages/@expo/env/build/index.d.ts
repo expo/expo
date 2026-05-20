@@ -27,6 +27,7 @@ export declare function parseEnvFiles(envFiles: string[], { systemEnv, }?: {
 }): {
     env: EnvOutput;
     files: string[];
+    sensitiveLoadedKeys: string[];
 };
 /**
  * Parse all environment variables using the list of `.env*` files, and mutate the system environment with these variables.
@@ -46,6 +47,7 @@ export declare function loadEnvFiles(envFiles: string[], { force, silent, system
     loaded: string[];
     env: EnvOutput;
     files: string[];
+    sensitiveLoadedKeys: string[];
     result: "loaded";
 };
 /**
@@ -55,6 +57,7 @@ export declare function loadEnvFiles(envFiles: string[], { force, silent, system
 export declare function parseProjectEnv(projectRoot: string, options?: Parameters<typeof getEnvFiles>[0] & Parameters<typeof parseEnvFiles>[1]): {
     env: EnvOutput;
     files: string[];
+    sensitiveLoadedKeys: string[];
 };
 /**
  * Parse all environment variables using the detected list of `.env*` files from a project.
@@ -69,8 +72,36 @@ export declare function loadProjectEnv(projectRoot: string, options?: Parameters
     loaded: string[];
     env: EnvOutput;
     files: string[];
+    sensitiveLoadedKeys: string[];
     result: "loaded";
 };
+/**
+ * Get a fresh clone of the system environment with all `@expo/env`-applied
+ * mutations reverted to their pre-load values. The result is intended to be
+ * passed as the `env` option of `child_process.spawn` / `@expo/spawn-async`
+ * when a subprocess should observe the environment as it was before any
+ * `.env*` files were loaded — for example, when resolving SDK tooling paths
+ * that should not be influenced by project-controlled `.env` values.
+ *
+ * Allocates lazily: nothing is held until this function is called, and each
+ * call returns a new object so callers may mutate it freely.
+ *
+ * @param systemEnv The env to revert against; defaults to `process.env`.
+ */
+export declare function getOriginalEnv(systemEnv?: EnvOutput): EnvOutput;
+/**
+ * Get the pre-load value of a single environment variable as recorded by
+ * `@expo/env`. Falls through to the value in `systemEnv` for keys that
+ * `@expo/env` never touched. O(1) and allocation-free, intended for read-sites
+ * that resolve filesystem paths or executables from a single env var.
+ *
+ * Honors `EXPO_UNSAFE_DOTENV_KEYS`: keys the caller has explicitly opted into
+ * via the escape hatch return their currently loaded value, not the original.
+ *
+ * @param key The environment variable to read.
+ * @param systemEnv The env to read against; defaults to `process.env`.
+ */
+export declare function getOriginalEnvValue(key: string, systemEnv?: EnvOutput): string | undefined;
 /** Log the loaded environment info from the loaded results */
 export declare function logLoadedEnv(envInfo: ReturnType<typeof loadEnvFiles>, options?: Parameters<typeof loadEnvFiles>[1]): {
     result: "skipped";
@@ -79,6 +110,7 @@ export declare function logLoadedEnv(envInfo: ReturnType<typeof loadEnvFiles>, o
     loaded: string[];
     env: EnvOutput;
     files: string[];
+    sensitiveLoadedKeys: string[];
     result: "loaded";
 };
 /**
@@ -93,6 +125,7 @@ export declare function get(projectRoot: string, { force, silent, }?: {
 }): {
     env: EnvOutput;
     files: string[];
+    sensitiveLoadedKeys: string[];
 };
 /**
  * Load environment variables from .env files and mutate the current `process.env` with the results.

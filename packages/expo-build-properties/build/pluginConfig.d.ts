@@ -183,6 +183,20 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
      */
     enableBundleCompression?: boolean;
     /**
+     * Enable precompiled headers (PCH) for Android native builds.
+     * When enabled, creates a custom CMakeLists.txt with PCH support for all autolinked
+     * native libraries, significantly speeding up C++ compilation by pre-compiling
+     * commonly used React Native headers.
+     *
+     * Can also be enabled by setting the `EXPO_USE_ANDROID_PRECOMPILED_HEADERS=1` environment variable.
+     *
+     * > **Note:** This feature is experimental and might not work with all native libraries.
+     *
+     * @default false
+     * @experimental
+     */
+    usePrecompiledHeaders?: boolean;
+    /**
      * Enable building React Native from source. Turning this on will significantly increase the build times.
      * @deprecated Use `buildReactNativeFromSource` instead.
      * @default false

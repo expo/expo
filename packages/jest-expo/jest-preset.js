@@ -24,7 +24,7 @@ try {
 jestPreset = cloneDeep(jestPreset);
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
-const { resolveBabelConfig } = require('./src/resolveBabelConfig');
+const { resolveBabelOptions } = require('./src/resolveBabelOptions');
 
 // Emulate the alias behavior of Expo's Metro resolver.
 jestPreset.moduleNameMapper = {
@@ -41,13 +41,7 @@ if (upstreamBabelJest) {
 }
 
 // transform
-const babelOpts = {
-  caller: { name: 'metro', bundler: 'metro', platform: 'ios' },
-};
-const babelConfigFile = resolveBabelConfig(process.cwd());
-if (babelConfigFile) {
-  babelOpts.configFile = babelConfigFile;
-}
+const babelOpts = resolveBabelOptions(process.cwd());
 jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
 
 /* Update this when metro changes their default extensions */
@@ -99,9 +93,8 @@ const defaultExpoMetroAssetExts = [
 ];
 
 const assetNamePattern = `^.+\\.(${defaultExpoMetroAssetExts.join('|')})$`;
-jestPreset.transform[assetNamePattern] = require.resolve(
-  'jest-expo/src/preset/assetFileTransformer.js'
-);
+jestPreset.transform[assetNamePattern] =
+  require.resolve('jest-expo/src/preset/assetFileTransformer.js');
 
 // transformIgnorePatterns
 if (!Array.isArray(jestPreset.transformIgnorePatterns)) {

@@ -1,4 +1,4 @@
-import type { ImageRef } from 'expo-image';
+import { type SharedRef } from 'expo';
 import { type PropsWithChildren } from 'react';
 import { type ViewProps, type ColorValue } from 'react-native';
 import type { BasicTextStyle } from '../../utils/font';
@@ -8,7 +8,7 @@ export interface NativeLinkPreviewActionProps {
     label?: string;
     icon?: string;
     xcassetName?: string;
-    image?: ImageRef | null;
+    image?: SharedRef<'image'> | null;
     imageRenderingMode?: 'template' | 'original';
     children?: React.ReactNode;
     disabled?: boolean;

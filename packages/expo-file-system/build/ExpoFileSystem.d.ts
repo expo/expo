@@ -1,64 +1,19 @@
-import { NativeModule, type SharedObject } from 'expo-modules-core';
-import type { Directory, File, DownloadOptions, DownloadProgress, PathInfo, WatchEventType, WatchOptions, PickSingleFileOptions, PickMultipleFilesOptions, UploadProgress, UploadResult } from './ExpoFileSystem.types';
+import { NativeModule } from 'expo-modules-core';
+import type { Directory } from './Directory';
+import type { File } from './File';
+import type { PickMultipleFilesOptions, PickSingleFileOptions } from './File.types';
+import type { DownloadOptions, DownloadProgress } from './NetworkTasks.types';
+import type { PathInfo } from './Paths.types';
+import type { FileSystemDownloadTask, FileSystemUploadTask, NativeFileSystemDirectory, NativeFileSystemFile, NativeFileSystemWatcher } from './internal/NativeFileSystem.types';
 type FileSystemEvents = {
     downloadProgress: (data: {
         uuid: string;
         data: DownloadProgress;
     }) => void;
 };
-type UploadTaskEvents = {
-    progress: (data: UploadProgress) => void;
-};
-type DownloadTaskEvents = {
-    progress: (data: DownloadProgress) => void;
-};
-declare class FileSystemUploadTask extends SharedObject<UploadTaskEvents> {
-    /**
-     * @hidden
-     */
-    start(url: string, file: File, options: Record<string, any>): Promise<UploadResult>;
-    /**
-     * @hidden
-     */
-    cancel(): void;
-}
-declare class FileSystemDownloadTask extends SharedObject<DownloadTaskEvents> {
-    /**
-     * @hidden
-     */
-    start(url: string, to: File | Directory, options?: Record<string, any>): Promise<string | null>;
-    /**
-     * @hidden
-     */
-    pause(): any;
-    /**
-     * @hidden
-     */
-    resume(url: string, to: File | Directory, resumeData: string, options?: Record<string, any>): Promise<string | null>;
-    /**
-     * @hidden
-     */
-    cancel(): void;
-}
-type FileSystemWatcherEvent = {
-    type: WatchEventType;
-    path: string;
-    isDirectory: boolean;
-    nativeEventFlags?: number;
-    newPath?: string;
-    newPathIsDirectory?: boolean;
-};
-type FileSystemWatcherEvents = {
-    change: (event: FileSystemWatcherEvent) => void;
-};
-declare class NativeFileSystemWatcher extends SharedObject<FileSystemWatcherEvents> {
-    constructor(path: string, options?: WatchOptions);
-    start(): void;
-    stop(): void;
-}
 declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
-    FileSystemDirectory: typeof Directory;
-    FileSystemFile: typeof File;
+    FileSystemDirectory: typeof NativeFileSystemDirectory;
+    FileSystemFile: typeof NativeFileSystemFile;
     FileSystemUploadTask: typeof FileSystemUploadTask;
     FileSystemDownloadTask: typeof FileSystemDownloadTask;
     FileSystemWatcher: typeof NativeFileSystemWatcher;

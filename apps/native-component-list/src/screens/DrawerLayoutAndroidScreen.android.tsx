@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { DrawerLayoutAndroid, Text, View, Platform } from 'react-native';
+import { DrawerLayoutAndroid, View, Platform } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import TitleSwitch from '../components/TitledSwitch';
 
 export default function DrawerLayoutAndroidScreen() {
@@ -10,11 +11,10 @@ export default function DrawerLayoutAndroidScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <Text>DrawerLayoutAndroid</Text>
+      <BodyText>DrawerLayoutAndroid</BodyText>
     </View>
   );
 
@@ -25,18 +25,17 @@ export default function DrawerLayoutAndroidScreen() {
       renderNavigationView={renderNavigationView}>
       <View style={{ flex: 1, padding: 16 }}>
         <TitleSwitch title="Is Right" value={isRight} setValue={setRight} />
-        <Text>Pull from the {isRight ? 'right' : 'left'}</Text>
+        <BodyText>Pull from the {isRight ? 'right' : 'left'}</BodyText>
       </View>
     </DrawerLayoutAndroid>
   ) : (
     <View
       style={{
         flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <Text>Only available on Android</Text>
+      <BodyText>Only available on Android</BodyText>
     </View>
   );
 }

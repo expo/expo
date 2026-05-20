@@ -68,16 +68,17 @@ import {
   contentShape,
   shapes,
   resizable,
+  tint,
 } from '@expo/ui/swift-ui/modifiers';
 import { useAssets } from 'expo-asset';
 import { useState } from 'react';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text as RNText,
   View,
   useWindowDimensions,
-  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -131,7 +132,9 @@ export default function ModifiersScreen() {
 
   return (
     <ScrollView>
-      <Host matchContents>
+      <Host
+        matchContents
+        modifiers={[tint('#FF6B6B'), font({ size: 16, weight: 'medium', design: 'rounded' })]}>
         <Form
           modifiers={[
             scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),

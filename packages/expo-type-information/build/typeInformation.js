@@ -36,12 +36,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeInferenceOption = exports.BasicType = exports.TypeKind = exports.IdentifierKind = void 0;
 exports.serializeTypeInformation = serializeTypeInformation;
 exports.deserializeTypeInformation = deserializeTypeInformation;
+exports.withPreparedSingleFile = withPreparedSingleFile;
 exports.getFileTypeInformation = getFileTypeInformation;
 const fs = __importStar(require("fs"));
 const os = __importStar(require("os"));
 const path = __importStar(require("path"));
 const sourcekittenTypeInformation_1 = require("./swift/sourcekittenTypeInformation");
 const utils_1 = require("./utils");
+/**
+ * Represents the kind of a parsed identifier from a native file.
+ */
 var IdentifierKind;
 (function (IdentifierKind) {
     IdentifierKind[IdentifierKind["BASIC"] = 0] = "BASIC";
@@ -49,6 +53,9 @@ var IdentifierKind;
     IdentifierKind[IdentifierKind["RECORD"] = 2] = "RECORD";
     IdentifierKind[IdentifierKind["CLASS"] = 3] = "CLASS";
 })(IdentifierKind || (exports.IdentifierKind = IdentifierKind = {}));
+/**
+ * Categorizes the type node within the abstract syntax tree.
+ */
 var TypeKind;
 (function (TypeKind) {
     TypeKind[TypeKind["BASIC"] = 0] = "BASIC";
@@ -59,6 +66,9 @@ var TypeKind;
     TypeKind[TypeKind["ARRAY"] = 5] = "ARRAY";
     TypeKind[TypeKind["DICTIONARY"] = 6] = "DICTIONARY";
 })(TypeKind || (exports.TypeKind = TypeKind = {}));
+/**
+ * Represents a basic type that is not user defined.
+ */
 var BasicType;
 (function (BasicType) {
     BasicType[BasicType["ANY"] = 0] = "ANY";
@@ -67,12 +77,14 @@ var BasicType;
     BasicType[BasicType["BOOLEAN"] = 3] = "BOOLEAN";
     BasicType[BasicType["VOID"] = 4] = "VOID";
     BasicType[BasicType["UNDEFINED"] = 5] = "UNDEFINED";
+    /** Represents a type that couldn't be resolved */
     BasicType[BasicType["UNRESOLVED"] = 6] = "UNRESOLVED";
 })(BasicType || (exports.BasicType = BasicType = {}));
 /**
- * Used for testing purposes, maps Sets and Maps to Arrays and returns FileTypeInformationSerialized object which can be written to a JSON.
- * @param param0 FileTypeInformation object to serialize.
- * @returns FileTypeInformationSerialized object.
+ * Used for testing purposes, maps Sets and Maps to Arrays and returns `FileTypeInformationSerialized` object which can be written to a JSON.
+ * @param fileTypeinformation `FileTypeInformation` object to serialize.
+ * @returns a `FileTypeInformationSerialized` object.
+ * @header TypeInformationAbstraction
  */
 function serializeTypeInformation({ usedTypeIdentifiers, declaredTypeIdentifiers, inferredTypeParametersCount, typeIdentifierDefinitionMap, moduleClasses, records, enums, }) {
     return {
@@ -86,9 +98,10 @@ function serializeTypeInformation({ usedTypeIdentifiers, declaredTypeIdentifiers
     };
 }
 /**
- * Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns FileTypeInformation object.
- * @param param0 FileTypeInformationSerialized object to deserialize.
- * @returns FileTypeInformation object.
+ *  Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns `FileTypeInformation` object.
+ * @param fileTypeinformationSerialized `FileTypeInformationSerialized` object to deserialize.
+ * @returns `FileTypeInformation` object.
+ * @header TypeInformationAbstraction
  */
 function deserializeTypeInformation({ usedTypeIdentifiersList, declaredTypeIdentifiersList, inferredTypeParametersCountList, typeIdentifierDefinitionList, moduleClasses, records, enums, }) {
     return {
@@ -103,7 +116,7 @@ function deserializeTypeInformation({ usedTypeIdentifiersList, declaredTypeIdent
 }
 /**
  * Defines the level of type inference to apply when extracting type information.
- * Note: In case where type inference is on, it may take more then twice the time to compute the type information.
+ * > **Note:** In case where type inference is on, it may take more then twice the time to compute the type information.
  */
 var TypeInferenceOption;
 (function (TypeInferenceOption) {
@@ -129,12 +142,26 @@ async function withTempFile(content, fn) {
         await fs.promises.rm(tempDir, { recursive: true, force: true });
     }
 }
+async function withPreparedSingleFile({ input, typeInference }, fn) {
+    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+    if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
+        return fn(input.inputFileAbsolutePaths[0]);
+    }
+    const fileContent = input.type === 'file'
+        ? await mergeFileContents(input.inputFileAbsolutePaths)
+        : input.fileContent;
+    if (shouldPreprocessFile) {
+        return withTempFile((0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent), fn);
+    }
+    return withTempFile(fileContent, fn);
+}
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
  * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
  * the function will create a temporary file with the (optionally preprocessed) content to facilitate parsing.
  * @param options - Configuration object containing the input source (file or string) and the desired level of type inference.
- * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it returns `null`.
+ * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it resolves to `null`.
+ * @header TypeInformationAbstraction
  */
 async function getFileTypeInformation({ input, typeInference, }) {
     const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
@@ -144,14 +171,8 @@ async function getFileTypeInformation({ input, typeInference, }) {
             typeInference: typeInferenceOn,
         });
     }
-    const fileContent = input.type === 'file'
-        ? await mergeFileContents(input.inputFileAbsolutePaths)
-        : input.fileContent;
-    const preprocessedContent = shouldPreprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent) : fileContent;
-    return withTempFile(preprocessedContent, async (tempFilePath) => {
-        return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(tempFilePath, {
-            typeInference: typeInferenceOn,
-        });
+    return withPreparedSingleFile({ input, typeInference }, async (tempFilePath) => {
+        return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(tempFilePath, { typeInference: typeInferenceOn });
     });
 }
 //# sourceMappingURL=typeInformation.js.map

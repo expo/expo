@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `EXC_BAD_ACCESS` crash from recursive `supportedInterfaceOrientations` when `react-native-screens` per-screen orientation is set.                                   
+([#45733](https://github.com/expo/expo/pull/45733) by [@rayabelcode](https://github.com/rayabelcode))
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

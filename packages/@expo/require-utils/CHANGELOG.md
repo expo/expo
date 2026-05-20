@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- Add special case for file specifiers, like relative and absolute paths, to `resolveFrom` ([#45983](https://github.com/expo/expo/pull/45983) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Add `/index` Node resolution logic for non-JSON `resolveFrom` calls ([#45983](https://github.com/expo/expo/pull/45983) by [@kitten](https://github.com/kitten))
+
+## 56.1.1 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- Fix source-map original file remapping in `evalModule` for Windows ([#45793](https://github.com/expo/expo/pull/45793) by [@kitten](https://github.com/kitten))
 
 ## 56.1.0 — 2026-05-08
 

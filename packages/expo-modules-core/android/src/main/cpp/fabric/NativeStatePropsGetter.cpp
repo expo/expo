@@ -1,5 +1,6 @@
 #include "NativeStatePropsGetter.h"
 #include "AndroidExpoViewState.h"
+#include <react/fabric/StateWrapperImpl.h>
 
 #include <react/renderer/core/ConcreteState.h>
 

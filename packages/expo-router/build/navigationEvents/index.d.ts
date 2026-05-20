@@ -1,6 +1,6 @@
-import type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent } from './types';
-export type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent, } from './types';
-export type AnalyticsEvent = PageWillRender | PageFocusedEvent | PageBlurredEvent | PageRemoved | ActionDispatchedEvent;
+import type { PagePreloadedEvent, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent } from './types';
+export type { PagePreloadedEvent, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent, } from './types';
+export type AnalyticsEvent = PagePreloadedEvent | PageFocusedEvent | PageBlurredEvent | PageRemoved | ActionDispatchedEvent;
 type EventTypeName = AnalyticsEvent['type'];
 type Payload<T extends EventTypeName> = Omit<Extract<AnalyticsEvent, {
     type: T;

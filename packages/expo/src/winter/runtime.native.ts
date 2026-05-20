@@ -3,6 +3,7 @@
 
 import '../../types';
 
+import { installAbortSignalPatch } from './AbortSignal';
 import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 
@@ -16,6 +17,8 @@ install('TextEncoderStream', () => require('./TextDecoderStream').TextEncoderStr
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+// https://webidl.spec.whatwg.org/#idl-DOMException
+install('DOMException', () => require('./DOMException').DOMException);
 // https://streams.spec.whatwg.org/#rs
 // ReadableStream is injected by Metro as a global
 
@@ -25,6 +28,7 @@ install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').Import
 install('structuredClone', () => require('@ungap/structured-clone').default);
 
 installFormDataPatch(FormData);
+installAbortSignalPatch(AbortSignal);
 
 // Polyfill async iterator symbol for Hermes.
 // @ts-expect-error: readonly property only applies when the engine supports it

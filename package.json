@@ -36,7 +36,7 @@
     "expo-modules-core": "workspace:*",
     "jest-expo": "workspace:*",
     "jsc-android": "^250231.0.0",
-    "prettier": "~3.5.3"
+    "prettier": "~3.8.3"
   },
   "volta": {
     "node": "22.14.0"

@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import ExpoModulesJSI
 
 struct Point: Record {
   @Field
@@ -78,6 +79,84 @@ public final class BenchmarkingExpoModule: Module {
 
       Property("y") { (point: SharedPoint) in
         return point.y
+      }
+    }
+
+    // MARK: - runtime.execute() benchmarks
+    //
+    // Each benchmark times `iterations` round-trips of one of the four
+    // `JavaScriptRuntime.execute(...)` overloads from a non-JS thread, returning
+    // elapsed milliseconds. AsyncFunction bodies already run off the JS thread,
+    // so calling `execute` here exercises the cross-thread scheduling + wakeup
+    // path.
+    //
+    // The two non-async closures dispatch onto the GCD queue shared by Expo
+    // Modules; the two async closures dispatch onto a Swift Concurrency
+    // executor. Both call the same `RuntimeScheduler` underneath, but the
+    // caller side differs.
+
+    // Caller: GCD queue. Closure: sync.
+    AsyncFunction("executeBlockingSync") { (iterations: Int) throws -> Double in
+      let runtime = try self.appContext!.runtime
+      let start = DispatchTime.now()
+      for _ in 0..<iterations {
+        try runtime.execute { () -> Void in
+          _ = runtime.global().hasProperty("Math")
+        }
+      }
+      return Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+    }
+
+    // Caller: GCD queue. Closure: async.
+    AsyncFunction("executeBlockingAsync") { (iterations: Int) throws -> Double in
+      let runtime = try self.appContext!.runtime
+      let start = DispatchTime.now()
+      for _ in 0..<iterations {
+        try runtime.execute { @JavaScriptActor () async -> Void in
+          _ = runtime.global().hasProperty("Math")
+        }
+      }
+      return Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+    }
+
+    // Caller: Swift Concurrency (detached Task). Closure: sync.
+    // The detached Task runs on the cooperative pool — off the JS thread — so
+    // each `await runtime.execute(...)` exercises the cross-thread scheduling
+    // path instead of the same-thread fast path.
+    AsyncFunction("executeAsyncSync") { (iterations: Int, promise: Promise) in
+      let runtime = try self.appContext!.runtime
+      Task.detached {
+        do {
+          let start = DispatchTime.now()
+          for _ in 0..<iterations {
+            try await runtime.execute { () -> Void in
+              _ = runtime.global().hasProperty("Math")
+            }
+          }
+          let elapsedMs = Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+          promise.resolve(elapsedMs)
+        } catch {
+          promise.reject(error)
+        }
+      }
+    }
+
+    // Caller: Swift Concurrency (detached Task). Closure: async.
+    AsyncFunction("executeAsyncAsync") { (iterations: Int, promise: Promise) in
+      let runtime = try self.appContext!.runtime
+      Task.detached {
+        do {
+          let start = DispatchTime.now()
+          for _ in 0..<iterations {
+            try await runtime.execute { @JavaScriptActor () async -> Void in
+              _ = runtime.global().hasProperty("Math")
+            }
+          }
+          let elapsedMs = Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+          promise.resolve(elapsedMs)
+        } catch {
+          promise.reject(error)
+        }
       }
     }
   }

@@ -10,6 +10,10 @@ export function ObserveRouterIntegrationProvider({ children }: PropsWithChildren
   const [storage] = useState<RouterIntegrationStorage | null>(() =>
     isInitialized() ? createRouterIntegrationStorage() : null
   );
+  const [listenersCleanup] = useState(() => {
+    if (!storage || !optionalRouter) return;
+    return initListeners(storage, optionalRouter.unstable_navigationEvents);
+  });
 
   const prevInitialized = useRef(isInitialized());
   if (prevInitialized.current !== isInitialized()) {
@@ -18,10 +22,7 @@ export function ObserveRouterIntegrationProvider({ children }: PropsWithChildren
     );
   }
 
-  useEffect(() => {
-    if (!storage || !optionalRouter) return;
-    return initListeners(storage, optionalRouter.unstable_navigationEvents);
-  }, [storage]);
+  useEffect(() => listenersCleanup, [listenersCleanup]);
 
   return (
     <ObserveRouterIntegrationContext.Provider value={storage}>

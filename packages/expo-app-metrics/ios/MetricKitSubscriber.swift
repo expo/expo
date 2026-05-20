@@ -39,20 +39,33 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       }
     }
     AppMetricsActor.isolated {
-      let mainSessions = AppMetrics.storage.getAllMainSessions()
-      var didStoreAny = false
+      let mainSessions: [SessionRow]
+      do {
+        mainSessions = try AppMetrics.database?.getAllSessions().filter { $0.type == Session.SessionType.main.rawValue } ?? []
+      } catch {
+        logger.warn("[AppMetrics] Failed to load main sessions for crash attribution: \(error.localizedDescription)")
+        return
+      }
       for crashReport in crashReports {
         if let session = crashReport.findMatchingSession(in: mainSessions) {
-          session.storeCrashReport(crashReport)
-          didStoreAny = true
+          persistCrashReport(crashReport, sessionId: session.id)
         } else {
           logger.warn("[AppMetrics] Received crash report with no matching session:\n\(crashReport)")
         }
       }
-      if didStoreAny {
-        try? AppMetrics.storage.commit()
-      }
     }
+  }
+}
+
+@AppMetricsActor
+private func persistCrashReport(_ crashReport: CrashReport, sessionId: String) {
+  guard let payload = encodeAsJSONString(crashReport) else {
+    return
+  }
+  do {
+    try AppMetrics.database?.setCrashReport(sessionId: sessionId, payload: payload)
+  } catch {
+    logger.warn("[AppMetrics] Failed to persist crash report for session \(sessionId): \(error.localizedDescription)")
   }
 }
 

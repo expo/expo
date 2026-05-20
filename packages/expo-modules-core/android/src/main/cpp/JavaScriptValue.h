@@ -5,7 +5,6 @@
 #include "ExpoHeader.pch"
 #include "JSIObjectWrapper.h"
 #include "JavaScriptTypedArray.h"
-#include "JavaScriptArrayBuffer.h"
 #include "JNIDeallocator.h"
 
 namespace jni = facebook::jni;

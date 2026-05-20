@@ -183,7 +183,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     if let options = currentOptions {
       do {
         try prepare(options: options, sessionOptions: currentSessionOptions)
-        emit(event: recordingStatus, arguments: [
+        emit(event: recordingStatus, payload: [
           "id": id,
           "isFinished": true,
           "hasError": false,
@@ -196,7 +196,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
 
     currentState = .error
-    emit(event: recordingStatus, arguments: [
+    emit(event: recordingStatus, payload: [
       "id": id,
       "isFinished": true,
       "hasError": true,
@@ -211,7 +211,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     currentState = .stopped
     resetDurationTracking()
 
-    emit(event: recordingStatus, arguments: [
+    emit(event: recordingStatus, payload: [
       "id": id,
       "isFinished": true,
       "hasError": false,
@@ -225,7 +225,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     currentState = .error
     resetDurationTracking()
 
-    emit(event: recordingStatus, arguments: [
+    emit(event: recordingStatus, payload: [
       "id": id,
       "isFinished": true,
       "hasError": true,

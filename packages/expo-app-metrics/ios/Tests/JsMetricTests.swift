@@ -18,6 +18,7 @@ struct JsMetricTests {
     #expect(metric.name == "ttr")
     #expect(metric.value == 1.5)
     #expect(metric.timestamp == "2026-01-01T00:00:00Z")
+    #expect(metric.sessionId == "s1")
   }
 
   @Test

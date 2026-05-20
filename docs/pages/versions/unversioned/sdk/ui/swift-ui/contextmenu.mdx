@@ -8,14 +8,15 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI ContextMenu matches the official SwiftUI [contextMenu API](<https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:)>) and displays a menu when long-pressed. For single-tap menu interactions, use [`Menu`](menu) instead.
 
-<ComponentDiagram
-  mode="portrait"
-  source="/static/images/expo-ui/contextmenu/ios-light.webp"
-  darkSource="/static/images/expo-ui/contextmenu/ios-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="portrait"
+  src="/static/images/expo-ui/contextmenu/ios-light.webp"
+  darkSrc="/static/images/expo-ui/contextmenu/ios-dark.webp"
   alt="A long-pressed tile shown as an enlarged preview with a Share, Favorite, Delete menu beneath it"
 />
 
@@ -163,6 +164,62 @@ export default function ContextMenuWithSectionsExample() {
           </Section>
           <Divider />
           <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Long press me</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+### Disabled items
+
+Use the [`disabled(true)`](modifiers/#disableddisabled) modifier on a menu `Button` to render it greyed-out and non-interactive.
+
+```tsx DisabledContextMenuItemExample.tsx
+import { Host, ContextMenu, Button, Text } from '@expo/ui/swift-ui';
+import { disabled } from '@expo/ui/swift-ui/modifiers';
+
+export default function DisabledContextMenuItemExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button label="Edit" onPress={() => console.log('Edit')} />
+          <Button
+            label="Locked"
+            systemImage="lock"
+            modifiers={[disabled(true)]}
+            onPress={() => console.log('This never fires')}
+          />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Long press me</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+### Selectable items (checkmarks)
+
+A SwiftUI [`Toggle`](toggle) inside `ContextMenu.Items` automatically renders as a row with a leading SF Symbol and a trailing checkmark when `isOn` is `true`.
+
+```tsx CheckmarkContextMenuItemExample.tsx
+import { Host, ContextMenu, Toggle, Text } from '@expo/ui/swift-ui';
+import { useState } from 'react';
+
+export default function CheckmarkContextMenuItemExample() {
+  const [pinned, setPinned] = useState(false);
+
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Toggle isOn={pinned} label="Pin" systemImage="pin" onIsOnChange={setPinned} />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>

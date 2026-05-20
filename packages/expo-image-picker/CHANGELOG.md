@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [Android] Follow system day/night theme in crop activity. ([#44944](https://github.com/expo/expo/pull/44944) by [@jeferson-sb](https://github.com/jeferson-sb))
+
+### 💡 Others
+
 - Updated permission hooks and permission type imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.6 — 2026-05-11

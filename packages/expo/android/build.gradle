@@ -10,7 +10,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.0-preview.9'
+version = '56.0.0-preview.13'
 
 expoModule {
   // We can't prebuild the module because it depends on the generated files.
@@ -21,7 +21,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "56.0.0-preview.9"
+    versionName "56.0.0-preview.13"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {
@@ -44,6 +44,9 @@ android {
 
 dependencies { dependencyHandler ->
   implementation 'com.facebook.react:react-android'
+  implementation 'com.squareup.okio:okio:3.16.0'
+  implementation 'com.squareup.zstd:zstd-kmp-okio:0.4.0'
+  implementation 'org.brotli:dec:0.1.2'
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.13.5'

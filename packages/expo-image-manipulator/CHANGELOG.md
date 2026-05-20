@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [Android] Save manipulated images in the scoped cache directory. ([#45708](https://github.com/expo/expo/pull/45708) by [@mvincentong](https://github.com/mvincentong))
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.6 — 2026-05-11
 
 _This version does not introduce any user-facing changes._

@@ -41,7 +41,7 @@
     "@expo/json-file": "workspace:*",
     "@expo/metro": "~56.0.0",
     "@expo/schemer": "workspace:*",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@types/debug": "^4.1.8",
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",

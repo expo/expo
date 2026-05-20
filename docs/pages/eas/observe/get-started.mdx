@@ -47,7 +47,11 @@ Make sure you are using the latest version of `expo`, then install `expo-observe
 
 ## Wrap your root layout
 
-Wrap your root layout with `AppMetricsRoot`. This higher-order component (HOC) automatically measures [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render) for you.
+Wrap your root layout with `AppMetricsRoot` (SDK 55) or `ObserveRoot` (SDK 56 and later). This higher-order component (HOC) automatically measures [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render) for you.
+
+<Tabs>
+
+<Tab label="SDK 55">
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -59,6 +63,25 @@ function RootLayout() {
 
 export default AppMetricsRoot.wrap(RootLayout);
 ```
+
+</Tab>
+
+<Tab label="SDK 56 and later">
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import { ObserveRoot } from 'expo-observe';
+
+function RootLayout() {
+  return <Stack />;
+}
+
+export default ObserveRoot.wrap(RootLayout);
+```
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -75,7 +98,7 @@ Call `markInteractive()` when your app is fully ready for user interaction. This
 
 <Tabs>
 
-<Tab label="With Expo Router">
+<Tab label="SDK 55">
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -123,18 +146,20 @@ export default AppMetricsRoot.wrap(RootLayout);
 
 </Tab>
 
-<Tab label="Without Expo Router">
+<Tab label="SDK 56">
 
-```tsx App.tsx
-import { useEffect, useState } from 'react';
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { AppMetrics, AppMetricsRoot } from 'expo-observe';
+import { ObserveRoot, useObserve } from 'expo-observe';
+import { useEffect, useState } from 'react';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
-function App() {
+function RootLayout() {
   const [isReady, setIsReady] = useState(false);
+  const { markInteractive } = useObserve();
 
   useEffect(() => {
     async function prepare() {
@@ -153,19 +178,19 @@ function App() {
 
   useEffect(() => {
     if (isReady) {
-      SplashScreen.hideAsync();
-      AppMetrics.markInteractive();
+      SplashScreen.hide();
+      markInteractive();
     }
-  }, [isReady]);
+  }, [isReady, markInteractive]);
 
   if (!isReady) {
     return null;
   }
 
-  // your app
+  return <Stack />;
 }
 
-export default AppMetricsRoot.wrap(App);
+export default ObserveRoot.wrap(RootLayout);
 ```
 
 </Tab>

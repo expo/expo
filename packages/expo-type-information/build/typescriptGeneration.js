@@ -374,7 +374,7 @@ function buildRecordTypeAlias(recordType, exported) {
     });
 }
 function buildEnumTypeDeclaration(enumType, exported, declared) {
-    return typescript_1.default.factory.createEnumDeclaration(constructModifiersArray({ exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
+    return typescript_1.default.factory.createEnumDeclaration(constructModifiersArray({ exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase, typescript_1.default.factory.createStringLiteral(enumcase))));
 }
 function buildMissingTypesDeclarations(ctx) {
     if (ctx.missingTypes.size === 0) {
@@ -557,6 +557,14 @@ async function tsNodesToString(elements) {
     const printedTs = printer.printList(typescript_1.default.ListFormat.MultiLine | typescript_1.default.ListFormat.PreserveLines, viewTypes, resultFile);
     return await prettifyCode(printedTs, 'typescript');
 }
+/**
+ * Helper function that takes a file content string and formats it using `prettier` formatter.
+ * @param text Content of a JavaScript/TypeScript file to format.
+ * @param parser An option of which parser to use to format the file.
+ * @default "babel"
+ * @returns A promise which resolves to the `text` string after formatting using `prettier` with the given `parser`.
+ * @header TypescriptGeneration
+ */
 async function prettifyCode(text, parser = 'babel') {
     return await prettier_1.default.format(text, {
         parser,
@@ -566,6 +574,12 @@ async function prettifyCode(text, parser = 'babel') {
         singleQuote: true,
     });
 }
+/**
+ * Generates the TypeScript string content for a native View's type declaration file.
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to a string containing the TypeScript declaration file content or `null` if the generation has failed.
+ * @header TypescriptGeneration
+ */
 async function generateViewTypesFileContent(fileTypeInformation) {
     const ctx = createDefaultGenerationContext(fileTypeInformation);
     if (!ctx) {
@@ -573,6 +587,12 @@ async function generateViewTypesFileContent(fileTypeInformation) {
     }
     return tsNodesToString(buildViewDeclarationNodes(ctx));
 }
+/**
+ * Generates the TypeScript string content for a native View's type declaration file which mounts the View props on the global `JSXIntrinsics`.
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to a string containing the TypeScript declaration file content or `null` if the generation has failed.
+ * @header TypescriptGeneration
+ */
 async function generateJSXIntrinsicsFileContent(fileTypeInformation) {
     const ctx = createDefaultGenerationContext(fileTypeInformation);
     if (!ctx) {
@@ -580,6 +600,12 @@ async function generateJSXIntrinsicsFileContent(fileTypeInformation) {
     }
     return tsNodesToString(buildJSXIntrinsicsViewNodes(ctx));
 }
+/**
+ * Generates the TypeScript string content for a native module type declaration file.
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to a string containing the TypeScript module declaration file content or `null` if the generation has failed.
+ * @header TypescriptGeneration
+ */
 async function generateModuleTypesFileContent(fileTypeInformation) {
     const ctx = createDefaultGenerationContext(fileTypeInformation);
     if (!ctx) {
@@ -587,6 +613,13 @@ async function generateModuleTypesFileContent(fileTypeInformation) {
     }
     return tsNodesToString(buildModuleDeclarationNodes(ctx));
 }
+/**
+ * Generates a short TypeScript interface for an Expo module. This creates the content for two files: a volatile generated file containing raw type definitions,
+ * and a stable user-facing file that wraps and exports the native module methods in new functions.
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to an object containing the string contents for both the volatile generated file and the stable TypeScript interface file.
+ * @header TypescriptGeneration
+ */
 async function generateConciseTsInterface(fileTypeInformation) {
     const ctx = createDefaultGenerationContext(fileTypeInformation);
     if (!ctx) {
@@ -599,6 +632,14 @@ async function generateConciseTsInterface(fileTypeInformation) {
         moduleTypescriptInterfaceFileContent,
     };
 }
+/**
+ * Generates a full, multi-file TypeScript interface for an Expo module.
+ * The generated interface is separated into a file with type definitions, a file which wraps the native module, a file for each view defined in a module and an index file which reexports all definitions from the other files.
+ *
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to an object containing the string contents for all of the generated files or `null` if the generation has failed.
+ * @header TypescriptGeneration
+ */
 async function generateFullTsInterface(fileTypeInformation) {
     const ctx = createDefaultGenerationContext(fileTypeInformation);
     if (!ctx) {

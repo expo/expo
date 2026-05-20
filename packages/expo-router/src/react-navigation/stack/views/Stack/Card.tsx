@@ -112,7 +112,7 @@ const getAnimateToValue = ({
 };
 
 const defaultOverlay = ({ style }: { style: Animated.WithAnimatedValue<StyleProp<ViewStyle>> }) =>
-  style ? <Animated.View pointerEvents="none" style={[styles.overlay, style]} /> : null;
+  style ? <Animated.View style={[styles.overlay, style]} /> : null;
 
 function Card({
   shadowEnabled = false,
@@ -510,13 +510,11 @@ function Card({
         />
       ) : null}
       {overlayEnabled ? (
-        <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+        <View style={[styles.overlayContainer, StyleSheet.absoluteFill]}>
           {overlay({ style: overlayStyle })}
         </View>
       ) : null}
-      <Animated.View
-        pointerEvents="box-none"
-        style={[styles.container, containerStyle, customContainerStyle]}>
+      <Animated.View style={[styles.container, containerStyle, customContainerStyle]}>
         <PanGestureHandler
           enabled={layout.width !== 0 && gestureEnabled}
           onGestureEvent={onGestureEvent}
@@ -528,12 +526,10 @@ function Card({
             gestureResponseDistance,
           })}>
           <Animated.View
-            pointerEvents="box-none"
             needsOffscreenAlphaCompositing={hasOpacityStyle(cardStyle)}
             style={[styles.container, cardStyle]}>
             {shadowEnabled && shadowStyle && !isTransparent ? (
               <Animated.View
-                pointerEvents="none"
                 style={[
                   styles.shadow,
                   gestureDirection === 'horizontal'
@@ -563,13 +559,19 @@ export { Card };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    pointerEvents: 'box-none',
   },
   overlay: {
     flex: 1,
     backgroundColor: '#000',
+    pointerEvents: 'none',
+  },
+  overlayContainer: {
+    pointerEvents: 'box-none',
   },
   shadow: {
     position: 'absolute',
+    pointerEvents: 'none',
   },
   shadowHorizontal: {
     top: 0,

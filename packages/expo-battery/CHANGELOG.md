@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-19
+
+### 💡 Others
+
+- [Android] Remove unused native dependencies. ([#45937](https://github.com/expo/expo/pull/45937) by [@jakex7](https://github.com/jakex7))
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

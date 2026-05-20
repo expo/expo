@@ -11,9 +11,9 @@ const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleTo
 const jsc_safe_url_1 = require("jsc-safe-url");
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
+const env_1 = require("../env");
 const serializeChunks_1 = require("./serializeChunks");
 const sourceMap_1 = require("./sourceMap");
-const env_1 = require("../env");
 // Lazy-loaded to avoid pulling in @babel/generator, @babel/core at startup
 let _reconcileTransformSerializerPlugin;
 function getReconcileTransformSerializerPlugin() {

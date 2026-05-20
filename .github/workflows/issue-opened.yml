@@ -9,6 +9,7 @@ on:
 
 jobs:
   check-if-trusted:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - uses: ./.github/actions/slack-notify
@@ -32,6 +33,7 @@ jobs:
             })
 
   validate:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout

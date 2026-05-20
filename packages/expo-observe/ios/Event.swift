@@ -1,4 +1,6 @@
 import ExpoAppMetrics
+import ExpoModulesCore
+import Foundation
 
 /**
  An object representing an event providing some app metrics and the information about the app and the device.
@@ -64,58 +66,72 @@ struct Event: Codable, Sendable {
   }
 
   /**
-   Creates a new event for EAS, based on the objects from `expo-app-metrics` package.
+   Builds an `Event` from a session row plus its metric/log batch. The session row carries all the
+   metadata that used to live on `Entry`/`AppInfo`/`DeviceInfo`; metrics and logs are passed
+   separately so a partial dispatch (only the rows past a cursor) can still produce a valid event.
    */
-  static func create(app: AppInfo, device: DeviceInfo, sessions: [Session], environment: String? = nil) -> Event {
+  static func from(session: SessionRow, metrics: [MetricRow], logs: [LogRow]) -> Event {
+    let updatesInfo = AppInfo.UpdatesInfo(
+      updateId: session.appUpdateId,
+      runtimeVersion: session.appUpdateRuntimeVersion,
+      requestHeaders: decodeRequestHeaders(session.appUpdateRequestHeaders)
+    )
     return Event(
       metadata: Metadata(
-        appName: app.appName,
-        appIdentifier: app.appId,
-        appVersion: app.appVersion,
-        appBuildNumber: app.buildNumber,
-        appEasBuildId: app.easBuildId,
-        appUpdatesInfo: app.updatesInfo,
-
-        deviceName: device.modelName,
-        deviceModel: device.modelIdentifier,
-        deviceOs: device.systemName,
-        deviceOsVersion: device.systemVersion,
-
-        reactNativeVersion: app.reactNativeVersion,
-        expoSdkVersion: app.expoSdkVersion,
+        appName: session.appName,
+        appIdentifier: session.appIdentifier,
+        appVersion: session.appVersion,
+        appBuildNumber: session.appBuildNumber,
+        appEasBuildId: session.appEasBuildId,
+        appUpdatesInfo: updatesInfo.isEmpty ? nil : updatesInfo,
+        deviceName: session.deviceName ?? "",
+        deviceModel: session.deviceModel ?? "",
+        deviceOs: session.deviceOs ?? "",
+        deviceOsVersion: session.deviceOsVersion ?? "",
+        reactNativeVersion: session.reactNativeVersion ?? "",
+        expoSdkVersion: session.expoSdkVersion ?? "",
         clientVersion: ObserveVersions.clientVersion,
-
-        languageTag: Locale.preferredLanguages.first ?? "en-US",
-        environment: environment
+        languageTag: session.languageTag ?? Locale.preferredLanguages.first ?? "en-US",
+        environment: session.environment
       ),
-      metrics: sessions.flatMap { session in
-        return session.metrics.map { metric in
-          return Metric(
-            category: metric.category?.rawValue,
-            name: metric.name,
-            value: metric.value,
-            timestamp: metric.timestamp,
-            sessionId: session.id,
-            parentSessionId: nil,
-            routeName: metric.routeName,
-            updateId: metric.updateId,
-            customParams: metric.params
-          )
-        }
+      metrics: metrics.map { metric in
+        return Metric(
+          category: metric.category,
+          name: metric.name,
+          value: metric.value,
+          timestamp: metric.timestamp,
+          sessionId: metric.sessionId,
+          parentSessionId: nil,
+          routeName: metric.routeName,
+          updateId: metric.updateId,
+          customParams: decodeCustomParams(metric.params)
+        )
       },
-      logs: sessions.flatMap { session in
-        return session.logs.map { log in
-          return Log(
-            name: log.name,
-            body: log.body,
-            timestamp: log.timestamp,
-            severity: log.severity,
-            attributes: log.attributes,
-            droppedAttributesCount: log.droppedAttributesCount,
-            sessionId: session.id
-          )
-        }
+      logs: logs.map { log in
+        return Log(
+          name: log.name,
+          body: log.body,
+          timestamp: log.timestamp,
+          severity: Severity(rawValue: log.severity) ?? .info,
+          attributes: decodeCustomParams(log.attributes),
+          droppedAttributesCount: log.droppedAttributesCount,
+          sessionId: log.sessionId
+        )
       }
     )
   }
+}
+
+private func decodeRequestHeaders(_ json: String?) -> [String: String]? {
+  guard let json, let data = json.data(using: .utf8) else {
+    return nil
+  }
+  return try? JSONSerialization.jsonObject(with: data) as? [String: String]
+}
+
+private func decodeCustomParams(_ json: String?) -> AnyCodable? {
+  guard let json, let data = json.data(using: .utf8) else {
+    return nil
+  }
+  return try? JSONDecoder().decode(AnyCodable.self, from: data)
 }

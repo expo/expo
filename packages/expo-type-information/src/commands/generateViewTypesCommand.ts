@@ -11,8 +11,9 @@ import {
 import { generateViewTypesFileContent } from '../typescriptGeneration';
 
 export function generateViewTypesCommand(cli: commander.Command) {
-  return addCommonOptions(cli.command('generate-view-types')).action(
-    async (options: TypeInformationCommandCommonAllArguments) => {
+  return addCommonOptions(cli.command('generate-view-types'))
+    .description('Generates a type declaration file for a native View.')
+    .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) {
         return;
@@ -34,6 +35,5 @@ export function generateViewTypesCommand(cli: commander.Command) {
       };
 
       runCommandOnWatch(parsedArgs, command);
-    }
-  );
+    });
 }

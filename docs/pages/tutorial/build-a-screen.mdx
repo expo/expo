@@ -82,16 +82,16 @@ To use the Image component in **app/(tabs)/index.tsx** file:
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=380
 import { View, StyleSheet } from 'react-native';
-/* @tutinfo Import the <CODE>Image</CODE> component. */ import { Image } from 'expo-image'; /* @end */
+/* @tutinfo Import the `Image` component. */ import { Image } from 'expo-image'; /* @end */
 
-/* @tutinfo Import the image from the "assets/images/" directory. Since this picture is a static resource, you have to reference it using <CODE>require</CODE>. */
+/* @tutinfo Import the image from the "assets/images/" directory. Since this picture is a static resource, you have to reference it using `require`. */
 const PlaceholderImage = require('@/assets/images/background-image.png');
 /* @end */
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo Wrap the <CODE>Image</CODE> component inside a container. Also, add the image component to display the placeholder image. */
+      /* @tutinfo Wrap the `Image` component inside a container. Also, add the image component to display the placeholder image. */
       <View style={styles.imageContainer}>
         <Image source={PlaceholderImage} style={styles.image} />
       </View>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#25292e',
-    /* @tutinfo Modify container styles to remove <CODE>justifyContent</CODE> property. */
+    /* @tutinfo Modify container styles to remove `justifyContent` property. */
     alignItems: 'center',
     /* @end */
   },
@@ -170,7 +170,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @tutinfo Replace <CODE>Image</CODE> component with <CODE>ImageViewer</CODE>. */
+        /* @tutinfo Replace `Image` component with `ImageViewer`. */
         <ImageViewer imgSource={PlaceholderImage} />
         /* @end */
       </View>
@@ -265,7 +265,7 @@ export default function Index() {
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
-      /* @tutinfo Use the reusable <CODE>Button</CODE> component to create two buttons and encapsulate them inside a <CODE>View</CODE> component. */
+      /* @tutinfo Use the reusable `Button` component to create two buttons and encapsulate them inside a `View` component. */
       <View style={styles.footerContainer}>
         <Button label="Choose a photo" />
         <Button label="Use this photo" />
@@ -324,7 +324,7 @@ type Props = {
   /* @tutinfo Add theme prop. */theme?: 'primary';/* @end */
 };
 
-export default function Button({ label, /* @tutinfo The prop <CODEtheme</CODE> to detect the button variant. */theme/* @end */ }: Props) {
+export default function Button({ label, /* @tutinfo The prop `theme` to detect the button variant. */theme/* @end */ }: Props) {
   /* @tutinfo Conditionally render the primary themed button. */
   if (theme === 'primary') {
   /* @end */
@@ -410,7 +410,7 @@ export default function Index() {
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
       <View style={styles.footerContainer}>
-        /* @tutinfo Add <CODE>"primary"</CODE> theme on the first button. */
+        /* @tutinfo Add `"primary"` theme on the first button. */
         <Button theme="primary" label="Choose a photo" />
         /* @end */
         <Button label="Use this photo" />

@@ -58,7 +58,7 @@ export async function test(t) {
     }
   });
 
-  t.describe('Stress tests', async () => {
+  t.describe('Stress tests', () => {
     t.it('creating files with the same filename', async () => {
       for (let i = 0; i < 40; i++) {
         const asset = await Asset.create(pngFile.localUri);
@@ -481,17 +481,19 @@ export async function test(t) {
       t.expect(width).toBeGreaterThan(0);
     });
 
-    if (Platform.OS === 'ios') {
-      t.it('sets and gets favorite status', async () => {
+    t.it('sets and gets favorite status', async () => {
+      if (Platform.OS === 'android' && Platform.Version < 29) {
         t.expect(await asset.getFavorite()).toBe(false);
-        // mark as favorite
+        await asset.setFavorite(true);
+        t.expect(await asset.getFavorite()).toBe(false);
+      } else {
+        t.expect(await asset.getFavorite()).toBe(false);
         await asset.setFavorite(true);
         t.expect(await asset.getFavorite()).toBe(true);
-        // unmark as favorite
         await asset.setFavorite(false);
         t.expect(await asset.getFavorite()).toBe(false);
-      });
-    }
+      }
+    });
 
     t.it('returns an asset info object', async () => {
       const info = await asset.getInfo();
@@ -505,9 +507,7 @@ export async function test(t) {
       t.expect(info.duration).toBe(await asset.getDuration());
       t.expect(info.creationTime).toBe(await asset.getCreationTime());
       t.expect(info.modificationTime).toBe(await asset.getModificationTime());
-      if (Platform.OS === 'ios') {
-        t.expect(info.isFavorite).toBe(await asset.getFavorite());
-      }
+      t.expect(info.isFavorite).toBe(await asset.getFavorite());
     });
   });
 

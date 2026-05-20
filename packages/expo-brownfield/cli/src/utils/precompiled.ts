@@ -1,7 +1,7 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runCommand } from './commands';
 import { XCFramework } from './constants';
 import CLIError from './error';
 import type { BuildConfiguration, ModuleXCFramework } from './types';
@@ -135,10 +135,10 @@ export const ensureCorrectFlavor = async (
   // `replace-xcframework.js -m` expects the pod's main product (the one whose tarball is at
   // `<podDir>/artifacts/<product>-<config>.tar.gz`), not necessarily the xcframework `name`
   // — sibling SPM-dep xcframeworks share the pod's main tarball.
-  await runCommand(
+  await spawnAsync(
     'node',
     [scriptPath, '-c', flavor, '-m', module.mainProduct, '-x', module.podDir],
-    { verbose: options.verbose }
+    { stdio: options.verbose ? 'inherit' : 'pipe' }
   );
 };
 

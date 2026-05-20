@@ -187,7 +187,7 @@ describe('useObserveForRouter', () => {
 
     isInitMock.mockReturnValue(true);
     expect(() => rerender(undefined)).toThrow(
-      "[expo-observe] Router integration was toggled during a screen's lifecycle. Call `ExpoObserve.configure({ disableRouterIntegration })` once at startup before any screen mounts."
+      "[expo-observe] Router integration was toggled during a screen's lifecycle. Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
     );
   });
 });

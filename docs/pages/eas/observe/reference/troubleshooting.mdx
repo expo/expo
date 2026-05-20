@@ -7,6 +7,7 @@ description: Solutions for common Expo Observe issues.
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 ## Common issues
 
@@ -18,7 +19,11 @@ import { Step } from '~/ui/components/Step';
 
 ### Time to first render not showing
 
-Verify that your root layout is wrapped with `AppMetricsRoot`:
+Verify that your root layout is wrapped with the root HOC:
+
+<Tabs>
+
+<Tab label="SDK 55">
 
 ```jsx
 import { AppMetricsRoot } from 'expo-observe';
@@ -30,12 +35,45 @@ function RootLayout() {
 export default AppMetricsRoot.wrap(RootLayout);
 ```
 
+</Tab>
+
+<Tab label="SDK 56 and later">
+
+```jsx
+import { ObserveRoot } from 'expo-observe';
+
+function RootLayout() {
+  return (/* your layout */);
+}
+
+export default ObserveRoot.wrap(RootLayout);
+```
+
+</Tab>
+
+</Tabs>
+
 ### Time to interactive not showing
 
 This metric requires manual instrumentation. Verify that:
 
+<Tabs>
+
+<Tab label="SDK 55">
+
 1. You are calling `AppMetrics.markInteractive()` after your splash screen is hidden.
 2. The call is actually being executed (add a `console.log` to verify).
+
+</Tab>
+
+<Tab label="SDK 56">
+
+1. You are calling `markInteractive()` (from `useObserve()`) after your splash screen is hidden.
+2. The call is actually being executed (add a `console.log` to verify).
+
+</Tab>
+
+</Tabs>
 
 <Collapsible summary="Migrating from expo-eas-observe">
 
@@ -66,9 +104,9 @@ If you previously installed `expo-eas-client` as a separate dependency, you can 
 
 <Step label="3">
 
-**Replace manual `markFirstRender()` with `AppMetricsRoot`**
+**Replace manual `markFirstRender()` with the root HOC**
 
-Instead of calling `markFirstRender()` manually, wrap your root layout with the `AppMetricsRoot` HOC. This handles the measurement automatically.
+Instead of calling `markFirstRender()` manually, wrap your root layout with the root HOC for your SDK. This handles the measurement automatically.
 
 Before:
 
@@ -87,6 +125,10 @@ export default function RootLayout() {
 
 After:
 
+<Tabs>
+
+<Tab label="SDK 55">
+
 ```jsx
 import { AppMetricsRoot } from 'expo-observe';
 
@@ -96,6 +138,24 @@ function RootLayout() {
 
 export default AppMetricsRoot.wrap(RootLayout);
 ```
+
+</Tab>
+
+<Tab label="SDK 56 and later">
+
+```jsx
+import { ObserveRoot } from 'expo-observe';
+
+function RootLayout() {
+  return (/* your layout */);
+}
+
+export default ObserveRoot.wrap(RootLayout);
+```
+
+</Tab>
+
+</Tabs>
 
 </Step>
 

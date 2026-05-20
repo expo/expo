@@ -13,16 +13,19 @@ const fs_1 = __importDefault(require("fs"));
 const invariant_1 = __importDefault(require("invariant"));
 const path_1 = __importDefault(require("path"));
 const constants_1 = __importDefault(require("../constants"));
+const RootPathUtils_1 = require("./RootPathUtils");
 const normalizePathSeparatorsToPosix_1 = __importDefault(require("./normalizePathSeparatorsToPosix"));
 const normalizePathSeparatorsToSystem_1 = __importDefault(require("./normalizePathSeparatorsToSystem"));
 const fallback_1 = require("../crawlers/node/fallback");
-const RootPathUtils_1 = require("./RootPathUtils");
 function isDirectory(node) {
-    return node instanceof Map;
+    return node != null && typeof node.get === 'function';
 }
 function isRegularFile(node) {
     return node != null && node[constants_1.default.SYMLINK] === 0;
 }
+// POSIX SYMLOOP_MAX. Bounded counter instead of a per-walk `Set` of
+// visited targets — cycles are rare; bailing after N follows is enough.
+const SYMLOOP_MAX = 40;
 /**
  * OVERVIEW:
  *
@@ -81,6 +84,32 @@ class TreeFS {
     #rootPattern;
     #roots;
     #rootNode = new Map();
+    #followScratch = {
+        parentNode: new Map(),
+        ancestorOfRootIdx: undefined,
+        targetNormalPath: '',
+        fromIdx: 0,
+        unseenPathFromIdx: 0,
+        followedSymlinks: 0,
+    };
+    // Hier isn't recursive; pool entries are mutated in place per call.
+    #hierAncestorsBuf = [];
+    #hierAncestorsPool = [];
+    #pushHierAncestor = (node, normalPath, segmentName, ancestorOfRootIdx) => {
+        const i = this.#hierAncestorsBuf.length;
+        let entry = this.#hierAncestorsPool[i];
+        if (entry === undefined) {
+            entry = { ancestorOfRootIdx, node, normalPath, segmentName };
+            this.#hierAncestorsPool[i] = entry;
+        }
+        else {
+            entry.ancestorOfRootIdx = ancestorOfRootIdx;
+            entry.node = node;
+            entry.normalPath = normalPath;
+            entry.segmentName = segmentName;
+        }
+        this.#hierAncestorsBuf.push(entry);
+    };
     constructor(opts) {
         const { rootDir, files, processFile, fallbackFilesystem, roots, serverRoot } = opts;
         this.#rootDir = rootDir;
@@ -468,15 +497,151 @@ class TreeFS {
      * `opts.X` branches. Thin convenience wrappers below (`#lookup`,
      * `#lookupNoFollow`, `#lookupFromNode`, `#walkAndStream`) cover the
      * common call shapes.
+     *
+     * Symlink-follow logic is shared via `#followSymlink`.
      */
-    #walkLookup(startNode, startPathIdx, startAncestorOfRootIdx, requestedNormalPath, onSegment, collectLinkPaths) {
-        // We'll update the target if we hit a symlink.
+    /**
+     * For `..`-prefixed symlink targets: match remainder's leading segments
+     * against root parts (`/A/B/C/D` + remainder `B/C/foo.js` collapses two
+     * `..`s away). TreeFS has no downward back-links, so we climb up once
+     * from `#rootNode` to build a stack, then index into it.
+     */
+    #collapseAgainstRootParts(ancestorOfRootIdx, parentNode, remainder, onSegment) {
+        const ancestors = [this.#rootNode];
+        {
+            let n = this.#rootNode;
+            for (let k = 1; k <= ancestorOfRootIdx; k++) {
+                n = n.get('..') ?? new Map();
+                if (!isDirectory(n))
+                    break;
+                ancestors.push(n);
+            }
+        }
+        const rootParts = this.#pathUtils.getParts();
+        let cursorIdx = 0;
+        // Trimmed by `'/..'` per step; `'..'.slice(0, -3) === ''` covers K=1→0.
+        let collapsedPath;
+        while (ancestorOfRootIdx > 0 &&
+            cursorIdx < remainder.length &&
+            ancestors.length > ancestorOfRootIdx - 1) {
+            const nextSep = remainder.indexOf(path_1.default.sep, cursorIdx);
+            const segEnd = nextSep === -1 ? remainder.length : nextSep;
+            const segName = remainder.slice(cursorIdx, segEnd);
+            const expectedPart = rootParts[rootParts.length - ancestorOfRootIdx];
+            if (segName !== expectedPart) {
+                break;
+            }
+            ancestorOfRootIdx--;
+            parentNode = ancestors[ancestorOfRootIdx];
+            cursorIdx = nextSep === -1 ? remainder.length : nextSep + 1;
+            if (onSegment != null) {
+                if (collapsedPath === undefined) {
+                    collapsedPath = '';
+                    for (let k = 0; k < ancestorOfRootIdx; k++) {
+                        collapsedPath = k === 0 ? '..' : collapsedPath + path_1.default.sep + '..';
+                    }
+                }
+                else {
+                    collapsedPath = collapsedPath.slice(0, -3);
+                }
+                onSegment(parentNode, collapsedPath, segName, ancestorOfRootIdx);
+            }
+        }
+        return { ancestorOfRootIdx, parentNode, cursorIdx };
+    }
+    /**
+     * Resolve an interior symlink. Returns a `WalkResult` to return
+     * immediately, or `undefined` after writing continue-state to
+     * `#followScratch` for the caller to read.
+     */
+    #followSymlink(symlinkNode, currentPath, segmentName, remainingTargetPath, followedSymlinks, onSegment, collectLinkPaths) {
+        const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(symlinkNode, currentPath);
+        if (normalSymlinkTarget == null) {
+            return {
+                canonicalMissingPath: currentPath,
+                exists: false,
+                missingSegmentName: segmentName,
+            };
+        }
+        else if (++followedSymlinks >= SYMLOOP_MAX) {
+            return {
+                canonicalMissingPath: normalSymlinkTarget,
+                exists: false,
+                missingSegmentName: segmentName,
+            };
+        }
+        else if (collectLinkPaths != null) {
+            collectLinkPaths.add(this.#pathUtils.normalToAbsolute(currentPath));
+        }
+        // `onSegment: undefined` so target's interior dirs aren't emitted;
+        // only the destination is emitted (manually, below).
+        const subResult = this.#walkLookup(this.#rootNode, 0, 0, normalSymlinkTarget, undefined, collectLinkPaths, followedSymlinks);
+        if (!subResult.exists || remainingTargetPath === '') {
+            return subResult;
+        }
+        else if (!isDirectory(subResult.node)) {
+            return {
+                exists: false,
+                canonicalMissingPath: subResult.canonicalPath,
+                missingSegmentName: segmentName,
+            };
+        }
+        let parentNode = subResult.node;
+        let ancestorOfRootIdx = subResult.ancestorOfRootIdx;
+        if (onSegment != null) {
+            const subBaseStart = subResult.canonicalPath.lastIndexOf(path_1.default.sep) + 1;
+            const subBaseName = subResult.canonicalPath.slice(subBaseStart);
+            onSegment(parentNode, subResult.canonicalPath, subBaseName, ancestorOfRootIdx);
+        }
+        let cursorIdx = 0;
+        if (ancestorOfRootIdx != null && ancestorOfRootIdx > 0) {
+            const collapsed = this.#collapseAgainstRootParts(ancestorOfRootIdx, parentNode, remainingTargetPath, onSegment);
+            ancestorOfRootIdx = collapsed.ancestorOfRootIdx;
+            parentNode = collapsed.parentNode;
+            cursorIdx = collapsed.cursorIdx;
+        }
+        // Canonical-to-parentNode: `..`-string above root, empty at root, or
+        // sub-walk's canonical path inside the tree.
+        const realRemainder = remainingTargetPath.slice(cursorIdx);
+        let canonicalToParent;
+        if (ancestorOfRootIdx != null && ancestorOfRootIdx > 0) {
+            canonicalToParent = '..';
+            for (let k = 1; k < ancestorOfRootIdx; k++) {
+                canonicalToParent += path_1.default.sep + '..';
+            }
+        }
+        else if (ancestorOfRootIdx === 0) {
+            canonicalToParent = '';
+        }
+        else {
+            canonicalToParent = subResult.canonicalPath;
+        }
+        const scratch = this.#followScratch;
+        scratch.parentNode = parentNode;
+        scratch.ancestorOfRootIdx = ancestorOfRootIdx;
+        scratch.followedSymlinks = followedSymlinks;
+        if (canonicalToParent === '') {
+            scratch.targetNormalPath = realRemainder;
+            scratch.fromIdx = 0;
+            scratch.unseenPathFromIdx = 0;
+        }
+        else if (realRemainder === '') {
+            scratch.targetNormalPath = canonicalToParent;
+            scratch.fromIdx = canonicalToParent.length;
+            scratch.unseenPathFromIdx = canonicalToParent.length;
+        }
+        else {
+            scratch.targetNormalPath = canonicalToParent + path_1.default.sep + realRemainder;
+            scratch.fromIdx = canonicalToParent.length + 1;
+            scratch.unseenPathFromIdx = canonicalToParent.length + 1;
+        }
+        return undefined;
+    }
+    #walkLookup(startNode, startPathIdx, startAncestorOfRootIdx, requestedNormalPath, onSegment, collectLinkPaths, initialFollows) {
+        // Cycle counter as a local — faster than an instance-field read in
+        // the per-segment loop. Recursive sub-walk inherits via `initialFollows`.
         let targetNormalPath = requestedNormalPath;
-        // Lazy-initialised set of seen target paths, to detect symlink cycles.
-        let seen;
-        // Set when a symlink is followed, to allow fallback population outside
-        // the boundary for paths reachable transitively through symlinks.
-        let followedSymlink = false;
+        let followedSymlinks = initialFollows;
         let fromIdx = startPathIdx;
         let parentNode = startNode;
         let ancestorOfRootIdx = startAncestorOfRootIdx;
@@ -508,7 +673,7 @@ class TreeFS {
                             ? fromIdx - segmentName.length - 1
                             : fromIdx - segmentName.length - 2;
                         const parentCanonicalPath = parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : '';
-                        segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath, followedSymlink);
+                        segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath, followedSymlinks > 0);
                         if (segmentNode != null) {
                             ancestorOfRootIdx = undefined;
                         }
@@ -567,87 +732,17 @@ class TreeFS {
                         missingSegmentName: segmentName,
                     };
                 }
-                // Symlink in a directory path
-                const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(segmentNode, currentPath);
-                if (normalSymlinkTarget == null) {
-                    return {
-                        canonicalMissingPath: currentPath,
-                        exists: false,
-                        missingSegmentName: segmentName,
-                    };
+                const followResult = this.#followSymlink(segmentNode, currentPath, segmentName, isLastSegment ? '' : targetNormalPath.slice(fromIdx), followedSymlinks, onSegment, collectLinkPaths);
+                if (followResult !== undefined) {
+                    return followResult;
                 }
-                if (collectLinkPaths != null) {
-                    collectLinkPaths.add(this.#pathUtils.normalToAbsolute(currentPath));
-                }
-                const remainingTargetPath = isLastSegment ? '' : targetNormalPath.slice(fromIdx);
-                // Append any subsequent path segments to the symlink target, and reset
-                // with our new target.
-                const joinedResult = this.#pathUtils.joinNormalToRelative(normalSymlinkTarget, remainingTargetPath);
-                targetNormalPath = joinedResult.normalPath;
-                // Two special cases (covered by unit tests):
-                //
-                // If the symlink target is the root, the root should be counted as an
-                // ancestor. We'd otherwise miss it because new ancestors are only
-                // streamed when entering a directory.
-                //
-                // If the symlink target is an ancestor of the root *and* joining it
-                // with the remaining path results in collapsing segments, e.g:
-                // '../..' + 'parentofroot/root/foo.js' = 'foo.js', then we must yield
-                // parentofroot and root as ancestors.
-                if (onSegment != null &&
-                    !isLastSegment &&
-                    // No-op optimisation to bail out the common case of nothing to do.
-                    ((ancestorOfRootIdx =
-                        this.#pathUtils.getAncestorOfRootIdx(normalSymlinkTarget) ?? undefined) === 0 ||
-                        joinedResult.collapsedSegments > 0)) {
-                    let node = this.#rootNode;
-                    let collapsedPath = '';
-                    const reverseAncestors = [];
-                    for (let i = 0; i <= joinedResult.collapsedSegments && isDirectory(node); i++) {
-                        if (
-                        // Add the root only if the target is the root or we have
-                        // collapsed segments.
-                        i > 0 ||
-                            ancestorOfRootIdx === 0 ||
-                            joinedResult.collapsedSegments > 0) {
-                            reverseAncestors.push({
-                                ancestorOfRootIdx: i,
-                                node,
-                                normalPath: collapsedPath,
-                                segmentName: this.#pathUtils.getBasenameOfNthAncestor(i),
-                            });
-                        }
-                        node = node.get('..') ?? new Map();
-                        collapsedPath = collapsedPath === '' ? '..' : collapsedPath + path_1.default.sep + '..';
-                    }
-                    // Emit in shallowest-first order, matching today's
-                    // collectAncestors.push(...reverseAncestors.reverse()).
-                    for (let i = reverseAncestors.length - 1; i >= 0; i--) {
-                        const a = reverseAncestors[i];
-                        onSegment(a.node, a.normalPath, a.segmentName, a.ancestorOfRootIdx);
-                    }
-                }
-                // For the purpose of streaming ancestors: Ignore the traversal to the
-                // symlink target, and start yielding ancestors only from the target
-                // itself (i.e. the basename of the normal target path) onwards.
-                unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path_1.default.sep) + 1;
-                if (seen == null) {
-                    // Optimisation: set this lazily only when we've encountered a symlink
-                    seen = new Set([requestedNormalPath]);
-                }
-                if (seen.has(targetNormalPath)) {
-                    // TODO: Warn `Symlink cycle detected: ${[...seen, node].join(' -> ')}`
-                    return {
-                        canonicalMissingPath: targetNormalPath,
-                        exists: false,
-                        missingSegmentName: segmentName,
-                    };
-                }
-                seen.add(targetNormalPath);
-                followedSymlink = true;
-                fromIdx = 0;
-                parentNode = this.#rootNode;
-                ancestorOfRootIdx = 0;
+                const scratch = this.#followScratch;
+                parentNode = scratch.parentNode;
+                ancestorOfRootIdx = scratch.ancestorOfRootIdx;
+                targetNormalPath = scratch.targetNormalPath;
+                fromIdx = scratch.fromIdx;
+                unseenPathFromIdx = scratch.unseenPathFromIdx;
+                followedSymlinks = scratch.followedSymlinks;
             }
         }
         (0, invariant_1.default)(parentNode === this.#rootNode, 'Unexpectedly escaped traversal');
@@ -668,8 +763,7 @@ class TreeFS {
      */
     #walkLookupNoFollow(startNode, startPathIdx, startAncestorOfRootIdx, requestedNormalPath, onSegment, skipFallback) {
         let targetNormalPath = requestedNormalPath;
-        let seen;
-        let followedSymlink = false;
+        let followedSymlinks = 0;
         let fromIdx = startPathIdx;
         let parentNode = startNode;
         let ancestorOfRootIdx = startAncestorOfRootIdx;
@@ -699,7 +793,7 @@ class TreeFS {
                             ? fromIdx - segmentName.length - 1
                             : fromIdx - segmentName.length - 2;
                         const parentCanonicalPath = parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : '';
-                        segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath, followedSymlink);
+                        segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath, followedSymlinks > 0);
                         if (segmentNode != null) {
                             ancestorOfRootIdx = undefined;
                         }
@@ -750,59 +844,17 @@ class TreeFS {
                         missingSegmentName: segmentName,
                     };
                 }
-                // Symlink in an interior position — still follow it (only the leaf
-                // is exempt from following under followLeaf=false).
-                const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(segmentNode, currentPath);
-                if (normalSymlinkTarget == null) {
-                    return {
-                        canonicalMissingPath: currentPath,
-                        exists: false,
-                        missingSegmentName: segmentName,
-                    };
+                const followResult = this.#followSymlink(segmentNode, currentPath, segmentName, targetNormalPath.slice(fromIdx), followedSymlinks, onSegment, undefined);
+                if (followResult !== undefined) {
+                    return followResult;
                 }
-                const remainingTargetPath = targetNormalPath.slice(fromIdx);
-                const joinedResult = this.#pathUtils.joinNormalToRelative(normalSymlinkTarget, remainingTargetPath);
-                targetNormalPath = joinedResult.normalPath;
-                if (onSegment != null &&
-                    ((ancestorOfRootIdx =
-                        this.#pathUtils.getAncestorOfRootIdx(normalSymlinkTarget) ?? undefined) === 0 ||
-                        joinedResult.collapsedSegments > 0)) {
-                    let node = this.#rootNode;
-                    let collapsedPath = '';
-                    const reverseAncestors = [];
-                    for (let i = 0; i <= joinedResult.collapsedSegments && isDirectory(node); i++) {
-                        if (i > 0 || ancestorOfRootIdx === 0 || joinedResult.collapsedSegments > 0) {
-                            reverseAncestors.push({
-                                ancestorOfRootIdx: i,
-                                node,
-                                normalPath: collapsedPath,
-                                segmentName: this.#pathUtils.getBasenameOfNthAncestor(i),
-                            });
-                        }
-                        node = node.get('..') ?? new Map();
-                        collapsedPath = collapsedPath === '' ? '..' : collapsedPath + path_1.default.sep + '..';
-                    }
-                    for (let i = reverseAncestors.length - 1; i >= 0; i--) {
-                        const a = reverseAncestors[i];
-                        onSegment(a.node, a.normalPath, a.segmentName, a.ancestorOfRootIdx);
-                    }
-                }
-                unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path_1.default.sep) + 1;
-                if (seen == null) {
-                    seen = new Set([requestedNormalPath]);
-                }
-                if (seen.has(targetNormalPath)) {
-                    return {
-                        canonicalMissingPath: targetNormalPath,
-                        exists: false,
-                        missingSegmentName: segmentName,
-                    };
-                }
-                seen.add(targetNormalPath);
-                followedSymlink = true;
-                fromIdx = 0;
-                parentNode = this.#rootNode;
-                ancestorOfRootIdx = 0;
+                const scratch = this.#followScratch;
+                parentNode = scratch.parentNode;
+                ancestorOfRootIdx = scratch.ancestorOfRootIdx;
+                targetNormalPath = scratch.targetNormalPath;
+                fromIdx = scratch.fromIdx;
+                unseenPathFromIdx = scratch.unseenPathFromIdx;
+                followedSymlinks = scratch.followedSymlinks;
             }
         }
         (0, invariant_1.default)(parentNode === this.#rootNode, 'Unexpectedly escaped traversal');
@@ -823,7 +875,7 @@ class TreeFS {
      */
     #walkAndMakeDirectories(startNode, startPathIdx, startAncestorOfRootIdx, requestedNormalPath, followLeaf, onSegment) {
         let targetNormalPath = requestedNormalPath;
-        let seen;
+        let followedSymlinks = 0;
         let fromIdx = startPathIdx;
         let parentNode = startNode;
         let ancestorOfRootIdx = startAncestorOfRootIdx;
@@ -888,33 +940,17 @@ class TreeFS {
                         missingSegmentName: segmentName,
                     };
                 }
-                // Interior symlink: follow it.
-                const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(segmentNode, currentPath);
-                if (normalSymlinkTarget == null) {
-                    return {
-                        canonicalMissingPath: currentPath,
-                        exists: false,
-                        missingSegmentName: segmentName,
-                    };
+                const followResult = this.#followSymlink(segmentNode, currentPath, segmentName, isLastSegment ? '' : targetNormalPath.slice(fromIdx), followedSymlinks, undefined, undefined);
+                if (followResult !== undefined) {
+                    return followResult;
                 }
-                const remainingTargetPath = isLastSegment ? '' : targetNormalPath.slice(fromIdx);
-                const joinedResult = this.#pathUtils.joinNormalToRelative(normalSymlinkTarget, remainingTargetPath);
-                targetNormalPath = joinedResult.normalPath;
-                unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path_1.default.sep) + 1;
-                if (seen == null) {
-                    seen = new Set([requestedNormalPath]);
-                }
-                if (seen.has(targetNormalPath)) {
-                    return {
-                        canonicalMissingPath: targetNormalPath,
-                        exists: false,
-                        missingSegmentName: segmentName,
-                    };
-                }
-                seen.add(targetNormalPath);
-                fromIdx = 0;
-                parentNode = this.#rootNode;
-                ancestorOfRootIdx = 0;
+                const scratch = this.#followScratch;
+                parentNode = scratch.parentNode;
+                ancestorOfRootIdx = scratch.ancestorOfRootIdx;
+                targetNormalPath = scratch.targetNormalPath;
+                fromIdx = scratch.fromIdx;
+                unseenPathFromIdx = scratch.unseenPathFromIdx;
+                followedSymlinks = scratch.followedSymlinks;
             }
         }
         (0, invariant_1.default)(parentNode === this.#rootNode, 'Unexpectedly escaped traversal');
@@ -926,18 +962,18 @@ class TreeFS {
             parentNode: undefined,
         };
     }
-    // Convenience wrappers for the common walker call shapes.
+    // Convenience wrappers. Top-level entries pass `0` for `initialFollows`.
     #lookup(normalPath, collectLinkPaths) {
-        return this.#walkLookup(this.#rootNode, 0, 0, normalPath, undefined, collectLinkPaths);
+        return this.#walkLookup(this.#rootNode, 0, 0, normalPath, undefined, collectLinkPaths, 0);
     }
     #lookupNoFollow(normalPath) {
         return this.#walkLookupNoFollow(this.#rootNode, 0, 0, normalPath, undefined, false);
     }
     #lookupFromNode(startNode, startPathIdx, startAncestorOfRootIdx, target, collectLinkPaths) {
-        return this.#walkLookup(startNode, startPathIdx, startAncestorOfRootIdx, target, undefined, collectLinkPaths);
+        return this.#walkLookup(startNode, startPathIdx, startAncestorOfRootIdx, target, undefined, collectLinkPaths, 0);
     }
     #walkAndStream(normalPath, onSegment, collectLinkPaths) {
-        return this.#walkLookup(this.#rootNode, 0, 0, normalPath, onSegment, collectLinkPaths);
+        return this.#walkLookup(this.#rootNode, 0, 0, normalPath, onSegment, collectLinkPaths, 0);
     }
     /**
      * Given a start path (which need not exist), a subpath and type, and
@@ -963,18 +999,11 @@ class TreeFS {
      * (subpath: node_modules/pkg, type: d) in Node.js resolution.
      */
     hierarchicalLookup(mixedStartPath, subpath, opts) {
-        const ancestorsOfInput = [];
+        const ancestorsOfInput = this.#hierAncestorsBuf;
+        ancestorsOfInput.length = 0;
         const normalPath = this.#normalizePath(mixedStartPath);
         const invalidatedBy = opts.invalidatedBy ?? undefined;
-        const onSegment = (node, normalPathOfDir, segmentName, ancestorOfRootIdx) => {
-            ancestorsOfInput.push({
-                ancestorOfRootIdx,
-                node,
-                normalPath: normalPathOfDir,
-                segmentName,
-            });
-        };
-        const closestLookup = this.#walkAndStream(normalPath, onSegment, invalidatedBy);
+        const closestLookup = this.#walkAndStream(normalPath, this.#pushHierAncestor, invalidatedBy);
         if (closestLookup.exists && isDirectory(closestLookup.node)) {
             const maybeAbsolutePathMatch = this.#checkCandidateHasSubpath(closestLookup.canonicalPath, subpath, opts.subpathType, invalidatedBy, {
                 ancestorOfRootIdx: closestLookup.ancestorOfRootIdx,

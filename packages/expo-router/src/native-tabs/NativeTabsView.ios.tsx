@@ -131,6 +131,7 @@ function Screen(props: InternalTabScreenProps) {
         ...shared.nativeIosOverrides,
       }}
       title={shared.title}
+      preventNativeSelection={options.disabled}
       {...shared.nativeRestOverrides}
       screenKey={shared.screenKey}>
       {wrappedContent}

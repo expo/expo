@@ -9,8 +9,6 @@ export * from './MediaLibraryNext.types';
 export declare class Query extends ExpoMediaLibraryNext.Query {
 }
 export declare class Asset extends ExpoMediaLibraryNext.Asset {
-    getFavorite(): Promise<boolean>;
-    setFavorite(isFavorite: boolean): Promise<void>;
     getMediaSubtypes(): Promise<MediaSubtype[]>;
     getLivePhotoVideoUri(): Promise<string | null>;
     getIsInCloud(): Promise<boolean>;

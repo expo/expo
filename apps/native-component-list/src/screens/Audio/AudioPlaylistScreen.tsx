@@ -2,6 +2,7 @@ import { AudioSource, useAudioPlaylist, useAudioPlaylistStatus } from 'expo-audi
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import HeadingText from '../../components/HeadingText';
 import Colors from '../../constants/Colors';
 
@@ -82,10 +83,10 @@ export default function AudioPlaylistScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.trackInfo}>
-        <Text style={styles.trackTitle}>{currentTrackName}</Text>
-        <Text style={styles.trackIndex}>
+        <BodyText style={styles.trackTitle}>{currentTrackName}</BodyText>
+        <BodyText color="secondary" style={styles.trackIndex}>
           Track {status.currentIndex + 1} of {status.trackCount}
-        </Text>
+        </BodyText>
       </View>
 
       <View style={styles.progressContainer}>
@@ -100,8 +101,12 @@ export default function AudioPlaylistScreen() {
           />
         </View>
         <View style={styles.timeContainer}>
-          <Text style={styles.timeText}>{formatTime(status.currentTime)}</Text>
-          <Text style={styles.timeText}>{formatTime(status.duration)}</Text>
+          <BodyText color="secondary" style={styles.timeText}>
+            {formatTime(status.currentTime)}
+          </BodyText>
+          <BodyText color="secondary" style={styles.timeText}>
+            {formatTime(status.duration)}
+          </BodyText>
         </View>
       </View>
 
@@ -136,13 +141,13 @@ export default function AudioPlaylistScreen() {
               key={`${source.uri}-${index}`}
               style={[styles.trackItem, index === status.currentIndex && styles.trackItemActive]}
               onPress={() => playlist.skipTo(index)}>
-              <Text
+              <BodyText
                 style={[
                   styles.trackItemText,
                   index === status.currentIndex && styles.trackItemTextActive,
                 ]}>
                 {index + 1}. {source.name ?? getTrackName(source.uri ?? '')}
-              </Text>
+              </BodyText>
               {index === status.currentIndex && <Text style={styles.nowPlaying}>Now Playing</Text>}
             </Pressable>
           ))
@@ -220,7 +225,6 @@ const styles = StyleSheet.create({
   },
   trackIndex: {
     fontSize: 14,
-    color: Colors.secondaryText,
   },
   progressContainer: {
     marginBottom: 20,
@@ -242,7 +246,6 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 12,
-    color: Colors.secondaryText,
   },
   controls: {
     flexDirection: 'row',

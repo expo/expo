@@ -1,7 +1,8 @@
 import { requireNativeModule, requireNativeView } from 'expo';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
 import { Page } from '../../components/Page';
@@ -18,21 +19,21 @@ export default function InlineModulesScreen() {
     <Page>
       <View style={styles.moduleContainer}>
         <HeadingText>Inline module</HeadingText>
-        <Text>
+        <BodyText>
           In the inline module there is a 'test' constant set to "{inlineModuleConstant}".
-        </Text>
+        </BodyText>
         <MonoText>
           {`Constant("test") {
   return "${inlineModuleConstant}"
 }`}
         </MonoText>
-        <Text>Below you should see this constant accessed from the module </Text>
+        <BodyText>Below you should see this constant accessed from the module </BodyText>
         <MonoText>{SimpleModule.test}</MonoText>
       </View>
       <HeadingText> Inline view </HeadingText>
-      <Text>
+      <BodyText>
         Below you should see an inline view - expo web view showing Expo Modules API docs.
-      </Text>
+      </BodyText>
       <TestView style={styles.viewContainer} url="https://docs.expo.dev/modules/" />
     </Page>
   );

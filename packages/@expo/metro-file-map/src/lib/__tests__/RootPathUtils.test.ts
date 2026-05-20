@@ -99,6 +99,8 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
             p('../normal/path'),
             p('../normal/path/'),
             p('../../normal/path'),
+            // On POSIX, `..` at the root re-enters the root
+            ...(platform === 'posix' ? [p('../../../normal/path')] : []),
           ]
         : [p('..'), p('../..'), p('../../'), p('normal/path'), p('normal/path/')];
 
@@ -127,6 +129,10 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
             p('../../project/root'),
             p('../../project/root/'),
             p('../../..'),
+            // On POSIX, `..` at the root re-enters the root
+            ...(platform === 'posix'
+              ? [p('../../../normal/path'), p('../../../normal/path/')]
+              : []),
           ]
         : [p('..')];
 

@@ -36,6 +36,37 @@ struct OTAnyValueConversionTests {
   }
 
   @Test
+  func `maps NSNumber(0) and NSNumber(1) to .int, not .bool`() throws {
+    // The bug this guards against: `NSNumber as? Bool` succeeds for any 0/1 value, so without
+    // the CFBoolean type-id check an integer-typed NSNumber holding 0 or 1 would emit as
+    // `boolValue`. Inputs from the JS bridge and JSON-deserialized attributes arrive as
+    // NSNumbers, so this is the realistic boxed shape — a Swift-pure `Int(0)` does not bridge
+    // until forced and would fall through `as? Bool` cleanly even without the fix.
+    for raw: Int in [0, 1] {
+      let value = try #require(otAnyValue(from: NSNumber(value: raw)))
+      if case .int(let int) = value {
+        #expect(int == Int64(raw))
+      } else {
+        Issue.record("Expected .int for NSNumber(\(raw)), got \(value)")
+      }
+    }
+  }
+
+  @Test
+  func `maps NSNumber boolean to .bool`() throws {
+    // A genuine boxed Bool is backed by CFBoolean (different type id from a numeric NSNumber),
+    // so the same call path that rejects NSNumber(0) as a bool still accepts NSNumber(true).
+    for raw in [true, false] {
+      let value = try #require(otAnyValue(from: NSNumber(value: raw)))
+      if case .bool(let bool) = value {
+        #expect(bool == raw)
+      } else {
+        Issue.record("Expected .bool for NSNumber(\(raw)), got \(value)")
+      }
+    }
+  }
+
+  @Test
   func `maps an Int64 to .int`() throws {
     let value = try #require(otAnyValue(from: Int64(9_999_999_999)))
     if case .int(let int) = value {
@@ -177,11 +208,12 @@ struct OTAnyValueCodableTests {
   }
 
   @Test
-  func `encodes .int under intValue as a string`() throws {
+  func `encodes .int under intValue as a JSON number`() throws {
     let json = try encode(.int(42))
     #expect(json.count == 1)
-    // OTLP encodes int64 as a JSON string to avoid JS-number precision loss.
-    #expect(json["intValue"] as? String == "42")
+    // OTLP/JSON spec stringifies int64 to avoid JS-number precision loss, but the EAS observability
+    // backend (ClickHouse) requires a JSON number — see OTAnyValue.encode(to:).
+    #expect(json["intValue"] as? Int64 == 42)
   }
 
   @Test
@@ -205,7 +237,7 @@ struct OTAnyValueCodableTests {
     let arrayValue = try #require(json["arrayValue"] as? [String: Any])
     let values = try #require(arrayValue["values"] as? [[String: Any]])
     #expect(values.count == 2)
-    #expect(values[0]["intValue"] as? String == "1")
+    #expect(values[0]["intValue"] as? Int64 == 1)
     #expect(values[1]["stringValue"] as? String == "x")
   }
 
@@ -221,7 +253,7 @@ struct OTAnyValueCodableTests {
     #expect(values.count == 2)
     #expect(values[0]["key"] as? String == "a")
     let firstValue = try #require(values[0]["value"] as? [String: Any])
-    #expect(firstValue["intValue"] as? String == "1")
+    #expect(firstValue["intValue"] as? Int64 == 1)
   }
 
   @Test

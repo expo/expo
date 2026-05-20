@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "56.0.6",
+  "version": "56.0.11",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -50,17 +50,17 @@
   },
   "dependencies": {
     "@expo/env": "workspace:~2.2.0",
+    "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "diff": "^5.2.0",
-    "expo-build-properties": "workspace:~56.0.6",
-    "expo-manifests": "workspace:~56.0.1",
+    "expo-build-properties": "workspace:~56.0.11",
+    "expo-manifests": "workspace:~56.0.4",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@bacons/xcode": "1.0.0-alpha.29",
-    "@expo/spawn-async": "^1.7.2",
     "@types/diff": "^5.2.0",
     "@types/node": "^22.14.0",
     "@types/prompts": "^2.0.6",

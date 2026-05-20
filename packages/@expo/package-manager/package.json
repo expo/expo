@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@expo/json-file": "workspace:^10.1.0",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.0.0",
     "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",

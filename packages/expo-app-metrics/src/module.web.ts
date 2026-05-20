@@ -11,9 +11,6 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   async markFirstRender() {}
   async markInteractive(attributes?: MetricAttributes) {}
   logEvent(name: string, options?: LogEventOptions) {}
-  async getStoredEntries() {
-    return [];
-  }
   async clearStoredEntries() {}
   async getAllSessions() {
     return [];

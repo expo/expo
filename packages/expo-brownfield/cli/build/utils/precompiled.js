@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = void 0;
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const commands_1 = require("./commands");
 const constants_1 = require("./constants");
 const error_1 = __importDefault(require("./error"));
 const SPM_DEPS_RELATIVE = node_path_1.default.join('packages', 'precompile', '.build', '.spm-deps');
@@ -120,7 +120,7 @@ const ensureCorrectFlavor = async (module, buildConfiguration, options) => {
     // `replace-xcframework.js -m` expects the pod's main product (the one whose tarball is at
     // `<podDir>/artifacts/<product>-<config>.tar.gz`), not necessarily the xcframework `name`
     // — sibling SPM-dep xcframeworks share the pod's main tarball.
-    await (0, commands_1.runCommand)('node', [scriptPath, '-c', flavor, '-m', module.mainProduct, '-x', module.podDir], { verbose: options.verbose });
+    await (0, spawn_async_1.default)('node', [scriptPath, '-c', flavor, '-m', module.mainProduct, '-x', module.podDir], { stdio: options.verbose ? 'inherit' : 'pipe' });
 };
 exports.ensureCorrectFlavor = ensureCorrectFlavor;
 const resolvedFixedXCFrameworks = () => {

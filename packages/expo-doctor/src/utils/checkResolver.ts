@@ -11,6 +11,7 @@ import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../checks/AppConf
 import { AutolinkingDependencyDuplicatesCheck } from '../checks/AutolinkingDependencyDuplicatesCheck';
 import { DependencyVersionOverrideCheck } from '../checks/DependencyVersionOverrideCheck';
 import { DirectPackageInstallCheck } from '../checks/DirectPackageInstallCheck';
+import { EnvLocalFilesCheck } from '../checks/EnvLocalFilesCheck';
 import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
 import { ExpoRouterReactNavigationCheck } from '../checks/ExpoRouterReactNavigationCheck';
@@ -41,6 +42,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
   const resolvedChecks: DoctorCheck[] = [
     // Project Structure Checks
     new ProjectSetupCheck(),
+    new EnvLocalFilesCheck(),
     new PackageJsonCheck(),
     new LockfileCheck(),
     new ExpoConfigSchemaCheck(),

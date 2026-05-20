@@ -226,7 +226,7 @@ const AddAssetToAlbumScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', width: '100%' },
+  container: { flex: 1, width: '100%' },
   contentWrapper: { flex: 1 },
   scrollContent: { padding: 20 },
   header: { fontSize: 22, fontWeight: '700', marginVertical: 12, color: '#333' },

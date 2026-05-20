@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 4.0.1 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Fix containment check in tar extraction to cover parallel folders with same prefix ([#45882](https://github.com/expo/expo/pull/45882) by [@kitten](https://github.com/kitten))
+
+## 3.8.0 — 2026-05-13
+
+### 💡 Others
+
 - Bump to `picomatch@^2.3.2` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
 
 ## 3.7.3 — 2026-05-07
@@ -31,6 +43,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Generate `AGENTS.md`, `CLAUDE.md`, and `.claude/settings.json` for new projects to provide AI coding agents with Expo-specific guidance and the `expo` skills plugin. Use `--no-agents-md` to skip. ([#44618](https://github.com/expo/expo/pull/44618) by [@EvanBacon](https://github.com/EvanBacon))
+- Prompt for the Expo SDK version when scaffolding the default template. ([#45369](https://github.com/expo/expo/pull/45369) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 

@@ -130,6 +130,19 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Using images from native resources
+
+Images bundled in Xcode asset catalogs or Android drawable resources can be loaded by name with
+`source={{ uri: 'app_icon' }}`. Omit the file extension and provide image dimensions manually:
+
+```tsx
+import { Image } from 'expo-image';
+
+export default function AppIcon() {
+  return <Image source={{ uri: 'app_icon' }} style={{ width: 40, height: 40 }} />;
+}
+```
+
 ## API
 
 ```js
