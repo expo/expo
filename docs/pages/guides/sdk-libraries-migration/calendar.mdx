@@ -1,7 +1,7 @@
 ---
-title: Migrate to expo-calendar/next
-sidebar_title: expo-calendar/next
-description: Migrate from the legacy expo-calendar API to the new class-based expo-calendar/next API with ExpoCalendar, ExpoCalendarEvent, and hooks.
+title: Migrate to the new expo-calendar API
+sidebar_title: expo-calendar/legacy
+description: Migrate from the legacy expo-calendar API to the new class-based expo-calendar API with ExpoCalendar, ExpoCalendarEvent, and hooks.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -9,7 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-The `expo-calendar/next` API is now stable. The legacy `expo-calendar` module is deprecated. Migrate to `expo-calendar/next` to benefit from the new API and future fixes.
+The new object-oriented `expo-calendar` API is now stable. The legacy API is available from `expo-calendar/legacy`. Migrate to the root `expo-calendar` import to benefit from the new API and future fixes.
 
 The new API replaces free functions that accepted IDs with methods on class instances. Calendars, events, reminders, and attendees are now represented as class instances with their own methods. Key changes:
 
@@ -18,16 +18,20 @@ The new API replaces free functions that accepted IDs with methods on class inst
 
 ## Installation
 
-Install the SDK-compatible package that includes `expo-calendar/next`:
+Install the SDK-compatible package that includes the new `expo-calendar` API:
 
 <Terminal cmd={['$ npx expo install expo-calendar']} />
 
 ## Importing the new API
 
-Import from `expo-calendar/next`:
+Import the legacy API from `expo-calendar/legacy` while you migrate, and import the new API from `expo-calendar`:
 
 ```ts
-import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
+// Before
+import * as Calendar from 'expo-calendar/legacy';
+
+// After
+import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar';
 ```
 
 ## Calendars
@@ -365,8 +369,8 @@ await getRemindersPermissions();
 ## Reference
 
 <BoxLink
-  title="Calendar (next)"
-  description="See the full API reference for expo-calendar/next."
-  href="/versions/latest/sdk/calendar-next/"
+  title="Calendar"
+  description="See the full API reference for expo-calendar."
+  href="/versions/latest/sdk/calendar/"
   Icon={BookOpen02Icon}
 />

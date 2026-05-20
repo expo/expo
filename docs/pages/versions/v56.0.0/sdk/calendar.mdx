@@ -1,10 +1,9 @@
 ---
 title: Calendar
 description: A library that provides an API for interacting with the device's system calendars, events, reminders, and associated records.
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-calendar'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-calendar/src'
 packageName: 'expo-calendar'
-platforms: ['android', 'ios', 'expo-go']
-isDeprecated: true
+platforms: ['ios*', 'android*']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -15,13 +14,12 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
-import { SnackInline } from '~/ui/components/Snippet';
 
-> **warning** **[Deprecated](/more/release-statuses/#deprecated):** The `expo-calendar` library is being replaced by [`expo-calendar/next`](calendar-next.mdx). The current API is not receiving patches and will be removed in an upcoming release.
+> **important** To provide quicker updates, `expo-calendar` is currently unsupported in Expo Go and Snack. To use it, create a [development build](/develop/development-builds/create-a-build/).
 
 `expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
-Additionally, it provides methods to launch the [system-provided calendar UI](#launching-system-provided-calendar-dialogs) to allow user view or edit events. On Android, these methods start the system calendar app using an Intent. On iOS, they present either [`EKEventViewController`](https://developer.apple.com/documentation/eventkitui/ekeventviewcontroller) or [`EKEventEditViewController`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewcontroller) as a modal.
+Additionally, it provides methods to launch the [system-provided calendar UI](#launching-system-provided-calendar-dialogs) to allow the user to view or edit events. On iOS, they present either [`EKEventViewController`](https://developer.apple.com/documentation/eventkitui/ekeventviewcontroller) or [`EKEventEditViewController`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewcontroller) as a modal.
 
 ## Installation
 
@@ -64,48 +62,62 @@ You can configure `expo-calendar` using its built-in [config plugin](/config-plu
       description: 'A string to set the [`NSRemindersUsageDescription`](#ios) permission message.',
       default: '"Allow $(PRODUCT_NAME) to access your reminders"',
     },
+    {
+      name: 'writeOnlyCalendarPermission',
+      platform: 'ios',
+      description:
+        'A string to set the [`NSCalendarsWriteOnlyAccessUsageDescription`](#ios) permission message, shown when requesting write-only calendar access (iOS 17+). Only used when `writeOnlyAccess` is `true`.',
+      default: '"Allow $(PRODUCT_NAME) to add events to your calendars"',
+    },
+    {
+      name: 'writeOnlyAccess',
+      platform: 'ios',
+      description:
+        'When `true`, requests write-only calendar access (iOS 17+). Sets `NSCalendarsWriteOnlyAccessUsageDescription` and omits `NSCalendarsFullAccessUsageDescription`.',
+      default: 'false',
+    },
   ]}
 />
 
 <ConfigReactNative>
 
-If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **ios** project manually), then you need to configure following permissions in your native project:
 
-- For Android, add `android.permission.READ_CALENDAR` and `android.permission.WRITE_CALENDAR` permissions to your project's **android/app/src/main/AndroidManifest.xml**:
-
-  ```xml
-  <uses-permission android:name="android.permission.READ_CALENDAR" />
-  <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-  ```
-
-- For iOS, add `NSCalendarsUsageDescription` and `NSRemindersUsageDescription` to your project's **ios/[app]/Info.plist**:
+- For iOS, add `NSCalendarsUsageDescription`, `NSCalendarsFullAccessUsageDescription`, and `NSRemindersUsageDescription` to your project's **ios/[app]/Info.plist**:
 
   ```xml
   <key>NSCalendarsUsageDescription</key>
   <string>Allow $(PRODUCT_NAME) to access your calendar</string>
+  <key>NSCalendarsFullAccessUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your calendar</string>
   <key>NSRemindersUsageDescription</key>
   <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+  ```
+
+  When requesting write-only calendar access on iOS 17+, add `NSCalendarsWriteOnlyAccessUsageDescription` instead of `NSCalendarsFullAccessUsageDescription`:
+
+  ```xml
+  <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to add events to your calendars</string>
   ```
 
 </ConfigReactNative>
 
 ## Usage
 
-<SnackInline label='Basic Calendar usage' dependencies={['expo-calendar']}>
-
 ```jsx
-import { useEffect } from 'react';
-import { StyleSheet, View, Text, Button, Platform } from 'react-native';
 import * as Calendar from 'expo-calendar';
+import { useEffect } from 'react';
+import { StyleSheet, View, Text, Button } from 'react-native';
 
-export default function App() {
+const BasicUsage = () => {
   useEffect(() => {
     (async () => {
-      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      const { status } = await Calendar.requestCalendarPermissions();
       if (status === 'granted') {
-        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        const calendars = Calendar.getCalendars(Calendar.EntityTypes.EVENT);
         console.log('Here are all your calendars:');
-        console.log({ calendars });
+        console.log(JSON.stringify(calendars));
       }
     })();
   }, []);
@@ -116,29 +128,15 @@ export default function App() {
       <Button title="Create a new calendar" onPress={createCalendar} />
     </View>
   );
-}
-
-async function getDefaultCalendarSource() {
-  const defaultCalendar = await Calendar.getDefaultCalendarAsync();
-  return defaultCalendar.source;
-}
+};
 
 async function createCalendar() {
-  const defaultCalendarSource =
-    Platform.OS === 'ios'
-      ? await getDefaultCalendarSource()
-      : { isLocalAccount: true, name: 'Expo Calendar' };
-  const newCalendarID = await Calendar.createCalendarAsync({
+  const newCalendar = await Calendar.createCalendar({
     title: 'Expo Calendar',
     color: 'blue',
     entityType: Calendar.EntityTypes.EVENT,
-    sourceId: defaultCalendarSource.id,
-    source: defaultCalendarSource,
-    name: 'internalCalendarName',
-    ownerAccount: 'personal',
-    accessLevel: Calendar.CalendarAccessLevel.OWNER,
   });
-  console.log(`Your new calendar ID is: ${newCalendarID}`);
+  console.log(`Your new calendar: ${JSON.stringify(newCalendar)}`);
 }
 
 const styles = StyleSheet.create({
@@ -151,13 +149,13 @@ const styles = StyleSheet.create({
 });
 ```
 
-</SnackInline>
-
 ## API
 
 ```js
 import * as Calendar from 'expo-calendar';
 ```
+
+Unless specified otherwise, all dates are returned in the ISO 8601 format.
 
 <APISection
   packageName="expo-calendar"
@@ -183,4 +181,19 @@ If you only intend to create events using system-provided calendar UI with [`cre
 
 The following usage description keys are used by this library:
 
-<IOSPermissions permissions={['NSCalendarsUsageDescription', 'NSRemindersUsageDescription']} />
+<IOSPermissions
+  permissions={[
+    'NSCalendarsUsageDescription',
+    {
+      name: 'NSCalendarsFullAccessUsageDescription',
+      description:
+        "A message that tells the user why the app is requesting full access to the user's calendar data.",
+    },
+    {
+      name: 'NSCalendarsWriteOnlyAccessUsageDescription',
+      description:
+        "A message that tells the user why the app is requesting write-only access to the user's calendar data.",
+    },
+    'NSRemindersUsageDescription',
+  ]}
+/>
