@@ -158,7 +158,8 @@ dependencies {
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
-  implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
+  implementation("com.squareup.zstd:zstd-kmp-okio:0.4.0")
+  implementation("org.brotli:dec:0.1.2")
   implementation("org.bouncycastle:bcutil-jdk15to18:1.81")
 
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
