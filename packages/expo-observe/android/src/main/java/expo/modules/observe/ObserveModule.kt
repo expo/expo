@@ -10,7 +10,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class Config(
   @Field val environment: String? = null,
   @Field val dispatchingEnabled: Boolean? = null,
@@ -18,6 +20,7 @@ class Config(
   @Field val sampleRate: Double? = null
 ) : Record
 
+@OptimizedRecord
 class BundleDefaults(
   @Field val environment: String = "",
   @Field val isJsDev: Boolean = false
