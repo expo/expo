@@ -3,9 +3,9 @@ import * as path from 'path';
 import {
   moduleNameIsDirectFileReference,
   moduleNameIsPackageReference,
+  resolveConfigPluginFunction,
   resolvePluginForModule,
 } from '../plugin-resolver';
-jest.unmock('resolve-from');
 
 describe('plugin resolver', () => {
   describe(moduleNameIsDirectFileReference, () => {
@@ -67,6 +67,13 @@ describe('plugin resolver', () => {
         });
       });
 
+      it('./localTsPlugin module path resolves the TypeScript file', () => {
+        expect(resolvePluginForModule(projectRoot, './localTsPlugin')).toStrictEqual({
+          filePath: `${projectRoot}/localTsPlugin.ts`,
+          isPluginFile: false,
+        });
+      });
+
       it('./node_modules/test-plugin/lib/commonjs/index.js direct file path', () => {
         expect(
           resolvePluginForModule(projectRoot, './node_modules/test-plugin/lib/commonjs/index.js')
@@ -83,6 +90,20 @@ describe('plugin resolver', () => {
         });
       });
 
+      it('test-lib-ts library name with TypeScript plugin entry', () => {
+        expect(resolvePluginForModule(projectRoot, 'test-lib-ts')).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-lib-ts/app.plugin.ts`,
+          isPluginFile: true,
+        });
+      });
+
+      it('test-lib-esm library name with ESM plugin entry', () => {
+        expect(resolvePluginForModule(projectRoot, 'test-lib-esm')).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-lib-esm/app.plugin.mjs`,
+          isPluginFile: true,
+        });
+      });
+
       it('test library which does not have app.plugin.js file but has main entry', () => {
         expect(resolvePluginForModule(projectRoot, 'test-plugin')).toStrictEqual({
           filePath: `${projectRoot}/node_modules/test-plugin/lib/commonjs/index.js`,
@@ -93,13 +114,24 @@ describe('plugin resolver', () => {
       it('test-lib library name with file path', () => {
         expect(resolvePluginForModule(projectRoot, 'test-lib/app.plugin.js')).toStrictEqual({
           filePath: `${projectRoot}/node_modules/test-lib/app.plugin.js`,
-          isPluginFile: true,
+          isPluginFile: false,
         });
         expect(resolvePluginForModule(projectRoot, 'test-lib/not.app.plugin.js')).toStrictEqual({
           filePath: `${projectRoot}/node_modules/test-lib/not.app.plugin.js`,
           isPluginFile: false,
         });
       });
+    });
+  });
+
+  describe(resolveConfigPluginFunction, () => {
+    const projectRoot = path.resolve(__dirname, 'fixtures');
+
+    it('loads and transpiles a TypeScript plugin entry', () => {
+      const plugin = resolveConfigPluginFunction(projectRoot, 'test-lib-ts');
+      expect(typeof plugin).toBe('function');
+      const input = { name: 'app' };
+      expect(plugin(input)).toBe(input);
     });
   });
 });
