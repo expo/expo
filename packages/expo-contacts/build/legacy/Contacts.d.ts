@@ -146,7 +146,6 @@ export type Address = {
     id?: string;
 };
 /**
- * @platform ios
  */
 export type SocialProfile = {
     /**
@@ -215,8 +214,6 @@ export type UrlAddress = {
     id?: string;
 };
 /**
- * Information regarding thumbnail images.
- * > On Android you can get dimensions using [`Image.getSize`](https://reactnative.dev/docs/image#getsize) method.
  */
 export type Image = {
     /**
@@ -240,9 +237,6 @@ export type Image = {
     base64?: string;
 };
 /**
- * Base contact type without ID. For better type safety, consider using:
- * - `Contact` when creating new contacts (no ID needed)
- * - `ExistingContact` when working with contacts returned from the system (ID guaranteed)
  */
 export type Contact = {
     /**
@@ -373,7 +367,6 @@ export type Contact = {
     isFavorite?: boolean;
 };
 /**
- * Type for existing contacts returned from the system - guarantees the id field is present.
  */
 export type ExistingContact = Contact & {
     /**
@@ -382,7 +375,6 @@ export type ExistingContact = Contact & {
     id: string;
 };
 /**
- * The return value for queried contact operations like `getContactsAsync`.
  */
 export type ContactResponse = {
     /**
@@ -400,7 +392,6 @@ export type ContactResponse = {
 };
 export type ContactSort = `${SortTypes}`;
 /**
- * Used to query contacts from the user's device.
  */
 export type ContactQuery = {
     /**
@@ -445,8 +436,6 @@ export type ContactQuery = {
     rawContacts?: boolean;
 };
 /**
- * Denotes the functionality of a native contact form.
- * @platform ios
  */
 export type FormOptions = {
     /**
@@ -491,8 +480,6 @@ export type FormOptions = {
     groupId?: string;
 };
 /**
- * Used to query native contact groups.
- * @platform ios
  */
 export type GroupQuery = {
     /**
@@ -509,11 +496,6 @@ export type GroupQuery = {
     containerId?: string;
 };
 /**
- * A parent to contacts. A contact can belong to multiple groups. Here are some query operations you can perform:
- * - Child Contacts: `getContactsAsync({ groupId })`
- * - Groups From Container: `getGroupsAsync({ containerId })`
- * - Groups Named: `getContainersAsync({ groupName })`
- * @platform ios
  */
 export type Group = {
     /**
@@ -526,8 +508,6 @@ export type Group = {
     id?: string;
 };
 /**
- * Used to query native contact containers.
- * @platform ios
  */
 export type ContainerQuery = {
     /**
@@ -550,324 +530,92 @@ export type Container = {
 };
 export { PermissionStatus, type PermissionResponse, type PermissionExpiration } from 'expo';
 /**
- * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.
- * @deprecated This legacy `expo-contacts` API is deprecated. This feature will be removed in `expo-contacts/next`.
- * @returns A promise that fulfills with a `boolean`, indicating whether the Contacts API is available on the current device. It always resolves to `false` on web.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 /**
- * Checks if any contacts exist on the device without querying all contacts. This method requires contacts read permission.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.hasAny()` from `expo-contacts/next` instead.
- * @return A promise that fulfills with a `boolean`, indicating whether there are any contacts on the device.
- * @example
- * ```js
- * const hasContacts = await Contacts.hasContactsAsync();
- * if (hasContacts) {
- *   console.log('Contacts are available');
- * }
- * ```
  */
 export declare function hasContactsAsync(): Promise<boolean>;
 /**
- * @deprecated This legacy `expo-contacts` API is deprecated. This feature will be removed in `expo-contacts/next`.
  */
 export declare function shareContactAsync(contactId: string, message: string, shareOptions?: ShareOptions): Promise<any>;
 /**
- * Return a list of contacts that fit a given criteria. You can get all of the contacts by passing no criteria.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.getAll()` from `expo-contacts/next` instead.
- * @param contactQuery Object used to query contacts.
- * @return A promise that fulfills with `ContactResponse` object returned from the query.
- * @example
- * ```js
- * const { data } = await Contacts.getContactsAsync({
- *   fields: [Contacts.Fields.Emails],
- * });
  *
- * if (data.length > 0) {
- *   const contact = data[0];
- *   console.log(contact);
- * }
- * ```
  */
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 /**
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.getAll()` from `expo-contacts/next` with `limit` and `offset` options instead.
  */
 export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 /**
- * Used for gathering precise data about a contact. Returns a contact matching the given `id`.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `contact.getDetails()` from `expo-contacts/next` instead.
- * @param id The ID of a system contact.
- * @param fields If specified, the fields defined will be returned. When skipped, all fields will be returned.
- * @return A promise that fulfills with `Contact` object with ID matching the input ID, or `undefined` if there is no match.
- * @example
- * ```js
- * const contact = await Contacts.getContactByIdAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
- * if (contact) {
- *   console.log(contact);
- * }
- * ```
  */
 export declare function getContactByIdAsync(id: string, fields?: FieldType[]): Promise<ExistingContact | undefined>;
 /**
- * Creates a new contact and adds it to the system.
  *
- * > **Note**: For Android users, the Expo Go app does not have the required `WRITE_CONTACTS` permission to write to Contacts.
- * > You will need to create a [development build](/develop/development-builds/create-a-build/) and add permission in there
- * > manually to use this method.
  *
- * @param contact A contact with the changes you wish to persist. The `id` parameter will not be used.
- * @param containerId @tag-ios The container that will parent the contact.
- * @return A promise that fulfills with ID of the new system contact.
  *
- * @example
- * ```js
- * const contact = {
- *   [Contacts.Fields.FirstName]: 'Bird',
- *   [Contacts.Fields.LastName]: 'Man',
- *   [Contacts.Fields.Company]: 'Young Money',
- * };
- * const contactId = await Contacts.addContactAsync(contact);
- * ```
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.create()` from `expo-contacts/next` instead.
  */
 export declare function addContactAsync(contact: Contact, containerId?: string): Promise<string>;
 /**
- * Mutate the information of an existing contact. Due to an iOS bug, `nonGregorianBirthday` field cannot be modified.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `contact.update()` or `contact.patch()` from `expo-contacts/next` instead.
- * @param contact A contact object including the wanted changes. Contact `id` is required.
- * @return A promise that fulfills with ID of the updated system contact if mutation was successful.
- * @example
- * ```js
- * const contact = {
- *   id: '161A368D-D614-4A15-8DC6-665FDBCFAE55',
- *   [Contacts.Fields.FirstName]: 'Drake',
- *   [Contacts.Fields.Company]: 'Young Money',
- * };
- * await Contacts.updateContactAsync(contact);
- * ```
  */
 export declare function updateContactAsync(contact: {
     id: string;
 } & Partial<ExistingContact>): Promise<string>;
 /**
- * Delete a contact from the system.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `contact.delete()` from `expo-contacts/next` instead.
- * @param contactId ID of the contact you want to delete.
- * @example
- * ```js
- * await Contacts.removeContactAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
- * ```
- * @platform ios
  */
 export declare function removeContactAsync(contactId: string): Promise<any>;
 /**
- * Query a set of contacts and write them to a local URI that can be used for sharing.
- * @deprecated This legacy `expo-contacts` API is deprecated. This feature will be removed in `expo-contacts/next`.
- * @param contactQuery Used to query contact you want to write.
- * @return A promise that fulfills with shareable local URI, or `undefined` if there was no match.
- * @example
- * ```js
- * const localUri = await Contacts.writeContactToFileAsync({
- *   id: '161A368D-D614-4A15-8DC6-665FDBCFAE55',
- * });
- * Share.share({ url: localUri, message: 'Call me!' });
- * ```
  */
 export declare function writeContactToFileAsync(contactQuery?: ContactQuery): Promise<string | undefined>;
 /**
- * Present a native form for manipulating contacts.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `contact.editWithForm()` or `Contact.presentCreateForm()` from `expo-contacts/next` instead.
- * @param contactId The ID of a system contact.
- * @param contact A contact with the changes you want to persist.
- * @param formOptions Options for the native editor.
- * @example
- * ```js
- * await Contacts.presentFormAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
- * ```
  */
 export declare function presentFormAsync(contactId?: string | null, contact?: Contact | null, formOptions?: FormOptions): Promise<any>;
 /**
- * Add a group to a container.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `container.addGroup()` from `expo-contacts/next` instead.
- * @param groupId The group you want to target.
- * @param containerId The container you want to add membership to.
- * @example
- * ```js
- * await Contacts.addExistingGroupToContainerAsync(
- *   '161A368D-D614-4A15-8DC6-665FDBCFAE55',
- *   '665FDBCFAE55-D614-4A15-8DC6-161A368D'
- * );
- * ```
- * @platform ios
  */
 export declare function addExistingGroupToContainerAsync(groupId: string, containerId: string): Promise<any>;
 /**
- * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Group.create()` from `expo-contacts/next` instead.
- * @param name Name of the new group.
- * @param containerId The container you to add membership to.
- * @return A promise that fulfills with ID of the new group.
- * @example
- * ```js
- * const groupId = await Contacts.createGroupAsync('Sailor Moon');
- * ```
- * @platform ios
  */
 export declare function createGroupAsync(name?: string, containerId?: string): Promise<string>;
 /**
- * Change the name of an existing group.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `group.setName()` from `expo-contacts/next` instead.
- * @param groupName New name for an existing group.
- * @param groupId ID of the group you want to edit.
- * @example
- * ```js
- * await Contacts.updateGroupName('Expo Friends', '161A368D-D614-4A15-8DC6-665FDBCFAE55');
- * ```
- * @platform ios
  */
 export declare function updateGroupNameAsync(groupName: string, groupId: string): Promise<any>;
 /**
- * Delete a group from the device.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `group.delete()` from `expo-contacts/next` instead.
- * @param groupId ID of the group you want to remove.
- * @example
- * ```js
- * await Contacts.removeGroupAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
- * ```
- * @platform ios
  */
 export declare function removeGroupAsync(groupId: string): Promise<any>;
 /**
- * Add a contact as a member to a group. A contact can be a member of multiple groups.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `group.addContact()` from `expo-contacts/next` instead.
- * @param contactId ID of the contact you want to edit.
- * @param groupId ID for the group you want to add membership to.
- * @example
- * ```js
- * await Contacts.addExistingContactToGroupAsync(
- *   '665FDBCFAE55-D614-4A15-8DC6-161A368D',
- *   '161A368D-D614-4A15-8DC6-665FDBCFAE55'
- * );
- * ```
- * @platform ios
  */
 export declare function addExistingContactToGroupAsync(contactId: string, groupId: string): Promise<any>;
 /**
- * Remove a contact's membership from a given group. This will not delete the contact.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `group.removeContact()` from `expo-contacts/next` instead.
- * @param contactId ID of the contact you want to remove.
- * @param groupId ID for the group you want to remove membership of.
- * @example
- * ```js
- * await Contacts.removeContactFromGroupAsync(
- *   '665FDBCFAE55-D614-4A15-8DC6-161A368D',
- *   '161A368D-D614-4A15-8DC6-665FDBCFAE55'
- * );
- * ```
- * @platform ios
  */
 export declare function removeContactFromGroupAsync(contactId: string, groupId: string): Promise<any>;
 /**
- * Query and return a list of system groups.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Group.getAll()` from `expo-contacts/next` instead.
- * @param groupQuery Information regarding which groups you want to get.
- * @example
- * ```js
- * const groups = await Contacts.getGroupsAsync({ groupName: 'sailor moon' });
- * const allGroups = await Contacts.getGroupsAsync({});
- * ```
- * @return A promise that fulfills with array of groups that fit the query.
- * @platform ios
  */
 export declare function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]>;
 /**
- * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
- * obtain this permission by calling the [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync) method. On iOS, no permissions are
- * required to use this method.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.presentPicker()` from `expo-contacts/next` instead.
- * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
  */
 export declare function presentContactPickerAsync(): Promise<ExistingContact | null>;
 /**
- * Get the default container's ID.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Container.getDefault()` from `expo-contacts/next` instead.
- * @return A promise that fulfills with default container ID.
- * @example
- * ```js
- * const containerId = await Contacts.getDefaultContainerIdAsync();
- * ```
- * @platform ios
  */
 export declare function getDefaultContainerIdAsync(): Promise<string>;
 /**
- * Query a list of system containers.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Container.getAll()` from `expo-contacts/next` instead.
- * @param containerQuery Information used to gather containers.
- * @return A promise that fulfills with array of containers that fit the query.
- * @example
- * ```js
- * const allContainers = await Contacts.getContainersAsync({
- *   contactId: '665FDBCFAE55-D614-4A15-8DC6-161A368D',
- * });
- * ```
- * @platform ios
  */
 export declare function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>;
 /**
- * Checks user's permissions for accessing contacts data.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `getPermissionsAsync()` from `expo-contacts/next` instead.
- * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
 export declare function getPermissionsAsync(): Promise<ContactsPermissionResponse>;
 /**
- * Asks the user to grant permissions for accessing contacts data.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `requestPermissionsAsync()` from `expo-contacts/next` instead.
- * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
 export declare function requestPermissionsAsync(): Promise<ContactsPermissionResponse>;
 /**
- * Presents a modal which allows the user to select which contacts the app has access to.
- * Using this function is reasonable only when the app has "limited" permissions.
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.presentAccessPicker()` from `expo-contacts/next` instead.
- * @return A promise that resolves with an array of contact identifiers that were newly granted to the app.
- * Contacts which the app lost access to are not listed. On platforms other than iOS and below 18.0, the promise rejects immediately.
- * @platform ios 18.0+
  */
 export declare function presentAccessPickerAsync(): Promise<string[]>;
 /**
- * Adds a listener for contact changes. The listener will be called whenever contacts are added, updated, or deleted.
  *
- * **Platform differences:**
- * - **Android**: 5-7 second delay - uses `ContentObserver` with inherent system delays
- * - **iOS**: Immediate response - uses `CNContactStoreDidChangeNotification`
  *
- * The Android delay is a system limitation that affects all apps using `ContentObserver` for contacts.
- * This delay is by design to batch notifications for better performance and battery life.
- * For more immediate updates, you can also listen to app state changes and refresh
- * contacts when the app comes to the foreground. This ensures users see the latest contacts when
- * returning from the native Contacts app.
  *
- * @deprecated This legacy `expo-contacts` API is deprecated. Use `addContactsChangeListener()` from `expo-contacts/next` instead.
- * @param listener The function that will be executed when contacts change.
- * This function accepts no arguments.
  *
- * @returns A subscription object with a `remove` method to stop listening.
- * @example
- * ```jsx
- * const subscription = Contacts.addContactChangeListener(() => {
- *   console.log('Contacts changed - refreshing contact list');
- *   // Refresh your contact list when changes are detected
- *   loadContacts();
- * });
  *
- * // Later, remove the listener
- * subscription.remove();
- * ```
  */
 export declare function addContactsChangeListener(listener: () => void): EventSubscription;
 /**
- * Possible fields to retrieve for a contact.
  */
 export declare enum Fields {
     ID = "id",
@@ -913,7 +661,6 @@ export declare enum Fields {
     IsFavorite = "isFavorite"
 }
 /**
- * This format denotes the common calendar format used to specify how a date is calculated in `nonGregorianBirthday` fields.
  */
 export declare enum CalendarFormats {
     Gregorian = "gregorian",
@@ -979,7 +726,6 @@ export declare enum CalendarFormats {
     IslamicUmmAlQura = "islamicUmmAlQura"
 }
 /**
- * @platform ios
  */
 export declare enum ContainerTypes {
     /**

@@ -207,6 +207,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
   'expo-contacts-next': ['next/index.ts', 'expo-contacts'],
+  'expo-contacts-legacy': ['legacy/index.ts', 'expo-contacts'],
   'expo-crypto': ['Crypto.ts'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-dev-menu': ['DevMenu.ts'],
