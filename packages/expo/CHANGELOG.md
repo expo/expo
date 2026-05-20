@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `AbortSignal.timeout`, `AbortSignal.any`, and `DOMException` to the native runtime. ([#45441](https://github.com/expo/expo/pull/45441) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
