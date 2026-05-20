@@ -7,8 +7,8 @@ import {
   ExpoCalendarReminder,
   ExpoCalendarAttendee,
   EntityTypes,
-} from 'expo-calendar/next';
-import * as Calendar from 'expo-calendar/next';
+} from 'expo-calendar';
+import * as Calendar from 'expo-calendar';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
