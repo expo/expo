@@ -277,7 +277,7 @@ export default function ModifiersScreen() {
             {/* Dynamic Type */}
             <VStack alignment="leading" spacing={8}>
               <Text modifiers={[font({ size: 12 })]}>
-                Dynamic Type (try Settings &gt; Larger Text)
+                Dynamic Type (try Settings &gt; Accessibility &gt; Larger Text)
               </Text>
               <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>
                 largeTitle scales

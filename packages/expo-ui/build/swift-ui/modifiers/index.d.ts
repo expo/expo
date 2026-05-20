@@ -780,16 +780,8 @@ export declare const listSectionMargins: (params?: {
 /**
  * Sets the font properties of a view.
  *
- * Pass `textStyle` to opt into a SwiftUI text style. Text-style fonts scale
- * with the user's Dynamic Type setting, the SwiftUI-native path for Apple's
- * Larger Text Accessibility Nutrition Label. Without `textStyle`, the
- * resolved font is fixed-size and does not scale.
- *
- * Resolution rules:
- * - `family` + `textStyle`: `Font.custom(family, size:, relativeTo: textStyle)` — scales.
- * - `family` only: `Font.custom(family, size:)` — fixed size.
- * - `textStyle` only: `Font.system(textStyle, design:)` — scales. `size` is ignored.
- * - Neither: `Font.system(size:weight:design:)` — fixed size.
+ * Pass `textStyle` to scale with the user's Dynamic Type setting. Combine
+ * it with `family` to scale a custom font.
  *
  * @example
  * ```tsx
@@ -797,23 +789,20 @@ export declare const listSectionMargins: (params?: {
  * <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Hello</Text>
  *
  * // Custom font that scales relative to the body text style
- * <Text modifiers={[font({ family: 'Helvetica', size: 18, textStyle: 'body' })]}>Hi</Text>
+ * <Text modifiers={[font({ textStyle: 'body', family: 'Helvetica', size: 18 })]}>Hi</Text>
  *
  * // Fixed-size system font (no Dynamic Type scaling)
  * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>Static</Text>
  * ```
- * @see Official [SwiftUI documentation for `Font`](https://developer.apple.com/documentation/swiftui/font), [`system(_:design:weight:)`](https://developer.apple.com/documentation/swiftui/font/system(_:design:weight:)), and [`custom(_:size:relativeTo:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:relativeto:)).
+ * @see Official SwiftUI documentation for [`system(_:design:weight:)`](https://developer.apple.com/documentation/swiftui/font/system(_:design:weight:)), and [`custom(_:size:relativeTo:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:relativeto:)).
  */
 export declare const font: (params: {
-    /**
-     * Custom font family name.
-     * If provided, uses `Font.custom()`.
-     */
+    /** Custom font family name. */
     family?: string;
     /**
-     * Font size in points. Defaults to 17 when omitted. Ignored when `textStyle`
-     * is set without a `family`. On the `family` + `textStyle` branch this is
-     * the base size that scales relative to the named style.
+     * Font size in points. Ignored when only `textStyle` is set.
+     *
+     * @default 17
      */
     size?: number;
     /** Font weight. */
