@@ -1,7 +1,6 @@
 import type { ActionDispatchedEvent } from 'expo-router';
 export interface ScreenTimes {
     dispatchTime: number;
-    lastInteractiveCall?: number;
 }
 export interface PendingAction {
     actionType: ActionDispatchedEvent['actionType'];
