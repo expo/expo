@@ -116,7 +116,7 @@ const DRAWABLES_CONFIGS = {
 const withAndroidSplashImages = (config, splash) => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
     if (splash) {
-      await setSplashImageDrawablesAsync(config, splash, config.modRequest.projectRoot, splash?.imageWidth ?? 200);
+      await setSplashImageDrawablesAsync(config, splash, config.modRequest.projectRoot, splash?.imageWidth ?? 100);
     }
     return config;
   }]);

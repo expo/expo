@@ -36,7 +36,7 @@ function getAndroidSplashConfig(config, props) {
       backgroundColor: splash.backgroundColor,
       image: splash.image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
-      imageWidth: 200,
+      imageWidth: splash.imageWidth ?? 100,
       dark: splash.dark
     };
   }
@@ -51,7 +51,7 @@ function getAndroidSplashConfig(config, props) {
       image: splash.image,
       backgroundColor: splash.backgroundColor,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
-      imageWidth: 200,
+      imageWidth: splash.imageWidth ?? 100,
       dark: splash.dark
     };
   }

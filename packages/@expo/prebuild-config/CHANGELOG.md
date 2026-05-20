@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android splash screen image width default to match the documented default value. ([#43761](https://github.com/expo/expo/issues/43761) by [@jiunshinn](https://github.com/jiunshinn))
+
 ### 💡 Others
 
 ## 55.0.18 — 2026-05-13
