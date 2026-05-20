@@ -15,9 +15,39 @@ struct CacheVariant: Codable {
   /// The request-header values that produced this stored response, used to match
   /// subsequent requests against this variant.
   let varyValues: [String: String]
+  /// Caller/application identity headers that must not be reused across values,
+  /// even when the server did not list them in `Vary`.
+  let identityValues: [String: String]
   /// Per RFC 9111 §3.5: whether this response may be reused for an
   /// `Authorization`-bearing request not already disambiguated by `Vary`.
   let allowsAuthorizedReuse: Bool
+
+  enum CodingKeys: String, CodingKey {
+    case storageKey, varyHeaders, varyValues, identityValues, allowsAuthorizedReuse
+  }
+
+  init(
+    storageKey: String,
+    varyHeaders: [String],
+    varyValues: [String: String],
+    identityValues: [String: String],
+    allowsAuthorizedReuse: Bool
+  ) {
+    self.storageKey = storageKey
+    self.varyHeaders = varyHeaders
+    self.varyValues = varyValues
+    self.identityValues = identityValues
+    self.allowsAuthorizedReuse = allowsAuthorizedReuse
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    storageKey = try container.decode(String.self, forKey: .storageKey)
+    varyHeaders = try container.decode([String].self, forKey: .varyHeaders)
+    varyValues = try container.decode([String: String].self, forKey: .varyValues)
+    identityValues = try container.decodeIfPresent([String: String].self, forKey: .identityValues) ?? [:]
+    allowsAuthorizedReuse = try container.decodeIfPresent(Bool.self, forKey: .allowsAuthorizedReuse) ?? false
+  }
 }
 
 /// Per-URL on-disk index of cached variants. Each variant points to a stored
@@ -26,8 +56,7 @@ struct CacheVariant: Codable {
 enum CacheVariantIndex {
   static let fileSuffix = ".variants"
   private static let authorizationHeader = "authorization"
-  /// Headers that imply a distinct identity. Used to derive the storage key
-  /// for the first request to a URL, before the server has revealed a `Vary`.
+  /// Headers that must never be reused across differing identities.
   private static let provisionalIdentityHeaders = ["authorization", "cookie", "proxy-authorization"]
 
   static func indexPath(forUrl url: URL) -> String? {
@@ -56,11 +85,17 @@ enum CacheVariantIndex {
   /// Returns the storage key for the variant that matches this request, or
   /// derives a provisional one when no variant matches yet.
   static func storageKey(forUrl url: URL, requestHeaders: [String: String]?) -> String {
-    let normalized = normalize(headers: requestHeaders)
+    let normalized = normalizedRequestHeaders(forUrl: url, requestHeaders: requestHeaders)
     if let variant = matchingVariant(forUrl: url, normalizedHeaders: normalized) {
       return variant.storageKey
     }
-    return provisionalStorageKey(normalizedHeaders: normalized)
+    let variants = load(forUrl: url)
+    let knownVaryHeaders = variants.flatMap { $0.varyHeaders }
+    return provisionalStorageKey(
+      normalizedHeaders: normalized,
+      knownVaryHeaders: knownVaryHeaders,
+      hasExistingVariants: !variants.isEmpty
+    )
   }
 
   static func recordVariant(
@@ -69,8 +104,10 @@ enum CacheVariantIndex {
     requestHeaders: [String: String]?,
     policy: CachePolicy
   ) {
-    guard policy.isCacheable else { return }
-    let normalized = normalize(headers: requestHeaders)
+    guard policy.isCacheable else {
+      return
+    }
+    let normalized = normalizedRequestHeaders(forUrl: url, requestHeaders: requestHeaders)
     let varyValues = Dictionary(uniqueKeysWithValues:
       policy.varyHeaders.map { ($0, normalized[$0] ?? "") }
     )
@@ -78,6 +115,7 @@ enum CacheVariantIndex {
       storageKey: storageKey,
       varyHeaders: policy.varyHeaders,
       varyValues: varyValues,
+      identityValues: identityValues(normalizedHeaders: normalized),
       allowsAuthorizedReuse: policy.allowsAuthorizedReuse
     )
     var existing = load(forUrl: url)
@@ -86,16 +124,27 @@ enum CacheVariantIndex {
     save(variants: existing, forUrl: url)
   }
 
+  static func hasIdentityHeaders(_ normalizedHeaders: [String: String]) -> Bool {
+    return Self.provisionalIdentityHeaders.contains { normalizedHeaders[$0] != nil }
+  }
+
   private static func matchingVariant(forUrl url: URL, normalizedHeaders: [String: String]) -> CacheVariant? {
     let hasAuthorization = normalizedHeaders[authorizationHeader] != nil
     for variant in load(forUrl: url) {
       let allMatch = variant.varyHeaders.allSatisfy { name in
         (normalizedHeaders[name] ?? "") == (variant.varyValues[name] ?? "")
       }
-      guard allMatch else { continue }
-      // §3.5 only matters when Authorization isn't already separating variants.
-      let authHandledByVary = variant.varyHeaders.contains(authorizationHeader)
-      if hasAuthorization && !authHandledByVary && !variant.allowsAuthorizedReuse {
+      guard allMatch else {
+        continue
+      }
+      let identityMatch = variant.identityValues.allSatisfy { name, value in
+        (normalizedHeaders[name] ?? "") == value
+      }
+      guard identityMatch else {
+        continue
+      }
+      let identityHandledByVariant = variant.identityValues[authorizationHeader] != nil
+      if hasAuthorization && !identityHandledByVariant && !variant.allowsAuthorizedReuse {
         continue
       }
       return variant
@@ -103,20 +152,52 @@ enum CacheVariantIndex {
     return nil
   }
 
-  private static func provisionalStorageKey(normalizedHeaders: [String: String]) -> String {
-    let composite = Self.provisionalIdentityHeaders
+  private static func provisionalStorageKey(
+    normalizedHeaders: [String: String],
+    knownVaryHeaders: [String],
+    hasExistingVariants: Bool
+  ) -> String {
+    let headers = Array(Set(Self.provisionalIdentityHeaders + knownVaryHeaders.map { $0.lowercased() })).sorted()
+    let hasVariantInput = hasExistingVariants ||
+      !knownVaryHeaders.isEmpty ||
+      Self.provisionalIdentityHeaders.contains { normalizedHeaders[$0] != nil }
+    if !hasVariantInput {
+      // Preserve the pre-variant URL-only cache filename for anonymous videos
+      // so existing offline downloads remain playable after upgrading.
+      return ""
+    }
+    let composite = headers
       .sorted()
       .map { "\($0):\(normalizedHeaders[$0] ?? "")" }
       .joined(separator: ";")
     return sha256(composite)
   }
 
-  private static func normalize(headers: [String: String]?) -> [String: String] {
+  static func normalizedRequestHeaders(forUrl url: URL, requestHeaders: [String: String]?) -> [String: String] {
     var out: [String: String] = [:]
-    for (key, value) in headers ?? [:] {
+    for (key, value) in requestHeaders ?? [:] {
       out[key.lowercased()] = value
     }
+    if out["cookie"] == nil,
+      let cookies = HTTPCookieStorage.shared.cookies(for: url),
+      !cookies.isEmpty {
+      let cookieHeaders = HTTPCookie.requestHeaderFields(with: cookies)
+      if let cookie = cookieHeaders["Cookie"], !cookie.isEmpty {
+        out["cookie"] = cookie
+      }
+    }
     return out
+  }
+
+  private static func identityValues(normalizedHeaders: [String: String]) -> [String: String] {
+    return Dictionary(uniqueKeysWithValues:
+      Self.provisionalIdentityHeaders.compactMap { name in
+        guard let value = normalizedHeaders[name] else {
+          return nil
+        }
+        return (name, value)
+      }
+    )
   }
 
   private static func save(variants: [CacheVariant], forUrl url: URL) {

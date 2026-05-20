@@ -1,10 +1,5 @@
 package expo.modules.video.cache
 
-/**
- * Result of evaluating an HTTP response against RFC 9111 caching semantics.
- * Mirrors `CachePolicy.swift` on iOS so both platforms reach the same decision
- * for a given response.
- */
 data class CachePolicy(
   val varyHeaders: List<String>,
   val isCacheable: Boolean,
@@ -12,8 +7,6 @@ data class CachePolicy(
 ) {
   companion object {
     fun evaluate(responseHeaders: Map<String, String>, statusCode: Int): CachePolicy {
-      // Only the success codes a video player can play back are worth caching.
-      // Caching a 401/500 would lock the user into a stale error.
       if (statusCode != 200 && statusCode != 206) {
         return CachePolicy(emptyList(), isCacheable = false, allowsAuthorizedReuse = false)
       }
@@ -21,16 +14,10 @@ data class CachePolicy(
       val vary = splitRespectingQuotes(headerValue(responseHeaders, "vary"))
       val cacheControl = directiveNames(splitRespectingQuotes(headerValue(responseHeaders, "cache-control")))
 
-      // `private` excludes shared caches (RFC 9111 §5.2.2.7). Our cache straddles
-      // multiple identities on one device, so we treat ourselves as shared.
-      if (vary.contains("*") || "no-store" in cacheControl || "private" in cacheControl) {
+      if (vary.any { it.trim() == "*" }) {
         return CachePolicy(emptyList(), isCacheable = false, allowsAuthorizedReuse = false)
       }
 
-      // Cache-Control is consulted only for the §3.5 reuse decision below.
-      // Freshness directives (`max-age`, `Expires`, `Age`) and conditional
-      // revalidation (`If-None-Match`/`Last-Modified`) are not implemented;
-      // cached responses live until LRU eviction.
       val allowsAuth = "public" in cacheControl ||
         "must-revalidate" in cacheControl ||
         "s-maxage" in cacheControl

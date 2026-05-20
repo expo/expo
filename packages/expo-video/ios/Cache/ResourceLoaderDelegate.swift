@@ -16,15 +16,13 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   private let saveFilePath: String
   private let fileExtension: String
   private let cachedResource: CachedResource
-  /// Caller-declared request headers. Variant matching only considers these;
-  /// `URLSession` may additionally attach cookies from `HTTPCookieStorage.shared`
-  /// at request time, and those don't reach the variant index — so two
-  /// identities differing only in auto-attached cookies will not be separated.
+  /// Caller-declared headers sent on the network request.
   private let urlRequestHeaders: [String: String]?
+  /// Normalized request identity used for cache variant matching. This includes
+  /// the cookie snapshot that `URLSession` is expected to attach.
+  private let cacheRequestHeaders: [String: String]
   private let variantKey: String
-  /// Set to `false` when the response forbids storage (e.g. `Vary: *`,
-  /// `Cache-Control: no-store`). Any data already written for this request is
-  /// evicted when the session ends.
+  /// Set to `false` when the response status is not useful for offline playback.
   private var responseAllowsStorage: Bool = true
   private var policyEvaluated: Bool = false
   internal var onError: ((Error) -> Void)?
@@ -46,11 +44,19 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     return self.saveFilePath
   }
 
-  init(url: URL, saveFilePath: String, fileExtension: String, urlRequestHeaders: [String: String]?, variantKey: String) {
+  init(
+    url: URL,
+    saveFilePath: String,
+    fileExtension: String,
+    urlRequestHeaders: [String: String]?,
+    cacheRequestHeaders: [String: String],
+    variantKey: String
+  ) {
     self.url = url
     self.saveFilePath = saveFilePath
     self.fileExtension = fileExtension
     self.urlRequestHeaders = urlRequestHeaders
+    self.cacheRequestHeaders = cacheRequestHeaders
     self.variantKey = variantKey
     cachedResource = CachedResource(dataFileUrl: saveFilePath, resourceUrl: url, dataPath: saveFilePath)
     super.init()
@@ -169,17 +175,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       }
     }
     let policy = CachePolicy.evaluate(responseHeaders: headers, statusCode: httpResponse.statusCode)
-    let normalizedRequest = (urlRequestHeaders ?? [:]).reduce(into: [String: String]()) { acc, pair in
-      acc[pair.key.lowercased()] = pair.value
-    }
-    let hasAuthorization = normalizedRequest["authorization"] != nil
-    let authorizationCoveredByVary = policy.varyHeaders.contains("authorization")
-    let authorizationBlocked = hasAuthorization && !authorizationCoveredByVary && !policy.allowsAuthorizedReuse
-
-    responseAllowsStorage = policy.isCacheable && !authorizationBlocked
-
-    // For both !isCacheable and §3.5 cases we drop just this variant's bytes;
-    // other variants for the same URL may still be valid representations.
+    responseAllowsStorage = policy.isCacheable
     if !responseAllowsStorage {
       evictStoredFiles()
       return
@@ -187,7 +183,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     CacheVariantIndex.recordVariant(
       forUrl: url,
       storageKey: variantKey,
-      requestHeaders: urlRequestHeaders,
+      requestHeaders: cacheRequestHeaders,
       policy: policy
     )
   }

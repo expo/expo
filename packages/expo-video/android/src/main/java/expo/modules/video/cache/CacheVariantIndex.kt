@@ -18,6 +18,7 @@ internal data class CacheVariant(
   val storageKey: String,
   val varyHeaders: List<String>,
   val varyValues: Map<String, String>,
+  val identityValues: Map<String, String>,
   val allowsAuthorizedReuse: Boolean
 )
 
@@ -37,8 +38,17 @@ internal object CacheVariantIndex {
   fun storageKey(context: Context, url: String, requestHeaders: Map<String, String>): String {
     val normalized = normalize(requestHeaders)
     val variants = pruneEvicted(context, url, load(context, url))
+
+    if (variants.isEmpty() && hasLegacyCacheEntry(url) && identityValues(normalized).isEmpty()) {
+      // Use legacy storage - the source does not specify auth headers.
+      return ""
+    }
     return matchingVariant(variants, normalized)?.storageKey
-      ?: provisionalStorageKey(normalized)
+      ?: provisionalStorageKey(
+        normalizedHeaders = normalized,
+        knownVaryHeaders = variants.flatMap { it.varyHeaders },
+        hasExistingVariants = variants.isNotEmpty()
+      )
   }
 
   /**
@@ -59,10 +69,12 @@ internal object CacheVariantIndex {
     if (!policy.isCacheable) return
     val normalized = normalize(requestHeaders)
     val varyValues = policy.varyHeaders.associateWith { (normalized[it] ?: "") }
+    val identityValues = identityValues(normalized)
     val variant = CacheVariant(
       storageKey = storageKey,
       varyHeaders = policy.varyHeaders,
       varyValues = varyValues,
+      identityValues = identityValues,
       allowsAuthorizedReuse = policy.allowsAuthorizedReuse
     )
     val existing = load(context, url).filterNot { it.storageKey == storageKey } + variant
@@ -75,13 +87,34 @@ internal object CacheVariantIndex {
       val allMatch = variant.varyHeaders.all { name ->
         (normalizedHeaders[name] ?: "") == (variant.varyValues[name] ?: "")
       }
-      if (!allMatch) continue
-      // §3.5 only matters when Authorization isn't already separating variants.
-      val authHandledByVary = AUTHORIZATION in variant.varyHeaders
-      if (hasAuthorization && !authHandledByVary && !variant.allowsAuthorizedReuse) continue
+      if (!allMatch) {
+        continue
+      }
+
+      val identityMatch = variant.identityValues.all { (name, value) ->
+        (normalizedHeaders[name] ?: "") == value
+      }
+
+      if (!identityMatch) {
+        continue
+      }
+      val identityHandledByVariant = variant.identityValues.containsKey(AUTHORIZATION)
+
+      if (hasAuthorization && !identityHandledByVariant && !variant.allowsAuthorizedReuse) {
+        continue
+      }
       return variant
     }
     return null
+  }
+
+  @OptIn(UnstableApi::class)
+  private fun hasLegacyCacheEntry(url: String): Boolean {
+    return try {
+      url in VideoManager.cache.instance.keys
+    } catch (e: Throwable) {
+      false
+    }
   }
 
   /**
@@ -113,11 +146,32 @@ internal object CacheVariantIndex {
     return live
   }
 
-  private fun provisionalStorageKey(normalizedHeaders: Map<String, String>): String {
-    val composite = provisionalIdentityHeaders
+  private fun provisionalStorageKey(
+    normalizedHeaders: Map<String, String>,
+    knownVaryHeaders: List<String>,
+    hasExistingVariants: Boolean
+  ): String {
+    val headers = (provisionalIdentityHeaders + knownVaryHeaders)
+      .map { it.lowercase() }
+      .distinct()
       .sorted()
+    val hasVariantInput = hasExistingVariants ||
+      knownVaryHeaders.isNotEmpty() ||
+      provisionalIdentityHeaders.any { it in normalizedHeaders }
+    if (!hasVariantInput) {
+      // Preserve the pre-variant URL-only cache key for anonymous videos so
+      // existing offline downloads remain playable after upgrading.
+      return ""
+    }
+    val composite = headers
       .joinToString(separator = ";") { name -> "$name:${normalizedHeaders[name] ?: ""}" }
     return sha256(composite)
+  }
+
+  private fun identityValues(normalizedHeaders: Map<String, String>): Map<String, String> {
+    return provisionalIdentityHeaders
+      .filter { it in normalizedHeaders }
+      .associateWith { normalizedHeaders[it].orEmpty() }
   }
 
   private fun normalize(headers: Map<String, String>): Map<String, String> {
@@ -126,7 +180,10 @@ internal object CacheVariantIndex {
 
   private fun load(context: Context, url: String): List<CacheVariant> {
     val file = indexFile(context, url)
-    if (!file.exists()) return emptyList()
+    if (!file.exists()) {
+      return emptyList()
+    }
+
     return try {
       val arr = JSONArray(file.readText())
       List(arr.length()) { i -> decode(arr.getJSONObject(i)) }
@@ -146,12 +203,18 @@ internal object CacheVariantIndex {
   private fun encode(v: CacheVariant): JSONObject {
     val values = JSONObject()
     v.varyValues.forEach { (k, value) -> values.put(k, value) }
+
+    val identityValues = JSONObject()
+    v.identityValues.forEach { (k, value) -> identityValues.put(k, value) }
+
     val headers = JSONArray()
     v.varyHeaders.forEach { headers.put(it) }
+
     return JSONObject()
       .put("storageKey", v.storageKey)
       .put("varyHeaders", headers)
       .put("varyValues", values)
+      .put("identityValues", identityValues)
       .put("allowsAuthorizedReuse", v.allowsAuthorizedReuse)
   }
 
@@ -165,10 +228,18 @@ internal object CacheVariantIndex {
       val key = keysIt.next()
       values[key] = valuesObj.optString(key, "")
     }
+    val identityValuesObj = json.optJSONObject("identityValues") ?: JSONObject()
+    val identityValues = mutableMapOf<String, String>()
+    val identityKeysIt = identityValuesObj.keys()
+    while (identityKeysIt.hasNext()) {
+      val key = identityKeysIt.next()
+      identityValues[key] = identityValuesObj.optString(key, "")
+    }
     return CacheVariant(
       storageKey = json.getString("storageKey"),
       varyHeaders = headers,
       varyValues = values,
+      identityValues = identityValues,
       allowsAuthorizedReuse = json.optBoolean("allowsAuthorizedReuse", false)
     )
   }

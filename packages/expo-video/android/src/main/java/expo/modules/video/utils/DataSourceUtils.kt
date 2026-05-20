@@ -73,8 +73,6 @@ private fun buildCacheVariantRecorder(context: Context, videoSource: VideoSource
   // key against, even if the network response was reached through redirects.
   val sourceUrl = videoSource.uri?.toString()
   val requestHeaders = videoSource.headers ?: emptyMap()
-  val normalizedRequest = requestHeaders.mapKeys { it.key.lowercase() }
-  val hasAuthorization = normalizedRequest.containsKey("authorization")
   return Interceptor { chain ->
     val response = chain.proceed(chain.request())
     if (sourceUrl != null) {
@@ -82,15 +80,12 @@ private fun buildCacheVariantRecorder(context: Context, videoSource: VideoSource
         .toMultimap()
         .mapValues { it.value.joinToString(separator = ",") }
       val policy = CachePolicy.evaluate(responseHeaders, response.code)
-      val authorizationCoveredByVary = "authorization" in policy.varyHeaders
-      val authorizationBlocked = hasAuthorization && !authorizationCoveredByVary && !policy.allowsAuthorizedReuse
       val storageKey = CacheVariantIndex.storageKey(context, sourceUrl, requestHeaders)
 
-      if (!policy.isCacheable || authorizationBlocked) {
-        // Drop this variant's bytes only; other variants for the same URL may
-        // still be valid. Eviction is deferred until Media3 has finished
-        // writing through the body so partial chunks don't linger.
-        return@Interceptor response.evictAfterClose { evictCacheEntry(sourceUrl, storageKey) }
+      if (!policy.isCacheable) {
+        return@Interceptor response.evictAfterClose {
+          evictCacheEntry(sourceUrl, storageKey)
+        }
       }
       CacheVariantIndex.recordVariant(context, sourceUrl, storageKey, requestHeaders, policy)
     }
@@ -100,7 +95,8 @@ private fun buildCacheVariantRecorder(context: Context, videoSource: VideoSource
 
 @OptIn(UnstableApi::class)
 private fun Response.evictAfterClose(onClose: () -> Unit): Response {
-  val originalBody = body ?: return this
+  val originalBody = body
+    ?: return this
   val wrappedSource = object : ForwardingSource(originalBody.source()) {
     private var fired = false
     override fun close() {

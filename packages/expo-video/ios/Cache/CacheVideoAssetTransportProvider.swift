@@ -14,14 +14,23 @@ internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvid
       return nil
     }
 
-    let variantKey = CacheVariantIndex.storageKey(forUrl: source.url, requestHeaders: source.headers)
-    let cachedMimeType = MediaInfo(forResourceUrl: source.url, variantKey: variantKey)?.mimeType
+    let cacheRequestHeaders = CacheVariantIndex.normalizedRequestHeaders(forUrl: source.url, requestHeaders: source.headers)
+    let variantKey = CacheVariantIndex.storageKey(forUrl: source.url, requestHeaders: cacheRequestHeaders)
+    let cachedMimeType = MediaInfo(forResourceUrl: source.url, variantKey: variantKey)?.mimeType ??
+      MediaInfo(forResourceUrl: source.url)?.mimeType
     let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
     let fileExtension = source.url.pathExtension.isEmpty ? cachedExtension : source.url.pathExtension
-    guard let saveFilePath = VideoAsset.pathForUrl(url: source.url, fileExtension: fileExtension, variantKey: variantKey) else {
+    guard let variantFilePath = VideoAsset.pathForUrl(url: source.url, fileExtension: fileExtension, variantKey: variantKey),
+      let legacyFilePath = VideoAsset.pathForUrl(url: source.url, fileExtension: fileExtension) else {
       log.warn("[expo-video] Failed to create a cache file path for the provided source with uri: \(source.url.absoluteString)")
       return nil
     }
+    let shouldUseLegacyCache = !variantKey.isEmpty &&
+      CacheVariantIndex.load(forUrl: source.url).isEmpty &&
+      !CacheVariantIndex.hasIdentityHeaders(cacheRequestHeaders) &&
+      cacheFilesExist(at: legacyFilePath)
+    let effectiveVariantKey = shouldUseLegacyCache ? "" : variantKey
+    let saveFilePath = shouldUseLegacyCache ? legacyFilePath : variantFilePath
 
     guard let urlWithCustomScheme = source.url.withScheme(VideoCacheManager.expoVideoCacheScheme) else {
       log.warn("[expo-video] CachingPlayerItem error: Urls without a scheme are not supported, the resource won't be cached")
@@ -36,7 +45,8 @@ internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvid
       saveFilePath: saveFilePath,
       fileExtension: fileExtension,
       urlRequestHeaders: source.headers,
-      variantKey: variantKey
+      cacheRequestHeaders: cacheRequestHeaders,
+      variantKey: effectiveVariantKey
     )
 
     return VideoAssetLoadPlan(
@@ -62,5 +72,10 @@ internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvid
     }
 
     return !source.hasDRM
+  }
+
+  private func cacheFilesExist(at path: String) -> Bool {
+    return FileManager.default.fileExists(atPath: path) ||
+      FileManager.default.fileExists(atPath: path + VideoCacheManager.mediaInfoSuffix)
   }
 }
