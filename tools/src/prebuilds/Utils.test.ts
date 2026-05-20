@@ -6,8 +6,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { before, describe, it, afterEach } from 'node:test';
 
-import { resolvePackagePath } from './resolvePackage';
 import { getVersionsInfoAsync, isNonInteractive, setForceNonInteractive } from './Utils';
+import { resolvePackagePath } from './resolvePackage';
 
 // ---------------------------------------------------------------------------
 // isNonInteractive / setForceNonInteractive
@@ -100,8 +100,7 @@ describe('getVersionsInfoAsync — Hermes V1 polarity', () => {
       if (key === 'HERMES_VERSION_NAME') classicVersion = value?.trim();
       if (key === 'HERMES_V1_VERSION_NAME') v1Version = value?.trim();
     }
-    propertiesAvailable =
-      !!classicVersion && !!v1Version && classicVersion !== v1Version;
+    propertiesAvailable = !!classicVersion && !!v1Version && classicVersion !== v1Version;
   });
 
   const originalEnv = process.env.RCT_HERMES_V1_ENABLED;
