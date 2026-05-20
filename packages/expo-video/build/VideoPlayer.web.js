@@ -243,7 +243,6 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             if (uri) {
                 video.setAttribute('src', uri);
                 video.load();
-                video.play();
             }
             else {
                 video.removeAttribute('src');
