@@ -1,0 +1,99 @@
+---
+title: RNHostView
+description: A cross-platform component for hosting React Native views inside @expo/ui views.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Hosts a React Native view subtree inside a universal `@expo/ui` layout. On Android and iOS it re-exports the platform-native [`RNHostView` for Jetpack Compose](../jetpack-compose/rnhostview)/[`RNHostView` for SwiftUI](../swift-ui/rnhostview), so React Native children bridge into the surrounding Compose/SwiftUI tree. On web there is no native host tree to bridge into, so it falls back to a React Native [`View`](https://reactnative.dev/docs/view) that wraps the children.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic usage
+
+Place a React Native view subtree anywhere inside a universal `@expo/ui` layout.
+
+```tsx RNHostViewExample.tsx
+import { Host, Column, RNHostView, Text } from '@expo/ui';
+import { Text as RNText, View } from 'react-native';
+
+export default function RNHostViewExample() {
+  return (
+    <Host matchContents>
+      <Column spacing={12} style={{ padding: 16 }}>
+        <Text textStyle={{ fontWeight: 'bold' }}>Native UI label</Text>
+        <RNHostView matchContents>
+          <View
+            style={{
+              alignSelf: 'flex-start',
+              padding: 16,
+              backgroundColor: '#9B59B6',
+              borderRadius: 10,
+            }}>
+            <RNText style={{ color: 'white' }}>Plain React Native content</RNText>
+          </View>
+        </RNHostView>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Fill parent vs. match child
+
+By default `RNHostView` fills its native parent. Set `matchContents` to have it shrink to fit its React Native children instead.
+
+```tsx RNHostViewExample.tsx
+import { Host, Column, Row, Text, RNHostView } from '@expo/ui';
+import { View } from 'react-native';
+
+export default function RNHostViewExample() {
+  return (
+    <Host matchContents>
+      <Column spacing={24} style={{ padding: 16 }}>
+        <Column spacing={8}>
+          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Fill parent size</Text>
+          <Text textStyle={{ fontSize: 12, color: '#666666' }}>
+            The RNHostView fills the native parent's 100×100 frame.
+          </Text>
+          <Row style={{ width: 100, height: 100 }}>
+            <RNHostView>
+              <View style={{ flex: 1, backgroundColor: '#9B59B6', borderRadius: 10, margin: 4 }} />
+            </RNHostView>
+          </Row>
+        </Column>
+
+        <Column spacing={8}>
+          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Match child size</Text>
+          <Text textStyle={{ fontSize: 12, color: '#666666' }}>
+            The RNHostView shrinks to wrap its 50×50 child.
+          </Text>
+          <Row style={{ padding: 8 }}>
+            <RNHostView matchContents>
+              <View
+                style={{ width: 50, height: 50, backgroundColor: '#9B59B6', borderRadius: 10 }}
+              />
+            </RNHostView>
+          </Row>
+        </Column>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { RNHostView } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/rnhostview" apiName="RNHostView" />

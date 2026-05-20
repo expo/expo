@@ -1,5 +1,4 @@
-import { type CommonViewModifierProps } from './types';
-export interface RNHostViewProps extends CommonViewModifierProps {
+export type RNHostViewProps = {
     /**
      * When `true`, the RNHost will update its size in the React Native view tree to match the children's size.
      * When `false`, the RNHost will use the size of the parent SwiftUI View.
@@ -11,6 +10,6 @@ export interface RNHostViewProps extends CommonViewModifierProps {
      * The RN View to be hosted.
      */
     children: React.ReactElement;
-}
+};
 export declare function RNHostView(props: RNHostViewProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=RNHostView.d.ts.map

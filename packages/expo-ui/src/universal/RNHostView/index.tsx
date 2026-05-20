@@ -4,8 +4,8 @@ import type { RNHostViewProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
 
 const styles = StyleSheet.create({
-  fill: { flex: 1 },
-  matchContents: { alignSelf: 'flex-start' },
+  fillParent: { width: '100%', height: '100%' },
+  matchContents: { width: 'fit-content', height: 'fit-content' },
   hidden: { display: 'none' },
 });
 
@@ -26,7 +26,11 @@ export function RNHostView({
   return (
     <View
       testID={testID}
-      style={[matchContents ? styles.matchContents : styles.fill, style, hidden && styles.hidden]}>
+      style={[
+        matchContents ? styles.matchContents : styles.fillParent,
+        style,
+        hidden && styles.hidden,
+      ]}>
       {children}
     </View>
   );
