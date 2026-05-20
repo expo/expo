@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo/fetch` not threading through `Request#body` for `whatwg-fetch` request inputs ([#46027](https://github.com/expo/expo/pull/46027) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.0-preview.13 — 2026-05-19
