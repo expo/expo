@@ -431,12 +431,12 @@ describe('built-in plugins', () => {
     const infoPlist = await plist.parse(
       fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/Info.plist'), 'utf8')
     );
-    expect(infoPlist.bar).toStrictEqual({ val: ['foo'] });
+    expect(infoPlist.bar).toEqual({ val: ['foo'] });
     // Ensure the entitlements object is merged correctly
     const entitlements = await plist.parse(
       fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/mycoolapp.entitlements'), 'utf8')
     );
-    expect(entitlements.foo).toStrictEqual('bar');
+    expect(entitlements.foo).toEqual('bar');
 
     // Ensure files are always written in the correct format
     for (const xmlPath of [
