@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo-contacts/next` throwing `Cannot find native module 'ExpoContactsNext'` when imported on web by adding a web shim.
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-19
