@@ -30,12 +30,33 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const require = createRequire(__dirname);
 
+function readOption(args, name, fallback) {
+  const index = args.indexOf(name);
+  if (index === -1) {
+    return fallback;
+  }
+  const value = args[index + 1];
+  args.splice(index, 2);
+  return value ?? fallback;
+}
+
 // NODE_BINARY is set for Xcode builds via the `with-node.sh` script.
 const nodePath = process.env.NODE_BINARY || 'node';
-const outputDir = path.join(__dirname, '../bundle/build');
-const appBundlePath = path.join(outputDir, 'ExpoWidgets.bundle');
+const cliArgs = argv.slice(3);
+const platform = readOption(cliArgs, '--platform', 'ios');
+const appBundlePath = readOption(
+  cliArgs,
+  '--bundle-output',
+  path.join(__dirname, '../bundle/build/ExpoWidgets.bundle')
+);
+const platformEntryPath = path.join(__dirname, `../bundle/index.${platform}.ts`);
+const entryFile = fs.existsSync(platformEntryPath)
+  ? platformEntryPath
+  : path.join(__dirname, '../bundle/index.ts');
+const outputDir = path.dirname(appBundlePath);
 
-await fs.promises.rm(outputDir, { recursive: true, force: true });
+await fs.promises.mkdir(outputDir, { recursive: true });
+await fs.promises.rm(appBundlePath, { force: true });
 
 const result = await spawn(
   nodePath,
@@ -43,15 +64,15 @@ const result = await spawn(
     require.resolve('expo/bin/cli'),
     'export:embed',
     '--platform',
-    'ios',
+    platform,
     '--bundle-output',
     appBundlePath,
     '--entry-file',
-    path.join(__dirname, '../bundle/index.ts'),
+    entryFile,
     '--dev',
     'false',
     '--skip-server',
-    ...argv.slice(2),
+    ...cliArgs,
   ],
   {
     stdio: 'inherit',
