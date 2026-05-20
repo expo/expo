@@ -563,6 +563,64 @@ describe('non-interactive defaults warning', () => {
   });
 });
 
+describe('--features option', () => {
+  it('should generate shared object view prop wiring when view and shared object are selected', async () => {
+    const project = createFakeProject('features-shared-view-project');
+    const slug = 'shared-view';
+
+    await executePassing(
+      [
+        slug,
+        '--local',
+        '--name',
+        'SharedThing',
+        '--package',
+        'expo.modules.sharedview',
+        '--platform',
+        'apple',
+        'android',
+        '--features',
+        'View',
+        'SharedObject',
+        '--source',
+        localTemplatePath,
+      ],
+      { cwd: project }
+    );
+
+    const modulePath = path.join(project, 'modules', slug);
+    const viewTsx = fs.readFileSync(path.join(modulePath, 'src', 'SharedThingView.tsx'), 'utf8');
+    const typesTs = fs.readFileSync(path.join(modulePath, 'src', 'SharedThing.types.ts'), 'utf8');
+    const swiftModule = fs.readFileSync(
+      path.join(modulePath, 'ios', 'SharedThingModule.swift'),
+      'utf8'
+    );
+    const kotlinModule = fs.readFileSync(
+      path.join(
+        modulePath,
+        'android',
+        'src',
+        'main',
+        'java',
+        'expo',
+        'modules',
+        'sharedview',
+        'SharedThingModule.kt'
+      ),
+      'utf8'
+    );
+
+    expect(viewTsx).toContain('__expo_shared_object_id__');
+    expect(viewTsx).toContain('NativeSharedThingViewProps');
+    expect(typesTs).toContain('sharedObject?: SharedThingModuleSharedObject | null');
+    expect(typesTs).toContain('sharedObject?: number | null');
+    expect(swiftModule).toContain('Prop("sharedObject")');
+    expect(swiftModule).toContain('sharedObject: SharedThingModuleSharedObject?');
+    expect(kotlinModule).toContain('Prop("sharedObject")');
+    expect(kotlinModule).toContain('sharedObject: SharedThingModuleSharedObject? ->');
+  });
+});
+
 describe('add-platform-support', () => {
   const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template');
 

@@ -4,6 +4,13 @@ import ExpoModulesCore
 // to apply the proper styling (e.g. border radius and shadows).
 class <%- project.viewName %>: ExpoView {
   let label = UILabel()
+<% if (project.features.includes('SharedObject')) { -%>
+  var sharedObject: <%- project.sharedObjectName %>? {
+    didSet {
+      updateLabel()
+    }
+  }
+<% } -%>
 <% if (project.features.includes('ViewEvent')) { -%>
   let onTap = EventDispatcher()
 <% } -%>
@@ -12,11 +19,15 @@ class <%- project.viewName %>: ExpoView {
     super.init(appContext: appContext)
     clipsToBounds = true
     backgroundColor = UIColor(red: 0.67, green: 0.73, blue: 0.80, alpha: 1.0)
-    label.text = "<%- project.name %> - native view<% if (project.features.includes('ViewEvent')) { %>\nTap the view to emit a view event<% } %>"
     label.textAlignment = .center
     label.numberOfLines = 0
     label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    updateLabel()
     addSubview(label)
+  }
+
+  private func updateLabel() {
+    label.text = "<%- project.name %> - native view<% if (project.features.includes('ViewEvent')) { %>\nTap the view to emit a view event<% } %><% if (project.features.includes('SharedObject')) { %>\nShared object count: \(sharedObject?.count ?? 0)<% } %>"
   }
 <% if (project.features.includes('ViewEvent')) { %>
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {

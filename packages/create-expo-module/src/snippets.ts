@@ -15,7 +15,7 @@ const MODULE_LEVEL_FEATURES: Feature[] = [
   'SharedObject',
 ];
 
-const VIEW_LEVEL_FEATURES: Feature[] = ['ViewEvent'];
+const VIEW_LEVEL_FEATURES: Feature[] = ['ViewEvent', 'SharedObject'];
 const WEB_MODULE_FEATURES: Feature[] = ['Constant', 'Function', 'AsyncFunction'];
 const APP_SNIPPET_FEATURES: Feature[] = [
   'Constant',
@@ -83,6 +83,9 @@ export async function buildViewSnippets(
   data: object,
   ext: 'swift' | 'kt'
 ): Promise<string> {
+  if (!features.includes('View')) {
+    return '';
+  }
   const selected = VIEW_LEVEL_FEATURES.filter((f) => features.includes(f));
   const parts = await Promise.all(
     selected.map((feature) => renderSnippet(snippetsDir, feature, `view-block.${ext}.ejs`, data))
