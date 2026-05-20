@@ -4,6 +4,7 @@ import ExpoModulesCore
 import Foundation
 import AuthenticationServices
 import Network
+import EXDevMenu
 
 private let selectedAccountKey = "expo-selected-account-id"
 private let sessionKey = "expo-session-secret"
@@ -34,17 +35,19 @@ class DevLauncherViewModel: ObservableObject {
   @Published var hasStoredCrash = false
   @Published var shakeDevice = true {
     didSet {
-      saveMenuPreference(key: "EXDevMenuMotionGestureEnabled", value: shakeDevice)
+      DevMenuManager.shared.setMotionGestureEnabled(shakeDevice)
     }
   }
   @Published var threeFingerLongPress = false {
     didSet {
-      saveMenuPreference(key: "EXDevMenuTouchGestureEnabled", value: threeFingerLongPress)
+      // Route through DevMenuManager so the recognizer is installed/uninstalled immediately
+      DevMenuManager.shared.setTouchGestureEnabled(threeFingerLongPress)
     }
   }
   @Published var showOnLaunch = false {
     didSet {
-      saveMenuPreference(key: "EXDevMenuShowsAtLaunch", value: showOnLaunch)
+      // Route through DevMenuManager so the auto-launch observer is refreshed immediately
+      DevMenuManager.shared.setShowsAtLaunch(showOnLaunch)
     }
   }
   @Published var isAuthenticated = false
@@ -202,7 +205,7 @@ class DevLauncherViewModel: ObservableObject {
     stopServerDiscovery()
     startDevServerBrowser()
   }
-  
+
   func markNetworkPermissionGranted() {
     UserDefaults.standard.set(true, forKey: networkPermissionGrantedKey)
     permissionStatus = .granted
@@ -408,10 +411,6 @@ class DevLauncherViewModel: ObservableObject {
     shakeDevice = defaults.object(forKey: "EXDevMenuMotionGestureEnabled") as? Bool ?? true
     threeFingerLongPress = defaults.object(forKey: "EXDevMenuTouchGestureEnabled") as? Bool ?? true
     showOnLaunch = defaults.object(forKey: "EXDevMenuShowsAtLaunch") as? Bool ?? false
-  }
-
-  private func saveMenuPreference(key: String, value: Bool) {
-    UserDefaults.standard.set(value, forKey: key)
   }
 
   private func checkAuthenticationStatus() {
