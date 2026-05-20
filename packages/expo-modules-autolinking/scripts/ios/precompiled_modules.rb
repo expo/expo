@@ -1754,7 +1754,9 @@ module Expo
         @hermes_version ||= begin
           rn_path = react_native_path
           if rn_path
-            is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
+            # Matches hermes-engine.podspec polarity: V1 is the default, classic
+            # is selected only when the consuming app explicitly sets the env var to "0".
+            is_v1 = ENV['RCT_HERMES_V1_ENABLED'] != '0'
             props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
             version = File.exist?(props_path) ?
               parse_version_properties(props_path)[is_v1 ? 'HERMES_V1_VERSION_NAME' : 'HERMES_VERSION_NAME'] : nil
