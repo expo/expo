@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.7 — 2026-05-20
+
+### 🛠 Breaking changes
+
 - Promote the object-oriented Calendar API to the root `expo-calendar` import and move the legacy API to `expo-calendar/legacy`. ([#46030](https://github.com/expo/expo/pull/46030) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🎉 New features
@@ -13,8 +23,6 @@
 ### 🐛 Bug fixes
 
 - [next] Remove legacy exports ([#45739](https://github.com/expo/expo/pull/45739) by [@Wenszel](https://github.com/Wenszel))
-
-### 💡 Others
 
 ## 56.0.6 — 2026-05-19
 

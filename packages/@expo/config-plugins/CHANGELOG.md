@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.7 — 2026-05-20
+
+### 🎉 New features
+
 - Support `.cjs`, `.mjs`, `.ts`, `.cts`, `.mts` extensions for config plugins ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes

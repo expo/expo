@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.19.7 — 2026-05-20
+
+### 🎉 New features
+
 - Add check for committed `*.local` env files ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes

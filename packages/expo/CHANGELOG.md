@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.0 — 2026-05-20
+
+### 🎉 New features
+
 - [fetch][Android] Added `brotli`, `gzip`, and `zstd` decompression support. ([#45458](https://github.com/expo/expo/pull/45458) by [@kudo](https://github.com/kudo))
 - Added `AbortSignal.timeout`, `AbortSignal.any`, and `DOMException` to the native runtime. ([#45441](https://github.com/expo/expo/pull/45441) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Fix `expo/fetch` not threading through `Request#body` for `whatwg-fetch` request inputs ([#46027](https://github.com/expo/expo/pull/46027) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 56.0.0-preview.13 — 2026-05-19
 

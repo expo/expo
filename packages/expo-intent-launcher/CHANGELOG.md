@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `getApplicationIcon` throwing an error on Android below API 26. ([#46043](https://github.com/expo/expo/pull/46043) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 56.0.4 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `getApplicationIcon` throwing an error on Android below API 26. ([#46043](https://github.com/expo/expo/pull/46043) by [@lukmccall](https://github.com/lukmccall))
 
 ## 56.0.3 — 2026-05-06
 
