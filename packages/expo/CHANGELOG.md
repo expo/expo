@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [fetch][Android] Added `brotli`, `gzip`, and `zstd` decompression support. ([#45458](https://github.com/expo/expo/pull/45458) by [@kudo](https://github.com/kudo))
 - Added `AbortSignal.timeout`, `AbortSignal.any`, and `DOMException` to the native runtime. ([#45441](https://github.com/expo/expo/pull/45441) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
