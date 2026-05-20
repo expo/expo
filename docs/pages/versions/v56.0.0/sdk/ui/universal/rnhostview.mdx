@@ -9,7 +9,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Hosts a React Native view subtree inside a universal `@expo/ui` layout. On Android and iOS it re-exports the platform-native [`RNHostView` for Jetpack Compose](../jetpack-compose/rnhostview)/[`RNHostView` for SwiftUI](../swift-ui/rnhostview), so React Native children bridge into the surrounding Compose/SwiftUI tree. On web there is no native host tree to bridge into, so it falls back to a React Native [`View`](https://reactnative.dev/docs/view) that wraps the children.
+Hosts a React Native view subtree inside a universal `@expo/ui` layout. On Android and iOS, it re-exports the platform-native [`RNHostView` for Jetpack Compose](../jetpack-compose/rnhostview)/[`RNHostView` for SwiftUI](../swift-ui/rnhostview), so React Native children bridge into the surrounding Compose/SwiftUI tree. On web, there is no native host tree to bridge into, so it falls back to a React Native [`View`](https://reactnative.dev/docs/view) that wraps the children.
 
 ## Installation
 

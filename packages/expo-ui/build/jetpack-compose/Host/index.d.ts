@@ -53,6 +53,7 @@ export type HostProps = {
     ignoreSafeAreaKeyboardInsets?: boolean;
     children: React.ReactElement;
     style?: StyleProp<ViewStyle>;
+    pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
 } & PrimitiveBaseProps;
 export declare function Host(props: HostProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
