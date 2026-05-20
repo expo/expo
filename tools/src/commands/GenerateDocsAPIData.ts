@@ -381,10 +381,7 @@ const executeCommand = async (
       );
       const pluginProject = await pluginApp.convert();
       if (pluginProject) {
-        const tempPluginJson = path.join(
-          os.tmpdir(),
-          `${jsonFileName}-plugin-${Date.now()}.json`
-        );
+        const tempPluginJson = path.join(os.tmpdir(), `${jsonFileName}-plugin-${Date.now()}.json`);
         await pluginApp.generateJson(pluginProject, tempPluginJson);
         const pluginOutput = await fs.readJson(tempPluginJson);
         await fs.remove(tempPluginJson);
