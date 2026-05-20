@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [android] Apply bundled `proguard-rules.pro` via `consumerProguardFiles` so the `-keep class expo.modules.notifications.**` rule is added to consumer apps' R8 pass. ([#45974](https://github.com/expo/expo/pull/45974) by [@jiunshinn](https://github.com/jiunshinn))
+
 ### 💡 Others
+
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.9 — 2026-05-15
 

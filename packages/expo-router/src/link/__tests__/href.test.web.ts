@@ -1,4 +1,4 @@
-import { resolveHref } from '../href';
+import { resolveHref, resolveHrefStringWithSegments } from '../href';
 
 describe(resolveHref, () => {
   it(`passes strings back without resolution`, () => {
@@ -65,5 +65,31 @@ describe(resolveHref, () => {
     expect(resolveHref({ pathname: '/fake/path', params: { value: '++test++' } })).toBe(
       '/fake/path?value=%2B%2Btest%2B%2B'
     );
+  });
+});
+
+describe(resolveHrefStringWithSegments, () => {
+  it('collapses leading slashes so a catch-all param cannot produce a scheme-relative href', () => {
+    const resolved = resolveHrefStringWithSegments(
+      './settings',
+      { segments: ['[...rest]'], params: { rest: '/evil.example' } },
+      { relativeToDirectory: true }
+    );
+    expect(resolved.startsWith('//')).toBe(false);
+    expect(resolved).toBe('/evil.example/settings');
+  });
+
+  it('collapses leading slashes from comma-substituted catch-all params', () => {
+    const resolved = resolveHrefStringWithSegments(
+      './settings',
+      { segments: ['[...rest]'], params: { rest: ',evil.example' } },
+      { relativeToDirectory: true }
+    );
+    expect(resolved.startsWith('//')).toBe(false);
+  });
+
+  it('collapses leading slashes in a directly-supplied scheme-relative href', () => {
+    expect(resolveHrefStringWithSegments('//evil.example/x')).toBe('/evil.example/x');
+    expect(resolveHrefStringWithSegments('///evil.example/x')).toBe('/evil.example/x');
   });
 });

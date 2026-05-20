@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 4.0.1 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Fix containment check in tar extraction to cover parallel folders with same prefix ([#45882](https://github.com/expo/expo/pull/45882) by [@kitten](https://github.com/kitten))
+
 ## 3.8.0 — 2026-05-13
 
 ### 💡 Others

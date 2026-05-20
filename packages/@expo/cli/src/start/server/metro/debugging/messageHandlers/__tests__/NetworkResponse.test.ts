@@ -58,6 +58,23 @@ it('does not respond to non-existing response', () => {
   expect(connection.debugger.sendMessage).not.toHaveBeenCalled();
 });
 
+it('evicts the oldest entry once the storage exceeds its cap', () => {
+  const connection = mockConnection();
+  const handler = new NetworkResponseHandler(connection);
+
+  // 512 is the cap; pushing 513 entries should drop the oldest.
+  for (let i = 0; i < 513; i++) {
+    handler.handleDeviceMessage({
+      method: 'Expo(Network.receivedResponseBody)',
+      params: { requestId: String(i), body: '', base64Encoded: false },
+    });
+  }
+
+  expect(NETWORK_RESPONSE_STORAGE.size).toBe(512);
+  expect(NETWORK_RESPONSE_STORAGE.has('0')).toBe(false);
+  expect(NETWORK_RESPONSE_STORAGE.has('512')).toBe(true);
+});
+
 // Known issue of the collision and will be resolved later
 it('known to have response collision from global `NETWORK_RESPONSE_STORAGE`', () => {
   const connection = mockConnection();

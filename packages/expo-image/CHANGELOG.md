@@ -8,9 +8,16 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `recyclingKey` not clearing cached `placeholderImage`, causing stale blurhash placeholders in recycled list cells. ([#44762](https://github.com/expo/expo/pull/44762) by [@simonronec](https://github.com/simonronec))
+- [Android] Fixed `tintColor` in `loadAsync`/`useImage` requiring API 26. ([#45981](https://github.com/expo/expo/pull/45981) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+## 56.0.5 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `recyclingKey` not clearing cached `placeholderImage`, causing stale blurhash placeholders in recycled list cells. ([#44762](https://github.com/expo/expo/pull/44762) by [@simonronec](https://github.com/simonronec))
+- [iOS] Fixed loading Xcode asset catalog images by resource name. ([#45686](https://github.com/expo/expo/pull/45686) by [@mvincentong](https://github.com/mvincentong))
 
 ## 56.0.4 — 2026-05-06
 

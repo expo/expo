@@ -7,23 +7,27 @@
  */
 import { type RouteProps, type ShouldSkip } from 'expo-router/internal/rsc';
 import type { FunctionComponent, ReactNode } from 'react';
-import type { PathSpec } from '../path';
 import type { BuildConfig, defineEntries } from '../server';
 type RoutePropsForLayout = Omit<RouteProps, 'searchParams'> & {
     children: ReactNode;
 };
 type ShouldSkipValue = ShouldSkip[number][1];
 export declare function unstable_defineRouter(getPathConfig: () => Promise<Iterable<{
-    pattern: string;
-    path: PathSpec;
+    path: string;
+    matchesPathname: (pathname: string) => boolean;
     isStatic?: boolean;
     noSsr?: boolean;
     data?: unknown;
-}>>, getComponent: (componentId: string, // "**/layout" or "**/page"
-options: {
+}>>, getComponent: (componentId: string, options: {
     unstable_setShouldSkip: (val?: ShouldSkipValue) => void;
     unstable_buildConfig: BuildConfig | undefined;
-}) => Promise<FunctionComponent<RouteProps> | FunctionComponent<RoutePropsForLayout> | null>): ReturnType<typeof defineEntries>;
+}) => Promise<{
+    component: FunctionComponent<RouteProps>;
+    kind: 'page';
+} | {
+    component: FunctionComponent<RoutePropsForLayout>;
+    kind: 'layout';
+} | null>): ReturnType<typeof defineEntries>;
 export declare function unstable_redirect(pathname: string, searchParams?: URLSearchParams, skip?: string[]): void;
 export {};
 //# sourceMappingURL=defineRouter.d.ts.map

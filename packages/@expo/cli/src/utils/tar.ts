@@ -34,10 +34,10 @@ export interface ExtractOptions {
 
 export async function extractStream(
   input: ReadableStream,
-  output: string,
+  targetOutput: string,
   options: ExtractOptions = {}
 ): Promise<string> {
-  output = path.resolve(output);
+  const output = path.resolve(targetOutput) + path.sep;
   await fs.promises.mkdir(output, { recursive: true });
 
   const { checksumAlgorithm, strip = 0, rename, filter } = options;

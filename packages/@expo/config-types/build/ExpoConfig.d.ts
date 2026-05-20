@@ -169,7 +169,7 @@ export interface ExpoConfig {
          */
         useNativeDebug?: boolean;
         /**
-         * Whether to enable support for downloading and applying bundle diffs using bsdiff. Defaults to false.
+         * Whether to enable support for downloading and applying bundle diffs using bsdiff. Defaults to true.
          */
         enableBsdiffPatchSupport?: boolean;
     };

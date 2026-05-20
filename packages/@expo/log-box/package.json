@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box",
-  "version": "56.0.10",
+  "version": "56.0.11",
   "main": "app/index.ts",
   "scripts": {
     "start": "expo start",
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@expo/cli": "workspace:*",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@types/react": "~19.2.0",
     "@types/react-dom": "^19.1.7",
     "expo": "workspace:*",

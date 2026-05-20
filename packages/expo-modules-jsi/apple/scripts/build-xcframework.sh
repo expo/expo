@@ -278,8 +278,14 @@ if [[ -f "${PODS_ROOT}/Local Podspecs/React-Core.podspec.json" ]]; then
   SOURCE_FILES+=("${PODS_ROOT}/Local Podspecs/React-Core.podspec.json")
 fi
 
-# Generate the module map for the `jsi` Clang module.
-env PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+# Generate the module map for the `jsi` Clang module. Set the env vars inline
+# instead of via `env`: pnpm's virtual-store paths contain `=` characters
+# (e.g. `patch_hash=…`), and BSD `env` parses positional args containing `=`
+# as additional NAME=VALUE assignments — so `env FOO=bar /pnpm/path=with/equals`
+# never finds a command, silently dumps the environment, and exits 0. The
+# parent `set -eo pipefail` doesn't catch that, the modulemap never gets
+# written, and xcodebuild later fails with `no such module 'jsi'`.
+PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
 GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 

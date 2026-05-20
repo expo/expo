@@ -10,7 +10,9 @@ import { compression } from './compression';
 import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
+import { isPathInside } from '../../../../utils/dir';
 import { openInEditorAsync } from '../../../../utils/editor';
+import { shouldThrottleRemoteDevCall } from '../../../../utils/net';
 
 interface MetroMiddlewareOptions {
   getMetroBundler(): MetroBundler;
@@ -101,6 +103,11 @@ function createMetroOpenStackFrameMiddleware(
       return res.end('Open stack frame requires target file to be in server root');
     }
 
+    if (shouldThrottleRemoteDevCall()) {
+      res.statusCode = 429;
+      return res.end();
+    }
+
     try {
       await openInEditorAsync(file, frame.lineNumber);
       return res.end('OK');
@@ -117,7 +124,7 @@ const ensureFileInRootDirectory = async (root: string, file: string): Promise<st
     file = await fs.promises.realpath(file);
     // Cannot be accessed using Metro's server API, we need to move the file
     // into the project root and try again.
-    if (!path.relative(root, file).startsWith('..' + path.sep)) {
+    if (isPathInside(file, root)) {
       return file;
     } else {
       return null;

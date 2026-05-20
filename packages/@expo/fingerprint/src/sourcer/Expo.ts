@@ -1,3 +1,4 @@
+import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
@@ -282,7 +283,7 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
     const { stdout } = await spawnAsync(
       'node',
       [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', 'android', '--json'],
-      { cwd: projectRoot }
+      { cwd: projectRoot, env: getOriginalEnv() }
     );
     const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
     for (const module of config.modules) {
@@ -369,7 +370,7 @@ export async function getExpoAutolinkingIosSourcesAsync(
     const { stdout } = await spawnAsync(
       'node',
       [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', platform, '--json'],
-      { cwd: projectRoot }
+      { cwd: projectRoot, env: getOriginalEnv() }
     );
     const config = JSON.parse(stdout);
     for (const module of config.modules) {

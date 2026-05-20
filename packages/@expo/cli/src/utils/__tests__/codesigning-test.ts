@@ -125,6 +125,16 @@ describe(getCodeSigningInfoAsync, () => {
         expect(result).toBeNull();
       });
 
+      it('rejects easProjectId values that contain path segments', async () => {
+        await expect(
+          getCodeSigningInfoAsync(
+            { extra: { eas: { projectId: '../outside-project' } } } as any,
+            'keyid="expo-root", alg="rsa-v1_5-sha256"',
+            undefined
+          )
+        ).rejects.toThrow('Invalid EAS project ID for development code signing cache');
+      });
+
       it('falls back to cached when there is a network error', async () => {
         const result = await getCodeSigningInfoAsync(
           { extra: { eas: { projectId: 'testprojectid' } } } as any,

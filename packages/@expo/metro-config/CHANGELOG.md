@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Add missing HTML attribute escaping for inserted asset URLs ([#45848](https://github.com/expo/expo/pull/45848) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.9 — 2026-05-15
 

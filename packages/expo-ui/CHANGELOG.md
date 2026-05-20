@@ -6,12 +6,26 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [universal] Fix universal components dark theme ([#45969](https://github.com/expo/expo/pull/45969) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+## 56.0.9 — 2026-05-19
+
+### 🎉 New features
+
+- [iOS][android] Added `onChange` listener to `useNativeState`. ([#45961](https://github.com/expo/expo/pull/45961) by [@nishan](https://github.com/intergalacticspacehighway))
+- Allow writing to native state from the JS thread. ([#45901](https://github.com/expo/expo/pull/45901) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `withAnimation(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's [`withAnimation(_:_:)`](<https://developer.apple.com/documentation/swiftui/withanimation(_:_:)>). ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `LoadingIndicator` and `ContainedLoadingIndicator` components. ([#41169](https://github.com/expo/expo/pull/41169) by [@suveshmoza](https://github.com/suveshmoza))
 
 ### 🐛 Bug fixes
 
 - [iOS] Unmount `BottomSheet` when it is dismissed. ([#45846](https://github.com/expo/expo/pull/45846) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Apply `modifiers` prop on `Host` instead of silently dropping it. ([#45872](https://github.com/expo/expo/pull/45872) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 

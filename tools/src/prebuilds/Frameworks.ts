@@ -1,5 +1,5 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
@@ -18,6 +18,7 @@ import {
 import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
+import { assertSafeSPMIdentifier } from './SPMIdentifier';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -37,18 +38,17 @@ export type SigningOptions = {
  * @param identity Code signing identity (certificate name)
  * @param useTimestamp Whether to include a secure timestamp (default: true)
  */
-const signXCFramework = (
+const signXCFramework = async (
   xcframeworkPath: string,
   identity: string,
   useTimestamp: boolean = true
-): void => {
+): Promise<void> => {
   logger.verbose(`🔏 Signing XCFramework with identity "${identity}"...`);
 
-  const timestampFlag = useTimestamp ? '--timestamp' : '';
-  const command = `codesign ${timestampFlag} --sign "${identity}" "${xcframeworkPath}"`.trim();
+  const args = [...(useTimestamp ? ['--timestamp'] : []), '--sign', identity, xcframeworkPath];
 
   try {
-    execSync(command, { stdio: 'inherit' });
+    await spawnAsync('codesign', args, { stdio: 'inherit' });
     logger.info(`✅ Successfully signed ${path.basename(xcframeworkPath)}`);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
@@ -145,7 +145,7 @@ export const Frameworks = {
 
     // Sign the XCFramework if a signing identity is provided
     if (signing?.identity) {
-      signXCFramework(xcframeworkOutputPath, signing.identity, signing.useTimestamp ?? true);
+      await signXCFramework(xcframeworkOutputPath, signing.identity, signing.useTimestamp ?? true);
     }
 
     // Create tarball containing the product xcframework and any SPM dependency xcframeworks
@@ -251,6 +251,7 @@ export const Frameworks = {
    * @returns Full path to the shared xcframework
    */
   getSharedSPMDepFrameworkPath: (productName: string, buildType: BuildFlavor): string => {
+    assertSafeSPMIdentifier(productName, 'productName');
     return path.join(
       Frameworks.getSharedSPMDepsRoot(),
       productName,
@@ -511,7 +512,9 @@ const copySPMDependencyXCFrameworksAsync = async (
         `📦 Copying shared SPM dep ${chalk.cyan(productName)} from shared location → ${path.relative(pkg.path, destPath)}`
       );
       await fs.remove(destPath);
-      execSync(`rsync -a --delete "${sharedPath}/" "${destPath}/"`, { stdio: 'pipe' });
+      await spawnAsync('rsync', ['-a', '--delete', `${sharedPath}/`, `${destPath}/`], {
+        stdio: 'pipe',
+      });
       logger.info(`✅ Bundled shared dep ${productName}.xcframework`);
       continue;
     }
@@ -579,9 +582,11 @@ const copySPMDependencyXCFrameworksAsync = async (
           `📦 Copying SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
         );
         await fs.remove(destXCFrameworkPath);
-        execSync(`rsync -a --delete "${sourceXCFrameworkPath}/" "${destXCFrameworkPath}/"`, {
-          stdio: 'pipe',
-        });
+        await spawnAsync(
+          'rsync',
+          ['-a', '--delete', `${sourceXCFrameworkPath}/`, `${destXCFrameworkPath}/`],
+          { stdio: 'pipe' }
+        );
         logger.info(`✅ Copied ${xcframeworkName} alongside ${product.name}.xcframework`);
       } else {
         logger.warn(
@@ -676,8 +681,9 @@ const createProductTarballAsync = async (
   );
 
   // Create tarball: tar -czf <Product>.tar.gz -C <outputDir> <entries...>
-  const tarArgs = ['-czf', tarballPath, '-C', outputDir, ...xcframeworkEntries];
-  execSync(`tar ${tarArgs.map((a) => `"${a}"`).join(' ')}`, { stdio: 'pipe' });
+  await spawnAsync('tar', ['-czf', tarballPath, '-C', outputDir, ...xcframeworkEntries], {
+    stdio: 'pipe',
+  });
 
   logger.info(
     `✅ Created ${path.basename(tarballPath)} (${xcframeworkEntries.length} framework(s))`

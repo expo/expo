@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo-contacts/next` throwing `Cannot find native module 'ExpoContactsNext'` when imported on web by adding a web shim. ([#46018](https://github.com/expo/expo/pull/46018) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+## 56.0.5 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.4 — 2026-05-13
 

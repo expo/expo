@@ -7,6 +7,7 @@ exports.loadPackageJson = exports.maybeRealpath = exports.fastJoin = exports.fil
 exports.listFilesSorted = listFilesSorted;
 exports.listFilesInDirectories = listFilesInDirectories;
 exports.scanFilesRecursively = scanFilesRecursively;
+exports.isPathInside = isPathInside;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const memoize_1 = require("./memoize");
@@ -84,6 +85,10 @@ const maybeRealpath = async (target) => {
     }
 };
 exports.maybeRealpath = maybeRealpath;
+function isPathInside(child, parent) {
+    const relative = path_1.default.relative(parent, child);
+    return !!relative && !relative.startsWith('..') && !path_1.default.isAbsolute(relative);
+}
 exports.loadPackageJson = (0, memoize_1.memoize)(async function loadPackageJson(jsonPath) {
     try {
         const packageJsonText = await fs_1.default.promises.readFile(jsonPath, 'utf8');

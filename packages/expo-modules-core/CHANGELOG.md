@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [iOS] Fix occasional `SharedObject.emit` crashes caused by an off-thread JSI lookup. ([#45986](https://github.com/expo/expo/pull/45986) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+## 56.0.10 — 2026-05-19
+
+### 🎉 New features
+
 - [iOS] `Decodable` types can now be used as native function arguments. JS values are decoded through the dynamic-type registry, so arrays, dictionaries, optionals, `RawRepresentable` enums and `Convertible`s are coerced consistently. ([#45705](https://github.com/expo/expo/pull/45705) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Keep `ExpoComposeView` content visible during parent view transitions (e.g., `react-native-screens` pop navigation). ([#45942](https://github.com/expo/expo/pull/45942) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 56.0.9 — 2026-05-15
 

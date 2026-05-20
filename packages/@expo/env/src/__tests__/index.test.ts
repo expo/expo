@@ -6,6 +6,8 @@ import { stripVTControlCharacters } from 'node:util';
 import type { loadEnvFiles } from '../';
 import {
   getEnvFiles,
+  getOriginalEnv,
+  getOriginalEnvValue,
   LOADED_ENV_NAME,
   loadProjectEnv,
   logLoadedEnv,
@@ -116,7 +118,7 @@ describe(getEnvFiles, () => {
 describe(parseProjectEnv, () => {
   it('parses .env file without mutating system environment variables', () => {
     vol.fromJSON({ '.env': 'FOO=bar' }, '/');
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       env: { FOO: 'bar' },
       files: ['/.env'],
     });
@@ -137,7 +139,7 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       files: ['/.env.development.local', '/.env.local', '/.env.development', '/.env'],
       env: {
         FOO: 'dev-local',
@@ -157,7 +159,7 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       files: ['/.env.production.local', '/.env.local', '/.env.production', '/.env'],
       env: {
         FOO: 'prod-local',
@@ -175,7 +177,7 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       files: ['/.env'],
       env: {
         FOO: 'default',
@@ -194,7 +196,7 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       files: ['/.env.local', '/.env'],
       env: {
         FOO: 'default-local',
@@ -214,7 +216,7 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       files: ['/.env'],
       env: {
         TEST_EXPAND: 'user-defined',
@@ -237,7 +239,7 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       files: ['/.env.local', '/.env.development', '/.env'],
       env: {
         TEST_EXPAND: 'user-defined',
@@ -257,7 +259,7 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       files: ['/.env'],
       env: {
         // NOTE: This value is untouched before dotenv-expand@11.0.7 but fixed to be empty after
@@ -276,12 +278,12 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({ env: {}, files: [] });
+    expect(parseProjectEnv('/')).toMatchObject({ env: {}, files: [] });
   });
 
   it(`does not fail when no files are available`, () => {
     vol.fromJSON({}, '/');
-    expect(parseProjectEnv('/')).toEqual({
+    expect(parseProjectEnv('/')).toMatchObject({
       env: {},
       files: [],
     });
@@ -295,7 +297,7 @@ describe(parseProjectEnv, () => {
       '/'
     );
 
-    expect(parseProjectEnv('/')).toEqual({ env: {}, files: ['/.env'] });
+    expect(parseProjectEnv('/')).toMatchObject({ env: {}, files: ['/.env'] });
   });
 });
 
@@ -304,7 +306,7 @@ describe(loadProjectEnv, () => {
     delete process.env.FOO;
     vol.fromJSON({ '.env': 'FOO=bar' }, '/');
 
-    expect(loadProjectEnv('/')).toEqual({
+    expect(loadProjectEnv('/')).toMatchObject({
       result: 'loaded',
       env: { FOO: 'bar' },
       files: ['/.env'],
@@ -331,7 +333,7 @@ describe(loadProjectEnv, () => {
     process.env.FOO = 'previous';
     vol.fromJSON({ '.env': 'FOO=bar' }, '/');
 
-    expect(loadProjectEnv('/', { force: true })).toEqual({
+    expect(loadProjectEnv('/', { force: true })).toMatchObject({
       result: 'loaded',
       env: { FOO: 'bar' },
       files: ['/.env'],
@@ -407,6 +409,355 @@ describe(loadProjectEnv, () => {
   });
 });
 
+describe(getOriginalEnv, () => {
+  it('returns a clone of process.env when nothing has been loaded', () => {
+    delete process.env.FOO;
+    process.env.PRE_EXISTING = 'original';
+
+    const original = getOriginalEnv();
+
+    expect(original).toEqual(process.env);
+    expect(original).not.toBe(process.env);
+  });
+
+  it('mutating the result does not affect process.env', () => {
+    process.env.PRE_EXISTING = 'original';
+
+    const original = getOriginalEnv();
+    original.PRE_EXISTING = 'mutated';
+    original.NEW_KEY = 'added';
+
+    expect(process.env.PRE_EXISTING).toBe('original');
+    expect(process.env.NEW_KEY).toBeUndefined();
+  });
+
+  it('strips keys added by loadProjectEnv', () => {
+    delete process.env.FOO;
+    delete process.env.BAR;
+    process.env.PRE_EXISTING = 'original';
+    vol.fromJSON({ '.env': 'FOO=from-env\nBAR=also-from-env' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env.FOO).toBe('from-env');
+    expect(process.env.BAR).toBe('also-from-env');
+
+    const original = getOriginalEnv();
+    expect(original.FOO).toBeUndefined();
+    expect(original.BAR).toBeUndefined();
+    expect(original.PRE_EXISTING).toBe('original');
+  });
+
+  it('strips the LOADED_ENV_NAME marker', () => {
+    delete process.env[LOADED_ENV_NAME];
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env[LOADED_ENV_NAME]).toBeDefined();
+
+    expect(getOriginalEnv()[LOADED_ENV_NAME]).toBeUndefined();
+  });
+
+  it('preserves the pre-load value when loadProjectEnv skipped the assignment', () => {
+    process.env.FOO = 'shell-provided';
+    vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
+
+    loadProjectEnv('/');
+    // `loadProjectEnv` does not overwrite a key already defined in the system env
+    expect(process.env.FOO).toBe('shell-provided');
+
+    expect(getOriginalEnv().FOO).toBe('shell-provided');
+  });
+
+  it('reverts mutations made after parseProjectEnv (the reloadEnvFiles pattern)', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
+
+    // parseProjectEnv does not mutate, but it does record originals so that
+    // an external mutator (e.g. @expo/cli's reloadEnvFiles) is covered.
+    parseProjectEnv('/');
+    expect(process.env.FOO).toBeUndefined();
+
+    process.env.FOO = 'manually-set';
+    expect(getOriginalEnv().FOO).toBeUndefined();
+  });
+
+  it('keeps the first-observed original across reloads', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=first' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env.FOO).toBe('first');
+
+    vol.fromJSON({ '.env': 'FOO=second' }, '/');
+    loadProjectEnv('/', { force: true });
+
+    expect(getOriginalEnv().FOO).toBeUndefined();
+  });
+
+  it('keeps the backup per target env object', () => {
+    const customEnv: NodeJS.ProcessEnv = {};
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    parseProjectEnv('/', { systemEnv: customEnv });
+    customEnv.FOO = 'bar';
+
+    // Reverting against the custom env strips FOO
+    expect(getOriginalEnv(customEnv).FOO).toBeUndefined();
+    // The default (process.env) backup is untouched
+    expect(getOriginalEnv()).not.toHaveProperty('FOO');
+  });
+
+  it('passes through keys never touched by .env files', () => {
+    process.env.UNRELATED = 'unrelated-value';
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    loadProjectEnv('/');
+
+    expect(getOriginalEnv().UNRELATED).toBe('unrelated-value');
+  });
+
+  it('honors EXPO_UNSAFE_DOTENV_KEYS by not reverting opted-in keys', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'JAVA_HOME';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        delete process.env.JAVA_HOME;
+        vol.fromJSON({ '.env': 'JAVA_HOME=/opt/jdk-17' }, '/');
+
+        mod.loadProjectEnv('/');
+        expect(process.env.JAVA_HOME).toBe('/opt/jdk-17');
+
+        expect(mod.getOriginalEnv().JAVA_HOME).toBe('/opt/jdk-17');
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+});
+
+describe(getOriginalEnvValue, () => {
+  it('returns the systemEnv value when no load has happened', () => {
+    process.env.UNTOUCHED = 'value';
+    expect(getOriginalEnvValue('UNTOUCHED')).toBe('value');
+  });
+
+  it('returns undefined for a key added by loadProjectEnv', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env.FOO).toBe('bar');
+
+    expect(getOriginalEnvValue('FOO')).toBeUndefined();
+  });
+
+  it('falls through to systemEnv for keys @expo/env never touched', () => {
+    process.env.UNRELATED = 'unrelated-value';
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    loadProjectEnv('/');
+
+    expect(getOriginalEnvValue('UNRELATED')).toBe('unrelated-value');
+  });
+
+  it('returns the first-observed original across reloads', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=first' }, '/');
+
+    loadProjectEnv('/');
+    vol.fromJSON({ '.env': 'FOO=second' }, '/');
+    loadProjectEnv('/', { force: true });
+
+    expect(getOriginalEnvValue('FOO')).toBeUndefined();
+  });
+
+  it('returns the pre-load value when loadProjectEnv skipped the assignment', () => {
+    process.env.FOO = 'shell-provided';
+    vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
+
+    loadProjectEnv('/');
+    expect(getOriginalEnvValue('FOO')).toBe('shell-provided');
+  });
+
+  it('reads against a custom systemEnv', () => {
+    const customEnv: NodeJS.ProcessEnv = {};
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    parseProjectEnv('/', { systemEnv: customEnv });
+    customEnv.FOO = 'manually-set';
+
+    expect(getOriginalEnvValue('FOO', customEnv)).toBeUndefined();
+    expect(getOriginalEnvValue('FOO')).toBeUndefined();
+  });
+
+  it('honors EXPO_UNSAFE_DOTENV_KEYS by returning the loaded value', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'JAVA_HOME';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        delete process.env.JAVA_HOME;
+        vol.fromJSON({ '.env': 'JAVA_HOME=/opt/jdk-17' }, '/');
+
+        mod.loadProjectEnv('/');
+        expect(mod.getOriginalEnvValue('JAVA_HOME')).toBe('/opt/jdk-17');
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+
+  it('shares backup state across multiple installations via globalThis', () => {
+    // Simulate two copies of @expo/env (e.g. hoisted + nested) by importing
+    // the module twice in isolated caches. Each gets its own module-level
+    // bindings; only the global backup store should be shared.
+    let modA: typeof import('../') | undefined;
+    let modB: typeof import('../') | undefined;
+    jest.isolateModules(() => {
+      modA = require('../');
+    });
+    jest.isolateModules(() => {
+      modB = require('../');
+    });
+
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    // Recorded by copy A's mutation path…
+    modA!.loadProjectEnv('/');
+    // …and observable through copy B's read path.
+    expect(modB!.getOriginalEnvValue('FOO')).toBeUndefined();
+    expect(modB!.getOriginalEnv().FOO).toBeUndefined();
+  });
+});
+
+describe('isLocalEnvKey policy', () => {
+  it('throws when a local-only key is set in a non-.local file', () => {
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON({ '.env': 'ANDROID_HOME=/evil/sdk\nUNRELATED=ok' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/ANDROID_HOME/);
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/\.local/);
+  });
+
+  it('allows local-only keys when loaded from .env.local', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON({ '.env.local': 'ANDROID_HOME=/dev/sdk' }, '/');
+
+    const result = parseProjectEnv('/', { systemEnv: {} });
+    expect(result.env.ANDROID_HOME).toBe('/dev/sdk');
+  });
+
+  it('allows local-only keys when loaded from .env.<mode>.local', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.JAVA_HOME;
+    vol.fromJSON({ '.env.development.local': 'JAVA_HOME=/opt/jdk-17' }, '/');
+
+    const result = parseProjectEnv('/', { systemEnv: {} });
+    expect(result.env.JAVA_HOME).toBe('/opt/jdk-17');
+  });
+
+  it('throws when a local-only key is set in .env.<mode> (committed mode file)', () => {
+    process.env.NODE_ENV = 'production';
+    vol.fromJSON({ '.env.production': 'ANDROID_HOME=/evil/sdk' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/ANDROID_HOME/);
+  });
+
+  it('throws if a committed file sets a local-only key even when .local also sets it', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON(
+      {
+        '.env': 'ANDROID_HOME=/committed-attacker',
+        '.env.local': 'ANDROID_HOME=/developer-override',
+      },
+      '/'
+    );
+
+    // The .local override is irrelevant — the committed `.env` is still a misconfiguration
+    // that the developer should fix, so parseProjectEnv refuses to load anything.
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/ANDROID_HOME/);
+  });
+
+  it('honors EXPO_UNSAFE_DOTENV_KEYS to allow a local-only key in any file', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'ANDROID_HOME';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        vol.fromJSON({ '.env': 'ANDROID_HOME=/explicit-opt-in' }, '/');
+
+        const result = mod.parseProjectEnv('/', { systemEnv: {} });
+        expect(result.env.ANDROID_HOME).toBe('/explicit-opt-in');
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+
+  it('throws on the committed-attacker scenario end-to-end via loadProjectEnv', () => {
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON({ '.env': 'ANDROID_HOME=/attacker/sdk' }, '/');
+
+    expect(() => loadProjectEnv('/')).toThrow(/ANDROID_HOME/);
+    // loadProjectEnv aborts before mutating process.env
+    expect(process.env.ANDROID_HOME).toBeUndefined();
+  });
+
+  it('throws on hard-blocked keys with a message pointing to EXPO_UNSAFE_DOTENV_KEYS', () => {
+    vol.fromJSON({ '.env': 'NODE_OPTIONS=--require=./payload.js' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/NODE_OPTIONS/);
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/EXPO_UNSAFE_DOTENV_KEYS/);
+  });
+
+  it('combines both violation classes into a single thrown error', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON(
+      {
+        '.env': 'NODE_OPTIONS=--require=./payload.js\nANDROID_HOME=/evil/sdk',
+      },
+      '/'
+    );
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(
+      /NODE_OPTIONS[\s\S]*ANDROID_HOME/
+    );
+  });
+
+  it('throws on package-manager registry/install vars even in .local files', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.NPM_CONFIG_REGISTRY;
+    delete process.env.YARN_REGISTRY;
+    delete process.env.PNPM_HOME;
+    delete process.env.BUN_INSTALL;
+    vol.fromJSON(
+      {
+        '.env.local': [
+          'NPM_CONFIG_REGISTRY=https://attacker.example/npm',
+          'YARN_REGISTRY=https://attacker.example/yarn',
+          'PNPM_HOME=/attacker/pnpm',
+          'BUN_INSTALL=/attacker/bun',
+        ].join('\n'),
+      },
+      '/'
+    );
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(
+      /NPM_CONFIG_REGISTRY.*YARN_REGISTRY|YARN_REGISTRY.*NPM_CONFIG_REGISTRY/s
+    );
+  });
+});
+
 describe(logLoadedEnv, () => {
   const envInfo: ReturnType<typeof loadEnvFiles> = {
     result: 'loaded',
@@ -465,6 +816,34 @@ describe(logLoadedEnv, () => {
     expect(logLoadedEnv(envInfoWithoutVars)).toBe(envInfoWithoutVars);
     // Ensure no `console.log` was called
     expect(console.log).not.toHaveBeenCalled();
+  });
+
+  it('logs a yellow (sensitive) line when local-only keys were loaded from .local', () => {
+    jest.mocked(console.log).mockImplementation();
+
+    const sensitiveEnvInfo: ReturnType<typeof loadEnvFiles> = {
+      ...envInfo,
+      sensitiveLoadedKeys: ['ANDROID_HOME', 'JAVA_HOME'],
+    };
+
+    logLoadedEnv(sensitiveEnvInfo);
+    const calls = jest.mocked(console.log).mock.calls.map((c) => stripVTControlCharacters(c[0]));
+    expect(calls).toEqual([
+      'env: load .env.production.local .env.production .env.local',
+      'env: export FOO BAR',
+      'env: export (sensitive) ANDROID_HOME JAVA_HOME',
+    ]);
+  });
+
+  it('does not emit the (sensitive) line when sensitiveLoadedKeys is empty', () => {
+    jest.mocked(console.log).mockImplementation();
+
+    logLoadedEnv({ ...envInfo, sensitiveLoadedKeys: [] });
+    const calls = jest.mocked(console.log).mock.calls.map((c) => stripVTControlCharacters(c[0]));
+    expect(calls).toEqual([
+      'env: load .env.production.local .env.production .env.local',
+      'env: export FOO BAR',
+    ]);
   });
 });
 

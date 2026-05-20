@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed brownfield mangling builds writing products outside the Pods build directory. (by [@ry-allan](https://github.com/ry-allan))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 56.0.11 — 2026-05-19
+
+### 🐛 Bug fixes
+
 - Fix `addSharedStateListener` callback type to match the native event shape ([#44401](https://github.com/expo/expo/pull/44401) by [@mberube09](https://github.com/mberube09))
 
 ### 💡 Others

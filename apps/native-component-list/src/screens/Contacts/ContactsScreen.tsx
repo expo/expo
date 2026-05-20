@@ -8,6 +8,7 @@ import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-
 
 import * as ContactUtils from './ContactUtils';
 import ContactsList from './ContactsList';
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
@@ -219,7 +220,7 @@ function ContactsView({ navigation }: Props) {
 
                 setSelectedContact(contact);
               }}>
-              <Text>Select a contact</Text>
+              <BodyText>Select a contact</BodyText>
             </TouchableOpacity>
 
             {selectedContact && <MonoText>{JSON.stringify(selectedContact, null, 2)}</MonoText>}

@@ -621,38 +621,12 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
-internal enum AnimationType: String, Enumerable {
-  case easeInOut
-  case easeIn
-  case easeOut
-  case linear
-  case spring
-  case interpolatingSpring
-  case `default`
-}
-
-internal struct AnimationConfig: Record {
-  @Field var type: AnimationType = .default
-  @Field var duration: Double?
-  @Field var response: Double?
-  @Field var dampingFraction: Double?
-  @Field var blendDuration: Double?
-  @Field var bounce: Double?
-  @Field var mass: Double?
-  @Field var stiffness: Double?
-  @Field var damping: Double?
-  @Field var initialVelocity: Double?
-  @Field var delay: Double?
-  @Field var repeatCount: Int?
-  @Field var autoreverses: Bool?
-}
-
 internal struct AnimationModifier: ViewModifier, Record {
   @Field var animation: AnimationConfig
   @Field var animatedValue: Either<Double, Bool>?
 
   func body(content: Content) -> some View {
-    let animationValue = parseAnimation(animation)
+    let animationValue = animation.toSwiftUIAnimation()
     if let value: Bool = animatedValue?.get() {
       content.animation(animationValue, value: value)
     } else if let value: Double = animatedValue?.get() {
@@ -660,91 +634,6 @@ internal struct AnimationModifier: ViewModifier, Record {
     } else {
       content
     }
-  }
-
-  private func parseAnimation(_ config: AnimationConfig) -> Animation {
-    let type = config.type
-
-    var animation: Animation
-
-    switch type {
-    case .easeIn:
-      if let duration = config.duration {
-        animation = .easeIn(duration: duration)
-      } else {
-        animation = .easeIn
-      }
-
-    case .easeOut:
-      if let duration = config.duration {
-        animation = .easeOut(duration: duration)
-      } else {
-        animation = .easeOut
-      }
-
-    case .linear:
-      if let duration = config.duration {
-        animation = .linear(duration: duration)
-      } else {
-        animation = .linear
-      }
-
-    case .easeInOut:
-      if let duration = config.duration {
-        animation = .easeInOut(duration: duration)
-      } else {
-        animation = .easeInOut
-      }
-
-    case .spring:
-      let duration = config.duration
-      let bounce = config.bounce
-      let response = config.response
-      let dampingFraction = config.dampingFraction
-      let blendDuration = config.blendDuration
-
-      if response != nil || dampingFraction != nil {
-        // default values are 0.5, 0.825, 0.0
-        animation = .spring(response: response ?? 0.5, dampingFraction: dampingFraction ?? 0.825, blendDuration: blendDuration ?? 0.0)
-      } else if duration != nil || bounce != nil {
-        // default values are 0.5, 0.0, 0.0
-        animation = .spring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, blendDuration: blendDuration ?? 0.0)
-      } else if let blendDuration = blendDuration {
-        animation = .spring(blendDuration: blendDuration)
-      } else {
-        animation = .spring
-      }
-
-    case .interpolatingSpring:
-      let duration = config.duration
-      let bounce = config.bounce
-      let mass = config.mass
-      let stiffness = config.stiffness
-      let damping = config.damping
-      let initialVelocity = config.initialVelocity
-
-      if duration != nil || bounce != nil {
-        animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
-      } else if let stiffness, let damping {
-        animation = .interpolatingSpring(mass: mass ?? 1.0, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity ?? 0.0)
-      } else {
-        animation = .interpolatingSpring
-      }
-
-    default:
-      animation = .default
-    }
-
-    if let delay = config.delay {
-      animation = animation.delay(delay)
-    }
-
-    if let repeatCount = config.repeatCount {
-      let autoreverses = config.autoreverses ?? false
-      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
-    }
-
-    return animation
   }
 }
 

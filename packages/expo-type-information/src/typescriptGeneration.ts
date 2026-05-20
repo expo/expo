@@ -726,7 +726,9 @@ export function buildEnumTypeDeclaration(
   return ts.factory.createEnumDeclaration(
     constructModifiersArray({ exported, declare: declared }),
     enumType.name,
-    enumType.cases.map((enumcase) => ts.factory.createEnumMember(enumcase))
+    enumType.cases.map((enumcase) =>
+      ts.factory.createEnumMember(enumcase, ts.factory.createStringLiteral(enumcase))
+    )
   );
 }
 

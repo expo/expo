@@ -112,6 +112,14 @@ export const UIUniversalScreens = [
     },
   },
   {
+    name: `${SCREEN_NAME_PREFIX}RNHostView`,
+    route: 'ui-universal/rn-host-view',
+    options: { title: 'RNHostView' },
+    getComponent() {
+      return optionalRequire(() => require('./RNHostViewScreen'));
+    },
+  },
+  {
     name: `${SCREEN_NAME_PREFIX}Spacer`,
     route: 'ui-universal/spacer',
     options: { title: 'Spacer' },
