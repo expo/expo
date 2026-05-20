@@ -857,6 +857,9 @@ importers:
       expo-age-range:
         specifier: workspace:*
         version: link:../../packages/expo-age-range
+      expo-app-metrics:
+        specifier: workspace:*
+        version: link:../../packages/expo-app-metrics
       expo-apple-authentication:
         specifier: workspace:*
         version: link:../../packages/expo-apple-authentication
@@ -17286,11 +17289,6 @@ snapshots:
   '@esbuild/win32-x64@0.27.7':
     optional: true
 
-  '@eslint-community/eslint-utils@4.9.1(eslint@8.57.1)':
-    dependencies:
-      eslint: 8.57.1
-      eslint-visitor-keys: 3.4.3
-
   '@eslint-community/eslint-utils@4.9.1(eslint@9.39.4(jiti@1.21.7))':
     dependencies:
       eslint: 9.39.4(jiti@1.21.7)
@@ -21721,7 +21719,7 @@ snapshots:
 
   eslint@8.57.1:
     dependencies:
-      '@eslint-community/eslint-utils': 4.9.1(eslint@8.57.1)
+      '@eslint-community/eslint-utils': 4.9.1(eslint@9.39.4(jiti@1.21.7))
       '@eslint-community/regexpp': 4.12.2
       '@eslint/eslintrc': 2.1.4
       '@eslint/js': 8.57.1

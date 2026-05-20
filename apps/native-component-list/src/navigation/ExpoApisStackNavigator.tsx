@@ -253,6 +253,13 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoObserveScreen'));
+    },
+    name: 'ExpoObserve',
+    options: { title: 'Expo Observe' },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/ImageManipulatorScreen'));
     },
     name: 'ImageManipulator',
