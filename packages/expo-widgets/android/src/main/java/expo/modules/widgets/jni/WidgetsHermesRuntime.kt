@@ -1,5 +1,6 @@
 package expo.modules.widgets.jni
 
+import com.facebook.react.bridge.ReadableMap
 import java.io.Closeable
 
 internal class WidgetsHermesRuntime : Closeable {
@@ -9,7 +10,7 @@ internal class WidgetsHermesRuntime : Closeable {
     nativeEvaluateVoid(nativeHandle, script, "ExpoWidgets.bundle")
   }
 
-  fun render(layout: String, propsJson: String, environmentJson: String): String {
+  fun render(layout: String, propsJson: String, environmentJson: String): ReadableMap {
     return nativeRender(nativeHandle, layout, propsJson, environmentJson)
   }
 
@@ -23,7 +24,7 @@ internal class WidgetsHermesRuntime : Closeable {
   private external fun nativeCreate(): Long
   private external fun nativeRelease(handle: Long)
   private external fun nativeEvaluateVoid(handle: Long, script: String, sourceUrl: String)
-  private external fun nativeRender(handle: Long, layout: String, propsJson: String, environmentJson: String): String
+  private external fun nativeRender(handle: Long, layout: String, propsJson: String, environmentJson: String): ReadableMap
 
   companion object {
     init {

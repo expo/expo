@@ -1,17 +1,16 @@
 package expo.modules.widgets
 
 import android.content.Context
+import com.facebook.react.bridge.ReadableMap
 import expo.modules.widgets.jni.WidgetsHermesRuntime
-import org.json.JSONObject
 
 internal object WidgetsJSRuntime {
   private var runtime: WidgetsHermesRuntime? = null
   private var isBundleLoaded = false
 
   @Synchronized
-  fun render(context: Context, layout: String, ): JSONObject {
-    val result = getRuntime(context).render(layout, "{}", "{}")
-    return JSONObject(result)
+  fun render(context: Context, layout: String): ReadableMap {
+    return getRuntime(context).render(layout, "{}", "{}")
   }
 
   private fun getRuntime(context: Context): WidgetsHermesRuntime {

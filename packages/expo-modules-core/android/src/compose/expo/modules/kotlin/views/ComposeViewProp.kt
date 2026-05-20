@@ -20,11 +20,16 @@ class ComposeViewProp(
 
   @Suppress("UNCHECKED_CAST")
   override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
-    setPropDirectly(prop, onView, appContext)
+    setPropDirectly(prop = prop, onView = onView, appContext = appContext)
   }
 
   override fun set(prop: Any?, onView: View, appContext: AppContext?) {
-    setPropDirectly(prop, onView, appContext)
+    setPropDirectly(prop = prop, onView = onView, appContext = appContext)
+  }
+
+  @PublishedApi
+  internal fun setPropDirectly(prop: Dynamic, onProps: Any, appContext: AppContext?): Any {
+    return copyPropsWithNewValue(prop, onProps, appContext) ?: onProps
   }
 
   @Suppress("UNCHECKED_CAST")
@@ -37,15 +42,7 @@ class ComposeViewProp(
       if (onView is ComposeFunctionHolder<*>) {
         // Use current props state, not the initial props instance
         val currentProps = onView.propsMutableState.value
-        // TODO(@lukmccall): We should remove the copy call
-        val copy = currentProps::class.memberFunctions.firstOrNull { it.name == "copy" }
-        if (copy == null) {
-          logger.warn("⚠️ Props are not a data class with default values for all properties, cannot set prop $name dynamically.")
-          return@exceptionDecorator
-        }
-        val instanceParam = copy.instanceParameter!!
-        val newPropParam = copy.parameters.firstOrNull { it.name == name } ?: return@exceptionDecorator
-        val result = copy.callBy(mapOf(instanceParam to currentProps, newPropParam to type.convert(prop, appContext)))
+        val result = copyPropsWithNewValue(prop, currentProps, appContext) ?: return@exceptionDecorator
         // Set the new props instance back to the onView
         (onView.propsMutableState as MutableState<Any?>).value = result
         return@exceptionDecorator
@@ -58,6 +55,18 @@ class ComposeViewProp(
         logger.warn("⚠️ Property $name is not a MutableState in ${onView::class.java}")
       }
     }
+  }
+
+  private fun copyPropsWithNewValue(prop: Any?, currentProps: Any, appContext: AppContext?): Any? {
+    // TODO(@lukmccall): We should remove the copy call
+    val copy = currentProps::class.memberFunctions.firstOrNull { it.name == "copy" }
+    if (copy == null) {
+      logger.warn("⚠️ Props are not a data class with default values for all properties, cannot set prop $name dynamically.")
+      return null
+    }
+    val instanceParam = copy.instanceParameter!!
+    val newPropParam = copy.parameters.firstOrNull { it.name == name } ?: return null
+    return copy.callBy(mapOf(instanceParam to currentProps, newPropParam to type.convert(prop, appContext)))
   }
 
   fun asStateProp(): ComposeViewProp {

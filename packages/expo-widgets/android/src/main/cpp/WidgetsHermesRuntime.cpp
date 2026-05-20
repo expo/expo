@@ -1,7 +1,10 @@
 #include <jni.h>
 
+#include <fbjni/fbjni.h>
 #include <hermes/hermes.h>
+#include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/jni/ReadableNativeMap.h>
 
 #include <memory>
 #include <mutex>
@@ -10,6 +13,7 @@
 #include <unordered_map>
 
 namespace jsi = facebook::jsi;
+namespace react = facebook::react;
 
 namespace {
 
@@ -44,10 +48,6 @@ std::string jstringToString(JNIEnv *env, jstring value) {
   std::string result(chars);
   env->ReleaseStringUTFChars(value, chars);
   return result;
-}
-
-jstring stringToJString(JNIEnv *env, const std::string &value) {
-  return env->NewStringUTF(value.c_str());
 }
 
 void throwRuntimeException(JNIEnv *env, const std::string &message) {
@@ -91,7 +91,7 @@ void ensureLayoutFunction(WidgetsRuntime *holder, const std::string &layout) {
   holder->layoutCache[layout] = std::make_unique<jsi::Value>(rt, layoutValue);
 }
 
-std::string renderWithFunction(
+jobject renderWithFunction(
   WidgetsRuntime *holder,
   const std::string &layout,
   const std::string &propsJson,
@@ -108,7 +108,12 @@ std::string renderWithFunction(
   const jsi::Value *argsPtr = args;
   auto render = rt.global().getPropertyAsFunction(rt, "__expoWidgetRender");
   auto result = render.call(rt, argsPtr, static_cast<size_t>(2));
-  return stringifyJson(rt, result);
+  if (!result.isObject()) {
+    throw std::runtime_error("Widget render function must return an object");
+  }
+
+  auto dynamic = jsi::dynamicFromValue(rt, result);
+  return react::ReadableNativeMap::createWithContents(std::move(dynamic)).release();
 }
 
 std::string handlePressWithFunction(
@@ -167,7 +172,7 @@ Java_expo_modules_widgets_jni_WidgetsHermesRuntime_nativeEvaluateVoid(
   }
 }
 
-extern "C" JNIEXPORT jstring JNICALL
+extern "C" JNIEXPORT jobject JNICALL
 Java_expo_modules_widgets_jni_WidgetsHermesRuntime_nativeRender(
         JNIEnv *env,
         jobject,
@@ -179,14 +184,11 @@ Java_expo_modules_widgets_jni_WidgetsHermesRuntime_nativeRender(
   try {
     auto holder = runtimeFromHandle(handle);
     std::scoped_lock lock(holder->mutex);
-    return stringToJString(
-            env,
-            renderWithFunction(
-                    holder,
-                    jstringToString(env, layout),
-                    jstringToString(env, propsJson),
-                    jstringToString(env, environmentJson)
-            )
+    return renderWithFunction(
+            holder,
+            jstringToString(env, layout),
+            jstringToString(env, propsJson),
+            jstringToString(env, environmentJson)
     );
   } catch (const jsi::JSError &error) {
     throwRuntimeException(env, error.getMessage());
