@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   prebuild:
-    runs-on: macos-26-arm64
+    runs-on: macos-26
     timeout-minutes: 120
     permissions:
       contents: read
