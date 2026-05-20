@@ -866,6 +866,9 @@ importers:
       expo-age-range:
         specifier: workspace:*
         version: link:../../packages/expo-age-range
+      expo-app-metrics:
+        specifier: workspace:*
+        version: link:../../packages/expo-app-metrics
       expo-apple-authentication:
         specifier: workspace:*
         version: link:../../packages/expo-apple-authentication
