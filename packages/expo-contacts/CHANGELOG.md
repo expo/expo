@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Change entrypoints ([#46037](https://github.com/expo/expo/pull/46037) by [@Wenszel](https://github.com/Wenszel))
+- Promote the object-oriented Contacts API to the root `expo-contacts` import and move the legacy API to `expo-contacts/legacy`. ([#46037](https://github.com/expo/expo/pull/46037) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🎉 New features
 
