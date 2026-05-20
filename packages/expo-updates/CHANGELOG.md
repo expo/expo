@@ -25,6 +25,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+- Added `zstd` decompression support for the `FileDownloader` on Android. ([#46052](https://github.com/expo/expo/pull/46052) by [@kudo](https://github.com/kudo))
 
 ## 56.0.13 — 2026-05-19
 
