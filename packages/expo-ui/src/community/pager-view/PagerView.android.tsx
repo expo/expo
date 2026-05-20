@@ -11,7 +11,7 @@ import {
 import { StyleSheet } from 'react-native';
 
 import { wrapNativeEvent, type PagerViewProps } from './types';
-import { worklets } from '../../State/optionalWorklets';
+import { worklets } from '../../State';
 import { HorizontalPager, type HorizontalPagerHandle } from '../../jetpack-compose/HorizontalPager';
 import { Host } from '../../jetpack-compose/Host';
 import { RNHostView } from '../../jetpack-compose/RNHostView';

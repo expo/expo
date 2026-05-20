@@ -12,8 +12,7 @@ import {
 import { Platform } from 'react-native';
 
 import { wrapNativeEvent, type PagerViewProps } from './types';
-import { worklets } from '../../State/optionalWorklets';
-import { useNativeState } from '../../State/useNativeState';
+import { useNativeState, worklets } from '../../State';
 import { Group } from '../../swift-ui/Group';
 import { Host } from '../../swift-ui/Host';
 import { LazyHStack } from '../../swift-ui/LazyHStack';

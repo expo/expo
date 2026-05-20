@@ -1,5 +1,4 @@
 import { type SharedObject } from 'expo-modules-core';
-import './index.fx';
 /**
  * Observable state shared between JavaScript and native views (Jetpack Compose
  * on Android and SwiftUI on iOS).

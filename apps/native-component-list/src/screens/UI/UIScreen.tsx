@@ -34,14 +34,6 @@ export const UIScreens = [
       return optionalRequire(() => require('./CommunitySliderScreen'));
     },
   },
-  {
-    name: 'Community PagerView replacement',
-    route: 'ui/community-pager-view',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./CommunityPagerViewScreen'));
-    },
-  },
 ];
 
 export default function UIScreen() {

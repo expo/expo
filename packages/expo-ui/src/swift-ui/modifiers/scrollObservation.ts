@@ -1,6 +1,4 @@
-import { worklets } from '../../State/optionalWorklets';
-import { useWorkletProp } from '../../State/useWorkletProp';
-import { getStateId } from '../../State/utils';
+import { getStateId, useWorkletProp, worklets } from '../../State';
 import type { ScrollGeometry, ScrollPhase } from '../ScrollView';
 import { createModifier, createModifierWithEventListener } from './createModifier';
 

@@ -1,9 +1,7 @@
 import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
-import { worklets } from '../../State/optionalWorklets';
-import { useWorkletProp } from '../../State/useWorkletProp';
-import { getStateId } from '../../State/utils';
+import { getStateId, useWorkletProp, worklets } from '../../State';
 import { type ModifierConfig, type ViewEvent } from '../../types';
 import { type PaddingValuesRecord } from '../Carousel';
 import { createViewModifierEventListener } from '../modifiers/utils';
