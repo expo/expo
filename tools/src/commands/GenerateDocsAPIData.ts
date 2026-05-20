@@ -153,6 +153,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/loadingindicator': [
+    'jetpack-compose/LoadingIndicator/index.tsx',
+    'expo-ui',
+  ],
 
   // Universal (cross-platform JS components)
   'expo-ui/universal/host': ['universal/Host/index.tsx', 'expo-ui'],
@@ -169,6 +173,11 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/universal/icon': ['universal/Icon/index.tsx', 'expo-ui'],
   'expo-ui/universal/spacer': ['universal/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/universal/textinput': ['universal/TextInput/index.tsx', 'expo-ui'],
+  'expo-ui/universal/collapsible': ['universal/Collapsible/index.tsx', 'expo-ui'],
+  'expo-ui/universal/list': ['universal/List/index.tsx', 'expo-ui'],
+  'expo-ui/universal/listitem': ['universal/ListItem/index.ts', 'expo-ui'],
+  'expo-ui/universal/picker': ['universal/Picker/index.ts', 'expo-ui'],
+  'expo-ui/universal/rnhostview': ['universal/RNHostView/index.tsx', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
@@ -185,11 +194,13 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
+  'expo-type-information': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
-  'expo-calendar': ['Calendar.ts'],
-  'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
+  'expo-calendar': ['index.ts'],
+  'expo-calendar-legacy': ['legacy/index.ts', 'expo-calendar'],
+  'expo-calendar-next': ['next/index.ts', 'expo-calendar'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
@@ -197,6 +208,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
   'expo-contacts-next': ['next/index.ts', 'expo-contacts'],
+  'expo-contacts-legacy': ['legacy/index.ts', 'expo-contacts'],
   'expo-crypto': ['Crypto.ts'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-dev-menu': ['DevMenu.ts'],
@@ -234,8 +246,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
-  'expo-media-library': ['MediaLibrary.ts'],
-  'expo-media-library-next': ['next/index.ts', 'expo-media-library'],
+  'expo-media-library': ['index.ts'],
+  'expo-media-library-legacy': ['legacy/index.ts', 'expo-media-library'],
   'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],

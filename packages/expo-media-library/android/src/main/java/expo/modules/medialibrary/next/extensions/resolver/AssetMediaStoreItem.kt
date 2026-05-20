@@ -23,6 +23,7 @@ class AssetMediaStoreItemBuilder {
   private var duration: Long? = null
   private var data: String? = null
   private var bucketId: String? = null
+  private var isFavorite: Boolean? = null
 
   fun build(): AssetMediaStoreItem {
     return AssetMediaStoreItem(
@@ -48,6 +49,7 @@ class AssetMediaStoreItemBuilder {
         AssetMediaStoreProperty.DateModified -> dateModified = getLong()
         AssetMediaStoreProperty.Duration -> duration = getLong()
         AssetMediaStoreProperty.BucketId -> bucketId = getString()
+        AssetMediaStoreProperty.IsFavorite -> isFavorite = getInt() == 1
       }
     }
   }
@@ -76,7 +78,8 @@ enum class AssetMediaStoreProperty(val column: String) {
   DateModified(MediaStore.MediaColumns.DATE_MODIFIED),
   Duration(MediaStore.MediaColumns.DURATION),
   Data(MediaStore.MediaColumns.DATA),
-  BucketId(MediaStore.MediaColumns.BUCKET_ID);
+  BucketId(MediaStore.MediaColumns.BUCKET_ID),
+  IsFavorite(MediaStore.MediaColumns.IS_FAVORITE);
 
   fun Cursor.columnIndex(): Int =
     getColumnIndexOrThrow(column)

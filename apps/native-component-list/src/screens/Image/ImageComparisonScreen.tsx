@@ -65,7 +65,6 @@ export default function ImageComparisonScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   content: {
     flex: 1,

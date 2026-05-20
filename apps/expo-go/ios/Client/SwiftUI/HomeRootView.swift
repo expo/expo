@@ -114,16 +114,16 @@ struct HomeRootView: View {
         )
         .transition(.opacity)
       }
-    }
 
-    if !hasCompletedPermissionFlow {
-      LocalNetworkPermissionView(serverService: viewModel.serverService) {
-        viewModel.serverService.startDiscovery()
-        withAnimation(.easeInOut(duration: 0.3)) {
-          hasCompletedPermissionFlow = true
+      if !hasCompletedPermissionFlow {
+        LocalNetworkPermissionView(serverService: viewModel.serverService) {
+          viewModel.serverService.startDiscovery()
+          withAnimation(.easeInOut(duration: 0.3)) {
+            hasCompletedPermissionFlow = true
+          }
         }
+        .transition(.opacity)
       }
-      .transition(.opacity)
     }
   }
 }

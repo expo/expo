@@ -15,6 +15,10 @@
 - [Web] Drop dependency on `expo-modules-core` `Platform` in favor of inline `window`/`document` checks. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
 - Switch package entry to TypeScript source and emit declarations only. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.9 — 2026-05-15
 
 _This version does not introduce any user-facing changes._

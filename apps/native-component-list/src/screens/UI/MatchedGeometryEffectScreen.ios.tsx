@@ -20,7 +20,7 @@ export default function MatchedGeometryEffectDemo() {
   const namespaceId = useId();
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <View style={{ flex: 1 }}>
       <Host style={{ flex: 1 }}>
         <Namespace id={namespaceId}>
           <ZStack modifiers={[animation(Animation.spring(), !!selectedBox)]}>

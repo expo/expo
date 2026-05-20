@@ -237,7 +237,7 @@
   <title>Expo Start | Loading Page</title>
 </head>
 <body>
-  <div id="alert"></div>
+  <div id="alert" data-scheme="{{ Scheme }}"></div>
   <div class="logo-box">
     <div class="logo-background-box">
 
@@ -297,12 +297,20 @@
   <script>
   const alertElement = document.getElementById("alert");
 
+  const escapeHtml = (value) => value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
   const showAlert = (isExpoGo) => {
     if (isExpoGo) {
       alertElement.innerHTML = 'Unable to open in Expo Go. Please install <b>Expo Go</b> to continue.' +
       '<br><a href="https://expo.dev/client">Learn more.</a>';
     } else {
-      alertElement.innerHTML = 'Unable to open in Development Build with the <b>{{ Scheme }}</b> scheme. Please build and install a compatible <b>Development Build</b> to continue.' +
+      const scheme = escapeHtml(alertElement.dataset.scheme || 'Unknown');
+      alertElement.innerHTML = 'Unable to open in Development Build with the <b>' + scheme + '</b> scheme. Please build and install a compatible <b>Development Build</b> to continue.' +
       '<br><a href="https://docs.expo.dev/development/build/">Learn more.</a>';
     }
 

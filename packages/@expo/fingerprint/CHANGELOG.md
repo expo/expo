@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Pass original env to Expo / Community CLI sub-commands ([#45834](https://github.com/expo/expo/pull/45834) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 0.18.3 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 0.18.2 — 2026-05-15
 

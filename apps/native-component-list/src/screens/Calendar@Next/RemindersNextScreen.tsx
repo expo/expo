@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import * as Calendar from 'expo-calendar';
-import { ExpoCalendar, ExpoCalendarReminder } from 'expo-calendar/next';
+import { ExpoCalendar, ExpoCalendarReminder } from 'expo-calendar';
+import * as Calendar from 'expo-calendar/legacy';
 import React, { useState, useEffect } from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 

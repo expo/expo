@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Align `jest-expo`'s Babel config loading with `@expo/metro-config` changes ([#45968](https://github.com/expo/expo/pull/45968) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

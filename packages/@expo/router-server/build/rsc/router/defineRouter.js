@@ -11,7 +11,6 @@ exports.unstable_redirect = unstable_redirect;
  */
 const rsc_1 = require("expo-router/internal/rsc");
 const react_1 = require("react");
-const path_1 = require("../path");
 const server_1 = require("../server");
 const safeJsonParse = (str) => {
     if (typeof str === 'string') {
@@ -27,6 +26,11 @@ const safeJsonParse = (str) => {
     }
     return undefined;
 };
+const parseSkipList = (value) => {
+    if (!Array.isArray(value))
+        return new Set();
+    return new Set(value.filter((v) => typeof v === 'string'));
+};
 function unstable_defineRouter(getPathConfig, getComponent) {
     let cachedPathConfig;
     const getMyPathConfig = async (buildConfig) => {
@@ -34,23 +38,22 @@ function unstable_defineRouter(getPathConfig, getComponent) {
             return buildConfig;
         }
         if (!cachedPathConfig) {
-            cachedPathConfig = Array.from(await getPathConfig()).map((item) => {
-                const is404 = item.path.length === 1 &&
-                    item.path[0].type === 'literal' &&
-                    item.path[0].name === '404';
-                return {
-                    pattern: item.pattern,
-                    pathname: item.path,
-                    isStatic: item.isStatic,
-                    customData: { is404, noSsr: !!item.noSsr, data: item.data },
-                };
-            });
+            cachedPathConfig = Array.from(await getPathConfig()).map((item) => ({
+                pathname: item.path,
+                matchesPathname: item.matchesPathname,
+                isStatic: item.isStatic,
+                customData: {
+                    is404: item.path === '/404',
+                    noSsr: !!item.noSsr,
+                    data: item.data,
+                },
+            }));
         }
         return cachedPathConfig;
     };
     const existsPath = async (pathname, buildConfig) => {
         const pathConfig = await getMyPathConfig(buildConfig);
-        const found = pathConfig.find(({ pathname: pathSpec }) => (0, path_1.getPathMapping)(pathSpec, pathname));
+        const found = pathConfig.find(({ matchesPathname }) => matchesPathname(pathname));
         return found
             ? found.customData.noSsr
                 ? ['FOUND', 'NO_SSR']
@@ -67,10 +70,14 @@ function unstable_defineRouter(getPathConfig, getComponent) {
         const shouldSkipObj = {};
         const parsedParams = safeJsonParse(params);
         const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
-        const skip = Array.isArray(parsedParams?.skip) ? parsedParams?.skip : [];
-        const componentIds = (0, rsc_1.getComponentIds)(pathname);
-        const entries = (await Promise.all(componentIds.map(async (id) => {
-            if (skip?.includes(id)) {
+        const skip = parseSkipList(parsedParams?.skip);
+        const { layouts, page } = (0, rsc_1.getComponentIds)(pathname);
+        const entries = (await Promise.all([...layouts, page].map(async (id) => {
+            // `getComponentIds` separates the terminal page from layouts. Use that
+            // structural distinction as a fast-path skip (kind isn't known until we
+            // resolve); the kind-based check after resolve is the authoritative defense.
+            const isPage = id === page;
+            if (isPage && skip.has(id)) {
                 return [];
             }
             const setShouldSkip = (val) => {
@@ -81,14 +88,18 @@ function unstable_defineRouter(getPathConfig, getComponent) {
                     delete shouldSkipObj[id];
                 }
             };
-            const component = await getComponent(id, {
+            const resolved = await getComponent(id, {
                 unstable_setShouldSkip: setShouldSkip,
                 unstable_buildConfig: buildConfig,
             });
-            if (!component) {
+            if (!resolved) {
                 return [];
             }
-            const element = (0, react_1.createElement)(component, id.endsWith('/layout') ? { path: pathname } : { path: pathname, query }, (0, react_1.createElement)(rsc_1.Children));
+            // Honor skip only for entries the resolver opted into shouldSkipObj; layouts are never skippable.
+            if (skip.has(id) && resolved.kind !== 'layout' && shouldSkipObj[id] != null) {
+                return [];
+            }
+            const element = (0, react_1.createElement)(resolved.component, isPage ? { path: pathname, query } : { path: pathname }, (0, react_1.createElement)(rsc_1.Children));
             return [[id, element]];
         }))).flat();
         entries.push([rsc_1.SHOULD_SKIP_ID, Object.entries(shouldSkipObj)]);
@@ -98,11 +109,10 @@ function unstable_defineRouter(getPathConfig, getComponent) {
     const getBuildConfig = async (unstable_collectClientModules) => {
         const pathConfig = await getMyPathConfig();
         const path2moduleIds = {};
-        for (const { pathname: pathSpec } of pathConfig) {
-            if (pathSpec.some(({ type }) => type !== 'literal')) {
+        for (const { pathname } of pathConfig) {
+            if (pathname.includes('[')) {
                 continue;
             }
-            const pathname = '/' + pathSpec.map(({ name }) => name).join('/');
             const input = (0, rsc_1.getInputString)(pathname);
             const moduleIds = await unstable_collectClientModules(input);
             path2moduleIds[pathname] = moduleIds;
@@ -115,15 +125,14 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
   }
 };`;
         const buildConfig = [];
-        for (const { pathname: pathSpec, isStatic, customData } of pathConfig) {
+        for (const { pathname, isStatic, customData } of pathConfig) {
             const entries = [];
-            if (pathSpec.every(({ type }) => type === 'literal')) {
-                const pathname = '/' + pathSpec.map(({ name }) => name).join('/');
+            if (!pathname.includes('[')) {
                 const input = (0, rsc_1.getInputString)(pathname);
                 entries.push({ input, isStatic });
             }
             buildConfig.push({
-                pathname: pathSpec,
+                pathname,
                 isStatic,
                 entries,
                 customCode,
@@ -145,9 +154,9 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
                 return null;
             }
         }
-        const componentIds = (0, rsc_1.getComponentIds)(pathname);
+        const { layouts, page } = (0, rsc_1.getComponentIds)(pathname);
         const input = (0, rsc_1.getInputString)(pathname);
-        const html = (0, react_1.createElement)(rsc_1.ServerRouter, { route: { path: pathname, query: searchParams.toString(), hash: '' } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(rsc_1.Slot, { id, fallback: acc }, acc), null));
+        const html = (0, react_1.createElement)(rsc_1.ServerRouter, { route: { path: pathname, query: searchParams.toString(), hash: '' } }, [...layouts, page].reduceRight((acc, id) => (0, react_1.createElement)(rsc_1.Slot, { id, fallback: acc }, acc), null));
         return {
             input,
             params: JSON.stringify({ query: searchParams.toString() }),

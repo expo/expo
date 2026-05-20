@@ -44,13 +44,6 @@ function _deepmerge() {
   };
   return data;
 }
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
-    return data;
-  };
-  return data;
-}
 function _glob() {
   const data = require("glob");
   _glob = function () {
@@ -314,29 +307,12 @@ function getConfigFilePaths(projectRoot) {
 }
 const DYNAMIC_CONFIG_EXTS = ['.ts', '.mts', '.cts', '.mjs', '.cjs', '.js'];
 function getDynamicConfigFilePath(projectRoot) {
-  const fileNames = DYNAMIC_CONFIG_EXTS.map(ext => `app.config${ext}`);
-  for (const fileName of fileNames) {
-    const configPath = _path().default.join(projectRoot, fileName);
-    try {
-      const stat = _fs().default.statSync(configPath);
-      if (stat.isFile()) {
-        return configPath;
-      }
-    } catch {}
-  }
-  return null;
+  return (0, _requireUtils().resolveFrom)(projectRoot, './app.config', {
+    extensions: DYNAMIC_CONFIG_EXTS
+  });
 }
 function getStaticConfigFilePath(projectRoot) {
-  for (const fileName of ['app.config.json', 'app.json']) {
-    const configPath = _path().default.join(projectRoot, fileName);
-    try {
-      const stat = _fs().default.statSync(configPath);
-      if (stat.isFile()) {
-        return configPath;
-      }
-    } catch {}
-  }
-  return null;
+  return (0, _requireUtils().resolveFrom)(projectRoot, './app.config.json') ?? (0, _requireUtils().resolveFrom)(projectRoot, './app.json');
 }
 
 /**

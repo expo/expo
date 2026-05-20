@@ -762,8 +762,9 @@ export async function initAsync(
     }
   );
 
-  // Remove default `pnpm-workspace.yaml`
-  await fs.rm(path.join(projectRoot, 'pnpm-workspace.yaml'));
+  // Remove default `pnpm-workspace.yaml` if the template still ships one. Newer template versions
+  // omit it; `force: true` keeps both cases working.
+  await fs.rm(path.join(projectRoot, 'pnpm-workspace.yaml'), { force: true });
 
   // We are done with template tarball
   await fs.rm(localTSTemplatePathName);

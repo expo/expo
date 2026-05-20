@@ -15,18 +15,9 @@ function applescript(strings: TemplateStringsArray, ...values: unknown[]): strin
     .filter((line) => line.length > 0);
 }
 
-/** Escapes a value for safe interpolation inside an AppleScript double-quoted string. */
-function escapeAppleScriptString(value: string): string {
-  return value
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .replace(/\r/g, '\\r')
-    .replace(/\n/g, '\\n');
-}
-
 function buildOpenChromiumTabScript(target: string, matchUrl: string): string[] {
-  const theURL = escapeAppleScriptString(target);
-  const matchURL = escapeAppleScriptString(matchUrl);
+  const theURL = osascript.escapeString(target);
+  const matchURL = osascript.escapeString(matchUrl);
   return applescript`
     property targetTab: null
     property targetTabIndex: -1

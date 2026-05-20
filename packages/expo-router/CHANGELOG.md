@@ -6,9 +6,31 @@
 
 ### 🎉 New features
 
+- Support disabling NativeTabs Material Symbols (`md`) icons on Android via the `EXPO_ROUTER_DISABLE_NATIVE_TABS_MD` environment variable ([#45857](https://github.com/expo/expo/pull/45857) by [@Ubax](https://github.com/Ubax))
+- Remove expo-image dependency ([#45862](https://github.com/expo/expo/pull/45862) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
+- Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Add `segments` to `unstable_navigationEvents` page events `pagePreloaded`, `pageFocused`, `pageBlurred`, `pageRemoved` ([#46019](https://github.com/expo/expo/pull/46019) by [@Ubax](https://github.com/Ubax))
+
+## 56.2.2 — 2026-05-19
+
+### 🎉 New features
+
+- Upgrade react-native-screens to 4.25.1 ([#45965](https://github.com/expo/expo/pull/45965) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Always use HTTP POST when invoking RSC server actions ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- [Internal] Canonicalize RSC component ID minting ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+- [Internal] Remove RSC render context and remove render store global ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
 
 ## 56.2.1 — 2026-05-15
 
@@ -22,6 +44,7 @@
 - Preserve `headerTitleAlign` set on parent navigator options when `Stack.Title` does not specify `style.textAlign` ([#42110](https://github.com/expo/expo/pull/42110) by [@Quaid5050](https://github.com/Quaid5050))
 - [web] Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
 - Pass `null` route params through `useLocalSearchParams` instead of stringifying them to `"null"` ([#34950](https://github.com/expo/expo/pull/34950) by [@hassankhan](https://github.com/hassankhan))
+- Add missing HTML attribute sanitization to vendored react-helmet-async ([#45851](https://github.com/expo/expo/pull/45851) by [@kitten](https://github.com/kitten))
 
 ## 56.2.0 — 2026-05-13
 
@@ -73,6 +96,7 @@ _This version does not introduce any user-facing changes._
 
 - Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
 - Move `pointerEvents` from component prop to style property in react-navigation views. ([#45519](https://github.com/expo/expo/pull/45519) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 56.1.0 — 2026-05-07
 
 ### 🎉 New features

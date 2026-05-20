@@ -4,6 +4,7 @@ export interface BasePageEvent {
     pathname: string;
     params: Record<string, string | string[]>;
     screenId: string;
+    segments: string[];
 }
 /**
  * The page rendered as part of a preload (e.g. `router.prefetch()`) and is not

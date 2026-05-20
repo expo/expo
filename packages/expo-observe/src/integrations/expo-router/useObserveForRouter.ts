@@ -3,25 +3,27 @@ import { use, useCallback, useEffect, useRef } from 'react';
 
 import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';
 import { isInitialized } from './init';
+import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 type MarkInteractive = (typeof AppMetrics)['markInteractive'];
 
 export function useObserveForRouter(): MarkInteractive | null {
+  const initialized = isInitialized();
   const storage = use(ObserveRouterIntegrationContext);
   const isMounted = useRef(true);
   const route = optionalRouter?.useRoute();
   const navigation = optionalRouter?.useNavigation();
   const routeInfo = optionalRouter?.useCurrentRouteInfo();
-  const { pathname, params: routeParams } = routeInfo ?? {};
+  const { pathname, params: routeParams, segments } = routeInfo ?? {};
+  const routePattern = buildRoutePattern(segments);
 
-  const initializedAtMount = useRef(isInitialized());
-  if (initializedAtMount.current !== isInitialized()) {
-    throw new Error(
-      "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
-        'Call `ExpoObserve.configure({ disableRouterIntegration })` once at startup before any screen mounts.'
-    );
-  }
+  useAssertValueDoesNotChange(
+    initialized,
+    "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
+      "Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
+  );
 
   const screenId = route?.key;
   const prevScreenId = useRef(screenId);
@@ -59,7 +61,8 @@ export function useObserveForRouter(): MarkInteractive | null {
       if (navigation?.isFocused()) {
         AppMetrics.markInteractive({
           ...(attributes ?? {}),
-          routeName: pathname,
+          routeName: routePattern,
+          params: { ...(attributes?.params ?? {}), url: pathname },
         });
       }
 
@@ -102,16 +105,15 @@ export function useObserveForRouter(): MarkInteractive | null {
           sessionId: mainSessionId,
           timestamp,
           category: 'navigation',
-          // TODO(@ubax): Use segments.join here to get full routeName and pass pathname and params via params
-          routeName: pathname,
+          routeName: routePattern,
           name: 'tti',
           value: interactiveTimeSeconds,
-          params: { routeParams },
+          params: { routeParams, url: pathname },
         });
       }
     },
-    [screenId, navigation, pathname, storage, routeParams]
+    [screenId, navigation, pathname, routePattern, storage, routeParams]
   );
 
-  return initializedAtMount.current ? markInteractive : null;
+  return initialized ? markInteractive : null;
 }

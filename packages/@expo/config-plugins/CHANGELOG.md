@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
+- Support `.cjs`, `.mjs`, `.ts`, `.cts`, `.mts` extensions for config plugins ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
+- Pass through better error message from `loadModuleSync` when loading/parsing config plugins fails ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- [Internal] Align config-plugin resolution support to `@expo/config` using `@expo/reqire-utils` ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
+- [Internal] Drop `resolve-from` for `@expo/require-utils` ([#45990](https://github.com/expo/expo/pull/45990) by [@kitten](https://github.com/kitten))
+
+## 56.0.6 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.5 — 2026-05-13
 

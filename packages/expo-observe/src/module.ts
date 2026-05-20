@@ -10,11 +10,10 @@ const ExpoObserve: ExpoObserveModuleType = new Proxy(native, {
   get(target, prop, receiver) {
     if (prop === 'configure') {
       return (config: Config) => {
-        const { disableRouterIntegration, ...nativeConfig } = config;
-        if (!disableRouterIntegration && isRouterInstalled) {
+        if (config.integrations?.['expo-router'] && isRouterInstalled) {
           initRouterIntegration();
         }
-        return target.configure(nativeConfig);
+        return target.configure(config);
       };
     }
     return Reflect.get(target, prop, receiver);

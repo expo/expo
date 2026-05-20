@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 56.0.8 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.7 — 2026-05-15
 
 ### 🐛 Bug fixes
@@ -17,6 +23,7 @@
 - [iOS] Fixed `pod install` failing with `bad component (expected absolute path component)` for precompiled Expo modules when the project lives under a path containing non-ASCII characters (e.g. emoji). ([#45779](https://github.com/expo/expo/pull/45779) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`. ([#45742](https://github.com/expo/expo/pull/45742) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Wire the macro plugin flag into `ExpoModulesCore`'s own xcconfig so SourceKit can resolve `#externalMacro` references in core source files. ([#45778](https://github.com/expo/expo/pull/45778) by [@tsapeta](https://github.com/tsapeta))
+- Disallow devtools plugins to point to `webpageRoot` outside of their own bounds ([#45841](https://github.com/expo/expo/pull/45841) by [@kitten](https://github.com/kitten))
 
 ## 56.0.6 — 2026-05-13
 

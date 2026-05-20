@@ -1,5 +1,6 @@
 import AppMetrics from 'expo-app-metrics';
 
+import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
 import { type RouterIntegrationStorage } from './storage';
 
@@ -58,6 +59,8 @@ export function initListeners(
       return;
     }
 
+    const routePattern = buildRoutePattern(e.segments);
+
     if (!storage.hasRecordedInitialTtr) {
       // Stored in seconds to match the OTel `unit = "s"` convention
       const appLaunchTtrSeconds = (now - appLaunchTime) / 1000;
@@ -67,9 +70,9 @@ export function initListeners(
         timestamp,
         category: 'navigation',
         name,
-        routeName: e.pathname,
+        routeName: routePattern,
         value: appLaunchTtrSeconds,
-        params: { isAppLaunch: true, routeParams: e.params },
+        params: { isAppLaunch: true, routeParams: e.params, url: e.pathname },
       });
       return;
     }
@@ -89,9 +92,9 @@ export function initListeners(
         timestamp,
         category: 'navigation',
         name,
-        routeName: e.pathname,
+        routeName: routePattern,
         value: (now - dispatchTime) / 1000,
-        params: { isAppLaunch: false, routeParams: e.params },
+        params: { isAppLaunch: false, routeParams: e.params, url: e.pathname },
       });
     }
     storage.pendingActions.length = 0;

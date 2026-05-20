@@ -8,14 +8,15 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Alert matches the official SwiftUI [alert API](<https://developer.apple.com/documentation/swiftui/view/alert(_:ispresented:actions:message:)>) and presents a native iOS alert dialog with a title, actions, and an optional message.
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/alert/ios-light.webp"
-  darkSource="/static/images/expo-ui/alert/ios-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/alert/ios-light.webp"
+  darkSrc="/static/images/expo-ui/alert/ios-dark.webp"
   alt="Alert asking the user to confirm signing out"
 />
 

@@ -12,9 +12,15 @@ export async function getSchemaAsync(sdkVersion, isUnversioned = false) {
   }
 
   const response = await fetch(
-    `http://exp.host/--/api/v2/sdks/${sdkVersion.replace('v', '')}/native-modules`
+    `https://exp.host/--/api/v2/sdks/${sdkVersion.replace('v', '')}/native-modules`
   );
+  if (!response.ok) {
+    throw new Error(`Failed to fetch native module schema for ${sdkVersion}: ${response.status}`);
+  }
   const responseJson = await response.json();
+  if (!Array.isArray(responseJson?.data)) {
+    throw new Error(`Unexpected native module schema response for ${sdkVersion}`);
+  }
   const versionData = responseJson.data.map(entry => {
     delete entry.id;
     delete entry.sdkVersion;

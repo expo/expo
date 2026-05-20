@@ -55,14 +55,14 @@ The typical way to link to a page in Expo Router is to use links like web apps. 
 {/* prettier-ignore */}
 ```tsx src/app/index.tsx
 import { View } from 'react-native';
-/* @info Import the <CODE>Link</CODE> React component from <CODE>expo-router</CODE>. */
+/* @info Import the `Link` React component from `expo-router`. */
 import { Link } from 'expo-router';
 /* @end */
 
 export default function Page() {
   return (
     <View>
-      /* @info Tapping this will link to the <strong>about</strong> page. */
+      /* @info Tapping this will link to the **about** page. */
       <Link href="/about">About</Link>
       /* @end */
     </View>
@@ -79,7 +79,7 @@ import { Link } from 'expo-router';
 
 export default function Page() {
   return (
-    /* @info The <CODE>onPress</CODE> event that navigates to <CODE>/other</CODE> will be passed to <CODE>Pressable</CODE>. */
+    /* @info The `onPress` event that navigates to `/other` will be passed to `Pressable`. */
     <Link href="/other" asChild>
     /* @end */
       <Pressable>
@@ -138,7 +138,7 @@ Each of these links will navigate to the same page:
 
 {/* prettier-ignore */}
 ```tsx src/app/index.tsx
-/* @info Import the <CODE>Link</CODE> React component and <CODE>router</CODE> to navigate imperatively from <CODE>expo-router</CODE>. */
+/* @info Import the `Link` React component and `router` to navigate imperatively from `expo-router`. */
 import { Link, router } from 'expo-router';
 /* @end */
 import { View, Pressable, Text } from 'react-native';

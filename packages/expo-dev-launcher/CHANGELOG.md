@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Apply dev launcher gesture and auto-launch settings immediately instead of requiring an app restart. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@gabrieldonadel](https://github.com/gabrieldonadel)) ([#46000](https://github.com/expo/expo/pull/46000) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
+
+## 56.0.12 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.11 — 2026-05-15
 

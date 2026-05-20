@@ -1,4 +1,6 @@
-import { StyleSheet, View, type LayoutChangeEvent, type ViewProps } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+
+import type { UniversalHostProps } from './types';
 
 const styles = StyleSheet.create({
   matchContents: {
@@ -22,16 +24,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type HostProps = {
-  ignoreSafeArea?: 'all' | 'keyboard';
-  layoutDirection?: 'leftToRight' | 'rightToLeft';
-  matchContents?: boolean | { horizontal?: boolean; vertical?: boolean };
-  onLayoutContent?: (event: { nativeEvent: { width: number; height: number } }) => void;
-  useViewportSizeMeasurement?: boolean;
-};
-
 /**
  * A bridging container that hosts SwiftUI views on iOS and Jetpack Compose views on Android.
+ * On platforms without a native UI-toolkit binding (web, RN fallback), renders a plain `View`.
+ * The `colorScheme`, `layoutDirection`, and `matchContents` props are accepted for API parity but have no effect.
  */
 export function Host({
   children,
@@ -42,8 +38,9 @@ export function Host({
   onLayoutContent,
   style,
   useViewportSizeMeasurement = false,
+  colorScheme: _colorScheme,
   ...rest
-}: ViewProps & HostProps) {
+}: UniversalHostProps) {
   const shouldMatchContents =
     typeof matchContents === 'object'
       ? matchContents.horizontal || matchContents.vertical
@@ -81,3 +78,5 @@ export function Host({
     </View>
   );
 }
+
+export type { UniversalHostProps } from './types';

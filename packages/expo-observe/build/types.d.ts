@@ -46,14 +46,13 @@ export type Config = {
      */
     sampleRate?: number;
     /**
-     * Disables the automatic `expo-router` integration that records TTR/TTI per screen.
-     *
-     * When `true` or `expo-router` is not installed, the router integration will not be used.
-     *
-     * @default false
+     * Opt in to per-integration behavior.
      */
-    disableRouterIntegration?: boolean;
+    integrations?: IntegrationsConfig;
 };
+export interface IntegrationsConfig {
+    'expo-router'?: boolean;
+}
 export interface ExpoObserveModuleType {
     dispatchEvents(): Promise<void>;
     /**

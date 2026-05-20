@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Use `android.icon` for legacy Android launcher icons when `android.adaptiveIcon` is also configured. ([#17969](https://github.com/expo/expo/issues/17969) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
+
+## 56.0.9 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.8 — 2026-05-15
 

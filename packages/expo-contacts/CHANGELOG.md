@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- Promote the object-oriented Contacts API to the root `expo-contacts` import and move the legacy API to `expo-contacts/legacy`. ([#46037](https://github.com/expo/expo/pull/46037) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Fix `expo-contacts/next` throwing `Cannot find native module 'ExpoContactsNext'` when imported on web by adding a web shim. ([#46018](https://github.com/expo/expo/pull/46018) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+## 56.0.5 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.4 — 2026-05-13
 

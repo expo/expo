@@ -64,7 +64,7 @@ link_xcframework "ReactNativeDependencies" \
 
 # --- Generate the jsi module map ---
 
-env PODS_ROOT="$PODS_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+PODS_ROOT="$PODS_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
 
 # --- Pick a simulator destination ---
 
