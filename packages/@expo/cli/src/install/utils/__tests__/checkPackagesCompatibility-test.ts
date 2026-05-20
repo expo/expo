@@ -51,10 +51,10 @@ describe(checkPackagesCompatibility, () => {
   it(`does not warn about supported or unknown package`, async () => {
     nock('https://reactnative.directory')
       .get('/api/libraries/check')
-      .query({ packages: 'expo-image,expo-image-picker' })
+      .query({ packages: 'expo-image,@expo-google-fonts/inter' })
       .reply(200, {
         'expo-image': { newArchitecture: 'supported' },
-        'expo-image-picker': { newArchitecture: undefined },
+        '@expo-google-fonts/inter': { newArchitecture: undefined },
       });
 
     await checkPackagesCompatibility(['expo-image', '@expo-google-fonts/inter']);
