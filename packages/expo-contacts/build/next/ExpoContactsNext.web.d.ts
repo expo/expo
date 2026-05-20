@@ -1,7 +1,6 @@
 import type { ContactsPermissionResponse } from './types/Permissions';
-import { Contact } from './types/Contact';
 declare const _default: {
-    Contact: typeof Contact;
+    Contact: typeof import("./types/Contact").Contact;
     getPermissionsAsync: () => Promise<ContactsPermissionResponse>;
     requestPermissionsAsync: () => Promise<ContactsPermissionResponse>;
     addListener: () => {

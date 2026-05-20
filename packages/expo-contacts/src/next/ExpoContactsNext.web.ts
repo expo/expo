@@ -1,7 +1,8 @@
 import { PermissionStatus } from 'expo';
 
-import { Contact } from './types/Contact';
 import type { ContactsPermissionResponse } from './types/Permissions';
+
+type ExpoContactsNext = typeof import('./ExpoContactsNext').default;
 
 const noPermissionResponse: ContactsPermissionResponse = {
   status: PermissionStatus.UNDETERMINED,
@@ -9,6 +10,10 @@ const noPermissionResponse: ContactsPermissionResponse = {
   granted: false,
   canAskAgain: true,
 };
+
+const Contact = class {
+  constructor(public id: string) {}
+} as ExpoContactsNext['Contact'];
 
 const noop = () => {};
 
@@ -21,4 +26,4 @@ export default {
   removeAllListeners: noop,
   emit: noop,
   listenerCount: () => 0,
-} satisfies typeof import('./ExpoContactsNext').default;
+} satisfies ExpoContactsNext;
