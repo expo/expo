@@ -1334,6 +1334,9 @@ importers:
       '@expo/styleguide-base':
         specifier: ^1.0.1
         version: 1.0.1(react@19.2.3)
+      '@expo/ui':
+        specifier: workspace:*
+        version: link:../../packages/expo-ui
       '@expo/vector-icons':
         specifier: ^15.0.2
         version: 15.1.1(expo-font@packages+expo-font)(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)

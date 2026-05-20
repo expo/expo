@@ -10,6 +10,7 @@ import { CrashReportPanel } from '@/components/CrashReportPanel';
 import { Divider } from '@/components/Divider';
 import { JSONView } from '@/components/JSONView';
 import { LogsPanel } from '@/components/LogsPanel';
+import { MetricsFilter } from '@/components/MetricsFilter';
 import { MetricsPanel } from '@/components/MetricsPanel';
 import { SessionHeader } from '@/components/SessionHeader';
 import { useTheme } from '@/utils/theme';
@@ -20,6 +21,17 @@ export default function SessionDetail() {
   const [session, setSession] = useState<Session | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [showRawJson, setShowRawJson] = useState(false);
+  const [selectedMetricNames, setSelectedMetricNames] = useState<Set<string>>(() => new Set());
+
+  // Seed the selection to every distinct metric name once per session id. Keyed on `session?.id`
+  // so refocusing the tab (which reloads sessions and creates a new metrics array reference)
+  // doesn't wipe the user's filter.
+  useEffect(() => {
+    if (!session) return;
+    const names = new Set<string>();
+    for (const metric of session.metrics) names.add(metric.name);
+    setSelectedMetricNames(names);
+  }, [session?.id]);
 
   const { markInteractive } = useObserve();
   useEffect(() => {
@@ -63,7 +75,12 @@ export default function SessionDetail() {
             </>
           ) : null}
           <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Metrics</Text>
-          <MetricsPanel metrics={session.metrics} />
+          <MetricsFilter
+            metrics={session.metrics}
+            selected={selectedMetricNames}
+            onChange={setSelectedMetricNames}
+          />
+          <MetricsPanel metrics={session.metrics} filter={selectedMetricNames} />
           <Divider style={styles.divider} />
           <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Log events</Text>
           <LogsPanel logs={session.logs} />
