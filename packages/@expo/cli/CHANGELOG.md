@@ -80,6 +80,7 @@
 
 ### 💡 Others
 
+- Switch React Native Directory compatibility check request from POST to GET. ([#45673](https://github.com/expo/expo/pull/45673) by [@simek](https://github.com/simek))
 - Target only the first compatible device architecture during Android debug builds to speed up build time. ([#44907](https://github.com/expo/expo/pull/44907) by [@AntoineThibi](https://github.com/AntoineThibi))
 - Bump to `picomatch@^4.0.4` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
 

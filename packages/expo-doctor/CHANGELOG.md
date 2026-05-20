@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+- Switch React Native Directory compatibility check request from POST to GET. ([#45673](https://github.com/expo/expo/pull/45673) by [@simek](https://github.com/simek))
 
 ## 1.19.6 — 2026-05-11
 
