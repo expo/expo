@@ -55,7 +55,7 @@
     "@expo/devcert": "^1.2.1",
     "@expo/env": "workspace:~2.3.0",
     "@expo/image-utils": "workspace:^0.10.0",
-    "@expo/inline-modules": "workspace:^0.0.8",
+    "@expo/inline-modules": "workspace:^0.0.9",
     "@expo/json-file": "workspace:^10.2.0",
     "@expo/log-box": "workspace:^56.0.12",
     "@expo/metro": "~56.0.0",

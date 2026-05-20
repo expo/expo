@@ -86,7 +86,7 @@
     "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:~56.0.11",
     "@ungap/structured-clone": "^1.3.0",
-    "babel-preset-expo": "workspace:~56.0.9",
+    "babel-preset-expo": "workspace:~56.0.10",
     "expo-asset": "workspace:~56.0.12",
     "expo-constants": "workspace:~56.0.13",
     "expo-file-system": "workspace:~56.0.7",

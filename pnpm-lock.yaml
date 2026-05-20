@@ -1822,7 +1822,7 @@ importers:
         specifier: workspace:^0.10.0
         version: link:../image-utils
       '@expo/inline-modules':
-        specifier: workspace:^0.0.8
+        specifier: workspace:^0.0.9
         version: link:../inline-modules
       '@expo/json-file':
         specifier: workspace:^10.2.0
@@ -3497,7 +3497,7 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       babel-preset-expo:
-        specifier: workspace:~56.0.9
+        specifier: workspace:~56.0.10
         version: link:../babel-preset-expo
       expo-asset:
         specifier: workspace:~56.0.12
@@ -3717,7 +3717,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-crypto
       expo-linking:
-        specifier: workspace:~56.0.9
+        specifier: workspace:~56.0.10
         version: link:../expo-linking
       expo-web-browser:
         specifier: workspace:~56.0.4
@@ -5150,7 +5150,7 @@ importers:
         specifier: workspace:^56.0.4
         version: link:../expo-glass-effect
       expo-linking:
-        specifier: workspace:^56.0.9
+        specifier: workspace:^56.0.10
         version: link:../expo-linking
       expo-server:
         specifier: workspace:^56.0.4
@@ -18935,7 +18935,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 

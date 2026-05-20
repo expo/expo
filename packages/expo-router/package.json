@@ -93,7 +93,7 @@
     "@testing-library/react-native": ">= 13.2.0",
     "expo": "*",
     "expo-constants": "workspace:^56.0.13",
-    "expo-linking": "workspace:^56.0.9",
+    "expo-linking": "workspace:^56.0.10",
     "react": "*",
     "react-dom": "*",
     "react-native": "*",
