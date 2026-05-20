@@ -47,7 +47,7 @@ Make sure you are using the latest version of `expo`, then install `expo-observe
 
 ## Wrap your root layout
 
-Wrap your root layout with `AppMetricsRoot` (SDK 55) or `ObserveRoot` (SDK 56). This higher-order component (HOC) automatically measures [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render) for you.
+Wrap your root layout with `AppMetricsRoot` (SDK 55) or `ObserveRoot` (SDK 56 and later). This higher-order component (HOC) automatically measures [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render) for you.
 
 <Tabs>
 
@@ -66,7 +66,7 @@ export default AppMetricsRoot.wrap(RootLayout);
 
 </Tab>
 
-<Tab label="SDK 56">
+<Tab label="SDK 56 and later">
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
