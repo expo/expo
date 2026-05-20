@@ -68,21 +68,6 @@ const isConfigPluginVariable = (entry: ApiDataEntry) =>
   entry.type?.name === 'ConfigPlugin' &&
   (!entry.type?.target?.qualifiedName || entry.type?.target?.qualifiedName === 'ConfigPlugin');
 
-const CONFIG_PLUGIN_TYPE_SUFFIX = /(Options|Config)$/;
-const getConfigPluginTypeNames = (data: GeneratedData[]): Set<string> => {
-  const serialized = JSON.stringify(data);
-  const escape = (s: string) => s.replace(/[$()*+.?[\\\]^{|}]/g, '\\$&');
-  return new Set(
-    data
-      .filter(entry => CONFIG_PLUGIN_TYPE_SUFFIX.test(entry.name))
-      .filter(entry => {
-        const matches = serialized.match(new RegExp(`"name":"${escape(entry.name)}"`, 'g'));
-        return matches?.length === 1;
-      })
-      .map(entry => entry.name)
-  );
-};
-
 const isFunctionLikeEntry = (entry: ApiDataEntry) =>
   entry.kind === TypeDocKind.Function ||
   isFunctionLikeVariable(entry) ||
@@ -266,9 +251,8 @@ const renderAPI = (
           entry.children
         )
     );
-    const configPluginTypeNames = getConfigPluginTypeNames(data);
-    const types = allTypes.filter(entry => !configPluginTypeNames.has(entry.name));
-    const configPluginTypes = allTypes.filter(entry => configPluginTypeNames.has(entry.name));
+    const types = allTypes.filter(entry => entry._source !== 'plugin');
+    const configPluginTypes = allTypes.filter(entry => entry._source === 'plugin');
 
     const props = filterDataByKind(
       data,

@@ -368,6 +368,34 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
+    const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
+    if (fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+      const pluginApp = await Application.bootstrapWithPlugins(
+        {
+          ...typedocOptions,
+          entryPoints: [pluginEntryPath],
+          tsconfig: pluginTsConfigPath,
+        } as unknown as TypeDocOptions,
+        [new TSConfigReader(), new TypeDocReader()]
+      );
+      const pluginProject = await pluginApp.convert();
+      if (pluginProject) {
+        const tempPluginJson = path.join(
+          os.tmpdir(),
+          `${jsonFileName}-plugin-${Date.now()}.json`
+        );
+        await pluginApp.generateJson(pluginProject, tempPluginJson);
+        const pluginOutput = await fs.readJson(tempPluginJson);
+        await fs.remove(tempPluginJson);
+        const pluginChildren = (pluginOutput.children ?? []).map((entry: any) => ({
+          ...entry,
+          _source: 'plugin',
+        }));
+        output.children = [...(output.children ?? []), ...pluginChildren];
+      }
+    }
+
     const { readme, symbolIdMap, ...trimmedOutput } = output;
 
     await applyDocsInline(trimmedOutput, {
