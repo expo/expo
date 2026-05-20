@@ -388,10 +388,12 @@ const executeCommand = async (
         await pluginApp.generateJson(pluginProject, tempPluginJson);
         const pluginOutput = await fs.readJson(tempPluginJson);
         await fs.remove(tempPluginJson);
-        const pluginChildren = (pluginOutput.children ?? []).map((entry: any) => ({
-          ...entry,
-          _source: 'plugin',
-        }));
+        const pluginChildren = (pluginOutput.children ?? [])
+          .filter((entry: any) => entry.name !== 'default')
+          .map((entry: any) => ({
+            ...entry,
+            _source: 'plugin',
+          }));
         output.children = [...(output.children ?? []), ...pluginChildren];
       }
     }
