@@ -23,6 +23,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static BOOL isEASUpdateHost(NSString * _Nullable host)
+{
+  return [host isEqualToString:@"u.expo.dev"] || [host isEqualToString:@"staging-u.expo.dev"];
+}
+
 @interface EXAppLoaderExpoUpdates ()
 
 @property (nonatomic, strong, nullable) NSURL *manifestUrl;
@@ -259,7 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
-  BOOL isEasUpdate = [_httpManifestUrl.host isEqualToString:@"u.expo.dev"];
+  BOOL isEasUpdate = isEASUpdateHost(_httpManifestUrl.host);
   if (!isEasUpdate && [EXAppLoaderExpoUpdates isHermesBundle:_bundle]) {
     EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
     _error = [manifestResource formatError:[NSError errorWithDomain:EXRuntimeErrorDomain code:0 userInfo:@{
