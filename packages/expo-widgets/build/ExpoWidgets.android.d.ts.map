@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoWidgets.android.d.ts","sourceRoot":"","sources":["../src/ExpoWidgets.android.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAuB,MAAM,MAAM,CAAC;AAEzD,OAAO,KAAK,EACV,iBAAiB,EAGjB,kBAAkB,EACnB,MAAM,iBAAiB,CAAC;AAEzB,OAAO,OAAO,iBAAkB,SAAQ,YAAY,CAAC,iBAAiB,CAAC;IACrE,gBAAgB,IAAI,IAAI;IACxB,QAAQ,CAAC,MAAM,EAAE,OAAO,kBAAkB,CAAC;CAG5C;;AAED,wBAAqE"}
