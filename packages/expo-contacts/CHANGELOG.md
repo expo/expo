@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Change entrypoints ([#46037](https://github.com/expo/expo/pull/46037) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
