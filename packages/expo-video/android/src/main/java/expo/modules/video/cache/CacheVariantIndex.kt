@@ -22,12 +22,20 @@ internal data class CacheVariant(
   val allowsAuthorizedReuse: Boolean
 )
 
+internal data class CacheStorageKey(
+  val storageKey: String,
+  val canReadFromCache: Boolean
+)
+
 internal object CacheVariantIndex {
   private const val INDEX_DIR = "ExpoVideoCacheVariants"
   private const val INDEX_SUFFIX = ".variants"
   private const val AUTHORIZATION = "authorization"
 
-  /** Headers used to derive the storage key before any response is seen. */
+  /**
+   * Headers used to derive the storage key before any response is seen.
+   * On Android, cookies are considered only when callers pass them in `VideoSource.headers`.
+   */
   private val provisionalIdentityHeaders = listOf("authorization", "cookie", "proxy-authorization")
 
   /**
@@ -35,20 +43,36 @@ internal object CacheVariantIndex {
    * provisional key when no variant matches yet. The storage key is appended
    * to the URL to form the Media3 cache key.
    */
+  @Synchronized
   fun storageKey(context: Context, url: String, requestHeaders: Map<String, String>): String {
+    return storageKeyResult(context, url, requestHeaders).storageKey
+  }
+
+  @Synchronized
+  fun storageKeyResult(context: Context, url: String, requestHeaders: Map<String, String>): CacheStorageKey {
     val normalized = normalize(requestHeaders)
     val variants = pruneEvicted(context, url, load(context, url))
 
     if (variants.isEmpty() && hasLegacyCacheEntry(url) && identityValues(normalized).isEmpty()) {
-      // Use legacy storage - the source does not specify auth headers.
-      return ""
+      return CacheStorageKey(
+        storageKey = "",
+        canReadFromCache = false
+      )
     }
-    return matchingVariant(variants, normalized)?.storageKey
-      ?: provisionalStorageKey(
+    matchingVariant(variants, normalized)?.let {
+      return CacheStorageKey(
+        storageKey = it.storageKey,
+        canReadFromCache = true
+      )
+    }
+    return CacheStorageKey(
+      storageKey = provisionalStorageKey(
         normalizedHeaders = normalized,
         knownVaryHeaders = variants.flatMap { it.varyHeaders },
         hasExistingVariants = variants.isNotEmpty()
-      )
+      ),
+      canReadFromCache = false
+    )
   }
 
   /**
@@ -59,6 +83,7 @@ internal object CacheVariantIndex {
     File(context.cacheDir, INDEX_DIR).deleteRecursively()
   }
 
+  @Synchronized
   fun recordVariant(
     context: Context,
     url: String,
@@ -112,7 +137,7 @@ internal object CacheVariantIndex {
   private fun hasLegacyCacheEntry(url: String): Boolean {
     return try {
       url in VideoManager.cache.instance.keys
-    } catch (e: Throwable) {
+    } catch (e: IllegalStateException) {
       false
     }
   }
@@ -128,7 +153,7 @@ internal object CacheVariantIndex {
     if (variants.isEmpty()) return variants
     val keys = try {
       VideoManager.cache.instance.keys
-    } catch (e: Throwable) {
+    } catch (e: IllegalStateException) {
       // Cache not initialized yet; nothing to prune against.
       return variants
     }

@@ -13,6 +13,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   lazy var audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(owner: self)
   lazy var seeker: VideoPlayerSeeker = VideoPlayerSeeker(player: self)
   private var tracksLoadingTask: Task<(), Never>?
+  private var blockEvents = false
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .doNotMix {
@@ -181,6 +182,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   deinit {
+    blockEvents = true
     observer?.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
@@ -412,7 +414,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func safeEmit(event: String, payload: Record? = nil) {
-    if self.appContext != nil {
+    if self.appContext != nil && !blockEvents {
       self.emit(event: event, payload: payload?.toDictionary(appContext: appContext))
     }
   }

@@ -8,9 +8,9 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
-
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
 
 ## 56.1.2 — 2026-05-21
 

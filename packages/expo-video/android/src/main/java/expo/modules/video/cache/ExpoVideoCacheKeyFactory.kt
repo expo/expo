@@ -16,11 +16,17 @@ import androidx.media3.datasource.cache.CacheKeyFactory
 @OptIn(UnstableApi::class)
 internal class ExpoVideoCacheKeyFactory(
   private val context: Context,
-  private val requestHeaders: Map<String, String>
+  private val requestHeaders: Map<String, String>,
+  private val sourceUrl: String?,
+  private val sourceStorageKey: String?
 ) : CacheKeyFactory {
   override fun buildCacheKey(dataSpec: DataSpec): String {
     val url = dataSpec.uri.toString()
-    val variantKey = CacheVariantIndex.storageKey(context, url, requestHeaders)
+    val variantKey = if (url == sourceUrl && sourceStorageKey != null) {
+      sourceStorageKey
+    } else {
+      CacheVariantIndex.storageKey(context, url, requestHeaders)
+    }
     return if (variantKey.isEmpty()) url else "$url#$variantKey"
   }
 }

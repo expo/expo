@@ -60,7 +60,9 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     self.variantKey = variantKey
     cachedResource = CachedResource(dataFileUrl: saveFilePath, resourceUrl: url, dataPath: saveFilePath)
     super.init()
-    self.session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+    let delegateQueue = OperationQueue()
+    delegateQueue.maxConcurrentOperationCount = 1
+    self.session = URLSession(configuration: .default, delegate: self, delegateQueue: delegateQueue)
   }
 
   deinit {
@@ -184,6 +186,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       forUrl: url,
       storageKey: variantKey,
       requestHeaders: cacheRequestHeaders,
+      fileExtension: fileExtension,
       policy: policy
     )
   }

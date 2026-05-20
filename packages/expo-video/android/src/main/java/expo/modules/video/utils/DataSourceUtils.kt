@@ -24,19 +24,27 @@ import okio.ForwardingSource
 import okio.buffer
 
 @OptIn(UnstableApi::class)
-fun buildBaseDataSourceFactory(context: Context, videoSource: VideoSource): DataSource.Factory {
+fun buildBaseDataSourceFactory(
+  context: Context,
+  videoSource: VideoSource,
+  cacheStorageKey: String? = null
+): DataSource.Factory {
   return if (videoSource.uri?.scheme?.startsWith("http") == true) {
-    buildOkHttpDataSourceFactory(context, videoSource)
+    buildOkHttpDataSourceFactory(context, videoSource, cacheStorageKey)
   } else {
     DefaultDataSource.Factory(context)
   }
 }
 
 @OptIn(UnstableApi::class)
-fun buildOkHttpDataSourceFactory(context: Context, videoSource: VideoSource): OkHttpDataSource.Factory {
+fun buildOkHttpDataSourceFactory(
+  context: Context,
+  videoSource: VideoSource,
+  cacheStorageKey: String? = null
+): OkHttpDataSource.Factory {
   val clientBuilder = OkHttpClient.Builder()
   if (videoSource.useCaching) {
-    clientBuilder.addNetworkInterceptor(buildCacheVariantRecorder(context, videoSource))
+    clientBuilder.addNetworkInterceptor(buildCacheVariantRecorder(context, videoSource, cacheStorageKey))
   }
   val client = clientBuilder.build()
 
@@ -57,20 +65,36 @@ fun buildOkHttpDataSourceFactory(context: Context, videoSource: VideoSource): Ok
 }
 
 @OptIn(UnstableApi::class)
-fun buildCacheDataSourceFactory(context: Context, videoSource: VideoSource): DataSource.Factory {
+fun buildCacheDataSourceFactory(
+  context: Context,
+  videoSource: VideoSource
+): DataSource.Factory {
   val requestHeaders = videoSource.headers ?: emptyMap()
+  val sourceUrl = videoSource.uri?.toString()
+  val storageKeyResult = sourceUrl?.let { CacheVariantIndex.storageKeyResult(context, it, requestHeaders) }
+  val storageKey = storageKeyResult?.storageKey
+  if (storageKeyResult?.canReadFromCache != true) {
+    if (sourceUrl != null && storageKey != null) {
+      evictCacheEntry(sourceUrl, storageKey)
+    }
+  }
   return CacheDataSource.Factory().apply {
     setCache(VideoManager.cache.instance)
     setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-    setCacheKeyFactory(ExpoVideoCacheKeyFactory(context, requestHeaders))
-    setUpstreamDataSourceFactory(buildBaseDataSourceFactory(context, videoSource))
+    setCacheKeyFactory(ExpoVideoCacheKeyFactory(context, requestHeaders, sourceUrl, storageKey))
+    setUpstreamDataSourceFactory(buildBaseDataSourceFactory(context, videoSource, storageKey))
   }
 }
 
 @OptIn(UnstableApi::class)
-private fun buildCacheVariantRecorder(context: Context, videoSource: VideoSource): Interceptor {
+private fun buildCacheVariantRecorder(
+  context: Context,
+  videoSource: VideoSource,
+  cacheStorageKey: String?
+): Interceptor {
   // Captured once: the original `videoSource.uri` is what later cache reads
   // key against, even if the network response was reached through redirects.
+  // `Vary` is intentionally read from the terminal response seen by Media3.
   val sourceUrl = videoSource.uri?.toString()
   val requestHeaders = videoSource.headers ?: emptyMap()
   return Interceptor { chain ->
@@ -80,9 +104,10 @@ private fun buildCacheVariantRecorder(context: Context, videoSource: VideoSource
         .toMultimap()
         .mapValues { it.value.joinToString(separator = ",") }
       val policy = CachePolicy.evaluate(responseHeaders, response.code)
-      val storageKey = CacheVariantIndex.storageKey(context, sourceUrl, requestHeaders)
+      val storageKey = cacheStorageKey ?: CacheVariantIndex.storageKey(context, sourceUrl, requestHeaders)
 
       if (!policy.isCacheable) {
+        evictCacheEntry(sourceUrl, storageKey)
         return@Interceptor response.evictAfterClose {
           evictCacheEntry(sourceUrl, storageKey)
         }
@@ -130,7 +155,10 @@ fun buildMediaSourceFactory(context: Context, dataSourceFactory: DataSource.Fact
 }
 
 @OptIn(UnstableApi::class)
-fun buildExpoVideoMediaSource(context: Context, videoSource: VideoSource): MediaSource {
+fun buildExpoVideoMediaSource(
+  context: Context,
+  videoSource: VideoSource
+): MediaSource {
   val dataSourceFactory = if (videoSource.useCaching) {
     buildCacheDataSourceFactory(context, videoSource)
   } else {

@@ -18,12 +18,14 @@ struct CacheVariant: Codable {
   /// Caller/application identity headers that must not be reused across values,
   /// even when the server did not list them in `Vary`.
   let identityValues: [String: String]
+  /// File extension used by this variant's data file.
+  let fileExtension: String?
   /// Per RFC 9111 §3.5: whether this response may be reused for an
   /// `Authorization`-bearing request not already disambiguated by `Vary`.
   let allowsAuthorizedReuse: Bool
 
   enum CodingKeys: String, CodingKey {
-    case storageKey, varyHeaders, varyValues, identityValues, allowsAuthorizedReuse
+    case storageKey, varyHeaders, varyValues, identityValues, fileExtension, allowsAuthorizedReuse
   }
 
   init(
@@ -31,12 +33,14 @@ struct CacheVariant: Codable {
     varyHeaders: [String],
     varyValues: [String: String],
     identityValues: [String: String],
+    fileExtension: String? = nil,
     allowsAuthorizedReuse: Bool
   ) {
     self.storageKey = storageKey
     self.varyHeaders = varyHeaders
     self.varyValues = varyValues
     self.identityValues = identityValues
+    self.fileExtension = fileExtension
     self.allowsAuthorizedReuse = allowsAuthorizedReuse
   }
 
@@ -46,6 +50,7 @@ struct CacheVariant: Codable {
     varyHeaders = try container.decode([String].self, forKey: .varyHeaders)
     varyValues = try container.decode([String: String].self, forKey: .varyValues)
     identityValues = try container.decodeIfPresent([String: String].self, forKey: .identityValues) ?? [:]
+    fileExtension = try container.decodeIfPresent(String.self, forKey: .fileExtension)
     allowsAuthorizedReuse = try container.decodeIfPresent(Bool.self, forKey: .allowsAuthorizedReuse) ?? false
   }
 }
@@ -55,6 +60,7 @@ struct CacheVariant: Codable {
 /// HTTP `Vary` rules and the §3.5 `Authorization` reuse restriction.
 enum CacheVariantIndex {
   static let fileSuffix = ".variants"
+  private static let queue = DispatchQueue(label: "expo.video.cache.variants")
   private static let authorizationHeader = "authorization"
   /// Headers that must never be reused across differing identities.
   private static let provisionalIdentityHeaders = ["authorization", "cookie", "proxy-authorization"]
@@ -74,6 +80,12 @@ enum CacheVariantIndex {
   }
 
   static func load(forUrl url: URL) -> [CacheVariant] {
+    return queue.sync {
+      pruneMissingVariantsUnlocked(forUrl: url, fileExtension: nil, variants: loadUnlocked(forUrl: url))
+    }
+  }
+
+  private static func loadUnlocked(forUrl url: URL) -> [CacheVariant] {
     guard let path = indexPath(forUrl: url),
       FileManager.default.fileExists(atPath: path),
       let data = FileManager.default.contents(atPath: path) else {
@@ -84,24 +96,35 @@ enum CacheVariantIndex {
 
   /// Returns the storage key for the variant that matches this request, or
   /// derives a provisional one when no variant matches yet.
-  static func storageKey(forUrl url: URL, requestHeaders: [String: String]?) -> String {
+  static func storageKey(
+    forUrl url: URL,
+    requestHeaders: [String: String]?,
+    fileExtension: String? = nil
+  ) -> String {
     let normalized = normalizedRequestHeaders(forUrl: url, requestHeaders: requestHeaders)
-    if let variant = matchingVariant(forUrl: url, normalizedHeaders: normalized) {
-      return variant.storageKey
+    return queue.sync {
+      let variants = pruneMissingVariantsUnlocked(
+        forUrl: url,
+        fileExtension: fileExtension,
+        variants: loadUnlocked(forUrl: url)
+      )
+      if let variant = matchingVariant(variants: variants, normalizedHeaders: normalized) {
+        return variant.storageKey
+      }
+      let knownVaryHeaders = variants.flatMap { $0.varyHeaders }
+      return provisionalStorageKey(
+        normalizedHeaders: normalized,
+        knownVaryHeaders: knownVaryHeaders,
+        hasExistingVariants: !variants.isEmpty
+      )
     }
-    let variants = load(forUrl: url)
-    let knownVaryHeaders = variants.flatMap { $0.varyHeaders }
-    return provisionalStorageKey(
-      normalizedHeaders: normalized,
-      knownVaryHeaders: knownVaryHeaders,
-      hasExistingVariants: !variants.isEmpty
-    )
   }
 
   static func recordVariant(
     forUrl url: URL,
     storageKey: String,
     requestHeaders: [String: String]?,
+    fileExtension: String? = nil,
     policy: CachePolicy
   ) {
     guard policy.isCacheable else {
@@ -116,21 +139,24 @@ enum CacheVariantIndex {
       varyHeaders: policy.varyHeaders,
       varyValues: varyValues,
       identityValues: identityValues(normalizedHeaders: normalized),
+      fileExtension: fileExtension,
       allowsAuthorizedReuse: policy.allowsAuthorizedReuse
     )
-    var existing = load(forUrl: url)
-    existing.removeAll { $0.storageKey == storageKey }
-    existing.append(variant)
-    save(variants: existing, forUrl: url)
+    queue.sync {
+      var existing = loadUnlocked(forUrl: url)
+      existing.removeAll { $0.storageKey == storageKey }
+      existing.append(variant)
+      saveUnlocked(variants: existing, forUrl: url)
+    }
   }
 
   static func hasIdentityHeaders(_ normalizedHeaders: [String: String]) -> Bool {
     return Self.provisionalIdentityHeaders.contains { normalizedHeaders[$0] != nil }
   }
 
-  private static func matchingVariant(forUrl url: URL, normalizedHeaders: [String: String]) -> CacheVariant? {
+  private static func matchingVariant(variants: [CacheVariant], normalizedHeaders: [String: String]) -> CacheVariant? {
     let hasAuthorization = normalizedHeaders[authorizationHeader] != nil
-    for variant in load(forUrl: url) {
+    for variant in variants {
       let allMatch = variant.varyHeaders.allSatisfy { name in
         (normalizedHeaders[name] ?? "") == (variant.varyValues[name] ?? "")
       }
@@ -157,7 +183,9 @@ enum CacheVariantIndex {
     knownVaryHeaders: [String],
     hasExistingVariants: Bool
   ) -> String {
-    let headers = Array(Set(Self.provisionalIdentityHeaders + knownVaryHeaders.map { $0.lowercased() })).sorted()
+    let headers = Array(
+      Set(Self.provisionalIdentityHeaders + knownVaryHeaders.map { $0.lowercased() })
+    ).sorted()
     let hasVariantInput = hasExistingVariants ||
       !knownVaryHeaders.isEmpty ||
       Self.provisionalIdentityHeaders.contains { normalizedHeaders[$0] != nil }
@@ -167,7 +195,6 @@ enum CacheVariantIndex {
       return ""
     }
     let composite = headers
-      .sorted()
       .map { "\($0):\(normalizedHeaders[$0] ?? "")" }
       .joined(separator: ";")
     return sha256(composite)
@@ -200,9 +227,36 @@ enum CacheVariantIndex {
     )
   }
 
-  private static func save(variants: [CacheVariant], forUrl url: URL) {
-    guard let path = indexPath(forUrl: url),
-      let data = try? JSONEncoder().encode(variants) else {
+  private static func pruneMissingVariantsUnlocked(
+    forUrl url: URL,
+    fileExtension: String?,
+    variants: [CacheVariant]
+  ) -> [CacheVariant] {
+    let live = variants.filter { variant in
+      guard let ext = variant.fileExtension ?? fileExtension else {
+        return true
+      }
+      guard let path = VideoAsset.pathForUrl(url: url, fileExtension: ext, variantKey: variant.storageKey) else {
+        return true
+      }
+      return FileManager.default.fileExists(atPath: path) ||
+        FileManager.default.fileExists(atPath: path + VideoCacheManager.mediaInfoSuffix)
+    }
+    if live.count != variants.count {
+      saveUnlocked(variants: live, forUrl: url)
+    }
+    return live
+  }
+
+  private static func saveUnlocked(variants: [CacheVariant], forUrl url: URL) {
+    guard let path = indexPath(forUrl: url) else {
+      return
+    }
+    if variants.isEmpty {
+      try? FileManager.default.removeItem(atPath: path)
+      return
+    }
+    guard let data = try? JSONEncoder().encode(variants) else {
       return
     }
     let parentDir = URL(fileURLWithPath: path).deletingLastPathComponent()

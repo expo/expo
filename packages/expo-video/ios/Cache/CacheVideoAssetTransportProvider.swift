@@ -15,7 +15,12 @@ internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvid
     }
 
     let cacheRequestHeaders = CacheVariantIndex.normalizedRequestHeaders(forUrl: source.url, requestHeaders: source.headers)
-    let variantKey = CacheVariantIndex.storageKey(forUrl: source.url, requestHeaders: cacheRequestHeaders)
+    let sourceExtension = source.url.pathExtension.isEmpty ? nil : source.url.pathExtension
+    let variantKey = CacheVariantIndex.storageKey(
+      forUrl: source.url,
+      requestHeaders: cacheRequestHeaders,
+      fileExtension: sourceExtension
+    )
     let cachedMimeType = MediaInfo(forResourceUrl: source.url, variantKey: variantKey)?.mimeType ??
       MediaInfo(forResourceUrl: source.url)?.mimeType
     let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
@@ -25,10 +30,12 @@ internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvid
       log.warn("[expo-video] Failed to create a cache file path for the provided source with uri: \(source.url.absoluteString)")
       return nil
     }
-    let shouldUseLegacyCache = !variantKey.isEmpty &&
-      CacheVariantIndex.load(forUrl: source.url).isEmpty &&
-      !CacheVariantIndex.hasIdentityHeaders(cacheRequestHeaders) &&
-      cacheFilesExist(at: legacyFilePath)
+    let shouldUseLegacyCache = hasUsableLegacyCache(
+      forUrl: source.url,
+      variantKey: variantKey,
+      cacheRequestHeaders: cacheRequestHeaders,
+      legacyFilePath: legacyFilePath
+    )
     let effectiveVariantKey = shouldUseLegacyCache ? "" : variantKey
     let saveFilePath = shouldUseLegacyCache ? legacyFilePath : variantFilePath
 
@@ -77,5 +84,17 @@ internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvid
   private func cacheFilesExist(at path: String) -> Bool {
     return FileManager.default.fileExists(atPath: path) ||
       FileManager.default.fileExists(atPath: path + VideoCacheManager.mediaInfoSuffix)
+  }
+
+  private func hasUsableLegacyCache(
+    forUrl url: URL,
+    variantKey: String,
+    cacheRequestHeaders: [String: String],
+    legacyFilePath: String
+  ) -> Bool {
+    return !variantKey.isEmpty &&
+      CacheVariantIndex.load(forUrl: url).isEmpty &&
+      !CacheVariantIndex.hasIdentityHeaders(cacheRequestHeaders) &&
+      cacheFilesExist(at: legacyFilePath)
   }
 }
