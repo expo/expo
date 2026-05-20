@@ -5,9 +5,9 @@ import {
   testID as testIDModifier,
   type ModifierConfig,
 } from '@expo/ui/jetpack-compose/modifiers';
+import { useEffect, useRef, useState } from 'react';
 
 import type { BottomSheetProps, SnapPoint } from './types';
-import { useEffect, useRef, useState } from 'react';
 
 // M3 `ModalBottomSheet` only has partial/expanded states.
 // Only allow the partial state when the consumer requested a partial-friendly snap point.
