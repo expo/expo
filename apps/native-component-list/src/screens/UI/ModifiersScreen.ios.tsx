@@ -274,6 +274,18 @@ export default function ModifiersScreen() {
               </VStack>
             </HStack>
 
+            {/* Dynamic Type */}
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>
+                Dynamic Type (try Settings &gt; Accessibility &gt; Larger Text)
+              </Text>
+              <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>
+                largeTitle scales
+              </Text>
+              <Text modifiers={[font({ textStyle: 'body' })]}>body scales</Text>
+              <Text modifiers={[font({ textStyle: 'caption' })]}>caption scales</Text>
+            </VStack>
+
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>
               <Text modifiers={[font({ size: 14 }), textCase('uppercase')]}>uppercase</Text>
