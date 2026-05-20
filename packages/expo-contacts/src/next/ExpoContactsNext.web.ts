@@ -1,7 +1,7 @@
 import { PermissionStatus } from 'expo';
 
-import type { ContactsPermissionResponse } from './types/Permissions';
 import { Contact } from './types/Contact';
+import type { ContactsPermissionResponse } from './types/Permissions';
 
 const noPermissionResponse: ContactsPermissionResponse = {
   status: PermissionStatus.UNDETERMINED,
