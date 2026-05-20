@@ -1,14 +1,9 @@
-import type { ComponentProps } from 'react';
-import {
-  StyleSheet,
-  Text,
-  unstable_createElement,
-  useColorScheme,
-  View,
-  type ViewProps,
-} from 'react-native';
+import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import type { CheckboxProps } from './types';
+import { createWebComponent } from '../web';
+
+const Input = createWebComponent('input');
 
 const styles = StyleSheet.create({
   label: {
@@ -31,10 +26,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const NativeCheckbox = (
-  props: Omit<ComponentProps<'input'>, 'style' | 'type'> & { style?: ViewProps['style'] }
-) => unstable_createElement('input', { ...props, type: 'checkbox' });
-
 /**
  * A toggle control that represents a checked or unchecked state.
  */
@@ -43,7 +34,8 @@ export function Checkbox({ value, onValueChange, label, disabled = false, testID
 
   return (
     <View role="label" aria-disabled={disabled} style={[styles.label, disabled && styles.disabled]}>
-      <NativeCheckbox
+      <Input
+        type="checkbox"
         checked={value}
         onChange={(e) => onValueChange(e.target.checked)}
         disabled={disabled}

@@ -97,6 +97,7 @@ declare module 'react-native' {
   }
 
   export interface ViewProps extends WebAccessibilityProps {
+    dataSet?: Record<string, string>;
     dir?: string;
     role?: WebRole;
   }

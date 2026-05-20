@@ -1,7 +1,9 @@
-import type { ComponentProps } from 'react';
-import { StyleSheet, unstable_createElement, View, type ViewProps } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { createWebComponent } from '../web';
 import type { SliderProps } from './types';
+
+const Input = createWebComponent('input');
 
 const styles = StyleSheet.create({
   view: {
@@ -13,10 +15,6 @@ const styles = StyleSheet.create({
     cursor: 'pointer',
   },
 });
-
-const NativeSlider = (
-  props: Omit<ComponentProps<'input'>, 'style' | 'type'> & { style?: ViewProps['style'] }
-) => unstable_createElement('input', { ...props, type: 'range' });
 
 /**
  * A control for selecting a value from a continuous or stepped range.
@@ -32,7 +30,8 @@ export function Slider({
 }: SliderProps) {
   return (
     <View style={styles.view}>
-      <NativeSlider
+      <Input
+        type="range"
         value={value}
         min={min}
         max={max}

@@ -1,23 +1,11 @@
-import type { ComponentProps, SyntheticEvent } from 'react';
-import {
-  StyleSheet,
-  Text,
-  unstable_createElement,
-  useColorScheme,
-  View,
-  type TextProps,
-  type ViewProps,
-} from 'react-native';
+import type { SyntheticEvent } from 'react';
+import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import type { CollapsibleProps } from './types';
+import { createWebComponent } from '../web';
 
-const Details = (
-  props: Omit<ComponentProps<'details'>, 'style'> & { style?: TextProps['style'] }
-) => unstable_createElement('details', props);
-
-const Summary = (
-  props: Omit<ComponentProps<'summary'>, 'style'> & { style?: ViewProps['style'] }
-) => unstable_createElement('summary', props);
+const Details = createWebComponent('details');
+const Summary = createWebComponent('summary');
 
 /**
  * A primitive that toggles visibility of its content via a labelled tappable

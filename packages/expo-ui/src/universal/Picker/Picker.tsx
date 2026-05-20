@@ -1,11 +1,10 @@
-import type { ComponentProps } from 'react';
-import { StyleSheet, unstable_createElement, type ViewProps } from 'react-native';
+import { StyleSheet } from 'react-native';
 
+import { createWebComponent } from '../web';
 import { extractPickerItems } from './PickerItem';
 import type { PickerItemValue, PickerProps } from './types';
 
-const Select = (props: Omit<ComponentProps<'select'>, 'style'> & { style?: ViewProps['style'] }) =>
-  unstable_createElement('select', props);
+const Select = createWebComponent('select');
 
 /**
  * A single-selection input.
