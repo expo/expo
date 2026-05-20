@@ -52,21 +52,33 @@ function dispatch(events: FakeNavigationEvents, actionType: string) {
   });
 }
 
-function focus(events: FakeNavigationEvents, screenId: string) {
+function focus(
+  events: FakeNavigationEvents,
+  screenId: string,
+  overrides?: Partial<PageFocusedEvent>
+) {
   events.emit<Partial<PageFocusedEvent>>('pageFocused', {
     type: 'pageFocused',
     screenId,
     pathname: `/${screenId}`,
     params: {},
+    segments: [screenId],
+    ...overrides,
   });
 }
 
-function preload(events: FakeNavigationEvents, screenId: string) {
+function preload(
+  events: FakeNavigationEvents,
+  screenId: string,
+  overrides?: Partial<PagePreloadedEvent>
+) {
   events.emit<Partial<PagePreloadedEvent>>('pagePreloaded', {
     type: 'pagePreloaded',
     screenId,
     pathname: `/${screenId}`,
     params: {},
+    segments: [screenId],
+    ...overrides,
   });
 }
 
@@ -111,7 +123,7 @@ describe('initListeners', () => {
       name: 'cold_ttr',
       routeName: '/a',
       value: expect.closeTo(0.1, 2),
-      params: { isAppLaunch: true, routeParams: {} },
+      params: { isAppLaunch: true, routeParams: {}, url: '/a' },
     });
   });
 
@@ -130,6 +142,7 @@ describe('initListeners', () => {
     expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
       isAppLaunch: false,
       routeParams: {},
+      url: '/b',
     });
   });
 
@@ -150,18 +163,53 @@ describe('initListeners', () => {
     expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
       isAppLaunch: true,
       routeParams: {},
+      url: '/a',
     });
     expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
     expect(mockAddCustomMetric.mock.calls[1][0].params).toEqual({
       isAppLaunch: false,
       routeParams: {},
+      url: '/b',
     });
     expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
     expect(mockAddCustomMetric.mock.calls[2][0].params).toEqual({
       isAppLaunch: false,
       routeParams: {},
+      url: '/a',
     });
   });
+
+  it.each<[string[], string, Record<string, string | string[]>, string]>([
+    [[], '/', {}, '/'],
+    [['(tabs)'], '/', {}, '/(tabs)'],
+    [['(tabs)', '(home)'], '/', {}, '/(tabs)/(home)'],
+    [['users', '[id]'], '/users/42', { id: '42' }, '/users/[id]'],
+    [['files', '[...path]'], '/files/a/b/c', { path: ['a', 'b', 'c'] }, '/files/[...path]'],
+    [
+      ['(tabs)', 'sessions', '[sessionId]'],
+      '/sessions/1234',
+      { sessionId: '1234' },
+      '/(tabs)/sessions/[sessionId]',
+    ],
+  ])(
+    'pageFocused(segments=%s, pathname=%s, params=%s) records routeName=%s',
+    async (segments, pathname, routeParams, expectedRouteName) => {
+      dispatch(events, 'NAVIGATE');
+      focus(events, 'screen', { pathname, params: routeParams, segments });
+      await flushAsync();
+
+      expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+      expect(mockAddCustomMetric).toHaveBeenCalledWith(
+        expect.objectContaining({
+          routeName: expectedRouteName,
+          params: expect.objectContaining({
+            url: pathname,
+            routeParams,
+          }),
+        })
+      );
+    }
+  );
 
   it('does not record a TTR for a PRELOAD action', async () => {
     storage.hasRecordedInitialTtr = true;

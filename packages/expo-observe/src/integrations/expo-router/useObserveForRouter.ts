@@ -3,6 +3,7 @@ import { use, useCallback, useEffect, useRef } from 'react';
 
 import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';
 import { isInitialized } from './init';
+import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
 import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
@@ -15,7 +16,8 @@ export function useObserveForRouter(): MarkInteractive | null {
   const route = optionalRouter?.useRoute();
   const navigation = optionalRouter?.useNavigation();
   const routeInfo = optionalRouter?.useCurrentRouteInfo();
-  const { pathname, params: routeParams } = routeInfo ?? {};
+  const { pathname, params: routeParams, segments } = routeInfo ?? {};
+  const routePattern = buildRoutePattern(segments);
 
   useAssertValueDoesNotChange(
     initialized,
@@ -59,7 +61,8 @@ export function useObserveForRouter(): MarkInteractive | null {
       if (navigation?.isFocused()) {
         AppMetrics.markInteractive({
           ...(attributes ?? {}),
-          routeName: pathname,
+          routeName: routePattern,
+          params: { ...(attributes?.params ?? {}), url: pathname },
         });
       }
 
@@ -102,15 +105,14 @@ export function useObserveForRouter(): MarkInteractive | null {
           sessionId: mainSessionId,
           timestamp,
           category: 'navigation',
-          // TODO(@ubax): Use segments.join here to get full routeName and pass pathname and params via params
-          routeName: pathname,
+          routeName: routePattern,
           name: 'tti',
           value: interactiveTimeSeconds,
-          params: { routeParams },
+          params: { routeParams, url: pathname },
         });
       }
     },
-    [screenId, navigation, pathname, storage, routeParams]
+    [screenId, navigation, pathname, routePattern, storage, routeParams]
   );
 
   return initialized ? markInteractive : null;

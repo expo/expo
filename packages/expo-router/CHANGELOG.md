@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Add `segments` to `unstable_navigationEvents` page events `pagePreloaded`, `pageFocused`, `pageBlurred`, `pageRemoved`
+
 ## 56.2.2 — 2026-05-19
 
 ### 🎉 New features
