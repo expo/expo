@@ -66,5 +66,5 @@ export interface UniversalHostProps extends ViewProps {
    */
   onLayoutContent?: (event: { nativeEvent: { width: number; height: number } }) => void;
 
-  children?: React.ReactNode;
+  children?: React.ReactElement;
 }

@@ -51,7 +51,7 @@ export type HostProps = {
      * @default false
      */
     ignoreSafeAreaKeyboardInsets?: boolean;
-    children: React.ReactNode;
+    children: React.ReactElement;
     style?: StyleProp<ViewStyle>;
 } & PrimitiveBaseProps;
 export declare function Host(props: HostProps): import("react/jsx-runtime").JSX.Element;

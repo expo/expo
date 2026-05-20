@@ -62,8 +62,9 @@ export type HostProps = {
    */
   ignoreSafeAreaKeyboardInsets?: boolean;
 
-  children: React.ReactNode;
+  children: React.ReactElement;
   style?: StyleProp<ViewStyle>;
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
 } & PrimitiveBaseProps;
 
 type NativeHostProps = Omit<HostProps, 'colorScheme'> & {

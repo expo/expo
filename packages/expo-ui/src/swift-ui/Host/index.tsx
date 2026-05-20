@@ -43,8 +43,9 @@ export type HostProps = {
    */
   ignoreSafeArea?: 'all' | 'keyboard';
 
-  children: React.ReactNode;
+  children: React.ReactElement;
   style?: StyleProp<ViewStyle>;
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
 } & CommonViewModifierProps;
 
 const HostNativeView: React.ComponentType<

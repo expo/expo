@@ -41,8 +41,9 @@ export type HostProps = {
      * - `'keyboard'` - ignores only the keyboard safe area.
      */
     ignoreSafeArea?: 'all' | 'keyboard';
-    children: React.ReactNode;
+    children: React.ReactElement;
     style?: StyleProp<ViewStyle>;
+    pointerEvents?: 'box-none' | 'none' | 'box-only';
 } & CommonViewModifierProps;
 /**
  * A hosting component for SwiftUI views.
