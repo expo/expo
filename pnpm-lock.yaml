@@ -539,6 +539,9 @@ importers:
       expo-haptics:
         specifier: workspace:*
         version: link:../../packages/expo-haptics
+      expo-image:
+        specifier: workspace:~
+        version: link:../../packages/expo-image
       expo-image-loader:
         specifier: workspace:*
         version: link:../../packages/expo-image-loader
@@ -18932,7 +18935,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
