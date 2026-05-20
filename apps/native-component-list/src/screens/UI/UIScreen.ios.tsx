@@ -83,6 +83,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community PagerView replacement',
+    route: 'ui/community-pager-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPagerViewScreen'));
+    },
+  },
+  {
     name: 'TabView component',
     route: 'ui/tabview',
     options: {},

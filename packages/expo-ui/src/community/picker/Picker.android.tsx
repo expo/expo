@@ -7,7 +7,7 @@ import {
   type PickerItemValue,
   type PickerProps,
 } from './types';
-import { useNativeState } from '../../State/useNativeState';
+import { useNativeState } from '../../State';
 import { DropdownMenuItem } from '../../jetpack-compose/DropdownMenu/DropdownMenuItem';
 import {
   ExposedDropdownMenuBox,

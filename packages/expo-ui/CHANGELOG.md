@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Added `@expo/ui/community/pager-view` — a drop-in replacement for `react-native-pager-view`. ([#45499](https://github.com/expo/expo/pull/45499) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `textStyle` option to `font` modifier in `@expo/ui/swift-ui` for iOS Dynamic Type scaling. ([#46007](https://github.com/expo/expo/pull/46007) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🐛 Bug fixes

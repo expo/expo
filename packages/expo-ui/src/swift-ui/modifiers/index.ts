@@ -19,6 +19,7 @@ import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
+import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
@@ -1358,6 +1359,8 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollTargetLayout>
   | ReturnType<typeof id>
   | ReturnType<typeof scrollPosition>
+  | ReturnType<typeof onScrollPhaseChange>
+  | NonNullable<ReturnType<typeof useScrollGeometryChange>>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1448,6 +1451,7 @@ export * from './presentationModifiers';
 export * from './environment';
 export * from './scrollPosition';
 export * from './symbolEffect';
+export * from './scrollObservation';
 export * from './widgets';
 export type {
   TimingAnimationParams,

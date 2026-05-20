@@ -1,6 +1,5 @@
 import { createModifier } from './createModifier';
-import { type ObservableState } from '../../State/useNativeState';
-import { getStateId } from '../../State/utils';
+import { getStateId, type ObservableState } from '../../State';
 
 // https://developer.apple.com/documentation/symbols/appearsymboleffect
 type AppearSymbolEffect = {
