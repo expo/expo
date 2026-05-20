@@ -67,6 +67,6 @@ export interface UniversalHostProps extends ViewProps {
             height: number;
         };
     }) => void;
-    children?: React.ReactElement;
+    children?: React.ReactNode;
 }
 //# sourceMappingURL=types.d.ts.map

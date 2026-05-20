@@ -28,16 +28,14 @@ export default function BottomSheetExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Column style={{ paddingTop: 100 }}>
-        <Button label="Open sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onDismiss={() => setIsPresented(false)}>
-          <Column spacing={12}>
-            <Text textStyle={{ fontSize: 18, fontWeight: '700' }}>Sheet contents</Text>
-            <Text>Drag down or tap the overlay to dismiss.</Text>
-            <Button label="Close" onPress={() => setIsPresented(false)} />
-          </Column>
-        </BottomSheet>
-      </Column>
+      <Button label="Open sheet" onPress={() => setIsPresented(true)} />
+      <BottomSheet isPresented={isPresented} onDismiss={() => setIsPresented(false)}>
+        <Column spacing={12}>
+          <Text textStyle={{ fontSize: 18, fontWeight: '700' }}>Sheet contents</Text>
+          <Text>Drag down or tap the overlay to dismiss.</Text>
+          <Button label="Close" onPress={() => setIsPresented(false)} />
+        </Column>
+      </BottomSheet>
     </Host>
   );
 }
@@ -49,22 +47,20 @@ Pass [`showDragIndicator={false}`](#showdragindicator) for sheets without a hand
 
 ```tsx BottomSheetNoIndicatorExample.tsx
 import { useState } from 'react';
-import { Host, Button, BottomSheet, Text, Column } from '@expo/ui';
+import { Host, Button, BottomSheet, Text } from '@expo/ui';
 
 export default function BottomSheetNoIndicatorExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
-      <Column style={{ paddingTop: 100 }}>
-        <Button label="Open" onPress={() => setIsPresented(true)} />
-        <BottomSheet
-          isPresented={isPresented}
-          onDismiss={() => setIsPresented(false)}
-          showDragIndicator={false}>
-          <Text>No drag handle.</Text>
-        </BottomSheet>
-      </Column>
+      <Button label="Open" onPress={() => setIsPresented(true)} />
+      <BottomSheet
+        isPresented={isPresented}
+        onDismiss={() => setIsPresented(false)}
+        showDragIndicator={false}>
+        <Text>No drag handle.</Text>
+      </BottomSheet>
     </Host>
   );
 }
@@ -78,27 +74,25 @@ When sheet content can be taller than the smallest snap point, wrap it in a `Scr
 
 ```tsx BottomSheetSnapPointsExample.tsx
 import { useState } from 'react';
-import { Host, BottomSheet, Button, Column, ScrollView, Text, RNHostView } from '@expo/ui';
+import { Host, BottomSheet, Button, Column, ScrollView, Text } from '@expo/ui';
 
 export default function BottomSheetSnapPointsExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
-      <Column style={{ paddingTop: 100 }}>
-        <Button label="Open" onPress={() => setIsPresented(true)} />
-        <BottomSheet
-          isPresented={isPresented}
-          onDismiss={() => setIsPresented(false)}
-          snapPoints={['half', 'full']}>
-          <ScrollView>
-            <Column spacing={12}>
-              <Text textStyle={{ fontSize: 20, fontWeight: '700' }}>Half / full sheet</Text>
-              <Text>Drag the sheet between half and full screen height.</Text>
-            </Column>
-          </ScrollView>
-        </BottomSheet>
-      </Column>
+      <Button label="Open" onPress={() => setIsPresented(true)} />
+      <BottomSheet
+        isPresented={isPresented}
+        onDismiss={() => setIsPresented(false)}
+        snapPoints={['half', 'full']}>
+        <ScrollView>
+          <Column spacing={12}>
+            <Text textStyle={{ fontSize: 20, fontWeight: '700' }}>Half / full sheet</Text>
+            <Text>Drag the sheet between half and full screen height.</Text>
+          </Column>
+        </ScrollView>
+      </BottomSheet>
     </Host>
   );
 }

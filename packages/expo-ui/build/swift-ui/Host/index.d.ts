@@ -41,7 +41,7 @@ export type HostProps = {
      * - `'keyboard'` - ignores only the keyboard safe area.
      */
     ignoreSafeArea?: 'all' | 'keyboard';
-    children: React.ReactElement;
+    children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
     pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
 } & CommonViewModifierProps;
