@@ -1,21 +1,5 @@
-import { NativeModule } from 'expo-modules-core';
 import type { EventSubscription } from 'expo-modules-core';
-import type { Contact as ContactType } from './types/Contact';
-import type { Container as ContainerType } from './types/Container';
-import type { Group as GroupType } from './types/Group';
-import type { ContactsPermissionResponse } from './types/Permissions';
-type ExpoContactsEvents = {
-    contactsDidChange: () => void;
-};
-declare class ExpoContactsModule extends NativeModule<ExpoContactsEvents> {
-    ContactNext?: typeof ContactType;
-    Contact: typeof ContactType;
-    Group: typeof GroupType;
-    Container: typeof ContainerType;
-    getPermissionsAsync(): Promise<ContactsPermissionResponse>;
-    requestPermissionsAsync(): Promise<ContactsPermissionResponse>;
-}
-declare const expoContactsModule: ExpoContactsModule;
+import expoContactsModule from './ExpoContactsNext';
 /**
  * Represents a contact in the device's address book.
  *
@@ -37,7 +21,7 @@ declare const expoContactsModule: ExpoContactsModule;
  */
 export declare class Contact extends expoContactsModule.Contact {
 }
-declare const Group_base: typeof GroupType;
+declare const Group_base: typeof import("./types/Group").Group;
 /**
  * Represents a group of contacts (for example, "Family", "Coworkers").
  * Groups belong to a specific Container and can contain multiple Contacts.
@@ -45,7 +29,7 @@ declare const Group_base: typeof GroupType;
  */
 export declare class Group extends Group_base {
 }
-declare const Container_base: typeof ContainerType;
+declare const Container_base: typeof import("./types/Container").Container;
 /**
  * Represents a container for contacts.
  * A container (often called an "Account" in UI terms) is a source of contacts, such as a local device storage, iCloud, Google, or Exchange account.
@@ -84,11 +68,11 @@ export declare function removeAllContactsChangeListeners(): void;
  * Checks user's permissions for accessing contacts data.
  * @returns A promise that resolves to a [`ContactsPermissionResponse`](#contactspermissionresponse) object.
  */
-export declare function getPermissionsAsync(): Promise<ContactsPermissionResponse>;
+export declare function getPermissionsAsync(): Promise<import(".").ContactsPermissionResponse>;
 /**
  * Asks the user to grant permissions for accessing contacts data.
  * @returns A promise that resolves to a [`ContactsPermissionResponse`](#contactspermissionresponse) object.
  */
-export declare function requestPermissionsAsync(): Promise<ContactsPermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<import(".").ContactsPermissionResponse>;
 export {};
 //# sourceMappingURL=ContactsModule.d.ts.map

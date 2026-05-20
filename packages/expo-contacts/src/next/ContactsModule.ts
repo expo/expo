@@ -1,36 +1,9 @@
-import {
-  NativeModule,
-  Platform,
-  UnavailabilityError,
-  requireNativeModule,
-} from 'expo-modules-core';
+import { UnavailabilityError } from 'expo-modules-core';
 import type { EventSubscription } from 'expo-modules-core';
 
-import type { Contact as ContactType } from './types/Contact';
-import type { Container as ContainerType } from './types/Container';
+import expoContactsModule from './ExpoContactsNext';
 import { FallbackContainer } from './types/Container';
 import { FallbackGroup } from './types/Group';
-import type { Group as GroupType } from './types/Group';
-import type { ContactsPermissionResponse } from './types/Permissions';
-
-type ExpoContactsEvents = {
-  contactsDidChange: () => void;
-};
-
-declare class ExpoContactsModule extends NativeModule<ExpoContactsEvents> {
-  ContactNext?: typeof ContactType;
-  Contact: typeof ContactType;
-  Group: typeof GroupType;
-  Container: typeof ContainerType;
-  getPermissionsAsync(): Promise<ContactsPermissionResponse>;
-  requestPermissionsAsync(): Promise<ContactsPermissionResponse>;
-}
-
-const expoContactsModule = requireNativeModule<ExpoContactsModule>('ExpoContactsNext');
-
-if (Platform.OS === 'ios' && expoContactsModule.ContactNext) {
-  expoContactsModule.Contact = expoContactsModule.ContactNext;
-}
 
 /**
  * Represents a contact in the device's address book.
