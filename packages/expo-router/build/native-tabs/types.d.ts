@@ -1,9 +1,25 @@
-import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
-import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
-import type { BottomTabsScreenProps } from 'react-native-screens';
+import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { TabsHostProps, TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
-export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
+import type { DefaultRouterOptions, EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '../react-navigation/native';
+/**
+ * Event map for `NativeTabs` navigation events.
+ * Only `tabPress` is currently supported.
+ */
+export type NativeTabNavigationEventMap = {
+    tabPress: {
+        data: {
+            __internalTabsType: 'native';
+        };
+        canPreventDefault: false;
+    };
+};
+export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'screenKey'>>;
+/**
+ * Props passed to the underlying tab host implementation in `react-native-screens`.
+ */
+export type NativeTabsHostNativeProps = Partial<Omit<TabsHostProps, 'navStateRequest' | 'onTabSelected' | 'children'>>;
 export interface NativeTabOptions extends DefaultRouterOptions {
     icon?: SymbolOrImageSource;
     selectedIcon?: SymbolOrImageSource;
@@ -31,8 +47,11 @@ export interface NativeTabOptions extends DefaultRouterOptions {
     };
     indicatorColor?: ColorValue;
     hidden?: boolean;
-    specialEffects?: BottomTabsScreenProps['specialEffects'];
+    disabled?: boolean;
+    specialEffects?: TabsScreenProps['specialEffects'];
     nativeProps?: NativeScreenProps;
+    disableAutomaticContentInsets?: boolean;
+    contentStyle?: Pick<ViewStyle, 'backgroundColor' | 'experimental_backgroundImage' | 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingBlock' | 'paddingBlockEnd' | 'paddingBlockStart' | 'paddingInline' | 'paddingInlineEnd' | 'paddingInlineStart' | 'paddingEnd' | 'paddingHorizontal' | 'paddingVertical' | 'paddingStart' | 'alignContent' | 'alignItems' | 'justifyContent' | 'flexDirection' | 'gap'>;
 }
 export type SymbolOrImageSource = {
     /**
@@ -40,6 +59,11 @@ export type SymbolOrImageSource = {
      * @platform iOS
      */
     sf?: SFSymbol;
+    /**
+     * The name of the iOS asset catalog image to use as an icon.
+     * @platform iOS
+     */
+    xcasset?: string;
     /**
      * The name of the drawable resource to use as an icon.
      * @platform android
@@ -50,67 +74,26 @@ export type SymbolOrImageSource = {
      * The image source to use as an icon.
      */
     src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
+    /**
+     * Controls how the icon is rendered on iOS.
+     * @platform ios
+     * @default 'template'
+     */
+    renderingMode?: 'template' | 'original';
 };
-type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
-export interface NativeTabsLabelStyle {
-    /**
-     * The font family of the tab label.
-     */
-    fontFamily?: TextStyle['fontFamily'];
-    /**
-     * The font size of the tab label.
-     */
-    fontSize?: TextStyle['fontSize'];
-    /**
-     * The font weight of the tab label.
-     */
-    fontWeight?: NumericFontWeight | `${NumericFontWeight}`;
-    /**
-     * The font style of the tab label.
-     */
-    fontStyle?: TextStyle['fontStyle'];
-    /**
-     * The color of the tab label.
-     */
-    color?: TextStyle['color'];
-}
+export type NativeTabsLabelStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'color'>;
 export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", "extraLight", "light", "dark", "regular", "prominent", "systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial", "systemUltraThinMaterialLight", "systemThinMaterialLight", "systemMaterialLight", "systemThickMaterialLight", "systemChromeMaterialLight", "systemUltraThinMaterialDark", "systemThinMaterialDark", "systemMaterialDark", "systemThickMaterialDark", "systemChromeMaterialDark"];
 /**
  * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiblureffect/style)
  */
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
-/**
- * @platform android
- * @platform web
- */
-export interface NativeTabsActiveStyleType {
-    /**
-     * @platform android
-     * @platform web
-     */
-    color?: ColorValue;
-    /**
-     * @platform android
-     * @platform web
-     */
-    fontSize?: TextStyle['fontSize'];
-    /**
-     * @platform android
-     */
-    iconColor?: ColorValue;
-    /**
-     * @platform android
-     * @platform web
-     */
-    indicatorColor?: ColorValue;
-}
 export interface NativeTabsProps extends PropsWithChildren {
     /**
      * The style of the every tab label in the tab bar.
      */
-    labelStyle?: NativeTabsLabelStyle | {
-        default?: NativeTabsLabelStyle;
-        selected?: NativeTabsLabelStyle;
+    labelStyle?: StyleProp<NativeTabsLabelStyle> | {
+        default?: StyleProp<NativeTabsLabelStyle>;
+        selected?: StyleProp<NativeTabsLabelStyle>;
     };
     /**
      * The color of every tab icon in the tab bar.
@@ -134,6 +117,12 @@ export interface NativeTabsProps extends PropsWithChildren {
      */
     badgeBackgroundColor?: ColorValue;
     /**
+     * When set to `true`, hides the tab bar.
+     *
+     * @default false
+     */
+    hidden?: boolean;
+    /**
      * Specifies the minimize behavior for the tab bar.
      *
      * Available starting from iOS 26.
@@ -147,7 +136,7 @@ export interface NativeTabsProps extends PropsWithChildren {
      * - `onScrollUp` - the tab bar minimizes when scrolling up and expands
      *   when scrolling back down
      *
-     * @see The supported values correspond to the official [UIKit documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
+     * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
      *
      * @default automatic
      *
@@ -229,11 +218,77 @@ export interface NativeTabsProps extends PropsWithChildren {
      * @platform web
      */
     badgeTextColor?: ColorValue;
+    /**
+     * When `true`, the tab bar lifts above the keyboard (input method editor, or IME) instead of being overlaid by it. By default, the keyboard overlays the tab bar.
+     *
+     * Requires `windowSoftInputMode="adjustResize"`. Has no effect on Android API levels earlier than 30 (Android 11).
+     *
+     * @default false
+     * @platform android
+     */
+    tabBarRespectsIMEInsets?: boolean;
+    /**
+     * Listeners for navigation events on all tabs.
+     *
+     * Supported events:
+     * - `tabPress` - called when a tab is pressed
+     * - `focus` - called when the screen comes into focus
+     * - `blur` - called when the screen loses focus
+     *
+     * @example
+     * ```tsx
+     * <NativeTabs
+     *   screenListeners={{
+     *     tabPress: (e) => {
+     *       console.log('Any tab pressed');
+     *     },
+     *   }}
+     * >
+     *   ...
+     * </NativeTabs>
+     * ```
+     */
+    screenListeners?: ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap> | ((prop: {
+        route: RouteProp<ParamListBase, string>;
+    }) => ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>);
+    /**
+     * Props passed to the underlying native tab host implementation in `react-native-screens`.
+     * Use this to configure props that are not directly exposed by Expo Router.
+     *
+     * > **Note**: This is an unstable API and may change or be removed in minor versions.
+     *
+     * @platform android
+     * @platform ios
+     */
+    unstable_nativeProps?: NativeTabsHostNativeProps;
 }
-export interface NativeTabsViewProps extends Omit<NativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
+export interface InternalNativeTabsProps extends NativeTabsProps {
+    nonTriggerChildren?: React.ReactNode;
+}
+export interface OnTabChangeEventPayload {
+    /**
+     * The route key of the tab the native side has just selected.
+     */
+    selectedKey: string;
+    /**
+     * The provenance value reported by the native side for this selection.
+     *
+     * The navigator echoes this back via `navStateRequest.baseProvenance` on
+     * subsequent JS-driven updates so the native side can distinguish stale
+     * updates from fresh ones. See `TabsHostNavStateRequest` in
+     * `react-native-screens` for the full contract.
+     */
+    provenance: number;
+    isNativeAction: boolean;
+}
+export interface NativeTabsViewProps extends Omit<InternalNativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
     focusedIndex: number;
+    /**
+     * Provenance counter associated with the currently rendered `focusedIndex`.
+     */
+    provenance: number;
     tabs: NativeTabsViewTabItem[];
-    onTabChange: (tabKey: string) => void;
+    onTabChange: (event: OnTabChangeEventPayload) => void;
 }
 export interface NativeTabsViewTabItem {
     options: NativeTabOptions;
@@ -268,6 +323,8 @@ export interface NativeTabTriggerProps {
      * If true, the tab will be hidden from the tab bar.
      *
      * > **Note**: Marking a tab as `hidden` means it cannot be navigated to in any way.
+     *
+     * > **Note**: Dynamically hiding tabs will remount the navigator and the state will be reset.
      */
     hidden?: boolean;
     /**
@@ -297,6 +354,23 @@ export interface NativeTabTriggerProps {
      */
     disableScrollToTop?: boolean;
     /**
+     * If `true`, the tab is shown but cannot be selected by tapping it in the
+     * tab bar.
+     *
+     * > **Note:** This only suppresses the native tap interaction. JavaScript
+     * > navigation such as  `router.push()` or `<Link />` still navigates to
+     * > the tab. Use this for tabs that should appear visible but be temporarily inert,
+     * > and gate navigation in your own code if you need to fully prevent access.
+     *
+     * Unlike `hidden`, the tab remains visible in the tab bar.
+     *
+     * @default false
+     *
+     * @platform android
+     * @platform ios
+     */
+    disabled?: boolean;
+    /**
      * The children of the trigger.
      *
      * Use `Icon`, `Label`, and `Badge` components to customize the tab.
@@ -310,10 +384,64 @@ export interface NativeTabTriggerProps {
      * properties will override the system icon, but the system-defined title cannot
      * be customized.
      *
-     * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
+     * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
      * @platform ios
      */
     role?: NativeTabsTabBarItemRole;
+    /**
+     * The default behavior differs between iOS and Android.
+     *
+     * On **Android**, the content of a native tabs screen is automatically wrapped in a `SafeAreaView`,
+     * and the **bottom** inset is applied. Other insets must be handled manually.
+     *
+     * On **iOS**, the first scroll view nested inside a native tabs screen has
+     * [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled
+     *
+     * When this property is set to `true`, automatic content inset adjustment is disabled for the screen
+     * and must be managed manually. You can use `SafeAreaView` from `react-native-screens/experimental`
+     * to handle safe area insets.
+     *
+     * @platform android
+     * @platform ios
+     */
+    disableAutomaticContentInsets?: boolean;
+    /**
+     * The style applied to the content of the tab
+     *
+     * Note: Only certain style properties are supported.
+     */
+    contentStyle?: NativeTabOptions['contentStyle'];
+    /**
+     * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+     *
+     * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+     *
+     * @platform iOS
+     */
+    disableTransparentOnScrollEdge?: boolean;
+    /**
+     * Listeners for navigation events on this tab.
+     *
+     * Supported events:
+     * - `tabPress` - called when this tab is pressed
+     * - `focus` - called when this screen comes into focus
+     * - `blur` - called when this screen loses focus
+     *
+     * @example
+     * ```tsx
+     * <NativeTabs.Trigger
+     *   name="home"
+     *   listeners={{
+     *     tabPress: (e) => {
+     *       console.log('Home tab pressed');
+     *     },
+     *   }}
+     * />
+     * ```
+     */
+    listeners?: ScreenListeners<NavigationState, EventMapBase> | ((prop: {
+        route: RouteProp<ParamListBase, string>;
+    }) => ScreenListeners<NavigationState, EventMapBase>);
 }
 declare const SUPPORTED_TAB_BAR_ITEM_ROLES: readonly ["bookmarks", "contacts", "downloads", "favorites", "featured", "history", "more", "mostRecent", "mostViewed", "recents", "search", "topRated"];
 export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];

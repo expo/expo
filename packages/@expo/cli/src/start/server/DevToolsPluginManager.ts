@@ -37,7 +37,17 @@ export default class DevToolsPluginManager {
     ).filter((maybePlugin) => maybePlugin != null);
     debug('Found autolinked plugins', plugins);
     return plugins
-      .map((pluginInfo) => new DevToolsPlugin(pluginInfo, this.projectRoot))
+      .map((pluginInfo) => {
+        try {
+          return new DevToolsPlugin(pluginInfo, this.projectRoot);
+        } catch (error: any) {
+          Log.warn(
+            `Skipping plugin "${pluginInfo.packageName}": ${error.message ?? 'invalid configuration'}`
+          );
+          debug('Plugin validation error for %s: %O', pluginInfo.packageName, error);
+          return null;
+        }
+      })
       .filter((p) => p != null) as DevToolsPlugin[];
   }
 }

@@ -1,7 +1,7 @@
-import { EventMapBase, NavigationState } from '@react-navigation/native';
-import { ComponentProps, ComponentType, ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
-import { PickPartial } from '../types';
-import { ScreenProps } from '../useScreens';
+import type { ComponentProps, ComponentType, ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
+import type { EventMapBase, NavigationState } from '../react-navigation/native';
+import type { PickPartial } from '../types';
+import type { ScreenProps } from '../useScreens';
 import { Protected } from '../views/Protected';
 export declare function useFilterScreenChildren(children: ReactNode, { isCustomNavigator, contextKey, }?: {
     isCustomNavigator?: boolean;

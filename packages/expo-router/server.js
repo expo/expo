@@ -1,1 +1,1 @@
-// Use `expo-server` directly instead
+export { createStaticLoader, createServerLoader } from 'expo-server';

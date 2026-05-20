@@ -94,9 +94,10 @@ export class TaskError<TaskType extends { name: string }> extends Error {
  * and the runner makes sure they all are being run. Runner also provides an easy way to
  * backup and restore tasks' state.
  */
-export class TaskRunner<Args extends any[], BackupDataType extends JSONObject | null = null>
-  implements TaskRunnerDescriptor<Args, BackupDataType>
-{
+export class TaskRunner<
+  Args extends any[],
+  BackupDataType extends JSONObject | null = null,
+> implements TaskRunnerDescriptor<Args, BackupDataType> {
   // Descriptor properties
   readonly tasks: Task<Args>[];
 

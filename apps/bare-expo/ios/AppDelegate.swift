@@ -1,10 +1,10 @@
-import Expo
+internal import Expo
 import Network
 import React
 import ReactAppDependencyProvider
 
 @main
-public class AppDelegate: ExpoAppDelegate {
+class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?

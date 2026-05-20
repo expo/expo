@@ -1,5 +1,4 @@
 import { act, screen } from '@testing-library/react-native';
-import React from 'react';
 import { Text, View } from 'react-native';
 
 import { store } from '../global-state/router-store';
@@ -64,6 +63,14 @@ it('stacks should always push a new route', () => {
               name: '(group)',
               params: {
                 id: '1',
+                screen: 'post/[id]',
+                params: {
+                  id: '1',
+                  params: {
+                    id: '1',
+                  },
+                  screen: 'index',
+                },
               },
               path: undefined,
               state: {
@@ -167,6 +174,10 @@ it('stacks should always push a new route', () => {
                     name: 'user/[id]',
                     params: {
                       id: '1',
+                      params: {
+                        id: '1',
+                      },
+                      screen: 'index',
                     },
                     path: undefined,
                     state: {
@@ -317,6 +328,10 @@ it('works in a nested layout Stack->Tab->Stack', () => {
             {
               key: expect.any(String),
               name: '(tabs)',
+              params: {
+                params: {},
+                screen: 'a',
+              },
               path: undefined,
               state: {
                 history: [
@@ -349,6 +364,10 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                   {
                     key: expect.any(String),
                     name: 'c',
+                    params: {
+                      params: {},
+                      screen: 'one',
+                    },
                     path: undefined,
                     state: {
                       index: 2,
@@ -466,6 +485,10 @@ it('targets the correct Stack when pushing to a nested layout', () => {
             {
               key: expect.any(String),
               name: 'one',
+              params: {
+                params: {},
+                screen: 'index',
+              },
               path: undefined,
               state: {
                 index: 2,
@@ -488,6 +511,10 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                   {
                     key: expect.any(String),
                     name: 'two',
+                    params: {
+                      params: {},
+                      screen: 'index',
+                    },
                     path: undefined,
                     state: {
                       index: 1,
@@ -592,6 +619,13 @@ it('push should also add anchor routes', () => {
             {
               key: expect.any(String),
               name: '(group)',
+              params: {
+                initial: false,
+                params: {
+                  initial: false,
+                },
+                screen: 'orange',
+              },
               path: undefined,
               state: {
                 index: 1,
@@ -607,7 +641,7 @@ it('push should also add anchor routes', () => {
                   {
                     key: expect.any(String),
                     name: 'orange',
-                    params: {},
+                    params: { initial: false },
                     path: undefined,
                   },
                 ],

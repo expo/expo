@@ -24,7 +24,9 @@ class UpdatesStateContext private constructor(
   val downloadError: UpdatesStateError? = null,
   val downloadProgress: Double = 0.0,
   val lastCheckForUpdateTime: Date? = null,
-  val sequenceNumber: Int
+  val sequenceNumber: Int,
+  val downloadStartTime: Date? = null,
+  val downloadFinishTime: Date? = null
 ) {
   constructor(
     isStartupProcedureRunning: Boolean = false,
@@ -40,7 +42,9 @@ class UpdatesStateContext private constructor(
     checkError: UpdatesStateError? = null,
     downloadError: UpdatesStateError? = null,
     downloadProgress: Double = 0.0,
-    lastCheckForUpdateTime: Date? = null
+    lastCheckForUpdateTime: Date? = null,
+    downloadStartTime: Date? = null,
+    downloadFinishTime: Date? = null
   ) : this(
     isStartupProcedureRunning = isStartupProcedureRunning,
     isUpdateAvailable = isUpdateAvailable,
@@ -56,7 +60,9 @@ class UpdatesStateContext private constructor(
     downloadError = downloadError,
     downloadProgress = downloadProgress,
     lastCheckForUpdateTime = lastCheckForUpdateTime,
-    sequenceNumber = 0
+    sequenceNumber = 0,
+    downloadStartTime = downloadStartTime,
+    downloadFinishTime = downloadFinishTime
   )
 
   fun copyAndIncrementSequenceNumber(
@@ -73,7 +79,9 @@ class UpdatesStateContext private constructor(
     rollback: UpdatesStateContextRollback? = this.rollback,
     checkError: UpdatesStateError? = this.checkError,
     downloadError: UpdatesStateError? = this.downloadError,
-    lastCheckForUpdateTime: Date? = this.lastCheckForUpdateTime
+    lastCheckForUpdateTime: Date? = this.lastCheckForUpdateTime,
+    downloadStartTime: Date? = this.downloadStartTime,
+    downloadFinishTime: Date? = this.downloadFinishTime
   ): UpdatesStateContext = UpdatesStateContext(
     isStartupProcedureRunning = isStartupProcedureRunning,
     isUpdateAvailable = isUpdateAvailable,
@@ -89,13 +97,37 @@ class UpdatesStateContext private constructor(
     downloadError = downloadError,
     downloadProgress = downloadProgress,
     lastCheckForUpdateTime = lastCheckForUpdateTime,
-    sequenceNumber = this.sequenceNumber + 1
+    sequenceNumber = this.sequenceNumber + 1,
+    downloadStartTime = downloadStartTime,
+    downloadFinishTime = downloadFinishTime
   )
 
   fun resetCopyWithIncrementedRestartCountAndSequenceNumber(): UpdatesStateContext = UpdatesStateContext(
     restartCount = this.restartCount + 1,
     sequenceNumber = this.sequenceNumber + 1
   )
+
+  val nativeInterfaceContext: expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
+    get() = expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext(
+      isUpdateAvailable = isUpdateAvailable,
+      isUpdatePending = isUpdatePending,
+      isChecking = isChecking,
+      isDownloading = isDownloading,
+      isRestarting = isRestarting,
+      restartCount = restartCount,
+      latestManifest = latestManifest?.let { jsonToMap(it) },
+      downloadedManifest = downloadedManifest?.let { jsonToMap(it) },
+      rollback = rollback?.let {
+        expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext.Rollback(commitTime = it.commitTime)
+      },
+      checkError = checkError?.let { mapOf("message" to it.message) },
+      downloadError = downloadError?.let { mapOf("message" to it.message) },
+      downloadProgress = downloadProgress,
+      lastCheckForUpdateTime = lastCheckForUpdateTime,
+      sequenceNumber = sequenceNumber,
+      downloadStartTime = downloadStartTime,
+      downloadFinishTime = downloadFinishTime
+    )
 
   val json: Map<String, Any>
     get() {
@@ -127,6 +159,12 @@ class UpdatesStateContext private constructor(
       }
       if (lastCheckForUpdateTime != null) {
         map["lastCheckForUpdateTime"] = lastCheckForUpdateTime
+      }
+      if (downloadStartTime != null) {
+        map["downloadStartTime"] = downloadStartTime.time
+      }
+      if (downloadFinishTime != null) {
+        map["downloadFinishTime"] = downloadFinishTime.time
       }
       return map
     }
@@ -183,6 +221,16 @@ class UpdatesStateContext private constructor(
       SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
         timeZone = java.util.TimeZone.getTimeZone("GMT")
       }
+    }
+
+    private fun jsonToMap(json: JSONObject): Map<String, Any> {
+      val map = mutableMapOf<String, Any>()
+      val keys = json.keys()
+      while (keys.hasNext()) {
+        val key = keys.next()
+        map[key] = json.get(key)
+      }
+      return map
     }
   }
 }

@@ -14,6 +14,10 @@ export interface RenderToImageOptions {
    * @default 'black'
    */
   color?: string;
+  /**
+   * Line height of the text. Accepts number in dp units.
+   */
+  lineHeight?: number;
 }
 
 // RenderToImageResult needs to be usable as the `source` prop for image,

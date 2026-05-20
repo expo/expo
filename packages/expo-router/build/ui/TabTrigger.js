@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TabTrigger = TabTrigger;
 exports.isTabTrigger = isTabTrigger;
 exports.useTabTrigger = useTabTrigger;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -38,16 +39,12 @@ function TabTrigger({ asChild, name, href, resetOnFocus, ...props }) {
     });
     // Pressable doesn't accept the extra props, so only pass them if we are using asChild
     if (asChild) {
-        return (<TabTriggerSlot style={styles.tabTrigger} {...props} {...triggerProps} href={trigger?.resolvedHref}>
-        {props.children}
-      </TabTriggerSlot>);
+        return ((0, jsx_runtime_1.jsx)(TabTriggerSlot, { style: styles.tabTrigger, ...props, ...triggerProps, href: trigger?.resolvedHref, children: props.children }));
     }
     else {
         // These props are not typed, but are allowed by React Native Web
         const reactNativeWebProps = { href: trigger?.resolvedHref };
-        return (<react_native_1.Pressable style={styles.tabTrigger} {...reactNativeWebProps} {...props} {...triggerProps}>
-        {props.children}
-      </react_native_1.Pressable>);
+        return ((0, jsx_runtime_1.jsx)(react_native_1.Pressable, { style: styles.tabTrigger, ...reactNativeWebProps, ...props, ...triggerProps, children: props.children }));
     }
 }
 /**
@@ -115,7 +112,9 @@ function useTabTrigger(options) {
         });
         if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
             return;
-        switchTab(name, { resetOnFocus });
+        if (!trigger.isFocused) {
+            switchTab(name, { resetOnFocus });
+        }
     }, [onPress, name, resetOnFocus, trigger]);
     const handleOnLongPress = (0, react_1.useCallback)((event) => {
         onLongPress?.(event);
@@ -129,9 +128,11 @@ function useTabTrigger(options) {
         });
         if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
             return;
-        switchTab(name, {
-            resetOnFocus,
-        });
+        if (!trigger.isFocused) {
+            switchTab(name, {
+                resetOnFocus,
+            });
+        }
     }, [onLongPress, name, resetOnFocus, trigger]);
     const triggerProps = {
         isFocused: Boolean(trigger?.isFocused),

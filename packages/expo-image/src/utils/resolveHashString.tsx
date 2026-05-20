@@ -1,4 +1,4 @@
-import { ImageSource } from '../Image.types';
+import type { ImageSource } from '../Image.types';
 
 type ImageHashType = 'blurhash' | 'thumbhash';
 
@@ -13,7 +13,7 @@ function hashToUri(type: ImageHashType, hash: string): string {
  * @return An ImageSource representing the provided blurhash.
  * */
 export function resolveBlurhashString(str: string): ImageSource {
-  const [blurhash, width, height] = str.replace(/^blurhash:\//, '').split('/');
+  const [blurhash = '', width = '', height = ''] = str.replace(/^blurhash:\//, '').split('/');
   return {
     uri: hashToUri('blurhash', blurhash),
     width: parseInt(width, 10) || 16,

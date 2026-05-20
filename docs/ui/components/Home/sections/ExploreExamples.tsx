@@ -17,30 +17,30 @@ export function ExploreExamples() {
       <div
         className={mergeClasses(
           'my-4 inline-grid w-full grid-cols-4 gap-8',
-          'max-xl-gutters:grid-cols-2',
-          'max-lg-gutters:grid-cols-4',
-          'max-md-gutters:grid-cols-2',
-          'max-sm-gutters:grid-cols-1'
+          'max-xl:grid-cols-2',
+          'max-lg:grid-cols-4',
+          'max-md:grid-cols-2',
+          'max-sm:grid-cols-1'
         )}>
         <GridBox
           title="StickerSmash"
           link="https://github.com/expo/examples/tree/master/stickersmash"
-          icon={<StickerCircleDuotoneIcon className="size-16" />}
+          icon={<StickerCircleDuotoneIcon className="size-16!" />}
         />
         <GridBox
           title="Router + menus"
           link="https://github.com/expo/examples/tree/master/with-router-menus"
-          icon={<Rows03DuotoneIcon className="size-16" />}
+          icon={<Rows03DuotoneIcon className="size-16!" />}
         />
         <GridBox
           title="API Routes + Open AI"
           link="https://github.com/expo/examples/tree/master/with-openai"
-          icon={<MessageChatSquareDuotoneIcon className="size-16" />}
+          icon={<MessageChatSquareDuotoneIcon className="size-16!" />}
         />
         <GridBox
           title="View all examples"
           link="https://github.com/expo/examples"
-          icon={<GithubIcon className="size-16" />}
+          icon={<GithubIcon className="size-16!" />}
         />
       </div>
     </>

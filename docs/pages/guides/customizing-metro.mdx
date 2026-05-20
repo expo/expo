@@ -109,6 +109,19 @@ You will see the changes the next time you restart the dev server. Resolutions a
   Icon={BookOpen02Icon}
 />
 
+## File watching and crawling
+
+From **SDK 56**, Expo's file map supports on-demand filesystem access. In practice, this means your `watchFolders` no longer need to include every module your app bundles, and projects that symlink to dependencies outside of the project root will now resolve correctly.
+
+The on-demand filesystem is controlled by the [`experiments.onDemandFilesystem`](/versions/v56.0.0/config/app/#ondemandfilesystem) flag in your [app config](/workflow/configuration/) and is enabled by default.
+
+<BoxLink
+  title="On-demand filesystem"
+  description="Learn how Expo's file map discovers, watches, and lazily resolves source files."
+  href="/versions/v56.0.0/config/metro/#on-demand-filesystem"
+  Icon={BookOpen02Icon}
+/>
+
 ## Bundle splitting
 
 Expo CLI automatically splits bundles based on async imports (web-only).
@@ -172,6 +185,8 @@ When exporting with `npx expo export`, the contents of the **public** directory 
 You can overwrite the default **index.html** in Metro web by creating a **public/index.html** file in your project.
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
+
+> **warning** Some paths such as `/assets` are reserved by Metro. Avoid placing files in **public/assets/** or other reserved paths. See [Reserved paths](/router/reference/reserved-paths/) for the complete list.
 
 ## TypeScript
 

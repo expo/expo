@@ -1,4 +1,5 @@
-import JsonFile, { JSONObject } from '@expo/json-file';
+import type { JSONObject } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
 

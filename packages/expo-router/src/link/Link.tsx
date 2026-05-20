@@ -2,6 +2,8 @@ import { ExpoLink } from './ExpoLink';
 import { LinkMenu, LinkMenuAction, LinkPreview, LinkTrigger } from './elements';
 import { resolveHref } from './href';
 import type { LinkProps, WebAnchorProps } from './useLinkHooks';
+import { LinkAppleZoom } from './zoom/link-apple-zoom';
+import { LinkAppleZoomTarget } from './zoom/link-apple-zoom-target';
 
 export const Link = Object.assign(
   /**
@@ -40,10 +42,12 @@ export const Link = Object.assign(
     Trigger: LinkTrigger,
     Preview: LinkPreview,
     MenuAction: LinkMenuAction,
+    AppleZoom: LinkAppleZoom,
+    AppleZoomTarget: LinkAppleZoomTarget,
   }
 );
 
 export type LinkComponent = typeof Link;
 
-export { LinkProps, WebAnchorProps };
-export { Redirect, RedirectProps } from './Redirect';
+export type { LinkProps, WebAnchorProps };
+export { Redirect, type RedirectProps } from './Redirect';

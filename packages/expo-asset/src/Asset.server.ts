@@ -104,7 +104,7 @@ export class Asset {
     // Possibly a Base64-encoded URI
     let type = '';
     if (uri.indexOf(';base64') > -1) {
-      type = uri.split(';')[0].split('/')[1];
+      type = uri.split(';')[0]?.split('/')[1] ?? '';
     } else {
       const extension = AssetUris.getFileExtension(uri);
       type = extension.startsWith('.') ? extension.substring(1) : extension;
@@ -128,9 +128,9 @@ export class Asset {
 }
 
 function pickScale(scales: number[], deviceScale: number): number {
-  for (let i = 0; i < scales.length; i++) {
-    if (scales[i] >= deviceScale) {
-      return scales[i];
+  for (const scale of scales) {
+    if (scale >= deviceScale) {
+      return scale;
     }
   }
   return scales[scales.length - 1] || 1;
@@ -147,7 +147,7 @@ function selectAssetSource(meta: AssetMetadata): AssetSource {
   // explicitly provided URIs
   const scale = pickScale(meta.scales, 1);
   const index = meta.scales.findIndex((s) => s === scale);
-  const hash = meta.fileHashes ? (meta.fileHashes[index] ?? meta.fileHashes[0]) : meta.hash;
+  const hash = meta.fileHashes?.[index] ?? meta.fileHashes?.[0] ?? meta.hash;
 
   // Allow asset processors to directly provide the URL to load
   const uri = meta.fileUris ? (meta.fileUris[index] ?? meta.fileUris[0]) : meta.uri;

@@ -1,18 +1,15 @@
-import { gql } from '@urql/core';
 import { promises as fs } from 'fs';
 
 import { getAccessToken, getSession, setSessionAsync } from './UserSettings';
 import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
-import { CurrentUserQuery } from '../../graphql/generated';
 import * as Log from '../../log';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { env } from '../../utils/env';
 import { getExpoWebsiteBaseUrl } from '../endpoint';
-import { graphqlClient } from '../graphql/client';
-import { UserQuery } from '../graphql/queries/UserQuery';
+import { UserQuery, type Actor } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
 
-export type Actor = NonNullable<CurrentUserQuery['meActor']>;
+const debug = require('debug')('expo:api:user') as typeof console.log;
 
 let currentUser: Actor | undefined;
 
@@ -36,6 +33,8 @@ export function getActorDisplayName(user?: Actor): string {
   }
 }
 
+export type { Actor };
+
 export async function getUserAsync(): Promise<Actor | undefined> {
   const hasCredentials = getAccessToken() || getSession()?.sessionSecret;
   if (!env.EXPO_OFFLINE && !currentUser && hasCredentials) {
@@ -57,7 +56,9 @@ export async function loginAsync(credentials: {
   const json: any = await res.json();
   const sessionSecret = json.data.sessionSecret;
 
-  const userData = await fetchUserAsync({ sessionSecret });
+  const userData = await UserQuery.meUserActorAsync({
+    'expo-session': sessionSecret,
+  });
 
   await setSessionAsync({
     sessionSecret,
@@ -67,12 +68,14 @@ export async function loginAsync(credentials: {
   });
 }
 
-export async function ssoLoginAsync(): Promise<void> {
+export async function browserLoginAsync({ sso = false }): Promise<void> {
   const sessionSecret = await getSessionUsingBrowserAuthFlowAsync({
     expoWebsiteUrl: getExpoWebsiteBaseUrl(),
+    sso,
   });
-  const userData = await fetchUserAsync({ sessionSecret });
-
+  const userData = await UserQuery.meUserActorAsync({
+    'expo-session': sessionSecret,
+  });
   await setSessionAsync({
     sessionSecret,
     userId: userData.id,
@@ -82,43 +85,18 @@ export async function ssoLoginAsync(): Promise<void> {
 }
 
 export async function logoutAsync(): Promise<void> {
+  const sessionSecret = getSession()?.sessionSecret;
+  if (sessionSecret) {
+    try {
+      await fetchAsync('auth/logout', { method: 'POST' });
+    } catch (error) {
+      debug('Failed to invalidate session secret on server:', error);
+    }
+  }
   currentUser = undefined;
   await Promise.all([
     fs.rm(getDevelopmentCodeSigningDirectory(), { recursive: true, force: true }),
     setSessionAsync(undefined),
   ]);
   Log.log('Logged out');
-}
-
-async function fetchUserAsync({
-  sessionSecret,
-}: {
-  sessionSecret: string;
-}): Promise<{ id: string; username: string }> {
-  const result = await graphqlClient
-    .query(
-      gql`
-        query UserQuery {
-          meUserActor {
-            id
-            username
-          }
-        }
-      `,
-      {},
-      {
-        fetchOptions: {
-          headers: {
-            'expo-session': sessionSecret,
-          },
-        },
-        additionalTypenames: [] /* UserQuery has immutable fields */,
-      }
-    )
-    .toPromise();
-  const { data } = result;
-  return {
-    id: data.meUserActor.id,
-    username: data.meUserActor.username,
-  };
 }

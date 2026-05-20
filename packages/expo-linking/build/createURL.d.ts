@@ -1,4 +1,4 @@
-import { CreateURLOptions, ParsedURL } from './Linking.types';
+import type { CreateURLOptions, ParsedURL } from './Linking.types';
 /**
  * Helper method for constructing a deep link into your app, given an optional path and set of query
  * parameters. Creates a URI scheme with two slashes by default.

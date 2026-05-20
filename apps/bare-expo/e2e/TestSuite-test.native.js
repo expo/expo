@@ -1,5 +1,6 @@
 /**
  * The test cases for bare-expo E2E testing.
+ * When adding or removing tests, also update the paths in .github/workflows/test-suite.yml
  */
 const TESTS = [
   'Basic',
@@ -7,7 +8,7 @@ const TESTS = [
   // 'FileSystem',
   // 'Font',
   // 'Blur',
-  'LinearGradient',
+  // 'LinearGradient',
   'Constants',
   // 'Contacts',
   'Crypto',

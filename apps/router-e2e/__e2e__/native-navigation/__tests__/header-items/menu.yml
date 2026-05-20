@@ -1,0 +1,60 @@
+appId: com.expo.routere2e
+name: Header Items menu
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://header-items?rightMenu1=1
+- runFlow: ../close-warning.yml
+- assertVisible: "Stack Header Items E2E Test Screen"
+- tapOn: "Menu"
+- assertVisible: "Send email"
+- assertVisible:
+    id: "paperplane"
+- assertVisible: "Delete email"
+- assertVisible:
+    id: "trash"
+- assertVisible: "Archive emails"
+- assertVisible:
+    id: "tray"
+- assertVisible: "View Mode"
+- assertVisible: "Icons"
+- assertVisible:
+    id: "checkmark"
+    index: 0
+- assertVisible: "List"
+- assertVisible: "Sort By"
+- assertVisible: "Name, Ascending"
+- assertVisible:
+    id: "checkmark"
+    index: 1
+# Menu is too long to fit fully
+- swipe:
+    from:
+      text: Icons
+    direction: UP
+- assertVisible: "Preferences"
+- assertVisible: "Quick Actions"
+- assertVisible: "Locked action"
+- assertVisible:
+    id: "lock"
+- tapOn: "Preferences"
+- assertVisible: "Preferences"
+- assertVisible: "Disable notifications"
+- assertVisible: "Favorite Color"
+- assertVisible: "Red"
+- assertVisible: "Blue"
+- assertVisible:
+    id: "checkmark"
+    index: 1
+- assertVisible: "Green"
+- tapOn: "Preferences"
+- assertVisible: "Tags"
+- tapOn: "Quick Actions"
+- assertVisible:
+    id: "star"
+- assertVisible:
+    id: "flag"
+- assertVisible:
+    id: "pin"
+- tapOn: "Star"
+- assertVisible: "Star"
+- tapOn: "OK"

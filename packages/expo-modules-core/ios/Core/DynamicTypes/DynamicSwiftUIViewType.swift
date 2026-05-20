@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicType {
   let innerType: ViewType.Type
 
@@ -15,13 +17,13 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
   }
 
   /**
-   Casts from the React component instance to the view tag (`Int`).
+   Resolves the React component instance to the native SwiftUI view via its tag.
    */
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
     guard let viewTag = findViewTag(jsValue) else {
       throw InvalidViewTagException()
     }
-    return viewTag
+    return try cast(viewTag, appContext: appContext)
   }
 
   /**
@@ -31,16 +33,35 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
     guard let viewTag = value as? Int else {
       throw InvalidViewTagException()
     }
-    guard Thread.isMainThread else {
-      throw NonMainThreadException()
+    // Direct match, the virtual view's content type matches exactly.
+    // e.g. View(SlotView.self)
+    // Both the production (`SwiftUIVirtualView`, NSObject-based) and dev
+    // (`SwiftUIVirtualViewDev`, UIView-based) concrete classes are checked —
+    // only one is instantiated at runtime per build, but the type-erased
+    // `findView` lookup needs to know about both. Without this, dev builds
+    // would fall through to the `ViewWrapper` branch below, which recursively
+    // unwraps and is not strictly equivalent to returning `contentView` as-is.
+    // TODO: Migrate to @MainActor to get compile-time thread safety instead of runtime dispatch
+    return try performSynchronouslyOnMainThread {
+      if let view = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.SwiftUIVirtualView<ViewType.Props, ViewType>.self) {
+        return view.contentView
+      }
+      if let view = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.SwiftUIVirtualViewDev<ViewType.Props, ViewType>.self) {
+        return view.contentView
+      }
+      // For wrapper types
+      // e.g. ExpoUIView(SecureFieldView.self)
+      if let provider = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.ViewWrapper.self),
+         let innerView = provider.getWrappedView() as? ViewType {
+        return innerView
+      }
+      // For views using WithHostingView protocol.
+      // e.g. View(HostView.self) where HostView conforms to WithHostingView
+      guard let view = appContext.findView(withTag: viewTag, ofType: AnyExpoSwiftUIHostingView.self) else {
+        throw Exceptions.SwiftUIViewNotFound((tag: viewTag, type: innerType.self))
+      }
+      return view.getContentView()
     }
-    if let view = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.SwiftUIVirtualView<ViewType.Props, ViewType>.self) {
-      return view.contentView
-    }
-    guard let view = appContext.findView(withTag: viewTag, ofType: AnyExpoSwiftUIHostingView.self) else {
-      throw Exceptions.SwiftUIViewNotFound((tag: viewTag, type: innerType.self))
-    }
-    return view.getContentView()
   }
 
   var description: String {

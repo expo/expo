@@ -26,7 +26,7 @@ export function get(object: any, path: string | string[]) {
   let index = 0;
 
   while (object != null && index < length) {
-    object = object[segments[index++]];
+    object = object[segments[index++]!];
   }
 
   return index && index === length ? object : undefined;

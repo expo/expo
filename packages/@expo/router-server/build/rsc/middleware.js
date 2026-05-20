@@ -16,22 +16,12 @@ exports.renderRscAsync = renderRscAsync;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const node_path_1 = __importDefault(require("node:path"));
 const rsc_renderer_1 = require("./rsc-renderer");
-const debug = require('debug')('expo:router:server:rsc-renderer');
-// Tracking the implementation in expo/cli's MetroBundlerDevServer
-const rscRenderContext = new Map();
+const debug_1 = require("../utils/debug");
+const debug = (0, debug_1.createDebug)('expo:router:server:rsc-renderer');
 function serverRequire(...targetOutputModulePath) {
     // NOTE(@kitten): This `__dirname` will be located in the output file system, e.g. `dist/server/*`
     const filePath = node_path_1.default.join(__dirname, ...targetOutputModulePath);
     return $$require_external(filePath);
-}
-function getRscRenderContext(platform) {
-    // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
-    if (rscRenderContext.has(platform)) {
-        return rscRenderContext.get(platform);
-    }
-    const context = {};
-    rscRenderContext.set(platform, context);
-    return context;
 }
 function getServerActionManifest(_distFolder, platform) {
     const filePath = `../../rsc/${platform}/action-manifest.js`;
@@ -42,12 +32,11 @@ function getSSRManifest(_distFolder, platform) {
     return serverRequire(filePath);
 }
 async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType, headers }) {
-    globalThis.__expo_platform_header = platform;
     if (method === 'POST' && !body) {
         throw new Error('Server request must be provided when method is POST (server actions)');
     }
-    const context = getRscRenderContext(platform);
-    context['__expo_requestHeaders'] = headers;
+    // Must stay per-request; sharing this object across renders would leak headers between concurrent requests.
+    const context = { __expo_requestHeaders: headers };
     const router = await imports.router();
     const entries = router.default({
         redirects: expo_constants_1.default.expoConfig?.extra?.router?.redirects,
@@ -60,6 +49,8 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         context,
         config,
         input,
+        method,
+        headers,
         contentType,
         decodedBody: searchParams.get('x-expo-params'),
     }, {
@@ -67,19 +58,21 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         resolveClientEntry(file, isServer) {
             debug('resolveClientEntry', file, { isServer });
             if (isServer) {
-                if (!(file in actionManifest)) {
+                const actionManifestFile = actionManifest[file];
+                if (actionManifestFile == null) {
                     throw new Error(`Could not find file in server action manifest: ${file}. ${JSON.stringify(actionManifest)}`);
                 }
-                const [id, chunk] = actionManifest[file];
+                const [id, chunk] = actionManifestFile;
                 return {
                     id,
                     chunks: chunk ? [chunk] : [],
                 };
             }
-            if (!(file in ssrManifest)) {
+            const ssrManifestFile = ssrManifest[file];
+            if (ssrManifestFile == null) {
                 throw new Error(`Could not find file in SSR manifest: ${file}`);
             }
-            const [id, chunk] = ssrManifest[file];
+            const [id, chunk] = ssrManifestFile;
             return {
                 id,
                 chunks: chunk ? [chunk] : [],

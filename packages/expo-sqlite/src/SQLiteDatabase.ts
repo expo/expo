@@ -1,24 +1,25 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
-import { flattenOpenOptions, NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { type NativeDatabase, flattenOpenOptions, type SQLiteOpenOptions } from './NativeDatabase';
 import {
   registerDatabaseForDevToolsAsync,
   unregisterDatabaseForDevToolsAsync,
 } from './SQLiteDevToolsClient';
 import { SQLiteSession } from './SQLiteSession';
-import {
+import type {
   SQLiteBindParams,
   SQLiteExecuteAsyncResult,
   SQLiteExecuteSyncResult,
   SQLiteRunResult,
-  SQLiteStatement,
   SQLiteVariadicBindParams,
 } from './SQLiteStatement';
+import { SQLiteStatement } from './SQLiteStatement';
+import { SQLiteTaggedQuery } from './SQLiteTaggedQuery';
 import { createDatabasePath } from './pathUtils';
 
-export { SQLiteOpenOptions };
+export type { SQLiteOpenOptions } from './NativeDatabase';
 
 /**
  * A SQLite database.
@@ -304,6 +305,42 @@ export class SQLiteDatabase {
       throw e;
     }
   }
+
+  /**
+   * Execute SQL queries using tagged template literals (Bun-style API).
+   * Queries are automatically protected against SQL injection using prepared statements.
+   *
+   * The query result is directly awaitable and returns an array of objects by default.
+   * Use `.values()`, `.first()`, or `.each()` for different result formats.
+   *
+   * @example
+   * ```ts
+   * // Direct await - returns array of objects
+   * const users = await sql<User>`SELECT * FROM users WHERE age > ${21}`;
+   *
+   * // Get first row only
+   * const user = await sql<User>`SELECT * FROM users WHERE id = ${userId}`.first();
+   *
+   * // Get values as arrays
+   * const rows = await sql`SELECT name, age FROM users`.values();
+   * // Returns: [["Alice", 30], ["Bob", 25]]
+   *
+   * // INSERT/UPDATE/DELETE - returns SQLiteRunResult
+   * const result = await sql`INSERT INTO users (name, age) VALUES (${name}, ${age})` as SQLiteRunResult;
+   * console.log('Inserted row:', result.lastInsertRowId);
+   *
+   * // Iteration
+   * for await (const user of db<User>`SELECT * FROM users`.each()) {
+   *   console.log(user.name);
+   * }
+   *
+   * // Synchronous API
+   * const users = sql<User>`SELECT * FROM users WHERE age > ${21}`.allSync();
+   * const user = sql<User>`SELECT * FROM users WHERE id = ${userId}`.firstSync();
+   * ```
+   */
+  public sql = <T = unknown>(strings: TemplateStringsArray, ...values: unknown[]) =>
+    new SQLiteTaggedQuery<T>(this, strings, values);
 
   //#region Statement API shorthands
 

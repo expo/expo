@@ -1,7 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import React from 'react';
-import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, ScrollView, StyleSheet, View } from 'react-native';
+
+import { BodyText } from '../components/BodyText';
 
 interface RowProps {
   reminder: Calendar.Reminder;
@@ -17,8 +19,8 @@ const ReminderRow: React.FunctionComponent<RowProps> = ({
   deleteReminder,
 }) => (
   <View style={styles.reminderRow}>
-    <Text style={styles.reminderName}>{reminder.title}</Text>
-    <Text style={styles.reminderData}>{JSON.stringify(reminder)}</Text>
+    <BodyText style={styles.reminderName}>{reminder.title}</BodyText>
+    <BodyText style={styles.reminderData}>{JSON.stringify(reminder)}</BodyText>
     <Button onPress={() => getReminder(reminder)} title="Get Reminder Using ID" />
     <Button onPress={() => updateReminder(reminder)} title="Update Reminder" />
     <Button onPress={() => deleteReminder(reminder.id!)} title="Delete Reminder" />
@@ -75,7 +77,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
       await Calendar.createReminderAsync(calendar.id!, newReminder);
       Alert.alert('Reminder saved successfully');
       this._findReminders(calendar.id!);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
   };
@@ -84,7 +86,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
     try {
       const newReminder = await Calendar.getReminderAsync(reminder.id!);
       Alert.alert('Reminder found using getReminderAsync', JSON.stringify(newReminder));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error finding reminder', e.message);
     }
   };
@@ -103,7 +105,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
       await Calendar.updateReminderAsync(reminder.id!, newReminder);
       Alert.alert('Reminder saved successfully');
       this._findReminders(calendar.id!);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
   };
@@ -114,14 +116,14 @@ export default class RemindersScreen extends React.Component<Props, State> {
       await Calendar.deleteReminderAsync(reminderId);
       Alert.alert('Reminder deleted successfully');
       this._findReminders(calendar.id!);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Reminder not deleted successfully', e.message);
     }
   };
 
   render() {
     if (!this.props.route.params?.calendar) {
-      return <Text>Access this screen from the "Calendars" screen.</Text>;
+      return <BodyText>Access this screen from the "Calendars" screen.</BodyText>;
     }
     if (this.state.reminders.length) {
       return (
@@ -142,7 +144,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
 
     return (
       <View style={{ padding: 10 }}>
-        <Text>This calendar has no reminders.</Text>
+        <BodyText>This calendar has no reminders.</BodyText>
         <Button onPress={this._addReminder} title="Add New Reminder" />
       </View>
     );

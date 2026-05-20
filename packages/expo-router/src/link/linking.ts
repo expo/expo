@@ -1,4 +1,3 @@
-import { LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
@@ -10,8 +9,9 @@ import { getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import { getInitialURLWithTimeout } from '../fork/useLinking';
 import { applyRedirects } from '../getRoutesRedirects';
-import { StoreRedirects } from '../global-state/router-store';
-import { NativeIntent } from '../types';
+import type { StoreRedirects } from '../global-state/router-store';
+import type { LinkingOptions } from '../react-navigation/native';
+import type { NativeIntent } from '../types';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 

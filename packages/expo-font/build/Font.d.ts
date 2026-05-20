@@ -1,4 +1,4 @@
-import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
+import type { FontSource, UnloadFontOptions } from './Font.types';
 /**
  * Synchronously detect if the font for `fontFamily` has finished loading.
  *
@@ -50,5 +50,5 @@ export declare function unloadAllAsync(): Promise<void>;
  * @hidden
  */
 export declare function unloadAsync(fontFamilyOrFontMap: string | Record<string, UnloadFontOptions>, options?: UnloadFontOptions): Promise<void>;
-export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
+export { FontDisplay, type FontSource, type FontResource, type UnloadFontOptions, type ServerFontResourceDescriptor, } from './Font.types';
 //# sourceMappingURL=Font.d.ts.map

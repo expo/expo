@@ -6,23 +6,16 @@ import {
   ensureSimulatorOpenAsync,
 } from '../../../start/platforms/ios/AppleDeviceManager';
 import { sortDefaultDeviceToBeginningAsync } from '../../../start/platforms/ios/promptAppleDevice';
-import { OSType } from '../../../start/platforms/ios/simctl';
+import type { OSType } from '../../../start/platforms/ios/simctl';
 import * as SimControl from '../../../start/platforms/ios/simctl';
 import { uniqBy } from '../../../utils/array';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { logDeviceArgument } from '../../hints';
-import { BuildProps } from '../XcodeBuild.types';
+import type { BuildProps } from '../XcodeBuild.types';
 import * as AppleDevice from '../appleDevice/AppleDevice';
 
-type AnyDevice = {
-  name: string;
-  osType: OSType;
-  osVersion: string;
-  udid: string;
-  deviceType?: string;
-};
-// type AnyDevice = SimControl.Device | AppleDevice.ConnectedDevice;
+type AnyDevice = SimControl.Device | AppleDevice.ConnectedDevice;
 
 /** Get a list of devices (called destinations) that are connected to the host machine. Filter by `osType` if defined. */
 async function getDevicesAsync({
@@ -90,11 +83,19 @@ function filterDevicesForOsType<TDevice extends { osType: OSType }>(
   });
 }
 
-/** Given a `device` argument from the CLI, parse and prompt our way to a usable device for building. */
+/** Given a `device` argument from the CLI, parse and prompt our way to a usable device for building.
+ * Returns `null` when device is "generic" for build-only workflows using generic simulator destination.
+ */
 export async function resolveDeviceAsync(
   device: string | boolean | undefined,
   buildProps: { osType?: OSType } & Pick<BuildProps, 'xcodeProject' | 'scheme' | 'configuration'>
-): Promise<AnyDevice> {
+): Promise<AnyDevice | null> {
+  // "generic" is a special value that means build for a generic simulator destination
+  // without targeting a specific device. This is useful for CI or build-only workflows.
+  if (device === 'generic') {
+    return null;
+  }
+
   await AppleDeviceManager.assertSystemRequirementsAsync();
 
   if (!device) {
@@ -115,7 +116,6 @@ export async function resolveDeviceAsync(
   const resolved =
     device === true
       ? // `--device` (no props after)
-        // @ts-expect-error
         await promptDeviceAsync(devices)
       : // `--device <name|udid>`
         findDeviceFromSearchValue(devices, device.toLowerCase());

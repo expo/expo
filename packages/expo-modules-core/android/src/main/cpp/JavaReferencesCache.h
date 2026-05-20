@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-
-#include <memory>
-#include <unordered_map>
+#include "ExpoHeader.pch"
 
 namespace jni = facebook::jni;
 
@@ -48,6 +45,8 @@ public:
   jclass jJavaScriptObject;
   jclass jJavaScriptValue;
   jclass jJavaScriptTypedArray;
+  jclass jJavaScriptArrayBuffer;
+  jclass jNativeArrayBuffer;
 
   jclass jReadableNativeArray;
   jclass jReadableNativeMap;

@@ -1,15 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAbstractLoader.h"
-#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXUtil.h"
 #import "ExpoKit.h"
 #import "EXReactAppManager.h"
+#import "Expo_Go-Swift.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTUtils.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
@@ -54,10 +53,9 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
   if (destinationApp) {
     [[EXKernel sharedInstance] sendUrl:urlToRoute.absoluteString toAppRecord:destinationApp];
   } else {
-    if ([EXKernel sharedInstance].appRegistry.homeAppRecord
-        && [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager.status == kEXReactAppManagerStatusRunning) {
-      // if Home is present and running, open a new app with this url.
-      // if home isn't running yet, we'll handle the LaunchOptions url after home finishes launching.
+    if ([EXKernel sharedInstance].browserController) {
+      // Open a new app with this url.
+      // If home isn't initialized yet, we'll handle the LaunchOptions url after home finishes launching.
 
       if (@available(iOS 14, *)) {
         // Try to detect if we're trying to open a local network URL so we can preemptively show the
@@ -75,13 +73,51 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
         }
       }
 
-      // Since this method might have been called on any thread,
-      // let's make sure we create a new app on the main queue.
+      // Route ALL new apps through ExpoGoHomeBridge for consolidated session handling.
+      // This ensures snack sessions are set up before the app loads, eliminating race conditions.
       RCTExecuteOnMainQueue(^{
-        [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
+        NSDictionary *snackParams = [self extractSnackParamsFromURL:urlToRoute];
+        [[ExpoGoHomeBridge shared] openAppWithUrl:urlToRoute.absoluteString
+                                      snackParams:snackParams
+                                       completion:^(BOOL success, NSString *error) {
+          if (!success) {
+            DDLogError(@"Failed to open app via bridge: %@", error);
+          }
+        }];
       });
     }
   }
+}
+
+// Helper to extract snack params from URL.
+// Snacks are detected by the presence of `snack-channel` query param.
+// Without a channel, we can't connect to Snackpub to set up the session.
+- (NSDictionary *)extractSnackParamsFromURL:(NSURL *)url {
+  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+
+  NSString *snackId = nil;
+  NSString *channel = nil;
+
+  for (NSURLQueryItem *item in components.queryItems) {
+    if ([item.name isEqualToString:@"snack"]) {
+      snackId = item.value;
+    } else if ([item.name isEqualToString:@"snack-channel"]) {
+      channel = item.value;
+    }
+  }
+
+  // Must have channel to set up session - without it we can't connect to Snackpub
+  if (channel) {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"channel"] = channel;
+    if (snackId) {
+      params[@"snackId"] = snackId;
+    }
+    params[@"isStaging"] = @([url.absoluteString containsString:@"staging"]);
+    return params;
+  }
+
+  return nil;
 }
 
 #pragma mark - scoped module delegate

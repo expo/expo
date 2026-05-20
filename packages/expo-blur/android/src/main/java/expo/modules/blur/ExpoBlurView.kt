@@ -107,15 +107,6 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
           this.setBackgroundColor(Color.TRANSPARENT)
         }
       }
-
-      BlurMethod.DIMEZIS_BLUR_VIEW_SDK_31_PLUS -> {
-        val isNewSdk = Build.VERSION.SDK_INT >= 31
-        blurView.setBlurEnabled(isNewSdk)
-
-        if (isNewSdk) {
-          this.setBackgroundColor(Color.TRANSPARENT)
-        }
-      }
     }
     // Update of the blur to the current blurRadius value
     setBlurRadius(blurRadius)
@@ -158,7 +149,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   private fun configureBlurView() {
     if (blurTarget == null || blurMethod == BlurMethod.NONE) {
       blurView.setBlurEnabled(false)
-      blurConfiguration == BlurViewConfiguration.NONE
+      blurConfiguration = BlurViewConfiguration.NONE
       return
     }
 
@@ -170,7 +161,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
 
     blurView.setupWith(dimezisBlurTarget)
       .setFrameClearDrawable(decorView.background)
-      .setBlurRadius(blurRadius)
+      .setBlurRadius(blurRadius / blurReduction)
 
     blurConfiguration = BlurViewConfiguration.DIMEZIS
   }

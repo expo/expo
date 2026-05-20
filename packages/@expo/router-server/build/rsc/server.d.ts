@@ -6,12 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { ReactNode } from 'react';
-import type { PathSpec } from './path';
 export declare const REQUEST_HEADERS = "__expo_requestHeaders";
 type Config = any;
 type Elements = Record<string, ReactNode>;
 export type BuildConfig = {
-    pathname: string | PathSpec;
+    pathname: string;
     isStatic?: boolean | undefined;
     entries?: {
         input: string;
@@ -46,7 +45,7 @@ export type EntriesDev = {
 export type EntriesPrd = EntriesDev & {
     loadConfig: () => Promise<Config>;
     loadModule: (id: string) => Promise<unknown>;
-    dynamicHtmlPaths: [pathSpec: PathSpec, htmlHead: string][];
+    dynamicHtmlPaths: [pathname: string, htmlHead: string][];
     publicIndexHtml: string;
 };
 type RenderStore = {
@@ -59,7 +58,5 @@ type RenderStore = {
 export declare const runWithRenderStore: <T>(renderStore: RenderStore, fn: () => T) => T;
 export declare function rerender(input: string, params?: unknown): Promise<void>;
 export declare function getContext<RscContext extends Record<string, unknown> = Record<string, unknown>>(): RscContext;
-/** Get the request headers used to make the server component or action request. */
-export declare function unstable_headers(): Promise<Headers>;
 export {};
 //# sourceMappingURL=server.d.ts.map

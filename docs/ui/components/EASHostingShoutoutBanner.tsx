@@ -25,7 +25,7 @@ export function EASHostingShoutoutBanner() {
     <div
       className={mergeClasses(
         'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg border border-success bg-palette-green2 px-6 py-4 shadow-xs',
-        'max-md-gutters:flex-wrap'
+        'max-md:flex-wrap'
       )}>
       <svg
         className="absolute left-[37.5%] -mt-1 rotate-45 opacity-35 dark:opacity-25"
@@ -64,14 +64,14 @@ export function EASHostingShoutoutBanner() {
         />
       </svg>
       <div className="flex items-center gap-4">
-        <div className="relative z-10 p-2 max-sm-gutters:hidden">
+        <div className="relative z-10 p-2 max-sm:hidden">
           <div
             className={mergeClasses(
-              'asset-sm-shadow absolute inset-0 rounded-md bg-palette-green10',
+              'absolute inset-0 rounded-md bg-palette-green10 asset-sm-shadow',
               'dark:bg-palette-green6'
             )}
           />
-          <Cloud01Icon className="icon-lg relative z-10 text-palette-white" />
+          <Cloud01Icon className="relative z-10 icon-lg text-palette-white" />
         </div>
         <div className="relative grid grid-cols-1">
           <p className="text-base font-medium text-success">EAS Hosting</p>

@@ -65,7 +65,7 @@ function ISODateString(d) {
 const toString = Object.prototype.toString;
 function type(obj) {
     const m = toString.call(obj).match(/\[object (.*)\]/);
-    return m ? m[1] : m;
+    return m?.[1] ?? null;
 }
 /**
  * Generate an XML plist string from the input object `obj`.
@@ -118,7 +118,7 @@ function walk_obj(next, next_child) {
     else if (name === 'Object') {
         next_child = next_child.ele('dict');
         for (prop in next) {
-            if (next.hasOwnProperty(prop) && next[prop] !== undefined) {
+            if (Object.prototype.hasOwnProperty.call(next, prop) && next[prop] !== undefined) {
                 next_child.ele('key').txt(prop);
                 walk_obj(next[prop], next_child);
             }

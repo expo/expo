@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import {
+import { memoize } from './memoize';
+import type {
   AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
   AndroidPublication,
@@ -9,7 +10,6 @@ import {
   RawModuleConfigApple,
   SupportedPlatform,
 } from './types';
-import { memoize } from './utils';
 
 function arrayize<T>(value: T[] | T | undefined): T[] {
   if (Array.isArray(value)) {
@@ -30,6 +30,7 @@ export class ExpoAndroidProjectConfig {
     public name: string,
     public path: string,
     public modules?: ExpoAndroidModuleConfig[],
+    public services?: string[],
     public publication?: AndroidPublication,
     public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
     public shouldUsePublicationScriptPath?: string,
@@ -138,6 +139,7 @@ export class ExpoModuleConfig {
             ? new ExpoAndroidModuleConfig(module, null)
             : new ExpoAndroidModuleConfig(module.class, module.name)
         ),
+        this.rawConfig.android?.services,
         this.rawConfig.android?.publication,
         this.rawConfig.android?.gradleAarProjects,
         this.rawConfig.android?.shouldUsePublicationScriptPath,
@@ -155,6 +157,7 @@ export class ExpoModuleConfig {
               ? new ExpoAndroidModuleConfig(module, null)
               : new ExpoAndroidModuleConfig(module.class, module.name)
           ),
+          project.services,
           project.publication,
           project.gradleAarProjects,
           project.shouldUsePublicationScriptPath
@@ -210,7 +213,7 @@ export const discoverExpoModuleConfigAsync = memoize(async function discoverExpo
   for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
     // TODO: Validate the raw config against a schema.
     // TODO: Support for `*.js` files, not only static `*.json`.
-    const targetPath = path.join(directoryPath, EXPO_MODULE_CONFIG_FILENAMES[idx]);
+    const targetPath = path.join(directoryPath, EXPO_MODULE_CONFIG_FILENAMES[idx] ?? '');
     let text: string;
     try {
       text = await fs.promises.readFile(targetPath, 'utf8');

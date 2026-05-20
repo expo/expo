@@ -2,20 +2,45 @@
 
 import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
-import { StyleSheet, type View } from 'react-native';
+import { StyleSheet, processColor, type ImageStyle, type TextStyle, type View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
-import {
+import type {
   ImageCacheConfig,
   ImageLoadOptions,
   ImagePrefetchOptions,
   ImageProps,
   ImageRef,
   ImageSource,
+  SFSymbolEffect,
+  SFSymbolEffectObject,
 } from './Image.types';
 import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 import { resolveSource, resolveSources } from './utils/resolveSources';
+
+/**
+ * Normalizes the `sfEffect` prop to always be an array of `SFSymbolEffectObject`.
+ * Supports: string, object, or array of strings/objects.
+ */
+function resolveSfEffect(
+  sfEffect: SFSymbolEffect | null | undefined
+): SFSymbolEffectObject[] | null {
+  if (sfEffect == null) {
+    return null;
+  }
+
+  // Convert to array if not already
+  const effectsArray = Array.isArray(sfEffect) ? sfEffect : [sfEffect];
+
+  // Normalize each item to SFSymbolEffectObject
+  return effectsArray.map((item): SFSymbolEffectObject => {
+    if (typeof item === 'string') {
+      return { effect: item };
+    }
+    return item;
+  });
+}
 
 let loggedDefaultSourceDeprecationWarning = false;
 let loggedRenderingChildrenWarning = false;
@@ -221,7 +246,10 @@ export class Image extends React.PureComponent<ImageProps> {
     options?: ImageLoadOptions
   ): Promise<ImageRef> {
     const resolvedSource = resolveSource(source) as ImageSource;
-    return await ImageModule.loadAsync(resolvedSource, options);
+    const resolvedOptions = options?.tintColor
+      ? { ...options, tintColor: processColor(options.tintColor) as number }
+      : options;
+    return await ImageModule.loadAsync(resolvedSource, resolvedOptions);
   }
 
   render() {
@@ -236,10 +264,17 @@ export class Image extends React.PureComponent<ImageProps> {
       resizeMode: resizeModeProp,
       defaultSource,
       loadingIndicatorSource,
+      sfEffect,
       ...restProps
     } = this.props;
 
-    const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten(style) || {};
+    const {
+      resizeMode: resizeModeStyle,
+      fontWeight: fontWeightStyle,
+      color: colorStyle,
+      fontSize: fontSizeStyle,
+      ...restStyle
+    } = (StyleSheet.flatten(style) as ImageStyle & TextStyle) || {};
     const resizeMode = resizeModeProp ?? resizeModeStyle;
 
     if ((defaultSource || loadingIndicatorSource) && !loggedDefaultSourceDeprecationWarning) {
@@ -255,15 +290,40 @@ export class Image extends React.PureComponent<ImageProps> {
       );
       loggedRenderingChildrenWarning = true;
     }
+    // Resolve sources
+    const resolvedSource = resolveSources(source);
+    const isSFSymbol =
+      Array.isArray(resolvedSource) && resolvedSource.some((s) => s?.uri?.startsWith('sf:/'));
+
+    // For SF Symbols, fontSize sets both the symbol point size and container dimensions
+    const resolvedStyle =
+      isSFSymbol && fontSizeStyle
+        ? { width: fontSizeStyle, height: fontSizeStyle, ...restStyle }
+        : restStyle;
+
     return (
       <ExpoImage
         {...restProps}
-        style={restStyle}
-        source={resolveSources(source)}
+        style={resolvedStyle}
+        source={resolvedSource}
         placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)}
-        contentFit={resolveContentFit(contentFit, resizeMode)}
+        contentFit={resolveContentFit(contentFit, resizeMode, isSFSymbol)}
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
+        sfEffect={resolveSfEffect(sfEffect)}
+        tintColor={
+          isSFSymbol && colorStyle && !restProps.tintColor
+            ? (colorStyle as string)
+            : restProps.tintColor
+        }
+        symbolWeight={
+          isSFSymbol
+            ? typeof fontWeightStyle === 'number'
+              ? String(fontWeightStyle)
+              : fontWeightStyle
+            : null
+        }
+        symbolSize={isSFSymbol && fontSizeStyle ? fontSizeStyle : null}
         nativeViewRef={this.nativeViewRef}
         containerViewRef={this.containerViewRef}
       />

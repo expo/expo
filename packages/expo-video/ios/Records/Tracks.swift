@@ -11,35 +11,69 @@ internal struct SubtitleTrack: Record {
   @Field
   var label: String? = nil
 
-  static func from(mediaSelectionOption option: AVMediaSelectionOption) -> SubtitleTrack? {
+  @Field
+  var name: String? = nil
+
+  @Field
+  var isDefault: Bool = false
+
+  @Field
+  var autoSelect: Bool = false
+
+  static func from(mediaSelectionOption option: AVMediaSelectionOption, in group: AVMediaSelectionGroup? = nil) -> SubtitleTrack? {
     guard let identifier = option.locale?.identifier else {
       return nil
     }
 
-    return SubtitleTrack(language: identifier, label: option.displayName)
+    let isDefault = group?.defaultOption == option
+    let autoSelect = option.hasMediaCharacteristic(.isAuxiliaryContent) == false
+
+    return SubtitleTrack(
+      language: identifier,
+      label: option.displayName,
+      name: option.commonMetadata.first(where: { $0.commonKey == .commonKeyTitle })?.stringValue,
+      isDefault: isDefault,
+      autoSelect: autoSelect
+    )
   }
 }
 
 internal struct AudioTrack: Record {
   @Field var language: String? = nil
   @Field var label: String? = nil
+  @Field var name: String? = nil
+  @Field var isDefault: Bool = false
+  @Field var autoSelect: Bool = false
 
-  static func from(mediaSelectionOption option: AVMediaSelectionOption) -> AudioTrack? {
+  static func from(mediaSelectionOption option: AVMediaSelectionOption, in group: AVMediaSelectionGroup? = nil) -> AudioTrack? {
     guard let identifier = option.locale?.identifier else {
       return nil
     }
 
-    return AudioTrack(language: identifier, label: option.displayName)
+    let isDefault = group?.defaultOption == option
+    let autoSelect = option.hasMediaCharacteristic(.isAuxiliaryContent) == false
+
+    return AudioTrack(
+      language: identifier,
+      label: option.displayName,
+      name: option.commonMetadata.first(where: { $0.commonKey == .commonKeyTitle })?.stringValue,
+      isDefault: isDefault,
+      autoSelect: autoSelect
+    )
   }
 }
 
 internal struct VideoTrack: Record, Equatable {
   @Field var id: String? = nil
+  @Field var url: URL? = nil
   @Field var size: VideoSize? = nil
   @Field var mimeType: String? = nil
-  @Field var bitrate: Int? = nil
+  @Field var bitrate: Int? = nil // deprecated as of SDK 55
+  @Field var peakBitrate: Int? = nil
+  @Field var averageBitrate: Int? = nil
   @Field var isSupported: Bool = true
   @Field var frameRate: Float? = nil
+  @Field var videoRange: VideoRange? = nil
 
   static func == (lhs: VideoTrack, rhs: VideoTrack) -> Bool {
     guard lhs.id != nil, rhs.id != nil else {
@@ -49,23 +83,68 @@ internal struct VideoTrack: Record, Equatable {
   }
 
   static func from(assetTrack: AVAssetTrack) async -> VideoTrack {
-    var bitrate: Int?
+    var averageBitrate: Int?
     var size: VideoSize?
     let supported = (try? await assetTrack.load(.isPlayable)) ?? true
     let mediaFormat = try? await assetTrack.mediaFormat
     let frameRate = try? await assetTrack.load(.nominalFrameRate)
+    let safeFrameRate = (frameRate?.isFinite == true) ? frameRate : nil
 
-    if let bitrateFloat = try? await assetTrack.load(.estimatedDataRate) {
-      bitrate = Int(bitrateFloat)
+    if let bitrateFloat = try? await assetTrack.load(.estimatedDataRate), bitrateFloat.isFinite {
+      averageBitrate = Int(bitrateFloat)
     }
-    if let cgSize = try? await assetTrack.load(.naturalSize) {
+
+    let videoRange = VideoRange.from(videoRange: await assetTrack.avVideoRange)
+    let peakBitrate = await assetTrack.getPeakBitrate()
+
+    if let cgSize = try? await assetTrack.load(.naturalSize), cgSize.width.isFinite, cgSize.height.isFinite {
       size = VideoSize.from(cgSize)
     }
 
-    return VideoTrack(id: "\(assetTrack.trackID)", size: size, mimeType: mediaFormat, bitrate: bitrate, isSupported: supported, frameRate: frameRate)
+    return VideoTrack(
+      id: "\(assetTrack.trackID)",
+      size: size,
+      mimeType: mediaFormat,
+      bitrate: peakBitrate ?? averageBitrate,
+      peakBitrate: peakBitrate,
+      averageBitrate: averageBitrate,
+      isSupported: supported,
+      frameRate: safeFrameRate,
+      videoRange: videoRange
+    )
   }
 
-  static func from(hlsHeaderLine: String, idLine: String) -> VideoTrack? {
+  @available(iOS 26, tvOS 26, *)
+  static func from(assetVariant: AVAssetVariant, isPlayable: Bool, mainUrl: URL) -> VideoTrack? {
+    guard let videoAttributes = assetVariant.videoAttributes else {
+      return nil
+    }
+
+    let trackUrl = assetVariant.url
+    let id = extractHlsTrackId(trackUrl: trackUrl, mainUrl: mainUrl)
+    let videoSize = videoAttributes.videoSize
+    let mimeType = videoAttributes.getFormattedCodecString()
+    let frameRate = videoAttributes.nominalFrameRate.flatMap(Float.init)
+    let peakBitrate = assetVariant.peakBitRate.flatMap { $0.isFinite ? Int($0) : nil }
+    let averageBitrate = assetVariant.averageBitRate.flatMap { $0.isFinite ? Int($0) : nil }
+    let safeFrameRate = (frameRate?.isFinite == true) ? frameRate : nil
+    let videoRange = VideoRange.from(videoRange: assetVariant.videoAttributes?.videoRange ?? .sdr)
+
+    return VideoTrack(
+      id: id,
+      url: trackUrl,
+      size: videoSize,
+      mimeType: mimeType,
+      bitrate: peakBitrate ?? averageBitrate,
+      peakBitrate: peakBitrate,
+      averageBitrate: averageBitrate,
+      isSupported: isPlayable,
+      frameRate: safeFrameRate,
+      videoRange: videoRange
+    )
+  }
+
+  static func from(hlsHeaderLine: String, idLine: String, mainUrl: URL) -> VideoTrack? {
     // The minimum information we require from a video track is it's resolution
     guard hlsHeaderLine.starts(with: "#EXT-X-STREAM-INF"), hlsHeaderLine.contains("RESOLUTION") else {
       return nil
@@ -91,20 +170,39 @@ internal struct VideoTrack: Record, Equatable {
       return nil
     }
 
+    let id = idLine.trimmingCharacters(in: .whitespacesAndNewlines)
     let size = VideoSize(width: width, height: height)
     let mimeType = codecsToMimeType(codecs: details["CODECS"])
-    var bitrate: Int? = nil
+    let videoRangeString = details["VIDEO-RANGE"]?.lowercased() ?? "sdr"
+    let videoRange = VideoRange(rawValue: videoRangeString ) ?? .sdr
+    var peakBitrage: Int? = nil
+    var averageBitrate: Int? = nil
     var frameRate: Float? = nil
 
-    // Use the default Andorid behavior for reporting the bitrate
-    if let bitrateString = details["BANDWIDTH"] ?? details["AVERAGE-BANDWIDTH"] {
-      bitrate = Int(bitrateString)
+    if let peakBitrateString = details["BANDWIDTH"] {
+      peakBitrage = Int(peakBitrateString)
+    }
+    if let averageBitrateString = details["AVERAGE-BANDWIDTH"] {
+      averageBitrate = Int(averageBitrateString)
     }
     if let frameRateString = details["FRAME-RATE"] {
       frameRate = Float(frameRateString)
     }
 
-    return VideoTrack(id: idLine, size: size, mimeType: mimeType, bitrate: bitrate, frameRate: frameRate)
+    // Use the default Andorid behavior for reporting the bitrate
+    let bitrate = peakBitrage ?? averageBitrate
+
+    return VideoTrack(
+      id: id,
+      url: resolveMediaUrl(pathLine: idLine, mainUrl: mainUrl),
+      size: size,
+      mimeType: mimeType,
+      bitrate: bitrate,
+      peakBitrate: peakBitrage,
+      averageBitrate: averageBitrate,
+      frameRate: frameRate,
+      videoRange: videoRange
+    )
   }
 
   // I'm not aware of any built in conversion functions. For HLS sources we only need to worry about a few formats though.
@@ -129,48 +227,3 @@ internal struct VideoTrack: Record, Equatable {
   }
 }
 // swiftlint:enable redundant_optional_initialization
-
-// https://developer.apple.com/documentation/avfoundation/avpartialasyncproperty/formatdescriptions
-private extension AVAssetTrack {
-  var mediaFormat: String {
-    get async throws {
-      var format = ""
-      let descriptions = try await load(.formatDescriptions)
-      for (index, formatDesc) in descriptions.enumerated() {
-        let subType = CMFormatDescriptionGetMediaSubType(formatDesc).toString()
-
-        // The reported subType is different for iOS and Android, ideally they should be the same
-        let correctedSubType: String
-        switch subType {
-        case "avc1": // H264 videos
-          correctedSubType = "avc"
-        case "hev1": // H265 videos
-          correctedSubType = "hevc"
-        default:
-          correctedSubType = subType
-        }
-        format += "video/\(correctedSubType)"
-        if index < descriptions.count - 1 {
-          format += ","
-        }
-      }
-      return format
-    }
-  }
-}
-
-private extension FourCharCode {
-  // Create a string representation of a FourCC.
-  func toString() -> String {
-    let bytes: [CChar] = [
-      CChar((self >> 24) & 0xff),
-      CChar((self >> 16) & 0xff),
-      CChar((self >> 8) & 0xff),
-      CChar(self & 0xff),
-      0
-    ]
-    let result = String(cString: bytes)
-    let characterSet = CharacterSet.whitespaces
-    return result.trimmingCharacters(in: characterSet)
-  }
-}

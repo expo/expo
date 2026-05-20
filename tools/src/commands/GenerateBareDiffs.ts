@@ -3,6 +3,7 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
+import npmPacklist from 'npm-packlist';
 import os from 'os';
 import path from 'path';
 import semver from 'semver';
@@ -56,19 +57,27 @@ function sdkToBranch(sdkVersion: string) {
   return `sdk-${sdkVersion}`;
 }
 
-async function executeDiffCommand(diffDirPathRaw, sdkFrom: string, sdkTo: string) {
+const TEMPLATE_PATH = 'templates/expo-template-bare-minimum';
+
+async function getTemplatePathspecs(): Promise<string[]> {
+  const packlist = await npmPacklist({ path: path.join(EXPO_DIR, TEMPLATE_PATH) });
+  return packlist.map((f) => `${TEMPLATE_PATH}/${f}`);
+}
+
+async function executeDiffCommand(
+  diffDirPathRaw,
+  sdkFrom: string,
+  sdkTo: string,
+  pathspecs: string[]
+) {
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
   const diffPath = path.join(diffDirPathRaw, `${sdkFrom}..${sdkTo}.diff`);
 
   await Git.fetchAsync();
 
-  const diff = await spawnAsync(
-    'git',
-    ['diff', diffCommand, '--', 'templates/expo-template-bare-minimum'],
-    {
-      cwd: EXPO_DIR,
-    }
-  );
+  const diff = await spawnAsync('git', ['diff', diffCommand, '--', ...pathspecs], {
+    cwd: EXPO_DIR,
+  });
 
   // write raw diff for later comparison to see if templates changed.
   await fs.writeFile(diffPath, diff.stdout);
@@ -112,7 +121,7 @@ async function action({ check = false }: ActionOptions) {
     await fs.remove(diffDirPathRaw);
     await fs.ensureDir(diffDirPathRaw);
 
-    //const diffPairs: string[] = [];
+    const pathspecs = await getTemplatePathspecs();
 
     // start with the lowest SDK version and diff it with all other SDK versions equal to or lower than it
     sdkVersionsToDiff.forEach((toSdkVersion) => {
@@ -122,7 +131,9 @@ async function action({ check = false }: ActionOptions) {
           : sdkVersionsToDiff.filter((s) => s <= toSdkVersion);
       sdkVersionsLowerThenOrEqualTo.forEach((fromSdkVersion) => {
         diffJobs.push(
-          taskQueue.add(() => executeDiffCommand(diffDirPathRaw, fromSdkVersion, toSdkVersion))
+          taskQueue.add(() =>
+            executeDiffCommand(diffDirPathRaw, fromSdkVersion, toSdkVersion, pathspecs)
+          )
         );
       });
     });

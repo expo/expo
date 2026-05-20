@@ -68,12 +68,12 @@ const generalDirectories = fs
 
 export const home = [
   makeSection('Get started', [
-    makePage('get-started/introduction.mdx'),
     makePage('get-started/create-a-project.mdx'),
     makePage('get-started/set-up-your-environment.mdx'),
     makePage('get-started/start-developing.mdx'),
     makePage('get-started/next-steps.mdx'),
   ]),
+  makeSection('AI', [makePage('skills.mdx'), makePage('llms.mdx')]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
     makePage('develop/app-navigation.mdx'),
@@ -129,6 +129,7 @@ export const home = [
       ],
       { expanded: false }
     ),
+    makePage('develop/database.mdx'),
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
@@ -145,7 +146,7 @@ export const home = [
     makePage('deploy/web.mdx'),
   ]),
   makeSection('Monitor', [makePage('monitoring/services.mdx')]),
-  makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx'), makePage('llms.mdx')]),
+  makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
 
 export const general = [
@@ -177,7 +178,7 @@ export const general = [
       { expanded: false }
     ),
     makeGroup(
-      'Compile locally',
+      'Build locally',
       [
         makePage('guides/local-app-overview.mdx'),
         makePage('guides/local-app-development.mdx'),
@@ -222,7 +223,9 @@ export const general = [
     ]),
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
-      makePage('brownfield/get-started.mdx'),
+      makePage('brownfield/isolated-approach.mdx'),
+      makePage('brownfield/integrated-approach.mdx'),
+      makePage('brownfield/lifecycle-listeners.mdx'),
     ]),
     makeGroup(
       'Reference',
@@ -245,7 +248,7 @@ export const general = [
     makeGroup('Router 101', [
       makePage('router/basics/core-concepts.mdx'),
       makePage('router/basics/notation.mdx'),
-      makePage('router/basics/layout.mdx'),
+      makePage('router/basics/navigation-layouts.mdx'),
       makePage('router/basics/navigation.mdx'),
       makePage('router/basics/common-navigation-patterns.mdx'),
     ]),
@@ -268,16 +271,22 @@ export const general = [
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
+      makePage('router/advanced/stack-toolbar.mdx'),
+      makePage('router/advanced/zoom-transition.mdx'),
     ]),
     makeGroup('Web', [
       makePage('router/web/api-routes.mdx'),
+      makePage('router/web/data-loaders.mdx'),
       makePage('router/web/middleware.mdx'),
+      makePage('router/web/server-headers.mdx'),
       makePage('router/web/static-rendering.mdx'),
+      makePage('router/web/server-rendering.mdx'),
       makePage('router/web/async-routes.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('router/error-handling.mdx'),
       makePage('router/reference/url-parameters.mdx'),
+      makePage('router/reference/color.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/link-preview.mdx'),
@@ -286,10 +295,12 @@ export const general = [
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
+      makePage('router/reference/reserved-paths.mdx'),
     ]),
     makeGroup('Migration', [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
+      makePage('router/migrate/sdk-55-to-56.mdx'),
     ]),
   ]),
   makeSection(
@@ -300,6 +311,8 @@ export const general = [
       makeSection('Tutorials', [
         makePage('modules/native-module-tutorial.mdx'),
         makePage('modules/native-view-tutorial.mdx'),
+        makePage('modules/inline-modules-tutorial.mdx'),
+        makePage('modules/type-generation-tutorial.mdx'),
         makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
         makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
         makePage('modules/third-party-library.mdx'),
@@ -308,9 +321,12 @@ export const general = [
       ]),
       makeSection('Reference', [
         makePage('modules/module-api.mdx'),
+        makePage('modules/inline-modules-reference.mdx'),
+        makePage('modules/type-generation-reference.mdx'),
         makePage('modules/android-lifecycle-listeners.mdx'),
         makePage('modules/appdelegate-subscribers.mdx'),
         makePage('modules/autolinking.mdx'),
+        makePage('modules/shared-objects.mdx'),
         makePage('modules/module-config.mdx'),
         makePage('modules/mocking.mdx'),
         makePage('modules/design.mdx'),
@@ -334,10 +350,43 @@ export const general = [
       { expanded: false }
     ),
   ]),
+  makeSection('Integrations', [
+    makeGroup('Analytics and error reports', [
+      makePage('guides/using-analytics.mdx'),
+      makePage('guides/using-sentry.mdx'),
+      makePage('guides/using-bugsnag.mdx'),
+      makePage('guides/using-logrocket.mdx'),
+      makePage('guides/using-vexo.mdx'),
+    ]),
+    makeGroup('Authentication', [
+      makePage('guides/using-authentication.mdx'),
+      makePage('guides/using-clerk.mdx'),
+      makePage('guides/facebook-authentication.mdx'),
+      makePage('guides/google-authentication.mdx'),
+    ]),
+    makeGroup('CMS', [makePage('guides/using-a-cms.mdx')]),
+    makeGroup('Database and SDKs', [
+      makePage('guides/using-convex.mdx'),
+      makePage('guides/using-firebase.mdx'),
+      makePage('guides/using-supabase.mdx'),
+    ]),
+    makeGroup('Emails', [makePage('guides/using-resend.mdx')]),
+    makeGroup('Feature flags', [makePage('guides/using-feature-flags.mdx')]),
+    makeGroup('In-app purchases', [makePage('guides/in-app-purchases.mdx')]),
+    makeGroup('Push notifications', [makePage('guides/using-push-notifications-services.mdx')]),
+    makeGroup('Tools', [makePage('guides/using-eslint.mdx'), makePage('guides/typescript.mdx')]),
+    makeGroup('TV apps', [makePage('guides/building-for-tv.mdx')]),
+    makeGroup('Web apps', [makePage('guides/using-nextjs.mdx')]),
+  ]),
   makeSection(
     'More',
     [
       makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
+      makeSection('SDK libraries migration', [
+        makePage('guides/sdk-libraries-migration/media-library.mdx'),
+        makePage('guides/sdk-libraries-migration/calendar.mdx'),
+        makePage('guides/sdk-libraries-migration/contacts.mdx'),
+      ]),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
         makePage('guides/using-hermes.mdx'),
@@ -350,25 +399,11 @@ export const general = [
         makePage('guides/store-assets.mdx'),
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
-        makePage('guides/expo-ui-swift-ui.mdx'),
       ]),
-      makeSection('Integrations', [
-        makePage('guides/using-analytics.mdx'),
-        makePage('guides/facebook-authentication.mdx'),
-        makePage('guides/using-supabase.mdx'),
-        makePage('guides/using-firebase.mdx'),
-        makePage('guides/google-authentication.mdx'),
-        makePage('guides/using-eslint.mdx'),
-        makePage('guides/using-nextjs.mdx'),
-        makePage('guides/using-logrocket.mdx'),
-        makePage('guides/using-sentry.mdx'),
-        makePage('guides/using-bugsnag.mdx'),
-        makePage('guides/using-vexo.mdx'),
-        makePage('guides/building-for-tv.mdx'),
-        makePage('guides/typescript.mdx'),
-        makePage('guides/in-app-purchases.mdx'),
-        makePage('guides/using-push-notifications-services.mdx'),
-        makePage('guides/using-feature-flags.mdx'),
+      makeSection('Expo UI', [
+        makePage('guides/expo-ui-swift-ui/index.mdx'),
+        makePage('guides/expo-ui-swift-ui/extending.mdx'),
+        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
@@ -394,7 +429,18 @@ export const eas = [
     [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
-      makePage('eas/environment-variables.mdx'),
+      makePage('eas/cli.mdx'),
+      makeGroup(
+        'Environment variables',
+        [
+          makePage('eas/environment-variables/index.mdx'),
+          makePage('eas/environment-variables/manage.mdx'),
+          makePage('eas/environment-variables/usage.mdx'),
+          makePage('eas/environment-variables/without-eas.mdx'),
+          makePage('eas/environment-variables/faq.mdx'),
+        ],
+        { expanded: false }
+      ),
     ],
     {
       expanded: true,
@@ -402,6 +448,7 @@ export const eas = [
   ),
   makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
+    makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
@@ -470,6 +517,7 @@ export const eas = [
         makePage('build-reference/app-extensions.mdx'),
         makePage('build-reference/easignore.mdx'),
         makePage('build-reference/npx-testflight.mdx'),
+        makePage('build-reference/repack.mdx'),
         makePage('build-reference/limitations.mdx'),
       ],
       { expanded: false }
@@ -485,7 +533,6 @@ export const eas = [
     makePage('eas/hosting/introduction.mdx'),
     makePage('eas/hosting/get-started.mdx'),
     makePage('eas/hosting/deployments-and-aliases.mdx'),
-    makePage('eas/hosting/environment-variables.mdx'),
     makePage('eas/hosting/custom-domain.mdx'),
     makePage('eas/hosting/api-routes.mdx'),
     makePage('eas/hosting/workflows.mdx'),
@@ -509,6 +556,7 @@ export const eas = [
       makePage('eas-update/download-updates.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
+      makePage('eas-update/bundle-diffing.mdx'),
       makePage('eas-update/optimize-assets.mdx'),
       makePage('eas-update/deployment-patterns.mdx'),
     ]),
@@ -531,7 +579,6 @@ export const eas = [
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/estimate-bandwidth.mdx'),
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
-      makePage('eas-update/faq.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [
@@ -539,15 +586,21 @@ export const eas = [
     makePage('eas/metadata/getting-started.mdx'),
     makeGroup(
       'Reference',
-      [
-        makePage('eas/metadata/config.mdx'),
-        makePage('eas/metadata/schema.mdx'),
-        makePage('eas/metadata/faq.mdx'),
-      ],
+      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
       { expanded: false }
     ),
   ]),
   makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
+  makeSection('Expo Observe', [
+    makePage('eas/observe/introduction.mdx'),
+    makePage('eas/observe/get-started.mdx'),
+    makePage('eas/observe/dashboard.mdx'),
+    makePage('eas/observe/configuration.mdx'),
+    makeGroup('Reference', [
+      makePage('eas/observe/reference/metrics.mdx'),
+      makePage('eas/observe/reference/troubleshooting.mdx'),
+    ]),
+  ]),
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
@@ -648,7 +701,6 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/e2e-tests.mdx'),
-    makePage('archive/glossary.mdx'),
   ]),
 ];
 
@@ -661,10 +713,28 @@ const versionsReference = VERSIONS.reduce(
       makeSection('Configuration files', pagesFromDir(`versions/${version}/config`), {
         expanded: true,
       }),
+      ...(fs.existsSync(path.resolve(PAGES_DIR, `versions/${version}/sdk/router`))
+        ? [
+            makeSection('Expo Router', pagesFromDir(`versions/${version}/sdk/router`), {
+              expanded: true,
+              hideIcon: true,
+            }),
+          ]
+        : []),
+      ...(fs.existsSync(path.resolve(PAGES_DIR, `versions/${version}/sdk/ui`))
+        ? [
+            makeSection('Expo UI', pagesFromDir(`versions/${version}/sdk/ui`), {
+              expanded: true,
+              hideIcon: true,
+            }),
+          ]
+        : []),
       makeSection(
         'Expo SDK',
         shiftEntryToFront(
-          pagesFromDir(`versions/${version}/sdk`).filter(entry => !entry.inExpoGo),
+          pagesFromDir(`versions/${version}/sdk`).filter(
+            entry => !entry.inExpoGo && !['Router', 'UI'].includes(entry.name)
+          ),
           entry => entry.name === 'Expo'
         ),
         { expanded: true }
@@ -686,7 +756,9 @@ const versionsReference = VERSIONS.reduce(
         [
           makePage('more/expo-cli.mdx'),
           makePage('more/create-expo.mdx'),
+          makePage('more/create-expo-module.mdx'),
           makePage('more/qr-codes.mdx'),
+          makePage('more/release-statuses.mdx'),
           makePage('more/glossary-of-terms.mdx'),
         ],
         {

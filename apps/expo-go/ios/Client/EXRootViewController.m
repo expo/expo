@@ -4,34 +4,33 @@
 
 #import <ExpoModulesCore/EXDefines.h>
 
+#import "EXAbstractLoader.h"
+#import "EXAppLoadingCancelView.h"
 #import "EXAppViewController.h"
-#import "EXHomeAppManager.h"
 #import "EXKernel.h"
-#import "EXDevelopmentHomeLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
-#import "EXKernelLinkingManager.h"
-#import "EXKernelServiceRegistry.h"
 #import "EXRootViewController.h"
-#import "EXDevMenuManager.h"
-#import "EXEmbeddedHomeLoader.h"
-#import "EXBuildConstants.h"
 #import "EXUtil.h"
+
 #import "Expo_Go-Swift.h"
+
+#import <React/RCTBridge+Private.h>
 
 @import ExpoScreenOrientation;
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
-NSString * const kEXIsLocalNetworkAccessGrantedKey = @"EXIsLocalNetworkAccessGranted";
-
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXRootViewController () <EXAppBrowserController>
+@interface EXRootViewController () <EXAppBrowserController, EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
-@property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
+@property (nonatomic, strong) HomeViewController *homeViewController;
+@property (nonatomic, strong) NSURL *pendingInitialHomeURL;
+@property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingOverlay;
+@property (nonatomic, assign) BOOL isPendingDelayedDismiss;
 
 @end
 
@@ -46,19 +45,41 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+  [super viewDidAppear:animated];
+  [self becomeFirstResponder];
+
+  // Attach three-finger long press gesture recognizer for dev menu
+  if (self.view.window) {
+    [[DevMenuManager shared] attachGestureRecognizerToWindow:self.view.window];
+  }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+  [super viewWillDisappear:animated];
+  [self resignFirstResponder];
+}
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent * _Nullable)event
+{
+  [super motionEnded:motion withEvent:event];
+  if (motion == UIEventSubtypeMotionShake && [DevMenuManager.shared getMotionGestureEnabled]) {
+    [DevMenuManager.shared toggleMenu];
+  }
+}
+
 #pragma mark - Screen Orientation
 
 - (BOOL)shouldAutorotate
 {
   return YES;
-}
-
-- (BOOL)isLocalNetworkAccessGranted {
-  if ([[NSUserDefaults standardUserDefaults] objectForKey:kEXIsLocalNetworkAccessGrantedKey] != nil) {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXIsLocalNetworkAccessGrantedKey];
-  } else {
-    return NO;
-  }
 }
 
 /**
@@ -87,78 +108,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createRootAppAndMakeVisible
 {
-  EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
-
-  // if developing, use development manifest from EXBuildConstants
-  EXAbstractLoader *homeAppLoader;
-  if ([EXBuildConstants sharedInstance].isDevKernel) {
-    homeAppLoader = [[EXDevelopmentHomeLoader alloc] init];
-  } else {
-    homeAppLoader = [[EXEmbeddedHomeLoader alloc] init];
+  _homeViewController = [[HomeViewController alloc] init];
+  if (_pendingInitialHomeURL) {
+    _homeViewController.initialURL = _pendingInitialHomeURL;
   }
+  [self _showHomeViewController];
+}
 
-  EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
-  [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];
-  [self moveAppToVisible:homeAppRecord];
+#pragma mark - Initial URL
+
+- (void)setInitialHomeURL:(NSURL *)url
+{
+  _pendingInitialHomeURL = url;
+  if (_homeViewController != nil) {
+    _homeViewController.initialURL = url;
+  }
 }
 
 #pragma mark - EXAppBrowserController
 
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
-  BOOL isHomeApp = appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
-  if (isHomeApp || [EXUtil isExpoHostedUrl:appRecord.appLoader.manifestUrl] || [self isLocalNetworkAccessGranted]) {
-    [self foregroundApp:appRecord];
-    return;
-  }
-  
-  [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (success) {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        [userDefaults setBool:YES forKey:kEXIsLocalNetworkAccessGrantedKey];
-        [self foregroundApp:appRecord];
-      } else {
-        [self createLocalNetworkDeniedAlert];
-      }
-    });
-  }];
+  [self foregroundApp:appRecord];
 }
 
 - (void)foregroundApp:(EXKernelAppRecord *)appRecord
 {
   [self _foregroundAppRecord:appRecord];
-  // When foregrounding the app record we want to add it to the history to handle the edge case
-  // where a user opened a project, then went to home and cleared history, then went back to a
-  // the already open project.
-  [self addHistoryItemWithUrl:appRecord.appLoader.manifestUrl manifest:appRecord.appLoader.manifest];
-}
-
-- (void)createLocalNetworkDeniedAlert
-{
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Local network access required"
-                                                                 message:@"Local network access has been denied. This permission is required to run projects in Expo Go. Enable \"Local Network\" for Expo Go from the Settings app."
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-  UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-  [alert addAction:okAction];
-  [self presentViewController:alert animated:YES completion:nil];
-}
-
-- (void)showQRReader
-{
-  [self moveHomeToVisible];
-  [[self _getHomeAppManager] showQRReader];
 }
 
 - (void)moveHomeToVisible
 {
-  [[EXDevMenuManager sharedInstance] close];
-  [[self _getHomeAppManager] dispatchForegroundHomeEvent];
-  [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
+  [DevMenuManager.shared hideMenu];
+  [self _removeAppLoadingOverlay];  // Always dismiss immediately when going home
+  _homeViewController.initialURL = nil;
+  [self _showHomeViewController];
 }
 
 - (BOOL)_isHomeVisible {
-  return [EXKernel sharedInstance].appRegistry.homeAppRecord == [EXKernel sharedInstance].visibleApp;
+  return _homeViewController != nil && self.contentViewController == _homeViewController;
 }
 
 // this is different from Util.reload()
@@ -166,12 +154,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reloadVisibleApp
 {
   if ([self _isHomeVisible]) {
-    EXReactAppManager *homeAppManager = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
-    [homeAppManager reloadApp];
     return;
   }
 
-  [[EXDevMenuManager sharedInstance] close];
+  [DevMenuManager.shared closeMenuWithCompletion:nil];
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
@@ -185,12 +171,67 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsManifest *)manifest
 {
-  [[self _getHomeAppManager] addHistoryItemWithUrl:manifestUrl manifest:manifest];
-}
+  if (!manifestUrl || !manifest) {
+    return;
+  }
 
-- (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString *))completion
-{
-  return [[self _getHomeAppManager] getHistoryUrlForScopeKey:scopeKey completion:completion];
+  // Skip snack/playground URLs - they use ephemeral channels that won't work when reopened from history
+  NSURLComponents *components = [NSURLComponents componentsWithURL:manifestUrl resolvingAgainstBaseURL:NO];
+  for (NSURLQueryItem *item in components.queryItems) {
+    if ([item.name isEqualToString:@"snack"] || [item.name isEqualToString:@"snack-channel"]) {
+      return;
+    }
+  }
+
+  NSString *appName = nil;
+  NSString *iconUrl = nil;
+
+  if ([manifest.rawManifestJSON[@"extra"] isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *extra = manifest.rawManifestJSON[@"extra"];
+    if ([extra[@"expoClient"] isKindOfClass:[NSDictionary class]]) {
+      NSDictionary *expoClient = extra[@"expoClient"];
+      appName = expoClient[@"name"];
+      iconUrl = expoClient[@"iconUrl"];
+      if (!iconUrl && [expoClient[@"icon"] isKindOfClass:[NSString class]]) {
+        iconUrl = expoClient[@"icon"];
+      }
+    }
+  }
+
+  if (!appName && manifest.rawManifestJSON[@"name"]) {
+    appName = manifest.rawManifestJSON[@"name"];
+  }
+
+  if (!iconUrl && manifest.rawManifestJSON[@"iconUrl"]) {
+    iconUrl = manifest.rawManifestJSON[@"iconUrl"];
+  }
+  if (!iconUrl && manifest.rawManifestJSON[@"icon"]) {
+    iconUrl = manifest.rawManifestJSON[@"icon"];
+  }
+  if (!iconUrl && [manifest.rawManifestJSON[@"ios"] isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *iosConfig = manifest.rawManifestJSON[@"ios"];
+    if (iosConfig[@"iconUrl"]) {
+      iconUrl = iosConfig[@"iconUrl"];
+    } else if (iosConfig[@"icon"]) {
+      iconUrl = iosConfig[@"icon"];
+    }
+  }
+
+  if (!appName) {
+    appName = manifestUrl.absoluteString;
+  }
+
+  if (iconUrl && [iconUrl length] > 0) {
+    NSURL *resolved = [NSURL URLWithString:iconUrl];
+    if (resolved == nil || resolved.scheme == nil) {
+      resolved = [NSURL URLWithString:iconUrl relativeToURL:manifestUrl];
+    }
+    iconUrl = resolved.absoluteString;
+  }
+  
+  [[ExpoGoHomeBridge shared] addHistoryItemWithUrl:manifestUrl.absoluteString
+                                              name:appName
+                                           iconUrl:iconUrl];
 }
 
 - (void)setIsNuxFinished:(BOOL)isFinished
@@ -206,103 +247,232 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord
 {
-  // show nux if needed
-  if (!self.isNuxFinished
-      && appRecord == [EXKernel sharedInstance].visibleApp
-      && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-    [[EXDevMenuManager sharedInstance] open];
-  }
-
   // Re-apply the default orientation after the app has been loaded (eq. after a reload)
   [self _applySupportedInterfaceOrientations];
+}
+
+- (void)showAppLoadingOverlayWithStatusText:(nullable NSString *)statusText
+{
+  [self showAppLoadingOverlayWithStatusText:statusText iconImage:nil dismissDelay:0 fixedDismissDelay:0];
+}
+
+- (void)showAppLoadingOverlayWithStatusText:(nullable NSString *)statusText iconImage:(nullable UIImage *)iconImage dismissDelay:(NSTimeInterval)minimumDisplayDuration fixedDismissDelay:(NSTimeInterval)fixedDismissDelay
+{
+  if (_appLoadingOverlay) {
+    // Already visible or animating in - just make sure it stays visible
+    [_appLoadingOverlay.layer removeAllAnimations];
+    _appLoadingOverlay.alpha = 1.0;
+    if (statusText) {
+      _appLoadingOverlay.statusText = statusText;
+    }
+    if (iconImage) {
+      _appLoadingOverlay.iconImage = iconImage;
+    }
+    if (minimumDisplayDuration > 0) {
+      _appLoadingOverlay.minimumDisplayDuration = minimumDisplayDuration;
+    }
+    if (fixedDismissDelay > 0) {
+      _appLoadingOverlay.fixedDismissDelay = fixedDismissDelay;
+    }
+    return;
+  }
+
+  _appLoadingOverlay = [[EXAppLoadingCancelView alloc] init];
+  _appLoadingOverlay.delegate = self;
+  _appLoadingOverlay.frame = self.view.bounds;
+  _appLoadingOverlay.backgroundColor = [UIColor whiteColor];
+  _appLoadingOverlay.shownAt = CFAbsoluteTimeGetCurrent();
+  _appLoadingOverlay.minimumDisplayDuration = minimumDisplayDuration;
+  _appLoadingOverlay.fixedDismissDelay = fixedDismissDelay;
+  if (statusText) {
+    _appLoadingOverlay.statusText = statusText;
+  }
+  if (iconImage) {
+    _appLoadingOverlay.iconImage = iconImage;
+  }
+  [self.view addSubview:_appLoadingOverlay];
+  [self.view bringSubviewToFront:_appLoadingOverlay];
+}
+
+- (void)hideAppLoadingOverlay
+{
+  if (!_appLoadingOverlay || _isPendingDelayedDismiss) {
+    return;
+  }
+
+  // Calculate how long to wait before dismissing
+  NSTimeInterval delay = _appLoadingOverlay.fixedDismissDelay;  // always added
+  if (delay <= 0) {
+    // Use minimum display duration: only wait if we haven't been visible long enough
+    NSTimeInterval minDuration = _appLoadingOverlay.minimumDisplayDuration;
+    if (minDuration > 0) {
+      NSTimeInterval elapsed = CFAbsoluteTimeGetCurrent() - _appLoadingOverlay.shownAt;
+      delay = MAX(0, minDuration - elapsed);
+    }
+  }
+
+  if (delay > 0) {
+    _isPendingDelayedDismiss = YES;
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      weakSelf.isPendingDelayedDismiss = NO;
+      [weakSelf _removeAppLoadingOverlay];
+    });
+  } else {
+    [self _removeAppLoadingOverlay];
+  }
+}
+
+- (void)_removeAppLoadingOverlay
+{
+  _isPendingDelayedDismiss = NO;
+  if (_appLoadingOverlay) {
+    [_appLoadingOverlay.layer removeAllAnimations];
+    [_appLoadingOverlay removeFromSuperview];
+    _appLoadingOverlay = nil;
+  }
+}
+
+#pragma mark - EXAppLoadingCancelViewDelegate
+
+- (void)appLoadingCancelViewDidCancel:(EXAppLoadingCancelView *)view
+{
+  [self hideAppLoadingOverlay];
+  // Cancel any pending app load by going back to home
+  [self moveHomeToVisible];
 }
 
 #pragma mark - internal
 
 - (void)_foregroundAppRecord:(EXKernelAppRecord *)appRecord
 {
-  // Some transition is in progress
-  if (_isAnimatingAppTransition) {
+  [self _transitionToViewController:appRecord.viewController appRecord:appRecord];
+}
+
+- (void)_showHomeViewController
+{
+  [self _transitionToViewController:_homeViewController appRecord:nil];
+}
+
+- (void)_transitionToViewController:(UIViewController *)viewControllerToShow
+                          appRecord:(nullable EXKernelAppRecord *)appRecord
+{
+  if (_isAnimatingAppTransition || viewControllerToShow == self.contentViewController) {
     return;
-  }
-  
-  EXAppViewController *viewControllerToShow = appRecord.viewController;
-  _transitioningToViewController = viewControllerToShow;
-  
-  // Tried to foreground the very same view controller
-  if (viewControllerToShow == self.contentViewController) {
-    return;
-  }
-  
-  _isAnimatingAppTransition = YES;
-  
-  EXAppViewController *viewControllerToHide = (EXAppViewController *)self.contentViewController;
-  
-  if (viewControllerToShow) {
-    [self.view addSubview:viewControllerToShow.view];
-    [self addChildViewController:viewControllerToShow];
   }
 
-  // Try transitioning to the interface orientation of the app before it is shown for smoother transitions
+  BOOL isShowingApp = appRecord != nil;
+  if (isShowingApp) {
+    _transitioningToViewController = viewControllerToShow;
+  }
+
+  _isAnimatingAppTransition = YES;
+
+  UIViewController *viewControllerToHide = self.contentViewController;
+  BOOL isHidingHome = (viewControllerToHide == _homeViewController);
+
+  [self _insertChildViewController:viewControllerToShow];
   [self _applySupportedInterfaceOrientations];
 
   EX_WEAKIFY(self)
   void (^finalizeTransition)(void) = ^{
     EX_ENSURE_STRONGIFY(self)
-    if (viewControllerToHide) {
-      // backgrounds and then dismisses all modals that are presented by the app
-      [viewControllerToHide backgroundControllers];
-      [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
-      [viewControllerToHide willMoveToParentViewController:nil];
-      [viewControllerToHide removeFromParentViewController];
-      [viewControllerToHide.view removeFromSuperview];
-    }
-  
-    if (viewControllerToShow) {
-      [viewControllerToShow didMoveToParentViewController:self];
-      self.contentViewController = viewControllerToShow;
-    }
-    
-    [self.view setNeedsLayout];
-    self.isAnimatingAppTransition = NO;
-    self.transitioningToViewController = nil;
-    if (self.delegate) {
-      [self.delegate viewController:self didNavigateAppToVisible:appRecord];
-    }
-    [self _applySupportedInterfaceOrientations];
+    [self _detachChildViewController:viewControllerToHide isHidingHome:isHidingHome];
+    [self _completeTransitionToViewController:viewControllerToShow appRecord:appRecord];
   };
 
-  BOOL animated = (viewControllerToHide && viewControllerToShow);
-  if (!animated) {
-    return finalizeTransition();
-  }
-  
-  if (viewControllerToHide.contentView) {
-    viewControllerToHide.contentView.transform = CGAffineTransformIdentity;
-    viewControllerToHide.contentView.alpha = 1.0f;
-  }
-  if (viewControllerToShow.contentView) {
-    viewControllerToShow.contentView.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
-    viewControllerToShow.contentView.alpha = 0;
-  }
-
-  [UIView animateWithDuration:0.3f animations:^{
-    if (viewControllerToHide.contentView) {
-      viewControllerToHide.contentView.transform = CGAffineTransformMakeScale(0.95f, 0.95f);
-      viewControllerToHide.contentView.alpha = 0.5f;
-    }
-    if (viewControllerToShow.contentView) {
-      viewControllerToShow.contentView.transform = CGAffineTransformIdentity;
-      viewControllerToShow.contentView.alpha = 1.0f;
-    }
-  } completion:^(BOOL finished) {
-    finalizeTransition();
-  }];
+  [self _animateTransitionFromViewController:viewControllerToHide
+                            toViewController:viewControllerToShow
+                                  completion:finalizeTransition];
 }
 
-- (EXHomeAppManager *)_getHomeAppManager
+- (void)_insertChildViewController:(UIViewController *)viewController
 {
-  return (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+  if (!viewController) {
+    return;
+  }
+  [self.view addSubview:viewController.view];
+  [self addChildViewController:viewController];
+  // Keep loading overlay on top of child view controllers
+  if (_appLoadingOverlay) {
+    [self.view bringSubviewToFront:_appLoadingOverlay];
+  }
+}
+
+- (void)_detachChildViewController:(UIViewController *)viewController isHidingHome:(BOOL)isHidingHome
+{
+  if (!viewController) {
+    return;
+  }
+
+  if (!isHidingHome && [viewController isKindOfClass:[EXAppViewController class]]) {
+    EXAppViewController *appVC = (EXAppViewController *)viewController;
+    [appVC backgroundControllers];
+    [appVC dismissViewControllerAnimated:NO completion:nil];
+  }
+
+  [viewController willMoveToParentViewController:nil];
+  [viewController removeFromParentViewController];
+  [viewController.view removeFromSuperview];
+}
+
+- (void)_completeTransitionToViewController:(UIViewController *)viewController
+                                  appRecord:(nullable EXKernelAppRecord *)appRecord
+{
+  BOOL isShowingApp = appRecord != nil;
+
+  if (viewController) {
+    [viewController didMoveToParentViewController:self];
+    self.contentViewController = viewController;
+
+    if (isShowingApp && appRecord.appManager.reactHost) {
+      [[DevMenuManager shared] notifyManifestChanged];
+    }
+  }
+
+  if (isShowingApp) {
+    [self.view setNeedsLayout];
+    // Loading overlay is hidden by EXAppViewController when manifest loads
+  }
+
+  _isAnimatingAppTransition = NO;
+  _transitioningToViewController = nil;
+
+  if (self.delegate) {
+    [self.delegate viewController:self didNavigateAppToVisible:appRecord];
+  }
+
+  [self _applySupportedInterfaceOrientations];
+}
+
+- (void)_animateTransitionFromViewController:(UIViewController *)fromViewController
+                            toViewController:(UIViewController *)toViewController
+                                  completion:(void (^)(void))completion
+{
+  BOOL shouldAnimate = fromViewController != nil && toViewController != nil;
+  if (!shouldAnimate) {
+    completion();
+    return;
+  }
+
+  // Skip fade animation when leaving home (going to an app) to avoid flicker
+  // from loading state resetting while still visible
+  BOOL isLeavingHome = fromViewController == _homeViewController;
+  if (isLeavingHome) {
+    toViewController.view.alpha = 1.0f;
+    completion();
+    return;
+  }
+
+  fromViewController.view.alpha = 1.0f;
+  toViewController.view.alpha = 0.0f;
+
+  [UIView animateWithDuration:0.3f animations:^{
+    fromViewController.view.alpha = 0.5f;
+    toViewController.view.alpha = 1.0f;
+  } completion:^(BOOL finished) {
+    completion();
+  }];
 }
 
 - (void)_maybeResetNuxState

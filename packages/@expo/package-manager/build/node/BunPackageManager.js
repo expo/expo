@@ -1,12 +1,20 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BunPackageManager = void 0;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const BasePackageManager_1 = require("./BasePackageManager");
 const nodeManagers_1 = require("../utils/nodeManagers");
 class BunPackageManager extends BasePackageManager_1.BasePackageManager {
     name = 'bun';
     bin = 'bun';
-    lockFile = nodeManagers_1.BUN_LOCK_FILE;
+    get lockFile() {
+        const cwd = this.options.cwd?.toString() || process.cwd();
+        return fs_1.default.existsSync(path_1.default.join(cwd, nodeManagers_1.BUN_LOCK_FILE)) ? nodeManagers_1.BUN_LOCK_FILE : nodeManagers_1.BUN_TEXT_LOCK_FILE;
+    }
     workspaceRoot() {
         const root = (0, nodeManagers_1.resolveWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
         if (root) {

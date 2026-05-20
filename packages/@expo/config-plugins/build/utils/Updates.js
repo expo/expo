@@ -23,6 +23,13 @@ exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringifie
 exports.getUpdatesTimeout = getUpdatesTimeout;
 exports.getUpdatesUseEmbeddedUpdate = getUpdatesUseEmbeddedUpdate;
 exports.resolveRuntimeVersionPolicyAsync = resolveRuntimeVersionPolicyAsync;
+function _requireUtils() {
+  const data = require("@expo/require-utils");
+  _requireUtils = function () {
+    return data;
+  };
+  return data;
+}
 function _sdkRuntimeVersions() {
   const data = require("@expo/sdk-runtime-versions");
   _sdkRuntimeVersions = function () {
@@ -51,13 +58,6 @@ function _path() {
   };
   return data;
 }
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
-    return data;
-  };
-  return data;
-}
 function _semver() {
   const data = _interopRequireDefault(require("semver"));
   _semver = function () {
@@ -79,13 +79,12 @@ function IOSVersion() {
   };
   return data;
 }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const FINGERPRINT_RUNTIME_VERSION_SENTINEL = exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
 function getExpoUpdatesPackageVersion(projectRoot) {
-  const expoUpdatesPackageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo-updates/package.json');
-  if (!expoUpdatesPackageJsonPath || !_fs().default.existsSync(expoUpdatesPackageJsonPath)) {
+  const expoUpdatesPackageJsonPath = (0, _requireUtils().resolveFrom)(projectRoot, 'expo-updates/package.json');
+  if (!expoUpdatesPackageJsonPath) {
     return null;
   }
   const packageJson = JSON.parse(_fs().default.readFileSync(expoUpdatesPackageJsonPath, 'utf8'));

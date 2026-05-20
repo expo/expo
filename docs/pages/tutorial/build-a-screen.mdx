@@ -7,7 +7,6 @@ hasVideoLink: true
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -24,7 +23,11 @@ The screen above displays an image and two buttons. The app user can select an i
 
 Once the user selects an image, they can add a sticker to it. So, let's start creating this screen.
 
-<VideoBoxLink videoId="3rcOP8xDwTQ" title="Watch: Building a screen in your universal Expo app" />
+<VideoBoxLink
+  videoId="3rcOP8xDwTQ"
+  title="Watch: Building a screen in your universal Expo app"
+  description="Build the StickerSmash app's first screen using Pressable, Expo Image, and other core components to create an image picker layout."
+/>
 
 ---
 
@@ -61,15 +64,7 @@ Now that we've broken down the UI into smaller chunks, we're ready to start codi
 
 ## Display the image
 
-We'll use `expo-image` library to display the image in the app. It provides a cross-platform `<Image>` component to load and render an image.
-
-Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `expo-image` library:
-
-<Terminal cmd={['$ npx expo install expo-image']} />
-
-The [`npx expo install`](/more/expo-cli/#installation) command will install the library and add it to the project's dependencies in **package.json**.
-
-> **info** **Tip:** Any time we install a new library in our project, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal and then run the installation command. After the installation completes, we can start the development server again by running `npx expo start` from the same terminal window.
+We'll use `expo-image` library to display the image in the app. It provides a cross-platform `<Image>` component to load and render an image. It is already included in the default project template we're using.
 
 The Image component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
 
@@ -87,16 +82,16 @@ To use the Image component in **app/(tabs)/index.tsx** file:
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=380
 import { View, StyleSheet } from 'react-native';
-/* @tutinfo Import the <CODE>Image</CODE> component. */ import { Image } from 'expo-image'; /* @end */
+/* @tutinfo Import the `Image` component. */ import { Image } from 'expo-image'; /* @end */
 
-/* @tutinfo Import the image from the "assets/images/" directory. Since this picture is a static resource, you have to reference it using <CODE>require</CODE>. */
+/* @tutinfo Import the image from the "assets/images/" directory. Since this picture is a static resource, you have to reference it using `require`. */
 const PlaceholderImage = require('@/assets/images/background-image.png');
 /* @end */
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo Wrap the <CODE>Image</CODE> component inside a container. Also, add the image component to display the placeholder image. */
+      /* @tutinfo Wrap the `Image` component inside a container. Also, add the image component to display the placeholder image. */
       <View style={styles.imageContainer}>
         <Image source={PlaceholderImage} style={styles.image} />
       </View>
@@ -109,7 +104,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#25292e',
-    /* @tutinfo Modify container styles to remove <CODE>justifyContent</CODE> property. */
+    /* @tutinfo Modify container styles to remove `justifyContent` property. */
     alignItems: 'center',
     /* @end */
   },
@@ -175,7 +170,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @tutinfo Replace <CODE>Image</CODE> component with <CODE>ImageViewer</CODE>. */
+        /* @tutinfo Replace `Image` component with `ImageViewer`. */
         <ImageViewer imgSource={PlaceholderImage} />
         /* @end */
       </View>
@@ -270,7 +265,7 @@ export default function Index() {
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
-      /* @tutinfo Use the reusable <CODE>Button</CODE> component to create two buttons and encapsulate them inside a <CODE>View</CODE> component. */
+      /* @tutinfo Use the reusable `Button` component to create two buttons and encapsulate them inside a `View` component. */
       <View style={styles.footerContainer}>
         <Button label="Choose a photo" />
         <Button label="Use this photo" />
@@ -329,7 +324,7 @@ type Props = {
   /* @tutinfo Add theme prop. */theme?: 'primary';/* @end */
 };
 
-export default function Button({ label, /* @tutinfo The prop <CODEtheme</CODE> to detect the button variant. */theme/* @end */ }: Props) {
+export default function Button({ label, /* @tutinfo The prop `theme` to detect the button variant. */theme/* @end */ }: Props) {
   /* @tutinfo Conditionally render the primary themed button. */
   if (theme === 'primary') {
   /* @end */
@@ -415,7 +410,7 @@ export default function Index() {
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
       <View style={styles.footerContainer}>
-        /* @tutinfo Add <CODE>"primary"</CODE> theme on the first button. */
+        /* @tutinfo Add `"primary"` theme on the first button. */
         <Button theme="primary" label="Choose a photo" />
         /* @end */
         <Button label="Use this photo" />

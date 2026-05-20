@@ -8,7 +8,7 @@ description: Learn how to send notifications with FCM legacy server.
 
 > **info** For documentation on communicating with the newer FCMv1 service, see [Send notifications with FCMv1 and APNs](/push-notifications/sending-notifications-custom/). This guide is based on [Google's documentation](https://firebase.google.com/docs/cloud-messaging/http-server-ref), and this section covers the basics to get you started.
 >
-> Before sending a notification directly through FCM, you will need to [obtain a device token](/push-notifications/obtaining-a-device-token-for-fcm-or-apns).
+> Before sending a notification directly through FCM, you will need to [obtain a device token](/push-notifications/sending-notifications-custom/).
 
 Communicating with FCM is done by sending a POST request. However, before sending or receiving any notifications, you'll need to follow the steps to [configure FCM](/push-notifications/push-notifications-setup/#android) to configure FCM and get your `FCM-SERVER-KEY`.
 
@@ -34,7 +34,7 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
 
 **The `experienceId` and `scopeKey` fields are required**. Otherwise, your notifications will not go through to your app. FCM has a list of supported fields in the [notification payload](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at the [FirebaseRemoteMessage](/versions/latest/sdk/notifications/#firebaseremotemessage).
 
-FCM also provides some [server-side libraries in a few different languages](https://firebase.google.com/docs/cloud-messaging/send-message#node.js) you can use instead of raw `fetch` requests.
+FCM also provides some [server-side libraries in a few different languages](https://firebase.google.com/docs/cloud-messaging/send/admin-sdk) you can use instead of raw `fetch` requests.
 
 ### How to find FCM server key
 
@@ -67,7 +67,7 @@ Your FCM server key can be found by making sure you've followed the [configurati
 
 ### Firebase notification types
 
-There are two types of Firebase Cloud Messaging messages: [notification and data messages](https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages).
+There are two types of Firebase Cloud Messaging messages: [notification and data messages](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type#notification-messages-with-optional-data-payload).
 
 1. **Notification** messages are only handled (and displayed) by the Firebase library. They don't necessarily wake the app, and `expo-notifications` will not be made aware that your app has received any notification.
 

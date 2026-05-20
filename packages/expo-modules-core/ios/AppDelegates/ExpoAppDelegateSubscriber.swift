@@ -31,7 +31,17 @@ public protocol ExpoAppDelegateSubscriberProtocol: UIApplicationDelegate {
    thus even before any other `UIApplicationDelegate` function. Use it if your subscriber needs to run some code as early as possible,
    but keep in mind that this affects the application loading time.
    */
-  @objc optional func subscriberDidRegister()
+  @objc
+  @MainActor
+  optional func subscriberDidRegister()
+
+  /**
+   Function that is called at the beginning of the `AppDelegate` initialization,
+   i.e. during the `main` function and before the application starts launching.
+   */
+  @objc
+  @MainActor
+  optional func appDelegateWillBeginInitialization()
 }
 
 /**

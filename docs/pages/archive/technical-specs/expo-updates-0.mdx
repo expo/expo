@@ -73,7 +73,7 @@ A conformant server MUST return a response structured in at least one of two way
 - For a response with `content-type: application/json` or `content-type: application/expo+json`, the [manifest headers](#manifest-response-headers) MUST be sent in the response headers and the [manifest body](#manifest-response-body) MUST be sent in the response body.
 - For a response with `content-type: multipart/mixed`, the response MUST be structured as specified in the [multipart manifest response](#multipart-manifest-response) section.
 
-The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST respond with a manifest for the most recent update, ordered by creation time, satisfying all parameters and constraints imposed by the [request headers](#manifest-request). The server MAY use any properties of the request like its headers and source IP address to choose amongst several updates that all satisfy the request's constraints.
+The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST respond with a manifest for the most recent update, ordered by creation time, satisfying all parameters and constraints imposed by the [request headers](#manifest-request). The server MAY use any properties of the request like its headers and source IP address to choose among several updates that all satisfy the request's constraints.
 
 ### Manifest response headers
 

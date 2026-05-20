@@ -9,6 +9,7 @@ buildscript {
     classpath('com.android.tools.build:gradle')
     classpath('com.facebook.react:react-native-gradle-plugin')
     classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
+    classpath('expo.modules:publish')
   }
 }
 
@@ -21,4 +22,14 @@ allprojects {
 }
 
 apply plugin: "expo-root-project"
+apply plugin: "expo-brownfield-publish"
 apply plugin: "com.facebook.react.rootproject"
+
+expoBrownfieldPublishPlugin {
+  libraryName = "brownfield"
+  publications {
+    localDefault {
+        type = "localMaven"
+    }
+  }
+}

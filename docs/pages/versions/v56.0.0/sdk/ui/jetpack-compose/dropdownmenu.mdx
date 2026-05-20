@@ -1,0 +1,124 @@
+---
+title: DropdownMenu
+description: A Jetpack Compose DropdownMenu component for displaying dropdown menus.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI DropdownMenu matches the official Jetpack Compose [Menu API](https://developer.android.com/develop/ui/compose/components/menu) and displays a dropdown menu when a trigger element is pressed.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/dropdownmenu/android-light.webp"
+  darkSrc="/static/images/expo-ui/dropdownmenu/android-dark.webp"
+  alt="Three-dot more menu opened to show Edit, Share, and Delete options with leading icons"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic dropdown menu
+
+```tsx BasicDropdownMenuExample.tsx
+import { Host, DropdownMenu, DropdownMenuItem, Button, Text, Icon } from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+
+export default function BasicDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+        <DropdownMenu.Trigger>
+          <Button variant="bordered" onClick={() => setIsExpanded(true)}>
+            Show Menu
+          </Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem
+            onClick={() => {
+              setIsExpanded(false);
+              console.log('Home pressed');
+            }}>
+            <DropdownMenuItem.Text>
+              <Text>Home</Text>
+            </DropdownMenuItem.Text>
+            <DropdownMenuItem.LeadingIcon>
+              <Icon source={homeIcon} size={24} />
+            </DropdownMenuItem.LeadingIcon>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
+### React Native components as trigger
+
+You can use a React Native view (such as `Pressable`) as the dropdown's trigger by wrapping it in [`RNHostView`](rnhostview).
+
+```tsx RNTriggerDropdownMenuExample.tsx
+import {
+  Host,
+  DropdownMenu,
+  DropdownMenuItem,
+  Text as ComposeText,
+  RNHostView,
+} from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+import { Pressable, Text } from 'react-native';
+
+export default function RNTriggerDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+        <DropdownMenu.Trigger>
+          <RNHostView matchContents>
+            <Pressable
+              onPress={() => setIsExpanded(true)}
+              style={{
+                alignSelf: 'flex-start',
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 8,
+                backgroundColor: '#9B59B6',
+              }}>
+              <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+            </Pressable>
+          </RNHostView>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <ComposeText>Item 1</ComposeText>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <ComposeText>Item 2</ComposeText>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { DropdownMenu } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/dropdownmenu" apiName="DropdownMenu" />

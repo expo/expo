@@ -42,6 +42,11 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     optionsCopy.pictureRef = false
 
     let result = try await takePicture(options: optionsCopy, photoOutput: photoOutput)
+
+    if optionsCopy.fastMode {
+      return [:]
+    }
+
     if let result = result as? [String: Any] {
       return result
     }
@@ -158,6 +163,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     let croppedSize = AVMakeRect(aspectRatio: previewSize, insideRect: cropRect)
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
+    takenImage = ExpoCameraUtils.normalizeOrientation(of: takenImage)
 
     let width = takenImage.size.width
     let height = takenImage.size.height
@@ -180,6 +186,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
       response["exif"] = updatedExif
 
       var updatedMetadata = metadata
+      updatedMetadata[kCGImagePropertyOrientation as String] = 1
 
       if let additionalExif = options.additionalExif {
         for (key, value) in additionalExif {

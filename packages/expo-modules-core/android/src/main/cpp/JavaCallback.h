@@ -2,16 +2,12 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JNIDeallocator.h"
 #include "JSharedObject.h"
+#include "JavaScriptArrayBuffer.h"
+#include "NativeArrayBuffer.h"
 
-#include <jsi/jsi.h>
-#include <fbjni/fbjni.h>
-#include <folly/dynamic.h>
-#include <variant>
-
-#include <react/jni/WritableNativeArray.h>
-#include <react/jni/WritableNativeMap.h>
 #include <fbjni/detail/CoreClasses.h>
 #include <ReactCommon/CallInvoker.h>
 #include <react/bridging/LongLivedObject.h>
@@ -83,6 +79,10 @@ private:
 
   void invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result);
 
+  void invokeJavaScriptArrayBuffer(jni::alias_ref<JavaScriptArrayBuffer::javaobject> result);
+
+  void invokeNativeArrayBuffer(jni::alias_ref<NativeArrayBuffer::javaobject> result);
+
   void invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage);
 
   void invokeIntArray(jni::alias_ref<jni::JArrayInt> result);
@@ -90,19 +90,9 @@ private:
   void invokeDoubleArray(jni::alias_ref<jni::JArrayDouble> result);
   void invokeFloatArray(jni::alias_ref<jni::JArrayFloat> result);
 
-  template<class T>
-  using ArgsConverter = std::function<void(jsi::Runtime &rt, jsi::Function &jsFunction, T arg)>;
-
-  template<class T>
-  inline void invokeJSFunction(
-    ArgsConverter<typename std::remove_const<T>::type> argsConverter,
-    T arg
-  );
+  void invokeWithResolver(std::function<void(jsi::Runtime &rt, jsi::Function &jsFunction)> resolver);
 
   template<class T>
   void invokeJSFunctionForArray(T &arg);
-
-  template<class T>
-  inline void invokeJSFunction(T arg);
 };
 } // namespace expo

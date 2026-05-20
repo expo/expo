@@ -1,16 +1,38 @@
 package versioned.host.exp.exponent.modules.universal
 
-import expo.modules.core.ModuleRegistry
-import expo.modules.filesystem.legacy.FilePermissionModule
-import expo.modules.interfaces.filesystem.Permission
+import android.content.Context
+import expo.modules.kotlin.services.FilePermissionService
 import host.exp.exponent.utils.ScopedContext
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.EnumSet
 
-class ScopedFilePermissionModule(private val scopedContext: ScopedContext) : FilePermissionModule() {
+class ScopedFilePermissionService(private val scopedContext: ScopedContext) :
+  FilePermissionService() {
+  override fun getPathPermissions(context: Context, path: String): EnumSet<Permission> {
+    return try {
+      val canonicalPath = File(path).canonicalPath
+      val scopedDirectories = listOf(
+        scopedContext.filesDir,
+        scopedContext.cacheDir,
+        scopedContext.noBackupFilesDir
+      ).map { it.canonicalPath }
 
-  private lateinit var moduleRegistry: ModuleRegistry
+      if (scopedDirectories.any { canonicalPath.isInDirectory(it) }) {
+        return EnumSet.of(Permission.READ, Permission.WRITE)
+      }
+
+      val dataDirCanonicalPath = File(scopedContext.context.applicationInfo.dataDir).canonicalPath
+      if (canonicalPath.isInDirectory(dataDirCanonicalPath)) {
+        return EnumSet.noneOf(Permission::class.java)
+      }
+
+      getExternalPathPermissions(path)
+    } catch (e: IOException) {
+      // Something's not right, let's be cautious.
+      EnumSet.noneOf(Permission::class.java)
+    }
+  }
 
   override fun getExternalPathPermissions(path: String): EnumSet<Permission> {
     try {
@@ -20,7 +42,8 @@ class ScopedFilePermissionModule(private val scopedContext: ScopedContext) : Fil
       val context = scopedContext.context
       val dataDirCanonicalPath = File(context.applicationInfo.dataDir).canonicalPath
       val canonicalPath = File(path).canonicalPath
-      val isInDataDir = canonicalPath.startsWith("$dataDirCanonicalPath/") || (canonicalPath == dataDirCanonicalPath)
+      val isInDataDir =
+        canonicalPath.startsWith("$dataDirCanonicalPath/") || (canonicalPath == dataDirCanonicalPath)
       if (isInDataDir) {
         return EnumSet.noneOf(Permission::class.java)
       }
@@ -31,7 +54,6 @@ class ScopedFilePermissionModule(private val scopedContext: ScopedContext) : Fil
     return super.getExternalPathPermissions(path)
   }
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
-  }
+  private fun String.isInDirectory(directory: String): Boolean =
+    startsWith("$directory/") || this == directory
 }

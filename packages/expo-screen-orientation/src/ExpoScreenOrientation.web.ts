@@ -1,12 +1,12 @@
 import { NativeModule, Platform, registerWebModule } from 'expo-modules-core';
 
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
+import type { ExpoOrientationEvents } from './ScreenOrientation.types';
 import {
   Orientation,
   OrientationLock,
   WebOrientationLock,
   WebOrientation,
-  ExpoOrientationEvents,
 } from './ScreenOrientation.types';
 
 const OrientationLockAPIToWeb: {
@@ -110,7 +110,8 @@ class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
   orientation: ScreenOrientation | null = Platform.canUseViewport
     ? screen.orientation || (screen as any).msOrientation || null
     : null;
-  async emitOrientationEvent() {
+
+  emitOrientationEvent = async () => {
     const [orientationLock, orientation] = await Promise.all([
       getOrientationLockAsync(),
       getOrientationAsync(),
@@ -119,23 +120,22 @@ class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
       orientationLock,
       orientationInfo: { orientation },
     });
-  }
+  };
   startObserving() {
-    this.listener = () => this.emitOrientationEvent();
     if (Platform.canUseEventListeners) {
-      if (this.orientation && this.orientation.addEventListener) {
-        this.orientation.addEventListener('change', this.listener);
+      if (this.orientation?.addEventListener) {
+        this.orientation.addEventListener('change', this.emitOrientationEvent);
       } else {
-        window.addEventListener('orientationchange', this.listener);
+        window.addEventListener('orientationchange', this.emitOrientationEvent);
       }
     }
   }
   stopObserving(): void {
     if (Platform.canUseEventListeners) {
-      if (this.orientation && this.orientation.removeEventListener) {
-        this.orientation.removeEventListener('change', this.listener);
+      if (this.orientation?.removeEventListener) {
+        this.orientation.removeEventListener('change', this.emitOrientationEvent);
       } else {
-        window.removeEventListener('orientationchange', this.listener);
+        window.removeEventListener('orientationchange', this.emitOrientationEvent);
       }
     }
   }
@@ -148,10 +148,11 @@ class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
   async getOrientationAsync(): Promise<Orientation> {
     const webOrientation =
       screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
-    if (!webOrientation) {
+    const orientation = OrientationWebToAPI[webOrientation];
+    if (!orientation) {
       return Orientation.UNKNOWN;
     }
-    return OrientationWebToAPI[webOrientation];
+    return orientation;
   }
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
     const webOrientationLock = OrientationLockAPIToWeb[orientationLock];

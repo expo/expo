@@ -3,9 +3,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.convertBcp47ToResourceQualifier = convertBcp47ToResourceQualifier;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+function isValidBCP47(tag) {
+    try {
+        return !!new Intl.Locale(tag);
+    }
+    catch {
+        return false;
+    }
+}
+function assertLocale(value) {
+    if (typeof value !== 'string' || !isValidBCP47(value)) {
+        throw new Error(`Invalid supportedLocales entry ${JSON.stringify(value)}: must be a BCP-47 locale tag.`);
+    }
+}
+function convertBcp47ToResourceQualifier(locale) {
+    return `b+${locale.replaceAll('-', '+')}`;
+}
 function withExpoLocalizationIos(config, data) {
     const mergedConfig = { ...config.extra, ...data };
     const supportedLocales = typeof mergedConfig.supportedLocales === 'object' &&
@@ -50,6 +67,7 @@ function withExpoLocalizationAndroid(config, data) {
         ? mergedConfig.supportedLocales.android
         : mergedConfig.supportedLocales;
     if (supportedLocales) {
+        supportedLocales.forEach(assertLocale);
         config = (0, config_plugins_1.withDangerousMod)(config, [
             'android',
             (config) => {
@@ -75,7 +93,8 @@ function withExpoLocalizationAndroid(config, data) {
         });
         config = (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
             if (config.modResults.language === 'groovy') {
-                config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${supportedLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `);
+                const resourceQualifiers = supportedLocales.map((locale) => convertBcp47ToResourceQualifier(locale));
+                config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]\n    `);
             }
             else {
                 config_plugins_1.WarningAggregator.addWarningAndroid('expo-localization supportedLocales', `Cannot automatically configure app build.gradle if it's not groovy`);
@@ -103,12 +122,15 @@ function withExpoLocalizationAndroid(config, data) {
         return config;
     });
 }
-function withExpoLocalization(config, data = {
-    allowDynamicLocaleChangesAndroid: true,
-}) {
+function withExpoLocalization(config, data = {}) {
+    // Ensure allowDynamicLocaleChangesAndroid defaults to true
+    const normalizedData = {
+        ...data,
+        allowDynamicLocaleChangesAndroid: data.allowDynamicLocaleChangesAndroid ?? true,
+    };
     return (0, config_plugins_1.withPlugins)(config, [
-        [withExpoLocalizationIos, data],
-        [withExpoLocalizationAndroid, data],
+        [withExpoLocalizationIos, normalizedData],
+        [withExpoLocalizationAndroid, normalizedData],
     ]);
 }
 exports.default = withExpoLocalization;

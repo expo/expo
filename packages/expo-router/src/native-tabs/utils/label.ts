@@ -1,3 +1,5 @@
+import { StyleSheet, type StyleProp } from 'react-native';
+
 import type { NativeTabsLabelStyle, NativeTabsProps } from '../types';
 
 export function convertLabelStylePropToObject(labelStyle: NativeTabsProps['labelStyle']): {
@@ -6,10 +8,13 @@ export function convertLabelStylePropToObject(labelStyle: NativeTabsProps['label
 } {
   if (labelStyle) {
     if (typeof labelStyle === 'object' && ('default' in labelStyle || 'selected' in labelStyle)) {
-      return labelStyle;
+      return {
+        default: labelStyle.default ? StyleSheet.flatten(labelStyle.default) : undefined,
+        selected: labelStyle.selected ? StyleSheet.flatten(labelStyle.selected) : undefined,
+      };
     }
     return {
-      default: labelStyle as NativeTabsLabelStyle,
+      default: StyleSheet.flatten(labelStyle as StyleProp<NativeTabsLabelStyle>),
     };
   }
   return {};

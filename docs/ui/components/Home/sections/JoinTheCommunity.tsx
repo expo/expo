@@ -5,9 +5,9 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { LinkedinIcon } from '@expo/styleguide-icons/custom/LinkedinIcon';
 import { RedditIcon } from '@expo/styleguide-icons/custom/RedditIcon';
 import { XLogoIcon } from '@expo/styleguide-icons/custom/XLogoIcon';
-import { YoutubeIcon } from '@expo/styleguide-icons/custom/YoutubeIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { Lightbulb02Icon } from '@expo/styleguide-icons/outline/Lightbulb02Icon';
+import { YoutubeIcon } from '@expo/styleguide-icons/outline/YoutubeIcon';
 import { type ReactNode } from 'react';
 
 import { Header } from '~/ui/components/Home/components';
@@ -24,9 +24,9 @@ export function JoinTheCommunity() {
         className={mergeClasses(
           'my-4 inline-grid w-full grid-cols-2 gap-x-8 gap-y-1.5',
           'rounded-lg border border-default p-3 shadow-xs',
-          'max-xl-gutters:grid-cols-1',
-          'max-lg-gutters:grid-cols-2',
-          'max-md-gutters:grid-cols-1'
+          'max-xl:grid-cols-1',
+          'max-lg:grid-cols-2',
+          'max-md:grid-cols-1'
         )}>
         <CommunityGridCell
           title="Discord and Forums"
@@ -68,7 +68,7 @@ export function JoinTheCommunity() {
           title="X"
           description="Follow Expo on X for news and updates."
           link="https://x.com/expo"
-          icon={<XLogoIcon className="size-7 text-palette-white" />}
+          icon={<XLogoIcon className="size-7! text-palette-white" />}
           iconClassName="bg-[#000000]"
         />
         <CommunityGridCell
@@ -113,7 +113,7 @@ function CommunityGridCell({
     <A
       href={link}
       className={mergeClasses(
-        'relative flex min-h-[30px] items-center justify-between gap-3 overflow-hidden rounded-lg bg-default p-2 pr-3 transition',
+        'relative flex min-h-7.5 items-center justify-between gap-3 overflow-hidden rounded-lg bg-default p-2 pr-3 transition',
         'hocus:bg-element hocus:opacity-100',
         className
       )}

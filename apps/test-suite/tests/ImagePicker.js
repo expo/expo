@@ -84,7 +84,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
       }
     });
 
-    describe('launchImageLibraryAsync', async () => {
+    describe('launchImageLibraryAsync', () => {
       it('mediaType: image', async () => {
         await alertAndWaitForResponse('Please choose an image.');
         const result = await ImagePicker.launchImageLibraryAsync({

@@ -1,8 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { FlatList, PixelRatio, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { FlatList, PixelRatio, StyleSheet, TouchableHighlight, View } from 'react-native';
 
 import examples from './examples';
+import { BodyText } from '../../components/BodyText';
 import { optionalRequire } from '../../navigation/routeBuilder';
 
 export const SVGScreens = [
@@ -36,10 +37,10 @@ export default function SVGScreen({
           onPress={() => navigation.navigate('SVGExample', { title: exampleKey, key: exampleKey })}>
           <View style={styles.row}>
             <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
-            <Text style={styles.rowLabel}>{exampleKey}</Text>
-            <Text style={styles.rowDecorator}>
+            <BodyText style={styles.rowLabel}>{exampleKey}</BodyText>
+            <BodyText style={styles.rowDecorator}>
               <Ionicons name="chevron-forward" size={18} color="#595959" />
-            </Text>
+            </BodyText>
           </View>
         </TouchableHighlight>
       )}
@@ -53,8 +54,7 @@ SVGScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'white',
+    ...StyleSheet.absoluteFill,
   },
   row: {
     flexDirection: 'row',

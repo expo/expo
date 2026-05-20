@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { Component, createRef } from 'react';
 import ExpoCamera from './ExpoCamera';
@@ -26,9 +27,6 @@ function ensurePictureOptions(options) {
     return options;
 }
 function ensureRecordingOptions(options = {}) {
-    if (!options || typeof options !== 'object') {
-        return {};
-    }
     if (options.mirror) {
         console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
     }
@@ -118,7 +116,6 @@ export default class CameraView extends Component {
         mode: 'picture',
         flash: 'off',
     };
-    _cameraHandle;
     _cameraRef = createRef();
     _lastEvents = {};
     _lastEventsTimes = {};
@@ -135,10 +132,7 @@ export default class CameraView extends Component {
      * @platform android
      * @platform ios
      */
-    static async launchScanner(options) {
-        if (!options) {
-            options = { barcodeTypes: [] };
-        }
+    static async launchScanner(options = { barcodeTypes: [] }) {
         if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
             await CameraManager.launchScanner(options);
         }
@@ -204,24 +198,16 @@ export default class CameraView extends Component {
         this._cameraRef.current?.stopRecording();
     }
     _onCameraReady = () => {
-        if (this.props.onCameraReady) {
-            this.props.onCameraReady();
-        }
+        this.props.onCameraReady?.();
     };
     _onAvailableLensesChanged = ({ nativeEvent }) => {
-        if (this.props.onAvailableLensesChanged) {
-            this.props.onAvailableLensesChanged(nativeEvent);
-        }
+        this.props.onAvailableLensesChanged?.(nativeEvent);
     };
     _onMountError = ({ nativeEvent }) => {
-        if (this.props.onMountError) {
-            this.props.onMountError(nativeEvent);
-        }
+        this.props.onMountError?.(nativeEvent);
     };
     _onResponsiveOrientationChanged = ({ nativeEvent, }) => {
-        if (this.props.onResponsiveOrientationChanged) {
-            this.props.onResponsiveOrientationChanged(nativeEvent);
-        }
+        this.props.onResponsiveOrientationChanged?.(nativeEvent);
     };
     _onObjectDetected = (callback) => ({ nativeEvent }) => {
         const { type } = nativeEvent;
@@ -237,14 +223,6 @@ export default class CameraView extends Component {
             this._lastEvents[type] = JSON.stringify(nativeEvent);
         }
     };
-    _setReference = (ref) => {
-        if (ref) {
-            // TODO(Bacon): Unify these - perhaps with hooks?
-            if (Platform.OS === 'web') {
-                this._cameraHandle = ref;
-            }
-        }
-    };
     render() {
         const nativeProps = ensureNativeProps(this.props);
         const onBarcodeScanned = this.props.onBarcodeScanned
@@ -255,7 +233,7 @@ export default class CameraView extends Component {
             console.warn('The <CameraView> component does not support children. This may lead to inconsistent behaviour or crashes. If you want to render content on top of the Camera, consider using absolute positioning.');
             loggedRenderingChildrenWarning = true;
         }
-        return (<ExpoCamera {...nativeProps} ref={this._cameraRef} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarcodeScanned={onBarcodeScanned} onAvailableLensesChanged={this._onAvailableLensesChanged} onPictureSaved={_onPictureSaved} onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}/>);
+        return (_jsx(ExpoCamera, { ...nativeProps, ref: this._cameraRef, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarcodeScanned: onBarcodeScanned, onAvailableLensesChanged: this._onAvailableLensesChanged, onPictureSaved: _onPictureSaved, onResponsiveOrientationChanged: this._onResponsiveOrientationChanged }));
     }
 }
 //# sourceMappingURL=CameraView.js.map

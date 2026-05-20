@@ -10,7 +10,14 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.vonovak.microfoam"
+      "bundleIdentifier": "com.vonovak.microfoam",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
+    },
+    "locales": {
+      "cs": "./languages/czech.json",
+      "en": "./languages/en.json"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,6 +41,15 @@
           "defaultChannel": "defaultExpoChannel",
           "sounds": ["./assets/pop_sound.wav", "./assets/bells_sound.wav"],
           "enableBackgroundRemoteNotifications": true
+        }
+      ],
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": ["en", "cs"],
+            "android": ["en", "cs"]
+          }
         }
       ]
     ],

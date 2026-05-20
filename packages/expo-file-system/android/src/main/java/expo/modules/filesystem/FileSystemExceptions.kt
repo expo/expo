@@ -1,6 +1,6 @@
 package expo.modules.filesystem
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.services.FilePermissionService
 
 internal class CopyOrMoveDirectoryToFileException :
   CodedException("Unable to copy or move a folder to a file")
@@ -15,44 +15,58 @@ internal class DestinationDoesNotExistException :
   CodedException("The destination path does not exist")
 
 internal class UnableToDownloadException(reason: String) :
-  CodedException(
-    "Unable to download a file: $reason"
-  )
+  CodedException("Unable to download a file: $reason")
 
 internal class UnableToDeleteException(reason: String) :
-  CodedException(
-    "Unable to delete file or directory: $reason"
-  )
+  CodedException("Unable to delete file or directory: $reason")
 
 internal class UnableToCreateException(reason: String) :
-  CodedException(
-    "Unable to create file or directory: $reason"
-  )
+  CodedException("Unable to create file or directory: $reason")
 
-internal class InvalidPermissionException(permission: Permission) :
-  CodedException(
-    "Missing '${permission.name}' permission for accessing the file."
-  )
+internal class InvalidPermissionException(permission: FilePermissionService.Permission) :
+  CodedException("Missing '${permission.name}' permission for accessing the file.")
 
 internal class UnableToReadHandleException(reason: String) :
-  CodedException(
-    "Unable to read from a file handle: '$reason'"
-  )
+  CodedException("Unable to read from a file handle: '$reason'")
 
 internal class UnableToWriteHandleException(reason: String) :
-  CodedException(
-    "Unable to write to a file handle: '$reason'"
-  )
+  CodedException("Unable to write to a file handle: '$reason'")
 
 internal class MissingAppContextException :
-  CodedException(
-    "The app context is missing."
-  )
+  CodedException("The app context is missing.")
 
 internal class PickerCancelledException :
   CodedException("The file picker was cancelled by the user")
 
 internal class DestinationAlreadyExistsException :
-  CodedException(
-    "Destination already exists"
-  )
+  CodedException("Destination already exists")
+
+internal class UnableToCopyException(reason: String) :
+  CodedException("Unable to copy file or directory: $reason")
+
+internal class UnableToMoveException(reason: String) :
+  CodedException("Unable to move file or directory: $reason")
+
+internal class UnableToUploadException(reason: String) :
+  CodedException("Unable to upload a file: $reason")
+
+internal class UploadCancelledException :
+  CodedException("Upload was cancelled")
+
+internal class InvalidResumeDataException :
+  CodedException("Invalid resume data provided")
+
+internal class DownloadCancelledException :
+  CodedException("Download was cancelled")
+
+internal class WatcherSetupException(path: String) :
+  CodedException("Cannot start watching path '$path'")
+
+internal class WatcherPermissionException(path: String) :
+  CodedException("No permission to watch path '$path'")
+
+internal class WatcherPathNotFoundException(path: String) :
+  CodedException("Path does not exist: '$path'")
+
+internal class WatcherUnsupportedPathException(path: String) :
+  CodedException("Cannot watch path '$path'. Only local file:// paths are supported.")

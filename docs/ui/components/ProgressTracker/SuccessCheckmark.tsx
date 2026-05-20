@@ -19,7 +19,7 @@ export function SuccessCheckmark({ size = 'md', className }: Props) {
         className={mergeClasses(
           'text-success',
           size === 'md' && 'size-10',
-          size === 'sm' && 'size-[30px]'
+          size === 'sm' && 'size-7.5'
         )}
       />
     </div>

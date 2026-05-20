@@ -4,10 +4,17 @@ package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 reactNativeVersion = '0.0.0'
 begin
-  reactNativeVersion = `node --print "require('react-native/package.json').version"`
+  absolute_react_native_path = ''
+  if !ENV['REACT_NATIVE_PATH'].nil?
+    absolute_react_native_path = File.expand_path(ENV['REACT_NATIVE_PATH'], Pod::Config.instance.project_root)
+  else
+    absolute_react_native_path = File.dirname(`node --print "require.resolve('react-native/package.json')"`)
+  end
+  reactNativeVersion = `node --print "require('#{absolute_react_native_path}/package.json').version"`
 rescue
   reactNativeVersion = '0.0.0'
 end
+
 reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
@@ -25,14 +32,21 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :tvos => '16.4',
+    :osx => '13.4'
   }
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
   s.requires_arc   = true
   s.header_dir     = 'EXDevMenu'
+
+  s.resource_bundles = {
+    'EXDevMenu' => [
+      'ios/Assets.xcassets',
+    ]
+  }
 
   s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED' }
 
@@ -73,20 +87,10 @@ Pod::Spec.new do |s|
   end
   install_modules_dependencies(s)
 
-  s.subspec 'SafeAreaView' do |safearea|
-    safearea.dependency 'ExpoModulesCore'
-
-    # Swift/Objective-C compatibility
-    safearea.pod_target_xcconfig = {
-      'DEFINES_MODULE' => 'YES',
-      'SWIFT_COMPILATION_MODE' => 'wholemodule'
-    }
-  end
-
   s.subspec 'Main' do |main|
     s.source_files   = 'ios/**/*.{h,m,mm,swift}'
     s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
-    s.exclude_files  = 'ios/*Tests/**/*', 'ios/ReactNativeCompatibles/**/*'
+    s.exclude_files  = 'ios/*Tests/**/*'
     s.compiler_flags = compiler_flags
 
     # add_dependency() requires to be defined
@@ -102,12 +106,6 @@ Pod::Spec.new do |s|
     main.dependency 'expo-dev-menu-interface'
   end
 
-  s.subspec 'ReactNativeCompatibles' do |ss|
-    ss.source_files = 'ios/ReactNativeCompatibles/ReactNative/**/*'
-    ss.compiler_flags = compiler_flags
-    ss.dependency 'React-Core'
-  end
-
   s.test_spec 'Tests' do |test_spec|
     test_spec.requires_app_host = false
     test_spec.source_files = 'ios/Tests/**/*'
@@ -117,7 +115,7 @@ Pod::Spec.new do |s|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.platforms = {
-      :ios => '15.1'
+      :ios => '16.4'
     }
   end
 
@@ -127,10 +125,12 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'ReactAppDependencyProvider'
     test_spec.dependency 'React'
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.platforms = {
-      :ios => '15.1'
+      :ios => '16.4'
     }
   end
 
-  s.default_subspec = ['Main', 'ReactNativeCompatibles']
+  s.default_subspec = ['Main']
 end

@@ -2,6 +2,7 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { glob } from 'glob';
 import path from 'path';
 
 import * as Directories from '../Directories';
@@ -74,17 +75,19 @@ async function action(options) {
     await fs.copy(path.join(SDK_DOCS_DIR, 'unversioned'), targetSdkDirectory);
 
     // Version the sourcecode URLs for the API pages
-    const apiPages = await fs.readdir(path.join(targetSdkDirectory, 'sdk'));
+    const apiFiles = await glob('**/*.mdx', {
+      cwd: path.join(targetSdkDirectory, 'sdk'),
+      absolute: true,
+    });
     await Promise.all(
-      apiPages.map(async (api) => {
-        const apiFilePath = path.join(targetSdkDirectory, 'sdk', api);
-        await transformFileAsync(apiFilePath, [
+      apiFiles.map((apiFilePath) =>
+        transformFileAsync(apiFilePath, [
           {
             find: /(sourceCodeUrl:.*?\/tree\/)(main)(\/packages[^\n]*)/,
             replaceWith: `$1sdk-${sdk.substring(0, 2)}$3`,
           },
-        ]);
-      })
+        ])
+      )
     );
   }
 

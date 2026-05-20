@@ -1,16 +1,8 @@
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
-import {
-  Alert,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-  Switch,
-  StyleSheet,
-} from 'react-native';
+import { Alert, Platform, ScrollView, TextInput, View, Switch, StyleSheet } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import ListButton from '../components/ListButton';
 import Colors from '../constants/Colors';
 import { useResolvedValue } from '../utilities/useResolvedValue';
@@ -32,7 +24,7 @@ export default function SecureStoreScreen() {
   if (warning) {
     return (
       <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-        <Text>{warning}</Text>
+        <BodyText>{warning}</BodyText>
       </View>
     );
   }
@@ -66,7 +58,7 @@ function SecureStoreView() {
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -81,7 +73,7 @@ function SecureStoreView() {
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -96,7 +88,7 @@ function SecureStoreView() {
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -111,7 +103,7 @@ function SecureStoreView() {
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -120,7 +112,7 @@ function SecureStoreView() {
     try {
       await SecureStore.deleteItemAsync(key, { keychainService: service });
       Alert.alert('Success!', 'Value deleted', [{ text: 'OK', onPress: () => {} }]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -188,12 +180,12 @@ function SecureStoreView() {
         value={service}
         onChangeText={setService}
       />
-      <Text style={{ marginBottom: 10 }}>
+      <BodyText style={{ marginBottom: 10 }}>
         Can use biometric authentication: {SecureStore.canUseBiometricAuthentication().toString()}
-      </Text>
+      </BodyText>
       {SecureStore.canUseBiometricAuthentication() && (
         <View style={styles.authToggleContainer}>
-          <Text>Requires authentication:</Text>
+          <BodyText>Requires authentication:</BodyText>
           <Switch value={requireAuth} onValueChange={setRequireAuth} />
         </View>
       )}
@@ -209,9 +201,9 @@ function SecureStoreView() {
       )}
       {key && <ListButton onPress={() => getValue(key)} title="Get value with key synchronously" />}
       {key && <ListButton onPress={() => deleteValue(key)} title="Delete value with key" />}
-      <Text style={styles.demoDescription}>
+      <BodyText style={styles.demoDescription}>
         Enter a byte length to test the storage limit on this platform.
-      </Text>
+      </BodyText>
       <TextInput
         style={styles.textInput}
         placeholder="Length in bytes (e.g. 4096)"

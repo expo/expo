@@ -1,7 +1,12 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
-import { LocationCallback, LocationErrorCallback, LocationHeadingCallback } from './Location.types';
+import type {
+  LocationCallback,
+  LocationErrorCallback,
+  LocationHeadingCallback,
+  MotionActivityCallback,
+} from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 
 type EventObject = {
@@ -12,7 +17,11 @@ type EventObject = {
 let nextWatchId = 0;
 
 class Subscriber<
-  CallbackType extends LocationCallback | LocationHeadingCallback | LocationErrorCallback,
+  CallbackType extends
+    | LocationCallback
+    | LocationHeadingCallback
+    | LocationErrorCallback
+    | MotionActivityCallback,
 > {
   private eventName: string;
   private eventDataField: string;
@@ -69,7 +78,24 @@ class Subscriber<
     ExpoLocation.removeWatchAsync(id);
 
     if (Object.keys(this.callbacks).length === 0 && this.eventSubscription) {
-      LocationEventEmitter.removeSubscription(this.eventSubscription);
+      this.eventSubscription.remove();
+      this.eventSubscription = null;
+    }
+  }
+
+  /**
+   * Removes a callback locally without calling native removeWatchAsync.
+   * Use when another subscriber will handle the native teardown for the same id.
+   */
+  forgetCallback(id: number): void {
+    if (!this.callbacks[id]) {
+      return;
+    }
+
+    delete this.callbacks[id];
+
+    if (Object.keys(this.callbacks).length === 0 && this.eventSubscription) {
+      this.eventSubscription.remove();
       this.eventSubscription = null;
     }
   }
@@ -98,6 +124,11 @@ export const HeadingSubscriber = new Subscriber<LocationHeadingCallback>(
 export const LocationErrorSubscriber = new Subscriber<LocationErrorCallback>(
   'Expo.locationError',
   'reason'
+);
+
+export const MotionActivitySubscriber = new Subscriber<MotionActivityCallback>(
+  'Expo.motionActivityChanged',
+  'activity'
 );
 
 /**

@@ -1,6 +1,6 @@
-import { Calendar, Attendee, DialogEventResult, EntityTypes, Event, OpenEventDialogResult, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
+import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus, PermissionResponse } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
-import { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, CalendarDialogOpenParamsNext, CalendarDialogParamsNext, ModifiableAttendeeProperties } from './ExpoCalendar.types';
+import type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, ModifiableAttendeeProperties, AddEventWithFormOptions } from './ExpoCalendar.types';
 /**
  * Represents a calendar attendee object.
  */
@@ -12,8 +12,6 @@ export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalen
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
-    openInCalendar(params?: CalendarDialogOpenParamsNext): Promise<OpenEventDialogResult>;
-    editInCalendar(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
     getOccurrenceSync(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(): Promise<ExpoCalendarAttendee[]>;
     createAttendee(attendee: Attendee): Promise<ExpoCalendarAttendee>;
@@ -40,6 +38,7 @@ export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
     listReminders(startDate?: Date | null, endDate?: Date | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
     update(details: Partial<ModifiableCalendarProperties>): Promise<void>;
+    addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult>;
     static get(calendarId: string): Promise<ExpoCalendar>;
 }
 /**
@@ -63,6 +62,12 @@ export declare function getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]
  */
 export declare function createCalendar(details?: Partial<Calendar>): Promise<ExpoCalendar>;
 /**
+ * Presents the OS calendar picker and returns the selected calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object or `null` when the picker is cancelled.
+ * @platform ios
+ */
+export declare function presentPicker(): Promise<ExpoCalendar | null>;
+/**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
  * @param calendars An array of calendar IDs (`string[]`) or [`ExpoCalendar`](#expocalendar) objects to search for events.
@@ -73,37 +78,60 @@ export declare function createCalendar(details?: Partial<Calendar>): Promise<Exp
 export declare function listEvents(calendars: (string | ExpoCalendar)[], startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
 /**
  * Asks the user to grant permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to request write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export declare const requestCalendarPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const requestCalendarPermissions: (writeOnly?: boolean) => Promise<PermissionResponse>;
 /**
- * Check or request permissions to access the calendar.
- * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
+ * Checks user's permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to check write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ */
+export declare const getCalendarPermissions: (writeOnly?: boolean) => Promise<PermissionResponse>;
+/**
+ * Asks the user to grant permissions for accessing user's reminders.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ */
+export declare const requestRemindersPermissions: () => Promise<PermissionResponse>;
+/**
+ * Checks user's permissions for accessing user's reminders.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ */
+export declare const getRemindersPermissions: () => Promise<PermissionResponse>;
+/**
+ * Gets an array of Source objects with details about the different sources stored on the device.
+ * @returns An array of Source objects representing the sources found.
+ */
+export declare const getSourcesSync: () => import("./Calendar").Source[];
+export type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, AddEventWithFormOptions, } from './ExpoCalendar.types';
+export type { PermissionResponse, Alarm, AlarmLocation, CalendarDialogParams, DaysOfTheWeek, DialogEventResult, OpenEventDialogResult, OpenEventPresentationOptions, PermissionExpiration, PermissionHookOptions, PresentationOptions, RecurrenceRule, RecurringEventOptions, Source, } from '../Calendar';
+export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, } from '../Calendar';
+/**
+ * Check or request permissions to access the user's calendars.
+ * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
  * with the permissions.
+ * On iOS, `writeOnly` requests permission to create calendar events without reading
+ * existing calendars or events. It does not grant permission to create, update, or delete calendars.
  *
  * @example
  * ```ts
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
-export declare const getCalendarPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const useCalendarPermissions: (options?: import("expo-modules-core").PermissionHookOptions<{
+    writeOnly?: boolean;
+}> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
- * Asks the user to grant permissions for accessing user's reminders.
- * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * Check or request permissions to access the user's reminders.
+ * This uses both `getRemindersPermissions` and `requestRemindersPermissions` to interact
+ * with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
  */
-export declare const requestRemindersPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
-/**
- * Checks user's permissions for accessing user's reminders.
- * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- */
-export declare const getRemindersPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
-/**
- * Gets an array of Source objects with details about the different sources stored on the device.
- * @returns An array of Source objects representing the sources found.
- */
-export declare const getSourcesSync: () => import("./Calendar").Source[];
-export type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, } from './ExpoCalendar.types';
-export type { PermissionResponse, Alarm, AlarmLocation, CalendarDialogParams, DaysOfTheWeek, DialogEventResult, OpenEventDialogResult, OpenEventPresentationOptions, PermissionExpiration, PermissionHookOptions, PresentationOptions, RecurrenceRule, RecurringEventOptions, Source, } from '../Calendar';
-export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, createEventInCalendarAsync, openEventInCalendarAsync, } from '../Calendar';
-export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';
+export declare const useRemindersPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 //# sourceMappingURL=Calendar.d.ts.map

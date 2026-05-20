@@ -1,10 +1,12 @@
 import commander from 'commander';
 
 import { generateModulesProviderCommand } from './commands/generateModulesProviderCommand';
+import { mirrorKotlinInlineModulesCommand } from './commands/mirrorKotlinInlineModulesCommand';
 import { reactNativeConfigCommand } from './commands/reactNativeConfigCommand';
 import { resolveCommand } from './commands/resolveCommand';
 import { searchCommand } from './commands/searchCommand';
 import { verifyCommand } from './commands/verifyCommand';
+import { createMemoizer } from './memoize';
 
 async function main(args: string[]) {
   const cli = commander
@@ -14,10 +16,13 @@ async function main(args: string[]) {
   verifyCommand(cli);
   searchCommand(cli);
   resolveCommand(cli);
+  mirrorKotlinInlineModulesCommand(cli);
   generateModulesProviderCommand(cli);
   reactNativeConfigCommand(cli);
 
-  await cli.parseAsync(args, { from: 'user' });
+  await createMemoizer().withMemoizer(async () => {
+    await cli.parseAsync(args, { from: 'user' });
+  });
 }
 
 module.exports = main;

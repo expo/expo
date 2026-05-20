@@ -1,6 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { Orientation, OrientationChangeEvent, OrientationChangeListener, OrientationLock, PlatformOrientationInfo, WebOrientationLock, WebOrientation, SizeClassIOS, ScreenOrientationInfo } from './ScreenOrientation.types';
-export { Orientation, OrientationLock, PlatformOrientationInfo, OrientationChangeListener, OrientationChangeEvent, WebOrientationLock, WebOrientation, SizeClassIOS, ScreenOrientationInfo, EventSubscription as Subscription, };
+import { Orientation, type OrientationChangeListener, OrientationLock, type PlatformOrientationInfo } from './ScreenOrientation.types';
+export { Orientation, OrientationLock, type PlatformOrientationInfo, type OrientationChangeListener, type OrientationChangeEvent, WebOrientationLock, WebOrientation, SizeClassIOS, type ScreenOrientationInfo, } from './ScreenOrientation.types';
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 /**
  * Lock the screen orientation to a particular `OrientationLock`.
  * @param orientationLock The orientation lock to apply. See the [`OrientationLock`](#orientationlock)
@@ -64,6 +65,7 @@ export declare function supportsOrientationLockAsync(orientationLock: Orientatio
 export declare function addOrientationChangeListener(listener: OrientationChangeListener): EventSubscription;
 /**
  * Removes all listeners subscribed to orientation change updates.
+ * @deprecated this function will be removed in future versions. Keep track of your own subscriptions.
  */
 export declare function removeOrientationChangeListeners(): void;
 /**
@@ -71,6 +73,7 @@ export declare function removeOrientationChangeListeners(): void;
  * updates.
  * @param subscription A subscription object that manages the updates passed to a listener function
  * on an orientation change.
+ * @deprecated this function will be removed in a future version. Use `subscription.remove()` instead.
  */
 export declare function removeOrientationChangeListener(subscription: EventSubscription): void;
 //# sourceMappingURL=ScreenOrientation.d.ts.map

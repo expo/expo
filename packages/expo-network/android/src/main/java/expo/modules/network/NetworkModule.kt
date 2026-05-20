@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
-import android.net.NetworkRequest
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -31,14 +30,74 @@ class NetworkModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val connectivityManager: ConnectivityManager
     get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  private val mainHandler = Handler(Looper.getMainLooper())
   private val DELAY_MS = 250
+  private var isNetworkCallbackRegistered = false
+
+  private val emitRunnable = Runnable { emitNetworkState() }
 
   private val networkCallback = object : ConnectivityManager.NetworkCallback() {
     override fun onAvailable(network: android.net.Network) {
       asyncEmitNetworkState(DELAY_MS)
     }
 
-    override fun onLost(network: android.net.Network) {
+    override fun onLost(lostNetwork: android.net.Network) {
+      // We intentionally do NOT reuse asyncEmitNetworkState(DELAY_MS) here.
+      //
+      // The 250ms delay used by onAvailable cannot be applied to onLost. On
+      // Android 13+, connectivityManager.activeNetwork continues to return the
+      // just-lost Network object even after the delay. Re-querying it would
+      // emit a stale "isConnected = true" event — the exact bug reported in
+      // https://github.com/expo/expo/issues/37972. This behavior isn't
+      // documented by AOSP as version-specific, so we apply this check
+      // defensively on all API 29+ devices.
+      //
+      // Instead, we compare the lost network against the current active network.
+      // If they match (or activeNetwork is null), there is no replacement
+      // network and we emit a disconnected state directly. If a different
+      // network is active (e.g. cellular), we emit
+      // its state instead.
+      //
+      // Note: android.net.Network.equals() compares by netId, so the check
+      // below is a reliable "same network" comparison.
+      //
+      // We still post to the main looper because sendEvent must run on the
+      // main thread; we just skip the artificial delay.
+      mainHandler.removeCallbacks(emitRunnable)
+      mainHandler.post {
+        try {
+          val activeNetwork = connectivityManager.activeNetwork
+          if (activeNetwork == null || activeNetwork == lostNetwork) {
+            val result = Bundle().apply {
+              putString("type", NetworkStateType.NONE.value)
+              putBoolean("isInternetReachable", false)
+              putBoolean("isConnected", false)
+            }
+            sendEvent(NETWORK_STATE_EVENT_NAME, result)
+          } else {
+            emitNetworkState()
+          }
+        } catch (e: SecurityException) {
+          // Missing ACCESS_NETWORK_STATE permission (or runtime revocation).
+          // Ensure the permission is declared in AndroidManifest.xml and
+          // granted at runtime on devices that require it.
+          Log.w(TAG, "expo-network could not read network state in onLost: missing ACCESS_NETWORK_STATE permission", e)
+        } catch (e: Exception) {
+          // The runnable may outlive the module if the React context is torn
+          // down between the ConnectivityManager.NetworkCallback firing and
+          // the posted runnable executing. In that case, the `connectivityManager`
+          // getter throws `ReactContextLost` when it
+          // attempts to resolve `appContext.reactContext`. Since
+          // unregisterNetworkCallback only prevents future callbacks and
+          // cannot cancel a runnable that is already in the queue, we must
+          // catch teardown-time exceptions here to avoid crashing the
+          // host app's main thread.
+          Log.w(TAG, "expo-network dropped a network state update during teardown (the module or React context is no longer available)", e)
+        }
+      }
+    }
+
+    override fun onCapabilitiesChanged(network: android.net.Network, networkCapabilities: NetworkCapabilities) {
       asyncEmitNetworkState(DELAY_MS)
     }
   }
@@ -49,15 +108,29 @@ class NetworkModule : Module() {
     Events(NETWORK_STATE_EVENT_NAME)
 
     OnCreate {
-      val networkRequest = NetworkRequest.Builder().build()
-      connectivityManager.registerNetworkCallback(
-        networkRequest,
-        networkCallback
-      )
+      try {
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+        isNetworkCallbackRegistered = true
+      } catch (e: SecurityException) {
+        Log.w(TAG, "expo-network cannot observe internet reachability: missing ACCESS_NETWORK_STATE permission", e)
+      } catch (e: RuntimeException) {
+        Log.e(TAG, "expo-network cannot observe internet reachability, too many callbacks registered!", e)
+      }
     }
 
     OnDestroy {
-      connectivityManager.unregisterNetworkCallback(networkCallback)
+      mainHandler.removeCallbacks(emitRunnable)
+      if (isNetworkCallbackRegistered) {
+        try {
+          connectivityManager.unregisterNetworkCallback(networkCallback)
+        } catch (e: SecurityException) {
+          Log.w(TAG, "expo-network could not unregister network callback: missing ACCESS_NETWORK_STATE permission", e)
+        } catch (e: Exception) {
+          Log.w(TAG, "expo-network could not unregister network callback during teardown", e)
+        } finally {
+          isNetworkCallbackRegistered = false
+        }
+      }
     }
 
     AsyncFunction("getNetworkStateAsync") {
@@ -89,21 +162,26 @@ class NetworkModule : Module() {
   }
 
   private fun emitNetworkState() {
-    val networkState = fetchNetworkState()
-    sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
+    try {
+      val networkState = fetchNetworkState()
+      sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
+    } catch (e: SecurityException) {
+      Log.w(TAG, "expo-network could not read network state: missing ACCESS_NETWORK_STATE permission", e)
+    } catch (e: Exception) {
+      // The runnable may outlive the module if the React context is torn down between the
+      // ConnectivityManager callback firing and this runnable executing.
+      Log.w(TAG, "expo-network dropped a delayed network state update during teardown (the module or React context is no longer available)", e)
+    }
   }
 
   /**
    * Emits the network state with a delay to prevent a race condition.
    * This delay ensures we read the actual current network state rather than stale information.
+   * Debounced: rapid successive calls collapse into a single emission.
    */
   private fun asyncEmitNetworkState(delay: Int) {
-    Handler(Looper.getMainLooper()).postDelayed({
-      try {
-        emitNetworkState()
-      } catch (e: SecurityException) {
-      }
-    }, delay.toLong())
+    mainHandler.removeCallbacks(emitRunnable)
+    mainHandler.postDelayed(emitRunnable, delay.toLong())
   }
 
   private fun fetchNetworkState(): Bundle {
@@ -113,7 +191,7 @@ class NetworkModule : Module() {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) { // use getActiveNetworkInfo before api level 29
         val netInfo = connectivityManager.activeNetworkInfo
         val connectionType = getConnectionType(netInfo)
-        val isInternetReachable = netInfo?.isConnected ?: false
+        val isInternetReachable = isInternetReachable(connectivityManager)
 
         result.apply {
           putBoolean("isInternetReachable", isInternetReachable)
@@ -124,9 +202,9 @@ class NetworkModule : Module() {
         return result
       } else {
         val network = connectivityManager.activeNetwork
-        val isInternetReachable = network != null
+        val isInternetReachable = isInternetReachable(connectivityManager)
 
-        val connectionType = if (isInternetReachable) {
+        val connectionType = if (network != null) {
           val netCapabilities = connectivityManager.getNetworkCapabilities(network)
           getConnectionType(netCapabilities)
         } else {
@@ -155,7 +233,7 @@ class NetworkModule : Module() {
       val manager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
       manager.connectionInfo
     } catch (e: Exception) {
-      Log.e(TAG, e.message ?: "Wi-Fi information could not be acquired")
+      Log.e(TAG, e.message ?: "expo-network could not acquire Wi-Fi information")
       throw NetworkWifiException(e)
     }
 

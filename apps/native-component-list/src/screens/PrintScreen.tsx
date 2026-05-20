@@ -1,8 +1,9 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as Print from 'expo-print';
 import React from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import ListButton from '../components/ListButton';
 
 interface State {
@@ -59,9 +60,9 @@ export default class PrintScreen extends React.Component<object, State> {
           style={styles.button}
           title="Select Printer (iOS only)"
         />
-        <Text style={styles.text}>
+        <BodyText style={styles.text}>
           Selected printer: {selectedPrinter ? selectedPrinter.name : 'None'}
-        </Text>
+        </BodyText>
       </View>
     );
   }
@@ -70,7 +71,7 @@ export default class PrintScreen extends React.Component<object, State> {
     try {
       const selectedPrinter = await Print.selectPrinterAsync();
       this.setState({ selectedPrinter });
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Something went wrong: ', e.message);
     }
   };
@@ -84,7 +85,7 @@ export default class PrintScreen extends React.Component<object, State> {
         printerUrl: selectedPrinter && selectedPrinter.url,
         orientation,
       });
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Something went wrong: ', e.message);
     }
   };
@@ -112,7 +113,7 @@ export default class PrintScreen extends React.Component<object, State> {
         uri: document.uri,
         printerUrl: selectedPrinter ? selectedPrinter.url : undefined,
       });
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Something went wrong: ', e.message);
     }
   };
@@ -125,7 +126,7 @@ export default class PrintScreen extends React.Component<object, State> {
         uri: PDF_DATA_URI,
         printerUrl: selectedPrinter ? selectedPrinter.url : undefined,
       });
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Something went wrong: ', e.message);
     }
   };
@@ -138,7 +139,7 @@ export default class PrintScreen extends React.Component<object, State> {
             <head>
               <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
               <style>
-                @page { 
+                @page {
                   margin: 50px;
                 }
                 h1 {
@@ -185,7 +186,7 @@ export default class PrintScreen extends React.Component<object, State> {
           },
         },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Something went wrong: ', e.message);
     }
   };

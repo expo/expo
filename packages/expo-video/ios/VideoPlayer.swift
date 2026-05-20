@@ -413,7 +413,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   func safeEmit(event: String, payload: Record? = nil) {
     if self.appContext != nil {
-      self.emit(event: event, arguments: payload?.toDictionary(appContext: appContext))
+      self.emit(event: event, payload: payload?.toDictionary(appContext: appContext))
     }
   }
 

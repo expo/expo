@@ -7,6 +7,10 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
+    OnCreate {
+      VideoAssetTransportRegistry.registerDefaultProviders()
+    }
+
     Function("isPictureInPictureSupported") { () -> Bool in
       return AVPictureInPictureController.isPictureInPictureSupported()
     }
@@ -59,17 +63,12 @@ public final class VideoModule: Module {
         )
       }
 
-      Prop("allowsFullscreen") { (view, allowsFullscreen: Bool?) in
-        #if !os(tvOS)
-        view.playerViewController.setValue(allowsFullscreen ?? true, forKey: "allowsEnteringFullScreen")
-        #endif
-      }
-
       Prop("fullscreenOptions") {(view, options: FullscreenOptions?) in
         #if !os(tvOS)
         view.playerViewController.fullscreenOrientation = options?.orientation.toUIInterfaceOrientationMask() ?? .all
         view.playerViewController.autoExitOnRotate = options?.autoExitOnRotate ?? false
         view.playerViewController.setValue(options?.enable ?? true, forKey: "allowsEnteringFullScreen")
+        view.playerViewController.keepFullscreenOnPiPStop = options?.keepFullscreenOnPiPStop ?? .never
         #endif
       }
 
@@ -149,7 +148,7 @@ public final class VideoModule: Module {
     }
 
     Class(VideoPlayer.self) {
-      Constructor { (source: VideoSource?, useSynchronousReplace: Bool?) -> VideoPlayer in
+      Constructor { (source: VideoSource?, useSynchronousReplace: Bool?, /* playerBuilderOptions - Android only */ _: [String: Any?]?) -> VideoPlayer in
         let useSynchronousReplace = useSynchronousReplace ?? false
         let player = AVPlayer()
         let videoPlayer = try VideoPlayer(player, initialSource: source, useSynchronousReplace: useSynchronousReplace)

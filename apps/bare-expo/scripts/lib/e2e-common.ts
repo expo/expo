@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';
-import { glob } from 'glob';
 import * as path from 'path';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = String(180_000);
 const MAESTRO_CLI_NO_ANALYTICS = '1';
@@ -53,8 +52,8 @@ jsEngine: graaljs
   ];
   if (confirmFirstRunPromptIOS) {
     contents.push(`\
-# Run once to approve the first time deeplinking prompt on iOS
-- openLink: bareexpo://test-suite/run
+# Run once to approve the first time deeplinking prompt on iOS (clearState above resets this)
+- openLink: bareexpo://test-suite/run?tests=${testCases[0]}
 - tapOn:
     text: "Open"
     optional: true
@@ -66,13 +65,15 @@ jsEngine: graaljs
 - openLink: bareexpo://test-suite/run?tests=${testCase}
 # make sure we're running the right test
 - assertVisible:
+    id: "test_suite_selection_query_text"
     text: "${testCase}"
 - extendedWaitUntil:
     visible:
       id: "test_suite_text_results"
     timeout: 120000
 - assertVisible:
-    text: "Success!"
+    id: "test_suite_summary_result_text"
+    text: "All tests passed!"
 `);
   }
 
@@ -179,14 +180,14 @@ const getCustomMaestroFlowsAsync = async (
     ignore.push('**/*.android.yaml');
   }
 
-  const yamlFiles = await glob('**/*.yaml', {
-    cwd: e2eDir,
-    ignore,
-  });
+  const yamlFiles = await Array.fromAsync(fs.glob('**/*.yaml', { cwd: e2eDir, exclude: ignore }));
+  yamlFiles.sort();
 
-  if (platform === 'ios') {
+  if (platform === 'ios' && process.env.CI) {
+    // when running locally, we assume the app can open without confirmation
     yamlFiles.unshift('_nested-flows/confirm-app-open.yaml');
   }
+
   console.log(`detected maestro files for ${platform}:`, yamlFiles);
   return yamlFiles;
 };

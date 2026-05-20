@@ -3,9 +3,9 @@ import { mergeClasses } from '@expo/styleguide';
 export const ELEMENT_SPACING = mergeClasses('mb-2.5 [table_&]:last:mb-0');
 export const VERTICAL_SPACING = mergeClasses('mx-4');
 
-export const STYLES_SECONDARY = mergeClasses('text-xs font-medium text-tertiary');
+export const STYLES_SECONDARY = mergeClasses('text-sm font-medium text-tertiary');
 
-export const STYLES_OPTIONAL = mergeClasses('flex !text-3xs text-tertiary');
+export const STYLES_OPTIONAL = mergeClasses('flex text-xs! text-tertiary');
 
 export const STYLES_APIBOX = mergeClasses(
   'mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs',

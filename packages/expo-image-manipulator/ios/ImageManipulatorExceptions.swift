@@ -47,7 +47,7 @@ internal final class NoImageInContextException: Exception {
 
 internal final class ImageLoaderNotFoundException: Exception {
   override var reason: String {
-    "ImageLoader module not found, make sure 'expo-image-loader' is linked correctly"
+    "ImageLoader module not found"
   }
 }
 

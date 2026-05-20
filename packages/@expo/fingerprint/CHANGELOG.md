@@ -8,9 +8,101 @@
 
 ### 🐛 Bug fixes
 
-- Fixed unstable fingerprint from `expo-sqlite` and `expo-updates`. ([#40524](https://github.com/expo/expo/pull/40524) by [@kudo](https://github.com/kudo))
+- Pass original env to Expo / Community CLI sub-commands ([#45834](https://github.com/expo/expo/pull/45834) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 0.18.3 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.2 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.1 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.0 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.4 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.0 — 2026-05-05
+
+### 🐛 Bug fixes
+
+- Use `expo-splash-screen` plugin config type and remove legacy `splash` properties from fingerprint sources. ([#44598](https://github.com/expo/expo/pull/44598) by [@zoontek](https://github.com/zoontek))
+
+## 0.16.7 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.6 - 2026-03-11
+
+### 🎉 New features
+
+- Include expo-font plugin font files in fingerprint hash calculation ([#43575](https://github.com/expo/expo/pull/43575) by [@vonovak](https://github.com/vonovak))
+
+## 0.16.5 — 2026-02-25
+
+### 💡 Others
+
+- Bump to `minimatch@^10.2.2` ([#43325](https://github.com/expo/expo/pull/43325) by [@kitten](https://github.com/kitten))
+
+## 0.16.4 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- Fix resolution to `expo -> @expo/cli -> @expo/env` being unstable ([#42764](https://github.com/expo/expo/pull/42764) by [@kitten](https://github.com/kitten))
+
+## 0.16.3 — 2026-02-03
+
+### 💡 Others
+
+- Drop `p-limit` dependency ([#42487](https://github.com/expo/expo/pull/42487) by [@kitten](https://github.com/kitten))
+
+## 0.16.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- Fixed unstable fingerprint from `expo-sqlite` and `expo-updates`. ([#40524](https://github.com/expo/expo/pull/40524) by [@kudo](https://github.com/kudo))
+
+## 0.15.4 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 0.15.3 - 2025-11-03
+
+_This version does not introduce any user-facing changes._
 
 ## 0.15.2 - 2025-10-20
 

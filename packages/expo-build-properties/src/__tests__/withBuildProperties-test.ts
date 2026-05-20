@@ -1,4 +1,5 @@
-import { AndroidConfig, withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
+import type { AndroidConfig } from 'expo/config-plugins';
+import { withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
 
 import { compileMockModWithResultsAsync } from './mockMods';
 import type { PluginConfigType } from '../pluginConfig';
@@ -316,6 +317,137 @@ describe(withBuildProperties, () => {
       type: 'property',
       key: 'reactNativeReleaseLevel',
       value: 'canary',
+    });
+  });
+});
+
+describe('shared config fields', () => {
+  it('should apply top-level buildReactNativeFromSource to iOS', async () => {
+    const pluginProps: PluginConfigType = {
+      buildReactNativeFromSource: true,
+    };
+
+    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResults).toMatchObject({
+      'ios.buildReactNativeFromSource': 'true',
+    });
+  });
+
+  it('should apply top-level reactNativeReleaseLevel to Android', async () => {
+    const pluginProps: PluginConfigType = {
+      reactNativeReleaseLevel: 'experimental',
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'reactNativeReleaseLevel',
+      value: 'experimental',
+    });
+  });
+
+  it('should allow platform-specific override of top-level buildReactNativeFromSource', async () => {
+    const pluginProps: PluginConfigType = {
+      buildReactNativeFromSource: true,
+      ios: { buildReactNativeFromSource: false },
+    };
+
+    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResults).toMatchObject({
+      'ios.buildReactNativeFromSource': 'false',
+    });
+  });
+
+  it('should apply top-level useHermesV1 to Android when buildReactNativeFromSource is true', async () => {
+    const pluginProps: PluginConfigType = {
+      useHermesV1: true,
+      buildReactNativeFromSource: true,
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'hermesV1Enabled',
+      value: 'true',
+    });
+  });
+
+  it('should apply top-level useHermesV1 to iOS when buildReactNativeFromSource is true', async () => {
+    const pluginProps: PluginConfigType = {
+      useHermesV1: true,
+      buildReactNativeFromSource: true,
+    };
+
+    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResults).toMatchObject({
+      'expo.useHermesV1': 'true',
+    });
+  });
+
+  it('should allow platform-specific override of top-level useHermesV1', async () => {
+    const pluginProps: PluginConfigType = {
+      useHermesV1: true,
+      buildReactNativeFromSource: true,
+      ios: { useHermesV1: false },
+    };
+
+    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResults).toMatchObject({
+      'expo.useHermesV1': 'false',
     });
   });
 });

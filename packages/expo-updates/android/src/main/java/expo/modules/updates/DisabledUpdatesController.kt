@@ -2,7 +2,9 @@ package expo.modules.updates
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.exception.CodedException
@@ -16,6 +18,9 @@ import expo.modules.updates.procedures.RecreateReactContextProcedure
 import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
+import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesStateChangeListener
+import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +48,7 @@ import kotlin.time.toDuration
 class DisabledUpdatesController(
   private val context: Context,
   private val fatalException: Exception?
-) : IUpdatesController {
+) : IUpdatesController, UpdatesInterface {
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
   private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -84,6 +89,7 @@ class DisabledUpdatesController(
     get() = launcher?.bundleAssetName
   override val reloadScreenManager: ReloadScreenManager?
     get() = null
+  override var reactHost: WeakReference<ReactHost> = WeakReference(null)
 
   override fun onEventListenerStartObserving() {
     stateMachine.sendContextToJS()
@@ -193,6 +199,16 @@ class DisabledUpdatesController(
 
   override fun shutdown() {
     controllerScope.cancel()
+  }
+
+  override val runtimeVersion: String? = null
+
+  override val updateUrl: Uri? = null
+
+  override val requestHeaders: Map<String, String>? = null
+
+  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
+    return DisabledUpdatesStateChangeSubscription()
   }
 
   companion object {

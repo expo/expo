@@ -10,7 +10,8 @@ const pluginConfig_1 = require("./pluginConfig");
  * @param props Configuration for the build properties plugin.
  */
 const withBuildProperties = (config, props) => {
-    const pluginConfig = (0, pluginConfig_1.validateConfig)(props || {});
+    const projectRoot = config._internal?.projectRoot;
+    const pluginConfig = (0, pluginConfig_1.validateConfig)(props || {}, projectRoot);
     config = (0, android_1.withAndroidBuildProperties)(config, pluginConfig);
     config = (0, android_1.withAndroidProguardRules)(config, pluginConfig);
     config = (0, android_1.withAndroidCleartextTraffic)(config, pluginConfig);
@@ -24,6 +25,7 @@ const withBuildProperties = (config, props) => {
     // plugins order matter: the later one would run first
     config = (0, android_1.withAndroidPurgeProguardRulesOnce)(config);
     config = (0, android_1.withAndroidDayNightTheme)(config, pluginConfig);
+    config = (0, android_1.withAndroidPrecompiledHeaders)(config, pluginConfig);
     config = (0, ios_1.withIosBuildProperties)(config, pluginConfig);
     config = (0, ios_1.withIosDeploymentTarget)(config, pluginConfig);
     config = (0, ios_1.withIosInfoPlist)(config, pluginConfig);

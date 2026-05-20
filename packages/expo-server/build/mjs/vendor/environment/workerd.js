@@ -55,11 +55,22 @@ export function createWorkerdEnv(params) {
         readText,
         readJson,
         loadModule,
+        isDevelopment: params.isDevelopment ?? false,
     });
 }
+const getRequestURLOrigin = (request) => {
+    try {
+        // NOTE: We don't trust any headers on incoming requests in "raw" environments
+        return new URL(request.url).origin || null;
+    }
+    catch {
+        return null;
+    }
+};
 export function createWorkerdRequestScope(scopeDefinition, params) {
     const makeRequestAPISetup = (request, _env, ctx) => ({
-        origin: request.headers.get('Origin') || 'null',
+        requestHeaders: request.headers,
+        origin: getRequestURLOrigin(request),
         environment: params.environment ?? null,
         waitUntil: ctx.waitUntil?.bind(ctx),
     });

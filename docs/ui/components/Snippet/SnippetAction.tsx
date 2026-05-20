@@ -30,7 +30,7 @@ export const SnippetAction = ({
       )}
       {...rest}>
       {children && (
-        <FOOTNOTE className={mergeClasses(alwaysDark && '!text-palette-white')}>
+        <FOOTNOTE className={mergeClasses(alwaysDark && 'text-palette-white!')}>
           {children}
         </FOOTNOTE>
       )}

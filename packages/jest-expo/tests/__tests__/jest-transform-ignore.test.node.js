@@ -1,6 +1,7 @@
 const path = require('node:path');
 
 const jestPreset = require('../../jest-preset');
+const { toPosixPath } = require('../../src/filePath');
 
 it('transforms project code', () => {
   expect(shouldTransform('/path/to/project', 'App.tsx')).toBe(true);
@@ -38,27 +39,46 @@ describe.each([
 
   it('transforms @react-native* packages', () => {
     /* eslint-disable prettier/prettier */
-    expect(shouldTransform(rootDir, 'node_modules/@react-native/normalize-colors/index.flow.js')).toBe(true);
+    expect(
+      shouldTransform(rootDir, 'node_modules/@react-native/normalize-colors/index.flow.js')
+    ).toBe(true);
     expect(shouldTransform(rootDir, 'node_modules/@react-native/js-polyfills/index.js')).toBe(true);
-    expect(shouldTransform(rootDir, 'node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js')).toBe(true);
+    expect(
+      shouldTransform(
+        rootDir,
+        'node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js'
+      )
+    ).toBe(true);
   });
 
   it('transforms @react-navigation/* packages', () => {
-    expect(shouldTransform(rootDir, 'node_modules/@react-navigation/native/lib/module/index.js')).toBe(true);
-    expect(shouldTransform(rootDir, 'node_modules/@react-navigation/elements/lib/module/index.js')).toBe(true);
-    expect(shouldTransform(rootDir, 'node_modules/@react-navigation/devtools/lib/module/index.js')).toBe(true);
+    expect(
+      shouldTransform(rootDir, 'node_modules/@react-navigation/native/lib/module/index.js')
+    ).toBe(true);
+    expect(
+      shouldTransform(rootDir, 'node_modules/@react-navigation/elements/lib/module/index.js')
+    ).toBe(true);
+    expect(
+      shouldTransform(rootDir, 'node_modules/@react-navigation/devtools/lib/module/index.js')
+    ).toBe(true);
   });
 
   it('transforms @sentry/react-native package', () => {
-    expect(shouldTransform(rootDir, 'node_modules/@sentry/react-native/dist/js/index.js')).toBe(true);
+    expect(shouldTransform(rootDir, 'node_modules/@sentry/react-native/dist/js/index.js')).toBe(
+      true
+    );
   });
 
   it('does not transform reanimated/plugin', () => {
-    expect(shouldTransform(rootDir, 'node_modules/react-native-reanimated/plugin/index.js')).toBe(false);
+    expect(shouldTransform(rootDir, 'node_modules/react-native-reanimated/plugin/index.js')).toBe(
+      false
+    );
   });
 
   it('does not transform other packages', () => {
-    expect(shouldTransform(rootDir, 'node_modules/@tsd/typescript/typescript/lib/typescript.js')).toBe(false);
+    expect(
+      shouldTransform(rootDir, 'node_modules/@tsd/typescript/typescript/lib/typescript.js')
+    ).toBe(false);
     expect(shouldTransform(rootDir, 'node_modules/lodash/index.js')).toBe(false);
     expect(shouldTransform(rootDir, 'node_modules/react/index.js')).toBe(false);
     expect(shouldTransform(rootDir, 'node_modules/typescript/index.js')).toBe(false);
@@ -78,5 +98,5 @@ const transformIgnoreRegex = new RegExp(jestPreset.transformIgnorePatterns.join(
  * @return {boolean}
  */
 function shouldTransform(rootDir, filename) {
-  return !transformIgnoreRegex.test(path.join(rootDir, filename));
+  return !transformIgnoreRegex.test(toPosixPath(path.join(rootDir, filename)));
 }

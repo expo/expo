@@ -11,30 +11,16 @@ import type { RenderRscArgs } from 'expo-server/private';
 import path from 'node:path';
 
 import { renderRsc } from './rsc-renderer';
+import { createDebug } from '../utils/debug';
 
 declare const $$require_external: typeof require;
 
-const debug = require('debug')('expo:router:server:rsc-renderer');
-
-// Tracking the implementation in expo/cli's MetroBundlerDevServer
-const rscRenderContext = new Map<string, any>();
+const debug = createDebug('expo:router:server:rsc-renderer');
 
 function serverRequire<T = any>(...targetOutputModulePath: string[]): T {
   // NOTE(@kitten): This `__dirname` will be located in the output file system, e.g. `dist/server/*`
   const filePath = path.join(__dirname, ...targetOutputModulePath);
   return $$require_external(filePath);
-}
-
-function getRscRenderContext(platform: string) {
-  // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
-  if (rscRenderContext.has(platform)) {
-    return rscRenderContext.get(platform)!;
-  }
-
-  const context = {};
-
-  rscRenderContext.set(platform, context);
-  return context;
 }
 
 function getServerActionManifest(
@@ -73,7 +59,7 @@ function getSSRManifest(
 
 // The import map allows us to use external modules from different bundling contexts.
 type ImportMap = {
-  router: () => Promise<typeof import('./router/expo-definedRouter')>;
+  router: () => Promise<import('./router').RouterModule>;
 };
 
 export async function renderRscWithImportsAsync(
@@ -81,14 +67,12 @@ export async function renderRscWithImportsAsync(
   imports: ImportMap,
   { body, platform, searchParams, config, method, input, contentType, headers }: RenderRscArgs
 ): Promise<ReadableStream<any>> {
-  globalThis.__expo_platform_header = platform;
   if (method === 'POST' && !body) {
     throw new Error('Server request must be provided when method is POST (server actions)');
   }
 
-  const context = getRscRenderContext(platform);
-  context['__expo_requestHeaders'] = headers;
-
+  // Must stay per-request; sharing this object across renders would leak headers between concurrent requests.
+  const context = { __expo_requestHeaders: headers };
   const router = await imports.router();
   const entries = router.default({
     redirects: Constants.expoConfig?.extra?.router?.redirects,
@@ -103,6 +87,8 @@ export async function renderRscWithImportsAsync(
       context,
       config,
       input,
+      method,
+      headers,
       contentType,
       decodedBody: searchParams.get('x-expo-params'),
     },
@@ -113,24 +99,28 @@ export async function renderRscWithImportsAsync(
         debug('resolveClientEntry', file, { isServer });
 
         if (isServer) {
-          if (!(file in actionManifest)) {
+          const actionManifestFile = actionManifest[file];
+
+          if (actionManifestFile == null) {
             throw new Error(
               `Could not find file in server action manifest: ${file}. ${JSON.stringify(actionManifest)}`
             );
           }
 
-          const [id, chunk] = actionManifest[file];
+          const [id, chunk] = actionManifestFile;
           return {
             id,
             chunks: chunk ? [chunk] : [],
           };
         }
 
-        if (!(file in ssrManifest)) {
+        const ssrManifestFile = ssrManifest[file];
+
+        if (ssrManifestFile == null) {
           throw new Error(`Could not find file in SSR manifest: ${file}`);
         }
 
-        const [id, chunk] = ssrManifest[file];
+        const [id, chunk] = ssrManifestFile;
         return {
           id,
           chunks: chunk ? [chunk] : [],

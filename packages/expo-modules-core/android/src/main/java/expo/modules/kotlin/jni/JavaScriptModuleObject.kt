@@ -34,14 +34,14 @@ class JavaScriptModuleObject(
 
   @Throws(Throwable::class)
   protected fun finalize() {
-    deallocate()
-  }
-
-  override fun deallocate() {
     mHybridData.resetNative()
   }
 
   override fun toString(): String {
     return "JavaScriptModuleObject_$name"
+  }
+
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
   }
 }

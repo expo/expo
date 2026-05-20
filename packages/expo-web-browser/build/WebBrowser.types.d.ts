@@ -47,6 +47,20 @@ export type WebBrowserOpenOptions = {
      */
     createTask?: boolean;
     /**
+     * A boolean determining whether to use a proxy activity to launch the browser.
+     * It's available only when `createTask` is `true`. Otherwise, it'll be ignored.
+     * When `true`, browser will be launched through a
+     * transparent proxy activity with a different task affinity. This prevents browser
+     * from being destroyed when the app is backgrounded.
+     * When `true`, `showInRecents` is always treated as `true`.
+     *
+     * Set to `false` to use the legacy direct launch behavior.
+     *
+     * @default true
+     * @platform android
+     */
+    useProxyActivity?: boolean;
+    /**
      * Tint color for controls in SKSafariViewController. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      * @platform ios
      */
@@ -93,6 +107,18 @@ export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
      * @platform ios
      */
     preferEphemeralSession?: boolean;
+    /**
+     * Whether to use HTTPS universal link callbacks instead of custom URL scheme callbacks.
+     * Set this to `true` when your app has the Associated Domains entitlement configured for
+     * the redirect URL host and you want to use HTTPS callbacks on iOS 17.4+.
+     *
+     * When `false` (the default), the legacy `callbackURLScheme` API is used, which works
+     * without any entitlement configuration.
+     *
+     * @default false
+     * @platform ios
+     */
+    preferUniversalLinks?: boolean;
 };
 export type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;
 export type WebBrowserCustomTabsResults = {

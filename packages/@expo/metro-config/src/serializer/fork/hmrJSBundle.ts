@@ -99,7 +99,7 @@ function prepareModule(module: Module<any>, graph: ReadOnlyGraph<any>, options: 
   // Transform the inverse dependency paths to ids.
   const inverseDependenciesById = Object.create(null);
   Object.keys(inverseDependencies).forEach((path: string) => {
-    inverseDependenciesById[options.createModuleId(path)] = inverseDependencies[path].map(
+    inverseDependenciesById[options.createModuleId(path)] = inverseDependencies[path]?.map(
       options.createModuleId
     );
   });

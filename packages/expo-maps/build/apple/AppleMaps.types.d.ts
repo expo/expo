@@ -1,7 +1,7 @@
 import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
 import type { ProcessedColorValue, StyleProp, ViewStyle } from 'react-native';
-import { CameraPosition, Coordinates } from '../shared.types';
+import type { CameraMoveEvent, CameraPosition, Coordinates } from '../shared.types';
 /**
  * @platform ios
  */
@@ -12,8 +12,15 @@ export type AppleMapsMarker = {
     id?: string;
     /**
      * The SF Symbol to display for the marker.
+     * This is mutually exclusive with `monogram`. If both are provided, `systemImage` takes precedence.
      */
     systemImage?: string;
+    /**
+     * A short text (typically initials or 1-2 characters) to display on the marker balloon.
+     * This is mutually exclusive with `systemImage`. If both are provided, `systemImage` takes precedence.
+     * @platform ios 17.0+
+     */
+    monogram?: string;
     /**
      * The coordinates of the marker.
      */
@@ -110,6 +117,24 @@ export declare enum AppleMapsMapStyleEmphasis {
      * A muted emphasis style, that deemphasizes the map’s imagery.
      */
     MUTED = "MUTED"
+}
+/**
+ * Controls the color scheme (appearance) of the map.
+ * @platform ios
+ */
+export declare enum AppleMapsColorScheme {
+    /**
+     * The map follows the app's color scheme (light/dark mode).
+     */
+    AUTOMATIC = "AUTOMATIC",
+    /**
+     * The map is always displayed in light mode.
+     */
+    LIGHT = "LIGHT",
+    /**
+     * The map is always displayed in dark mode.
+     */
+    DARK = "DARK"
 }
 /**
  * @platform ios
@@ -357,6 +382,12 @@ export type AppleMapsViewProps = {
     ref?: Ref<AppleMapsViewType>;
     style?: StyleProp<ViewStyle>;
     /**
+     * Controls the color scheme (appearance) of the map.
+     * Use this to force the map to display in light or dark mode.
+     * @default AppleMapsColorScheme.AUTOMATIC
+     */
+    colorScheme?: AppleMapsColorScheme;
+    /**
      * The initial camera position of the map.
      */
     cameraPosition?: CameraPosition;
@@ -396,34 +427,35 @@ export type AppleMapsViewProps = {
         coordinates: Coordinates;
     }) => void;
     /**
-     * Lambda invoked when the marker is clicked
+     * Lambda invoked when the marker is clicked.
      * @platform ios 18.0+
      */
     onMarkerClick?: (event: AppleMapsMarker) => void;
     /**
-     * Lambda invoked when the polyline is clicked
+     * Lambda invoked when the annotation is clicked.
+     * @platform ios 18.0+
+     */
+    onAnnotationClick?: (event: AppleMapsAnnotation) => void;
+    /**
+     * Lambda invoked when the polyline is clicked.
      * @platform ios 18.0+
      */
     onPolylineClick?: (event: AppleMapsPolyline) => void;
     /**
-     * Lambda invoked when the polygon is clicked
+     * Lambda invoked when the polygon is clicked.
      * @platform ios 18.0+
      */
     onPolygonClick?: (event: AppleMapsPolygon) => void;
     /**
-     * Lambda invoked when the circle is clicked
+     * Lambda invoked when the circle is clicked.
      * @platform ios 18.0+
      */
     onCircleClick?: (event: AppleMapsCircle) => void;
     /**
      * Lambda invoked when the map was moved by the user.
+     * Also runs once on initial mount with the starting viewport.
      */
-    onCameraMove?: (event: {
-        coordinates: Coordinates;
-        zoom: number;
-        tilt: number;
-        bearing: number;
-    }) => void;
+    onCameraMove?: (event: CameraMoveEvent) => void;
 };
 /**
  * @platform ios
@@ -442,5 +474,31 @@ export type AppleMapsViewType = {
      * @param coordinates The coordinates of the location to open the look around view at.
      */
     openLookAroundAsync: (coordinates: Coordinates) => Promise<void>;
+    /**
+     * Programmatically select a marker by its ID.
+     * @platform ios 18.0+
+     *
+     * @param id The ID of the marker to select, or `undefined` to clear selection.
+     * @param options Optional configuration for the selection.
+     * @param options.zoom The zoom level to use when animating to the selected item.
+     * @param options.moveCamera Whether to animate the camera to the selected item. When `false`, the camera will not move at all. Defaults to `true`.
+     */
+    selectMarker: (id?: string, options?: {
+        zoom?: number;
+        moveCamera?: boolean;
+    }) => void;
+    /**
+     * Programmatically select an annotation by its ID.
+     * @platform ios 18.0+
+     *
+     * @param id The ID of the annotation to select, or `undefined` to clear selection.
+     * @param options Optional configuration for the selection.
+     * @param options.zoom The zoom level to use when animating to the selected item.
+     * @param options.moveCamera Whether to animate the camera to the selected item. When `false`, the camera will not move at all. Defaults to `true`.
+     */
+    selectAnnotation: (id?: string, options?: {
+        zoom?: number;
+        moveCamera?: boolean;
+    }) => void;
 };
 //# sourceMappingURL=AppleMaps.types.d.ts.map

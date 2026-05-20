@@ -18,7 +18,7 @@ public class TrackingTransparencyModule: Module {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: TrackingTransparencyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -28,7 +28,7 @@ public class TrackingTransparencyModule: Module {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: TrackingTransparencyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }

@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import DevToolsPluginManager from '../../DevToolsPluginManager';
 import { DevToolsPluginMiddleware } from '../DevToolsPluginMiddleware';
-import { ServerRequest, ServerResponse } from '../server.types';
+import type { ServerRequest, ServerResponse } from '../server.types';
 
 jest.mock('fs/promises');
 

@@ -1,30 +1,34 @@
 import {
-  Button as ButtonPrimitive,
-  CircularProgress,
+  Button,
+  ProgressView,
   Host,
   Image,
   Label,
+  List,
   Text,
   VStack,
+  Section,
 } from '@expo/ui/swift-ui';
 import {
   background,
+  buttonStyle,
+  controlSize,
+  disabled,
   fixedSize,
   foregroundStyle,
+  labelStyle,
   padding,
   shapes,
+  tint,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-
-import { Page, Section } from '../../components/Page';
 
 export default function ButtonScreen() {
   return (
-    <Page>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <Host style={{ flex: 1 }}>
+      <List>
         <Section title="With Label">
-          <Button style={styles.button}>
+          <Button>
             <Label
               title="Default Padding"
               systemImage="gear"
@@ -35,14 +39,14 @@ export default function ButtonScreen() {
               ]}
             />
           </Button>
-          <Button style={styles.button}>
+          <Button>
             <Label
               title="No Padding"
               systemImage="gear"
               modifiers={[foregroundStyle('black'), padding({ all: 0 }), background('yellow')]}
             />
           </Button>
-          <Button style={styles.button}>
+          <Button>
             <Label
               title="Custom Padding"
               modifiers={[
@@ -54,151 +58,73 @@ export default function ButtonScreen() {
           </Button>
         </Section>
         <Section title="Default">
-          <Button style={styles.button}>Test</Button>
+          <Button label="Test" />
         </Section>
         <Section title="System Styles">
-          <Button style={styles.button} variant="default">
-            Default
-          </Button>
-          <Button style={styles.button} variant="glass">
-            Glass button
-          </Button>
-          <Button style={styles.button} variant="glassProminent">
-            Glass Prominent
-          </Button>
-          <Button style={styles.button} variant="bordered">
-            Bordered
-          </Button>
-          <Button style={styles.button} variant="borderless">
-            Borderless
-          </Button>
-          <Button style={styles.button} variant="borderedProminent">
-            Bordered Prominent
-          </Button>
-          <Button style={styles.button} variant="plain">
-            Plain
-          </Button>
+          <Button label="Default" />
+          <Button label="Glass button" modifiers={[buttonStyle('glass')]} />
+          <Button label="Glass Prominent" modifiers={[buttonStyle('glassProminent')]} />
+          <Button label="Bordered" modifiers={[buttonStyle('bordered')]} />
+          <Button label="Borderless" modifiers={[buttonStyle('borderless')]} />
+          <Button label="Bordered Prominent" modifiers={[buttonStyle('borderedProminent')]} />
+          <Button label="Plain" modifiers={[buttonStyle('plain')]} />
         </Section>
         <Section title="Control Size">
           <Button
-            style={styles.button}
-            controlSize="mini"
-            variant="glassProminent"
-            modifiers={[fixedSize()]}>
-            Mini glass prominent
-          </Button>
-          <Button style={styles.button} controlSize="small" variant="bordered">
-            Small bordered
-          </Button>
-          <Button style={styles.button} controlSize="regular" variant="glass">
-            Regular glass
-          </Button>
-          <Button style={styles.button} controlSize="large" variant="glassProminent">
-            Large
-          </Button>
-          <Button style={styles.button} controlSize="large" variant="glass">
-            Large glass
-          </Button>
+            label="Mini glass prominent"
+            modifiers={[controlSize('mini'), buttonStyle('glassProminent'), fixedSize()]}
+          />
           <Button
-            style={styles.button}
-            controlSize="extraLarge"
-            variant="glassProminent"
+            label="Small bordered"
+            modifiers={[controlSize('small'), buttonStyle('bordered')]}
+          />
+          <Button
+            label="Regular glass"
+            modifiers={[controlSize('regular'), buttonStyle('glass')]}
+          />
+          <Button label="Large" modifiers={[controlSize('large'), buttonStyle('glassProminent')]} />
+          <Button label="Large glass" modifiers={[controlSize('large'), buttonStyle('glass')]} />
+          <Button
+            label="Extra Large (iOS 17+)"
             systemImage="square.and.arrow.up"
-            color="orange"
-            modifiers={[fixedSize()]}>
-            Extra Large (iOS 17+)
-          </Button>
+            modifiers={[controlSize('extraLarge'), buttonStyle('glassProminent'), tint('orange')]}
+          />
         </Section>
         <Section title="Disabled">
-          <Button style={styles.button} disabled>
-            Disabled
-          </Button>
-          <Button style={styles.button}>Enabled</Button>
+          <Button label="Disabled" modifiers={[disabled()]} />
+          <Button label="Enabled" />
         </Section>
         <Section title="Button Roles">
-          <Button style={styles.button} role="default">
-            Default
-          </Button>
-          <Button style={styles.button} role="cancel">
-            Cancel
-          </Button>
-          <Button style={styles.button} role="destructive">
-            Destructive
-          </Button>
+          <Button label="Default" role="default" />
+          <Button label="Cancel" role="cancel" />
+          <Button label="Destructive" role="destructive" />
         </Section>
         <Section title="Button Images">
-          <Button variant="bordered" style={styles.button} systemImage="folder">
-            Folder
-          </Button>
-          <Button style={styles.button} systemImage="tortoise">
-            Tortoise
-          </Button>
-          <Button variant="borderless" style={styles.button} systemImage="trash">
-            Trash
-          </Button>
-          <Button style={styles.button} systemImage="heart">
-            Heart
-          </Button>
-          <Button style={styles.button} systemImage="gear" variant="glass" />
+          <Button label="Folder" systemImage="folder" modifiers={[buttonStyle('bordered')]} />
+          <Button label="Tortoise" systemImage="tortoise" />
+          <Button label="Trash" systemImage="trash" modifiers={[buttonStyle('borderless')]} />
+          <Button label="Heart" systemImage="heart" />
+          <Button
+            label="Settings"
+            systemImage="gear"
+            modifiers={[buttonStyle('glass'), labelStyle('iconOnly')]}
+          />
         </Section>
         <Section title="Tinted Buttons">
-          <Button style={styles.button} color="#f00f0f">
-            Red
+          <Button label="Red" modifiers={[tint('#f00f0f')]} />
+        </Section>
+        <Section title="Custom label">
+          <Button>
+            <VStack spacing={4}>
+              <Image systemName="folder" />
+              <Text>Folder</Text>
+            </VStack>
+          </Button>
+          <Button>
+            <ProgressView modifiers={[tint('blue')]} />
           </Button>
         </Section>
-        <Section title="Custom children">
-          <Host style={styles.buttonHost}>
-            <ButtonPrimitive>
-              <VStack spacing={4}>
-                <Image systemName="folder" />
-                <Text>Folder</Text>
-              </VStack>
-            </ButtonPrimitive>
-          </Host>
-          <Host style={styles.buttonHost}>
-            <ButtonPrimitive>
-              <CircularProgress color="blue" />
-            </ButtonPrimitive>
-          </Host>
-        </Section>
-        <Section title="interpolated strings">
-          <Button style={styles.button} color="#FF6347">
-            {/* eslint-disable-next-line */}
-            Hello {'world'}
-          </Button>
-        </Section>
-      </ScrollView>
-    </Page>
-  );
-}
-
-function Button(
-  props: React.ComponentProps<typeof ButtonPrimitive> & { style?: StyleProp<ViewStyle> }
-) {
-  const { style, ...restProps } = props;
-  return (
-    <Host matchContents style={style}>
-      <ButtonPrimitive {...restProps}>{props.children}</ButtonPrimitive>
+      </List>
     </Host>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    width: 150,
-    margin: 5,
-    marginLeft: 20,
-    overflow: 'visible',
-  },
-  buttonHost: {
-    width: 50,
-    height: 50,
-  },
-  stretch: {
-    alignSelf: 'stretch',
-  },
-  columnWrapper: {
-    justifyContent: 'space-around',
-    alignContent: 'space-around',
-  },
-});

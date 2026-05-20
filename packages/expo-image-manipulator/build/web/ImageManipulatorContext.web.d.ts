@@ -1,5 +1,5 @@
 import { SharedObject } from 'expo';
-import { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
+import type { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
 import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
 type ContextLoader = () => HTMLCanvasElement | Promise<HTMLCanvasElement>;
 export default class ImageManipulatorContext extends SharedObject {

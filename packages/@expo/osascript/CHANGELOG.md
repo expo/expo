@@ -6,9 +6,45 @@
 
 ### 🎉 New features
 
+- Add `escapeString` helper for safely interpolating values into AppleScript double-quoted string literals ([#45890](https://github.com/expo/expo/pull/45890) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
+- Fix `openItermToSpecificFolderAsync`, `openTerminalToSpecificFolderAsync`, and `openInAppAsync` mis-quoting paths/app names that contain `'`, `"`, or `\` ([#45890](https://github.com/expo/expo/pull/45890) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 2.5.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 2.5.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.3 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.2 — 2026-01-26
+
+### 💡 Others
+
+- Drop `exec-async` and call into `@expo/spawn-async` instead ([#42483](https://github.com/expo/expo/pull/42483) by [@kitten](https://github.com/kitten))
+
+## 2.4.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 2.3.7 — 2025-09-11
 

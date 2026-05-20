@@ -2,17 +2,17 @@ package expo.modules.kotlin.sharedobjects
 
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.weak
 import kotlin.reflect.KClass
 
 @DoNotStrip
-open class SharedObject(runtimeContext: RuntimeContext? = null) {
-  constructor(appContext: AppContext) : this(appContext.hostingRuntimeContext)
+open class SharedObject(runtime: Runtime? = null) {
+  constructor(appContext: AppContext) : this(appContext.runtime)
 
   /**
    * An identifier of the native shared object that maps to the JavaScript object.
@@ -26,35 +26,57 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
     return sharedObjectId.value
   }
 
-  var runtimeContextHolder = runtimeContext.weak()
+  var runtimeContextHolder = runtime.weak()
 
-  private val runtimeContext: RuntimeContext?
+  private val runtime: Runtime?
     get() = runtimeContextHolder.get()
 
   val appContext
-    get() = runtimeContext?.appContext
+    get() = runtime?.appContext
 
   private fun getJavaScriptObject(): JavaScriptWeakObject? {
     return SharedObjectId(sharedObjectId.value)
       .toWeakJavaScriptObjectNull(
-        runtimeContext ?: return null
+        runtime ?: return null
       )
   }
 
-  fun emit(eventName: String, vararg args: Any?) {
+  /**
+   * Emits an event with no payload to the associated JavaScript object.
+   */
+  fun emit(event: String) {
+    emitInternal(event, emptyArray())
+  }
+
+  /**
+   * Emits an event with a single payload to the associated JavaScript object.
+   */
+  fun emit(event: String, payload: Any?) {
+    emitInternal(event, arrayOf(payload))
+  }
+
+  @Deprecated(
+    "Multi-argument event emission is deprecated. Use `emit(event)` or `emit(event, payload)` and pass a single payload (typically a Map/Bundle) instead.",
+    ReplaceWith("emit(event, args)")
+  )
+  fun emit(event: String, vararg args: Any?) {
+    emitInternal(event, args)
+  }
+
+  private fun emitInternal(event: String, payload: Array<out Any?>) {
     val jsObject = getJavaScriptObject() ?: return
-    val jniInterop = runtimeContext?.jsiContext ?: return
+    val jniInterop = runtime?.jsiContext ?: return
     try {
       JNIUtils.emitEvent(
         jsObject,
         jniInterop,
-        eventName,
-        args
-          .map { JSTypeConverter.convertToJSValue(it) }
+        event,
+        payload
+          .map { JSTypeConverterProvider.convertToJSValue(it, useExperimentalConverter = true) }
           .toTypedArray()
       )
     } catch (e: Throwable) {
-      logger.error("Unable to send event '$eventName' by shared object of type ${this::class.java.simpleName}", e)
+      logger.error("Unable to send event '$event' by shared object of type ${this::class.java.simpleName}", e)
     }
   }
 

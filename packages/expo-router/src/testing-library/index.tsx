@@ -2,13 +2,15 @@ import './expect';
 import './mocks';
 
 import type { RenderResult } from '@testing-library/react-native';
-import React from 'react';
 
-import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
+import { type MockContextConfig, getMockContext } from './mock-config';
 import { ExpoRoot } from '../ExpoRoot';
-import { ExpoLinkingOptions } from '../getLinkingConfig';
-import { ReactNavigationState, store } from '../global-state/router-store';
+import type { ExpoLinkingOptions } from '../getLinkingConfig';
+import type { ReactNavigationState } from '../global-state/router-store';
+import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
+
+export { type MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 
 const rnTestingLibrary = ((): typeof import('@testing-library/react-native') => {
   try {
@@ -42,7 +44,7 @@ export declare const {
   isInaccessible,
   getDefaultNormalizer,
   renderHook,
-  userEvent,
+  // userEvent,
 }: typeof rnTestingLibrary;
 
 export declare let screen: typeof rnTestingLibrary.screen;
@@ -66,8 +68,6 @@ type Result = ReturnType<typeof rnTestingLibrary.render> & {
   getSearchParams(): Record<string, string | string[]>;
   getRouterState(): ReactNavigationState | undefined;
 };
-
-export { MockContextConfig, getMockConfig, getMockContext };
 
 export function renderRouter(
   context: MockContextConfig = './app',

@@ -1,4 +1,4 @@
-import fs from 'fs';
+import type fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -6,17 +6,12 @@ import * as Updates from '../Updates';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 jest.mock('fs');
-jest.mock('resolve-from');
-
-const { silent } = require('resolve-from');
 
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 const sampleCodeSigningCertificatePath = path.resolve(fixturesPath, 'codeSigningCertificate.pem');
 
 describe('iOS Updates config', () => {
   beforeEach(() => {
-    const resolveFrom = require('resolve-from');
-    resolveFrom.silent = silent;
     vol.reset();
   });
 
@@ -47,7 +42,7 @@ describe('iOS Updates config', () => {
             'expo-channel-name': 'test',
             testheader: 'test',
           },
-          enableBsdiffPatchSupport: false,
+          enableBsdiffPatchSupport: true,
         },
       },
       {} as any,
@@ -66,7 +61,7 @@ describe('iOS Updates config', () => {
       ),
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
       EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
-      EXUpdatesEnableBsdiffPatchSupport: false,
+      EXUpdatesEnableBsdiffPatchSupport: true,
     });
   });
 });

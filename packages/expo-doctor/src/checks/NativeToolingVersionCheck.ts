@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { getXcodeVersionAsync } from '../utils/getXcodeVersionAsync';
 
@@ -39,6 +39,7 @@ async function checkMinimumXcodeVersionAsync(
   // Table of SDK version compatibility with Xcode versions
   const compatibilityTable: Record<string, string> = {
     '51': '<=16.2.0',
+    '55': '>=26.0.0',
   };
 
   const majorSdkVersion = semver.major(sdkVersion).toString();

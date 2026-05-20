@@ -14,7 +14,7 @@ import type {
   SeekTolerance,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoThumbnail } from './VideoThumbnail';
 import resolveAssetSource from './resolveAssetSource';
 
 export function useVideoPlayer(
@@ -30,7 +30,7 @@ export function useVideoPlayer(
   }, [JSON.stringify(source)]);
 }
 
-export function getSourceUri(source: VideoSource): string | null {
+export function getSourceUri(source?: VideoSource): string | null {
   if (typeof source === 'string') {
     return source;
   }
@@ -204,9 +204,11 @@ export default class VideoPlayerWeb
       return -1;
     }
     const buffered = [...this._mountedVideos][0]?.buffered;
-    for (let i = 0; i < buffered.length; i++) {
-      if (buffered.start(i) <= this.currentTime && buffered.end(i) >= this.currentTime) {
-        return buffered.end(i);
+    if (buffered != null) {
+      for (let i = 0; i < buffered.length; i++) {
+        if (buffered.start(i) <= this.currentTime && buffered.end(i) >= this.currentTime) {
+          return buffered.end(i);
+        }
       }
     }
     return 0;
@@ -278,8 +280,11 @@ export default class VideoPlayerWeb
     // If video playing audio has been removed, select a new video to be the audio player by disconnecting it from the mute node.
     if (videoPlayingAudio === video && this._audioNodes.size > 0 && audioContext) {
       const newMainAudioSource = [...this._audioNodes][0];
-      newMainAudioSource.disconnect();
-      newMainAudioSource.connect(audioContext.destination);
+
+      if (newMainAudioSource != null) {
+        newMainAudioSource.disconnect();
+        newMainAudioSource.connect(audioContext.destination);
+      }
     }
   }
 
@@ -369,25 +374,29 @@ export default class VideoPlayerWeb
   }
 
   _addListeners(video: HTMLVideoElement): void {
-    video.onplay = () => {
+    video.onplay = (e) => {
       this._emitOnce(video, 'playingChange', {
         isPlaying: true,
         oldIsPlaying: this.playing,
       });
       this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
-        mountedVideo.play();
+        if (e.target !== mountedVideo) {
+          mountedVideo.play();
+        }
       });
     };
 
-    video.onpause = () => {
+    video.onpause = (e) => {
       this._emitOnce(video, 'playingChange', {
         isPlaying: false,
         oldIsPlaying: this.playing,
       });
       this.playing = false;
       this._mountedVideos.forEach((mountedVideo) => {
-        mountedVideo.pause();
+        if (e.target !== mountedVideo) {
+          mountedVideo.pause();
+        }
       });
     };
 

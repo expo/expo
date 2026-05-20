@@ -4,7 +4,16 @@
 
 RCT_EXPORT_MODULE(BenchmarkingBridgeModule);
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(void, nothing) {}
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(double, nothing)
+{
+  return 0;
+}
+
+RCT_EXPORT_METHOD(nothingAsync:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  resolve(nil);
+}
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(addNumbers:(double)a b:(double)b)
 {
@@ -26,6 +35,11 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(foldArray:(NSArray *)array)
     sum += [num doubleValue];
   }
   return @(sum);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(passthroughDict:(NSDictionary *)point)
+{
+  return point;
 }
 
 @end

@@ -1,10 +1,11 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import { generateFaviconAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
 import path from 'path';
 
 import { getUserDefinedFile } from './publicFolder';
-import { ExportAssetMap } from './saveAssets';
+import type { ExportAssetMap } from './saveAssets';
 import { Log } from '../log';
 
 const debug = require('debug')('expo:favicon') as typeof console.log;
@@ -75,7 +76,7 @@ export async function getFaviconFromExpoConfigAsync(
   const dims = [16, 32, 48];
   const cacheType = 'favicon';
 
-  const size = dims[dims.length - 1];
+  const size = dims[dims.length - 1]!;
   try {
     const { source } = await generateImageAsync(
       { projectRoot, cacheType },

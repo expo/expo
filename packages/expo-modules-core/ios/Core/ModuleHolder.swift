@@ -1,4 +1,4 @@
-import Dispatch
+import ExpoModulesJSI
 
 /**
  Holds a reference to the module instance and caches its definition.
@@ -22,7 +22,8 @@ public final class ModuleHolder {
   /**
    JavaScript object that represents the module instance in the runtime.
    */
-  public internal(set) lazy var javaScriptObject: JavaScriptObject? = createJavaScriptModuleObject()
+  @JavaScriptActor
+  private var javaScriptObject: JavaScriptObject?
 
   /**
    Caches the definition of the module type.
@@ -45,8 +46,26 @@ public final class ModuleHolder {
     self.appContext = appContext
     self._name = name
     self.module = module
-    self.definition = module.definition()
+    self.definition = ModuleHolder.buildDefinition(for: module)
     post(event: .moduleCreate)
+  }
+
+  /// Combines the user-authored definition with the entries synthesized by the
+  /// `@ExpoModule` macro on this module's class (if any). The macro emits a
+  /// `_exposedDefinition()` method returning an `[AnyDefinition]` array of the
+  /// `Function` / `Property` / `Constructor` entries it generated from `@JS`
+  /// members. Those entries are prepended to the user's definitions and the
+  /// whole list is fed back through `ModuleDefinition.init` so the merged
+  /// result is rebucketed (into `functions`, `properties`, etc.) just like a
+  /// hand-written definition. Modules that don't use the macro fall through
+  /// the empty-exposed fast path and return the user's definition unchanged.
+  private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
+    let userDefinition = module.definition()
+    let exposed = module._exposedDefinition()
+    if exposed.isEmpty {
+      return userDefinition
+    }
+    return ModuleDefinition(definitions: exposed + userDefinition.rawDefinitions)
   }
 
   // MARK: Constants
@@ -58,37 +77,17 @@ public final class ModuleHolder {
     return definition.getLegacyConstants()
   }
 
-  // MARK: Calling functions
-
-  @preconcurrency
-  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> () = { _ in }) {
-    guard let appContext else {
-      callback(.failure(Exceptions.AppContextLost()))
-      return
+  @JavaScriptActor
+  func getJavaScriptValue() -> JavaScriptValue? {
+    if javaScriptObject == nil {
+      javaScriptObject = createJavaScriptModuleObject()
     }
-    guard let function = definition.functions[functionName] else {
-      callback(.failure(FunctionNotFoundException((functionName: functionName, moduleName: self.name))))
-      return
-    }
-    function.call(by: self, withArguments: args, appContext: appContext, callback: callback)
+    return javaScriptObject?.asValue()
   }
 
-  @discardableResult
-  func callSync(function functionName: String, args: [Any]) -> Any? {
-    guard let appContext, let function = definition.functions[functionName] as? AnySyncFunctionDefinition else {
-      return nil
-    }
-    do {
-      let arguments = try cast(arguments: args, forFunction: function, appContext: appContext)
-      let result = try function.call(by: self, withArguments: arguments, appContext: appContext)
-
-      if let result = result as? SharedObject {
-        return appContext.sharedObjectRegistry.ensureSharedJavaScriptObject(runtime: try appContext.runtime, nativeObject: result)
-      }
-      return result
-    } catch {
-      return error
-    }
+  @JavaScriptActor
+  func releaseJavaScriptObject() {
+    javaScriptObject = nil
   }
 
   // MARK: JavaScript Module Object
@@ -99,6 +98,7 @@ public final class ModuleHolder {
    JavaScript can access it through `global.expo.modules[moduleName]`.
    - Note: The object will be `nil` when the runtime is unavailable (e.g. remote debugger is enabled).
    */
+  @JavaScriptActor
   private func createJavaScriptModuleObject() -> JavaScriptObject? {
     // It might be impossible to create any object at the moment (e.g. remote debugging, app context destroyed)
     guard let appContext else {
@@ -131,23 +131,6 @@ public final class ModuleHolder {
     listeners(forEvent: event).forEach {
       try? $0.call(module, payload)
     }
-  }
-
-  // MARK: JavaScript events
-
-  /**
-   Modifies module's listeners count and calls `onStartObserving` or `onStopObserving` accordingly.
-   */
-  func modifyListenersCount(_ count: Int) {
-    guard let appContext else {
-      return
-    }
-    if count > 0 && listenersCount == 0 {
-      definition.functions["startObserving"]?.call(withArguments: [], appContext: appContext)
-    } else if count < 0 && listenersCount + count <= 0 {
-      definition.functions["stopObserving"]?.call(withArguments: [], appContext: appContext)
-    }
-    listenersCount = max(0, listenersCount + count)
   }
 
   // MARK: Deallocation

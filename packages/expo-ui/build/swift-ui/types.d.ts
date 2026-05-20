@@ -1,4 +1,9 @@
 /**
+ * The alignment of content within a container or overlay.
+ * Maps to SwiftUI's `Alignment` type.
+ */
+export type Alignment = 'center' | 'leading' | 'trailing' | 'top' | 'bottom' | 'topLeading' | 'topTrailing' | 'bottomLeading' | 'bottomTrailing' | 'centerFirstTextBaseline' | 'centerLastTextBaseline' | 'leadingFirstTextBaseline' | 'leadingLastTextBaseline' | 'trailingFirstTextBaseline' | 'trailingLastTextBaseline';
+/**
  * Common frame properties that can be applied to any view.
  */
 export interface FrameProps {
@@ -37,7 +42,7 @@ export interface FrameProps {
     /**
      * The alignment of the content within the frame.
      */
-    alignment?: 'center' | 'leading' | 'trailing' | 'top' | 'bottom' | 'topLeading' | 'topTrailing' | 'bottomLeading' | 'bottomTrailing';
+    alignment?: Alignment;
 }
 /**
  * Common padding properties that can be applied to any view.
@@ -61,45 +66,16 @@ export interface PaddingProps {
     trailing?: number;
 }
 /**
+ * A closed date range with lower and upper bounds.
+ */
+export type ClosedRangeDate = {
+    lower: Date;
+    upper: Date;
+};
+/**
  * Common props that can be applied to any view.
  */
 export interface CommonViewModifierProps {
-    /**
-     * @deprecated Use `fixedSize()` modifier instead. This prop will be removed in a future version.
-     * @example
-     * ```tsx
-     * // Old way (deprecated)
-     * <Text fixedSize={true}>Hello</Text>
-     *
-     * // New way (recommended)
-     * <Text modifiers={[fixedSize(true)]}>Hello</Text>
-     * ```
-     */
-    fixedSize?: boolean;
-    /**
-     * @deprecated Use `frame()` modifier instead. This prop will be removed in a future version.
-     * @example
-     * ```tsx
-     * // Old way (deprecated)
-     * <Text frame={{ width: 100, height: 50 }}>Hello</Text>
-     *
-     * // New way (recommended)
-     * <Text modifiers={[frame({ width: 100, height: 50 })]}>Hello</Text>
-     * ```
-     */
-    frame?: FrameProps;
-    /**
-     * @deprecated Use `padding()` modifier instead. This prop will be removed in a future version.
-     * @example
-     * ```tsx
-     * // Old way (deprecated)
-     * <Text padding={{ all: 16 }}>Hello</Text>
-     *
-     * // New way (recommended)
-     * <Text modifiers={[padding({ all: 16 })]}>Hello</Text>
-     * ```
-     */
-    padding?: PaddingProps;
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -110,7 +86,7 @@ export interface CommonViewModifierProps {
      *
      * @example
      * ```tsx
-     * import { background, cornerRadius, shadow, frame, padding, fixedSize } from 'expo-ui/swift-ui/modifiers';
+     * import { background, cornerRadius, shadow, frame, padding, fixedSize } from '@expo/ui/swift-ui/modifiers';
      *
      * <Text modifiers={[
      *   background('#FF0000'),

@@ -82,7 +82,7 @@ export async function test({ describe, it, expect }) {
     return out;
   };
 
-  describe('Blob', async () => {
+  describe('Blob', () => {
     describe('Blob creation', () => {
       it('Empty blob', () => {
         const blob = new Blob([]);
@@ -133,7 +133,7 @@ export async function test({ describe, it, expect }) {
         expect(slice.size).toBe(3);
         expect(bytes).toEqual(new TextEncoder().encode(str).slice(0, 3));
       });
-      describe('large slice start and end', async () => {
+      describe('large slice start and end', () => {
         it('large positive start', async () => {
           const blob = new Blob(['PASS']);
           const str = await blob.slice(10000).text();
@@ -201,7 +201,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('Bytes', async () => {
+    describe('Bytes', () => {
       it('Simple', async () => {
         const input_arr = new TextEncoder().encode('PASS');
         const blob = new Blob([input_arr]);
@@ -243,7 +243,7 @@ export async function test({ describe, it, expect }) {
     // Windows platforms use CRLF as the native line ending. All others use LF.
     const crlf = Platform.OS === 'windows';
     const native_ending = crlf ? '\r\n' : '\n';
-    describe('constructor-endings', async () => {
+    describe('constructor-endings', () => {
       it('valid endings value', () => {
         const blob0 = new Blob([], { endings: 'native' });
         const blob1 = new Blob([], { endings: 'transparent' });
@@ -932,7 +932,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('Text', async () => {
+    describe('Text', () => {
       it('simple', async () => {
         const blob = new Blob(['PASS']);
         const text = await blob.text();
@@ -991,7 +991,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('Worker', async () => {
+    describe('Worker', () => {
       it('Create Blob in Worker', async () => {
         const data = 'TEST';
         const blob = new Blob([data], { type: 'text/plain' });
@@ -999,7 +999,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('Blob slice overflow', async () => {
+    describe('Blob slice overflow', () => {
       let text = '';
 
       for (let i = 0; i < 2000; ++i) {
@@ -1031,7 +1031,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('Blob Slice', async () => {
+    describe('Blob Slice', () => {
       test_blob(
         () => {
           const blobTemp = new Blob(['PASS']);
@@ -1044,7 +1044,7 @@ export async function test({ describe, it, expect }) {
         }
       );
 
-      describe('Slices', async () => {
+      describe('Slices', () => {
         const blob1 = new Blob(['squiggle']);
         const blob2 = new Blob(['steak'], { type: 'content/type' });
 
@@ -1301,7 +1301,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('stream', async () => {
+    describe('stream', () => {
       it('stream byob crash', async () => {
         const a = new Blob(['', '', undefined], {});
         const b = a.stream();

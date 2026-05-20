@@ -1,12 +1,7 @@
 import { expectType, expectError, expectAssignable, expectNotAssignable } from 'tsd-lite';
 
-import {
-  useRouter,
-  Href,
-  useLocalSearchParams,
-  useSegments,
-  UnknownOutputParams,
-} from './fixtures/default';
+import type { Href, UnknownOutputParams } from './fixtures/default';
+import { useRouter, useLocalSearchParams, useSegments } from './fixtures/default';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 const router = useRouter();

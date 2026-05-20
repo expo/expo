@@ -16,5 +16,6 @@
 
 - (void)requestLocationPermissions;
 - (NSDictionary *)parsePermissions:(CLAuthorizationStatus)systemStatus;
+- (NSString *)accuracyAuthorizationString;
 
 @end

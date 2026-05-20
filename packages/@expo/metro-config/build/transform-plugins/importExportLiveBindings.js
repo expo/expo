@@ -2,6 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.importExportLiveBindingsPlugin = importExportLiveBindingsPlugin;
 const helpers_1 = require("./helpers");
+var ImportDeclarationKind;
+(function (ImportDeclarationKind) {
+    ImportDeclarationKind["REQUIRE"] = "REQUIRE";
+    ImportDeclarationKind["IMPORT_DEFAULT"] = "DEFAULT";
+    ImportDeclarationKind["IMPORT_NAMESPACE"] = "NAMESPACE";
+})(ImportDeclarationKind || (ImportDeclarationKind = {}));
 function importExportLiveBindingsPlugin({ template, types: t, }) {
     const addModuleSpecifiers = (state, source) => {
         let moduleSpecifiers = state.importSpecifiers.get(source.value);
@@ -16,12 +22,12 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
         if (sideEffect || !state.opts.performConstantFolding) {
             moduleSpecifiers.sideEffect = true;
         }
-        let id = moduleSpecifiers["REQUIRE" /* ImportDeclarationKind.REQUIRE */];
+        let id = moduleSpecifiers[ImportDeclarationKind.REQUIRE];
         if (!id) {
             id = path.scope.generateUid(source.value);
-            moduleSpecifiers["REQUIRE" /* ImportDeclarationKind.REQUIRE */] = id;
+            moduleSpecifiers[ImportDeclarationKind.REQUIRE] = id;
             state.importDeclarations.push({
-                kind: "REQUIRE" /* ImportDeclarationKind.REQUIRE */,
+                kind: ImportDeclarationKind.REQUIRE,
                 local: undefined,
                 source,
                 loc: path.node.loc,
@@ -31,7 +37,7 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
     };
     const addDefaultImport = (path, state, source, name) => {
         const moduleSpecifiers = addModuleSpecifiers(state, source);
-        let id = moduleSpecifiers["DEFAULT" /* ImportDeclarationKind.IMPORT_DEFAULT */];
+        let id = moduleSpecifiers[ImportDeclarationKind.IMPORT_DEFAULT];
         if (!id) {
             // Use the given name, if possible, or generate one. If no initial name is given,
             // we'll create one based on the parent import
@@ -40,9 +46,9 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
                 !name || !t.isValidIdentifier(name)
                     ? path.scope.generateUid(name ?? parentImportLocal)
                     : name;
-            moduleSpecifiers["DEFAULT" /* ImportDeclarationKind.IMPORT_DEFAULT */] = id;
+            moduleSpecifiers[ImportDeclarationKind.IMPORT_DEFAULT] = id;
             state.importDeclarations.push({
-                kind: "DEFAULT" /* ImportDeclarationKind.IMPORT_DEFAULT */,
+                kind: ImportDeclarationKind.IMPORT_DEFAULT,
                 local: parentImportLocal,
                 source,
                 loc: path.node.loc,
@@ -52,7 +58,7 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
     };
     const addNamespaceImport = (path, state, source, name) => {
         const moduleSpecifiers = addModuleSpecifiers(state, source);
-        let id = moduleSpecifiers["NAMESPACE" /* ImportDeclarationKind.IMPORT_NAMESPACE */];
+        let id = moduleSpecifiers[ImportDeclarationKind.IMPORT_NAMESPACE];
         if (!id) {
             // Use the given name, if possible, or generate one. If no initial name is given,
             // we'll create one based on the parent import
@@ -61,9 +67,9 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
                 !name || !t.isValidIdentifier(name)
                     ? path.scope.generateUid(name ?? parentImportLocal)
                     : name;
-            moduleSpecifiers["NAMESPACE" /* ImportDeclarationKind.IMPORT_NAMESPACE */] = id;
+            moduleSpecifiers[ImportDeclarationKind.IMPORT_NAMESPACE] = id;
             state.importDeclarations.push({
-                kind: "NAMESPACE" /* ImportDeclarationKind.IMPORT_NAMESPACE */,
+                kind: ImportDeclarationKind.IMPORT_NAMESPACE,
                 local: parentImportLocal,
                 source,
                 loc: path.node.loc,
@@ -299,10 +305,12 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
                                 : helpers_1.assignExportHelper;
                             const exportBindings = t.getBindingIdentifiers(declaration, false, true);
                             for (const exportName in exportBindings) {
-                                state.exportDeclarations.push({
-                                    statement: (0, helpers_1.withLocation)(exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)), exportStatement.loc),
-                                    local: undefined,
-                                });
+                                if (exportBindings[exportName] != null) {
+                                    state.exportDeclarations.push({
+                                        statement: (0, helpers_1.withLocation)(exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)), exportStatement.loc),
+                                        local: undefined,
+                                    });
+                                }
                             }
                         }
                     }
@@ -390,7 +398,7 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
                         if (!local || !state.referencedLocals.has(local)) {
                             // Don't add imports that aren't referenced, unless they're required for a side-effect
                             // We check for REQUIRE, to make sure we only ever add a single side-effect require
-                            if (importDeclaration.kind === "REQUIRE" /* ImportDeclarationKind.REQUIRE */ &&
+                            if (importDeclaration.kind === ImportDeclarationKind.REQUIRE &&
                                 moduleSpecifiers.sideEffect) {
                                 esmStatements.push((0, helpers_1.withLocation)((0, helpers_1.sideEffectRequireCall)(t, source), importDeclaration.loc));
                             }
@@ -398,13 +406,13 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
                         }
                         let importStatement;
                         switch (importDeclaration.kind) {
-                            case "REQUIRE" /* ImportDeclarationKind.REQUIRE */:
+                            case ImportDeclarationKind.REQUIRE:
                                 importStatement = (0, helpers_1.requireCall)(t, local, source);
                                 break;
-                            case "DEFAULT" /* ImportDeclarationKind.IMPORT_DEFAULT */:
+                            case ImportDeclarationKind.IMPORT_DEFAULT:
                                 importStatement = wrapDefault(local, importDeclaration.local);
                                 break;
-                            case "NAMESPACE" /* ImportDeclarationKind.IMPORT_NAMESPACE */:
+                            case ImportDeclarationKind.IMPORT_NAMESPACE:
                                 importStatement = wrapNamespace(local, importDeclaration.local);
                                 break;
                         }

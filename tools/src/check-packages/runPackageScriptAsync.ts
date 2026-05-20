@@ -19,12 +19,12 @@ export default async function runPackageScriptAsync(
     logger.debug(`🤷‍♂️ ${cyan(scriptName)} script not found`);
     return;
   }
-  const spawnArgs = [scriptName, ...args];
+  const spawnArgs = ['run', scriptName, ...args];
 
-  logger.log(`🏃‍♀️ Running ${cyan.italic(`yarn ${spawnArgs.join(' ')}`)}`);
+  logger.log(`🏃‍♀️ Running ${cyan.italic(`pnpm ${spawnArgs.join(' ')}`)}`);
 
   try {
-    await spawnAsync('yarn', spawnArgs, {
+    await spawnAsync('pnpm', spawnArgs, {
       stdio: 'pipe',
       cwd: pkg.path,
     });

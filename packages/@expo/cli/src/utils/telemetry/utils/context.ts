@@ -23,10 +23,10 @@ function summarizeCpuInfo() {
   const summary = { model: '', speed: 0, count: 0 };
 
   for (const key in cpus) {
-    if (cpus[key].length > summary.count) {
+    if (cpus[key]!.length > summary.count) {
       summary.model = key;
-      summary.speed = cpus[key][0].speed;
-      summary.count = cpus[key].length;
+      summary.speed = cpus[key]![0]?.speed ?? 0;
+      summary.count = cpus[key]!.length;
     }
   }
 

@@ -9,7 +9,7 @@ import { ReactLogo } from './ReactLogo';
 
 export function StateOfRNBanner() {
   const router = useRouter();
-  const stateOfRNEndDate = new Date('2025-01-08');
+  const stateOfRNEndDate = new Date('2026-01-10');
   const showShoutout = isBefore(new Date(), stateOfRNEndDate);
   const isHomePage = router?.pathname === '/';
 
@@ -21,18 +21,18 @@ export function StateOfRNBanner() {
     <div
       className={mergeClasses(
         'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg px-6 py-4',
-        'border-2 border-[#001a72] bg-[#b1dfd0]',
+        'border-[#001a72] border-2 bg-[#b1dfd0]',
         'dark:border-[#b1dfd0] dark:bg-[#001a72]',
-        'max-md-gutters:flex-wrap'
+        'max-md:flex-wrap'
       )}>
       <div className="flex items-center gap-4">
-        <div className="relative z-10 p-2 max-sm-gutters:hidden">
-          <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#001a72] dark:bg-[#b1dfd0]" />
-          <ReactLogo className="icon-lg relative z-10 text-palette-white dark:text-[#001a72]" />
+        <div className="relative z-10 p-2 max-sm:hidden">
+          <div className="absolute inset-0 rounded-md bg-[#001a72] asset-sm-shadow dark:bg-[#b1dfd0]" />
+          <ReactLogo className="relative z-10 icon-lg text-palette-white dark:text-[#001a72]" />
         </div>
         <div className="relative grid grid-cols-1 gap-1">
           <HEADLINE className="text-[#001a72] dark:text-[#b1dfd0]">
-            State of React Native 2024
+            State of React Native 2025
           </HEADLINE>
           <CALLOUT className="text-[#001a72] dark:text-[#b1dfd0]">
             Have a few minutes and want to shape the future of React Native?

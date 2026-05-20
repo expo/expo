@@ -1,10 +1,16 @@
+import fs from 'fs';
+import path from 'path';
+
 import { BasePackageManager } from './BasePackageManager';
-import { resolveWorkspaceRoot, BUN_LOCK_FILE } from '../utils/nodeManagers';
+import { resolveWorkspaceRoot, BUN_LOCK_FILE, BUN_TEXT_LOCK_FILE } from '../utils/nodeManagers';
 
 export class BunPackageManager extends BasePackageManager {
   readonly name = 'bun';
   readonly bin = 'bun';
-  readonly lockFile = BUN_LOCK_FILE;
+  get lockFile() {
+    const cwd = this.options.cwd?.toString() || process.cwd();
+    return fs.existsSync(path.join(cwd, BUN_LOCK_FILE)) ? BUN_LOCK_FILE : BUN_TEXT_LOCK_FILE;
+  }
 
   workspaceRoot() {
     const root = resolveWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));

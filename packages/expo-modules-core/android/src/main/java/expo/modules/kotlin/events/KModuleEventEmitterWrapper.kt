@@ -10,7 +10,7 @@ import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.toJSValueExperimental
 import java.lang.ref.WeakReference
 
@@ -45,7 +45,7 @@ class KModuleEventEmitterWrapper(
   }
 
   private fun emitNative(eventName: String, eventBody: Map<String, Any?>?) {
-    val runtimeContext = moduleHolder.module.runtimeContext
+    val runtimeContext = moduleHolder.module.runtime
     val jsObject = moduleHolder.safeJSObject ?: return
     try {
       JNIUtils.emitEvent(jsObject, runtimeContext.jsiContext, eventName, eventBody)
@@ -85,12 +85,12 @@ open class KEventEmitterWrapper(
 
   override fun emit(eventName: String, eventBody: Record?) {
     deviceEventEmitter
-      ?.emit(eventName, JSTypeConverter.legacyConvertToJSValue(eventBody))
+      ?.emit(eventName, JSTypeConverterProvider.legacyConvertToJSValue(eventBody))
   }
 
   override fun emit(eventName: String, eventBody: Map<*, *>?) {
     deviceEventEmitter
-      ?.emit(eventName, JSTypeConverter.legacyConvertToJSValue(eventBody))
+      ?.emit(eventName, JSTypeConverterProvider.legacyConvertToJSValue(eventBody))
   }
 
   override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {

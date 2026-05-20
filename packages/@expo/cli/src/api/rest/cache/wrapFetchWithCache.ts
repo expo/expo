@@ -1,9 +1,9 @@
-import { Response, type RequestInfo, type RequestInit } from 'undici';
+import { Response, type RequestInfo, type RequestInit } from 'fetch-nodeshim';
 
 import { getRequestCacheKey, getResponseInfo, type ResponseCache } from './ResponseCache';
 import type { FetchLike } from '../client.types';
 
-const debug = require('debug')('expo:undici-cache');
+const debug = require('debug')('expo:fetch-cache');
 
 export function wrapFetchWithCache(fetch: FetchLike, cache: ResponseCache): FetchLike {
   return async function cachedFetch(url: RequestInfo, init?: RequestInit) {

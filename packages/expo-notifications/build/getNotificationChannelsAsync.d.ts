@@ -1,4 +1,4 @@
-import { NotificationChannel } from './NotificationChannelManager.types';
+import type { NotificationChannel } from './NotificationChannelManager.types';
 /**
  * Fetches information about all known notification channels.
  * @return A Promise which resolves to an array of channels. On platforms that do not support notification channels,
@@ -6,5 +6,5 @@ import { NotificationChannel } from './NotificationChannelManager.types';
  * @platform android
  * @header channels
  */
-export default function getNotificationChannelsAsync(): Promise<NotificationChannel[]>;
+export declare function getNotificationChannelsAsync(): Promise<NotificationChannel[]>;
 //# sourceMappingURL=getNotificationChannelsAsync.d.ts.map

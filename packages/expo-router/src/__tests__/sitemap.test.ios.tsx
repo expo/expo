@@ -123,7 +123,7 @@ test('expands nested route when the layout header is pressed', async () => {
   act(() => router.replace('/_sitemap'));
   const containers = screen.getAllByTestId('sitemap-item-container');
 
-  const nestedContainer = containers[2];
+  const nestedContainer = containers[2]!;
   const layoutHeader = within(nestedContainer).getByTestId('sitemap-item');
   act(() => fireEvent.press(layoutHeader));
   await waitFor(() => {
@@ -153,7 +153,7 @@ test('renders and expands all levels of a deeply nested route on presses on head
   const containers = screen.getAllByTestId('sitemap-item-container');
   expect(containers).toHaveLength(3);
 
-  const nestedContainer = containers[2];
+  const nestedContainer = containers[2]!;
   const layoutHeader = within(nestedContainer).getByTestId('sitemap-item');
   act(() => fireEvent.press(layoutHeader));
   await waitFor(() => {
@@ -161,7 +161,7 @@ test('renders and expands all levels of a deeply nested route on presses on head
   });
 
   let nestedItems = within(nestedContainer).getAllByTestId('sitemap-item');
-  const deepLayoutHeader = nestedItems[2];
+  const deepLayoutHeader = nestedItems[2]!;
 
   act(() => fireEvent.press(deepLayoutHeader));
   await waitFor(() => {
@@ -211,19 +211,19 @@ describe('links', () => {
     expect(containers).toHaveLength(3);
   });
   test('clicking the first sitemap item navigates to the index page', () => {
-    const link = within(containers[0]).getByRole('link');
+    const link = within(containers[0]!).getByRole('link');
     act(() => fireEvent.press(link));
     expect(screen).toHavePathname('/');
   });
   test('clicking the second sitemap item navigates to the about page', () => {
-    const link = within(containers[1]).getByRole('link');
+    const link = within(containers[1]!).getByRole('link');
     act(() => fireEvent.press(link));
     expect(screen).toHavePathname('/about');
   });
   describe('nested links', () => {
     let nestedContainer: ReturnType<typeof screen.getByTestId>;
     beforeEach(async () => {
-      nestedContainer = containers[2];
+      nestedContainer = containers[2]!;
       const layoutHeader = within(nestedContainer).getByTestId('sitemap-item');
       act(() => fireEvent.press(layoutHeader));
       await waitFor(() => {

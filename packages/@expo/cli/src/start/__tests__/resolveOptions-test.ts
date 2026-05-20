@@ -250,6 +250,22 @@ describe(resolvePortsAsync, () => {
       metroPort: 8081,
     });
   });
+  it(`does not abort when port resolves to 0`, async () => {
+    jest.mocked(resolvePortAsync).mockResolvedValueOnce(0);
+    await expect(
+      resolvePortsAsync('/noop', { port: 0 }, { webOnly: false })
+    ).resolves.toStrictEqual({
+      metroPort: 0,
+    });
+  });
+  it(`does not abort when webpack port resolves to 0`, async () => {
+    jest.mocked(resolvePortAsync).mockResolvedValueOnce(0);
+    await expect(resolvePortsAsync('/noop', { port: 0 }, { webOnly: true })).resolves.toStrictEqual(
+      {
+        webpackPort: 0,
+      }
+    );
+  });
   it(`resolves default port for webpack`, async () => {
     await expect(resolvePortsAsync('/noop', {}, { webOnly: true })).resolves.toStrictEqual({
       webpackPort: 19006,

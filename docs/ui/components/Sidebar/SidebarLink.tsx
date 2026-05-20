@@ -34,13 +34,17 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
   const isSelected = isRouteActive(info, router?.asPath, router?.pathname);
 
   useEffect(() => {
-    if (isSelected && ref?.current && !isLinkInViewport(ref?.current)) {
-      setTimeout(() => {
-        if (ref?.current) {
-          ref.current.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 50);
+    if (!isSelected || !ref?.current) {
+      return;
     }
+    const timeoutId = setTimeout(() => {
+      if (ref?.current && !isLinkInViewport(ref.current)) {
+        ref.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 50);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   if (info.hidden) {
@@ -57,7 +61,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       href={info.href}
       ref={ref}
       className={mergeClasses(
-        'group -ml-2.5 flex w-full scroll-m-[60px] items-center p-1 pr-0 text-xs text-secondary decoration-0',
+        'group -ml-2.5 flex w-full scroll-m-15 items-center p-1 pr-0 text-sm text-secondary decoration-0',
         'hocus:text-link [&_svg]:hocus:text-icon-info',
         isSelected && 'text-link [&_svg]:text-icon-info',
         info.isDeprecated && 'line-through',
@@ -73,21 +77,21 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {children}
       {info.isDeprecated && <span className="sr-only">Deprecated</span>}
       {info.hasVideoLink && !isSelected && (
-        <PlaySquareIcon className="icon-xs ml-1.5 text-icon-secondary" aria-hidden="true" />
+        <PlaySquareIcon className="ml-1.5 icon-xs text-icon-secondary" aria-hidden="true" />
       )}
       {info.hasVideoLink && isSelected && (
-        <PlaySquareDuotoneIcon className="icon-xs ml-1.5 text-palette-blue11" aria-hidden="true" />
+        <PlaySquareDuotoneIcon className="ml-1.5 icon-xs text-palette-blue11" aria-hidden="true" />
       )}
       {info.isDeprecated && !isSelected && (
-        <AlertTriangleIcon className="icon-xs ml-1.5 !text-icon-warning" aria-hidden="true" />
+        <AlertTriangleIcon className="ml-1.5 icon-xs text-icon-warning!" aria-hidden="true" />
       )}
       {info.isDeprecated && isSelected && (
-        <AlertTriangleSolidIcon className="icon-xs ml-1.5 !text-icon-warning" aria-hidden="true" />
+        <AlertTriangleSolidIcon className="ml-1.5 icon-xs text-icon-warning!" aria-hidden="true" />
       )}
       {info.isNew && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-blue10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
+            '-mt-px ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-blue10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
               ? 'bg-palette-blue10 text-palette-white dark:text-palette-black'
               : 'border-palette-blue10 bg-none text-palette-blue10 dark:border-palette-blue9 dark:text-palette-blue9'
@@ -98,7 +102,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isAlpha && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-purple10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
+            '-mt-px ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
               ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
               : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
@@ -109,7 +113,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isBeta && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-purple10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
+            '-mt-px ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
               ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
               : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
@@ -120,7 +124,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isPreview && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-purple10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
+            '-mt-px ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
               ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
               : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
@@ -129,7 +133,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
         </div>
       )}
       {isExternal && (
-        <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary group-hover:text-icon-info" />
+        <ArrowUpRightIcon className="ml-auto icon-sm text-icon-secondary group-hover:text-icon-info" />
       )}
     </LinkBase>
   );

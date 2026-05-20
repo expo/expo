@@ -1,10 +1,11 @@
-import { PermissionStatus, Platform } from 'expo-modules-core';
+import { PermissionStatus } from 'expo';
+import { Platform } from 'expo-modules-core';
 
-import {
+import type {
   NativeNotificationPermissionsRequest,
   NotificationPermissionsStatus,
 } from './NotificationPermissions.types';
-import { NotificationPermissionsModule } from './NotificationPermissionsModule.types';
+import type { NotificationPermissionsModule } from './NotificationPermissionsModule.types';
 
 function convertPermissionStatus(
   status?: NotificationPermission | 'prompt'

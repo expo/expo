@@ -1,23 +1,36 @@
 import {
-  ConfigPlugin,
+  type ConfigPlugin,
   IOSConfig,
   createRunOncePlugin,
   withAndroidManifest,
   AndroidConfig,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-secure-store/package.json');
+const pkg = require('../../package.json');
 
 const BACKUP_RULES_PATH = '@xml/secure_store_backup_rules';
 const EXTRACTION_RULES_PATH = '@xml/secure_store_data_extraction_rules';
 const FACEID_USAGE = 'Allow $(PRODUCT_NAME) to access your Face ID biometric data.';
 
-const withSecureStore: ConfigPlugin<
-  {
-    faceIDPermission?: string | false;
-    configureAndroidBackup?: boolean;
-  } | void
-> = (config, { faceIDPermission, configureAndroidBackup = true } = {}) => {
+export type Props = {
+  /**
+   * A string to set the `NSFaceIDUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
+   * @platform ios
+   */
+  faceIDPermission?: string | false;
+  /**
+   * Whether to configure automatic Android backup to work correctly with expo-secure-store.
+   * @default true
+   * @platform android
+   */
+  configureAndroidBackup?: boolean;
+};
+
+const withSecureStore: ConfigPlugin<Props | void> = (
+  config,
+  { faceIDPermission, configureAndroidBackup = true } = {}
+) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSFaceIDUsageDescription: FACEID_USAGE,
   })(config, {

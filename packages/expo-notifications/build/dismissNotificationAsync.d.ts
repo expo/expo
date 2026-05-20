@@ -4,5 +4,5 @@
  * @return A Promise which resolves once the request to dismiss the notification is successfully dispatched to the notifications manager.
  * @header dismiss
  */
-export default function dismissNotificationAsync(notificationIdentifier: string): Promise<void>;
+export declare function dismissNotificationAsync(notificationIdentifier: string): Promise<void>;
 //# sourceMappingURL=dismissNotificationAsync.d.ts.map

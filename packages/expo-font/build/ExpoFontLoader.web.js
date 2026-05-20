@@ -32,7 +32,7 @@ function getFontFaceRulesMatchingResource(fontFamilyName, options) {
     });
 }
 const serverContext = new Set();
-function getHeadElements() {
+function getServerResourceDescriptors() {
     const entries = [...serverContext.entries()];
     if (!entries.length) {
         return [];
@@ -42,17 +42,16 @@ function getHeadElements() {
     // TODO: Maybe return nothing if no fonts were loaded.
     return [
         {
-            $$type: 'style',
-            children: css,
+            css,
             id: ID,
-            type: 'text/css',
+            type: 'style',
         },
         ...links.map((resourceId) => ({
-            $$type: 'link',
-            rel: 'preload',
-            href: resourceId,
             as: 'font',
-            crossorigin: '',
+            crossOrigin: '',
+            href: resourceId,
+            rel: 'preload',
+            type: 'link',
         })),
     ];
 }
@@ -75,19 +74,22 @@ const ExpoFontLoader = {
         }
     },
     getServerResources() {
-        const elements = getHeadElements();
+        const elements = getServerResourceDescriptors();
         return elements
             .map((element) => {
-            switch (element.$$type) {
+            switch (element.type) {
                 case 'style':
-                    return `<style id="${element.id}">${element.children}</style>`;
+                    return `<style id="${element.id}">${element.css}</style>`;
                 case 'link':
-                    return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
+                    return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossOrigin}" />`;
                 default:
                     return '';
             }
         })
             .filter(Boolean);
+    },
+    getServerResourceDescriptors() {
+        return getServerResourceDescriptors();
     },
     resetServerContext() {
         serverContext.clear();
@@ -139,7 +141,7 @@ const ExpoFontLoader = {
         return new FontObserver(fontFamilyName, {
             // @ts-expect-error: TODO(@kitten): Typings indicate that the polyfill may not support this?
             display: resource.display,
-        }).load(null, 6000);
+        }).load(resource.testString ?? null, 12000);
     },
 };
 const isServer = process.env.EXPO_OS === 'web' && typeof window === 'undefined';
@@ -163,8 +165,12 @@ function getStyleElement() {
     styleElement.id = ID;
     return styleElement;
 }
+const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
 export function _createWebFontTemplate(fontFamily, resource) {
-    return `@font-face{font-family:"${fontFamily}";src:url("${resource.uri}");font-display:${resource.display || FontDisplay.AUTO}}`;
+    const display = typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)
+        ? resource.display
+        : FontDisplay.AUTO;
+    return `@font-face{font-family:${JSON.stringify(fontFamily)};src:url(${JSON.stringify(resource.uri)});font-display:${display}}`;
 }
 function _createWebStyle(fontFamily, resource) {
     const fontStyle = _createWebFontTemplate(fontFamily, resource);
@@ -192,8 +198,6 @@ function isFontLoadingListenerSupported() {
     const isEdge = userAgent.includes('Edge');
     // Internet Explorer
     const isIE = userAgent.includes('Trident');
-    // Firefox
-    const isFirefox = userAgent.includes('Firefox');
-    return !isSafari && !isIOS && !isEdge && !isIE && !isFirefox;
+    return !isSafari && !isIOS && !isEdge && !isIE;
 }
 //# sourceMappingURL=ExpoFontLoader.web.js.map

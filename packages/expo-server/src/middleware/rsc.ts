@@ -25,6 +25,8 @@ export type RenderRscArgs = {
   headers: Record<string, string>;
 };
 
+const ALLOWED_PLATFORMS = new Set(['web', 'ios', 'android']);
+
 export const decodeInput = (encodedInput: string) => {
   if (encodedInput === 'index.txt') {
     return '';
@@ -60,7 +62,7 @@ export function getRscMiddleware(options: {
       throw new Error(`Unsupported method '${method}'`);
     }
 
-    const platform = url.searchParams.get('platform') ?? req.headers.get('expo-platform');
+    const platform = req.headers.get('expo-platform') ?? url.searchParams.get('platform');
     if (typeof platform !== 'string' || !platform) {
       return new Response('Missing expo-platform header or platform query parameter', {
         status: 500,
@@ -68,6 +70,16 @@ export function getRscMiddleware(options: {
           'Content-Type': 'text/plain',
         },
       });
+    } else if (!ALLOWED_PLATFORMS.has(platform)) {
+      return new Response(
+        `Unsupported platform "${platform}". expo-platform must be one of: web, ios, android.`,
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+        }
+      );
     }
 
     const engine = url.searchParams.get('transform.engine');
@@ -82,15 +94,15 @@ export function getRscMiddleware(options: {
       });
     }
 
-    let encodedInput = url.pathname.replace(
-      // TODO: baseUrl support
-      rscPathPrefix,
-      ''
-    );
+    // TODO: baseUrl support
+    let encodedInput = url.pathname.replace(rscPathPrefix, '');
 
     // First segment should be the target platform.
     // This is used for aligning with production exports which are statically exported to a single location at build-time.
-    encodedInput = encodedInput.replace(new RegExp(`^${platform}/`), '');
+    const platformPrefix = `${platform}/`;
+    if (encodedInput.toLowerCase().startsWith(platformPrefix)) {
+      encodedInput = encodedInput.slice(platformPrefix.length);
+    }
 
     try {
       encodedInput = decodeInput(encodedInput);

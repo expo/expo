@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import UIKit
 import Combine
+import React
+import ExpoModulesCore
 
 @MainActor
 class DevMenuViewModel: ObservableObject {
@@ -12,6 +13,7 @@ class DevMenuViewModel: ObservableObject {
   @Published var clipboardMessage: String?
   @Published var hostUrlCopiedMessage: String?
   @Published var isOnboardingFinished: Bool = true
+  @Published var showFloatingActionButton: Bool = false
 
   private let devMenuManager = DevMenuManager.shared
   private var cancellables = Set<AnyCancellable>()
@@ -20,12 +22,14 @@ class DevMenuViewModel: ObservableObject {
     loadData()
     checkOnboardingStatus()
     observeRegisteredCallbacks()
+    observeManifestChanges()
   }
 
   private func loadData() {
     loadAppInfo()
     loadDevSettings()
     loadRegisteredCallbacks()
+    loadFloatingActionButtonState()
   }
 
   private func loadAppInfo() {
@@ -97,7 +101,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func openRNDevMenu() {
-    guard let rctDevMenu = devMenuManager.currentBridge?.devMenu else {
+    guard let rctDevMenu: RCTDevMenu = devMenuManager.currentAppContext?.nativeModule(named: "RCTDevMenu") else {
       return
     }
 
@@ -108,7 +112,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyToClipboard(_ content: String) {
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     UIPasteboard.general.string = content
     hostUrlCopiedMessage = "Copied!"
 
@@ -119,7 +123,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyAppInfo() {
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     guard let appInfo = appInfo else {
       return
     }
@@ -164,6 +168,14 @@ class DevMenuViewModel: ObservableObject {
     return devMenuManager.canNavigateHome
   }
 
+  var shouldShowReactNativeDevMenu: Bool {
+    return devMenuManager.shouldShowReactNativeDevMenu
+  }
+
+  var configuration: DevMenuConfiguration {
+    return devMenuManager.configuration
+  }
+
   private func checkOnboardingStatus() {
     isOnboardingFinished = devMenuManager.isOnboardingFinished
   }
@@ -173,10 +185,29 @@ class DevMenuViewModel: ObservableObject {
     isOnboardingFinished = true
   }
 
+  private func loadFloatingActionButtonState() {
+    showFloatingActionButton = DevMenuPreferences.showFloatingActionButton
+  }
+
+  func toggleFloatingActionButton() {
+    showFloatingActionButton.toggle()
+    DevMenuPreferences.showFloatingActionButton = showFloatingActionButton
+  }
+
   private func observeRegisteredCallbacks() {
     devMenuManager.callbacksPublisher
       .map { $0.map { $0.name } }
       .receive(on: DispatchQueue.main)
       .assign(to: &$registeredCallbacks)
+  }
+
+  private func observeManifestChanges() {
+    devMenuManager.manifestPublisher
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in
+        self?.loadAppInfo()
+        self?.loadDevSettings()
+      }
+      .store(in: &cancellables)
   }
 }

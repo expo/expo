@@ -1,6 +1,5 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env pnpm --silent ts-node --transpile-only
 
-import nullthrows from 'nullthrows';
 import path from 'path';
 
 import {

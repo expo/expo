@@ -7,5 +7,5 @@
  * @platform ios
  * @header categories
  */
-export default function deleteNotificationCategoryAsync(identifier: string): Promise<boolean>;
+export declare function deleteNotificationCategoryAsync(identifier: string): Promise<boolean>;
 //# sourceMappingURL=deleteNotificationCategoryAsync.d.ts.map

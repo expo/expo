@@ -1,5 +1,5 @@
-import { NativeNotificationTriggerInput } from './NotificationScheduler.types';
-import { NotificationRequestInput, NotificationTriggerInput } from './Notifications.types';
+import type { NativeNotificationTriggerInput } from './NotificationScheduler.types';
+import type { NotificationRequestInput, NotificationTriggerInput } from './Notifications.types';
 /**
  * Schedules a notification to be triggered in the future.
  * > **Note:** This does not mean that the notification will be presented when it is triggered.
@@ -60,6 +60,6 @@ import { NotificationRequestInput, NotificationTriggerInput } from './Notificati
  * ```
  * @header schedule
  */
-export default function scheduleNotificationAsync(request: NotificationRequestInput): Promise<string>;
+export declare function scheduleNotificationAsync(request: NotificationRequestInput): Promise<string>;
 export declare function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotificationTriggerInput;
 //# sourceMappingURL=scheduleNotificationAsync.d.ts.map

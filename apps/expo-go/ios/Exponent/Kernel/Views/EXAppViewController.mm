@@ -5,16 +5,12 @@
 #import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
-#import "EXAppLoadingCancelView.h"
 #import "Expo_Go-Swift.h"
-#import "EXHomeModule.h"
 #import "EXEnvironment.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXReactAppManager.h"
-#import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
 
@@ -25,7 +21,9 @@
 #import <React/RCTAppearance.h>
 #import <React/RCTDevSettings.h>
 
+#if __has_include(<RNScreens/RNSScreenWindowTraits.h>)
 #import <RNScreens/RNSScreenWindowTraits.h>
+#endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -48,7 +46,7 @@ const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
-  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate, EXAppLoadingCancelViewDelegate>
+  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
 @property (atomic, assign) BOOL isHostAlreadyLoading;
@@ -58,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 @property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
 
-@property (nonatomic, assign) BOOL isHomeApp;
 @property (nonatomic, assign) UIInterfaceOrientation previousInterfaceOrientation;
 
 /*
@@ -71,17 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * SplashScreenViewProvider that is used only in managed workflow app.
- * Managed app does not need any specific SplashScreenViewProvider as it uses generic one povided by the SplashScreen module.
- * See also EXHomeAppSplashScreenViewProvider in self.viewDidLoad
+ * Managed app does not need any specific SplashScreenViewProvider as it uses generic one provided by the SplashScreen module.
  */
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewController *managedSplashScreenController;
-
-/*
- * This view is available in managed apps run in Expo Go only.
- * It is shown only before any managed app manifest is delivered by the app loader.
- */
-@property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
 
 @end
 
@@ -112,31 +102,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
 
-  // EXKernel.appRegistry.homeAppRecord does not contain any homeAppRecord until this point,
-  // therefore we cannot move this property initialization to the constructor/initializer
-  _isHomeApp = _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
+  // Loading overlay is now managed by EXRootViewController (browserController)
+  // to show immediately when user taps a project
 
-  // show LoadingCancelView in managed apps only
-  if (!self.isHomeApp) {
-    self.appLoadingCancelView = [EXAppLoadingCancelView new];
-    // if home app is available then LoadingCancelView can show `go to home` button
-    if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
-      self.appLoadingCancelView.delegate = self;
-    }
-    [self.view addSubview:self.appLoadingCancelView];
-    [self.view bringSubviewToFront:self.appLoadingCancelView];
-  }
-
-  // show LoadingProgressWindow in the development client for all apps other than production home
-  BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
-  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!isProductionHomeApp];
-
-  // show SplashScreen in standalone apps and home app only
-  // SplashScreen for managed is shown once the manifest is available
-  if (self.isHomeApp) {
-    EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
-    [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
-  }
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:YES];
 
   self.view.backgroundColor = [UIColor whiteColor];
   _appRecord.appManager.delegate = self;
@@ -161,9 +130,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
-  if (_appLoadingCancelView) {
-    _appLoadingCancelView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-  }
   if (_contentView) {
     _contentView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
@@ -216,10 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
     });
-  } else if ([domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
-    // RCTRedBox already handled this
-  } else if ([domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
-    // RCTRedBox already handled this
   } else {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _showErrorWithType:kEXFatalErrorTypeException error:error];
@@ -255,15 +217,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appStateDidBecomeActive
 {
-  if (_isHomeApp) {
-      [EXTextDirectionController setRTLPreferences:false :false];
-  } else if(_appRecord.appLoader.manifest != nil) {
-      BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
-      BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
-      [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
+  if (_appRecord.appLoader.manifest != nil) {
+    BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
+    BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
+    [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
   }
   dispatch_async(dispatch_get_main_queue(), ^{
-    // Reset the root view background color and window color if we switch between Expo home and project
     [self _setBackgroundColor];
   });
 }
@@ -321,13 +280,9 @@ NS_ASSUME_NONNULL_BEGIN
  * - actual one served when app is fetched.
  * For each of them we should show SplashScreen,
  * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
- * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
  */
 - (void)_showOrReconfigureManagedAppSplashScreen:(EXManifestsManifest *)manifest
 {
-  if (_isHomeApp) {
-    return;
-  }
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWith:manifest];
 
@@ -339,10 +294,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showCachedExperienceAlert
 {
-  if (self.isHomeApp) {
-    return;
-  }
-
   dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertController *alert = [UIAlertController
                                 alertControllerWithTitle:@"Using a cached project"
@@ -386,7 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        options:EXSplashScreenDefault
                                successCallback:^(BOOL hasEffect){}
                                failureCallback:^(NSString * _Nonnull message) {
-        EXLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+        RCTLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
       }];
     });
   };
@@ -398,13 +349,12 @@ NS_ASSUME_NONNULL_BEGIN
                                      options:EXSplashScreenDefault
                     splashScreenViewProvider:provider
                              successCallback:hideRootViewControllerSplashScreen
-                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
   });
 }
 
 - (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
 {
-
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
   EX_WEAKIFY(self);
@@ -419,7 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      options:EXSplashScreenDefault
                       splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
-                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
   });
 
 }
@@ -427,6 +377,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideLoadingProgressWindow
 {
   [self.appLoadingProgressWindowController hide];
+  // Hide our loading overlay now that the app is fully loaded
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+  }
   if (self.managedSplashScreenController) {
     [self.managedSplashScreenController startSplashScreenVisibleTimer];
   }
@@ -436,19 +390,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
-  if (_appLoadingCancelView) {
-    EX_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      EX_ENSURE_STRONGIFY(self);
-      [self.appLoadingCancelView removeFromSuperview];
-      self.appLoadingCancelView = nil;
-    });
-  }
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
-  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   if ([EXKernel sharedInstance].browserController) {
+    // Only hide loading overlay if manifest has an app icon to show.
+    // Otherwise keep it visible until app is fully loaded (hideLoadingProgressWindow).
+    if ([manifest iosAppIconUrl] != nil) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+      });
+    }
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
+  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   [self _rebuildHost];
 }
 
@@ -462,11 +415,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAbstractLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
-  if (!_isHomeApp) {
-    BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
-    BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
-    [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
-  }
+  BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
+  BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
+  [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
   [self _rebuildHost];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
@@ -479,10 +430,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didFailWithError:(NSError *)error
 {
-  if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
-    [_appRecord.appManager appLoaderFailedWithError:error];
-  }
-  [self maybeShowError:error];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Hide the loading overlay on error
+    if ([EXKernel sharedInstance].browserController) {
+      [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+    }
+    if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
+      [self->_appRecord.appManager appLoaderFailedWithError:error];
+    }
+    [self maybeShowError:error];
+  });
 }
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
@@ -549,6 +506,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)errorViewDidSelectRetry:(EXErrorView *)errorView
 {
+  // Dismiss the error view immediately so the user sees visible feedback
+  // (the loading overlay below it) while the retry runs. If the retry
+  // fails, _showErrorWithType: re-adds the same _errorView object.
+  [errorView removeFromSuperview];
   [self refresh];
 }
 
@@ -562,7 +523,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super supportedInterfaceOrientations];
   }
 
-  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0 && !self.isHomeApp) {
+  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0) {
     return [ScreenOrientationRegistry.shared requiredOrientationMask];
   }
 
@@ -571,7 +532,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldUseRNScreenOrientation
 {
+#if __has_include(<RNScreens/RNSScreenWindowTraits.h>)
   return [RNSScreenWindowTraits shouldAskScreensForScreenOrientationInViewController:self];
+#else
+  return NO;
+#endif
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault
@@ -719,8 +684,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_storeLastFatalErrorDate:(NSDate *)date
 {
-  [[NSUserDefaults standardUserDefaults] setObject:date forKey:kEXLastFatalErrorDateDefaultsKey];
-  [[NSUserDefaults standardUserDefaults] synchronize];
+  [[NSUserDefaults standardUserDefaults] setObject:date forKey:@"EXKernelLastFatalErrorDateDefaultsKey"];
 }
 
 #pragma mark - Internal
@@ -792,14 +756,6 @@ NS_ASSUME_NONNULL_BEGIN
   if (_tmrAutoReloadDebounce) {
     [_tmrAutoReloadDebounce invalidate];
     _tmrAutoReloadDebounce = nil;
-  }
-}
-
-#pragma mark - EXAppLoadingCancelViewDelegate
-
-- (void)appLoadingCancelViewDidCancel:(EXAppLoadingCancelView *)view {
-  if ([EXKernel sharedInstance].browserController) {
-    [[EXKernel sharedInstance].browserController moveHomeToVisible];
   }
 }
 

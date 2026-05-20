@@ -1,4 +1,4 @@
-import { Button, mergeClasses } from '@expo/styleguide';
+import { Button } from '@expo/styleguide';
 import { ComponentType, HTMLAttributes, ReactNode } from 'react';
 
 import { FOOTNOTE } from '~/ui/components/Text';
@@ -17,22 +17,19 @@ export const SdkPackageButton = ({ label, Icon, tooltip, href }: SdkPackageButto
       <Tooltip.Trigger asChild>
         <Button
           theme="quaternary"
-          className="min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]"
+          className="justify-center px-2.5"
           openInNewTab
-          href={href}>
-          <div
-            className={mergeClasses(
-              'flex flex-col items-center',
-              'max-xl-gutters:flex-row max-xl-gutters:gap-1.5'
-            )}>
-            <Icon className="mt-0.5 text-icon-secondary" />
-            <FOOTNOTE crawlable={false} theme="secondary">
+          href={href}
+          aria-label={label}>
+          <div className="flex items-center gap-1.5">
+            <Icon className="icon-sm text-icon-secondary" />
+            <FOOTNOTE crawlable={false} theme="secondary" className="max-md:hidden">
               {label}
             </FOOTNOTE>
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px]">
+      <Tooltip.Content sideOffset={8} className="max-w-75">
         <FOOTNOTE>{tooltip}</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>

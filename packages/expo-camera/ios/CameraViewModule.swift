@@ -30,18 +30,12 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       )
     }
 
-    Property("isModernBarcodeScannerAvailable") { () -> Bool in
-      if #available(iOS 16.0, *) {
-        return true
-      }
-      return false
+    Property("isModernBarcodeScannerAvailable") {
+      if #available(iOS 16.0, *) { true } else { false }
     }
 
-    Property("toggleRecordingAsyncAvailable") { () -> Bool in
-      if #available(iOS 18.0, *) {
-        return true
-      }
-      return false
+    Property("toggleRecordingAsyncAvailable") {
+      if #available(iOS 18.0, *) { true } else { false }
     }
 
     AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
@@ -148,7 +142,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       Prop("barcodeScannerEnabled") { (view, scanBarcodes: Bool?) in
-#if canImport(ZXingObjC)
         if let scanBarcodes, view.isScanningBarcodes != scanBarcodes {
           view.isScanningBarcodes = scanBarcodes
           return
@@ -156,17 +149,15 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         if scanBarcodes == nil && view.isScanningBarcodes != false {
           view.isScanningBarcodes = false
         }
-#endif
       }
 
       Prop("barcodeScannerSettings") { (view, settings: BarcodeSettings?) in
-#if canImport(ZXingObjC)
         if let settings {
+          if view.barcodeScanner?.isAvailable == false {
+            self.appContext?.jsLogger.warn("Barcode scanning has been disabled")
+          }
           view.setBarcodeScannerSettings(settings: settings)
         }
-#else
-        self.appContext?.jsLogger.warn("Barcode scanning has been disabled")
-#endif
       }
 
       Prop("mute") { (view, muted: Bool?) in
@@ -192,6 +183,16 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
         if quality == nil && view.videoQuality != .video1080p {
           view.videoQuality = .video1080p
+        }
+      }
+
+      Prop("videoStabilizationMode") { (view, mode: VideoStabilizationMode?) in
+        if let mode, view.videoStabilizationMode != mode {
+          view.videoStabilizationMode = mode
+          return
+        }
+        if mode == nil && view.videoStabilizationMode != .auto {
+          view.videoStabilizationMode = .auto
         }
       }
 
@@ -246,9 +247,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       AsyncFunction("getAvailablePictureSizes") {
-        return PictureSize.allCases.map {
-          $0.rawValue
-        }
+        return PictureSize.allCases.map { $0.rawValue }
       }
 
       AsyncFunction("getAvailableLenses") { view in
@@ -257,16 +256,20 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
       AsyncFunction("takePictureRef") { (view, options: TakePictureOptions) -> PictureRef in
         #if targetEnvironment(simulator)
-        return try takePictureRefForSimulator(self.appContext, view, options)
-        #else
-        return try await view.takePictureRef(options: options)
+        if AVCaptureDevice.default(for: .video) == nil {
+          return try takePictureRefForSimulator(self.appContext, view, options)
+        }
         #endif
+        return try await view.takePictureRef(options: options)
       }
 
       AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
-        #if targetEnvironment(simulator) // simulator
-        try takePictureForSimulator(self.appContext, view, options, promise)
-        #else
+        #if targetEnvironment(simulator)
+        if AVCaptureDevice.default(for: .video) == nil {
+          try takePictureForSimulator(self.appContext, view, options, promise)
+          return
+        }
+        #endif
         Task {
           do {
             let result = try await view.takePicturePromise(options: options)
@@ -275,17 +278,17 @@ public final class CameraViewModule: Module, ScannerResultHandler {
             promise.reject(error)
           }
         }
-        #endif
       }
 
       AsyncFunction("record") { (view, options: CameraRecordingOptions, promise: Promise) in
         #if targetEnvironment(simulator)
-        throw Exceptions.SimulatorNotSupported()
-        #else
+        if AVCaptureDevice.default(for: .video) == nil {
+          throw Exceptions.SimulatorNotSupported()
+        }
+        #endif
         Task {
           await view.record(options: options, promise: promise)
         }
-        #endif
       }
 
       AsyncFunction("toggleRecording") { view in
@@ -298,20 +301,21 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
       AsyncFunction("stopRecording") { view in
         #if targetEnvironment(simulator)
-        throw Exceptions.SimulatorNotSupported()
-        #else
-        view.stopRecording()
+        if AVCaptureDevice.default(for: .video) == nil {
+          throw Exceptions.SimulatorNotSupported()
+        }
         #endif
+        view.stopRecording()
       }
     }
 
     Class("Picture", PictureRef.self) {
-      Property("width") { (image: PictureRef) -> Int in
-        return image.ref.cgImage?.width ?? 0
+      Property("width") { (image: PictureRef) -> CGFloat in
+        return image.ref.size.width
       }
 
-      Property("height") { (image: PictureRef) -> Int in
-        return image.ref.cgImage?.height ?? 0
+      Property("height") { (image: PictureRef) -> CGFloat in
+        return image.ref.size.height
       }
 
       AsyncFunction("savePictureAsync") { (image: PictureRef, options: SavePictureOptions?) -> [String: Any?] in
@@ -325,7 +329,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in
       if #available(iOS 16.0, *) {
-        await MainActor.run {
+        try await MainActor.run {
+          guard DataScannerViewController.isSupported, DataScannerViewController.isAvailable else {
+            throw CameraScannerUnavailableException()
+          }
           let delegate = VisionScannerDelegate(handler: self)
           scannerContext = ScannerContext(delegate: delegate)
           launchScanner(with: options)
@@ -345,7 +352,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -354,7 +361,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -363,7 +370,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -372,7 +379,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -398,7 +405,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       controller.delegate = delegate
     }
 
-    appContext?.utilities?.currentViewController()?.present(controller, animated: true) {
+    appContext?.utilities?.currentViewController()?.present(controller, animated: true) { [weak self] in
+      if let delegate = self?.scannerContext?.delegate as? VisionScannerDelegate {
+        controller.presentationController?.delegate = delegate
+      }
       try? controller.startScanning()
     }
   }
@@ -409,12 +419,23 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     guard let controller = scannerContext?.controller as? DataScannerViewController else {
       return
     }
-    controller.stopScanning()
-    controller.dismiss(animated: true)
+    controller.dismiss(animated: true) { [weak self] in
+      self?.onScannerDismissed()
+    }
   }
 
   func onItemScanned(result: [String: Any]) {
     sendEvent("onModernBarcodeScanned", result)
+  }
+
+  @MainActor
+  func onScannerDismissed() {
+    if #available(iOS 16.0, *) {
+      if let controller = scannerContext?.controller as? DataScannerViewController {
+        controller.stopScanning()
+      }
+    }
+    scannerContext = nil
   }
 
   private func getAvailableVideoCodecs() -> [String] {
@@ -425,22 +446,31 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     guard let captureDevice = ExpoCameraUtils.device(
       with: AVMediaType.video,
       preferring: AVCaptureDevice.Position.front) else {
+      session.commitConfiguration()
       return []
     }
     guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
+      session.commitConfiguration()
       return []
     }
     if session.canAddInput(deviceInput) {
       session.addInput(deviceInput)
     }
 
-    session.commitConfiguration()
-
     let movieFileOutput = AVCaptureMovieFileOutput()
-
     if session.canAddOutput(movieFileOutput) {
       session.addOutput(movieFileOutput)
     }
-    return movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
+
+    session.commitConfiguration()
+
+    let codecs = movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
+
+    session.beginConfiguration()
+    session.removeOutput(movieFileOutput)
+    session.removeInput(deviceInput)
+    session.commitConfiguration()
+
+    return codecs
   }
 }

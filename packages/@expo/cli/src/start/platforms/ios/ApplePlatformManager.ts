@@ -1,8 +1,9 @@
 import { AppleAppIdResolver } from './AppleAppIdResolver';
 import { AppleDeviceManager } from './AppleDeviceManager';
-import { Device } from './simctl';
-import { AppIdResolver } from '../AppIdResolver';
-import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
+import type { Device } from './simctl';
+import type { AppIdResolver } from '../AppIdResolver';
+import type { BaseOpenInCustomProps, BaseResolveDeviceProps } from '../PlatformManager';
+import { PlatformManager } from '../PlatformManager';
 
 /** Manages launching apps on Apple simulators. */
 export class ApplePlatformManager extends PlatformManager<Device> {
@@ -31,9 +32,19 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     options:
       | { runtime: 'expo' | 'web' }
       | { runtime: 'custom'; props?: Partial<BaseOpenInCustomProps> },
-    resolveSettings?: Partial<{ shouldPrompt?: boolean; device?: Device }>
+    resolveSettings?: BaseResolveDeviceProps<Device>
   ): Promise<{ url: string }> {
     await AppleDeviceManager.assertSystemRequirementsAsync();
+
+    // Expo Go only supports iOS (iPhone/iPad), not watchOS or tvOS.
+    // Ensure device selection filters to iOS when launching Expo Go.
+    if (options.runtime === 'expo') {
+      resolveSettings = {
+        ...resolveSettings,
+        device: { ...resolveSettings?.device, osType: 'iOS' } as Device,
+      };
+    }
+
     return super.openAsync(options, resolveSettings);
   }
 

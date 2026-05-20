@@ -1,12 +1,36 @@
 import type MetroServer from '@expo/metro/metro/Server';
+import type { ChangeEvent, ChangedFileMetadata } from '@expo/metro/metro-file-map/flow-types';
 
-import { ServerLike } from '../../BundlerDevServer';
+import type { ServerLike } from '../../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metroWatchTypeScriptFiles';
+
+type FileEntry = readonly [string, Readonly<ChangedFileMetadata>];
+
+function createChangeEvent({
+  addedFiles = [],
+  modifiedFiles = [],
+  removedFiles = [],
+}: {
+  addedFiles?: FileEntry[];
+  modifiedFiles?: FileEntry[];
+  removedFiles?: FileEntry[];
+}): ChangeEvent {
+  return {
+    changes: {
+      addedDirectories: [],
+      removedDirectories: [],
+      addedFiles,
+      modifiedFiles,
+      removedFiles,
+    },
+    rootDir: '/',
+  };
+}
 
 function createRunner() {
   const listeners = new Map();
   const watcher = {
-    addListener: jest.fn((event, listener) => {
+    addListener: jest.fn((event: string, listener: Function) => {
       listeners.set(event, listener);
     }),
     removeListener: jest.fn(),
@@ -15,8 +39,8 @@ function createRunner() {
   return {
     watcher,
     listeners,
-    invoke(events: unknown) {
-      listeners.get('change')({ eventsQueue: events });
+    invoke(event: ChangeEvent) {
+      listeners.get('change')(event);
     },
     runner: {
       metro: {
@@ -43,22 +67,14 @@ describe(metroWatchTypeScriptFiles, () => {
     metroWatchTypeScriptFiles({ projectRoot: '/app/', callback, ...runner });
     expect(watcher.addListener).toHaveBeenCalledWith('change', expect.any(Function));
 
-    invoke([
-      {
-        filePath: '/foo.ts',
-        metadata: {
-          type: 'f',
-        },
-        type: 'add',
-      },
-      {
-        filePath: '/bar.ts',
-        metadata: {
-          type: 'f',
-        },
-        type: 'add',
-      },
-    ]);
+    invoke(
+      createChangeEvent({
+        addedFiles: [
+          ['/foo.ts', { isSymlink: false }],
+          ['/bar.ts', { isSymlink: false }],
+        ],
+      })
+    );
 
     expect(callback).toHaveBeenCalledTimes(2);
   });
@@ -70,22 +86,14 @@ describe(metroWatchTypeScriptFiles, () => {
       metroWatchTypeScriptFiles({ projectRoot: '/app/', callback, throttle: true, ...runner });
       expect(watcher.addListener).toHaveBeenCalledWith('change', expect.any(Function));
 
-      invoke([
-        {
-          filePath,
-          metadata: {
-            type: 'f',
-          },
-          type: 'add',
-        },
-        {
-          filePath: '/foo.ts',
-          metadata: {
-            type: 'f',
-          },
-          type: 'add',
-        },
-      ]);
+      invoke(
+        createChangeEvent({
+          addedFiles: [
+            [filePath, { isSymlink: false }],
+            ['/foo.ts', { isSymlink: false }],
+          ],
+        })
+      );
 
       expect(callback).toHaveBeenCalledTimes(1);
     });
@@ -106,15 +114,11 @@ describe(metroWatchTypeScriptFiles, () => {
       metroWatchTypeScriptFiles({ projectRoot: '/app/', callback, ...runner });
       expect(watcher.addListener).toHaveBeenCalledWith('change', expect.any(Function));
 
-      invoke([
-        {
-          filePath,
-          metadata: {
-            type: 'f',
-          },
-          type: 'add',
-        },
-      ]);
+      invoke(
+        createChangeEvent({
+          addedFiles: [[filePath, { isSymlink: false }]],
+        })
+      );
 
       expect(callback).toHaveBeenCalledTimes(0);
     });
@@ -131,24 +135,14 @@ describe(metroWatchTypeScriptFiles, () => {
     });
     expect(watcher.addListener).toHaveBeenCalledWith('change', expect.any(Function));
 
-    invoke([
-      {
-        filePath: 'foo.tsx',
-        metadata: {
-          type: 'f',
-        },
-        type: 'delete',
-      },
-      {
-        filePath: 'foo2.tsx',
-        metadata: {
-          type: 'f',
-        },
-        type: 'add',
-      },
-    ]);
+    invoke(
+      createChangeEvent({
+        removedFiles: [['foo.tsx', { isSymlink: false }]],
+        addedFiles: [['foo2.tsx', { isSymlink: false }]],
+      })
+    );
 
-    // Only called once
+    // Only called once — only 'delete' events are watched
     expect(callback).toHaveBeenCalledTimes(1);
   });
 });

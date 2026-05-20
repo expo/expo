@@ -1,8 +1,5 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.imagemanipulator
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -12,8 +9,8 @@ import expo.modules.imagemanipulator.transformers.CropTransformer
 import expo.modules.imagemanipulator.transformers.FlipTransformer
 import expo.modules.imagemanipulator.transformers.ResizeTransformer
 import expo.modules.imagemanipulator.transformers.RotateTransformer
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.functions.Coroutine
@@ -31,12 +28,9 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class ImageManipulatorModule : Module() {
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
   private fun createManipulatorContext(url: Uri): ImageManipulatorContext {
     val loader = suspend {
-      val imageLoader = appContext.imageLoader
+      val imageLoader = appContext.service<ImageLoaderInterface>()
         ?: throw ImageLoaderNotFoundException()
 
       suspendCancellableCoroutine { continuation ->
@@ -118,7 +112,7 @@ class ImageManipulatorModule : Module() {
 
       AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions? ->
         val options = options ?: ManipulateOptions()
-        val path = FileUtils.generateRandomOutputPath(context, options.format)
+        val path = FileUtils.generateRandomOutputPath(appContext.cacheDirectory, options.format)
         val compression = (options.compress * 100).toInt()
         val resultBitmap = image.ref
 

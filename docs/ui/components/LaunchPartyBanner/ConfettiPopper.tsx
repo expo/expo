@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { useState } from 'react';
-import ConfettiExplosion from 'react-confetti-explosion';
+import ConfettiExplosionComponent from 'react-confetti-explosion';
 
 const CONFETTI_DURATION = 2250;
 
@@ -21,13 +21,17 @@ export function ConfettiPopper() {
       <div
         onClick={onEasterEggClick}
         onMouseDown={() => {
-          !confettiShown && setConfettiPressed(true);
+          if (!confettiShown) {
+            setConfettiPressed(true);
+          }
         }}
         onMouseUp={() => {
           setConfettiPressed(false);
         }}
         onTouchStart={() => {
-          !confettiShown && setConfettiPressed(true);
+          if (!confettiShown) {
+            setConfettiPressed(true);
+          }
         }}
         onTouchEnd={() => {
           setConfettiPressed(false);
@@ -39,12 +43,13 @@ export function ConfettiPopper() {
         🎉
       </div>
       {confettiShown && (
-        <ConfettiExplosion
-          zIndex={10}
-          duration={CONFETTI_DURATION}
-          colors={['#006CFF', '#D22323', '#F3AD0D']}
-          className="absolute left-1/2 top-1/2"
-        />
+        <div className="absolute top-1/2 left-1/2">
+          <ConfettiExplosionComponent
+            zIndex={10}
+            duration={CONFETTI_DURATION}
+            colors={['#006CFF', '#D22323', '#F3AD0D']}
+          />
+        </div>
       )}
     </>
   );

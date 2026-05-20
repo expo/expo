@@ -8,7 +8,7 @@ import expo.modules.medialibrary.AssetFileException
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.getOrThrow
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetPath
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -31,7 +31,7 @@ class AssetLegacyDeleter(
 
   override suspend fun delete(contentUri: Uri): Unit = withContext(Dispatchers.IO) {
     systemPermissionsDelegate.requireWritePermissions()
-    val path = contentResolver.queryAssetPath(contentUri)
+    val path = contentResolver.queryAssetData(contentUri)
       ?: throw AssetPropertyNotFoundException("Uri")
     if (!File(path).delete()) {
       throw AssetFileException("Could not delete a file.")

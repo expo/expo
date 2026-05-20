@@ -1,9 +1,9 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
+import type { AndroidManifest } from './Manifest';
 import {
   addMetaDataItemToMainApplication,
   addUsesLibraryItemToMainApplication,
-  AndroidManifest,
   getMainApplicationOrThrow,
   removeMetaDataItemFromMainApplication,
   removeUsesLibraryItemFromMainApplication,

@@ -10,6 +10,114 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `EXC_BAD_ACCESS` crash from recursive `supportedInterfaceOrientations` when `react-native-screens` per-screen orientation is set.                                   
+([#45733](https://github.com/expo/expo/pull/45733) by [@rayabelcode](https://github.com/rayabelcode))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `lockAsync` silently failing when flipping between previously-applied masks. ([#45239](https://github.com/expo/expo/pull/45239) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.14 - 2026-05-04
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed per-screen orientation not working with expo-dev-client by searching child VCs for react-native-screens orientation when an intermediate VC blocks the traversal. ([#44181](https://github.com/expo/expo/pull/44181) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+### 💡 Others
+
+- [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.9 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- [iOS] [New Architecture] Restore orientationMask after app transition from background to foreground ([#42536](https://github.com/expo/expo/pull/42536) by [@LongyuW](https://github.com/LongyuW))
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+### 💡 Others
+
+- mark `removeOrientationChangeListeners` and `removeOrientationChangeListener` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- [web] fix undeclared `listener` reference ([#41441](https://github.com/expo/expo/pull/41441) by [@vonovak](https://github.com/vonovak))
+- [iOS] Remove use of deprecated API `UIApplication.shared.windows`. ([#40881](https://github.com/expo/expo/pull/40881) by [@bwallberg](https://github.com/bwallberg))
+
+## 9.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 9.0.7 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

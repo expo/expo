@@ -276,7 +276,7 @@ public class CalendarModule: Module {
     AsyncFunction("getCalendarPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         CalendarPermissionsRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -284,7 +284,7 @@ public class CalendarModule: Module {
     AsyncFunction("requestCalendarPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.askForPermission(
         usingRequesterClass: CalendarPermissionsRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -292,7 +292,7 @@ public class CalendarModule: Module {
     AsyncFunction("getRemindersPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         RemindersPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -300,8 +300,9 @@ public class CalendarModule: Module {
     AsyncFunction("requestRemindersPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.askForPermission(
         usingRequesterClass: RemindersPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter)
+        resolve: promise.legacyResolver,
+        reject: promise.legacyRejecter
+      )
     }
 
     AsyncFunction("createEventInCalendarAsync") { (event: Event, promise: Promise) in
@@ -583,7 +584,7 @@ public class CalendarModule: Module {
       return firstEvent
     }
 
-    guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
+    if let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame {
       return firstEvent
     }
 
@@ -593,10 +594,8 @@ public class CalendarModule: Module {
     )
 
     for event in events {
-      if event.calendarItemIdentifier != id {
-        break
-      }
-      if let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
+      if event.calendarItemIdentifier == firstEvent.calendarItemIdentifier,
+        let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
         return event
       }
     }

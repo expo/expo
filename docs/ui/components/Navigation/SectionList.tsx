@@ -19,7 +19,7 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
       className="mb-3 pt-3"
       open={isActive ?? route.expanded}
       summary={
-        <div className="mx-4 flex select-none items-center">
+        <div className="mx-4 flex items-center select-none">
           <ChevronDownIcon
             className={mergeClasses(
               'icon-sm shrink-0 -rotate-90 text-icon-default transition-transform duration-150',

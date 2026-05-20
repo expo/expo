@@ -1,4 +1,4 @@
-import {
+import type {
   AttendeeRole,
   AttendeeStatus,
   AttendeeType,
@@ -21,11 +21,23 @@ import {
   OpenEventDialogResult,
   Attendee,
 } from '../Calendar';
-import { RecurrenceRule } from './types/RecurrenceRule';
+import type { RecurrenceRule } from './types/RecurrenceRule';
 
 export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 
 export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
+
+export type AddEventWithFormOptions = PresentationOptions & {
+  title?: string;
+  startDate?: Date | string;
+  endDate?: Date | string;
+  allDay?: boolean;
+  notes?: string;
+  location?: string;
+  url?: string;
+  alarms?: Alarm[];
+  recurrenceRule?: RecurrenceRule;
+};
 
 export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
 
@@ -90,7 +102,7 @@ export declare class ExpoCalendar {
   /**
    * Color used to display this calendar's events.
    */
-  color: string;
+  color?: string;
   /**
    * Whether the calendar is used in the Calendar or Reminders OS app.
    * @platform ios
@@ -188,6 +200,12 @@ export declare class ExpoCalendar {
   createReminder(
     reminderData: Omit<Partial<ExpoCalendarReminder>, 'id' | 'calendarId'>
   ): Promise<ExpoCalendarReminder>;
+
+  /**
+   * Presents the system-provided dialog to create a new event in this calendar, pre-filled with the provided data.
+   * Requires at minimum write-only calendar permission.
+   */
+  addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,

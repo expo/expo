@@ -5,7 +5,9 @@
   },
   "include": [
     "**/__tests__/",
-    "**/__rsc_tests__/"
+    "**/__rsc_tests__/",
+    "./src/ts-declarations",
+    "./src/types",
   ],
   "exclude": [
     "**/__mocks__/*",

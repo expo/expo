@@ -6,11 +6,11 @@ import type {
 import fs from 'fs';
 import path from 'path';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
+import type { AutolinkingResolutionsCache } from '../utils/autolinkingResolutions';
 import {
   ExpoExportMissingError,
-  AutolinkingResolutionsCache,
   scanNativeModuleResolutions,
 } from '../utils/autolinkingResolutions';
 
@@ -101,7 +101,7 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
         const hasStorePaths = versions.some((version) => STORE_PATH.test(version.originPath));
         for (let idx = 0; idx < versions.length; idx++) {
           const prefix = idx !== versions.length - 1 ? '├─' : '└─';
-          const duplicate = versions[idx];
+          const duplicate = versions[idx]!;
           line.push(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
           // If some duplicates are isolated store paths, but not all, we display the real path
           // of the non store paths to assure the user that this check is aware of isolated dependencies

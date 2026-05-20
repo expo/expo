@@ -1,0 +1,22 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoModulesJSI",
+      "podName": "ExpoModulesJSI",
+      "platforms": [
+        "iOS(.v16)"
+      ],
+      "externalDependencies": [
+        "Hermes",
+        "React",
+        "ReactNativeDependencies"
+      ],
+      "customBuild": {
+        "script": "apple/scripts/build-xcframework.sh",
+        "output": "apple/Products/ExpoModulesJSI.xcframework"
+      },
+      "targets": []
+    }
+  ]
+}

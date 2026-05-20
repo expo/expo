@@ -1,0 +1,7 @@
+diff --git a/ios/ExpoRadialChart.podspec b/ios/ExpoRadialChart.podspec
+index 0000000..1111111 100644
+--- a/ios/ExpoRadialChart.podspec
++++ b/ios/ExpoRadialChart.podspec
+@@ -1,1 +1,1 @@
+- s.source_files = '**/*.{h,m,mm,swift,hpp,cpp}'
++ s.source_files = 'src/**/*.{h,m,mm,swift,hpp,cpp}'

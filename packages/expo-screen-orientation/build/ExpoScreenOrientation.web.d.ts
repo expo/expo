@@ -1,5 +1,6 @@
 import { NativeModule } from 'expo-modules-core';
-import { Orientation, OrientationLock, WebOrientationLock, ExpoOrientationEvents } from './ScreenOrientation.types';
+import type { ExpoOrientationEvents } from './ScreenOrientation.types';
+import { Orientation, OrientationLock, WebOrientationLock } from './ScreenOrientation.types';
 declare global {
     interface Screen {
         msOrientation?: Screen['orientation']['type'];
@@ -11,7 +12,7 @@ declare global {
 }
 declare class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
     orientation: ScreenOrientation | null;
-    emitOrientationEvent(): Promise<void>;
+    emitOrientationEvent: () => Promise<void>;
     startObserving(): void;
     stopObserving(): void;
     supportsOrientationLockAsync(orientationLock: OrientationLock): Promise<boolean>;

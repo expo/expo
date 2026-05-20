@@ -20,9 +20,28 @@ public final class GlassEffectModule: Module {
       return false
     }
 
+    Constant("isGlassEffectAPIAvailable") {
+      #if compiler(>=6.2)
+      if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
+        guard let glassEffectClass = NSClassFromString("UIGlassEffect") as? NSObject.Type else {
+          return false
+        }
+        let respondsToSelector = glassEffectClass.responds(to: Selector(("effectWithStyle:")))
+        return respondsToSelector
+      }
+      #endif
+      return false
+    }
+
     View(GlassView.self) {
-      Prop("glassEffectStyle", .regular) { (view, style: GlassStyle) in
-        view.setGlassStyle(style)
+      Prop("glassEffectStyle") { (view, config: Either<GlassStyle, GlassEffectStyleConfig>?) in
+        if let styleConfig: GlassEffectStyleConfig = config?.get() {
+          view.setGlassStyle(styleConfig)
+        } else if let style: GlassStyle = config?.get() {
+          view.setGlassStyle(style)
+        } else {
+          view.setGlassStyle(.regular)
+        }
       }
 
       Prop("tintColor") { (view, tintColor: UIColor?) in
@@ -31,6 +50,10 @@ public final class GlassEffectModule: Module {
 
       Prop("isInteractive") { (view, interactive: Bool) in
         view.setInteractive(interactive)
+      }
+
+      Prop("colorScheme", .auto) { (view, colorScheme: GlassColorScheme) in
+        view.setColorScheme(colorScheme)
       }
 
       Prop("borderRadius") { (view, border: CGFloat?) in

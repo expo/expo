@@ -1,9 +1,10 @@
 import { act, screen } from '@testing-library/react-native';
-import React, { Text } from 'react-native';
+import { Text } from 'react-native';
 
 import { router } from '../exports';
 import { store } from '../global-state/router-store';
 import { renderRouter } from '../testing-library';
+import { parseUrlUsingCustomBase } from '../utils/url';
 
 it('can push a hash url', () => {
   renderRouter({
@@ -115,6 +116,93 @@ it('works alongside with search params', () => {
   expect(screen).toHavePathnameWithParams('/test?a=3');
   expect(screen).toHaveSearchParams({ a: '3' });
 });
+
+it.each(['/test#myhash', parseUrlUsingCustomBase('/test#myhash')])(
+  'initialUrl=%p with hash resolves correctly',
+  (url) => {
+    renderRouter(
+      {
+        index: () => <Text testID="index" />,
+        test: () => <Text testID="test" />,
+      },
+      { initialUrl: url }
+    );
+
+    expect(screen.getByTestId('test')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test');
+    expect(screen).toHaveSearchParams({ '#': 'myhash' });
+  }
+);
+
+it.each(['/test?a=1#myhash', parseUrlUsingCustomBase('/test?a=1#myhash')])(
+  'initialUrl=%p with search params and hash maintains RFC order',
+  (url) => {
+    renderRouter(
+      {
+        index: () => <Text testID="index" />,
+        test: () => <Text testID="test" />,
+      },
+      { initialUrl: url }
+    );
+
+    expect(screen.getByTestId('test')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test');
+    expect(screen).toHavePathnameWithParams('/test?a=1#myhash');
+    expect(screen).toHaveSearchParams({ a: '1', '#': 'myhash' });
+  }
+);
+
+it.each(['/#section', parseUrlUsingCustomBase('/#section')])(
+  'initialUrl=%p with hash on index route',
+  (url) => {
+    renderRouter(
+      {
+        index: () => <Text testID="index" />,
+      },
+      { initialUrl: url }
+    );
+
+    expect(screen.getByTestId('index')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/');
+    expect(screen).toHaveSearchParams({ '#': 'section' });
+  }
+);
+
+it.each(['/test?a=1', parseUrlUsingCustomBase('/test?a=1')])(
+  'initialUrl=%p with search params but no hash works unchanged',
+  (url) => {
+    renderRouter(
+      {
+        index: () => <Text testID="index" />,
+        test: () => <Text testID="test" />,
+      },
+      { initialUrl: url }
+    );
+
+    expect(screen.getByTestId('test')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test');
+    expect(screen).toHavePathnameWithParams('/test?a=1');
+    expect(screen).toHaveSearchParams({ a: '1' });
+  }
+);
+
+it.each(['/test#myhash?a=1', parseUrlUsingCustomBase('/test#myhash?a=1')])(
+  'when url is malformed initialUrl=%p the hash and query param are treated as search param',
+  (url) => {
+    renderRouter(
+      {
+        index: () => <Text testID="index" />,
+        test: () => <Text testID="test" />,
+      },
+      { initialUrl: url }
+    );
+
+    expect(screen.getByTestId('test')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test');
+    expect(screen).toHavePathnameWithParams('/test#myhash?a=1');
+    expect(screen).toHaveSearchParams({ '#': 'myhash?a=1' });
+  }
+);
 
 it('navigating to the same route with a hash will only rerender the screen', () => {
   renderRouter({

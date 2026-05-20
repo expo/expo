@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 export function createRecordingOptions(options) {
-    let commonOptions = {
+    const commonOptions = {
         extension: options.extension,
         sampleRate: options.sampleRate,
         numberOfChannels: options.numberOfChannels,
@@ -8,17 +8,22 @@ export function createRecordingOptions(options) {
         isMeteringEnabled: options.isMeteringEnabled ?? false,
     };
     if (Platform.OS === 'ios') {
-        commonOptions = {
+        return {
             ...commonOptions,
             ...options.ios,
         };
     }
     else if (Platform.OS === 'android') {
-        commonOptions = {
+        return {
             ...commonOptions,
             ...options.android,
         };
     }
-    return commonOptions;
+    else {
+        return {
+            ...commonOptions,
+            ...options.web,
+        };
+    }
 }
 //# sourceMappingURL=options.js.map

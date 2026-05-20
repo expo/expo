@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertIconColorPropToObject = convertIconColorPropToObject;
 exports.useAwaitedScreensIcon = useAwaitedScreensIcon;
-exports.convertOptionsIconToRNScreensPropsIcon = convertOptionsIconToRNScreensPropsIcon;
-exports.convertOptionsIconToIOSPropsIcon = convertOptionsIconToIOSPropsIcon;
-exports.convertOptionsIconToAndroidPropsIcon = convertOptionsIconToAndroidPropsIcon;
+exports.convertComponentSrcToImageSource = convertComponentSrcToImageSource;
 const react_1 = require("react");
+const children_1 = require("../../utils/children");
+const elements_1 = require("../common/elements");
 function convertIconColorPropToObject(iconColor) {
     if (iconColor) {
         if (typeof iconColor === 'object' && ('default' in iconColor || 'selected' in iconColor)) {
@@ -19,14 +19,14 @@ function convertIconColorPropToObject(iconColor) {
 }
 function useAwaitedScreensIcon(icon) {
     const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
+    const renderingMode = icon && typeof icon === 'object' && 'renderingMode' in icon ? icon.renderingMode : undefined;
     const [awaitedIcon, setAwaitedIcon] = (0, react_1.useState)(undefined);
     (0, react_1.useEffect)(() => {
         const loadIcon = async () => {
             if (src && src instanceof Promise) {
                 const awaitedSrc = await src;
                 if (awaitedSrc) {
-                    const currentAwaitedIcon = { src: awaitedSrc };
-                    setAwaitedIcon(currentAwaitedIcon);
+                    setAwaitedIcon({ src: awaitedSrc });
                 }
             }
         };
@@ -36,42 +36,33 @@ function useAwaitedScreensIcon(icon) {
         // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
         // So we should be safe with promise resolving
     }, [src]);
-    return (0, react_1.useMemo)(() => (isAwaitedIcon(icon) ? icon : awaitedIcon), [awaitedIcon, icon]);
+    return (0, react_1.useMemo)(() => {
+        const resolved = isAwaitedIcon(icon) ? icon : awaitedIcon;
+        if (resolved && renderingMode && 'src' in resolved) {
+            return { ...resolved, renderingMode };
+        }
+        return resolved;
+    }, [awaitedIcon, icon, renderingMode]);
 }
 function isAwaitedIcon(icon) {
     return !icon || !('src' in icon && icon.src instanceof Promise);
 }
-function convertOptionsIconToRNScreensPropsIcon(icon) {
-    if (!icon) {
+function convertComponentSrcToImageSource(src, renderingMode) {
+    let result;
+    if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerVectorIcon)) {
+        const props = src.props;
+        result = { src: props.family.getImageSource(props.name, 24, 'white') };
+    }
+    else if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerPromiseIcon)) {
+        result = { src: src.props.loader() };
+    }
+    else {
+        console.warn('Only VectorIcon is supported as a React element in Icon.src');
         return undefined;
     }
-    return {
-        ios: convertOptionsIconToIOSPropsIcon(icon),
-        android: convertOptionsIconToAndroidPropsIcon(icon),
-    };
-}
-function convertOptionsIconToIOSPropsIcon(icon) {
-    if (icon && 'sf' in icon && icon.sf) {
-        return {
-            type: 'sfSymbol',
-            name: icon.sf,
-        };
+    if (renderingMode) {
+        result = { ...result, renderingMode };
     }
-    if (icon && 'src' in icon && icon.src) {
-        return { type: 'templateSource', templateSource: icon.src };
-    }
-    return undefined;
-}
-function convertOptionsIconToAndroidPropsIcon(icon) {
-    if (icon && 'drawable' in icon && icon.drawable) {
-        return {
-            type: 'drawableResource',
-            name: icon.drawable,
-        };
-    }
-    if (icon && 'src' in icon && icon.src) {
-        return { type: 'imageSource', imageSource: icon.src };
-    }
-    return undefined;
+    return result;
 }
 //# sourceMappingURL=icon.js.map

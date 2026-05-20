@@ -16,15 +16,16 @@ export function filterPlatformAssetScales(platform: string, scales: number[]): n
     // let's just use the closest larger image
     const maxScale = whitelist[whitelist.length - 1];
     for (const scale of scales) {
-      if (scale > maxScale) {
+      if (maxScale != null && scale > maxScale) {
         result.push(scale);
         break;
       }
     }
 
     // There is no larger scales available, use the largest we have
-    if (result.length === 0) {
-      result.push(scales[scales.length - 1]);
+    const largest = scales[scales.length - 1];
+    if (result.length === 0 && largest != null) {
+      result.push(largest);
     }
   }
   return result;

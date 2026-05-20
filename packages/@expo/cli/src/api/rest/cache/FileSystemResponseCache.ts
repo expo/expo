@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import stream, { Readable } from 'node:stream';
-import { ReadableStream } from 'node:stream/web';
+import type { ReadableStream } from 'node:stream/web';
 
 import type { ResponseCache, ResponseCacheEntry } from './ResponseCache';
 import { fileExistsAsync } from '../../../utils/dir';
@@ -69,7 +69,7 @@ export class FileSystemResponseCache implements ResponseCache {
       }
 
       return {
-        body: responseBody,
+        body: responseBody as globalThis.ReadableStream,
         info: cleanInfo,
       };
     } catch {
@@ -108,7 +108,7 @@ export class FileSystemResponseCache implements ResponseCache {
       } else {
         // Create write stream and pipe response body to file
         const writeStream = fs.createWriteStream(paths.body);
-        const nodeStream = Readable.fromWeb(forWrite);
+        const nodeStream = Readable.fromWeb(forWrite as ReadableStream);
         nodeStream.pipe(writeStream);
 
         // Wait for the stream to finish

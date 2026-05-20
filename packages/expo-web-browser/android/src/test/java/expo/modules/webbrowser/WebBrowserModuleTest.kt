@@ -1,6 +1,5 @@
 package expo.modules.webbrowser
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import expo.modules.kotlin.exception.CodedException
@@ -13,7 +12,6 @@ import io.mockk.slot
 import io.mockk.verify
 import junit.framework.ComparisonFailure
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -135,93 +133,11 @@ internal class WebBrowserModuleTest {
         enableBarCollapsing = true,
         enableDefaultShareMenuItem = true,
         showInRecents = true,
-        shouldCreateTask = true,
         showTitle = true
       )
     )
 
     assertEquals("com.browser.package", intentSlot.captured.intent.`package`)
-  }
-
-  @Test
-  fun testTrueFlagsCorrectlyPassedToIntent() = withWebBrowserMock {
-    // given
-    val intentSlot = slot<CustomTabsIntent>()
-    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
-    initialize(moduleSpy, customTabsActivitiesHelper = mock)
-
-    // when
-    module.openBrowserAsync(
-      "http://expo.io",
-      OpenBrowserOptions(
-        toolbarColor = 0,
-        browserPackage = "com.browser.package",
-        enableBarCollapsing = true,
-        enableDefaultShareMenuItem = true,
-        showInRecents = true,
-        showTitle = true
-      )
-    )
-
-    intentSlot.captured.intent.let {
-      assertTrue(it.hasExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING))
-      assertTrue(it.getBooleanExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false))
-      assertTrue((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
-      assertFalse((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
-      assertFalse((it.flags and Intent.FLAG_ACTIVITY_NO_HISTORY) > 0)
-    }
-  }
-
-  @Test
-  fun testFalseFlagsCorrectlyPassedToIntent() = withWebBrowserMock {
-    // given
-    val intentSlot = slot<CustomTabsIntent>()
-    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
-    initialize(moduleSpy, customTabsActivitiesHelper = mock)
-
-    // when
-    module.openBrowserAsync(
-      "http://expo.io",
-      OpenBrowserOptions(
-        toolbarColor = 0,
-        browserPackage = "com.browser.package",
-        enableBarCollapsing = false,
-        enableDefaultShareMenuItem = false,
-        showInRecents = false,
-        showTitle = false
-      )
-    )
-
-    intentSlot.captured.intent.let {
-      assertFalse(it.getBooleanExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, true))
-      assertTrue((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
-      assertTrue((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
-      assertTrue((it.flags and Intent.FLAG_ACTIVITY_NO_HISTORY) > 0)
-    }
-  }
-
-  @Test
-  fun testCreateTaskFalseCorrectlyPassedToIntent() = withWebBrowserMock {
-    // given
-    val intentSlot = slot<CustomTabsIntent>()
-    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
-    initialize(moduleSpy, customTabsActivitiesHelper = mock)
-
-    // when
-    module.openBrowserAsync(
-      "http://expo.io",
-      OpenBrowserOptions(
-        toolbarColor = 0,
-        browserPackage = "com.browser.package",
-        shouldCreateTask = false
-      )
-    )
-
-    intentSlot.captured.intent.let {
-      assertFalse((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
-      assertFalse((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
-      assertFalse((it.flags and Intent.FLAG_ACTIVITY_NO_HISTORY) > 0)
-    }
   }
 
   @Test

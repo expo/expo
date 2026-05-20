@@ -19,7 +19,7 @@ export async function sortDefaultIdToBeginningAsync(
 
   if (lastSelected) {
     let iterations = 0;
-    while (identities[0].signingCertificateId !== lastSelected && iterations < identities.length) {
+    while (identities[0]?.signingCertificateId !== lastSelected && iterations < identities.length) {
       identities.push(identities.shift()!);
       iterations++;
     }
@@ -63,7 +63,7 @@ export async function resolveCertificateSigningIdentityAsync(
   if (ids.length === 1 || !isInteractive()) {
     // This method is cheaper than `resolveIdentitiesAsync` and checking the
     // cached user preference so we should use this as early as possible.
-    return Security.resolveCertificateSigningInfoAsync(ids[0]);
+    return Security.resolveCertificateSigningInfoAsync(ids[0]!);
   }
 
   // Get identities and sort by the one that the user is most likely to choose.
@@ -119,5 +119,6 @@ export async function selectDevelopmentTeamAsync(
     })
   );
 
-  return identities[index];
+  // TODO(@kitten): Not type safe, identifiers may not be checked before
+  return identities[index]!;
 }

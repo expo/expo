@@ -1,11 +1,8 @@
 import type Server from '@expo/metro/metro/Server';
-import fs from 'fs/promises';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
-import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
-import { ServerLike } from '../BundlerDevServer';
+import type { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
@@ -36,21 +33,13 @@ export interface SetupTypedRoutesOptions {
 }
 
 export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
-  /*
-   * In SDK 51, TypedRoutes was moved out of cli and into expo-router. For now we need to support both
-   * the legacy and new versions of TypedRoutes.
-   *
-   * TODO (@marklawlor): Remove this check in SDK 53, only support Expo Router v4 and above.
-   */
-  const typedRoutesModule = resolveFrom.silent(
-    options.projectRoot,
-    '@expo/router-server/build/typed-routes'
-  );
-  return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
+  // TODO(@kitten): Remove indirection here. Unclear why it's needed
+  const typedRoutesModule = require.resolve('@expo/router-server/build/typed-routes');
+  return typedRoutes(typedRoutesModule, options);
 }
 
 async function typedRoutes(
-  typedRoutesModulePath: any,
+  typedRoutesModulePath: string,
   { server, metro, typesDirectory, projectRoot, routerDirectory, plugin }: SetupTypedRoutesOptions
 ) {
   /*
@@ -60,7 +49,9 @@ async function typedRoutes(
    */
   process.env.EXPO_ROUTER_APP_ROOT = routerDirectory;
 
-  const typedRoutesModule = require(typedRoutesModulePath);
+  const typedRoutesModule: typeof import('@expo/router-server/build/typed-routes') = require(
+    typedRoutesModulePath
+  );
 
   /*
    * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
@@ -89,95 +80,6 @@ async function typedRoutes(
     typedRoutesModule.regenerateDeclarations(typesDirectory);
   }
 }
-
-async function legacyTypedRoutes({
-  server,
-  metro,
-  typesDirectory,
-  projectRoot,
-  routerDirectory,
-}: SetupTypedRoutesOptions) {
-  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
-    getTypedRoutesUtils(routerDirectory);
-
-  // Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
-  if (metro && server) {
-    metroWatchTypeScriptFiles({
-      projectRoot,
-      server,
-      metro,
-      eventTypes: ['add', 'delete', 'change'],
-      async callback({ filePath, type }) {
-        if (!isRouteFile(filePath)) {
-          return;
-        }
-
-        let shouldRegenerate = false;
-
-        if (type === 'delete') {
-          const route = filePathToRoute(filePath);
-          staticRoutes.delete(route);
-          dynamicRoutes.delete(route);
-          shouldRegenerate = true;
-        } else {
-          shouldRegenerate = addFilePath(filePath);
-        }
-
-        if (shouldRegenerate) {
-          regenerateRouterDotTS(
-            typesDirectory,
-            new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
-            new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
-            new Set(dynamicRoutes.keys())
-          );
-        }
-      },
-    });
-  }
-
-  if (await directoryExistsAsync(routerDirectory)) {
-    // Do we need to walk the entire tree on startup?
-    // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-    await walk(routerDirectory, addFilePath);
-  }
-
-  regenerateRouterDotTS(
-    typesDirectory,
-    new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
-    new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
-    new Set(dynamicRoutes.keys())
-  );
-}
-
-function debounce<U, T extends (this: U, ...args: any[]) => void>(fn: T, delay: number): T {
-  let timeoutId: NodeJS.Timeout | undefined;
-  return function (this: U, ...args: any[]) {
-    clearTimeout(timeoutId);
-    // NOTE(@hassankhan): The cast to `NodeJS.Timeout` below is a hack to work around an issue
-    // with TypeScript where React Native's types are being imported before Node types
-    timeoutId = setTimeout(() => fn.apply(this, args), delay) as unknown as NodeJS.Timeout;
-  } as T;
-}
-
-/**
- * Generate a router.d.ts file that contains all of the routes in the project.
- * Should be debounced as its very common for developers to make changes to multiple files at once (eg Save All)
- */
-const regenerateRouterDotTS = debounce(
-  async (
-    typesDir: string,
-    staticRoutes: Set<string>,
-    dynamicRoutes: Set<string>,
-    dynamicRouteTemplates: Set<string>
-  ) => {
-    await fs.mkdir(typesDir, { recursive: true });
-    await fs.writeFile(
-      path.resolve(typesDir, './router.d.ts'),
-      getTemplateString(staticRoutes, dynamicRoutes, dynamicRouteTemplates)
-    );
-  },
-  100
-);
 
 /*
  * This is exported for testing purposes
@@ -319,23 +221,6 @@ export const setToUnionType = <T>(set: Set<T>) => {
 };
 
 /**
- * Recursively walk a directory and call the callback with the file path.
- */
-async function walk(directory: string, callback: (filePath: string) => void) {
-  const files = await fs.readdir(directory);
-  for (const file of files) {
-    const p = path.join(directory, file);
-    if ((await fs.stat(p)).isDirectory()) {
-      await walk(p, callback);
-    } else {
-      // Normalise the paths so they are easier to convert to URLs
-      const normalizedPath = p.replaceAll(path.sep, '/');
-      callback(normalizedPath);
-    }
-  }
-}
-
-/**
  * Given a route, return all possible routes that could be generated from it.
  */
 export function extrapolateGroupRoutes(
@@ -355,7 +240,7 @@ export function extrapolateGroupRoutes(
   const groupsMatch = match[0];
 
   for (const group of groupsMatch.matchAll(CAPTURE_GROUP_REGEX)) {
-    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1].trim()})`), routes);
+    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1]!.trim()})`), routes);
   }
 
   return routes;
@@ -366,9 +251,7 @@ export function extrapolateGroupRoutes(
  * mix with arbitrary versions.
  * TODO: Version this code with `expo-router` or version expo-router with `@expo/cli`.
  */
-const routerDotTSTemplate = unsafeTemplate`/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable import/export */
-/* eslint-disable @typescript-eslint/ban-types */
+const routerDotTSTemplate = unsafeTemplate`/* eslint-disable */
 declare module "expo-router" {
   import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
   import type { Router as OriginalRouter } from 'expo-router/build/types';

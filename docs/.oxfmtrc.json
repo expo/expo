@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "bracketSameLine": true,
+  "trailingComma": "es5",
+  "arrowParens": "avoid",
+  "sortImports": {
+    "groups": [
+      ["builtin", "external"],
+      ["internal", "subpath"],
+      ["parent", "sibling", "index"],
+      "unknown"
+    ],
+    "ignoreCase": false
+  },
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    ".cache",
+    ".next",
+    ".swc",
+    ".wrangler",
+    ".worker-test",
+    ".vale",
+    "node_modules",
+    "out",
+    "public",
+    "pages/versions/latest",
+    "next-env.d.ts",
+    "ui/components/EASCLIReference/data/eas-cli-commands.json"
+  ]
+}

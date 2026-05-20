@@ -1,41 +1,9 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useFilterScreenChildren = useFilterScreenChildren;
 exports.withLayoutContext = withLayoutContext;
-const react_1 = __importStar(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
+const react_1 = require("react");
 const Route_1 = require("../Route");
 const NativeTabTrigger_1 = require("../native-tabs/NativeTabTrigger");
 const useScreens_1 = require("../useScreens");
@@ -96,9 +64,12 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
         // Add an assertion for development
         if (process.env.NODE_ENV !== 'production') {
             // Assert if names are not unique
-            const names = screens?.map((screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name);
-            if (names && new Set(names).size !== names.length) {
-                throw new Error('Screen names must be unique: ' + names);
+            const normalizeName = (name) => typeof name === 'string' ? name.replace(/\/index$/, '') : name;
+            const screenNames = screens?.map((screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name) ?? [];
+            const protectedScreenNames = Array.from(protectedScreens).map(normalizeName);
+            const allNames = [...screenNames.map(normalizeName), ...protectedScreenNames];
+            if (new Set(allNames).size !== allNames.length) {
+                throw new Error('Screen names must be unique: ' + allNames);
             }
         }
         return {
@@ -154,9 +125,7 @@ function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
         if (!sorted.length) {
             return null;
         }
-        return (<IsWithinLayoutContext_1.IsWithinLayoutContext value>
-          <Nav {...props} id={contextKey} ref={ref} children={sorted}/>
-        </IsWithinLayoutContext_1.IsWithinLayoutContext>);
+        return ((0, jsx_runtime_1.jsx)(IsWithinLayoutContext_1.IsWithinLayoutContext, { value: true, children: (0, jsx_runtime_1.jsx)(Nav, { ...props, id: contextKey, ref: ref, children: sorted }) }));
     }), {
         Screen: Screen_1.Screen,
         Protected: Protected_1.Protected,

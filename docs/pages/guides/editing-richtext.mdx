@@ -15,13 +15,14 @@ There is currently no default solution for that in the React Native ecosystem. H
 <VideoBoxLink
   videoId="CxORa1tXMjw"
   title="Watch: How to implement a Rich Text Editor using DOM components"
+  description="Build a rich text editor in React Native using Expo DOM components to render a web-based editor inside a native app."
 />
 
 ## Render rich text
 
 There are a lot of good options to display rich text:
 
-- For markdown content, you can use a markdown renderer such as [`react-native-markdown-display`](https://www.npmjs.com/package/react-native-markdown-display) or another.
+- For markdown content, you can use a markdown renderer such as [`react-native-enriched-markdown`](https://github.com/software-mansion-labs/react-native-enriched-markdown) or another.
 
 - For HTML content, you can use [`@expo/html-elements`](https://www.npmjs.com/package/@expo/html-elements) or a webview ([`react-native-webview`](/versions/latest/sdk/webview/)).
 
@@ -73,7 +74,7 @@ In this section, let's discuss if it is possible to have a feature complete rich
 
 React Native allows nested `<Text>` components and allows them to be used as children of `<TextInput>` to render and edit styled text. It is synchronous with the new React Native architecture (the `onChange` event fires immediately after a new character is typed into the text input field).
 
-Unfortunately, the `<TextInput>` component is built towards working with regular text, and it only returns a string in it's `onTextChange` callback. This is a significant limitation.
+Unfortunately, the `<TextInput>` component is built toward working with regular text, and it only returns a string in it's `onTextChange` callback. This is a significant limitation.
 
 Here is a quick example. Let's start by rendering a text input with the following bold text:
 
@@ -105,6 +106,7 @@ You can use a native Android or iOS rich text editor wrapped into a React Native
 - [`react-native-aztec`](https://github.com/WordPress/gutenberg/tree/trunk/packages/react-native-aztec)
 - [`gutenberg-mobile`](https://github.com/wordpress-mobile/gutenberg-mobile)
 - [`react-native-live-markdown`](https://github.com/Expensify/react-native-live-markdown)
+- [`react-native-enriched-markdown`](https://github.com/software-mansion-labs/react-native-enriched-markdown)
 - [`react-native-enriched`](https://github.com/software-mansion-labs/react-native-enriched)
 
 You can also wrap any native rich text editor using [Expo Modules API](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.

@@ -47,7 +47,21 @@ class Subscriber {
         delete this.callbacks[id];
         ExpoLocation.removeWatchAsync(id);
         if (Object.keys(this.callbacks).length === 0 && this.eventSubscription) {
-            LocationEventEmitter.removeSubscription(this.eventSubscription);
+            this.eventSubscription.remove();
+            this.eventSubscription = null;
+        }
+    }
+    /**
+     * Removes a callback locally without calling native removeWatchAsync.
+     * Use when another subscriber will handle the native teardown for the same id.
+     */
+    forgetCallback(id) {
+        if (!this.callbacks[id]) {
+            return;
+        }
+        delete this.callbacks[id];
+        if (Object.keys(this.callbacks).length === 0 && this.eventSubscription) {
+            this.eventSubscription.remove();
             this.eventSubscription = null;
         }
     }
@@ -65,6 +79,7 @@ class Subscriber {
 export const LocationSubscriber = new Subscriber('Expo.locationChanged', 'location');
 export const HeadingSubscriber = new Subscriber('Expo.headingChanged', 'heading');
 export const LocationErrorSubscriber = new Subscriber('Expo.locationError', 'reason');
+export const MotionActivitySubscriber = new Subscriber('Expo.motionActivityChanged', 'activity');
 /**
  * @private Necessary for some unit tests.
  */

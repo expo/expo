@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import ExpoModulesCore
 
 // swiftlint:disable:next line_length
 private let selectedGesturesInfoMessage = "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools."
@@ -30,6 +31,7 @@ struct SettingsTabView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24) {
+        SafeAreaTopPadding(manualInset: viewModel.topSafeAreaInset)
         titleSection
         showMenuAtLaunch
         gestures
@@ -37,6 +39,10 @@ struct SettingsTabView: View {
         Text(selectedGesturesInfoMessage)
           .font(.system(size: 13))
           .foregroundStyle(.secondary)
+
+        #if !targetEnvironment(simulator)
+        localNetworkDebugSettings
+        #endif
 
         VStack(alignment: .leading, spacing: 8) {
           Text("system".uppercased())
@@ -59,7 +65,17 @@ struct SettingsTabView: View {
     #if os(tvOS)
     .background()
     #endif
+    #if !os(macOS)
     .navigationBarHidden(true)
+    #endif
+    #if os(iOS) && !targetEnvironment(simulator)
+    .task {
+      viewModel.refreshPermissionStatus()
+    }
+    .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+      viewModel.refreshPermissionStatus()
+    }
+    #endif
   }
 
   private var showMenuAtLaunch: some View {
@@ -104,7 +120,7 @@ struct SettingsTabView: View {
             .resizable()
             .frame(width: 24, height: 24)
             .opacity(0.6)
-          Toggle("Shake Device", isOn: $viewModel.shakeDevice)
+          Toggle("Shake device", isOn: $viewModel.shakeDevice)
         }
         .padding()
 
@@ -142,7 +158,6 @@ struct SettingsTabView: View {
         let buildInfoJSON = createBuildInfoJSON()
         let clipboard = UIPasteboard.general
         clipboard.string = buildInfoJSON
-
         showCopiedMessage = true
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -222,9 +237,38 @@ struct SettingsTabView: View {
     }
     """
   }
-}
 
-#Preview {
-  SettingsTabView()
-    .environmentObject(DevLauncherViewModel())
+  #if !targetEnvironment(simulator)
+  private var localNetworkDebugSettings: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      VStack(spacing: 0) {
+        Toggle("Local Network", isOn: .constant(viewModel.permissionStatus == .granted))
+          .disabled(true)
+          .padding()
+
+        if viewModel.permissionStatus == .denied {
+          Divider()
+
+          #if os(iOS)
+          Button {
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+              UIApplication.shared.open(url)
+            }
+          } label: {
+            HStack {
+              Text("Open App Settings")
+              Spacer()
+              Image(systemName: "gear")
+                .foregroundColor(.blue)
+            }
+          }
+          .padding()
+          #endif
+        }
+      }
+      .background(Color.expoSecondarySystemBackground)
+      .cornerRadius(12)
+    }
+  }
+  #endif
 }

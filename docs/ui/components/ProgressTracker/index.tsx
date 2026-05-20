@@ -5,9 +5,9 @@ import { useTutorialChapterCompletion } from '~/providers/TutorialChapterComplet
 import { BoxLink } from '~/ui/components/BoxLink';
 import { P } from '~/ui/components/Text';
 
+import { Checkbox } from '../Form/Checkbox';
 import { SuccessCheckmark } from './SuccessCheckmark';
 import { Chapter } from './TutorialData';
-import { Checkbox } from '../Form/Checkbox';
 
 type ProgressTrackerProps = {
   currentChapterIndex: number;
@@ -100,8 +100,8 @@ export function ProgressTracker({
           )}
         />
         <div className="flex flex-col items-center justify-center gap-2">
-          <p className="flex items-center text-center font-semibold text-default heading-lg">
-            <BookOpen02Icon className="mr-2 size-6 text-icon-secondary max-md-gutters:hidden" />{' '}
+          <p className="flex items-center text-center heading-lg text-default">
+            <BookOpen02Icon className="mr-2 size-6! text-icon-secondary max-md:hidden" />{' '}
             {currentChapter.title}
           </p>
           <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">{summary}</p>

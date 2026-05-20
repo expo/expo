@@ -18,7 +18,8 @@ static RCTReconnectingWebSocket *createSocketForURL(NSURL * url)
 {
   NSURLComponents *const components = [NSURLComponents new];
   components.host = [url host];
-  components.scheme = @"http";
+  NSString *scheme = [url scheme];
+  components.scheme = ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"exps"]) ? @"https" : @"http";
   components.port =  [url port];
   components.path = @"/message";
   components.queryItems = @[[NSURLQueryItem queryItemWithName:@"role" value:@"ios"]];

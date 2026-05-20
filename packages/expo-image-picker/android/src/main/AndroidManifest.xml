@@ -4,8 +4,8 @@
   <uses-permission android:name="android.permission.CAMERA" />
 
   <!-- Required for picking images from camera roll -->
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
   <application>
     <service
@@ -21,9 +21,15 @@
         android:value="" />
     </service>
 
+    <!-- Prevent external apps from directly invoking the underlying cropper library activity.
+         The library declares this activity with exported="true". -->
+    <activity
+      android:name="com.canhub.cropper.CropImageActivity"
+      android:exported="false"
+      tools:replace="android:exported" />
     <activity
       android:name="expo.modules.imagepicker.ExpoCropImageActivity"
-      android:theme="@style/Base.Theme.AppCompat"
+      android:theme="@style/Theme.AppCompat.DayNight"
       android:exported="false"
       tools:replace="android:exported" />
     <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->

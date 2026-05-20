@@ -1,10 +1,15 @@
-import { AutolinkingOptions, createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
-import { ExtraDependencies, ModuleDescriptor, SearchResults, SupportedPlatform } from '../types';
 import { findModulesAsync } from './findModules';
 import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import { createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
+import type {
+  ExtraDependencies,
+  ModuleDescriptor,
+  SearchResults,
+  SupportedPlatform,
+} from '../types';
 
 export { getConfiguration } from './getConfiguration';
-export { generateModulesProviderAsync } from './generatePackageList';
 
 /** @deprecated */
 export interface SearchOptions extends Partial<AutolinkingOptions> {

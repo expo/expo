@@ -6,17 +6,14 @@ on:
     paths:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-cli.yml
       - packages/expo-updates/cli/**
+      - packages/expo-updates/e2e-cli/**
   pull_request:
     paths:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-cli.yml
       - packages/expo-updates/cli/**
+      - packages/expo-updates/e2e-cli/**
   schedule:
     - cron: '0 18 * * SUN' # 18:00 UTC every Sunday
-
-defaults:
-  tools:
-    node: 22.14.0
-    yarn: 1.22.22
 
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
@@ -34,4 +31,4 @@ jobs:
         id: cli
         working_directory: ../../packages/expo-updates
         run: |
-          yarn test:e2e-cli --ci --runInBand
+          pnpm run test:e2e-cli --ci --runInBand

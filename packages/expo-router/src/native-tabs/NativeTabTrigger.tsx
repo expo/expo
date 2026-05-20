@@ -1,14 +1,9 @@
 'use client';
 
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { isValidElement, type ReactElement, type ReactNode } from 'react';
-import { type ImageSourcePropType } from 'react-native';
+import { useCallback, type ReactElement, type ReactNode } from 'react';
+import { StyleSheet } from 'react-native';
 
-import type { NativeTabOptions, NativeTabTriggerProps } from './types';
-import { filterAllowedChildrenElements, isChildOfType } from './utils';
-import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import type { VectorIconProps } from '../primitives';
-import { useSafeLayoutEffect } from '../views/useSafeLayoutEffect';
+import { useNavigation, useRoute } from '../react-navigation/native';
 import {
   NativeTabsTriggerIcon,
   NativeTabsTriggerBadge,
@@ -16,9 +11,12 @@ import {
   NativeTabsTriggerVectorIcon,
   type NativeTabsTriggerBadgeProps,
   type NativeTabsTriggerLabelProps,
-  type NativeTabsTriggerIconProps,
-  type SrcIcon,
 } from './common/elements';
+import type { NativeTabOptions, NativeTabTriggerProps } from './types';
+import { appendIconOptions } from './utils/optionsIconConverter';
+import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { useFocusEffect } from '../useFocusEffect';
+import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
 
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -27,8 +25,7 @@ import {
  * When used in the tab screen, the `name` prop takes no effect.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -42,8 +39,7 @@ import {
  * ```
  *
  * @example
- * ```tsx
- * // In a tab screen
+ * ```tsx app/home.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function HomeScreen() {
@@ -57,29 +53,28 @@ import {
  *   );
  * }
  * ```
- *
- * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
-  const isFocused = navigation.isFocused();
   const isInPreview = useIsPreview();
 
-  useSafeLayoutEffect(() => {
-    // This will cause the tab to update only when it is focused.
-    // As long as all tabs are loaded at the start, we don't need this check.
-    // It is here to ensure similar behavior to stack
-    if (isFocused && !isInPreview) {
-      if (navigation.getState()?.type !== 'tab') {
-        throw new Error(
-          `Trigger component can only be used in the tab screen. Current route: ${route.name}`
-        );
+  useFocusEffect(
+    useCallback(() => {
+      // This will cause the tab to update only when it is focused.
+      // As long as all tabs are loaded at the start, we don't need this check.
+      // It is here to ensure similar behavior to stack
+      if (!isInPreview) {
+        if (navigation.getState()?.type !== 'tab') {
+          throw new Error(
+            `Trigger component can only be used in the tab screen. Current route: ${route.name}`
+          );
+        }
+        const options = convertTabPropsToOptions(props, true);
+        navigation.setOptions(options);
       }
-      const options = convertTabPropsToOptions(props, true);
-      navigation.setOptions(options);
-    }
-  }, [isFocused, props, isInPreview]);
+    }, [props, isInPreview])
+  );
 
   return null;
 }
@@ -99,12 +94,18 @@ export function convertTabPropsToOptions(
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
+    disableAutomaticContentInsets,
+    contentStyle,
+    disableTransparentOnScrollEdge,
+    disabled,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
   const initialOptions: NativeTabOptions = isDynamic
     ? {
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
+        ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(disabled !== undefined ? { disabled } : {}),
       }
     : {
         hidden: !!hidden,
@@ -114,8 +115,12 @@ export function convertTabPropsToOptions(
             scrollToTop: !disableScrollToTop,
           },
         },
+        contentStyle,
         role,
         nativeProps: unstable_nativeProps,
+        disableAutomaticContentInsets,
+        ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(disabled !== undefined ? { disabled } : {}),
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,
@@ -155,101 +160,24 @@ function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerL
   } else {
     options.title = props.children;
     if (props.selectedStyle) {
-      options.selectedLabelStyle = props.selectedStyle;
+      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle);
     }
   }
-}
-
-export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
-  if ('sf' in props && props.sf && process.env.EXPO_OS === 'ios') {
-    if (typeof props.sf === 'string') {
-      options.icon = props.sf
-        ? {
-            sf: props.sf,
-          }
-        : undefined;
-      options.selectedIcon = undefined;
-    } else if (props.sf) {
-      options.icon = props.sf.default
-        ? {
-            sf: props.sf.default,
-          }
-        : undefined;
-      options.selectedIcon = props.sf.selected
-        ? {
-            sf: props.sf.selected,
-          }
-        : undefined;
-    }
-  } else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
-    options.icon = { drawable: props.drawable };
-    options.selectedIcon = undefined;
-  } else if ('src' in props && props.src) {
-    const icon = convertIconSrcToIconOption(props);
-    options.icon = icon?.icon;
-    options.selectedIcon = icon?.selectedIcon;
-  }
-  if (props.selectedColor) {
-    options.selectedIconColor = props.selectedColor;
-  }
-}
-
-function convertIconSrcToIconOption(
-  icon: SrcIcon | undefined
-): Pick<NativeTabOptions, 'icon' | 'selectedIcon'> | undefined {
-  if (icon && icon.src) {
-    const { defaultIcon, selected } =
-      typeof icon.src === 'object' && 'selected' in icon.src
-        ? { defaultIcon: icon.src.default, selected: icon.src.selected }
-        : { defaultIcon: icon.src };
-
-    const options: Pick<NativeTabOptions, 'icon' | 'selectedIcon'> = {};
-    options.icon = convertSrcOrComponentToSrc(defaultIcon);
-    options.selectedIcon = convertSrcOrComponentToSrc(selected);
-    return options;
-  }
-
-  return undefined;
-}
-
-function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
-  if (src) {
-    if (isValidElement(src)) {
-      if (src.type === NativeTabsTriggerVectorIcon) {
-        const props = src.props as VectorIconProps<string>;
-        return { src: props.family.getImageSource(props.name, 24, 'white') };
-      } else {
-        console.warn('Only VectorIcon is supported as a React element in Icon.src');
-      }
-    } else {
-      return { src };
-    }
-  }
-  return undefined;
 }
 
 export function isNativeTabTrigger(
   child: ReactNode,
   contextKey?: string
 ): child is ReactElement<NativeTabTriggerProps & { name: string }> {
-  if (isValidElement(child) && child && child.type === NativeTabTrigger) {
-    if (
-      typeof child.props === 'object' &&
-      child.props &&
-      'name' in child.props &&
-      !child.props.name
-    ) {
+  if (isChildOfType(child, NativeTabTrigger)) {
+    if ('name' in child.props && !child.props.name) {
       throw new Error(
         `<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`
       );
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      if (
-        ['component', 'getComponent'].some(
-          (key) => child.props && typeof child.props === 'object' && key in child.props
-        )
-      ) {
+      if ((['component', 'getComponent'] as const).some((key) => key in child.props)) {
         throw new Error(
           `<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must not have a \`component\` or \`getComponent\` prop when used as a child of a Layout Route`
         );

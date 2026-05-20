@@ -16,25 +16,19 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
         <Button
           type="button"
           theme="quaternary"
-          className={mergeClasses(
-            'min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]'
-          )}
+          className="justify-center px-2.5"
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask about this page with AI">
-          <div
-            className={mergeClasses(
-              'flex flex-col items-center',
-              'max-xl-gutters:flex-row max-xl-gutters:gap-1.5'
-            )}>
-            <Star06Icon className="mt-0.5 text-palette-purple11" />
+          <div className="flex items-center gap-1.5">
+            <Star06Icon className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} className="text-palette-purple11">
               Ask AI
             </FOOTNOTE>
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px] text-center">
+      <Tooltip.Content sideOffset={8} className="max-w-75 text-center">
         <FOOTNOTE>Open the contextual AI assistant for this SDK page</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>
@@ -48,7 +42,7 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
         <Button
           type="button"
           theme="quaternary"
-          className={mergeClasses('min-h-[36px] justify-center px-2.5')}
+          className={mergeClasses('min-h-9 justify-center px-2.5')}
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask about this configuration page with AI">
@@ -60,7 +54,7 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px] text-center">
+      <Tooltip.Content sideOffset={8} className="max-w-75 text-center">
         <FOOTNOTE>Open the contextual AI assistant for this configuration reference</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>

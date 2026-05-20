@@ -1,8 +1,8 @@
-import { toByteArray } from 'base64-js';
 import { UnavailabilityError } from 'expo-modules-core';
 import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
 export * from './Crypto.types';
+export * from './aes';
 class CryptoError extends TypeError {
     code = 'ERR_CRYPTO';
     constructor(message) {
@@ -35,10 +35,6 @@ export function getRandomBytes(byteCount) {
         ExpoCrypto.getRandomValues(byteArray);
         return byteArray;
     }
-    else if (ExpoCrypto.getRandomBase64String) {
-        const base64 = ExpoCrypto.getRandomBase64String(validByteCount);
-        return toByteArray(base64);
-    }
     else {
         throw new UnavailabilityError('expo-crypto', 'getRandomBytes');
     }
@@ -57,10 +53,6 @@ export async function getRandomBytesAsync(byteCount) {
         const byteArray = new Uint8Array(validByteCount);
         ExpoCrypto.getRandomValues(byteArray);
         return byteArray;
-    }
-    else if (ExpoCrypto.getRandomBase64StringAsync) {
-        const base64 = await ExpoCrypto.getRandomBase64StringAsync(validByteCount);
-        return toByteArray(base64);
     }
     else {
         throw new UnavailabilityError('expo-crypto', 'getRandomBytesAsync');

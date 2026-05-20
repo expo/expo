@@ -1,6 +1,6 @@
 import { CodedError } from 'expo-modules-core';
 import { AppState } from 'react-native';
-import { WebBrowserResultType, } from './WebBrowser.types';
+import { WebBrowserResultType } from './WebBrowser.types';
 const POPUP_WIDTH = 500;
 const POPUP_HEIGHT = 650;
 let popupWindow = null;
@@ -228,9 +228,12 @@ function generateRandom(size) {
 }
 function bufferToString(buffer) {
     let state = '';
-    for (let i = 0; i < buffer.byteLength; i += 1) {
-        const index = buffer[i] % CHARSET.length;
-        state += CHARSET[index];
+    for (const byte of buffer) {
+        const index = byte % CHARSET.length;
+        const char = CHARSET[index];
+        if (char != null) {
+            state += char;
+        }
     }
     return state;
 }

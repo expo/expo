@@ -1,9 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Redirect = exports.Link = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const ExpoLink_1 = require("./ExpoLink");
 const elements_1 = require("./elements");
 const href_1 = require("./href");
+const link_apple_zoom_1 = require("./zoom/link-apple-zoom");
+const link_apple_zoom_target_1 = require("./zoom/link-apple-zoom-target");
 exports.Link = Object.assign(
 /**
  * Component that renders a link using [`href`](#href) to another route.
@@ -33,13 +36,15 @@ exports.Link = Object.assign(
  */
 function Link(props) {
     // Re-exporting ExpoLink here so that Link.* can be used in server components.
-    return <ExpoLink_1.ExpoLink {...props}/>;
+    return (0, jsx_runtime_1.jsx)(ExpoLink_1.ExpoLink, { ...props });
 }, {
     resolveHref: href_1.resolveHref,
     Menu: elements_1.LinkMenu,
     Trigger: elements_1.LinkTrigger,
     Preview: elements_1.LinkPreview,
     MenuAction: elements_1.LinkMenuAction,
+    AppleZoom: link_apple_zoom_1.LinkAppleZoom,
+    AppleZoomTarget: link_apple_zoom_target_1.LinkAppleZoomTarget,
 });
 var Redirect_1 = require("./Redirect");
 Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Redirect_1.Redirect; } });

@@ -1,4 +1,5 @@
-import crypto, { BinaryToTextEncoding, Encoding } from 'crypto';
+import type { BinaryToTextEncoding, Encoding } from 'crypto';
+import crypto from 'crypto';
 import forge from 'node-forge';
 
 /**
@@ -15,11 +16,12 @@ export function getFormattedSerialNumber(certificate: forge.pki.Certificate): st
  */
 export function getX509Certificate(p12: forge.pkcs12.Pkcs12Pfx): forge.pki.Certificate {
   const certBagType = forge.pki.oids.certBag;
-  const bags = p12.getBags({ bagType: certBagType })[certBagType];
-  if (!bags || bags.length === 0) {
+  const bag =
+    certBagType != null ? p12.getBags({ bagType: certBagType })[certBagType]?.[0] : undefined;
+  if (bag == null) {
     throw new Error(`PKCS12: No certificates found`);
   }
-  return getX509CertificateFromBag(bags[0]);
+  return getX509CertificateFromBag(bag);
 }
 
 /**
@@ -34,14 +36,14 @@ export function getX509CertificateByFriendlyName(
 ): forge.pki.Certificate | null {
   const certBagType = forge.pki.oids.certBag;
   // node-forge converts friendly names to lowercase, so we search by lowercase
-  const bags = p12.getBags({
+  const bag = p12.getBags({
     friendlyName: friendlyName.toLowerCase(),
     bagType: certBagType,
-  }).friendlyName;
-  if (!bags || bags.length === 0) {
+  }).friendlyName?.[0];
+  if (bag == null) {
     return null;
   }
-  return getX509CertificateFromBag(bags[0]);
+  return getX509CertificateFromBag(bag);
 }
 
 function getX509CertificateFromBag(bag: forge.pkcs12.Bag): forge.pki.Certificate {
@@ -63,14 +65,14 @@ export function getX509Asn1ByFriendlyName(
 ): forge.asn1.Asn1 | null {
   const certBagType = forge.pki.oids.certBag;
   // node-forge converts friendly names to lowercase, so we search by lowercase
-  const bags = p12.getBags({
+  const bag = p12.getBags({
     friendlyName: friendlyName.toLowerCase(),
     bagType: certBagType,
-  }).friendlyName;
-  if (!bags || bags.length === 0) {
+  }).friendlyName?.[0];
+  if (bag == null) {
     return null;
   }
-  const { cert, asn1 } = bags[0];
+  const { cert, asn1 } = bag;
   if (cert) {
     return forge.pki.certificateToAsn1(cert);
   }

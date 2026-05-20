@@ -1,7 +1,6 @@
-import type { NavigationState } from '@react-navigation/native/lib/typescript/src';
-
 import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';
+import type { NavigationState } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
 import {
   deepEqual,
@@ -53,18 +52,25 @@ describe('deepEqual', () => {
   });
 
   it('returns false if one is null', () => {
-    expect(deepEqual(null, { a: 1 })).toBe(false);
-    expect(deepEqual({ a: 1 }, null)).toBe(false);
+    type DeepEqualParam = Parameters<typeof deepEqual>[0];
+    expect(deepEqual(null as unknown as DeepEqualParam, { a: 1 })).toBe(false);
+    expect(deepEqual({ a: 1 }, null as unknown as DeepEqualParam)).toBe(false);
   });
 
   it('returns false if both are null', () => {
-    expect(deepEqual(null, null)).toBe(true);
+    type DeepEqualParam = Parameters<typeof deepEqual>[0];
+    expect(deepEqual(null as unknown as DeepEqualParam, null as unknown as DeepEqualParam)).toBe(
+      true
+    );
   });
 
   it('returns false for non-object types', () => {
-    expect(deepEqual(1 as any, { a: 1 })).toBe(false);
-    expect(deepEqual({ a: 1 }, 1 as any)).toBe(false);
-    expect(deepEqual('test' as any, 'test' as any)).toBe(true);
+    type DeepEqualParam = Parameters<typeof deepEqual>[0];
+    expect(deepEqual(1 as unknown as DeepEqualParam, { a: 1 })).toBe(false);
+    expect(deepEqual({ a: 1 }, 1 as unknown as DeepEqualParam)).toBe(false);
+    expect(
+      deepEqual('test' as unknown as DeepEqualParam, 'test' as unknown as DeepEqualParam)
+    ).toBe(true);
   });
 
   it('returns true for deeply nested equal objects', () => {

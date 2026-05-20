@@ -1,7 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -eo pipefail
+import { getArgs, packageManagerExecAsync } from '../utils/commandUtils.js';
 
-script_dir="$(dirname "$0")"
-
-"$script_dir/npx" eslint "$@"
+await packageManagerExecAsync(['eslint', ...getArgs()]);

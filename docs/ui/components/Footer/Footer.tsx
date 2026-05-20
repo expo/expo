@@ -1,13 +1,16 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { PrivacyChoicesButton } from '@expo/styleguide-cookie-consent';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
 
+import { isEasPath } from '~/common/routes';
+import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRouteWithSection } from '~/types/common';
+import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
 import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
-import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
-import { NewsletterSignUp } from './NewsletterSignUp';
+import { ForumsLink, EditPageLink, IssuesLink, LlmsTxtLink, ShareFeedbackLink } from './Links';
 import { PageVote } from './PageVote';
 
 type Props = {
@@ -20,6 +23,8 @@ type Props = {
 };
 
 const isDev = process.env.NODE_ENV === 'development';
+const LLMS_SDK_VERSIONS = ['v53.0.0'];
+const LLMS_SDK_LATEST_VERSION = LLMS_SDK_VERSIONS[0];
 
 export const Footer = ({
   title,
@@ -29,10 +34,21 @@ export const Footer = ({
   nextPage,
   modificationDate,
 }: Props) => {
+  const { hasVersion, version } = usePageApiVersion();
   const router = useRouter();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
   const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
   const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
+  const llmsSdkVersion = version === 'latest' ? LLMS_SDK_LATEST_VERSION : version;
+  const shouldUseLlmsSdkFile = hasVersion && LLMS_SDK_VERSIONS.includes(llmsSdkVersion);
+  const isEasPage = router?.pathname ? isEasPath(router.pathname) : false;
+  const llmsFullFilename = isEasPage
+    ? 'llms-eas.txt'
+    : shouldUseLlmsSdkFile
+      ? `llms-sdk-${llmsSdkVersion}.txt`
+      : 'llms-full.txt';
+  const llmsFullHref = `/${llmsFullFilename}`;
+  const llmsFullLabel = 'llms-full.txt';
 
   const shouldShowModifiedDate = !isExpoPackage && !isTutorial && title;
 
@@ -41,15 +57,15 @@ export const Footer = ({
       className={mergeClasses(
         'flex flex-col gap-10 px-14 pb-10',
         title ? 'pt-10' : 'pt-6',
-        'max-lg-gutters:px-4 max-lg-gutters:pb-12'
+        'max-lg:px-4 max-lg:pb-12'
       )}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
             'flex gap-4',
-            'max-xl-gutters:flex-col-reverse',
-            'max-lg-gutters:flex-row',
-            'max-md-gutters:flex-col-reverse'
+            'max-xl:flex-col-reverse',
+            'max-lg:flex-row',
+            'max-md:flex-col-reverse'
           )}
           data-nosnippet>
           {previousPage ? (
@@ -90,24 +106,24 @@ export const Footer = ({
           )}
         </div>
       )}
-      <div
-        className={mergeClasses('flex flex-row justify-between gap-4', 'max-md-gutters:flex-col')}>
+      <div className={mergeClasses('flex flex-row justify-between gap-4', 'max-md:flex-col')}>
         <div>
           <PageVote />
-          <UL className="!ml-0 !mt-0 flex-1 !list-none">
+          <UL className="mt-0! ml-0! flex-1 list-none!">
             <ShareFeedbackLink pathname={router?.pathname} />
             {title && <ForumsLink isAPIPage={isAPIPage} title={title} />}
             {title && isAPIPage && (
               <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
             )}
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
+            <LlmsTxtLink fullVersionHref={llmsFullHref} fullVersionLabel={llmsFullLabel} />
             {!isDev && shouldShowModifiedDate && modificationDate && (
-              <LI className="!mt-4 !text-2xs !text-quaternary">
+              <LI className="mt-4! text-xs! text-quaternary!">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
               </LI>
             )}
             {isDev && shouldShowModifiedDate && (
-              <LI className="!mt-4 !text-2xs !text-quaternary">
+              <LI className="mt-4! text-xs! text-quaternary!">
                 Last updated data is not available in dev mode
               </LI>
             )}
@@ -115,6 +131,7 @@ export const Footer = ({
         </div>
         <NewsletterSignUp />
       </div>
+      <PrivacyChoicesButton />
     </footer>
   );
 };

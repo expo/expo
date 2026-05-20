@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-mail-composer/package.json');
+const pkg = require('../../package.json');
 /**
  * Keep the mail client URLs in sync with those in the file `ios/MailClients.swift`.
  */

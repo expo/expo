@@ -3,15 +3,14 @@
  * while the dev server is running.
  */
 import { test, expect } from '@playwright/test';
+import path from 'node:path';
 import { platform } from 'node:process';
 
-import { setupTestProjectWithOptionsAsync } from '../../__tests__/utils';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
+import { setupTestProjectWithOptionsAsync } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
-import { pageCollectErrors } from '../page';
-
-import path from 'node:path';
 import { mutateFile, openPageAndEagerlyLoadJS } from '../../utils/hmr';
+import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -32,19 +31,12 @@ test.describe('router-e2e with spaces', () => {
       // NOTE(@kitten): This space is reflected in the project root:
       'hmr-env-vars',
       'with-hmr-env-vars',
-      // We're installing the @expo/cli from our workspace source into the newly
-      // created project. This is required to be able to execute the SSR bundle
-      // outside the Expo monorepo module
       {
-        linkExpoPackages: ['expo'],
-        // TODO(@hassankhan): remove @expo/router-server after publishing
-        linkExpoPackagesDev: ['@expo/cli', '@expo/router-server', 'babel-preset-expo', '@expo/metro-config', 'expo-server'],
+        linkExpoPackages: ['expo']
       }
     );
 
     expoStart = createExpoStart({
-      // Use linked version of @expo/cli via `bun expo-internal`:
-      command: (port) => ['bun', 'expo-internal', 'start', `--port=${port}`],
       cwd: projectRoot,
       env: {
         EXPO_PUBLIC_VALUE_INLINE: 'inlined',
@@ -75,7 +67,7 @@ test.describe('router-e2e with spaces', () => {
     await expect(page.locator('[data-testid="env-var-inline"]')).toHaveText('inlined');
 
     // Ensure the initial hash is correct
-    await expect(page.locator('[data-testid="env-var"]')).toHaveText('ROUTE_VALUE');
+    await expect(page.locator('[data-testid="env-var"]')).toHaveText(/ROUTE_VALUE/);
     const envFile = path.join(projectRoot, '.env');
     // Use a changing value to prevent caching.
     const nextValue = 'ROUTE_VALUE_' + Date.now();
@@ -86,7 +78,7 @@ test.describe('router-e2e with spaces', () => {
         throw new Error(`Expected to find 'ROUTE_VALUE' in the file`);
       }
       console.log('Emulate writing to a file');
-      return contents.replace(/ROUTE_VALUE/g, nextValue);
+      return contents.replace(/ROUTE_VALUE(_\w+)?/g, nextValue);
     });
 
     await waitForFashRefresh();

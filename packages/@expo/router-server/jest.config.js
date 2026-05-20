@@ -39,13 +39,13 @@ const tsdProject = {
 };
 
 /*
- * In CI, or using `yarn test:tsd` add the TSD project.
+ * In CI, or using `pnpm test:tsd` add the TSD project.
  *
  * `jest-runner-tsd` is incompatible with `jest-watch-select-projects` so we need to disable it.
  *
  * If you wish to run only the tsd project, you can use the following command:
  *
- * `yarn test:tsd --selectProjects TSD`
+ * `pnpm test:tsd --selectProjects TSD`
  *
  */
 if (process.env.CI || process.env.EXPORT_ROUTER_JEST_TSD) {

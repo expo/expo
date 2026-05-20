@@ -7,11 +7,18 @@
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
-import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
+import type {
+  BabelTransformer,
+  BabelTransformerArgs,
+  BabelTransformerCacheKeyOptions,
+} from '@expo/metro/metro-babel-transformer';
+import { getCacheKey as getFileCacheKey } from '@expo/metro/metro-cache-key';
 import assert from 'node:assert';
+import path from 'node:path';
 
 import type { TransformOptions } from './babel-core';
-import { loadBabelConfig } from './loadBabelConfig';
+import { loadPartialConfigSync } from './babel-core';
+import { loadBabelConfig, resolveBabelrcName } from './loadBabelConfig';
 import { transformSync } from './transformSync';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
@@ -31,6 +38,10 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   platform?: string | null;
   routerRoot?: string;
   projectRoot: string;
+  /** When true, indicates this bundle should contain only the loader export */
+  isLoaderBundle?: boolean;
+  /** When true, indicates this file is part of a DOM component bundle */
+  isDomComponent?: boolean;
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
@@ -135,6 +146,14 @@ function getBabelCaller({
       ? true
       : undefined,
 
+    // When true, indicates this bundle should contain only the loader export.
+    // Used by server-data-loaders-plugin to strip everything except the loader function.
+    isLoaderBundle: isCustomTruthy(options.customTransformOptions?.isLoaderBundle)
+      ? true
+      : undefined,
+
+    isDomComponent: options.customTransformOptions?.dom != null ? true : undefined,
+
     // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
     // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
     // This option should be set to the project's version of `@babel/runtime`, if it's installed directly
@@ -158,6 +177,9 @@ const transform: BabelTransformer['transform'] = ({
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
 
   try {
+    const { enableBabelRCLookup } = options;
+    const { exts, presets } = loadBabelConfig(options);
+
     const babelConfig: TransformOptions = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
@@ -176,12 +198,19 @@ const transform: BabelTransformer['transform'] = ({
       filename,
       highlightCode: true,
 
-      // Load the project babel config file.
-      ...loadBabelConfig(options),
+      root: options.projectRoot, // Default value
 
-      babelrc:
-        typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+      babelrcRoots: enableBabelRCLookup ? options.projectRoot : false, // Default value
+      // NOTE(@kitten): This will and has always only searched `projectRoot`, excluding node_modules and other workspaces
+      // As such, we'll only enable it when `enableBabelRCLookup` is explicitly enabled for non-node_modules
+      babelrc: enableBabelRCLookup ? !filename.includes('node_modules') : false,
+      // NOTE(@kitten): This used to duplicate the config file, which is already piped into `extends`
+      // However, for deprecated/legacy behaviour, we'll still enable it when `enableBabelRCLookup` is explicitly enabled
+      configFile: !!enableBabelRCLookup, // Otherwise duplicates our search below
 
+      // Add the discovered config file
+      extends: exts,
+      presets,
       plugins,
 
       // NOTE(EvanBacon): We heavily leverage the caller functionality to mutate the babel config.
@@ -207,14 +236,59 @@ const transform: BabelTransformer['transform'] = ({
     assert(result.ast);
     return { ast: result.ast, metadata: result.metadata };
   } finally {
-    if (OLD_BABEL_ENV) {
+    // Restore the old process.env.BABEL_ENV
+    if (OLD_BABEL_ENV == null) {
+      // We have to treat this as a special case because writing undefined to
+      // an environment variable coerces it to the string 'undefined'. To
+      // unset it, we must delete it.
+      // See https://github.com/facebook/metro/pull/446
+      delete process.env.BABEL_ENV;
+    } else {
       process.env.BABEL_ENV = OLD_BABEL_ENV;
     }
   }
 };
 
+/**
+ * Generates a cache key component based on the user's Babel configuration files.
+ * This uses Babel's loadPartialConfig to resolve which config files apply
+ * to the project, and includes their contents in the cache key so that changes
+ * to babel.config.js, .babelrc, or any file they reference will invalidate the
+ * transform cache.
+ *
+ * This is called once by the main thread (not on worker instances).
+ */
+function getCacheKey(options?: BabelTransformerCacheKeyOptions): string {
+  if (options?.projectRoot == null || options.enableBabelRCLookup === false) {
+    return '';
+  }
+
+  // In Expo, we pass the `extendsBabelConfigPath` ourselves, but if we're not using this with the Expo CLI
+  // we re-resolve the Babel config, same as in `loadBabelConfig`
+  const configName = options.extendsBabelConfigPath ?? resolveBabelrcName(options.projectRoot);
+  if (!configName) {
+    return '';
+  }
+
+  const partialConfig = loadPartialConfigSync({
+    cwd: options.projectRoot,
+    root: options.projectRoot,
+    extends: path.resolve(options.projectRoot, configName),
+    configFile: false,
+    babelrc: false,
+  });
+
+  const files = partialConfig?.files;
+  if (files == null || files.size === 0) {
+    return '';
+  }
+
+  return getFileCacheKey([...files].sort());
+}
+
 const babelTransformer: BabelTransformer = {
   transform,
+  getCacheKey,
 };
 
 module.exports = babelTransformer;

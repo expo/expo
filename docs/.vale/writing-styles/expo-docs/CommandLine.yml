@@ -1,0 +1,11 @@
+extends: substitution
+message: "Use '%s' instead of '%s' when the phrase modifies a noun."
+level: warning
+nonword: true
+scope: ~text.frontmatter
+action:
+  name: replace
+swap:
+  '\bcommand line(?= (?:app|apps|application|applications|argument|arguments|client|clients|experience|flag|flags|interface|interfaces|option|options|program|programs|script|scripts|tool|tools|utility|utilities)\b)': command-line
+  '\bCommand line(?= (?:app|apps|application|applications|argument|arguments|client|clients|experience|flag|flags|interface|interfaces|option|options|program|programs|script|scripts|tool|tools|utility|utilities)\b)': Command-line
+  '\bCommand Line(?= (?:App|Apps|Application|Applications|Argument|Arguments|Client|Clients|Experience|Flag|Flags|Interface|Interfaces|Option|Options|Program|Programs|Script|Scripts|Tool|Utility|Utilities)\b)': Command-line

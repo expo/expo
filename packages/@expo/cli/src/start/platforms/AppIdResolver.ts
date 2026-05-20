@@ -1,5 +1,6 @@
 import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
 
+import { env } from '../../utils/env';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { get } from '../../utils/obj';
 
@@ -15,6 +16,9 @@ export class AppIdResolver {
 
   /** Resolve the application ID for the project. */
   async getAppIdAsync(): Promise<string> {
+    if (env.EXPO_RUN_PREFER_APP_CONFIG_ID) {
+      return this.getAppIdFromConfigAsync();
+    }
     if (await this.hasNativeProjectAsync()) {
       return this.getAppIdFromNativeAsync();
     }

@@ -1,9 +1,24 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -eo pipefail
+process.env.EXPO_NONINTERACTIVE = 1;
 
-script_dir="$(dirname "$0")"
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { commandRunner } from '../utils/commandUtils.js';
 
-export EXPO_NONINTERACTIVE=1
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-"$script_dir/npx" proofread
+async function runAsync() {
+  console.log('Preparing module for publishing');
+  await commandRunner(path.join(dirname, 'expo-module-clean'));
+  await commandRunner(path.join(dirname, 'expo-module-build'));
+}
+
+(async () => {
+  try {
+    await runAsync();
+  } catch (error) {
+    console.error(error);
+    process.exit(error.status || error.code || 1);
+  }
+})();

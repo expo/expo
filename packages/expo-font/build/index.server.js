@@ -1,5 +1,5 @@
 export * from './Font';
-export function useFonts() {
-    return [];
-}
+export const useFonts = () => {
+    return [false, null];
+};
 //# sourceMappingURL=index.server.js.map

@@ -2,7 +2,7 @@ import fs from 'fs';
 import { vol } from 'memfs';
 
 import rnFixture from './fixtures/react-native-project';
-import { ExportedConfig, Mod } from '../../Plugin.types';
+import type { ExportedConfig, Mod } from '../../Plugin.types';
 import { compileModsAsync, sortMods } from '../mod-compiler';
 import { withMod } from '../withMod';
 

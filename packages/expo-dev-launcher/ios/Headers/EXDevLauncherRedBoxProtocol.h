@@ -1,7 +1,5 @@
 // Copied `React/RCTRedBox.h` and turn into a protocol.
 
-#import <UIKit/UIKit.h>
-
 #import <React/RCTRedBox.h>
 #import <React/RCTJSStackFrame.h>
 

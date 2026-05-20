@@ -1,6 +1,21 @@
 import ExpoModulesCore
 import EventKit
 
+
+func requireDate(from date: Either<String, Double>?) throws -> Date {
+  guard let parsedDate = parse(date: date) else {
+    throw InvalidDateFormatException()
+  }
+  return parsedDate
+}
+
+func requireDate(from date: String?) throws -> Date {
+  guard let parsedDate = parse(date: date) else {
+    throw InvalidDateFormatException()
+  }
+  return parsedDate
+}
+
 func parse(date: Either<String, Double>?) -> Date? {
   guard let date else {
     return nil

@@ -1,16 +1,12 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesJSI/BridgelessJSCallInvoker.h>
-
+#import <ExpoModulesCore/BridgelessJSCallInvoker.h>
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
-#import <ExpoModulesCore/ExpoModulesHostObject.h>
-#import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/SharedRef.h>
 #import <ExpoModulesCore/EventEmitter.h>
 #import <ExpoModulesCore/NativeModule.h>
-#import <ExpoModulesCore/Swift.h>
-#import <ExpoModulesCore/EXRuntime.h>
 
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
@@ -23,120 +19,46 @@ namespace jsi = facebook::jsi;
 NSString *const EXGlobalCoreObjectPropertyName = @"expo";
 
 /**
- Property name used to define the modules host object in the main object of the Expo JS runtime.
+ Property name used to define the modules host object in the main object of the
+ Expo JS runtime.
  */
 static NSString *modulesHostObjectPropertyName = @"modules";
 
-@interface RCTBridge (ExpoBridgeWithRuntime)
-
-- (void *)runtime;
-- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker;
-
-@end
-
-@implementation EXJavaScriptRuntimeManager
-
-+ (std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeSchedulerFromRuntime:(jsi::Runtime *)jsiRuntime
-{
-  if (jsiRuntime == nullptr) {
-    return nullptr;
-  }
-  if (auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(*jsiRuntime)) {
-    return binding->getRuntimeScheduler();
-  }
-  return nullptr;
+@implementation EXJavaScriptRuntimeManager {
+  std::shared_ptr<jsi::Runtime> _runtime;
 }
 
-+ (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
+- (nonnull instancetype)initWithRuntime:(nonnull void *)runtime
 {
-  jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(bridge.runtime);
-  if (!jsiRuntime) {
-    return nil;
+  if (self = [super init]) {
+    // Make shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
+    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), reinterpret_cast<jsi::Runtime *>(runtime));
   }
-
-  return [[EXRuntime alloc] initWithRuntime:jsiRuntime
-                                callInvoker:bridge.jsCallInvoker
-                           runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
+  return self;
 }
-
-#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
-+ (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge withExecutor:(nonnull RCTRuntimeExecutor *)executor
-{
-  jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(bridge.runtime);
-
-  // Create a call invoker based on the given runtime executor.
-  auto runtimeExecutor = [executor](std::function<void(jsi::Runtime &runtime)> &&callback) {
-    // Convert to Objective-C block so it can be captured properly.
-    __block auto callbackBlock = callback;
-
-    [executor execute:^(jsi::Runtime &runtime) {
-      callbackBlock(runtime);
-    }];
-  };
-
-  auto callInvoker = std::make_shared<expo::BridgelessJSCallInvoker>(runtimeExecutor);
-
-  if (!jsiRuntime) {
-    return nil;
-  }
-
-  return [[EXRuntime alloc] initWithRuntime:jsiRuntime
-                                callInvoker:callInvoker
-                           runtimeScheduler:[self runtimeSchedulerFromRuntime:jsiRuntime]];
-}
-#endif // React Native >=0.74
 
 #pragma mark - Installing JSI bindings
 
-+ (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
+- (void)installSharedObjectClass:(void (^_Nonnull)(long))releaser
 {
-  EXRuntime *runtime = [appContext _runtime];
-
-  // The runtime may be unavailable, e.g. remote debugger is enabled or it hasn't been set yet.
-  if (!runtime) {
-    return false;
-  }
-
-  EXJavaScriptObject *global = [runtime global];
-  EXJavaScriptValue *coreProperty = [global getProperty:EXGlobalCoreObjectPropertyName];
-  NSAssert([coreProperty isObject], @"The global core property should be an object");
-  EXJavaScriptObject *coreObject = [coreProperty getObject];
-
-  if ([coreObject hasProperty:modulesHostObjectPropertyName]) {
-    return false;
-  }
-
-  std::shared_ptr<expo::ExpoModulesHostObject> modulesHostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(appContext);
-  EXJavaScriptObject *modulesHostObject = [runtime createHostObject:modulesHostObjectPtr];
-
-  // Define the `global.expo.modules` object as a non-configurable, read-only and enumerable property.
-  [coreObject defineProperty:modulesHostObjectPropertyName
-                       value:modulesHostObject
-                     options:EXJavaScriptObjectPropertyDescriptorEnumerable];
-
-  return true;
-}
-
-+ (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void(^)(long))releaser
-{
-  expo::SharedObject::installBaseClass(*[runtime get], [releaser](expo::SharedObject::ObjectId objectId) {
+  expo::SharedObject::installBaseClass(*_runtime, [releaser](expo::SharedObject::ObjectId objectId) {
     releaser(objectId);
   });
 }
 
-+ (void)installSharedRefClass:(nonnull EXRuntime *)runtime
+- (void)installSharedRefClass
 {
-  expo::SharedRef::installBaseClass(*[runtime get]);
+  expo::SharedRef::installBaseClass(*_runtime);
 }
 
-+ (void)installEventEmitterClass:(nonnull EXRuntime *)runtime
+- (void)installEventEmitterClass
 {
-  expo::EventEmitter::installClass(*[runtime get]);
+  expo::EventEmitter::installClass(*_runtime);
 }
 
-+ (void)installNativeModuleClass:(nonnull EXRuntime *)runtime
+- (void)installNativeModuleClass
 {
-  expo::NativeModule::installClass(*[runtime get]);
+  expo::NativeModule::installClass(*_runtime);
 }
 
 @end

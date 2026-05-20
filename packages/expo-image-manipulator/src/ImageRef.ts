@@ -1,7 +1,6 @@
 import { SharedRef } from 'expo';
 
 import type { ImageResult, SaveOptions } from './ImageManipulator.types';
-import ExpoImageManipulator from './NativeImageManipulatorModule';
 
 /**
  * A reference to a native instance of the image.
@@ -23,5 +22,3 @@ export declare class ImageRef extends SharedRef<'image'> {
    */
   saveAsync(options?: SaveOptions): Promise<ImageResult>;
 }
-
-export default ExpoImageManipulator.ImageRef as typeof ImageRef;

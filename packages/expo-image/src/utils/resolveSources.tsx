@@ -2,7 +2,7 @@ import { Platform } from 'expo-modules-core';
 
 import resolveAssetSource from './resolveAssetSource';
 import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
-import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
+import type { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 import { isImageRef } from '../utils';
 
 export function isBlurhashString(str: string): boolean {
@@ -15,12 +15,25 @@ export function isThumbhashString(str: string): boolean {
   return str.startsWith('thumbhash:/');
 }
 
+// SF Symbols are specified with the sf: prefix, e.g. "sf:star" or "sf:star.fill"
+export function isSFSymbolString(str: string): boolean {
+  return str.startsWith('sf:');
+}
+
+export function resolveSFSymbolString(str: string): ImageSource {
+  // Extract the symbol name after "sf:" prefix
+  const symbolName = str.slice(3);
+  return { uri: `sf:/${symbolName}` };
+}
+
 export function resolveSource(source?: ImageSource | string | number | null): ImageSource | null {
   if (typeof source === 'string') {
     if (isBlurhashString(source)) {
       return resolveBlurhashString(source);
     } else if (isThumbhashString(source)) {
       return resolveThumbhashString(source);
+    } else if (isSFSymbolString(source)) {
+      return resolveSFSymbolString(source);
     }
     return { uri: source };
   }

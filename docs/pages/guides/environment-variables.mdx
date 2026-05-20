@@ -66,6 +66,8 @@ You may choose to commit the default **.env** file or other standard configurati
 
 #### Environment variables and `NODE_ENV`
 
+`NODE_ENV` is the standard Node.js variable that identifies which mode your code is running in (typically `development`, `production`, or `test`). Tools like module resolvers, bundlers, and test runners read it to decide how to build, install, or run your code.
+
 We recommend against using `NODE_ENV` to switch between **.env** files (such as **.env.test** and **.env.production**). While it is technically possible (`NODE_ENV=test npx expo start` will load **.env.test**) &mdash; it may not behave as you would expect. For example, `npx expo export` always forces `NODE_ENV` to `production`, so `NODE_ENV=test npx expo export` will not actually run the command with the `NODE_ENV` set to `test`.
 
 Other tools that build on top of Expo CLI commands will exhibit the same behavior &mdash; for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further for this use case.
@@ -85,11 +87,11 @@ If you're experiencing issues with environment variables, you can try disabling 
 
 ### EAS Build
 
-[EAS Build](/build/introduction/) uses Metro Bundler to build the JavaScript bundle embedded within your app binary, so it will use **.env** files uploaded with your build job to inline `EXPO_PUBLIC_` variables into your code. EAS Build also lets you define environment variables within build profiles in **eas.json** and via EAS Secrets. Check out the EAS Build documentation on [environment variables and build secrets](/build-reference/variables/) for more information.
+[EAS Build](/build/introduction/) uses Metro Bundler to build the JavaScript bundle embedded within your app binary, so it will use **.env** files uploaded with your build job to inline `EXPO_PUBLIC_` variables into your code. EAS Build also lets you define environment variables within build profiles in **eas.json** and via EAS Secrets. Check out the EAS Build documentation on [environment variables and build secrets](/eas/environment-variables) for more information.
 
 ### EAS Update
 
-[EAS Update](/eas-update/introduction) uses Metro Bundler in your local environment or CI to build your app bundle, so it will use available **.env** files to inline `EXPO_PUBLIC_` variables into your code. Check out the EAS Update documentation on [environment variables](/eas-update/environment-variables/) for more information.
+[EAS Update](/eas-update/introduction) uses Metro Bundler in your local environment or CI to build your app bundle, so it will use available **.env** files to inline `EXPO_PUBLIC_` variables into your code. Check out the EAS Update documentation on [environment variables](/eas/environment-variables/usage/#using-environment-variables-with-eas-update) for more information.
 
 ## Migrating to Expo environment variables
 

@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoBlob.web.d.ts","sourceRoot":"","sources":["../src/ExpoBlob.web.ts"],"names":[],"mappings":"AAAA,eAAO,MAAM,QAAQ;;;CAAO,CAAC"}
+{"version":3,"file":"ExpoBlob.web.d.ts","sourceRoot":"","sources":["../src/ExpoBlob.web.ts"],"names":[],"mappings":"AAAA,QAAA,MAAM,QAAQ;;;CAAO,CAAC;AACtB,OAAO,EAAE,QAAQ,IAAI,IAAI,EAAE,CAAC"}

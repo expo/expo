@@ -1,0 +1,1 @@
+{"version":3,"file":"router.d.ts","sourceRoot":"","sources":["../../../src/integrations/expo-router/router.ts"],"names":[],"mappings":"AAEA,QAAA,IAAI,cAAc,EAAE,cAAc,aAAa,CAAC,GAAG,SAAS,CAAC;AAM7D,QAAA,MAAM,iBAAiB,SAAmB,CAAC;AAE3C,OAAO,EAAE,cAAc,EAAE,iBAAiB,EAAE,CAAC"}

@@ -5,6 +5,7 @@ description: Learn how to install and configure expo-updates in your existing Re
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 
 `expo-updates` is a library that enables your app to manage remote updates to your application code. It communicates with the configured remote update service to get information about available updates. This guide explains how to set up a bare React Native project for use with [EAS Update](/eas-update/introduction), a hosted remote update service that includes tools to simplify installation and configuration of the `expo-updates` library.
@@ -15,9 +16,13 @@ You may be reading the wrong guide. To use `expo-updates` in a project that uses
 
 </Collapsible>
 
-## Prerequisites
-
-**The `expo` package must be installed and configured.** If you created your project with `npx @react-native-community/cli@latest init` and do not have any other Expo libraries installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
+<Prerequisites>
+  <Requirement title="Install and configure the expo package">
+    If you created your project with `npx @react-native-community/cli@latest init` and do not have
+    any other Expo libraries installed, you will need to [install Expo
+    modules](/bare/installing-expo-modules) before proceeding.
+  </Requirement>
+</Prerequisites>
 
 ## Installation
 
@@ -47,20 +52,23 @@ Modify the `expo` section of **app.json**. If you created your project using `np
 
 If you want to set up a [custom `expo-updates` server](https://github.com/expo/custom-expo-updates-server) instead, add your URL to `updates.url` in **app.json**.
 
-```diff app.json
- {
-   "name": "MyApp",
-   "displayName": "MyApp",
+<DiffBlock
+  raw={`diff --git a/app.json b/app.json
+index 0000000..1111111 100644
+--- a/app.json
++++ b/app.json
+@@ -1,7 +1,7 @@
    "expo": {
      "name": "MyApp",
-      ...
-     "updates": {
+-    "updates": {
 -      "url": "https://u.expo.dev/[your-project-id]"
+-    }
++    "updates": {
 +      "url": "http://localhost:3000/api/manifest"
-     }
++    }
    }
- }
-```
+ }`}
+/>
 
 ### Android
 
@@ -74,21 +82,7 @@ Modify **android/app/src/main/AndroidManifest.xml** to add the `expo-updates` co
 
 If using the updates server URL (a custom non-HTTPS update server running on the same machine), you will need to modify **android/app/src/main/AndroidManifest.xml** to add the update server URL and enable `usesCleartextTraffic`:
 
-```diff android/app/src/main/AndroidManifest.xml
- <application
-  android:name=".MainApplication"
-  android:label="@string/app_name"
-  android:icon="@mipmap/ic_launcher"
-  android:roundIcon="@mipmap/ic_launcher_round"
-  android:allowBackup="false"
-  android:theme="@style/AppTheme"
-+ android:usesCleartextTraffic="true"
- >
-
-- <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/[your-project-id]"/>
-+ <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="http://localhost:3000/api/manifest"/>
- </application>
-```
+<DiffBlock source="/static/diffs/expo-updates-android-manifest-cleartext.diff" />
 
 Add the Expo runtime version string key to **android/app/src/main/res/values/strings.xml**:
 

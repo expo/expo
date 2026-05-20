@@ -1,4 +1,4 @@
-import { SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import type { SpawnPromise, SpawnResult } from '@expo/spawn-async';
 
 /** The shared spawn child object, used to assert resolve values in tests */
 export const STUB_SPAWN_CHILD = { type: 'child' };

@@ -1,1 +1,1 @@
-{"version":3,"file":"expo-definedRouter.d.ts","sourceRoot":"","sources":["../../../src/rsc/router/expo-definedRouter.ts"],"names":[],"mappings":";AAiBA,wBAyHG"}
+{"version":3,"file":"expo-definedRouter.d.ts","sourceRoot":"","sources":["../../../src/rsc/router/expo-definedRouter.ts"],"names":[],"mappings":"AAIA,OAAO,EAAE,SAAS,EAAE,MAAM,oBAAoB,CAAC;AAE/C,OAAO,KAAK,EAAE,UAAU,EAAE,MAAM,WAAW,CAAC;yBA6H5B,kBAAkB,UAAU,CAAC,OAAO,SAAS,CAAC,CAAC,CAAC,CAAC,KAAG,UAAU;AAA9E,wBAWG"}

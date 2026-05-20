@@ -26,22 +26,29 @@ jobs:
         ndk-version: [21.4.7075529]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
           ndk: 'true'
           ndk-version: ${{ matrix.ndk-version }}
-      - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: Init new expo app
         working-directory: ../
-        run: yarn create expo-app ./development-client-android-test --yes
+        run: pnpm create expo-app ./development-client-android-test --yes
       - name: Make Yarn resolve expo-dev-client dependencies locally
         working-directory: ../development-client-android-test
         run: |
@@ -49,24 +56,24 @@ jobs:
             const pkg = require('./package.json'); \
             pkg.resolutions = { \
               ...pkg.resolutions, \
-              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
-              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
-              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
-              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
-              'expo-updates': 'file:../expo/packages/expo-updates', \
-              'expo-manifests': 'file:../expo/packages/expo-manifests', \
-              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+              'expo-dev-menu': 'file:${{ github.workspace }}/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:${{ github.workspace }}/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:${{ github.workspace }}/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:${{ github.workspace }}/packages/expo-updates-interface', \
+              'expo-updates': 'file:${{ github.workspace }}/packages/expo-updates', \
+              'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
+              'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-android-test
-        run: yarn add file:../expo/packages/expo-dev-client
+        run: pnpm add file:${{ github.workspace }}/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-android-test
         run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
       - name: Prebuild Android
         working-directory: ../development-client-android-test
-        run: yarn expo prebuild --platform android
+        run: pnpm expo prebuild --platform android
       - name: Bump `build tools`
         working-directory: ../development-client-android-test
         run: sed -i -e 's/buildToolsVersion\ =\ \"29\..\..\"/buildToolsVersion\ = \"30\.0\.3\"/' ./android/build.gradle
@@ -83,20 +90,26 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: Init new expo app
         working-directory: ../
-        run: yarn create expo-app ./development-client-ios-test --yes
+        run: pnpm create expo-app ./development-client-ios-test --yes
       - name: Make Yarn resolve expo-dev-client dependencies locally
         working-directory: ../development-client-ios-test
         run: |
@@ -104,24 +117,24 @@ jobs:
             const pkg = require('./package.json'); \
             pkg.resolutions = { \
               ...pkg.resolutions, \
-              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
-              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
-              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
-              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
-              'expo-updates': 'file:../expo/packages/expo-updates', \
-              'expo-manifests': 'file:../expo/packages/expo-manifests', \
-              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+              'expo-dev-menu': 'file:${{ github.workspace }}/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:${{ github.workspace }}/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:${{ github.workspace }}/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:${{ github.workspace }}/packages/expo-updates-interface', \
+              'expo-updates': 'file:${{ github.workspace }}/packages/expo-updates', \
+              'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
+              'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-ios-test
-        run: yarn add file:../expo/packages/expo-dev-client
+        run: pnpm add file:${{ github.workspace }}/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-ios-test
         run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
       - name: Prebuild iOS
         working-directory: ../development-client-ios-test
-        run: yarn expo prebuild --platform ios
+        run: pnpm expo prebuild --platform ios
       - name: 🏗️ Build debug version
         working-directory: ../development-client-ios-test
         run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator -arch x86_64

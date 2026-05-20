@@ -7,7 +7,6 @@ import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-import Colors from '../constants/Colors';
 import { optionalRequire } from '../navigation/routeBuilder';
 
 export const CalendarsScreens = [
@@ -101,7 +100,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       await Calendar.createCalendarAsync(newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -114,7 +113,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       await Calendar.updateCalendarAsync(calendarId, newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -132,7 +131,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
             await Calendar.deleteCalendarAsync(calendar.id);
             Alert.alert('Calendar deleted successfully');
             findCalendars();
-          } catch (e) {
+          } catch (e: any) {
             Alert.alert('Calendar not deleted successfully', e.message);
           }
         },
@@ -174,7 +173,6 @@ CalendarsScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.greyBackground,
     paddingHorizontal: 10,
     paddingVertical: 16,
     flex: 1,
