@@ -182,19 +182,45 @@ val expoAggregator = configurations.create("brownfieldFusedExpoAggregator") {
 // This catches BOTH Expo modules (via `expo-module-gradle-plugin`) AND React Native
 // community modules (which only apply `com.android.library`), fixing the previous
 // expo-only filter that silently excluded `react-native-screens` etc.
+// `project` inside a `Project` extension function resolves to the RECEIVER (since
+// `Project.getProject()` returns `this`), not the script's project. Capture the
+// script project's path in an outer `val` so the self-check actually compares the
+// iterated subproject against THIS fused module.
+val thisProjectPath: String = project.path
+
+// `plugins.hasPlugin("com.android.library")` returns false on Expo modules because
+// `expo-module-gradle-plugin` applies AGP via `pluginManager.apply(LibraryPlugin::class.java)`
+// (programmatic class apply), which doesn't register the plugin ID in the ID lookup
+// table. We match by class FQN instead, catching both apply-by-class and apply-by-id.
+fun Project.hasAndroidLibraryPlugin(): Boolean {
+  if (plugins.hasPlugin("com.android.library")) return true
+  if (plugins.toList().any { p ->
+        val n = p.javaClass.name
+        (n.startsWith("com.android.build.gradle.") || n.startsWith("com.android.build.api.")) &&
+          n.endsWith("LibraryPlugin")
+      }) return true
+  val android = extensions.findByName("android") ?: return false
+  return android.javaClass.name.contains("Library", ignoreCase = true)
+}
+
 fun Project.isFusableAndroidLibrary(): Boolean {
-  if (path == project.path) return false
+  if (path == thisProjectPath) return false
   if (name == "${{libraryName}}") return false
   if (name == "${{libraryName}}-fused-release") return false
   if (name == "${{libraryName}}-fused-debug") return false
   if (name in fusedSkipProjects) return false
-  if (!plugins.hasPlugin("com.android.library")) return false
+  if (!hasAndroidLibraryPlugin()) return false
   return true
 }
 
+val fusableSubprojects: List<Project> = rootProject.subprojects.filter { it.isFusableAndroidLibrary() }
+logger.lifecycle(
+  "brownfield.fused[${fusedVariant}]: fusing ${fusableSubprojects.size} subprojects: " +
+    fusableSubprojects.joinToString(", ") { it.name }
+)
+
 dependencies {
-  rootProject.subprojects.forEach { sub ->
-    if (!sub.isFusableAndroidLibrary()) return@forEach
+  fusableSubprojects.forEach { sub ->
     add("brownfieldFusedExpoAggregator", sub)
   }
 }
@@ -258,6 +284,37 @@ dependencies {
 }
 
 publishing {
+  // Mirror the repositories declared on the root project's `expoBrownfieldPublishPlugin`
+  // extension onto THIS fused sibling. The publish plugin's `setupRepositories` runs
+  // via `setupPublishing`, which is gated by `shouldBeSkipped()` — that returns true
+  // for fused modules (no `LibraryExtension`), so the wiring would otherwise stop at
+  // the publication and never create the `publishBrownfield<V>PublicationTo<X>Repository`
+  // tasks. Re-implement the repo loop here against the SAME `ExpoPublishExtension`
+  // config so `--repo <Name>` on the CLI resolves identically for fused and non-fused.
+  repositories {
+    val rootPublishConfig =
+      rootProject.extensions.findByType(expo.modules.plugin.ExpoPublishExtension::class.java)
+    rootPublishConfig?.publications?.forEach { pubConfig ->
+      when (pubConfig.type.get()) {
+        "localMaven" -> mavenLocal()
+        "localDirectory", "remotePublic" -> maven {
+          name = pubConfig.name
+          url = uri(pubConfig.url.get())
+          isAllowInsecureProtocol = pubConfig.allowInsecure.get()
+        }
+        "remotePrivate" -> maven {
+          name = pubConfig.name
+          url = uri(pubConfig.url.get())
+          credentials {
+            username = pubConfig.username.get()
+            password = pubConfig.password.get()
+          }
+          isAllowInsecureProtocol = pubConfig.allowInsecure.get()
+        }
+      }
+    }
+  }
+
   publications {
     register<MavenPublication>("brownfield${fusedVariantCapitalized}") {
       afterEvaluate { from(components["fusedLibraryComponent"]) }
