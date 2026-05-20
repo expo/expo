@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix Hermes version resolution polarity in `precompiled_modules.rb` so external prebuilt artifacts are looked up under the V1 Hermes subfolder by default, matching `hermes-engine.podspec`.
+- Fix Hermes version resolution polarity in `precompiled_modules.rb` so external prebuilt artifacts are looked up under the V1 Hermes subfolder by default, matching `hermes-engine.podspec`. ([#46053](https://github.com/expo/expo/pull/46053) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
