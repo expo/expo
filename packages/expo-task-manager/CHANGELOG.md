@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [android] Apply bundled `proguard-rules.pro` via `consumerProguardFiles` so the `-keep class expo.modules.taskManager.**` rule is added to consumer apps' R8 pass. Mirrors the same fix applied to `expo-notifications` in [#45974](https://github.com/expo/expo/pull/45974); without it, classes used by the task manager (and consumers like `Notifications.registerTaskAsync` — see [#35551](https://github.com/expo/expo/issues/35551)) get obfuscated in release builds, causing `registerTaskAsync` to fail with `ClassNotFoundException` after R8 mapping shifts between app upgrades. ([#46029](https://github.com/expo/expo/pull/46029) by [@jiunshinn](https://github.com/jiunshinn))
+- [android] Apply bundled `proguard-rules.pro` via `consumerProguardFiles` so the `-keep class expo.modules.taskManager.**` rule is added to consumer apps' R8 pass. ([#46029](https://github.com/expo/expo/pull/46029) by [@jiunshinn](https://github.com/jiunshinn))
 
 ### 💡 Others
 
