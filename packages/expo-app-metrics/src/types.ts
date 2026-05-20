@@ -95,7 +95,7 @@ export interface Metric {
   name: string;
   value: number;
   sessionId: string;
-  routeName?: string;
+  routeName?: string | null;
   params?: Record<string, unknown>;
 }
 
@@ -105,7 +105,7 @@ export type MetricAttributes = {
    * with a sensible default when omitted — for example, the TTI metric falls
    * back to the initial route name detected from the router.
    */
-  routeName?: string;
+  routeName?: string | null;
   /**
    * Custom parameters to attach to the metric.
    */
