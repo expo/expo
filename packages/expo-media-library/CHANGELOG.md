@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Change entry-points ([#46030](https://github.com/expo/expo/pull/46030) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🎉 New features
 
 - [android] Add `getFavorite()`/`setFavorite()` ([#45768](https://github.com/expo/expo/pull/45768) by [@Wenszel](https://github.com/Wenszel))

@@ -53,7 +53,7 @@ Using `Platform` module from React Native, we can implement platform-specific be
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, View, StyleSheet, /* @tutinfo */Platform/* @end */ } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

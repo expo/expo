@@ -1,6 +1,6 @@
 import { Directory, File, Paths } from 'expo-file-system';
 import { Image } from 'expo-image';
-import { Asset, Album, requestPermissionsAsync } from 'expo-media-library/next';
+import { Asset, Album, requestPermissionsAsync } from 'expo-media-library';
 import { useEffect, useState } from 'react';
 import {
   View,

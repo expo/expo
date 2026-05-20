@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import React from 'react';
 import {
   FlatList,
