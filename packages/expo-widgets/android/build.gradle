@@ -60,11 +60,7 @@ android {
 dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'com.facebook.react:hermes-android'
-  if (findProject(':expo-ui') != null) {
-    implementation project(':expo-ui')
-  } else {
-    implementation 'expo.modules.ui:expo.modules.ui:+'
-  }
+  implementation expoModule.getExpoDependency("expo-ui")
   implementation 'androidx.compose.foundation:foundation-android:1.10.6'
   implementation 'androidx.compose.ui:ui-android:1.10.6'
   api 'androidx.glance:glance:1.2.0-rc01'
