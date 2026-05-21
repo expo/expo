@@ -1,9 +1,9 @@
 ---
 title: User-defined events
-description: Log named events from your app with AppMetrics.logEvent to track product flows, feature usage, and other custom signals visible in the EAS Observe dashboard.
+description: Log named events from your app to track custom signals visible in the EAS Observe dashboard.
 ---
 
-User-defined events let you record arbitrary, named events from your app. Use them to track product flows (such as signup or checkout completion), feature engagement, or any signal specific to your app that the built-in performance metrics do not cover.
+User-defined events let you record arbitrary, named events from your app. Use them to track any signal specific to your app that the built-in performance metrics do not cover.
 
 Events are persisted on-device, batched, and dispatched on the next flush as OpenTelemetry log records. They appear in the **Events** tab of the EAS Observe dashboard and are queryable from the EAS CLI.
 
@@ -19,7 +19,7 @@ function handleSignupComplete() {
 }
 ```
 
-The first argument is the event name. Use a stable, dot-separated identifier — the dashboard groups events by exact name.
+The first argument is the event name. Use a stable, dot-separated identifier - the dashboard groups events by exact name.
 
 ## Attach attributes
 
@@ -87,7 +87,3 @@ $ eas observe:events --all-events --json
 ```
 
 Run `eas observe:events --help` for the full list of flags (time range, platform, session ID, and more).
-
-## Sampling and retention
-
-Events follow the same dispatch and sampling rules as the rest of EAS Observe. See [Configuration](/eas/observe/configuration) for the `sampleRate` and `dispatchInDebug` options.
