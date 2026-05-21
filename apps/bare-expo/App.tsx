@@ -1,4 +1,5 @@
 import { ThemeProvider } from 'ThemeProvider';
+import BenchmarkHelper from 'benchmark-helper';
 import { ObserveRoot } from 'expo-observe';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
@@ -92,6 +93,12 @@ export default function Main() {
   }, []);
 
   const isLoaded = useLoaded();
+
+  React.useEffect(() => {
+    if (isLoaded) {
+      BenchmarkHelper.reportFullyDrawn();
+    }
+  }, [isLoaded]);
 
   return (
     <ObserveRoot>
