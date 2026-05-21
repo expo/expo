@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [ios] add wraning in bottom toolbar for when image is passed to icon ([#46094](https://github.com/expo/expo/pull/46094) by [@Ubax](https://github.com/Ubax))
+
 ## 56.2.5 — 2026-05-21
 
 ### 🐛 Bug fixes
