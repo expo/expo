@@ -17,7 +17,7 @@ import {
   collectSharedSPMDependencies,
   CACHE_DEPS,
   expandWithUnbuiltDependencies,
-  rebindExternalPackagesToBundledVersionsAsync,
+  rebindExternalPackagesToBundledVersions,
 } from './RunSteps';
 import type { SPMPackageSource } from '../ExternalPackage';
 import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
@@ -175,30 +175,25 @@ describe('resolveFlavorTemplatedPath', () => {
 });
 
 // ---------------------------------------------------------------------------
-// rebindExternalPackagesToBundledVersionsAsync
+// rebindExternalPackagesToBundledVersions
 // ---------------------------------------------------------------------------
 
-describe('rebindExternalPackagesToBundledVersionsAsync', () => {
-  it('rewrites path and packageVersion for packages listed in bundledNativeModules', async () => {
+describe('rebindExternalPackagesToBundledVersions', () => {
+  it('rewrites path and packageVersion for packages listed in bundledNativeModules', () => {
     const pkg = makePkg('rn-safe-area', [], { path: '/before', packageVersion: '5.6.2' });
-    await rebindExternalPackagesToBundledVersionsAsync(
-      [pkg],
-      { 'rn-safe-area': '~5.7.0' },
-      async () => ({ path: '/after', version: '5.7.0' })
-    );
+    rebindExternalPackagesToBundledVersions([pkg], { 'rn-safe-area': '~5.7.0' }, () => ({
+      path: '/after',
+      version: '5.7.0',
+    }));
     assert.equal(pkg.packageVersion, '5.7.0');
     assert.equal(pkg.path, '/after');
   });
 
-  it('throws with an actionable error when no installed version satisfies the bundled range', async () => {
+  it('throws with an actionable error when no installed version satisfies the bundled range', () => {
     const pkg = makePkg('rn-safe-area', [], { path: '/before', packageVersion: '5.6.2' });
-    await assert.rejects(
+    assert.throws(
       () =>
-        rebindExternalPackagesToBundledVersionsAsync(
-          [pkg],
-          { 'rn-safe-area': '~5.7.0' },
-          async () => null
-        ),
+        rebindExternalPackagesToBundledVersions([pkg], { 'rn-safe-area': '~5.7.0' }, () => null),
       (err: Error) =>
         err.message.includes('rn-safe-area') &&
         err.message.includes('~5.7.0') &&
@@ -207,17 +202,13 @@ describe('rebindExternalPackagesToBundledVersionsAsync', () => {
     );
   });
 
-  it('leaves packages absent from the bundled map untouched', async () => {
+  it('leaves packages absent from the bundled map untouched', () => {
     const pkg = makePkg('private-pkg', [], { path: '/before', packageVersion: '0.0.1' });
     let resolverCalled = false;
-    await rebindExternalPackagesToBundledVersionsAsync(
-      [pkg],
-      { 'something-else': '1.0.0' },
-      async () => {
-        resolverCalled = true;
-        return null;
-      }
-    );
+    rebindExternalPackagesToBundledVersions([pkg], { 'something-else': '1.0.0' }, () => {
+      resolverCalled = true;
+      return null;
+    });
     assert.equal(resolverCalled, false);
     assert.equal(pkg.packageVersion, '0.0.1');
     assert.equal(pkg.path, '/before');

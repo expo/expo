@@ -46,7 +46,7 @@ import type { Step } from './Types';
 export const CACHE_DEPS = new Set(['ReactNativeDependencies', 'React', 'Hermes']);
 
 // ---------------------------------------------------------------------------
-// Helper: rebindExternalPackagesToBundledVersionsAsync
+// Helper: rebindExternalPackagesToBundledVersions
 // ---------------------------------------------------------------------------
 
 /**
@@ -56,15 +56,15 @@ export const CACHE_DEPS = new Set(['ReactNativeDependencies', 'React', 'Hermes']
  * Packages absent from the bundled map are left untouched. Throws when a
  * bundled-listed package has no satisfying install anywhere in the workspace.
  */
-export async function rebindExternalPackagesToBundledVersionsAsync(
+export function rebindExternalPackagesToBundledVersions(
   externalPackages: SPMPackageSource[],
   bundledNativeModules: Record<string, string>,
-  resolve: (name: string, range: string) => Promise<{ path: string; version: string } | null>
-): Promise<void> {
+  resolve: (name: string, range: string) => { path: string; version: string } | null
+): void {
   for (const pkg of externalPackages) {
     const range = bundledNativeModules[pkg.packageName];
     if (!range) continue;
-    const resolved = await resolve(pkg.packageName, range);
+    const resolved = resolve(pkg.packageName, range);
     if (!resolved) {
       throw new Error(
         `No installed version of "${pkg.packageName}" in the monorepo satisfies ${range} ` +
@@ -529,7 +529,7 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     // workspace whose version satisfies bundledNativeModules.json. This decouples
     // the precompile from apps/bare-expo's pin, which drifts. Packages absent
     // from the bundled map keep their bare-expo-resolved path.
-    await rebindExternalPackagesToBundledVersionsAsync(
+    rebindExternalPackagesToBundledVersions(
       externalPackages,
       await getBundledVersionsAsync(),
       resolveInstalledPackage
