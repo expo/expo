@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Update `@shopify/react-native-skia` precompile config for the 2.6.x source layout
+- [iOS] Update `@shopify/react-native-skia` precompile config for the 2.6.x source layout ([#46081](https://github.com/expo/expo/pull/46081) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
