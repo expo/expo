@@ -116,20 +116,20 @@ internal class MediaFileHandle {
 
     try writeHandle.seek(toOffset: UInt64(offset))
 
-    writeHandle.write(data)
-    writeHandle.synchronizeFile()
+    try writeHandle.write(contentsOf: data)
+    try writeHandle.synchronize()
   }
 
-  func append(data: Data) {
+  func append(data: Data) throws {
     lock.lock()
     defer { lock.unlock() }
     guard let writeHandle = writeHandle else {
-      return
+      throw VideoCacheException("Failed to append data to cache file handle: Write handle not available for file at: \(filePath)")
     }
 
-    writeHandle.seekToEndOfFile()
-    writeHandle.write(data)
-    writeHandle.synchronizeFile()
+    try writeHandle.seekToEnd()
+    try writeHandle.write(contentsOf: data)
+    try writeHandle.synchronize()
   }
 
   func close() {

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix crash when loading a cached video when the device is out of disk space. ([#46062](https://github.com/expo/expo/pull/46062) by [@dmilin1](https://github.com/dmilin1))
+
 ### 💡 Others
 
 ## 56.1.1 — 2026-05-15
