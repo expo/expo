@@ -39,7 +39,7 @@
     <img alt="GitHub stars" src="https://img.shields.io/github/stars/expo/expo.svg?style=for-the-badge&logo=github&label=stars&labelColor=000000&color=FFD700" />
   </a>
   <a aria-label="GitHub contributors" href="https://github.com/expo/expo/graphs/contributors" target="_blank">
-    <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/expo/expo.svg?style=for-the-badge&logo=github&label=contributors&labelColor=000000&color=4630EB" />
+    <img alt="GitHub contributors" src="https://img.shields.io/github/contributors-anon/expo/expo.svg?style=for-the-badge&logo=github&label=contributors&labelColor=000000&color=4630EB" />
   </a>
 </p>
 
