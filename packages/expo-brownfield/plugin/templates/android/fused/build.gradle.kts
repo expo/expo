@@ -1,16 +1,9 @@
-// Single fat AAR that merges every autolinked Android module (Expo + RN community)
-// plus the brownfield library's own classes/resources/jni into one publishable
-// artifact via AGP's `com.android.fused-library` plugin (Preview in AGP 8.13+).
+// Fuses every autolinked Android module + the brownfield library into a single
+// publishable AAR via AGP's `com.android.fused-library` (Preview, AGP 8.13+).
 //
-// Two sibling subprojects are emitted by the brownfield config plugin:
-//   `:<libraryName>-fused-release` and `:<libraryName>-fused-debug`.
-// They share THIS template — `{{fusedVariant}}` is substituted at prebuild time to
-// `"release"` or `"debug"` and the script branches on `isReleaseVariant` for the
-// few places the two siblings actually differ.
-//
-// `android.experimental.fusedLibrarySupport.publicationOnly=false` in gradle.properties
-// lets `include(project(...))` resolve sibling Gradle subprojects directly without
-// first publishing them to mavenLocal.
+// One sibling subproject per variant — `:<libraryName>-fused-release` and
+// `-fused-debug` — both rendered from this template; `{{fusedVariant}}` is the
+// only delta.
 
 plugins {
   id("com.android.fused-library")
@@ -21,7 +14,6 @@ group = "${{groupId}}"
 
 version = "${{version}}"
 
-// Substituted by the config plugin: "release" or "debug".
 val fusedVariant = "${{fusedVariant}}"
 val isReleaseVariant = fusedVariant == "release"
 val fusedVariantCapitalized = fusedVariant.replaceFirstChar { it.uppercase() }
@@ -32,20 +24,10 @@ androidFusedLibrary {
   aarMetadata { minCompileSdk = 36 }
 }
 
-// Modules that must NOT land in the release fat AAR. Dev tooling
-// (`expo-dev-menu` / `-launcher` / `-client` / `-menu-interface`) is wired as
-// `debugImplementation` on the brownfield library by `templates/patches/build.gradle.patch`
-// — leaking it into release shipped to consumers contradicts that policy. The debug
-// sibling intentionally includes them so devs get dev-menu, etc.
-//
-// `setupFusedModeStripping` in the brownfield-setup Gradle plugin strips the matching
-// references from the autolinking-generated `ExpoModulesPackageList.kt` when the
-// release sibling builds — otherwise the host crashes at startup with
-// `NoClassDefFoundError` on the dangling Package class references.
-//
-// Extend at invocation via `-Pbrownfield.fused.skip=foo,bar` if a specific module
-// trips a build (e.g. a new Expo module introduces an external library that needs a
-// manual coord override).
+// Dev tooling is `debugImplementation`-only on the brownfield library, so the
+// release fat AAR must skip it. `setupFusedModeStripping` strips matching entries
+// from the generated `ExpoModulesPackageList.kt` to avoid `NoClassDefFoundError`
+// at host startup. Extend ad-hoc via `-Pbrownfield.fused.skip=foo,bar`.
 val devOnlySkipProjects: Set<String> = if (isReleaseVariant) {
   setOf("expo-dev-client", "expo-dev-launcher", "expo-dev-menu", "expo-dev-menu-interface")
 } else {
@@ -59,25 +41,19 @@ val extraSkip: Set<String> = (project.findProperty("brownfield.fused.skip") as? 
   ?: emptySet()
 val fusedSkipProjects = devOnlySkipProjects + extraSkip
 
-// Force every sibling Android module to evaluate its build script before we resolve
-// `include()` targets and walk their `releaseRuntimeClasspath`/`debugRuntimeClasspath`.
-// Without this, the `hasPlugin(...)` check and the classpath resolution both see
-// incomplete state.
+// Force sibling evaluation before resolving include() targets and walking their
+// runtime classpaths — without this, plugin detection and classpath resolution
+// see incomplete state. Skip self and the OTHER fused sibling to avoid a cycle.
 rootProject.subprojects.forEach {
-  // Skip self AND the sibling fused module — both fused siblings declare
-  // `evaluationDependsOn(rootProject.subprojects)`, so depending on each other
-  // creates a cycle. The siblings are independent (one per build type), so
-  // neither needs the other's evaluation.
   if (it.path == project.path) return@forEach
   if (it.name == "${{libraryName}}-fused-release") return@forEach
   if (it.name == "${{libraryName}}-fused-debug") return@forEach
   evaluationDependsOn(it.path)
 }
 
-// Group prefixes for non-AndroidX coords that MUST stay external in the published POM.
-// The consumer's host app provides these foundational libraries; bundling them inside
-// the fused AAR triggers duplicate-class errors at dex merge time. Extend at
-// invocation via `-Pbrownfield.fused.exclude-transitive=foo,bar`.
+// Foundational libraries the host app already provides — bundling them in the
+// fused AAR causes duplicate-class errors at dex merge. Stay external in the POM.
+// Extend via `-Pbrownfield.fused.exclude-transitive=foo,bar`.
 val transitiveIncludeDenylistNonAndroidX = setOf(
   "org.jetbrains.kotlin",
   "org.jetbrains.kotlinx",
@@ -92,12 +68,9 @@ val transitiveIncludeDenylistNonAndroidX = setOf(
   "com.squareup.okhttp3",
   "com.squareup.okio",
 )
-// AndroidX subgroups we DO want fused — these provide the heavy library code Android
-// modules wrap (ExoPlayer for expo-video, CameraX for expo-camera). All other
-// `androidx.*` groups stay external because the consumer's host app already provides
-// them, and Fused Library's validation refuses partially-included transitive-dep
-// chains (one allowed transitive's parent must also be in the fat AAR — easy to
-// trip when AndroidX modules cross-depend).
+// AndroidX subgroups we DO want fused (ExoPlayer for expo-video, CameraX for
+// expo-camera). All other `androidx.*` stays external — Fused Library rejects
+// partial transitive chains, easy to trip with cross-depending AndroidX modules.
 val androidxFuseAllowlist = setOf(
   "androidx.camera",
   "androidx.media3",
@@ -110,23 +83,20 @@ val extraDenylist: Set<String> =
     ?.toSet()
     ?: emptySet()
 val effectiveDenylist = transitiveIncludeDenylistNonAndroidX + extraDenylist
-// Helper that decides if a group should stay external (in POM, not in the fat AAR).
+// True → coord stays external in the POM. AndroidX uses an allowlist, everything
+// else uses the denylist above.
 fun isGroupDenied(group: String): Boolean {
   if (effectiveDenylist.any { group == it || group.startsWith("$it.") }) return true
-  // AndroidX: deny everything EXCEPT the explicit allowlist.
   if (group == "androidx" || group.startsWith("androidx.")) {
     return androidxFuseAllowlist.none { group == it || group.startsWith("$it.") }
   }
   return false
 }
 
-// AGP Fused Library rejects ANY `androidx.databinding:*` dep — including
-// `viewbinding`, which is pulled transitively by `react { autolinkLibrariesWithApp() }`
-// on the brownfield library and by some autolinked modules. We don't use binding
-// in the fused AAR, so strip it from every configuration before validation runs.
-// This MUST be registered BEFORE the aggregator below is resolved — `configureEach`
-// fires for every configuration including future ones, and adding excludes after
-// resolution throws "Cannot mutate after resolved".
+// AGP Fused Library rejects any `androidx.databinding:*` dep (including
+// `viewbinding`, pulled transitively by `react { autolinkLibrariesWithApp() }`).
+// Strip them from every configuration. MUST be registered BEFORE the aggregator
+// resolves, otherwise `configureEach` throws "Cannot mutate after resolved".
 configurations.configureEach {
   exclude(group = "androidx.databinding", module = "viewbinding")
   exclude(group = "androidx.databinding", module = "databinding-common")
@@ -137,11 +107,9 @@ configurations.configureEach {
   fusedSkipProjects.forEach { skipName -> exclude(module = skipName) }
 }
 
-// Create an aggregator configuration on THIS project that depends on every autolinked
-// Android module. Resolving another project's configuration directly fails under
-// Gradle 8+ parallel execution with "attempted without an exclusive lock"; resolving
-// our own configuration is always safe. `BuildTypeAttr=${{fusedVariant}}` picks the
-// matching variant of every Expo / RN community module.
+// Aggregator configuration: depends on every autolinked module, resolved locally
+// to avoid Gradle 8+'s "attempted without an exclusive lock" on cross-project
+// resolution. `BuildTypeAttr` picks the matching variant per module.
 val expoAggregator = configurations.create("brownfieldFusedExpoAggregator") {
   isCanBeResolved = true
   isCanBeConsumed = false
@@ -163,35 +131,20 @@ val expoAggregator = configurations.create("brownfieldFusedExpoAggregator") {
       project.objects.named(com.android.build.api.attributes.BuildTypeAttr::class.java, fusedVariant)
     )
   }
-  // Two autolinked modules pin different `-android`-suffixed Guava versions which
-  // Gradle's version comparator can't reconcile (the suffix throws off SemVer
-  // ordering). The conflict cascades and lenient resolution returns ZERO artifacts.
-  // Neither `force(...)` nor `eachDependency` resolves it cleanly. Excluding Guava
-  // from the aggregator entirely is the pragmatic fix — Guava is foundational and
-  // stays external in the POM via the denylist above, so the consumer's host app
-  // provides it.
+  // Conflicting `-android`-suffixed Guava versions confuse Gradle's SemVer
+  // comparator and cascade into lenient resolution returning zero artifacts.
+  // Guava is denylisted anyway (host provides it), so just drop it here.
   exclude(group = "com.google.guava", module = "guava")
 }
 
-// Heuristic for "this is an autolinked Android module we should fuse in":
-// * applies `com.android.library`
-// * isn't this fused sibling, isn't the brownfield library itself
-// * isn't the host `:app` (com.android.application)
-// * isn't the OTHER fused sibling (avoid the debug sibling trying to include the
-//   release one or vice versa)
-// This catches BOTH Expo modules (via `expo-module-gradle-plugin`) AND React Native
-// community modules (which only apply `com.android.library`), fixing the previous
-// expo-only filter that silently excluded `react-native-screens` etc.
-// `project` inside a `Project` extension function resolves to the RECEIVER (since
-// `Project.getProject()` returns `this`), not the script's project. Capture the
-// script project's path in an outer `val` so the self-check actually compares the
-// iterated subproject against THIS fused module.
+// `project.path` inside a `Project` extension function resolves to the RECEIVER
+// (Project.getProject() returns `this`), not the script's project. Capture it in
+// an outer `val` so the self-check compares against THIS fused module.
 val thisProjectPath: String = project.path
 
 // `plugins.hasPlugin("com.android.library")` returns false on Expo modules because
-// `expo-module-gradle-plugin` applies AGP via `pluginManager.apply(LibraryPlugin::class.java)`
-// (programmatic class apply), which doesn't register the plugin ID in the ID lookup
-// table. We match by class FQN instead, catching both apply-by-class and apply-by-id.
+// `expo-module-gradle-plugin` applies AGP via `pluginManager.apply(LibraryPlugin::class.java)`,
+// which doesn't register the plugin ID. Match by class FQN to catch both apply paths.
 fun Project.hasAndroidLibraryPlugin(): Boolean {
   if (plugins.hasPlugin("com.android.library")) return true
   if (plugins.toList().any { p ->
@@ -225,15 +178,10 @@ dependencies {
   }
 }
 
-// Walk the aggregator's resolved artifacts to collect external AAR coordinates the
-// fused AAR should `include()`. Auto-discovers ExoPlayer for expo-video, CameraX
-// for expo-camera, Glide for expo-image, etc. without hardcoding per-module coord
-// lists. Foundational coords from the denylist stay out; sibling Android projects are
-// already include()'d as projects below.
-//
-// Uses the modern `incoming.artifactView { lenient(true) }` API rather than
-// `resolvedConfiguration.lenientConfiguration` — the latter throws on any failure
-// before you can access the lenient surface, masking the underlying error.
+// Walk the aggregator's resolved artifacts to collect external AAR coords for
+// `include()`. Auto-discovers ExoPlayer, CameraX, Glide, etc. Lenient via the
+// modern `artifactView` API — the legacy `lenientConfiguration` throws before
+// you can read the lenient surface, masking the real failure.
 val transitiveAarIncludes: Set<String> = run {
   val collected = mutableSetOf<String>()
   val artifactView = expoAggregator.incoming.artifactView {
@@ -252,11 +200,9 @@ val transitiveAarIncludes: Set<String> = run {
     val group = id.group
     if (isGroupDenied(group)) return@forEach
     if (rootProject.findProject(":${id.module}") != null) return@forEach
-    // Drop per-build-type Maven coords (e.g. `com.composables:core-android-debug`).
-    // These have variant baked into the artifactId and have no cross-variant
-    // counterpart, so AGP fused-library's internal release-hardcoded `fusedRuntime`
-    // configuration trips trying to resolve "release" of a "-debug" coord. Leave
-    // them external in the POM; the consumer's build resolves the matching variant.
+    // Drop per-build-type coords (e.g. `com.composables:core-android-debug`):
+    // AGP fused-library's internal release-hardcoded resolution trips on
+    // cross-variant lookups. Leave them external; the host resolves them.
     if (id.module.endsWith("-debug") || id.module.endsWith("-release")) return@forEach
     collected += "${group}:${id.module}:${id.version}"
   }
@@ -267,7 +213,7 @@ val transitiveAarIncludes: Set<String> = run {
 }
 
 dependencies {
-  // The brownfield library carries the user's BrownfieldActivity / Fragment / Host code.
+  // User's BrownfieldActivity / Fragment / Host code.
   include(project(":${{libraryName}}"))
 
   // Every autolinked Android module (Expo + RN community).
@@ -276,21 +222,15 @@ dependencies {
     include(project(sub.path))
   }
 
-  // External Maven AARs reachable from each fused module's runtime classpath
-  // (ExoPlayer for expo-video, CameraX for expo-camera, Glide for expo-image, etc.).
-  // Bringing them in as `include()` targets merges their R.txt + resources into the
-  // fused AAR so `rewriteClasses` can resolve the FQNs modules reference.
+  // External heavy libs (ExoPlayer, CameraX, Glide, ...). Including them merges
+  // R.txt + resources so `rewriteClasses` can resolve the FQNs modules reference.
   transitiveAarIncludes.forEach { coord -> include(coord) }
 }
 
 publishing {
-  // Mirror the repositories declared on the root project's `expoBrownfieldPublishPlugin`
-  // extension onto THIS fused sibling. The publish plugin's `setupRepositories` runs
-  // via `setupPublishing`, which is gated by `shouldBeSkipped()` — that returns true
-  // for fused modules (no `LibraryExtension`), so the wiring would otherwise stop at
-  // the publication and never create the `publishBrownfield<V>PublicationTo<X>Repository`
-  // tasks. Re-implement the repo loop here against the SAME `ExpoPublishExtension`
-  // config so `--repo <Name>` on the CLI resolves identically for fused and non-fused.
+  // Mirror the root project's `expoBrownfieldPublishPlugin` repositories. The
+  // publish plugin skips fused modules (no `LibraryExtension`), so without this
+  // loop no `publishBrownfield<V>PublicationTo<X>Repository` tasks are created.
   repositories {
     val rootPublishConfig =
       rootProject.extensions.findByType(expo.modules.plugin.ExpoPublishExtension::class.java)
@@ -318,13 +258,10 @@ publishing {
   publications {
     register<MavenPublication>("brownfield${fusedVariantCapitalized}") {
       afterEvaluate { from(components["fusedLibraryComponent"]) }
-      // The Fused Library plugin externalizes every transitive dep it saw (RN, AndroidX,
-      // Kotlin, and — relevant here — every skip-list module reachable via
-      // `:${{libraryName}}`'s `react { autolinkLibrariesWithApp() }`). It uses Gradle
-      // project names (`expo-camera`) as artifactIds rather than the real published coords
-      // (`expo.modules.camera`), so consumers can't resolve them. Configuration-level
-      // excludes don't reach the component's POM emission. Strip the broken nodes
-      // here after Gradle generates the POM.
+      // Fused Library emits skip-list modules into the POM using Gradle project
+      // names (`expo-camera`) instead of the real coords (`expo.modules.camera`),
+      // breaking consumer resolution. Configuration-level excludes don't reach
+      // the POM, so strip them post-generation.
       pom.withXml {
         val deps = (asNode().get("dependencies") as? groovy.util.NodeList)?.firstOrNull() as? groovy.util.Node
           ?: return@withXml

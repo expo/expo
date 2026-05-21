@@ -33,7 +33,7 @@ describe('plugin templates', () => {
 
     expectFile({
       projectRoot: TEMP_DIR,
-      fileName: 'build.gradle.kts',
+      filePath: 'android/brownfield/build.gradle.kts',
       content: [`group = "${GROUP}"`, `version = "${VERSION}"`, `namespace = "${PACKAGE}"`],
     });
     expectFiles({

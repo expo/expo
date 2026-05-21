@@ -11,10 +11,9 @@ const withGradlePropertiesPlugin = (config) => {
                 config.modResults = [...config.modResults, ...devMenuReleaseConfiguration];
             }
         }
-        // AGP's Fused Library plugin is in Preview and refuses to apply without an explicit
-        // opt-in. The second flag lets `include(project(...))` resolve sibling Gradle
-        // subprojects directly instead of forcing a per-module mavenLocal round-trip.
-        // Emit both unconditionally — they're no-ops in default (non-fused) mode.
+        // Opt into AGP's Fused Library Preview. The `.publicationOnly=false` flag lets
+        // `include(project(...))` resolve sibling subprojects directly (no mavenLocal
+        // round-trip). No-op in non-fused mode.
         const hasFusedOptIn = config.modResults.some((item) => item.type === 'property' && item.key === 'android.experimental.fusedLibrarySupport');
         const hasFusedPubFlag = config.modResults.some((item) => item.type === 'property' &&
             item.key === 'android.experimental.fusedLibrarySupport.publicationOnly');

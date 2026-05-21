@@ -15,12 +15,6 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     const brownfieldMainPath = path.join(brownfieldPath, 'src/main/');
     const brownfieldSourcesPath = path.join(brownfieldMainPath, pluginConfig.packagePath);
 
-    // The fused siblings sit next to the brownfield library so AGP's
-    // `com.android.fused-library` plugin can `include(project(":<expoModule>"))` from
-    // the same Gradle build. Two siblings — one per variant — because AGP fused-library
-    // is single-variant per module by design. Each carries no sources, only an
-    // `include()` list. Only assembled when the user opts in via
-    // `expo-brownfield build:android --fused` (+ `--debug`/`--release`/`--all`).
     const fusedReleasePath = path.join(
       pluginConfig.projectRoot,
       `android/${pluginConfig.libraryName}-fused-release`

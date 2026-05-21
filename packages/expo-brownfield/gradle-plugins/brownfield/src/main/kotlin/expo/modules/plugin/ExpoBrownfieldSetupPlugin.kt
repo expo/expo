@@ -25,21 +25,10 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   }
 
   /**
-   * In `--fused` mode, strips entries from the autolinking-generated
-   * `ExpoModulesPackageList.kt` for modules excluded from the fat AAR, so the host
-   * app doesn't hit `NoClassDefFoundError` at load time.
-   *
-   * Variant-aware: on the RELEASE sibling build (CLI passes
-   * `-Pbrownfield.fused.variant=release`), dev-only Expo modules
-   * (`expo-dev-menu` / `-launcher` / `-client`) are excluded from the fat AAR by
-   * the fused template's `devOnlySkipProjects` set, so this strips their
-   * `ExpoModulesPackageList` references too. On the DEBUG sibling build, dev
-   * modules ARE included, so no stripping is needed.
-   *
-   * Extra prefixes can be passed via `-Pbrownfield.fused.strip-packages=foo.,bar.`
-   * to handle ad-hoc skip-list additions.
-   *
-   * Inert in non-fused builds.
+   * In `--fused` release builds, strips dev-only entries from the autolinking-generated
+   * `ExpoModulesPackageList.kt` so the host app doesn't hit `NoClassDefFoundError`
+   * for modules excluded from the fat AAR. Extra prefixes via
+   * `-Pbrownfield.fused.strip-packages=foo.,bar.`. Inert otherwise.
    */
   private fun setupFusedModeStripping(brownfieldProject: Project) {
     if (brownfieldProject.findProperty("brownfield.fused") != "true") return
