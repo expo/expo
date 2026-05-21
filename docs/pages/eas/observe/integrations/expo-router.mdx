@@ -20,7 +20,7 @@ Expo Observe ships an opt-in integration for [Expo Router](/router/introduction/
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
-  <Requirement title="`expo-router` installed in the app">
+  <Requirement title="Expo Router installed in the app">
     The integration depends on `expo-router` at runtime. If the package is not installed, the
     integration becomes a silent no-op.
   </Requirement>
@@ -30,9 +30,11 @@ Expo Observe ships an opt-in integration for [Expo Router](/router/introduction/
 
 ## Enable the integration
 
+> **warning** The integration must be enabled before mount and cannot be toggled at runtime. Calling `configure()` after the app has mounted, or toggling the flag mid-session, throws an error.
+
 Call `ExpoObserve.configure()` with the `expo-router` integration flag at module scope, before any screen mounts:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import ExpoObserve from 'expo-observe';
 
 ExpoObserve.configure({
@@ -40,40 +42,15 @@ ExpoObserve.configure({
 });
 ```
 
-> **warning** The integration must be enabled before mount and cannot be toggled at runtime. Calling `configure()` after the app has mounted, or toggling the flag mid-session, throws an error.
-
 </Step>
 
 <Step label="2">
-
-## Wrap your root with `ObserveRoot`
-
-`ObserveRoot` includes `AppMetricsRoot` plus the integration context that holds navigation timing state. Replace `AppMetricsRoot.wrap(...)` with `ObserveRoot.wrap(...)`:
-
-```tsx app/_layout.tsx
-import ExpoObserve, { ObserveRoot } from 'expo-observe';
-import { Stack } from 'expo-router';
-
-ExpoObserve.configure({
-  integrations: { 'expo-router': true },
-});
-
-function RootLayout() {
-  return <Stack />;
-}
-
-export default ObserveRoot.wrap(RootLayout);
-```
-
-</Step>
-
-<Step label="3">
 
 ## Call `useObserve()` in your screens
 
 Use the `useObserve()` hook to get a `markInteractive` that is automatically scoped to the current route. The emitted event is tagged with the screen's route pattern.
 
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import { useObserve } from 'expo-observe';
 import { useEffect } from 'react';
 
@@ -107,7 +84,7 @@ Emitted at most once per screen instance within a session.
 | `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                 |
 | `url`         | `string`  | Resolved pathname for the navigation.                                      |
 | `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).               |
-| `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for later navigations. |
+| `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
 
 ### Per-route warm render (`warm_ttr`)
 
@@ -121,7 +98,7 @@ Emitted at most once per screen instance within a session.
 | `url`         | `string` | Resolved pathname for the navigation.                        |
 | `routeParams` | `object` | Resolved route params (for example, `{ sessionId: 'abc' }`). |
 
-### Per-screen time to interactive (`tti`)
+### Per-route time to interactive (`tti`)
 
 **What it measures:** Time from when a navigation action is dispatched to when `markInteractive()` is called on the destination screen. Only the first call per navigation is recorded, so it is safe to call `markInteractive()` multiple times.
 
