@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- add missing exports to js-tabs and js-top-tabs ([#46117](https://github.com/expo/expo/pull/46117) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 56.2.5 — 2026-05-21
