@@ -8,6 +8,7 @@ platforms: ['android', 'ios']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 A `PagerView` component with an API compatible with `react-native-pager-view`. It wraps the platform-specific `@expo/ui` primitives: Jetpack Compose `HorizontalPager` on Android and a paged SwiftUI `ScrollView` on iOS. Each child becomes a separate page and stretches to fill the pager.
 
@@ -24,7 +25,7 @@ Optionally, install [`react-native-worklets`](https://docs.swmansion.com/react-n
 
 ## Migrating from `react-native-pager-view`
 
-Update your import:
+Update the import statement by importing `PagerView` from `@expo/ui/community/pager-view`:
 
 ```tsx
 import PagerView from 'react-native-pager-view';
@@ -32,7 +33,7 @@ import PagerView from 'react-native-pager-view';
 import PagerView from '@expo/ui/community/pager-view';
 ```
 
-Before you swap, know what changes:
+Before you swap, you should know what changes:
 
 - `orientation="vertical"`, `keyboardDismissMode`, `overdrag`, and `overScrollMode` are not supported.
 - The `usePagerView` hook is not provided — use a `ref` instead.
@@ -82,23 +83,23 @@ const styles = StyleSheet.create({
 
 ## Platform behavior
 
-Web is not supported &mdash; rendering `PagerView` on web throws at runtime.
+Web is not supported and rendering `PagerView` on web throws at runtime.
 
 | Feature                                     | Android                | iOS                                                                                                       |
 | ------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------- |
-| Minimum platform version                    | Any supported version  | iOS 17+ for paging; on iOS 16 the view scrolls horizontally but pages don't snap                          |
-| `onPageScroll` / `onPageScrollStateChanged` | Supported              | iOS 18+ only; on iOS 17 they never fire and the component logs a development warning on mount             |
-| Animated `setPage`                          | Native pager animation | Routes through `react-native-worklets`; falls back to a non-animated jump if the package is not installed |
-| `layoutDirection`                           | Supported              | Not supported                                                                                             |
-| `offscreenPageLimit`                        | Supported              | Not supported                                                                                             |
-| `pageMargin`                                | Supported              | Not supported                                                                                             |
+| Minimum platform version                    | Any supported version  | iOS 17+ for paging. On iOS 16, the view scrolls horizontally but pages don't snap                         |
+| `onPageScroll` / `onPageScrollStateChanged` | <YesIcon />            | iOS 18+ only. On iOS 17, they never fire and the component logs a development warning on mount            |
+| Animated `setPage`                          | Native pager animation | Routes through `react-native-worklets`. Falls back to a non-animated jump if the package is not installed |
+| `layoutDirection`                           | <YesIcon />            | <NoIcon />                                                                                                |
+| `offscreenPageLimit`                        | <YesIcon />            | <NoIcon />                                                                                                |
+| `pageMargin`                                | <YesIcon />            | <NoIcon />                                                                                                |
 
 Additional differences from upstream `react-native-pager-view`:
 
 - `orientation="vertical"`, `keyboardDismissMode`, `overdrag`, and `overScrollMode` are not supported. Only horizontal paging is available, and the others fall back to the platform pager's defaults.
 - The `usePagerView` hook is not provided. Use a `ref` to `PagerView` to access `setPage`, `setPageWithoutAnimation`, and `setScrollEnabled`.
 - `setScrollEnabled` triggers a re-render so the new value flows through to the native view as a prop. It is still useful for toggling from non-React contexts such as a ref-based gesture handler.
-- The `borderRadius` style applies on both platforms. On Android, only numeric values clip the pager; the underlying Compose host silently drops string values such as `'50%'`.
+- The `borderRadius` style applies on both platforms. On Android, only numeric values clip the pager. The underlying Compose host silently drops string values such as `'50%'`.
 
 ## API
 
