@@ -296,7 +296,7 @@ index 9743535e7ad..c3158e3fb9b 100644
  prepare_react_native_project!
  
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a1a026a23e1..3e151175775 100644
+index a1a026a23e1..6188f97c149 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
@@ -304,7 +304,7 @@ index a1a026a23e1..3e151175775 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
 -  "version": "54.0.51",
-+  "version": "56.0.13",
++  "version": "56.0.16",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -316,7 +316,7 @@ index a1a026a23e1..3e151175775 100644
 -    "expo-status-bar": "~3.0.9",
 -    "react": "19.1.0",
 -    "react-native": "0.81.5"
-+    "expo": "~56.0.0-preview.13",
++    "expo": "~56.0.2",
 +    "expo-status-bar": "~56.0.4",
 +    "react": "19.2.3",
 +    "react-native": "0.85.3"
