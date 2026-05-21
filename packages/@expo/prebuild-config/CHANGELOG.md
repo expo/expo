@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix Jest 30 compatibility in prebuild test helpers by removing internal `expect/build/matchers` import. ([#44188](https://github.com/expo/expo/pull/44188) by [@mvincentong](https://github.com/mvincentong))
-
 ### 💡 Others
+
+## 56.0.12 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix Jest 30 compatibility in prebuild test helpers by removing internal `expect/build/matchers` import. ([#44188](https://github.com/expo/expo/pull/44188) by [@mvincentong](https://github.com/mvincentong))
 
 ## 56.0.11 — 2026-05-21
 

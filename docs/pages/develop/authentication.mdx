@@ -5,8 +5,8 @@ sidebar_title: Authentication
 hasVideoLink: true
 ---
 
+import { DocsLogo, RouterLogo } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -133,11 +133,11 @@ The following diagram illustrates this flow in more detail:
 
 Expo lets you implement the entire OAuth flow directly in your app using:
 
-<BoxLink title="Expo Router" href="/router/introduction" Icon={BookOpen02Icon} />
+<BoxLink title="Expo Router" href="/router/introduction" Icon={RouterLogo} />
 
-<BoxLink title="Expo Router API Routes" href="/router/web/api-routes" Icon={BookOpen02Icon} />
+<BoxLink title="Expo Router API Routes" href="/router/web/api-routes" Icon={RouterLogo} />
 
-<BoxLink title="Expo AuthSession" href="/versions/latest/sdk/auth-session" Icon={BookOpen02Icon} />
+<BoxLink title="Expo AuthSession" href="/versions/latest/sdk/auth-session" Icon={DocsLogo} />
 
 Some providers offer native APIs to handle the sign-in flow directly within the app. Google offers a native Sign in with Google experience on Android. If you're looking for a native implementation, see the [Google authentication guide](/guides/google-authentication). Apple provides Sign in with Apple, which uses a native bottom sheet and Face ID on iOS. See [`expo-apple-authentication`](/versions/latest/sdk/apple-authentication) reference.
 
