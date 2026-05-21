@@ -10,7 +10,8 @@ android {
   namespace "expo.modules.taskmanager"
   defaultConfig {
     versionCode 23
-    versionName "56.0.12"
+    versionName "56.0.11"
+    consumerProguardFiles 'proguard-rules.pro'
   }
 }
 
