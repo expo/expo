@@ -66,6 +66,12 @@ export function PagerView(props: PagerViewProps) {
     onPageSelected,
     children,
     style,
+    // Drop pager-view-only props that aren't meaningful on iOS so they don't
+    // collide with `Host`'s own prop surface.
+    layoutDirection: _layoutDirection,
+    offscreenPageLimit: _offscreenPageLimit,
+    pageMargin: _pageMargin,
+    ...passthrough
   } = props;
 
   warnIfPreIOS18ScrollCallbacksDropped(onPageScroll, onPageScrollStateChanged);
@@ -207,7 +213,7 @@ export function PagerView(props: PagerViewProps) {
   ];
 
   return (
-    <Host style={style ?? { flex: 1 }}>
+    <Host style={style ?? { flex: 1 }} {...passthrough}>
       <ScrollView axes="horizontal" showsIndicators={false} modifiers={modifiers}>
         <LazyHStack spacing={0} modifiers={[scrollTargetLayout()]}>
           {pages}
