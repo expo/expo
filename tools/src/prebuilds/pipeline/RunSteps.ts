@@ -32,7 +32,7 @@ import {
   verifyAllPackagesAsync,
   verifyLocalTarballPathsIfSetAsync,
 } from '../Utils';
-import { resolvePackageFromPnpmStore } from '../resolvePackage';
+import { resolveInstalledPackage } from '../resolvePackage';
 import type { PrebuildContext } from './Context';
 import type { Step } from './Types';
 
@@ -46,25 +46,25 @@ import type { Step } from './Types';
 export const CACHE_DEPS = new Set(['ReactNativeDependencies', 'React', 'Hermes']);
 
 // ---------------------------------------------------------------------------
-// Helper: rebindExternalPackagesToBundledVersions
+// Helper: rebindExternalPackagesToBundledVersionsAsync
 // ---------------------------------------------------------------------------
 
 /**
- * Rebinds each external package's `path` / `packageVersion` to the pnpm-store
- * install whose version satisfies `packages/expo/bundledNativeModules.json` —
- * the canonical SDK manifest end users resolve against via `expo install`.
+ * Rebinds each external package's `path` / `packageVersion` to the install in
+ * any monorepo workspace whose version satisfies `packages/expo/bundledNativeModules.json`
+ * — the canonical SDK manifest end users resolve against via `expo install`.
  * Packages absent from the bundled map are left untouched. Throws when a
  * bundled-listed package has no satisfying install anywhere in the workspace.
  */
-export function rebindExternalPackagesToBundledVersions(
+export async function rebindExternalPackagesToBundledVersionsAsync(
   externalPackages: SPMPackageSource[],
   bundledNativeModules: Record<string, string>,
-  resolve: (name: string, range: string) => { path: string; version: string } | null
-): void {
+  resolve: (name: string, range: string) => Promise<{ path: string; version: string } | null>
+): Promise<void> {
   for (const pkg of externalPackages) {
     const range = bundledNativeModules[pkg.packageName];
     if (!range) continue;
-    const resolved = resolve(pkg.packageName, range);
+    const resolved = await resolve(pkg.packageName, range);
     if (!resolved) {
       throw new Error(
         `No installed version of "${pkg.packageName}" in the monorepo satisfies ${range} ` +
@@ -525,14 +525,14 @@ export const prepareInputsStep: Step<PrebuildContext> = {
 
     const externalPackages = ctx.packages.filter((p) => isExternalPackage(p));
 
-    // 4b. Rebind each external package's source path to the install in the pnpm
-    // store whose version satisfies bundledNativeModules.json. This decouples the
-    // precompile from apps/bare-expo's pin, which drifts. Packages absent from
-    // the bundled map keep their bare-expo-resolved path.
-    rebindExternalPackagesToBundledVersions(
+    // 4b. Rebind each external package's source path to the install in any
+    // workspace whose version satisfies bundledNativeModules.json. This decouples
+    // the precompile from apps/bare-expo's pin, which drifts. Packages absent
+    // from the bundled map keep their bare-expo-resolved path.
+    await rebindExternalPackagesToBundledVersionsAsync(
       externalPackages,
       await getBundledVersionsAsync(),
-      resolvePackageFromPnpmStore
+      resolveInstalledPackage
     );
 
     // Log external packages with their resolved versions, so the post-rebind
