@@ -130,6 +130,25 @@ export type AudioPlayerOptions = {
      * @platform android
      */
     preferredForwardBufferDuration?: number;
+    /**
+     * Whether to enable constant-bitrate seek estimation for AAC/ADTS and MP3
+     * progressive sources. When `true`, the underlying `AdtsExtractor` and
+     * `Mp3Extractor` on Android are configured with
+     * `FLAG_ENABLE_CONSTANT_BITRATE_SEEKING_ALWAYS`, allowing `seekTo` to land
+     * approximate byte offsets for streams that lack a seek table or index.
+     *
+     * Without this flag, seeks on such streams silently no-op (the player
+     * position doesn't move). Enabling this introduces approximate seeking
+     * for genuinely-VBR content (the position can be off by ~seconds in
+     * pathological cases) but fixes the silently-dropped-seek bug for the
+     * common case of effectively-CBR voice recordings, podcast streams, etc.
+     *
+     * No-op on iOS (AVPlayer handles ADTS seek natively) and web.
+     *
+     * @default false
+     * @platform android
+     */
+    enableConstantBitrateSeeking?: boolean;
 };
 /**
  * Options for configuring audio preloading behavior.
