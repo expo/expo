@@ -44,13 +44,14 @@ expect.extend({
     expected: any
   ) {
     if (config[cacheSymbol]?.infoPlist) {
-      const pass = this.equals(config[cacheSymbol].infoPlist, expected);
+      const received = config[cacheSymbol].infoPlist;
+      const pass = this.equals(received, expected);
       return {
         pass,
         message: () =>
           getMatcherHint(this, 'toMatchInfoPlist') +
           '\n\n' +
-          printMatcherDiff(this, expected, config[cacheSymbol]!.infoPlist),
+          printMatcherDiff(this, expected, received),
       };
     }
 

@@ -23,10 +23,6 @@ import {
 
 jest.mock('fs');
 
-const expoUpdatesPackageJsonFixture = {
-  [require.resolve('expo-updates/package.json')]: JSON.stringify({ version: '0.10.0' }),
-};
-
 export function getPrebuildConfig(exp: ExpoConfig): ExportedConfig {
   // let config = exp;
   let config = withPlugins(exp, exp.plugins ?? []);
@@ -55,13 +51,7 @@ export function unmockProcessPlatform() {
 }
 
 export function applyTemplateFixture(projectRoot: string) {
-  vol.fromJSON(
-    {
-      ...rnFixture,
-      ...expoUpdatesPackageJsonFixture,
-    },
-    projectRoot
-  );
+  vol.fromJSON(rnFixture, projectRoot);
   return projectRoot;
 }
 

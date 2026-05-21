@@ -22,6 +22,7 @@ expect.extend({
         const pass = this.equals(received, expected);
         return {
             pass,
+            // Diffs add value for structured data, but are noise for short strings, so print raw values here.
             message: () => getMatcherHint(this, 'toHavePathname') +
                 '\n\n' +
                 printMatcherValues(this, expected, received),
@@ -32,6 +33,7 @@ expect.extend({
         const pass = this.equals(received, expected);
         return {
             pass,
+            // Diffs add value for structured data, but are noise for short strings, so print raw values here.
             message: () => getMatcherHint(this, 'toHavePathnameWithParams') +
                 '\n\n' +
                 printMatcherValues(this, expected, received),
