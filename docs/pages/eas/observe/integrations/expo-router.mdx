@@ -79,11 +79,11 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type      | Description                                                                |
-| ------------- | --------- | -------------------------------------------------------------------------- |
-| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                 |
-| `url`         | `string`  | Resolved pathname for the navigation.                                      |
-| `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).               |
+| Param         | Type      | Description                                                                    |
+| ------------- | --------- | ------------------------------------------------------------------------------ |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                     |
+| `url`         | `string`  | Resolved pathname for the navigation.                                          |
+| `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).                   |
 | `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
 
 ### Per-route warm render (`warm_ttr`)
