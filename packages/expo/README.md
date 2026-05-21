@@ -129,10 +129,6 @@ EAS is optional, but the fastest path from `git push` to the store.
 - [Changelog](https://expo.dev/changelog) and [blog](https://expo.dev/blog).
 - [Discord & Forums](https://chat.expo.dev) — ask questions and chat with the community.
 
-## About this package
-
-The `expo` package itself is small — it wires together core infrastructure ([`expo-modules-core`](https://github.com/expo/expo/tree/main/packages/expo-modules-core), [`expo-modules-autolinking`](https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking)), the [Expo CLI](https://github.com/expo/expo/blob/main/packages/%40expo/cli/README.md), a minimal essentials bundle (like [`expo-asset`](https://github.com/expo/expo/tree/main/packages/expo-asset)), and the runtime entry point that registers your root component and loads fonts. Most of what you'd think of as "Expo" lives in the other packages linked above.
-
 ## Contributing
 
 Bug reports, fixes, and improvements are very welcome. See [CONTRIBUTING](./CONTRIBUTING.md) for how to set up this package locally, and the repo-wide [contributing guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md) for general guidelines.
