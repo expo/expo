@@ -134,7 +134,7 @@ describe('useObserveForRouter', () => {
         routeName: expectedRouteName,
         name: 'tti',
         value: 0.3,
-        params: { routeParams, url: pathname },
+        params: { isAppLaunch: false, routeParams, url: pathname },
       });
     }
   );
@@ -152,7 +152,7 @@ describe('useObserveForRouter', () => {
       expect.objectContaining({
         name: 'tti',
         value: 0.3,
-        params: { isAppLaunch: true, routeParams: { x: '1' } },
+        params: { isAppLaunch: true, routeParams: { x: '1' }, url: '/test' },
       })
     );
   });
