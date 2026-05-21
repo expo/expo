@@ -10,6 +10,7 @@
 
 - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 - [Android] Fixed `useImage` crashing on SVG sources, and made `maxWidth`/`maxHeight` preserve the SVG's aspect ratio. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Support the accessibilityElementsHidden prop. ([46105](https://github.com/expo/expo/pull/46105) by [@marcshilling](https://github.com/marcshilling))
 
 ### 💡 Others
 
