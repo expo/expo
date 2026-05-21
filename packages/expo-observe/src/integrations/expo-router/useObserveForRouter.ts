@@ -72,28 +72,13 @@ export function useObserveForRouter(): MarkInteractive | null {
         );
       }
 
-      // Snapshot times BEFORE writing the new interactive timestamp so the
-      // duplicate-detection logic below sees the *previous* call, not this one.
-      const currentScreenData = storage.screenTimes[screenId];
-
+      // TTI is recorded once per screen ID for the lifetime of the storage —
+      // re-focusing the same screen (A → B → A) must not produce a second metric
+      if (storage.interactiveScreensIds.has(screenId)) return;
       storage.interactiveScreensIds.add(screenId);
-      if (storage.screenTimes[screenId]) {
-        storage.screenTimes[screenId] = {
-          ...storage.screenTimes[screenId],
-          lastInteractiveCall: now,
-        };
-      }
 
+      const currentScreenData = storage.screenTimes[screenId];
       if (!currentScreenData?.dispatchTime) return;
-
-      const previousInteractiveCall = currentScreenData.lastInteractiveCall;
-      const previousWasAfterDispatch =
-        previousInteractiveCall != null && currentScreenData.dispatchTime < previousInteractiveCall;
-
-      if (previousWasAfterDispatch) {
-        // We only want to record interactive once per navigation
-        return;
-      }
 
       // Stored in seconds to match the OTel `unit = "s"` convention
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
