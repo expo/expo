@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 - [Android] Fixed SVG drawables not rendering as Google Maps marker icons, and memoized marker rasterization across recompositions. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
