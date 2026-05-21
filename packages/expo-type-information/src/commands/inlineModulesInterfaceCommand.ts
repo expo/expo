@@ -5,6 +5,7 @@ import path from 'path';
 import {
   debounce,
   generateConciseTsFiles,
+  maybePrepareOutputDirectory,
   parseCommandArguments,
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
@@ -143,6 +144,7 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
       if (!parsedArgs) {
         return;
       }
+      maybePrepareOutputDirectory(parsedArgs?.realOutputPath);
 
       const { appJsonPath, watcher } = parsedArgs;
       if (!appJsonPath) {
