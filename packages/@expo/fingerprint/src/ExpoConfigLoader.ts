@@ -68,14 +68,14 @@ async function runAsync(programName: string, args: string[] = []) {
   const existingLoadedModules = (
     await Promise.all(
       filteredLoadedModules.map(async (modulePath) => {
+        const relativePath = path.relative(projectRoot, modulePath);
+        if (isIgnoredPath(relativePath, ignoredPaths)) {
+          return null;
+        }
+
         try {
           const stat = await fs.stat(modulePath);
           if (!stat.isFile()) {
-            return null;
-          }
-
-          const relativePath = path.relative(projectRoot, modulePath);
-          if (isIgnoredPath(modulePath, ignoredPaths)) {
             return null;
           }
 
