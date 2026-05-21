@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow string widget family values in the typed config plugin. ([#46133](https://github.com/expo/expo/issues/46133) by [@eliotgevers](https://github.com/eliotgevers))
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-21
