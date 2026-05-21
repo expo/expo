@@ -3,10 +3,11 @@ import type { ExpoConfig } from '@expo/config-types';
 import type * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
+import xcode from 'xcode';
 
 import rnFixture from '../../__tests__/fixtures/react-native-project';
 import { getDirFromFS } from '../../__tests__/getDirFromFS';
-import { getIcons, setIconsAsync } from '../withIosIcons';
+import { getIcons, setIconsAsync, withIosIcons } from '../withIosIcons';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
@@ -17,6 +18,8 @@ jest.mock('@expo/config-plugins', () => ({
   WarningAggregator: {
     addWarningIOS: jest.fn(),
   },
+  withDangerousMod: jest.fn((config: any) => config),
+  withXcodeProject: jest.fn((config: any, action: any) => action(config)),
 }));
 
 jest.mock('fs');
@@ -118,6 +121,78 @@ describe('iOS Icons', () => {
     expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
       'icon',
       'Liquid glass icons (.icon) should be provided via the "ios.icon" property, not the root "icon" property. Found: "assets/MyApp.icon"'
+    );
+  });
+});
+
+describe(withIosIcons, () => {
+  const projectRoot = '/app';
+  const pbxprojPath = 'ios/HelloWorld.xcodeproj/project.pbxproj';
+  const generatedAppIconName = path.basename(
+    'Images.xcassets/AppIcon.appiconset',
+    '.appiconset'
+  );
+
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('resets the Xcode app icon name to the generated appiconset when using a PNG icon', () => {
+    const projectWithLiquidGlassIconName = rnFixture[pbxprojPath].replace(
+      new RegExp(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`, 'g'),
+      'ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;'
+    );
+
+    vol.fromJSON({ [pbxprojPath]: projectWithLiquidGlassIconName }, projectRoot);
+
+    const project = xcode.project(path.join(projectRoot, pbxprojPath));
+    project.parseSync();
+
+    withIosIcons({
+      slug: 'HelloWorld',
+      version: '1',
+      name: 'HelloWorld',
+      platforms: ['ios'],
+      ios: {
+        icon: '/app/assets/icon.png',
+      },
+      modResults: project,
+      modRequest: {
+        projectName: 'HelloWorld',
+      },
+    } as any);
+
+    const output = project.writeSync();
+    expect(output).toContain(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`);
+    expect(output).not.toContain('ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;');
+  });
+
+  it('does not reset the Xcode app icon name when no icon is configured', () => {
+    const projectWithCustomIconName = rnFixture[pbxprojPath].replace(
+      new RegExp(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`, 'g'),
+      'ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;'
+    );
+
+    vol.fromJSON({ [pbxprojPath]: projectWithCustomIconName }, projectRoot);
+
+    const project = xcode.project(path.join(projectRoot, pbxprojPath));
+    project.parseSync();
+
+    withIosIcons({
+      slug: 'HelloWorld',
+      version: '1',
+      name: 'HelloWorld',
+      platforms: ['ios'],
+      modResults: project,
+      modRequest: {
+        projectName: 'HelloWorld',
+      },
+    } as any);
+
+    const output = project.writeSync();
+    expect(output).toContain('ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;');
+    expect(output).not.toContain(
+      `ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`
     );
   });
 });
