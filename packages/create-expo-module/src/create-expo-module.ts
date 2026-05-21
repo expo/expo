@@ -775,7 +775,17 @@ async function generateBarrelFileAsync(
   targetPath: string,
   data: LocalSubstitutionData
 ): Promise<void> {
-  const { moduleName, viewName, sharedObjectName, name, features } = data.project;
+  const {
+    moduleName,
+    viewName,
+    swiftUIViewName,
+    swiftUIModifierName,
+    composeViewName,
+    composeModifierName,
+    sharedObjectName,
+    name,
+    features,
+  } = data.project;
   const lines = [
     `// Re-export the native module. On web, it will be resolved to ${moduleName}.web.ts`,
     `// and on native platforms to ${moduleName}.ts`,
@@ -783,6 +793,18 @@ async function generateBarrelFileAsync(
   ];
   if (features.includes('View')) {
     lines.push(`export { default as ${viewName} } from './src/${viewName}';`);
+  }
+  if (features.includes('SwiftUIView')) {
+    lines.push(`export { default as ${swiftUIViewName} } from './src/${swiftUIViewName}';`);
+  }
+  if (features.includes('ComposeView')) {
+    lines.push(`export { default as ${composeViewName} } from './src/${composeViewName}';`);
+  }
+  if (features.includes('SwiftUIModifier')) {
+    lines.push(`export * from './src/${swiftUIModifierName}';`);
+  }
+  if (features.includes('ComposeModifier')) {
+    lines.push(`export * from './src/${composeModifierName}';`);
   }
   if (features.includes('SharedObject')) {
     lines.push(
