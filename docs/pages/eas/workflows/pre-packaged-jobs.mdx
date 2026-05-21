@@ -874,7 +874,7 @@ jobs:
       exclude_tags: string | string[] # optional
       maestro_version: string # optional - defaults to latest
       android_system_image_package: string # optional
-      device_identifier: string | { android: string, ios: string } # optional
+      device_identifier: string | { android?: string, ios?: string } # optional
       output_format: string # optional - defaults to junit
     hooks:
       before_maestro_tests: step[] # optional - steps to run before the tests start.
@@ -1121,6 +1121,8 @@ You can pass the following parameters into the `params` list:
 | async              | boolean | Optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.               |
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
+
+#### Hooks
 
 The following hooks are supported for the Maestro Cloud job:
 
