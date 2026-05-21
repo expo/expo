@@ -16,6 +16,7 @@ import path from 'path';
 import { PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { getPackageByName } from '../../Packages';
+import { getBundledVersionsAsync } from '../../ProjectVersions';
 import { Artifacts } from '../Artifacts';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
@@ -31,6 +32,7 @@ import {
   verifyAllPackagesAsync,
   verifyLocalTarballPathsIfSetAsync,
 } from '../Utils';
+import { resolvePackageFromPnpmStore } from '../resolvePackage';
 import type { PrebuildContext } from './Context';
 import type { Step } from './Types';
 
@@ -42,6 +44,41 @@ import type { Step } from './Types';
  * Standard external dependencies that come from the cache (not from other packages).
  */
 export const CACHE_DEPS = new Set(['ReactNativeDependencies', 'React', 'Hermes']);
+
+// ---------------------------------------------------------------------------
+// Helper: rebindExternalPackagesToBundledVersions
+// ---------------------------------------------------------------------------
+
+/**
+ * Rebinds each external package's `path` / `packageVersion` to the pnpm-store
+ * install whose version satisfies `packages/expo/bundledNativeModules.json` —
+ * the canonical SDK manifest end users resolve against via `expo install`.
+ * Packages absent from the bundled map are left untouched. Throws when a
+ * bundled-listed package has no satisfying install anywhere in the workspace.
+ */
+export function rebindExternalPackagesToBundledVersions(
+  externalPackages: SPMPackageSource[],
+  bundledNativeModules: Record<string, string>,
+  resolve: (name: string, range: string) => { path: string; version: string } | null
+): void {
+  for (const pkg of externalPackages) {
+    const range = bundledNativeModules[pkg.packageName];
+    if (!range) continue;
+    const resolved = resolve(pkg.packageName, range);
+    if (!resolved) {
+      throw new Error(
+        `No installed version of "${pkg.packageName}" in the monorepo satisfies ${range} ` +
+          `(from packages/expo/bundledNativeModules.json — the canonical SDK manifest for ` +
+          `"expo install" and create-expo templates). Without a satisfying install, the ` +
+          `prebuilt XCFramework would be invisible to precompiled_modules.rb at end-user ` +
+          `pod install. Fix: add "${pkg.packageName}" to some workspace at a version ` +
+          `satisfying ${range} and run "pnpm install".`
+      );
+    }
+    pkg.path = resolved.path;
+    pkg.packageVersion = resolved.version;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Helper: resolveFlavorTemplatedPath
@@ -486,11 +523,25 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     ctx.packages = sorted;
     ctx.dependsOn = dependsOn;
 
-    // Log external packages if any
     const externalPackages = ctx.packages.filter((p) => isExternalPackage(p));
+
+    // 4b. Rebind each external package's source path to the install in the pnpm
+    // store whose version satisfies bundledNativeModules.json. This decouples the
+    // precompile from apps/bare-expo's pin, which drifts. Packages absent from
+    // the bundled map keep their bare-expo-resolved path.
+    rebindExternalPackagesToBundledVersions(
+      externalPackages,
+      await getBundledVersionsAsync(),
+      resolvePackageFromPnpmStore
+    );
+
+    // Log external packages with their resolved versions, so the post-rebind
+    // values are visible in the build output.
     if (externalPackages.length > 0) {
       logger.info(
-        `📦 External packages to build:\n${chalk.blue(externalPackages.map((p) => p.packageName).join(', '))}`
+        `📦 External packages to build:\n${chalk.blue(
+          externalPackages.map((p) => `${p.packageName}@${p.packageVersion}`).join(', ')
+        )}`
       );
     }
 

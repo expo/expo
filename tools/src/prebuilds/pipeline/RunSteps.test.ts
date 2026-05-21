@@ -17,6 +17,7 @@ import {
   collectSharedSPMDependencies,
   CACHE_DEPS,
   expandWithUnbuiltDependencies,
+  rebindExternalPackagesToBundledVersions,
 } from './RunSteps';
 import type { SPMPackageSource } from '../ExternalPackage';
 import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
@@ -170,6 +171,56 @@ describe('resolveFlavorTemplatedPath', () => {
       resolveFlavorTemplatedPath('{flavor}/path/{flavor}.tar.gz', 'Release'),
       'Release/path/Release.tar.gz'
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// rebindExternalPackagesToBundledVersions
+// ---------------------------------------------------------------------------
+
+describe('rebindExternalPackagesToBundledVersions', () => {
+  it('rewrites path and packageVersion for packages listed in bundledNativeModules', () => {
+    const pkg = makePkg('rn-safe-area', [], { path: '/before', packageVersion: '5.6.2' });
+    rebindExternalPackagesToBundledVersions(
+      [pkg],
+      { 'rn-safe-area': '~5.7.0' },
+      () => ({ path: '/after', version: '5.7.0' })
+    );
+    assert.equal(pkg.packageVersion, '5.7.0');
+    assert.equal(pkg.path, '/after');
+  });
+
+  it('throws with an actionable error when no installed version satisfies the bundled range', () => {
+    const pkg = makePkg('rn-safe-area', [], { path: '/before', packageVersion: '5.6.2' });
+    assert.throws(
+      () =>
+        rebindExternalPackagesToBundledVersions(
+          [pkg],
+          { 'rn-safe-area': '~5.7.0' },
+          () => null
+        ),
+      (err: Error) =>
+        err.message.includes('rn-safe-area') &&
+        err.message.includes('~5.7.0') &&
+        err.message.includes('bundledNativeModules.json') &&
+        err.message.includes('pnpm install')
+    );
+  });
+
+  it('leaves packages absent from the bundled map untouched', () => {
+    const pkg = makePkg('private-pkg', [], { path: '/before', packageVersion: '0.0.1' });
+    let resolverCalled = false;
+    rebindExternalPackagesToBundledVersions(
+      [pkg],
+      { 'something-else': '1.0.0' },
+      () => {
+        resolverCalled = true;
+        return null;
+      }
+    );
+    assert.equal(resolverCalled, false);
+    assert.equal(pkg.packageVersion, '0.0.1');
+    assert.equal(pkg.path, '/before');
   });
 });
 
