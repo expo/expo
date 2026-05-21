@@ -12,11 +12,11 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-Building, testing, delivering an Expo and React Native app is rarely a one-step process. Each code change goes through a similar flow of building for Android and iOS, running unit and E2E tests, handing it off to teammates and QA, or the app stores. Doing this on every commit gets tedious fast, and it's exactly the kind of work a CI/CD pipeline should handle for you.
+Building, testing, and delivering an Expo and React Native app is rarely a one-step process. Each code change goes through a similar flow of building for Android and iOS, running unit and end-to-end (E2E) tests, and handing it off to teammates, QA, or the app stores. Doing this on every commit gets tedious fast, and it's exactly the kind of work a CI/CD pipeline should handle for us.
 
 By the end of this tutorial, every push to our Expo project builds, tests, or ships automatically. The service that makes this possible is [EAS Workflows](/eas/workflows/introduction/), a Continuous Integration (CI)/Continuous Delivery (CD) service from Expo Application Services (EAS) for Expo and React Native apps.
 
-An EAS Workflow is defined in a [YAML](https://en.wikipedia.org/wiki/YAML) file that lives in **.eas/workflows/** at the root of our project. Here is a complete example that builds an Android development build on every push to the `main` branch in a GitHub repository:
+A workflow is defined in a [YAML](https://en.wikipedia.org/wiki/YAML) file that lives in **.eas/workflows/** at the root of our project. Here is a complete example that builds an Android development build on every push to the `main` branch in a GitHub repository:
 
 ```yaml .eas/workflows/build.yml
 name: Build Android
@@ -37,7 +37,7 @@ That is the entire file. EAS handles the environment, compiles the native code, 
 
 ## What is EAS Workflows and why use it?
 
-**EAS Workflows** is a CI/CD platform optimised for building, testing and deploying React Native and Expo proejects. It runs Android, iOS, and web builds, publishes OTA updates, submits to app stores, and runs E2E tests with Maestro, all from YAML files in our GitHub repository. Jobs run in a managed cloud environment, which means no build server setup on our end.
+**EAS Workflows** is a CI/CD platform optimized for building, testing, and deploying React Native and Expo projects. It runs Android, iOS, and web builds, publishes OTA updates, submits to app stores, and runs E2E tests with Maestro, all from YAML files in our GitHub repository. Jobs run in a managed cloud environment, which means no build server setup on our end.
 
 Workflows may be triggered from GitHub events (push, pull request, tags, or labels), from schedules (cron), or manually using [EAS CLI](/eas/cli/).
 
@@ -45,7 +45,7 @@ Workflows may be triggered from GitHub events (push, pull request, tags, or labe
 
 The tutorial has three phases:
 
-- **Development.** Create custom jobs, automate [development builds](/develop/development-builds/introduction/) with fingerprinting, and ship PR preview updates for stakeholders.
+- **Development.** Create custom jobs, automate [development builds](/develop/development-builds/introduction/) with fingerprinting, and ship pull request (PR) preview updates for stakeholders.
 - **Testing and releasing.** Run E2E tests with Maestro in a workflow, then create a production workflow that uses fingerprinting to choose between a native build and an OTA update.
 - **Extensions.** Switch production triggers from branches to version tags and deploy web builds with [EAS Hosting](/eas/hosting/introduction/).
 
@@ -77,7 +77,7 @@ An Expo app can target three deployment targets by default. Each one uses a diff
 
 </Collapsible>
 
-<Collapsible summary="Builds vs Updates">
+<Collapsible summary="Builds vs. updates">
 
 Like EAS Build, [EAS Update](/eas-update/introduction/) is a service that serves OTA updates for Expo projects using the [`expo-updates`](/versions/latest/sdk/updates/) library.
 
@@ -136,7 +136,7 @@ To create a new Expo project, run the following command:
   }}
 />
 
-Creating a new project with `create-expo-app` will set up a project without native **android** and **ios** directories committed. This pattern is called Continuous Native Generation (CNG) and EAS Build creates those native project directories for us automatically.
+Creating a new project with `create-expo-app` sets up a project without native **android** and **ios** directories committed. This pattern is called Continuous Native Generation (CNG) and EAS Build creates those native project directories for us automatically.
 
 </Requirement>
 

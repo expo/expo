@@ -14,7 +14,7 @@ import { Step } from '~/ui/components/Step';
 
 Manually rebuilding a development client on every push to a GitHub repository can be slow. Team members or new contributors who pull native changes (a new module, a new permission, an SDK upgrade) wait for a fresh build before they can run the project.
 
-Automating dev builds on the `main` branch keeps a current build ready to install. Developers can run `eas build:dev` to install the latest compatible build. If the project fingerprint matches an existing EAS Build, that build is downloaded instead of a new one being created.
+Automating development builds on the `main` branch keeps a current build ready to install. Developers can run `eas build:dev` to install the latest compatible build. If the project fingerprint matches an existing EAS Build, that build is downloaded instead of a new one being created.
 
 ## Learning outcomes
 
@@ -36,7 +36,7 @@ EAS CLI prompts to generate credentials the first time we trigger a build for a 
 
 ## The `build` job type for development builds
 
-The `build` job type is one of the [pre-packaged jobs](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) from EAS Workflows. We don't have to define each step of the build process and instead, using the `build` job type, we can run an EAS Build for both Android and iOS and define only the necessary parameters for the build jobs to execute.
+The `build` job type is one of the [pre-packaged jobs](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) from EAS Workflows. Instead of defining each step of the build process, we use the `build` job type to run an EAS Build for Android and iOS. We only need to specify the parameters the build jobs require.
 
 For this chapter, we are going to use the `development` build profile from our **eas.json**. This profile is used during Expo app development.
 
@@ -115,7 +115,7 @@ Wait for both builds to complete before moving to the next step. After the build
 
 When our project has only TypeScript/JavaScript changes, we do not need a new development build. The existing build is still compatible. Our team pulls the latest from the `main` branch, runs `npx expo start`, and the development server delivers the JS changes to the build on their device or emulator/simulator.
 
-[**Expo Fingerprint**](/versions/latest/sdk/fingerprint/) automates this decision. It hashes the project's native characteristics (dependencies, native project files, configuration). If the hash matches an existing build, native code has not changed and EAS skips the rebuild. If the hash is different, native code changed and EAS creates a new build.
+[**Expo Fingerprint**](/versions/latest/sdk/fingerprint/) automates this decision. It hashes the project's native characteristics (dependencies, native project files, configuration). If the hash matches an existing build, native code has not changed, and EAS skips the rebuild. If the hash is different, native code changed, and EAS creates a new build.
 
 <FingerprintFlow />
 
@@ -322,7 +322,7 @@ With **EAS Workflows**, we can automate this process by mixing a custom job with
 
 ### Add a custom job for unit tests
 
-Let's add a custom job that runs unit tests before the builds start in our **build.yml** workflow file:
+In our **build.yml** workflow file, let's add a custom job that runs unit tests before the builds start:
 
 ```yaml .eas/workflows/build.yml
 name: Development builds

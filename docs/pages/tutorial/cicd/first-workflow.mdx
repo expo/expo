@@ -21,7 +21,7 @@ In this chapter, we will create our first EAS Workflows job.
 
 ## How workflow files work
 
-Workflow files are YAML files stored in our project's **.eas/workflows/** directory. Each file defines how many workflow jobs should run and what steps each job should follow.
+Workflow files are YAML files stored in our project's **.eas/workflows/** directory. Each file defines the jobs to run and the steps each job follows.
 
 <JobTypes />
 
@@ -164,7 +164,7 @@ Commit the workflow file and push it to the `main` branch:
 
 > **info** **Tip:** This step depends on our local Expo project being pushed to GitHub and the GitHub repository being connected to EAS. To confirm: run `git remote -v` to verify the local repo points to a GitHub URL and open the project's [GitHub settings on EAS](https://expo.dev/accounts/[account]/projects/[projectName]/github) to check that a repository is connected.
 
-Let's open our project's [Workflow page](https://expo.dev/accounts/[account]/projects/[project]/workflows) on the EAS dashboard to see the new job.
+Let's open our project's [Workflows page](https://expo.dev/accounts/[account]/projects/[project]/workflows) on the EAS dashboard to see the new job.
 
 <ContentSpotlight
   alt="EAS Workflows dashboard showing a workflow run automatically triggered by a push to the GitHub repository's main branch."
