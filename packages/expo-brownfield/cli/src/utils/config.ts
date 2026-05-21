@@ -169,11 +169,8 @@ const resolveTaskArray = (
 ): string[] => {
   const tasks: string[] = options.task ?? [];
   const repositories: string[] = options.repository ?? [];
-  // Each fused sibling is single-variant (AGP fused-library constraint), so
-  // `--fused --all` expands into separate `Debug` and `Release` task invocations
-  // — each runs against the matching sibling (`:<lib>-fused-debug` or
-  // `:<lib>-fused-release`). Default (non-fused) `--all` continues to use AGP's
-  // built-in multi-variant publishing in a single task.
+  // In `--fused` mode, `--all` expands to separate Debug + Release task
+  // invocations against the matching sibling subprojects.
   const variantsForRepoTasks: BuildVariant[] =
     fusedOpts.fused && variant === 'All' ? ['Debug', 'Release'] : [variant];
   const repoTasks = repositories.flatMap((repo) =>
