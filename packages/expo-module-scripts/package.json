@@ -79,9 +79,9 @@
     "@types/jest": "^29.2.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "commander": "^12.1.0",
-    "eslint-config-universe": "workspace:^15.1.1",
+    "eslint-config-universe": "workspace:^15.2.0",
     "glob": "^13.0.0",
-    "jest-expo": "workspace:~56.0.3",
+    "jest-expo": "workspace:~56.0.4",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
     "resolve-workspace-root": "^2.0.0",
@@ -90,5 +90,22 @@
   "devDependencies": {
     "@expo/metro": "~56.0.0",
     "@babel/core": "^7.26.0"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./bin/expo-module-babel",
+      "./bin/expo-module-clean",
+      "./bin/expo-module-configure",
+      "./bin/expo-module-eslint",
+      "./bin/expo-module-jest",
+      "./bin/expo-module-lint",
+      "./bin/expo-module-prepare",
+      "./bin/expo-module-prepublishOnly",
+      "./bin/expo-module-readme",
+      "./bin/expo-module-test",
+      "./bin/expo-module-tsc",
+      "./bin/expo-module-typecheck",
+      "./bin/expo-module.js"
+    ]
   }
 }

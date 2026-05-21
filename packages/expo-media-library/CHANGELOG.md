@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- [android] Add `getFavorite()`/`setFavorite()` ([#45768](https://github.com/expo/expo/pull/45768) by [@Wenszel](https://github.com/Wenszel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.5 — 2026-05-20
+
+### 🛠 Breaking changes
+
+- Promote the object-oriented MediaLibrary API to the root `expo-media-library` import and move the legacy API to `expo-media-library/legacy`. ([#46030](https://github.com/expo/expo/pull/46030) by [@Wenszel](https://github.com/Wenszel))
+
+### 🎉 New features
+
+- [android] Add `getFavorite()`/`setFavorite()` ([#45768](https://github.com/expo/expo/pull/45768) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.4 — 2026-05-13
 

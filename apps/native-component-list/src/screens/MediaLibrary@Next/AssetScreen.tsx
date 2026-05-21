@@ -9,7 +9,7 @@ import {
   Query,
   requestPermissionsAsync,
   MediaSubtype,
-} from 'expo-media-library/next';
+} from 'expo-media-library';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
 import {

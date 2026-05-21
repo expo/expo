@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.2.3 — 2026-05-20
+
+### 🎉 New features
+
 - Support disabling NativeTabs Material Symbols (`md`) icons on Android via the `EXPO_ROUTER_DISABLE_NATIVE_TABS_MD` environment variable ([#45857](https://github.com/expo/expo/pull/45857) by [@Ubax](https://github.com/Ubax))
 - Remove expo-image dependency ([#45862](https://github.com/expo/expo/pull/45862) by [@Ubax](https://github.com/Ubax))
 
@@ -14,6 +22,8 @@
 - Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Add `segments` to `unstable_navigationEvents` page events `pagePreloaded`, `pageFocused`, `pageBlurred`, `pageRemoved` ([#46019](https://github.com/expo/expo/pull/46019) by [@Ubax](https://github.com/Ubax))
 
 ## 56.2.2 — 2026-05-19
 

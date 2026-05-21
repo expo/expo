@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.6.0 — 2026-05-20
+
+### 🎉 New features
+
 - Add `escapeString` helper for safely interpolating values into AppleScript double-quoted string literals ([#45890](https://github.com/expo/expo/pull/45890) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes

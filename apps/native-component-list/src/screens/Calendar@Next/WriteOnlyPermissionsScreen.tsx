@@ -4,7 +4,7 @@ import {
   presentPicker,
   requestCalendarPermissions,
   useCalendarPermissions,
-} from 'expo-calendar/next';
+} from 'expo-calendar';
 import { type ReactNode, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 

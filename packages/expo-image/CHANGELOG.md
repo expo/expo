@@ -8,10 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `tintColor` in `loadAsync`/`useImage` requiring API 26. ([#45981](https://github.com/expo/expo/pull/45981) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed `useImage` crashing on SVG sources, and made `maxWidth`/`maxHeight` preserve the SVG's aspect ratio. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
+
+## 56.0.6 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `tintColor` in `loadAsync`/`useImage` requiring API 26. ([#45981](https://github.com/expo/expo/pull/45981) by [@lukmccall](https://github.com/lukmccall))
 
 ## 56.0.5 — 2026-05-19
 

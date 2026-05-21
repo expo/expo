@@ -1,5 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import * as Calendar from 'expo-calendar';
+import * as Calendar from 'expo-calendar/legacy';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, View } from 'react-native';
 

@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.7 — 2026-05-20
+
+### 🛠 Breaking changes
+
+- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
 
 ## 56.0.6 — 2026-05-19
 

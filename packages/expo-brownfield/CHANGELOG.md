@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.12 — 2026-05-20
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed brownfield mangling builds writing products outside the Pods build directory. (by [@ry-allan](https://github.com/ry-allan))
 
 ### 💡 Others

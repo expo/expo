@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import type { ObservableState } from '../../State/useNativeState';
+import { type ObservableState } from '../../State';
 import { type ModifierConfig } from '../../types';
 /**
  * Common props shared by loading indicator variants.

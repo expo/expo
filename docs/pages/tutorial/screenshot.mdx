@@ -119,7 +119,7 @@ Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with t
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

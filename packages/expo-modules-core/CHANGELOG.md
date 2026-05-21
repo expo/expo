@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix occasional `SharedObject.emit` crashes caused by an off-thread JSI lookup. ([#45986](https://github.com/expo/expo/pull/45986) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 56.0.11 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [iOS] Fix occasional `SharedObject.emit` crashes caused by an off-thread JSI lookup. ([#45986](https://github.com/expo/expo/pull/45986) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.10 — 2026-05-19
 

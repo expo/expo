@@ -6,14 +6,21 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.10 — 2026-05-20
+
+### 🎉 New features
+
+- Added `@expo/ui/community/pager-view` — a drop-in replacement for `react-native-pager-view`. ([#45499](https://github.com/expo/expo/pull/45499) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `textStyle` option to `font` modifier in `@expo/ui/swift-ui` for iOS Dynamic Type scaling. ([#46007](https://github.com/expo/expo/pull/46007) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🐛 Bug fixes
 
 - [universal] Fix universal components dark theme ([#45969](https://github.com/expo/expo/pull/45969) by [@zoontek](https://github.com/zoontek))
 - [universal] Fix `BottomSheet` behavior by making `Host` optional, and fix Android exit animation. ([#46031](https://github.com/expo/expo/pull/46031) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 56.0.9 — 2026-05-19
 

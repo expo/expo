@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.1.8 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.1.7 — 2026-05-20
+
+### 🎉 New features
+
 - Add `EXPO_RUN_PREFER_APP_CONFIG_ID=1` to prefer Expo config app IDs over native files when running apps ([#45774](https://github.com/expo/expo/pull/45774) by [@sebryu](https://github.com/sebryu))
 - Support disabling NativeTabs Material Symbols (`md`) icons on Android via the `EXPO_ROUTER_DISABLE_NATIVE_TABS_MD` environment variable ([#45857](https://github.com/expo/expo/pull/45857) by [@Ubax](https://github.com/Ubax))
 
@@ -80,6 +92,7 @@
 
 ### 💡 Others
 
+- Switch React Native Directory compatibility check request from POST to GET. ([#45673](https://github.com/expo/expo/pull/45673) by [@simek](https://github.com/simek))
 - Target only the first compatible device architecture during Android debug builds to speed up build time. ([#44907](https://github.com/expo/expo/pull/44907) by [@AntoineThibi](https://github.com/AntoineThibi))
 - Bump to `picomatch@^4.0.4` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
 

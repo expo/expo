@@ -38,6 +38,7 @@ import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } fr
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
   sdkVersion: string;
+  header?: string;
 };
 
 const COLLAPSED_LITERAL_MESSAGE = 'Acceptable values are: See description for available values.';
@@ -434,10 +435,10 @@ const renderType = (
   return undefined;
 };
 
-const APISectionTypes = ({ data, sdkVersion }: APISectionTypesProps) =>
+const APISectionTypes = ({ data, sdkVersion, header = 'Types' }: APISectionTypesProps) =>
   data?.length ? (
     <>
-      <H2 key="types-header">Types</H2>
+      <H2 key="types-header">{header}</H2>
       {data.map(d => renderType(d, sdkVersion))}
     </>
   ) : null;

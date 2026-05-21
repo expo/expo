@@ -8,7 +8,7 @@ import {
   AssetField,
   addListener,
   removeAllListeners,
-} from 'expo-media-library/next';
+} from 'expo-media-library';
 import { Platform } from 'react-native';
 
 export const name = 'MediaLibrary@Next';

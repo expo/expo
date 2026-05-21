@@ -1,4 +1,4 @@
-import { type ObservableState } from '../../State/useNativeState';
+import { type ObservableState } from '../../State';
 import { type ModifierConfig } from '../../types';
 export type SyncSwitchProps = {
     /**

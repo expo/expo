@@ -1,4 +1,4 @@
-import { Contact, requestPermissionsAsync } from 'expo-contacts/next';
+import { Contact, requestPermissionsAsync } from 'expo-contacts';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 
