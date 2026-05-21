@@ -3123,7 +3123,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-widgets:
-        specifier: workspace:^56.0.12
+        specifier: workspace:^56.0.13
         version: link:../expo-widgets
     devDependencies:
       '@babel/core':
@@ -3745,7 +3745,7 @@ importers:
   packages/expo-background-fetch:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~56.0.12
+        specifier: workspace:~56.0.13
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3761,7 +3761,7 @@ importers:
   packages/expo-background-task:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~56.0.12
+        specifier: workspace:~56.0.13
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -5114,7 +5114,7 @@ importers:
         specifier: workspace:^56.0.0
         version: link:../@expo/schema-utils
       '@expo/ui':
-        specifier: workspace:^56.0.11
+        specifier: workspace:^56.0.12
         version: link:../expo-ui
       '@radix-ui/react-slot':
         specifier: ^1.2.0
@@ -5918,7 +5918,7 @@ importers:
         specifier: workspace:^0.7.0
         version: link:../@expo/plist
       '@expo/ui':
-        specifier: workspace:~56.0.11
+        specifier: workspace:~56.0.12
         version: link:../expo-ui
       react:
         specifier: 19.2.3
