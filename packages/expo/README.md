@@ -150,6 +150,7 @@ EAS is optional, but the fastest path from `git push` to the store.
 - [Examples](https://github.com/expo/examples) — sample projects you can copy from.
 - [Changelog](https://expo.dev/changelog) and [blog](https://expo.dev/blog).
 - [Discord & Forums](https://chat.expo.dev) — ask questions and chat with the community.
+- [Support](https://expo.dev/support) — community, enterprise, and partner-agency options all in one place.
 
 ## Contributing
 
