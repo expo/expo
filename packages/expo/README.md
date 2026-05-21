@@ -101,6 +101,18 @@ A [file-based router](https://docs.expo.dev/router/introduction/) for universal 
 
 A modern Swift and Kotlin [API for writing native modules](https://docs.expo.dev/modules/overview/). It's what powers the entire Expo SDK and a growing ecosystem of third-party libraries. If you can write Swift or Kotlin, you can extend your app with native code — no Objective-C, no Java, no C++, no JNI.
 
+### Expo UI
+
+[`@expo/ui`](https://docs.expo.dev/versions/latest/sdk/ui/) — a set of truly native UI components backed by SwiftUI on iOS and Jetpack Compose on Android. Use platform controls (pickers, switches, sliders, menus, …) that look and feel exactly like the rest of the OS, from React.
+
+### DOM components
+
+Mark a React component with `"use dom"` and Expo will render it as web content inside your native app — perfect for incrementally migrating web code or reusing a React web component on mobile. [Learn more](https://docs.expo.dev/guides/dom-components/).
+
+### Continuous Native Generation
+
+Your `ios/` and `android/` folders are generated, not maintained. Describe your native config in `app.json` and [config plugins](https://docs.expo.dev/config-plugins/introduction/); run `npx expo prebuild` to materialize the projects on demand. Upgrades, package additions, and native customizations all flow through the same declarative pipeline — no more merge conflicts in native code.
+
 ### EAS
 
 [Expo Application Services](https://expo.dev/eas) — hosted infrastructure for shipping React Native apps:
@@ -116,8 +128,7 @@ EAS is optional, but the fastest path from `git push` to the store.
 
 ### Tooling
 
-- **[`@expo/cli`](https://github.com/expo/expo/blob/main/packages/%40expo/cli/README.md)** — one interface around Metro and the native toolchain (Xcode, Simulator.app, Android Studio, ADB, …). Generate native projects with `npx expo prebuild`, keep dependency versions aligned with `npx expo install`.
-- **[Config plugins](https://docs.expo.dev/config-plugins/introduction/)** — customize native iOS and Android projects without forking them. No ejecting required.
+- **[`@expo/cli`](https://github.com/expo/expo/blob/main/packages/%40expo/cli/README.md)** — one interface around Metro and the native toolchain (Xcode, Simulator.app, Android Studio, ADB, …). Keep dependency versions aligned with `npx expo install`.
 - **[Expo Go](https://expo.dev/go)** and **[development builds](https://docs.expo.dev/develop/development-builds/introduction/)** — preview your app on a device in seconds.
 - **[Snack](https://snack.expo.dev)** — try Expo right in your browser, no install needed.
 
