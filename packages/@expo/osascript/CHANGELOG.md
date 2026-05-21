@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.4.4 — 2026-05-21
+
+### 🎉 New features
+
 - Add `escapeString` helper for safely interpolating values into AppleScript double-quoted string literals ([#45890](https://github.com/expo/expo/pull/45890) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
 - Fix `openItermToSpecificFolderAsync`, `openTerminalToSpecificFolderAsync`, and `openInAppAsync` mis-quoting paths/app names that contain `'`, `"`, or `\` ([#45890](https://github.com/expo/expo/pull/45890) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 2.4.3 — 2026-05-05
 

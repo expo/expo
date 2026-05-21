@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add missing HTML attribute escaping for inserted asset URLs ([#45848](https://github.com/expo/expo/pull/45848) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 55.0.23 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Add missing HTML attribute escaping for inserted asset URLs ([#45848](https://github.com/expo/expo/pull/45848) by [@kitten](https://github.com/kitten))
 
 ## 55.0.22 — 2026-05-19
 
