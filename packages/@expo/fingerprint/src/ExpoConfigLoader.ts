@@ -60,11 +60,39 @@ async function runAsync(programName: string, args: string[] = []) {
     ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
     ...(await loadIgnoredPathsAsync(ignoredFile)),
   ];
-  const filteredLoadedModules = loadedModules
-    .filter((modulePath) => !virtualModuleNames.has(modulePath))
-    .map((modulePath) => path.relative(projectRoot, modulePath))
-    .filter((modulePath) => !isIgnoredPath(modulePath, ignoredPaths));
-  const result = JSON.stringify({ config, loadedModules: filteredLoadedModules });
+
+  const filteredLoadedModules = loadedModules.filter(
+    (modulePath) => !virtualModuleNames.has(modulePath)
+  );
+
+  const existingLoadedModules = (
+    await Promise.all(
+      filteredLoadedModules.map(async (modulePath) => {
+        try {
+          const stat = await fs.stat(modulePath);
+          if (!stat.isFile()) {
+            return null;
+          }
+
+          const relativePath = path.relative(projectRoot, modulePath);
+          if (isIgnoredPath(modulePath, ignoredPaths)) {
+            return null;
+          }
+
+          return relativePath;
+        } catch (error: any) {
+          // Filter out virtual paths / non-existent files
+          if (error.code === 'ENOENT') {
+            return null;
+          }
+          throw error;
+        }
+      })
+    )
+  ).filter((modulePath) => modulePath != null);
+
+  const result = JSON.stringify({ config, loadedModules: existingLoadedModules });
+
   if (process.send) {
     process.send(result);
   } else {
