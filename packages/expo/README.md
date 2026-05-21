@@ -6,6 +6,8 @@
   </a>
 </p>
 
+<h1 align="center">Expo</h1>
+
 <p align="center">The open-source framework for universal React Native apps — one codebase for Android, iOS, and the web.</p>
 
 <p align="center">
