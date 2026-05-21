@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Include and consume shared SPM dependencies in the precompiled pod / npm publish pipeline.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
