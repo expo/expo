@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve `expo-modules-core` from the installed `expo` package when npm nests it there. ([#44647](https://github.com/expo/expo/issues/44647) by [@mvincentong](https://github.com/mvincentong)) ([#46104](https://github.com/expo/expo/pull/46104) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-20

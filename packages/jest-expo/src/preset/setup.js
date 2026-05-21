@@ -13,6 +13,7 @@ const stackTrace = require('stacktrace-js');
 const publicExpoModules = require('./moduleMocks/expoModules');
 const internalExpoModules = require('./moduleMocks/internalExpoModules');
 const thirdPartyModules = require('./moduleMocks/thirdPartyModules');
+const { resolveExpoModulesCoreModuleId } = require('./resolveExpoModulesCore');
 
 // window isn't defined as of react-native 0.45+ it seems
 if (typeof window !== 'object') {
@@ -231,7 +232,7 @@ function attemptLookup(moduleName) {
 
 // TODO(@kitten): This is an invalid dependency chain
 jest.doMock('expo-modules-core', () => {
-  const ExpoModulesCore = jest.requireActual('expo-modules-core');
+  const ExpoModulesCore = jest.requireActual(resolveExpoModulesCoreModuleId());
 
   const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 
@@ -316,7 +317,9 @@ jest.doMock('expo-modules-core', () => {
 });
 
 // Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
-require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
+require(
+  resolveExpoModulesCoreModuleId('expo-modules-core/src/polyfill/dangerous-internal')
+).installExpoGlobalPolyfill();
 
 // `expo/fetch` defines `class FetchResponse extends ExpoFetchModule.NativeResponse`
 // at module load — provide stub classes so tests that transitively import fetch
