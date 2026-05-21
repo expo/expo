@@ -155,3 +155,7 @@ EAS is optional, but the fastest path from `git push` to the store.
 ## Contributing
 
 Bug reports, fixes, and improvements are very welcome. See [CONTRIBUTING](./CONTRIBUTING.md) for how to set up this package locally, and the repo-wide [contributing guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md) for general guidelines.
+
+## License
+
+The Expo source code is made available under the [MIT License](https://github.com/expo/expo/blob/main/LICENSE).
