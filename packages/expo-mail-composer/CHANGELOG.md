@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Migrate from deprecated MobileCoreServices to modern UniformTypeIdentifiers API for MIME type detection. ([Apple Documentation](https://developer.apple.com/documentation/uniformtypeidentifiers)) ([#41008](https://github.com/expo/expo/pull/41008) by [@tarikfp](https://github.com/tarikfp))
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._
