@@ -3464,7 +3464,7 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:^56.1.8
+        specifier: workspace:^56.1.9
         version: link:../@expo/cli
       '@expo/config':
         specifier: workspace:~56.0.8

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.2.4 — 2026-05-21
+
+### 💡 Others
+
 - [docs] Remove references to react-navigation's docs ([#46072](https://github.com/expo/expo/pull/46072) by [@Ubax](https://github.com/Ubax))
 
 ## 56.2.3 — 2026-05-20
