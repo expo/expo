@@ -21,8 +21,8 @@ Expo Observe ships an opt-in integration for [Expo Router](/router/introduction/
     build.
   </Requirement>
   <Requirement title="`expo-router` installed in the app">
-    The integration soft-requires `expo-router`. If the package is not installed, the integration
-    becomes a silent no-op.
+    The integration depends on `expo-router` at runtime. If the package is not installed, the
+    integration becomes a silent no-op.
   </Requirement>
 </Prerequisites>
 
@@ -84,7 +84,7 @@ export default function Home() {
     markInteractive();
   }, [markInteractive]);
 
-  return /* ... */;
+  return (/* your screen content */);
 }
 ```
 
@@ -94,11 +94,11 @@ export default function Home() {
 
 ## Metrics
 
-### Per-route time to first render (`cold_ttr`)
+### Per-route first render (`cold_ttr`)
 
-**What it measures:** Time from when a navigation action is dispatched - for example link click - to when the destination screen first becomes focused. For the very first focus after app launch, the measurement is taken from when the js bundle is loaded, and the event includes `isAppLaunch: true`.
+**What it measures:** Time from when a navigation action is dispatched (for example, a link click) to when the destination screen first becomes focused. For the very first focus after app launch, the measurement is taken from when the JS bundle is loaded, and the event includes `isAppLaunch: true`.
 
-Emitted at most once per `(route, screenId)` pair within a session.
+Emitted at most once per screen instance within a session.
 
 **Event params:**
 
@@ -111,7 +111,7 @@ Emitted at most once per `(route, screenId)` pair within a session.
 
 ### Per-route warm render (`warm_ttr`)
 
-**What it measures:** Same as `cold_ttr`, but for screens that were already rendered before focus — typically because they were preloaded via [`<Link prefetch />`](/router/basics/navigation/#prefetching) or the back navigation happened.
+**What it measures:** Same as `cold_ttr`, but for screens that were already rendered before focus, typically because they were preloaded via [`<Link prefetch />`](/router/basics/navigation/#prefetching) or the user navigated back to them.
 
 **Event params:**
 
@@ -134,16 +134,10 @@ Emitted at most once per `(route, screenId)` pair within a session.
 | `routeParams` | `object` | Resolved route params.                                               |
 | `...`         | `any`    | Any custom params passed via `markInteractive({ params: { ... } })`. |
 
-### Notes on `routeName`
-
-`routeName` is a pattern (`/(tabs)/sessions/[sessionId]), not a resolved URL (`/sessions/abc`). This keeps metrics stable across distinct param values so the dashboard buckets them together. Resolved values are still available on the event via `url`and`routeParams`.
-
-### Preloaded routes
-
-Calls to `router.prefetch()` do not count as a user navigation and never seed a `cold_ttr` or `warm_ttr` measurement. The next user-driven navigation to that route emits `warm_ttr` because the screen has already rendered.
-
 ## Notes and troubleshooting
 
+- `routeName` is a pattern (`/(tabs)/sessions/[sessionId]`), not a resolved URL (`/sessions/abc`). This keeps metrics stable across distinct param values so the dashboard buckets them together. Resolved values are still available on the event via `url` and `routeParams`.
+- Calls to `router.prefetch()` do not count as a user navigation and never seed a `cold_ttr` or `warm_ttr` measurement. The next user-driven navigation to that route emits `warm_ttr` because the screen has already rendered.
 - The integration only activates if `expo-router` is installed at runtime. If it is not installed, `useObserve()` and `ObserveRoot` continue to work but no per-route navigation metrics are emitted.
 - The integration must be enabled before mount via `ExpoObserve.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
 - If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
