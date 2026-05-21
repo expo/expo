@@ -54,6 +54,11 @@ module Expo
     # Centralized build output directory under packages/precompile/
     PRECOMPILE_BUILD_DIR = '.build'.freeze
 
+    # Subdir under packages/precompile/.build/ holding <Name>/<flavor>/<Name>.xcframework (monorepo source).
+    SHARED_SPM_DEPS_SOURCE_DIR = '.spm-deps'.freeze
+    # Subdir inside an npm package that bundles shared SPM xcframeworks for standalone consumers.
+    BUNDLED_SHARED_SPM_DEPS_SUBPATH = File.join('prebuilds', 'spm-deps').freeze
+
     # Apple platforms supported by CocoaPods podspecs
     APPLE_PLATFORMS = %w[ios osx tvos watchos visionos].freeze
 
@@ -188,10 +193,14 @@ module Expo
       # - Pods that vendor xcframeworks (already precompiled)
       # - Source-built pods that depend on React-Core (non-modular includes)
       #
+      # Also stages shared SPM dep xcframework symlinks inside their owner pod's
+      # directory — must run before `generate_pods_project` reads each xcframework's
+      # Info.plist to slice it.
+      #
       # @param installer [Pod::Installer] The CocoaPods installer instance
       def perform_pre_install(installer)
         return unless enabled?
-        return unless prebuilt_react_active?
+        ensure_shared_spm_deps(installer)
         return if linkage(installer).nil?
 
         pods_to_downgrade = Set.new(installer.podfile.framework_modules_to_patch)
@@ -213,6 +222,63 @@ module Expo
             end
           end
         end
+      end
+
+      # Symlinks each shared SPM dependency xcframework (e.g. SDWebImage) into the
+      # pod directory of its owner. Ownership is whatever `build_vendored_paths` set
+      # in `@framework_owner_map` during `store_podspec` (resolution-first);
+      # falls back to alphabetical-first only if the map has no entry. Must run
+      # before `generate_pods_project` so CocoaPods sees the symlinks when reading
+      # each xcframework's Info.plist.
+      def ensure_shared_spm_deps(installer)
+        return unless enabled?
+
+        consumers_by_dep = collect_shared_spm_deps(installer)
+        return if consumers_by_dep.empty?
+
+        @framework_owner_map ||= {}
+        @claimed_vendored_frameworks ||= Set.new
+
+        unresolved = []
+        staged = 0
+
+        consumers_by_dep.each do |dep_name, consumers|
+          existing = @framework_owner_map[dep_name]
+          owner_name = (existing && consumers.key?(existing)) ? existing : consumers.keys.sort.first
+          owner_info = consumers[owner_name]
+          @framework_owner_map[dep_name] ||= owner_name
+          @claimed_vendored_frameworks.add(dep_name)
+
+          source_path = shared_spm_dep_xcframework_path(dep_name, owner_info, build_flavor)
+          owner_pod_dir = File.join(installer.sandbox.root, owner_name)
+          unless source_path && File.directory?(owner_pod_dir)
+            unresolved << dep_name
+            next
+          end
+
+          FileUtils.rm_rf(File.join(owner_pod_dir, "#{dep_name}.xcframework"))
+          File.symlink(source_path, File.join(owner_pod_dir, "#{dep_name}.xcframework"))
+          staged += 1
+        end
+
+        if unresolved.any?
+          Pod::UI.warn "[Expo-precompiled] Shared SPM xcframeworks not found for: #{unresolved.join(', ')} (flavor: #{build_flavor}). The Expo modules that depend on them will fail at runtime with dyld 'Library not loaded: @rpath/<Name>.framework/<Name>'. Run the precompile prebuild pipeline, or ensure each consuming npm package ships prebuilds/spm-deps/<Name>/<flavor>/<Name>.xcframework."
+        end
+
+        Pod::UI.puts "[Expo] ".blue + "Staged #{staged}/#{consumers_by_dep.size} shared SPM xcframework(s) (#{build_flavor})" if staged > 0
+      end
+
+      # dep_name => { pod_name => pod_info } for shared SPM deps consumed by enabled prebuilt pods in this install.
+      def collect_shared_spm_deps(installer)
+        by_dep = {}
+        installer.pod_targets.each do |pod_target|
+          info = pod_lookup_map[pod_target.name]
+          next unless info && has_prebuilt_xcframework?(pod_target.name)
+          (info[:spm_dependency_frameworks] || []).each do |dep_name|
+            (by_dep[dep_name] ||= {})[pod_target.name] = info
+          end
+        end
+        by_dep
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -1108,15 +1174,10 @@ module Expo
         end
       end
 
-      # Builds the vendored_frameworks paths array for a prebuilt pod.
-      # Deduplicates shared SPM dependency frameworks across multiple prebuilt pods:
-      # the first pod to claim a framework "owns" it; subsequent pods skip it and
-      # instead get FRAMEWORK_SEARCH_PATHS pointing at the owning pod's directory.
-      #
-      # @param product_name [String] The product/module name
-      # @param pod_info [Hash] Package info from spm.config.json lookup
-      # @param pod_name [String] The pod name (for summary tracking)
-      # @return [Array<String>] vendored framework paths
+      # Returns vendored_frameworks paths for a prebuilt pod: the product's own
+      # xcframework plus any shared SPM deps this pod owns (first to claim wins;
+      # non-owners get FRAMEWORK_SEARCH_PATHS instead). Shared dep entries are
+      # symlinks staged by `ensure_shared_spm_deps` inside the owner's pod dir.
       def build_vendored_paths(product_name, pod_info, pod_name)
         @claimed_vendored_frameworks ||= Set.new
         @framework_owner_map ||= {}
@@ -1126,38 +1187,27 @@ module Expo
         @framework_owner_map[product_name] = pod_name
 
         (pod_info[:spm_dependency_frameworks] || []).each do |dep_name|
-          if @claimed_vendored_frameworks.include?(dep_name)
-            owner = @framework_owner_map[dep_name]
-            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Skipping #{dep_name}.xcframework from #{pod_name} — already vendored by #{owner}"
-          else
+          owner = (@framework_owner_map[dep_name] ||= pod_name)
+          if owner == pod_name
             paths << "#{dep_name}.xcframework"
-            @claimed_vendored_frameworks.add(dep_name)
-            @framework_owner_map[dep_name] = pod_name
+          else
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Skipping #{dep_name}.xcframework from #{pod_name} — already vendored by #{owner}"
           end
           log_spm_dependency(pod_name, dep_name)
         end
         paths
       end
 
-      # Returns FRAMEWORK_SEARCH_PATHS entries for shared SPM dependency frameworks
-      # that were claimed by another prebuilt pod. The non-owning pod needs these
-      # paths so the linker can find the xcframeworks at build time.
-      #
-      # @param pod_name [String] The pod name
-      # @param pod_info [Hash] Package info from spm.config.json lookup
-      # @return [Array<String>] framework search path entries
+      # FRAMEWORK_SEARCH_PATHS entries for shared SPM deps claimed by another pod.
+      # CocoaPods slices each xcframework into `${PODS_XCFRAMEWORKS_BUILD_DIR}/<owner>/`,
+      # which is where the linker resolves the framework.
       def framework_search_paths_for_skipped_deps(pod_name, pod_info)
-        @claimed_vendored_frameworks ||= Set.new
         @framework_owner_map ||= {}
-
-        paths = []
-        (pod_info[:spm_dependency_frameworks] || []).each do |dep_name|
+        owners = (pod_info[:spm_dependency_frameworks] || []).filter_map do |dep_name|
           owner = @framework_owner_map[dep_name]
-          if owner && owner != pod_name
-            paths << "\"${PODS_ROOT}/#{owner}\""
-          end
-        end
-        paths.uniq
+          owner if owner && owner != pod_name
+        end.uniq
+        owners.flat_map { |owner| [%("${PODS_XCFRAMEWORKS_BUILD_DIR}/#{owner}"), %("${PODS_ROOT}/#{owner}")] }
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -1184,11 +1234,13 @@ module Expo
         package_root_var = "#{pods_parent}/#{package_root_rel}"
         dsym_stamp = "$(DERIVED_FILE_DIR)/expo-dsym-resolve-#{product_name}-$(CONFIGURATION).stamp"
 
+        shared_deps = shared_dep_switch_args(spec_name, pod_info)
+
         switch_phase = {
           'name' => "[Expo] Switch #{spec_name} XCFramework for build configuration",
           'execution_position' => 'before_compile',
           'input_files' => ["#{pods_parent}/#{switch_script_rel}"],
-          'script' => xcframework_switch_script(product_name, xcframeworks_dir_var, switch_script_path),
+          'script' => xcframework_switch_script(product_name, xcframeworks_dir_var, switch_script_path, shared_deps),
         }
 
         if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
@@ -1231,32 +1283,55 @@ module Expo
         SH
       end
 
-      # Returns the shell script for the xcframework switch phase.
-      def xcframework_switch_script(product_name, xcframeworks_dir, script_path)
-        <<~SH
-          # Switch between debug/release XCFramework based on build configuration
-          # This script is auto-generated by expo-modules-autolinking
-
+      # Shell script for the xcframework switch phase. With no shared deps the
+      # script short-circuits in shell when the per-pod state file matches; with
+      # shared deps Node is always invoked so each dep's symlink can be repointed
+      # (it has its own per-dep state file inside replace-xcframework.js).
+      def xcframework_switch_script(product_name, xcframeworks_dir, script_path, shared_deps = [])
+        config_detect = <<~SH.chomp
           CONFIG="release"
           if echo "$GCC_PREPROCESSOR_DEFINITIONS" | grep -q "DEBUG=1"; then
             CONFIG="debug"
           fi
-
-          # Early exit: Skip Node.js invocation if configuration hasn't changed
-          # This optimization avoids ~100-200ms overhead per module on incremental builds
-          LAST_CONFIG_FILE="#{xcframeworks_dir}/artifacts/.last_build_configuration"
-          if [ -f "$LAST_CONFIG_FILE" ] && [ "$(cat "$LAST_CONFIG_FILE")" = "$CONFIG" ]; then
-            exit 0
-          fi
-
-          # Configuration changed or first build - invoke Node.js to extract tarball
-          . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
-
-          "$NODE_BINARY" "#{script_path}" \\
-            -c "$CONFIG" \\
-            -m "#{product_name}" \\
-            -x "#{xcframeworks_dir}"
         SH
+
+        if shared_deps.empty?
+          <<~SH
+            # Auto-generated by expo-modules-autolinking
+            #{config_detect}
+            LAST_CONFIG_FILE="#{xcframeworks_dir}/artifacts/.last_build_configuration"
+            if [ -f "$LAST_CONFIG_FILE" ] && [ "$(cat "$LAST_CONFIG_FILE")" = "$CONFIG" ]; then
+              exit 0
+            fi
+            . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+            "$NODE_BINARY" "#{script_path}" -c "$CONFIG" -m "#{product_name}" -x "#{xcframeworks_dir}"
+          SH
+        else
+          shared_args = shared_deps.map { |arg| "  #{arg}" }.join(" \\\n")
+          <<~SH
+            # Auto-generated by expo-modules-autolinking
+            #{config_detect}
+            . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+            "$NODE_BINARY" "#{script_path}" \\
+              -c "$CONFIG" \\
+              -m "#{product_name}" \\
+              -x "#{xcframeworks_dir}" \\
+            #{shared_args}
+          SH
+        end
+      end
+
+      # '--shared "<Name>:<source_base>"' tokens for shared SPM deps this pod owns.
+      # Non-owners reach the framework via FRAMEWORK_SEARCH_PATHS at link time.
+      def shared_dep_switch_args(pod_name, pod_info)
+        return [] unless pod_info && pod_info[:spm_dependency_frameworks]
+        @framework_owner_map ||= {}
+        pod_info[:spm_dependency_frameworks].filter_map do |dep_name|
+          next nil unless @framework_owner_map[dep_name] == pod_name
+          source_base = shared_spm_dep_source_base(dep_name, pod_info)
+          next nil unless source_base
+          %(--shared "#{dep_name}:#{source_base.gsub(/[\\"$`]/) { |c| "\\#{c}" }}")
+        end
       end
 
       # Returns the shell script for the dSYM source map resolution phase.
@@ -1851,6 +1926,43 @@ module Expo
         end
 
         own_resolution
+      end
+
+      # Candidate parent dirs (each holds <flavor>/<Name>.xcframework subtrees) for
+      # a shared SPM dep. Ordered: EXPO_PRECOMPILED_MODULES_PATH override, monorepo
+      # .spm-deps, then the consumer-side npm-bundled location.
+      def shared_spm_dep_source_base_candidates(dep_name, pod_info)
+        candidates = []
+        candidates << File.join(custom_modules_path, SHARED_SPM_DEPS_SOURCE_DIR, dep_name) if custom_modules_path
+        candidates << File.join(memoized_repo_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR, SHARED_SPM_DEPS_SOURCE_DIR, dep_name) if memoized_repo_root
+        candidates << File.join(pod_info[:package_root], BUNDLED_SHARED_SPM_DEPS_SUBPATH, dep_name) if pod_info && pod_info[:package_root]
+        candidates
+      end
+
+      # First candidate base that has at least one flavor on disk (used to build switch-script source_base args).
+      def shared_spm_dep_source_base(dep_name, pod_info)
+        shared_spm_dep_source_base_candidates(dep_name, pod_info).find do |base|
+          %w[debug release].any? { |f| File.directory?(File.join(base, f, "#{dep_name}.xcframework")) }
+        end
+      end
+
+      # First candidate that has the requested flavor on disk (walks all candidates so a partial monorepo doesn't shadow a complete npm bundle).
+      def shared_spm_dep_xcframework_path(dep_name, pod_info, flavor)
+        shared_spm_dep_source_base_candidates(dep_name, pod_info).each do |base|
+          path = File.join(base, flavor, "#{dep_name}.xcframework")
+          return path if File.directory?(path)
+        end
+        nil
+      end
+
+      def memoized_repo_root
+        return @repo_root if @memoized_repo_root_set
+        begin
+          @repo_root = find_repo_root
+        ensure
+          @memoized_repo_root_set = true
+        end
+        @repo_root
       end
 
       def resolve_prebuilt_tarball(pod_info, product_name, flavor, pod_name = nil)

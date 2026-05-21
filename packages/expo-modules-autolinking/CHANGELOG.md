@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Update `@shopify/react-native-skia` precompile config for the 2.6.x source layout ([#46081](https://github.com/expo/expo/pull/46081) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+## 56.0.10 — 2026-05-21
+
+### 🎉 New features
+
+- [iOS] Include and consume shared SPM dependencies in the precompiled pod / npm publish pipeline. ([#46069](https://github.com/expo/expo/pull/46069) by [@chrfalch](https://github.com/chrfalch))
 
 ## 56.0.9 — 2026-05-20
 

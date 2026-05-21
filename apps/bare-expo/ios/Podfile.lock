@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (56.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (56.0.0):
+  - Expo (56.0.2):
     - ExpoModulesCore
     - ExpoModulesJSI
     - hermes-engine
@@ -299,7 +299,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (56.0.0):
+  - Expo/Tests (56.0.2):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesTestCore
@@ -405,9 +405,9 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (56.0.7):
     - ExpoModulesCore
-  - ExpoCamera (56.0.5):
+  - ExpoCamera (56.0.6):
     - ExpoModulesCore
-  - ExpoCameraBarcodeScanning (56.0.5):
+  - ExpoCameraBarcodeScanning (56.0.6):
     - ExpoCamera
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -440,14 +440,14 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (56.0.3):
     - ExpoModulesCore
-  - ExpoImage (56.0.6):
+  - ExpoImage (56.0.7):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (56.0.6):
+  - ExpoImage/Tests (56.0.7):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -455,7 +455,7 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImageManipulator (56.0.11):
+  - ExpoImageManipulator (56.0.12):
     - ExpoModulesCore
     - SDWebImageWebPCoder
   - ExpoImagePicker (56.0.11):
@@ -588,7 +588,7 @@ PODS:
   - ExpoNotifications/Tests (56.0.11):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoObserve (56.0.11):
+  - ExpoObserve (56.0.13):
     - EASClient
     - ExpoAppMetrics
     - ExpoModulesCore
@@ -613,7 +613,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoObserve/Tests (56.0.11):
+  - ExpoObserve/Tests (56.0.13):
     - EASClient
     - ExpoAppMetrics
     - ExpoModulesCore
@@ -2317,7 +2317,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context (5.6.2):
+  - react-native-safe-area-context (5.7.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2329,8 +2329,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.6.2)
-    - react-native-safe-area-context/fabric (= 5.6.2)
+    - react-native-safe-area-context/common (= 5.7.0)
+    - react-native-safe-area-context/fabric (= 5.7.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2341,7 +2341,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/common (5.6.2):
+  - react-native-safe-area-context/common (5.7.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2363,7 +2363,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/fabric (5.6.2):
+  - react-native-safe-area-context/fabric (5.7.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3437,7 +3437,7 @@ DEPENDENCIES:
   - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.6_react-native-reanimated@4.3.1_patch_hash=1e34e4_e9da8032dc92e07ee8e9f9de5f82aa13/node_modules/react-native-keyboard-controller`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_57cdd99b2abbd81bf66bfe06e3966bfe/node_modules/@react-native-community/netinfo`)"
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@6.9.1_react-native@0.85.3_@babel+core@7.29.0_@react-native+jest_635cad3fc277b440fe37e814de1bc4f1/node_modules/react-native-pager-view`)"
-  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.3_@babel+core@7.29.0_@react-nati_b5c9982a06f140c157b72454b7505cf1/node_modules/react-native-safe-area-context`)"
+  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.85.3_@babel+core@7.29.0_@react-nati_5218ce1da1bc499456ea2ce83b894307/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.85.3_@babel+core_d06c98e80c699e170f8b37806ce468ec/node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.4.18_react-native-reanimated@4.3.1_patch_hash=1e34e4238541_c7ed8dcc454df7c13ebf24d246f99025/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.1.2/node_modules/@react-native-community/slider`)"
@@ -3851,7 +3851,7 @@ EXTERNAL SOURCES:
   react-native-pager-view:
     :path: "../../../node_modules/.pnpm/react-native-pager-view@6.9.1_react-native@0.85.3_@babel+core@7.29.0_@react-native+jest_635cad3fc277b440fe37e814de1bc4f1/node_modules/react-native-pager-view"
   react-native-safe-area-context:
-    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.3_@babel+core@7.29.0_@react-nati_b5c9982a06f140c157b72454b7505cf1/node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.85.3_@babel+core@7.29.0_@react-nati_5218ce1da1bc499456ea2ce83b894307/node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.85.3_@babel+core_d06c98e80c699e170f8b37806ce468ec/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
@@ -3967,7 +3967,7 @@ SPEC CHECKSUMS:
   EXConstants: 13f6719b5c0d537be9c7b169d54445b063f95213
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
-  Expo: bbddb135ce862854a8351782c4ac2923d5ca4898
+  Expo: ee6ac2312c750f206f2b7b5bb81660170df4c208
   expo-dev-client: e7bdc2fee0cedb048f283eafd8439a09b6028a8a
   expo-dev-launcher: 2aec76e53c72eb67e0d0e4a4495337293cd13af9
   expo-dev-menu: 533fd236470d22a1d16bb810fc6823171723a9e1
@@ -3975,7 +3975,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: c652074c8c24bf52bd3201ecd017040c867ba58b
   ExpoAppIntegrity: 43cc62f24c533b960de07b5038568acedc3a567a
   ExpoAppleAuthentication: 47f6f6c6722a7facef29d15397635b785086bc5e
-  ExpoAppMetrics: 886c20aadd776a9af1530fef0b8f70411c4e2be0
+  ExpoAppMetrics: bb15aff1cbe0f648f6bb6644a6efaa61f1eb4efa
   ExpoAsset: 051b7b3bf1edecb3d8f3643b0b9dc3e308d43cb4
   ExpoAudio: ad5b6e07a7ff22b89e7683d8a12cf51a54f6b90b
   ExpoBackgroundFetch: 52cefdd114179fba877d76fdcef2aa694cfce0fe
@@ -3986,8 +3986,8 @@ SPEC CHECKSUMS:
   ExpoBrightness: 49e17a1b53fd0070bc7d7a2255b00051e5c781b4
   ExpoBrownfield: f267f4b94a0e4d2aee982c60c9c9881305853278
   ExpoCalendar: a69d854621f6beb28aa57bb3a0cfbfb5174e4217
-  ExpoCamera: 4d44aace75d08eeb91838a7d08345cd57b2c65f5
-  ExpoCameraBarcodeScanning: 25b7b6ce09d5deb09aad0b60cba2fdc1dbccc3e9
+  ExpoCamera: 4f06a19feff4cbddebd86efd07555934ca4b25c0
+  ExpoCameraBarcodeScanning: 28fc7a22048f75744e755b440a599977a0024e48
   ExpoCellular: b7aa904a620e79abd91a78fbc4db704b93793134
   ExpoClipboard: eee843698341fd26d571fd2807800f98abb6123c
   ExpoContacts: 3f4b61dc6db5b593d8ec9ac7468a49eec557f920
@@ -4000,8 +4000,8 @@ SPEC CHECKSUMS:
   ExpoGL: 1e0fbbc03bc28677d1e15f78bf7bb7083c573346
   ExpoGlassEffect: 7d4233dc0727ee2b28dd757eda70e1b6abf662fd
   ExpoHaptics: 89364cf3c3ca2cfd54cafed42f3be3169bab6d42
-  ExpoImage: 08e5a5b1071b1e76793582f152e0e5eebf7269b9
-  ExpoImageManipulator: 1b6a482c65e99545ee407642aa0aa4b38176270e
+  ExpoImage: e57c71915f7df993da8be268a631546376338aca
+  ExpoImageManipulator: f652875e5ea6b7794d691679dedcfc4809926716
   ExpoImagePicker: 13cfc44f02b3b6230715c138b8682f8832d52433
   ExpoInsights: 215d27779a8e49c7356c70eca3a1ce8a7edd78c4
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
@@ -4023,7 +4023,7 @@ SPEC CHECKSUMS:
   ExpoModulesWorkletsAdapter: 4d065a4e45a12246e2a111fbd4727bb98c74e691
   ExpoNetwork: c9651806f67c5fe93d221f9b4533c98ae6833bb9
   ExpoNotifications: a360386d2944c24e5ce4543d8a5b13d01f994527
-  ExpoObserve: f3bf7aa608758070f6128ac737d775a7ae2227e5
+  ExpoObserve: bbc8aec6288d4b3e3b45ac1d417d1411c34d3809
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0
   ExpoScreenCapture: c388565b6244aec9d96c18941efbee8655b2fec2
   ExpoScreenOrientation: 733d1dc1fa97f2716442d4fa2b0abe1457d9d2dd
@@ -4098,7 +4098,7 @@ SPEC CHECKSUMS:
   react-native-keyboard-controller: 91fb57a926597b9d16c8438bc88f1142a169715c
   react-native-netinfo: 4319d381f35bc11b53dafebd5cd99c04c66a9fb4
   react-native-pager-view: a3cb9627d41fa2f31ad2b312af6e3f10f831f26d
-  react-native-safe-area-context: 91a90d98c310adcc90a511e5aeb6046d7c19d885
+  react-native-safe-area-context: 6b4966397ada0f7dd481e4486a2ef936834861a1
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
   react-native-skia: 93613a9428b7f33530e5e085e95a89f023548320
   react-native-slider: f9910f69950b9953c46e091377c1265b71eb01f0

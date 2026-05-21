@@ -34,6 +34,7 @@ export function PagerView(props: PagerViewProps) {
     onPageSelected,
     children,
     style,
+    ...passthrough
   } = props;
 
   const pagerRef = useRef<HorizontalPagerHandle>(null);
@@ -90,7 +91,7 @@ export function PagerView(props: PagerViewProps) {
   }
 
   return (
-    <Host style={style ?? { flex: 1 }}>
+    <Host style={style ?? { flex: 1 }} {...passthrough}>
       <HorizontalPager
         ref={pagerRef}
         initialPage={initialPage}

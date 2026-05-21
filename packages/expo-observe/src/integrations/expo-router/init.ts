@@ -65,6 +65,14 @@ export function initListeners(
       // Stored in seconds to match the OTel `unit = "s"` convention
       const appLaunchTtrSeconds = (now - appLaunchTime) / 1000;
       storage.hasRecordedInitialTtr = true;
+      // Seed dispatchTime so a later markInteractive on the initial screen can
+      // diff against app launch — symmetric with the navigated-focus branch
+      // below, which seeds dispatchTime from the last pending action.
+      storage.screenTimes[e.screenId] = {
+        ...storage.screenTimes[e.screenId],
+        dispatchTime: appLaunchTime,
+        isAppLaunch: true,
+      };
       AppMetrics.addCustomMetricToSession({
         sessionId: mainSessionId,
         timestamp,
@@ -85,6 +93,7 @@ export function initListeners(
       storage.screenTimes[e.screenId] = {
         ...storage.screenTimes[e.screenId],
         dispatchTime,
+        isAppLaunch: false,
       };
 
       AppMetrics.addCustomMetricToSession({

@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (56.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (56.0.0):
+  - Expo (56.0.2):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -52,7 +52,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (56.0.0):
+  - Expo/Tests (56.0.2):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -108,9 +108,9 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (56.0.7):
     - ExpoModulesCore
-  - ExpoCamera (56.0.5):
+  - ExpoCamera (56.0.6):
     - ExpoModulesCore
-  - ExpoCameraBarcodeScanning (56.0.5):
+  - ExpoCameraBarcodeScanning (56.0.6):
     - ExpoCamera
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -143,14 +143,14 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (56.0.3):
     - ExpoModulesCore
-  - ExpoImage (56.0.6):
+  - ExpoImage (56.0.7):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (56.0.6):
+  - ExpoImage/Tests (56.0.7):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -158,7 +158,7 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImageManipulator (56.0.11):
+  - ExpoImageManipulator (56.0.12):
     - ExpoModulesCore
     - SDWebImageWebPCoder
   - ExpoImagePicker (56.0.11):
@@ -275,10 +275,10 @@ PODS:
     - ExpoModulesTestCore
   - ExpoPrint (56.0.3):
     - ExpoModulesCore
-  - ExpoRouter (56.2.3):
+  - ExpoRouter (56.2.4):
     - ExpoModulesCore
     - RNScreens
-  - ExpoRouter/Tests (56.2.3):
+  - ExpoRouter/Tests (56.2.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - RNScreens
@@ -4643,7 +4643,7 @@ SPEC CHECKSUMS:
   EXConstants: 13f6719b5c0d537be9c7b169d54445b063f95213
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
-  Expo: 58bbb883cc6f2fb7a270d038beffdb59adf7a339
+  Expo: 8f831e59834e45c8d8fb7d5926c3470c6fe3c331
   ExpoAsset: 051b7b3bf1edecb3d8f3643b0b9dc3e308d43cb4
   ExpoAudio: ad5b6e07a7ff22b89e7683d8a12cf51a54f6b90b
   ExpoBackgroundFetch: 52cefdd114179fba877d76fdcef2aa694cfce0fe
@@ -4653,8 +4653,8 @@ SPEC CHECKSUMS:
   ExpoBlur: caddd80171e5f8f3581ff3d865e99c6465047240
   ExpoBrightness: 49e17a1b53fd0070bc7d7a2255b00051e5c781b4
   ExpoCalendar: a69d854621f6beb28aa57bb3a0cfbfb5174e4217
-  ExpoCamera: 4d44aace75d08eeb91838a7d08345cd57b2c65f5
-  ExpoCameraBarcodeScanning: 25b7b6ce09d5deb09aad0b60cba2fdc1dbccc3e9
+  ExpoCamera: 4f06a19feff4cbddebd86efd07555934ca4b25c0
+  ExpoCameraBarcodeScanning: 28fc7a22048f75744e755b440a599977a0024e48
   ExpoCellular: b7aa904a620e79abd91a78fbc4db704b93793134
   ExpoClipboard: eee843698341fd26d571fd2807800f98abb6123c
   ExpoContacts: 3f4b61dc6db5b593d8ec9ac7468a49eec557f920
@@ -4667,8 +4667,8 @@ SPEC CHECKSUMS:
   ExpoGL: 1e0fbbc03bc28677d1e15f78bf7bb7083c573346
   ExpoGlassEffect: 7d4233dc0727ee2b28dd757eda70e1b6abf662fd
   ExpoHaptics: 89364cf3c3ca2cfd54cafed42f3be3169bab6d42
-  ExpoImage: 08e5a5b1071b1e76793582f152e0e5eebf7269b9
-  ExpoImageManipulator: 1b6a482c65e99545ee407642aa0aa4b38176270e
+  ExpoImage: e57c71915f7df993da8be268a631546376338aca
+  ExpoImageManipulator: f652875e5ea6b7794d691679dedcfc4809926716
   ExpoImagePicker: 13cfc44f02b3b6230715c138b8682f8832d52433
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
   ExpoLinearGradient: 16c2b9c6105444883d34958d573725de1293b8d0
@@ -4687,7 +4687,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: c9651806f67c5fe93d221f9b4533c98ae6833bb9
   ExpoNotifications: a360386d2944c24e5ce4543d8a5b13d01f994527
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0
-  ExpoRouter: 4ba271124971ccf2829ca20666e483006aeaaa44
+  ExpoRouter: 6260cedcbdcc49f30bfc1ccdb1cf89d2ddf0a9b3
   ExpoScreenCapture: c388565b6244aec9d96c18941efbee8655b2fec2
   ExpoScreenOrientation: 6462afcecade499a169b71f2aadd58bf169e93c5
   ExpoSecureStore: 4d1c0303f8ead59766d7466c3c14d0ce4336fc0f
@@ -4723,7 +4723,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 971c315ad976a4dcbf09795cb72e85ea3f7200d9
+  hermes-engine: 020d7dbf64ea2ac7f2dc43408d80cc6035c4b3e8
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

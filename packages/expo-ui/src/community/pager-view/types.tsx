@@ -1,28 +1,23 @@
 import type { ReactNode, Ref } from 'react';
 import type { NativeSyntheticEvent, ViewProps } from 'react-native';
 
-/**
- * Event payload for `onPageScroll`. Mirrors the upstream
- * `react-native-pager-view` shape.
- */
 export type PagerViewOnPageScrollEventData = Readonly<{
+  /** Index of the leading visible page. */
   position: number;
+  /** Fractional progress toward the next page, in `[0, 1)`. */
   offset: number;
 }>;
 
-/**
- * Event payload for `onPageSelected`. Mirrors the upstream
- * `react-native-pager-view` shape.
- */
 export type PagerViewOnPageSelectedEventData = Readonly<{
+  /** Index of the newly selected page. */
   position: number;
 }>;
 
-/**
- * Event payload for `onPageScrollStateChanged`. Mirrors the upstream
- * `react-native-pager-view` shape.
- */
 export type PageScrollStateChangedEventData = Readonly<{
+  /**
+   * `idle` when scrolling has stopped, `dragging` while the user is actively
+   * swiping, and `settling` while the pager animates to a target page.
+   */
   pageScrollState: 'idle' | 'dragging' | 'settling';
 }>;
 
@@ -84,7 +79,11 @@ export type PagerViewProps = ViewProps & {
    * is the index of the leading visible page; `offset` is the fractional
    * progress toward the next page in the `[0, 1)` range.
    *
-   * **iOS 18+ only.**
+   * Mark this handler with `'worklet'` (requires `react-native-worklets`)
+   * to run it synchronously on the UI thread every frame.
+   *
+   * @platform android
+   * @platform ios 18.0+
    */
   onPageScroll?: (event: PagerViewOnPageScrollEvent) => void;
   /**
@@ -96,7 +95,8 @@ export type PagerViewProps = ViewProps & {
    * Fires when the scroll state changes between `idle`, `dragging`,
    * and `settling`.
    *
-   * **iOS 18+ only.**
+   * @platform android
+   * @platform ios 18.0+
    */
   onPageScrollStateChanged?: (event: PageScrollStateChangedEvent) => void;
   /**
@@ -108,7 +108,6 @@ export type PagerViewProps = ViewProps & {
 
 /**
  * Ref handle for the `PagerView` component.
- * Compatible with `react-native-pager-view`.
  */
 export type PagerViewRef = {
   /**
@@ -122,16 +121,11 @@ export type PagerViewRef = {
    */
   setPageWithoutAnimation: (selectedPage: number) => void;
   /**
-   * Imperatively enable or disable user scrolling — convenient when
-   * toggling from a non-React context like a ref-based gesture handler.
+   * Imperatively enable or disable user scrolling.
    *
    * > **Note:** If the `scrollEnabled` prop is also provided, subsequent
    * > prop changes win and reset the value set imperatively. To use the
    * > imperative path exclusively, omit the prop.
-   *
-   * > Unlike upstream `react-native-pager-view` (which calls UIManager
-   * > directly), this triggers a re-render of `PagerView` so the new
-   * > flag flows through to the native view via props.
    */
   setScrollEnabled: (scrollEnabled: boolean) => void;
 };
