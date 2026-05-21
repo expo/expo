@@ -1,15 +1,7 @@
 import { BridgeModule, ExpoModule, TurboModule } from 'benchmarking';
-import { requireOptionalNativeModule } from 'expo';
 import { Platform } from 'react-native';
 
 import { BenchmarkRun } from './ModulesBenchmarksHistory';
-
-type ExpoCryptoNativeModule = {
-  randomUUID?: () => string;
-  randomUUIDOptimized?: () => string;
-};
-
-const ExpoCryptoModule = requireOptionalNativeModule<ExpoCryptoNativeModule>('ExpoCrypto');
 
 const DEFAULT_ITERATIONS = 100_000;
 const DEFAULT_ASYNC_ITERATIONS = Platform.OS === 'ios' ? DEFAULT_ITERATIONS : 25_000;
@@ -445,36 +437,6 @@ export const GROUPS: Group[] = [
           BridgeModule.foldArray(numbers);
           return timeSync(iterations, () => {
             BridgeModule.foldArray(numbers);
-          });
-        },
-      },
-    ],
-  },
-  {
-    id: 'randomUUID',
-    title: 'randomUUID()',
-    description:
-      'Synchronous no-argument call that returns a freshly generated UUIDv4 string. Compares the baseline expo-crypto host function against the `@OptimizedFunction` JSI bridge variant.',
-    benchmarks: [
-      {
-        id: 'expo',
-        label: 'ExpoCrypto (baseline)',
-        available: ExpoCryptoModule?.randomUUID != null,
-        async run(iterations) {
-          ExpoCryptoModule!.randomUUID!();
-          return timeSync(iterations, () => {
-            ExpoCryptoModule!.randomUUID!();
-          });
-        },
-      },
-      {
-        id: 'expo-optimized',
-        label: 'ExpoCrypto (optimized)',
-        available: ExpoCryptoModule?.randomUUIDOptimized != null,
-        async run(iterations) {
-          ExpoCryptoModule!.randomUUIDOptimized!();
-          return timeSync(iterations, () => {
-            ExpoCryptoModule!.randomUUIDOptimized!();
           });
         },
       },
