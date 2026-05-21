@@ -18,6 +18,13 @@ public class CryptoModule: Module {
     Function("randomUUID") {
       UUID().uuidString.lowercased()
     }
+
+    Function("randomUUIDOptimized", randomUUIDOptimized())
+  }
+
+  @OptimizedFunction
+  private func randomUUIDOptimized() -> String {
+    return UUID().uuidString.lowercased()
   }
 }
 
