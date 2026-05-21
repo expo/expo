@@ -1,11 +1,11 @@
 import assert from 'assert';
-import openBrowserAsync from 'better-opn';
 import crypto from 'crypto';
 import http from 'http';
 import type { Socket } from 'node:net';
 
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
+import { openBrowserAsync } from '../../utils/open';
 import { fetchAsync, getResponseDataOrThrow } from '../rest/client';
 
 const CLIENT_ID = 'expo-cli';

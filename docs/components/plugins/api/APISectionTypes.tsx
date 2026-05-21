@@ -38,6 +38,7 @@ import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } fr
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
   sdkVersion: string;
+  header?: string;
 };
 
 const COLLAPSED_LITERAL_MESSAGE = 'Acceptable values are: See description for available values.';
@@ -50,7 +51,7 @@ const renderTypeDeclarationTable = (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     {index && index > 0 ? (
       <CALLOUT
-        className={mergeClasses(STYLES_SECONDARY, 'border-palette-gray4 border-t px-4 py-3')}>
+        className={mergeClasses(STYLES_SECONDARY, 'border-t border-palette-gray4 px-4 py-3')}>
         Or <CODE className="text-default">object</CODE> shaped as below:
       </CALLOUT>
     ) : undefined}
@@ -100,7 +101,7 @@ const renderTypeMethodEntry = (
   );
 
   if (inline) {
-    return <div className="border-secondary border-t p-4 pt-2.5">{content}</div>;
+    return <div className="border-t border-secondary p-4 pt-2.5">{content}</div>;
   } else {
     return (
       <APIBox
@@ -215,7 +216,7 @@ const renderType = (
               'mt-3.5 flex flex-row items-start gap-2'
             )}>
             <div className="flex flex-row items-center gap-2">
-              <CornerDownRightIcon className="icon-sm text-icon-tertiary relative -mt-0.5 inline-block" />
+              <CornerDownRightIcon className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary" />
               <span className={STYLES_SECONDARY}>Returns:</span>
             </div>
             <CALLOUT>
@@ -434,10 +435,10 @@ const renderType = (
   return undefined;
 };
 
-const APISectionTypes = ({ data, sdkVersion }: APISectionTypesProps) =>
+const APISectionTypes = ({ data, sdkVersion, header = 'Types' }: APISectionTypesProps) =>
   data?.length ? (
     <>
-      <H2 key="types-header">Types</H2>
+      <H2 key="types-header">{header}</H2>
       {data.map(d => renderType(d, sdkVersion))}
     </>
   ) : null;

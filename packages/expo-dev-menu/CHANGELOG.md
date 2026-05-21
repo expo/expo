@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 56.0.13 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.12 — 2026-05-20
+
+### 🎉 New features
+
+- [iOS] Add `setShowsAtLaunch`/`getShowsAtLaunch` to `DevMenuManager` so preferences can be toggled at runtime and applied immediately. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@gabrieldonadel](https://github.com/gabrieldonadel)) ([#46000](https://github.com/expo/expo/pull/46000) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Fix FAB resizing on label disappearance ([#45869](https://github.com/expo/expo/pull/45869) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.11 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.9 — 2026-05-13
 
 _This version does not introduce any user-facing changes._

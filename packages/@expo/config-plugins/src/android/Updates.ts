@@ -197,12 +197,11 @@ export async function setUpdatesConfigAsync(
     removeMetaDataItemFromMainApplication(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES);
   }
 
-  const bsPatchSupport = getUpdatesBsdiffPatchSupportEnabled(config);
-  if (bsPatchSupport) {
-    addMetaDataItemToMainApplication(mainApplication, Config.BSDIFF_PATCH_SUPPORT, 'true');
-  } else {
-    removeMetaDataItemFromMainApplication(mainApplication, Config.BSDIFF_PATCH_SUPPORT);
-  }
+  addMetaDataItemToMainApplication(
+    mainApplication,
+    Config.BSDIFF_PATCH_SUPPORT,
+    getUpdatesBsdiffPatchSupportEnabled(config) ? 'true' : 'false'
+  );
 
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }

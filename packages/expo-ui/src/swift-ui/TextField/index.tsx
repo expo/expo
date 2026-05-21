@@ -1,10 +1,7 @@
 import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
-import { worklets } from '../../State/optionalWorklets';
-import type { ObservableState } from '../../State/useNativeState';
-import { useWorkletProp } from '../../State/useWorkletProp';
-import { getStateId } from '../../State/utils';
+import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
 import type { ViewEvent } from '../../types';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';

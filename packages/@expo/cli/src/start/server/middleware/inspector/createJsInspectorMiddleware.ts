@@ -1,26 +1,37 @@
 import chalk from 'chalk';
 import type { NextHandleFunction } from 'connect';
 import type { IncomingMessage, ServerResponse } from 'http';
-import net from 'net';
-import { TLSSocket } from 'tls';
 import { URL } from 'url';
 
 import { openJsInspector, queryInspectorAppAsync } from './JsInspector';
+import { isMatchingOrigin, shouldThrottleRemoteDevCall } from '../../../../utils/net';
+
+interface JsInspectorMiddlewareOptions {
+  serverBaseUrl: string;
+}
 
 /**
  * Create a middleware that handles new requests to open the debugger from the dev menu.
  * @todo(cedric): delete this middleware once we fully swap over to the new React Native JS Inspector.
  */
-export function createJsInspectorMiddleware(): NextHandleFunction {
+export function createJsInspectorMiddleware({
+  serverBaseUrl,
+}: JsInspectorMiddlewareOptions): NextHandleFunction {
   return async function (req: IncomingMessage, res: ServerResponse, next: (err?: Error) => void) {
-    const { origin, searchParams } = new URL(req.url ?? '/', getServerBase(req));
+    if (!isMatchingOrigin(req, serverBaseUrl)) {
+      res.writeHead(403).end();
+      return;
+    }
+
+    // `req.url` may be absolute-form (HTTP/1.1) — only take search params from it.
+    const { searchParams } = new URL(req.url ?? '/', serverBaseUrl);
     const appId = searchParams.get('appId') || searchParams.get('applicationId');
     if (!appId) {
       res.writeHead(400).end('Missing application identifier ("?appId=...")');
       return;
     }
 
-    const app = await queryInspectorAppAsync(origin, appId);
+    const app = await queryInspectorAppAsync(serverBaseUrl, appId);
     if (!app) {
       res.writeHead(404).end('Unable to find inspector target from @react-native/dev-middleware');
       console.warn(
@@ -40,8 +51,12 @@ export function createJsInspectorMiddleware(): NextHandleFunction {
       });
       res.end(data);
     } else if (req.method === 'POST' || req.method === 'PUT') {
+      if (shouldThrottleRemoteDevCall()) {
+        res.writeHead(429).end();
+        return;
+      }
       try {
-        await openJsInspector(origin, app);
+        await openJsInspector(serverBaseUrl, app);
       } catch (error: any) {
         // abort(Error: Command failed: osascript -e POSIX path of (path to application "google chrome")
         // 15:50: execution error: Google Chrome got an error: Application isn’t running. (-600)
@@ -58,12 +73,4 @@ export function createJsInspectorMiddleware(): NextHandleFunction {
       res.writeHead(405);
     }
   };
-}
-
-function getServerBase(req: IncomingMessage): string {
-  const scheme =
-    req.socket instanceof TLSSocket && req.socket.encrypted === true ? 'https' : 'http';
-  const { localAddress, localPort } = req.socket;
-  const address = localAddress && net.isIPv6(localAddress) ? `[${localAddress}]` : localAddress;
-  return `${scheme}:${address}:${localPort}`;
 }

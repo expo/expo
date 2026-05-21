@@ -169,7 +169,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     arguments.merge(dict) { _, new in
       new
     }
-    self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
+    self.emit(event: AudioConstants.playbackStatus, payload: arguments)
 
     if isActiveForLockScreen {
       MediaController.shared.updateNowPlayingInfo(for: self)
@@ -390,7 +390,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
           return ["frames": channelData]
         }
 
-        self.emit(event: AudioConstants.audioSample, arguments: [
+        self.emit(event: AudioConstants.audioSample, payload: [
           "channels": channels,
           "timestamp": timestamp
         ])

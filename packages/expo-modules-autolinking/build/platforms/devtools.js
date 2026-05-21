@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveModuleAsync = resolveModuleAsync;
 exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("../utils");
 async function resolveModuleAsync(packageName, revision) {
     const devtoolsConfig = revision.config?.toJSON().devtools;
     if (devtoolsConfig == null) {
@@ -14,11 +15,18 @@ async function resolveModuleAsync(packageName, revision) {
     return {
         packageName,
         packageRoot: revision.path,
-        webpageRoot: devtoolsConfig.webpageRoot
-            ? path_1.default.join(revision.path, devtoolsConfig.webpageRoot)
-            : undefined,
+        webpageRoot: await resolveWebpageRoot(revision.path, devtoolsConfig.webpageRoot),
         cliExtensions: devtoolsConfig.cliExtensions,
     };
+}
+async function resolveWebpageRoot(packageRoot, configuredWebpageRoot) {
+    if (!configuredWebpageRoot) {
+        return undefined;
+    }
+    const resolvedWebpageRoot = path_1.default.resolve(packageRoot, configuredWebpageRoot);
+    // NOTE(@kitten): Failing realpath-ing, typically due to ENOENT, results in the original value
+    const webpageRoot = (await (0, utils_1.maybeRealpath)(resolvedWebpageRoot)) ?? resolvedWebpageRoot;
+    return (0, utils_1.isPathInside)(webpageRoot, packageRoot) ? webpageRoot : undefined;
 }
 async function resolveExtraBuildDependenciesAsync(_projectNativeRoot) {
     return null;

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-20
+
+### 🎉 New features
+
+- Align `jest-expo`'s Babel config loading with `@expo/metro-config` changes ([#45968](https://github.com/expo/expo/pull/45968) by [@kitten](https://github.com/kitten))
+
+## 56.0.3 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.2 — 2026-05-13
 
 _This version does not introduce any user-facing changes._

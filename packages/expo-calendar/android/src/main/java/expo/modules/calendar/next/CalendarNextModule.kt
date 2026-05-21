@@ -1,9 +1,7 @@
 package expo.modules.calendar.next
 
 import android.Manifest
-import expo.modules.calendar.dialogs.CreateEventContract
 import expo.modules.calendar.dialogs.CreateEventIntentResult
-import expo.modules.calendar.dialogs.CreatedEventOptions
 import expo.modules.calendar.dialogs.ViewEventContract
 import expo.modules.calendar.dialogs.ViewEventIntentResult
 import expo.modules.calendar.dialogs.ViewedEventOptions
@@ -13,8 +11,10 @@ import expo.modules.calendar.next.domain.repositories.instance.InstanceRepositor
 import expo.modules.calendar.next.domain.repositories.attendee.AttendeeRepository
 import expo.modules.calendar.next.domain.repositories.reminder.ReminderRepository
 import expo.modules.calendar.next.domain.repositories.calendar.CalendarRepository
+import expo.modules.calendar.next.exceptions.CalendarNotFoundException
 import expo.modules.calendar.next.mappers.AttendeeMapper
 import expo.modules.calendar.next.records.AttendeeRecord
+import expo.modules.calendar.next.records.AddEventWithFormOptionsRecord
 import expo.modules.calendar.next.mappers.CalendarMapper
 import expo.modules.calendar.next.mappers.EventMapper
 import expo.modules.calendar.next.mappers.ReminderMapper
@@ -34,7 +34,8 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 class CalendarNextModule : Module() {
-  private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, CreateEventIntentResult>
+  private lateinit var addEventWithFormLauncher:
+    AppContextActivityResultLauncher<AddEventWithFormContract.Input, CreateEventIntentResult>
   private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, ViewEventIntentResult>
 
   private val context
@@ -99,8 +100,8 @@ class CalendarNextModule : Module() {
     Name("CalendarNext")
 
     RegisterActivityContracts {
-      createEventLauncher = registerForActivityResult(
-        CreateEventContract()
+      addEventWithFormLauncher = registerForActivityResult(
+        AddEventWithFormContract(eventMapper)
       )
       viewEventLauncher = registerForActivityResult(
         ViewEventContract()
@@ -218,6 +219,16 @@ class CalendarNextModule : Module() {
       AsyncFunction("createEvent") Coroutine { expoCalendar: ExpoCalendar, record: EventInputRecord ->
         permissionsDelegate.requireSystemPermissions(true)
         expoCalendar.createEvent(record)
+      }
+
+      AsyncFunction("addEventWithForm") Coroutine { expoCalendar: ExpoCalendar, options: AddEventWithFormOptionsRecord? ->
+        val result = addEventWithFormLauncher.launch(
+          AddEventWithFormContract.Input(
+            calendarId = expoCalendar.id ?: throw CalendarNotFoundException("Calendar ID is null"),
+            options = options ?: AddEventWithFormOptionsRecord()
+          )
+        )
+        return@Coroutine result
       }
 
       AsyncFunction("update") Coroutine { expoCalendar: ExpoCalendar, updateCalendarInput: CalendarUpdateRecord ->

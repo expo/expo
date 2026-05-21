@@ -161,6 +161,14 @@ function getMockForModule(module, typeInfo) {
     ];
     return (0, typescriptGeneration_1.joinTSNodesWithNewlines)(sections).flat();
 }
+/**
+ * This function generates a JavaScript/TypeScript mock content string for a given ModuleClassDeclaration object which is also part of the FileTypeInformation object.
+ * @param module a ModuleClassDeclaration object which is a child of the fileTypeInformation object.
+ * @param fileTypeInformation a FileTypeInformation object which has the context of the whole file in which the module was declared.
+ * @param includeTypes when set to true, the function emits TypeScript code otherwise it emits JavaScript.
+ * @returns a string which is the generated mock content.
+ * @header Mocks
+ */
 function generateTSMockForModule(module, fileTypeInformation, includeTypes) {
     const mockFileName = module.name + (includeTypes ? '.ts' : '.js');
     const mock = typescript_1.default.factory.createNodeArray(getMockForModule(module, fileTypeInformation));
@@ -180,6 +188,14 @@ function generateTSMockForModule(module, fileTypeInformation, includeTypes) {
 }
 const directoryPath = process.cwd();
 const swiftFilesGlob = `${directoryPath}/**/*.swift`;
+/**
+ * This function generates JavaScript/TypeScript mocks for each provided `FileTypeInformation` object.
+ *
+ * @param files A list of `FileTypeInformation` objects with generated type information for multiple modules
+ * @param outputLanguage the language to emit the mocks in
+ * @returns nothing
+ * @header Mocks
+ */
 async function generateMocks(files, outputLanguage = 'javascript') {
     const modules = files.flatMap((file) => file.moduleClasses.map((module) => ({ module, file })));
     if (modules.length === 0) {
@@ -195,6 +211,11 @@ async function generateMocks(files, outputLanguage = 'javascript') {
         await fs_1.default.promises.writeFile(path_1.default.join(mocksDir, module.name + extension), prettified);
     });
 }
+/**
+ *
+ * @returns
+ * @header Mocks
+ */
 async function getAllExpoModulesInWorkingDirectory() {
     const files = fs_1.default.globSync(swiftFilesGlob);
     return (await Promise.all(files.map((file) => (0, typeInformation_1.getFileTypeInformation)({

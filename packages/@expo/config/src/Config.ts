@@ -3,7 +3,6 @@ import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
 import { resolveFrom } from '@expo/require-utils';
 import deepMerge from 'deepmerge';
-import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 import semver from 'semver';
@@ -243,30 +242,11 @@ export function getConfigFilePaths(projectRoot: string): ConfigFilePaths {
 const DYNAMIC_CONFIG_EXTS = ['.ts', '.mts', '.cts', '.mjs', '.cjs', '.js'];
 
 function getDynamicConfigFilePath(projectRoot: string): string | null {
-  const fileNames = DYNAMIC_CONFIG_EXTS.map((ext) => `app.config${ext}`);
-  for (const fileName of fileNames) {
-    const configPath = path.join(projectRoot, fileName);
-    try {
-      const stat = fs.statSync(configPath);
-      if (stat.isFile()) {
-        return configPath;
-      }
-    } catch {}
-  }
-  return null;
+  return resolveFrom(projectRoot, './app.config', { extensions: DYNAMIC_CONFIG_EXTS });
 }
 
 function getStaticConfigFilePath(projectRoot: string): string | null {
-  for (const fileName of ['app.config.json', 'app.json']) {
-    const configPath = path.join(projectRoot, fileName);
-    try {
-      const stat = fs.statSync(configPath);
-      if (stat.isFile()) {
-        return configPath;
-      }
-    } catch {}
-  }
-  return null;
+  return resolveFrom(projectRoot, './app.config.json') ?? resolveFrom(projectRoot, './app.json');
 }
 
 /**

@@ -1,5 +1,5 @@
-import * as Contacts from '../Contacts';
-import ExpoContacts from '../ExpoContacts';
+import * as Contacts from '../legacy/Contacts';
+import ExpoContacts from '../legacy/ExpoContacts';
 
 describe('presentFormAsync', () => {
   it(`should invalidate contact when ID is provided`, async () => {

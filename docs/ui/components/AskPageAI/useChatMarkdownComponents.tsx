@@ -62,7 +62,7 @@ export function useChatMarkdownComponents({ onNavigate }: UseChatMarkdownCompone
             type="button"
             theme="quaternary"
             size="xs"
-            className="border-default! bg-default! pointer-events-auto absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-full border! p-0! shadow-sm"
+            className="pointer-events-auto absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-full border! border-default! bg-default! p-0! shadow-sm"
             onClick={handleCopy}
             aria-label="Copy code block">
             {copied ? (
@@ -80,31 +80,31 @@ export function useChatMarkdownComponents({ onNavigate }: UseChatMarkdownCompone
       h1: props => (
         <Heading1Component
           {...props}
-          className={mergeClasses('text-default text-[14px]! font-semibold', props.className)}
+          className={mergeClasses('text-[14px]! font-semibold text-default', props.className)}
         />
       ),
       h2: props => (
         <Heading2Component
           {...props}
-          className={mergeClasses('text-default text-[14px]! font-semibold', props.className)}
+          className={mergeClasses('text-[14px]! font-semibold text-default', props.className)}
         />
       ),
       h3: props => (
         <Heading3Component
           {...props}
-          className={mergeClasses('text-default text-[12px]! font-semibold', props.className)}
+          className={mergeClasses('text-[12px]! font-semibold text-default', props.className)}
         />
       ),
       h4: props => (
         <Heading4Component
           {...props}
-          className={mergeClasses('text-default text-[12px]! font-semibold', props.className)}
+          className={mergeClasses('text-[12px]! font-semibold text-default', props.className)}
         />
       ),
       h5: props => (
         <Heading5Component
           {...props}
-          className={mergeClasses('text-default text-[10px]! font-semibold', props.className)}
+          className={mergeClasses('text-[10px]! font-semibold text-default', props.className)}
         />
       ),
       p: ({ className, style, ...rest }) => (
@@ -112,7 +112,7 @@ export function useChatMarkdownComponents({ onNavigate }: UseChatMarkdownCompone
           {...rest}
           style={{ ...(style ?? {}), fontSize: '14px', lineHeight: '1.5' }}
           className={mergeClasses(
-            'text-secondary mb-2!',
+            'mb-2! text-secondary',
             className,
             'text-[10px]! leading-[1.55]!'
           )}

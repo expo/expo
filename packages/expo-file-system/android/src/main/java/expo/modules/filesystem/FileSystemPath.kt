@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
-import androidx.core.net.toUri
 import expo.modules.filesystem.unifiedfile.AssetFile
 import expo.modules.filesystem.unifiedfile.ContentProviderFile
 import expo.modules.filesystem.fsops.DestinationSpec
@@ -20,6 +19,16 @@ import java.io.File
 import java.util.EnumSet
 import java.util.regex.Pattern
 import kotlin.io.path.moveTo
+
+internal fun validateFileSystemChildName(name: String) {
+  val invalid = name.isEmpty() ||
+    name == "." ||
+    name == ".." ||
+    name.any { it == '/' || it == '\\' }
+  if (invalid) {
+    throw UnableToCreateException("child name must be a single path segment")
+  }
+}
 
 val Uri.isContentUri
   get(): Boolean {
@@ -75,6 +84,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       }
 
   fun delete() {
+    validatePermission(FilePermissionService.Permission.WRITE)
     if (!file.exists()) {
       throw UnableToDeleteException("uri '${file.uri}' does not exist")
     }
@@ -134,9 +144,12 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       // TODO: Consider adding a check for asset URIs – this returns asset files of Expo Go (such as root-cert), but these are already freely available on apk mirrors ect.
       return true
     }
+    return checkPermissionForPath(javaFile.path, permission)
+  }
 
+  private fun checkPermissionForPath(path: String, permission: FilePermissionService.Permission): Boolean {
     val permissions = appContext?.filePermission?.getPathPermissions(
-      appContext?.reactContext ?: throw Exceptions.ReactContextLost(), javaFile.path
+      appContext?.reactContext ?: throw Exceptions.ReactContextLost(), path
     ) ?: EnumSet.noneOf(FilePermissionService.Permission::class.java)
     return permissions.contains(permission)
   }
@@ -176,15 +189,31 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   fun rename(newName: String) {
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
-    val newFile = File(javaFile.parent, newName)
+    validateFileSystemChildName(newName)
+    val parent = javaFile.parentFile
+      ?: throw UnableToCreateException("parent directory does not exist")
+    // Use canonical paths only for containment checks, so symlinks and aliases cannot escape the parent.
+    val parentCanonicalPath = parent.canonicalPath
+    val newFile = File(parent, newName)
+    if (newFile.canonicalFile.parentFile?.canonicalPath != parentCanonicalPath) {
+      throw UnableToCreateException("child path escapes parent directory")
+    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       javaFile.toPath().moveTo(newFile.toPath())
-      uri = newFile.toUri()
     } else {
       javaFile.copyTo(newFile)
       javaFile.delete()
-      uri = newFile.toUri()
     }
+    uri = renamedUri(newName)
+  }
+
+  private fun renamedUri(newName: String): Uri {
+    // Preserve the original URI spelling; canonical paths can rewrite /data/user/0 to /data/data.
+    val currentUri = uri.toString()
+    val currentPath = currentUri.trimEnd('/')
+    val parentUri = currentUri.substring(0, currentPath.lastIndexOf('/') + 1)
+    val renamedUri = Uri.withAppendedPath(Uri.parse(parentUri), newName).toString()
+    return Uri.parse(if (this is FileSystemDirectory) "$renamedUri/" else renamedUri)
   }
 
   val modificationTime: Long?

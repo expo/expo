@@ -54,24 +54,24 @@ export const FeedbackDialog = ({ pathname }: Props) => {
       <Dialog.Portal>
         <Dialog.Overlay
           className={mergeClasses(
-            'dialog-overlay absolute z-[999]',
+            'dialog-overlay absolute z-999',
             'data-[state=open]:animate-fadeIn',
             'data-[state=closed]:animate-fadeOut'
           )}>
           <div className="fixed inset-0 bg-[#00000080]" />
         </Dialog.Overlay>
-        <div className="fixed top-0 left-0 z-[1000] flex h-dvh w-dvw items-center justify-center">
+        <div className="fixed top-0 left-0 z-1000 flex h-dvh w-dvw items-center justify-center">
           <Dialog.Content
             className={mergeClasses(
               'dialog-content',
-              'border-default bg-default top-0 left-0 max-h-[90vh] w-[90vw] max-w-[500px] overflow-hidden rounded-lg border wrap-break-word shadow-md outline-0 backface-hidden',
+              'top-0 left-0 max-h-[90vh] w-[90vw] max-w-125 overflow-hidden rounded-lg border border-default bg-default wrap-break-word shadow-md outline-0 backface-hidden',
               'data-[state=open]:animate-slideUpAndFadeIn',
               'data-[state=closed]:animate-fadeOut'
             )}>
             {isSuccess ? (
               <>
                 <div className="flex flex-col items-center px-6 py-12">
-                  <div className="border-success bg-success flex size-[72px] items-center justify-center rounded-full border-2">
+                  <div className="flex size-18 items-center justify-center rounded-full border-2 border-success bg-success">
                     <CheckIcon className="icon-2xl text-icon-success" />
                   </div>
                   <RawH2 className="mt-5! mb-2!">Feedback received</RawH2>
@@ -79,7 +79,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                     Your feedback will help us make our docs better. Thanks for sharing!
                   </CALLOUT>
                 </div>
-                <div className="bg-subtle flex min-h-[56px] items-center justify-end gap-2 px-3">
+                <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-3">
                   <Dialog.Close asChild>
                     <Button type="submit">Done</Button>
                   </Dialog.Close>
@@ -106,7 +106,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                       <LABEL>Feedback</LABEL>
                       <Textarea
                         autoFocus
-                        className="h-[180px] resize-none"
+                        className="h-45 resize-none"
                         characterLimit={1000}
                         value={feedback}
                         onChange={event => {
@@ -140,7 +140,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                     </InlineHelp>
                   )}
                 </div>
-                <div className="bg-subtle flex min-h-[56px] items-center justify-end gap-2 px-3">
+                <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-3">
                   <Dialog.Close asChild>
                     <Button theme="quaternary">No Thanks</Button>
                   </Dialog.Close>

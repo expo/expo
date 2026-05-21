@@ -34,7 +34,28 @@ async function directoryExistsAsync(file) {
 }
 function fileExists(file) {
   try {
-    return _fs().default.statSync(file).isFile();
+    const stat = _fs().default.lstatSync(file, {
+      throwIfNoEntry: false
+    });
+    if (!stat) {
+      return false;
+    } else if (stat.isFile()) {
+      return true;
+    } else if (stat.isSymbolicLink()) {
+      return isRealpathFileSync(file);
+    } else {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+}
+function isRealpathFileSync(target) {
+  try {
+    const realpath = _fs().default.realpathSync(target);
+    return !!_fs().default.lstatSync(realpath, {
+      throwIfNoEntry: false
+    })?.isFile();
   } catch {
     return false;
   }

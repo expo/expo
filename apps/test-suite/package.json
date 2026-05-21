@@ -57,6 +57,7 @@
     "expo-navigation-bar": "workspace:*",
     "expo-network": "workspace:*",
     "expo-notifications": "workspace:*",
+    "expo-observe": "workspace:*",
     "expo-screen-orientation": "workspace:*",
     "expo-secure-store": "workspace:*",
     "expo-sms": "workspace:*",

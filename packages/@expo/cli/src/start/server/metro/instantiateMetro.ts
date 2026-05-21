@@ -387,16 +387,16 @@ export async function instantiateMetroAsync(
     getMetroBundler,
   });
 
-  // Create the core middleware stack for Metro, including websocket listeners
-  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
-    metroConfig,
-    { getMetroBundler }
-  );
-
   // Get local URL to Metro bundler server (typically configured as 127.0.0.1:8081)
   const serverBaseUrl = metroBundler
     .getUrlCreator()
     .constructUrl({ scheme: 'http', hostType: 'localhost' });
+
+  // Create the core middleware stack for Metro, including websocket listeners
+  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
+    metroConfig,
+    { getMetroBundler, serverBaseUrl }
+  );
 
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
@@ -409,7 +409,7 @@ export async function instantiateMetroAsync(
     });
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
-    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+    middleware.use('/_expo/debugger', createJsInspectorMiddleware({ serverBaseUrl }));
 
     // TODO(cedric): `enhanceMiddleware` is deprecated, but is currently used to unify the middleware stacks
     // See: https://github.com/facebook/metro/commit/22e85fde85ec454792a1b70eba4253747a2587a9

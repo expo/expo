@@ -14,6 +14,7 @@ exports.getPodspecFilePath = getPodspecFilePath;
 exports.getSourceFilesGlobFromPodspecFile = getSourceFilesGlobFromPodspecFile;
 exports.getModuleFilePathsFromPodspec = getModuleFilePathsFromPodspec;
 exports.uniqueStrings = uniqueStrings;
+exports.maybePrepareOutputDirectory = maybePrepareOutputDirectory;
 exports.parseCommandArguments = parseCommandArguments;
 exports.getFileTypeInformationFromArgs = getFileTypeInformationFromArgs;
 exports.writeStringToFileOrPrintToConsole = writeStringToFileOrPrintToConsole;
@@ -47,11 +48,11 @@ function isSourceKittenInstalled() {
 function addCommonOptions(command) {
     return command
         .option('-i, --input-paths <filePaths...>', 'Paths to Swift files for some module, glob patterns are allowed.')
-        .option('-m --module-path <modulePath>', 'Path to expo module root directory.')
+        .option('-m --module-path <modulePath>', 'Path to Expo module root directory.')
         .option('-o, --output-path <filePath>', 'Path to save the generated output. If this option is not provided the generated output is printed to console.')
         .option('-t, --type-inference <typeInference>', 
     // TODO(@HubertBer) Fix the PREPROCESS_AND_INFERENCE option.
-    'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE. Note that the last option rarely fails for some modules, use the 2nd or 1st in that case.', 'SIMPLE_INFERENCE')
+    'Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.', 'SIMPLE_INFERENCE')
         .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
 }
 /**
@@ -109,6 +110,9 @@ function sanitizeAndValidateOutputPath(rawPath, isFilePath = true) {
         if (isFilePath && fs_1.default.existsSync(path_1.default.dirname(resolvedPath))) {
             return resolvedPath;
         }
+        if (!isFilePath) {
+            return resolvedPath;
+        }
     }
     catch { }
     return null;
@@ -156,6 +160,17 @@ function getModuleFilePathsFromPodspec(modulePath) {
 function uniqueStrings(strings) {
     return [...new Set(strings)];
 }
+async function maybePrepareOutputDirectory(dirName) {
+    if (!dirName) {
+        return;
+    }
+    try {
+        await fs_1.default.promises.mkdir(dirName, { recursive: true });
+    }
+    catch {
+        console.error(`Error creating the output directory: ${dirName}`);
+    }
+}
 function parseCommandArguments(options, isOutputFile = true) {
     const appJsonPath = options.appJson ?? undefined;
     let realInputPaths = (options.inputPaths ?? [])
@@ -174,7 +189,7 @@ function parseCommandArguments(options, isOutputFile = true) {
     if (options.outputPath) {
         const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath, isOutputFile);
         if (!validatedOutPath) {
-            console.error(`Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a path to an existing directory.'}`);
+            console.error(`Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a valid path to a directory.'}`);
             return null;
         }
         realOutputPath = validatedOutPath;

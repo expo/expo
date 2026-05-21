@@ -52,7 +52,7 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
   return (
     <blockquote
       className={mergeClasses(
-        'border-default bg-subtle mb-4 flex gap-2.5 rounded-md border py-3 pr-4 pl-3.5 shadow-xs',
+        'mb-4 flex gap-2.5 rounded-md border border-default bg-subtle py-3 pr-4 pl-3.5 shadow-xs',
         size === 'sm' && 'gap-2 px-3 py-2.5',
         '[table_&]:last:mb-0',
         '[&_code]:bg-element',
@@ -66,13 +66,13 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
       <Icon
         className={mergeClasses(
           'mt-1 select-none',
-          size === 'sm' ? 'icon-xs mt-[3px]' : 'icon-sm',
+          size === 'sm' ? 'mt-0.75 icon-xs' : 'icon-sm',
           getCalloutIconColor(finalType)
         )}
       />
       <div
         className={mergeClasses(
-          'text-default w-full leading-normal',
+          'w-full leading-normal text-default',
           'last:mb-0',
           size === 'sm' && 'text-sm [&_code]:text-[90%] [&_p]:text-sm'
         )}>

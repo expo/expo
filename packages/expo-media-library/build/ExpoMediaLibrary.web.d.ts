@@ -1,5 +1,5 @@
 import { type PermissionResponse } from 'expo';
-import type { MediaTypeObject, SortByObject } from './MediaLibrary';
+import type { MediaTypeObject, SortByObject } from './legacy/MediaLibrary';
 declare const _default: {
     readonly CHANGE_LISTENER_NAME: string;
     readonly MediaType: MediaTypeObject;

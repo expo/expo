@@ -22,6 +22,7 @@ concurrency:
 
 jobs:
   docs-pr:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout

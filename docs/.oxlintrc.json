@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["import", "react", "unicorn", "typescript", "nextjs", "node", "oxc"],
-  "jsPlugins": ["eslint-plugin-testing-library"],
+  "jsPlugins": ["eslint-plugin-testing-library", "oxlint-tailwindcss"],
   "categories": {
     "correctness": "off"
   },
@@ -299,9 +299,39 @@
     "testing-library/prefer-presence-queries": "error",
     "testing-library/prefer-query-by-disappearance": "error",
     "testing-library/prefer-screen-queries": "error",
-    "testing-library/render-result-naming-convention": "error"
+    "testing-library/render-result-naming-convention": "error",
+    "tailwindcss/no-unknown-classes": [
+      "warn",
+      {
+        "allowlist": [
+          "dark-theme",
+          "react-player",
+          "table-wrapper",
+          "terminal-snippet",
+          "tutorial-code-annotation"
+        ],
+        "ignorePrefixes": ["diff-", "dialog-", "max-medium:", "[table_&]"]
+      }
+    ],
+    "tailwindcss/no-duplicate-classes": "warn",
+    "tailwindcss/no-conflicting-classes": "allow",
+    "tailwindcss/no-deprecated-classes": "warn",
+    "tailwindcss/no-unnecessary-whitespace": "warn",
+    "tailwindcss/enforce-sort-order": [
+      "warn",
+      {
+        "mode": "strict"
+      }
+    ],
+    "tailwindcss/enforce-shorthand": "warn",
+    "tailwindcss/enforce-canonical": "warn"
   },
-  "settings": {},
+  "settings": {
+    "tailwindcss": {
+      "entryPoint": ["styles/global.css", "docs/styles/global.css"],
+      "callees": ["mergeClasses"]
+    }
+  },
   "overrides": [
     {
       "files": ["**/*.js", "**/*.mjs", "**/*.cjs"],

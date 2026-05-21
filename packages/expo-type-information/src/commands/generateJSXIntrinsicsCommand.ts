@@ -11,8 +11,11 @@ import {
 import { generateJSXIntrinsicsFileContent } from '../typescriptGeneration';
 
 export function generateJsxIntrinsics(cli: commander.Command) {
-  return addCommonOptions(cli.command('generate-jsx-intrinsics')).action(
-    async (options: TypeInformationCommandCommonAllArguments) => {
+  return addCommonOptions(cli.command('generate-jsx-intrinsics'))
+    .description(
+      'Generates a declaration file for a View, updates JSX intrinsics with the View props.'
+    )
+    .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) {
         return;
@@ -33,6 +36,5 @@ export function generateJsxIntrinsics(cli: commander.Command) {
         writeStringToFileOrPrintToConsole(jsxIntrinsicViewFileContent, realOutputPath);
       };
       runCommandOnWatch(parsedArgs, command);
-    }
-  );
+    });
 }

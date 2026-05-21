@@ -5,6 +5,7 @@ exports.createRequestHandler = createRequestHandler;
 const ImmutableRequest_1 = require("../ImmutableRequest");
 const matchers_1 = require("../utils/matchers");
 const middleware_1 = require("../utils/middleware");
+const LOADER_PREFIX = '/_expo/loaders';
 /** Internal errors class to indicate that the server has failed
  * @remarks
  * This should be thrown for unexpected errors, so they show up as crashes.
@@ -45,7 +46,11 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
         let url = new URL(request.url);
         if (manifest.middleware) {
             const middleware = await getMiddleware(manifest.middleware);
-            if ((0, middleware_1.shouldRunMiddleware)(request, middleware)) {
+            // Pass the route a loader endpoint resolves to, so matchers can't be bypassed via `/_expo/loaders/...`.
+            const effectivePathname = url.pathname.startsWith(LOADER_PREFIX + '/')
+                ? url.pathname.slice(LOADER_PREFIX.length).replace(/\/index$/, '/')
+                : url.pathname;
+            if ((0, middleware_1.shouldRunMiddleware)(request, middleware, effectivePathname)) {
                 const middlewareResponse = await middleware.default(new ImmutableRequest_1.ImmutableRequest(request));
                 if (middlewareResponse instanceof Response) {
                     return middlewareResponse;
@@ -79,9 +84,9 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
         }
         // First, test static routes and loader data requests
         if (request.method === 'GET' || request.method === 'HEAD') {
-            const isLoaderRequest = url.pathname.startsWith('/_expo/loaders/');
+            const isLoaderRequest = url.pathname.startsWith(LOADER_PREFIX + '/');
             const matchedPath = isLoaderRequest
-                ? url.pathname.replace('/_expo/loaders', '').replace(/\/index$/, '/')
+                ? url.pathname.slice(LOADER_PREFIX.length).replace(/\/index$/, '/')
                 : url.pathname;
             for (const route of manifest.htmlRoutes) {
                 if (!route.namedRegex.test(matchedPath)) {

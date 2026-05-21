@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 1.19.7 — 2026-05-20
+
+### 🎉 New features
+
+- Add check for committed `*.local` env files ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Pass original env to Expo sub-command ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+- Switch React Native Directory compatibility check request from POST to GET. ([#45673](https://github.com/expo/expo/pull/45673) by [@simek](https://github.com/simek))
+
 ## 1.19.6 — 2026-05-11
 
 ### 🎉 New features

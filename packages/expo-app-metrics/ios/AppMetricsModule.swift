@@ -67,10 +67,6 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       return await AppMetrics.mainSession.frameMetricsRecorder.metrics
     }
 
-    AsyncFunction("getStoredEntries") { () -> [Any] in
-      return []
-    }
-
     AsyncFunction("clearStoredEntries") {
       // no-op
     }

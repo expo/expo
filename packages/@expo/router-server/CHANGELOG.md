@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 56.0.11 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- Add missing HTML attribute escaping for inserted asset URLs ([#45848](https://github.com/expo/expo/pull/45848) by [@kitten](https://github.com/kitten))
+
+## 56.0.9 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Reject RSC server-action invocations that aren't HTTP POST ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+- Enforce `Sec-Fetch-Site` or `expo-platform` header values ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+- Fix RSC falling through on lookup causing unexpected errors ([#45895](https://github.com/expo/expo/pull/45895) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- [Internal] Align RSC server routing with expo-server/expo-router's canonical matchers ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+- Enforce that RSC `skip` parameter cannot skip layouts anymore ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+- [Internal] Remove RSC render context and remove render store global ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
+
 ## 56.0.8 — 2026-05-13
 
 _This version does not introduce any user-facing changes._

@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "56.0.5",
+  "version": "56.0.7",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -54,15 +54,15 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "workspace:^56.0.4",
-    "@expo/json-file": "workspace:~10.1.0",
-    "@expo/plist": "workspace:^0.6.0",
+    "@expo/config-types": "workspace:^56.0.5",
+    "@expo/json-file": "workspace:~10.2.0",
+    "@expo/plist": "workspace:^0.7.0",
+    "@expo/require-utils": "workspace:^56.1.2",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
-    "resolve-from": "^5.0.0",
     "semver": "^7.5.4",
     "slugify": "^1.6.6",
     "xcode": "^3.0.1",

@@ -10,12 +10,19 @@ const typescriptGeneration_1 = require("../typescriptGeneration");
 function moduleInterfaceCommand(cli) {
     return (0, commandUtils_1.addCommonOptions)(cli.command('module-interface'))
         .summary('Generates a full ts interface for a Swift module.')
-        .description('Generates a full ts interface for a Swift module. It consists of types.ts file with all types defined in the module, module.ts with the native module definition, and view.tsx for each view defined in the module, and an index.ts file which reexports some functions.')
+        .description(`Generates a full TypeScript interface for a Swift module. It consists of:
+
+- **types.ts** file with all types defined in the module
+- **module.ts** with the native module definition
+- **view.tsx** for each view defined in the module
+- **index.ts** file which reexports some functions
+`)
         .action(async (options) => {
         const parsedArgs = await (0, commandUtils_1.parseCommandArguments)(options, false);
         if (!parsedArgs) {
             return;
         }
+        (0, commandUtils_1.maybePrepareOutputDirectory)(parsedArgs.realOutputPath);
         const { realInputPaths, realOutputPath } = parsedArgs;
         const command = async () => {
             const typeInfo = await (0, commandUtils_1.getFileTypeInformationFromArgs)(parsedArgs);

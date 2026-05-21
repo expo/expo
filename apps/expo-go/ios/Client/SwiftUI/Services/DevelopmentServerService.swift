@@ -207,7 +207,7 @@ class DevelopmentServerService: ObservableObject {
       return
     }
 
-    guard let url = URL(string: "\(APIClient.shared.apiOrigin)/--/api/v2/development-sessions") else {
+    guard let url = URL(string: "\(APIClient.shared.apiOrigin)/--/api/v2/active-sessions") else {
       return
     }
 

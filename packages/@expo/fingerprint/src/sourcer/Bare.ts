@@ -1,3 +1,4 @@
+import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -90,7 +91,10 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
     return [];
   }
   try {
-    const { stdout } = await spawnAsync('npx', ['react-native', 'config'], { cwd: projectRoot });
+    const { stdout } = await spawnAsync('npx', ['react-native', 'config'], {
+      cwd: projectRoot,
+      env: getOriginalEnv(),
+    });
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
@@ -120,7 +124,10 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
     'android',
   ];
   try {
-    const { stdout } = await spawnAsync('node', args, { cwd: projectRoot });
+    const { stdout } = await spawnAsync('node', args, {
+      cwd: projectRoot,
+      env: getOriginalEnv(),
+    });
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
@@ -153,7 +160,7 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
         '--platform',
         'ios',
       ],
-      { cwd: projectRoot }
+      { cwd: projectRoot, env: getOriginalEnv() }
     );
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({

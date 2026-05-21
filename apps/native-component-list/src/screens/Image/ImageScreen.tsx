@@ -127,6 +127,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'SVG sizing (maxWidth/maxHeight)',
+    route: 'image/svg-sizing',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSvgSizingScreen'));
+    },
+  },
+  {
     name: 'Hash Placeholders',
     route: 'image/hash-placeholders',
     getComponent() {

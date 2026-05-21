@@ -35,6 +35,15 @@ export default function Example() {
 }
 ```
 
+## Components
+
+- **Container:** [`Host`](host) &mdash; the required root for every universal subtree.
+- **Layout:** [`Column`](column), [`Row`](row), [`Spacer`](spacer), [`ScrollView`](scrollview).
+- **Display:** [`Text`](text), [`Icon`](icon).
+- **Controls:** [`Button`](button), [`Switch`](switch), [`Checkbox`](checkbox), [`Slider`](slider), [`TextInput`](textinput), [`Picker`](picker).
+- **Disclosure and presentation:** [`BottomSheet`](bottomsheet), [`Collapsible`](collapsible).
+- **Collections and forms:** [`List`](list) (with `ListItem`), [`FieldGroup`](fieldgroup).
+
 ## When to use this versus `swift-ui` / `jetpack-compose`
 
 - Reach for **universal** components when you want one component tree that runs unmodified on Android, iOS, and web. The platform-native look and feel is preserved on Android and iOS because the components delegate to Jetpack Compose/SwiftUI under the hood.

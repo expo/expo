@@ -3,11 +3,11 @@
 exports[`TableOfContents correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="w-[280px] px-6 pt-[52px] pb-10"
+    class="w-70 px-6 pt-13 pb-10"
     data-toc="true"
   >
     <p
-      class="text-inherit text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute z-[100] -mt-[52px] -ml-6 flex min-h-[32px] w-[272px] select-none from-default items-center gap-2 bg-linear-to-b from-80% to-transparent py-3 pl-6"
+      class="text-inherit text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute z-100 -mt-13 -ml-6 flex min-h-8 w-68 select-none items-center gap-2 bg-linear-to-b from-default from-80% to-transparent py-3 pl-6"
       data-text="true"
     >
       <svg
@@ -49,7 +49,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
               id="arrow-circle-up-outline-icon"
             >
               <path
-                d="M16 12L12 8M12 8L8 12M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                d="M8 12L12 8L16 12M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -72,7 +72,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           href="#base-level-heading"
         >
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary! hocus:text-link! w-full"
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-secondary! hocus:text-link!"
             data-text="true"
           >
             Base level heading
@@ -88,7 +88,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           href="#level-3-subheading"
         >
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary! hocus:text-link! w-full"
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-secondary! hocus:text-link!"
             data-text="true"
           >
             Level 3 subheading
@@ -104,7 +104,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           href="#code-heading-depth-1"
         >
           <code
-            class="leading-[1.6154] text-inherit text-secondary! hocus:text-link! w-full truncate text-xs!"
+            class="leading-[1.6154] text-inherit w-full text-secondary! hocus:text-link! truncate text-xs!"
             data-text="true"
           >
             Code heading depth 1

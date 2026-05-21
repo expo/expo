@@ -7,6 +7,9 @@ ExpoObserve.configure({
   environment: 'custom-env',
   dispatchingEnabled: true,
   dispatchInDebug: true,
+  integrations: {
+    'expo-router': true,
+  },
 });
 
 export default function RootLayout() {

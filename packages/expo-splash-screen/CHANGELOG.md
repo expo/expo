@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 56.0.9 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- Fix `exports` field resolving to the web stubs on native, making functions like `preventAutoHideAsync` no-ops. ([#45798](https://github.com/expo/expo/pull/45798) by [@zoontek](https://github.com/zoontek))
+
 ## 56.0.6 — 2026-05-13
 
 _This version does not introduce any user-facing changes._

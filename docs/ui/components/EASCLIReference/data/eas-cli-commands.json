@@ -1,15 +1,15 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-05-06T07:28:30.145Z",
-    "cliVersion": "18.11.0"
+    "fetchedAt": "2026-05-19T18:50:44.995Z",
+    "cliVersion": "19.0.1"
   },
   "totalCommands": 114,
   "commands": [
     {
       "command": "eas account:login",
       "description": "log in with your Expo account",
-      "usage": "USAGE\n  $ eas account:login [-s] [-b]\n\nFLAGS\n  -b, --browser  Login with your browser\n  -s, --sso      Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
+      "usage": "USAGE\n  $ eas account:login [-s] [-b]\n\nFLAGS\n  -b, --[no-]browser  Log in with your browser (default; use --no-browser for CLI-based login)\n  -s, --sso           Log in with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
     },
     {
       "command": "eas account:logout",
@@ -369,7 +369,7 @@
     {
       "command": "eas login",
       "description": "log in with your Expo account",
-      "usage": "USAGE\n  $ eas login [-s] [-b]\n\nFLAGS\n  -b, --browser  Login with your browser\n  -s, --sso      Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
+      "usage": "USAGE\n  $ eas login [-s] [-b]\n\nFLAGS\n  -b, --[no-]browser  Log in with your browser (default; use --no-browser for CLI-based login)\n  -s, --sso           Log in with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
     },
     {
       "command": "eas logout",

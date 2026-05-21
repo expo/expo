@@ -48,7 +48,8 @@ const react_2 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
-const hooks_1 = require("./hooks");
+// Direct import to prevent a require cycle
+const useCurrentRouteInfo_1 = require("./hooks/useCurrentRouteInfo");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
 const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
@@ -262,7 +263,7 @@ function getQualifiedRouteComponent(value) {
 function AnalyticsListeners({ navigation, screenId, }) {
     const isFirstRenderRef = react_2.default.useRef(true);
     const hasBlurredRef = react_2.default.useRef(true);
-    const routeInfo = (0, hooks_1.useCurrentRouteInfo)();
+    const routeInfo = (0, useCurrentRouteInfo_1.useCurrentRouteInfo)();
     const isFocused = navigation.isFocused();
     if (isFirstRenderRef.current) {
         isFirstRenderRef.current = false;
@@ -270,6 +271,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
             navigationEvents_1.unstable_navigationEvents.emit('pagePreloaded', {
                 pathname: routeInfo.pathname,
                 params: routeInfo.params,
+                segments: routeInfo.segments,
                 screenId,
             });
         }
@@ -280,12 +282,13 @@ function AnalyticsListeners({ navigation, screenId, }) {
                 navigationEvents_1.unstable_navigationEvents.emit('pageRemoved', {
                     pathname: routeInfo.pathname,
                     params: routeInfo.params,
+                    segments: routeInfo.segments,
                     screenId,
                 });
             };
         }
         return () => { };
-    }, [routeInfo?.params, routeInfo?.pathname, screenId]);
+    }, [routeInfo?.params, routeInfo?.pathname, routeInfo?.segments, screenId]);
     // Emit `pageFocused` from an effect — not during render — so it fires after the
     // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
     (0, react_2.useEffect)(() => {
@@ -293,11 +296,12 @@ function AnalyticsListeners({ navigation, screenId, }) {
             navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
                 pathname: routeInfo.pathname,
                 params: routeInfo.params,
+                segments: routeInfo.segments,
                 screenId,
             });
             hasBlurredRef.current = false;
         }
-    }, [isFocused, routeInfo?.pathname, routeInfo?.params, screenId]);
+    }, [isFocused, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
     (0, react_2.useEffect)(() => {
         if (routeInfo) {
             const cleanFocus = navigation.addListener('focus', () => {
@@ -307,6 +311,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
                     navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
                         pathname: routeInfo.pathname,
                         params: routeInfo.params,
+                        segments: routeInfo.segments,
                         screenId,
                     });
                     hasBlurredRef.current = false;
@@ -316,6 +321,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
                 navigationEvents_1.unstable_navigationEvents.emit('pageBlurred', {
                     pathname: routeInfo.pathname,
                     params: routeInfo.params,
+                    segments: routeInfo.segments,
                     screenId,
                 });
                 hasBlurredRef.current = true;
@@ -326,7 +332,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
             };
         }
         return () => { };
-    }, [navigation, routeInfo?.pathname, routeInfo?.params, screenId]);
+    }, [navigation, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
     return null;
 }
 function screenOptionsFactory(route, options) {

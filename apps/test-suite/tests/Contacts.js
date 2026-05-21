@@ -1,7 +1,7 @@
 'use strict';
 
 import { Asset } from 'expo-asset';
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
