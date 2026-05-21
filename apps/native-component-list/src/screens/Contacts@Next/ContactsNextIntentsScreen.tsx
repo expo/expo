@@ -1,4 +1,4 @@
-import { Contact, ContactAccessButton, requestPermissionsAsync } from 'expo-contacts/next';
+import { Contact, ContactAccessButton, requestPermissionsAsync } from 'expo-contacts';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 

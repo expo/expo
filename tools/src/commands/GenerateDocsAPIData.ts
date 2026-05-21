@@ -177,6 +177,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/universal/list': ['universal/List/index.tsx', 'expo-ui'],
   'expo-ui/universal/listitem': ['universal/ListItem/index.ts', 'expo-ui'],
   'expo-ui/universal/picker': ['universal/Picker/index.ts', 'expo-ui'],
+  'expo-ui/universal/rnhostview': ['universal/RNHostView/index.tsx', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
@@ -197,8 +198,9 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-brightness': ['Brightness.ts'],
   'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
-  'expo-calendar': ['Calendar.ts'],
-  'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
+  'expo-calendar': ['index.ts'],
+  'expo-calendar-legacy': ['legacy/index.ts', 'expo-calendar'],
+  'expo-calendar-next': ['next/index.ts', 'expo-calendar'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
@@ -206,6 +208,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
   'expo-contacts-next': ['next/index.ts', 'expo-contacts'],
+  'expo-contacts-legacy': ['legacy/index.ts', 'expo-contacts'],
   'expo-crypto': ['Crypto.ts'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-dev-menu': ['DevMenu.ts'],
@@ -243,8 +246,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
-  'expo-media-library': ['MediaLibrary.ts'],
-  'expo-media-library-next': ['next/index.ts', 'expo-media-library'],
+  'expo-media-library': ['index.ts'],
+  'expo-media-library-legacy': ['legacy/index.ts', 'expo-media-library'],
   'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],
@@ -366,6 +369,33 @@ const executeCommand = async (
         .map((entry) => entry.children)
         .flat()
         .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
+    const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
+    if (fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+      const pluginApp = await Application.bootstrapWithPlugins(
+        {
+          ...typedocOptions,
+          entryPoints: [pluginEntryPath],
+          tsconfig: pluginTsConfigPath,
+        } as unknown as TypeDocOptions,
+        [new TSConfigReader(), new TypeDocReader()]
+      );
+      const pluginProject = await pluginApp.convert();
+      if (pluginProject) {
+        const tempPluginJson = path.join(os.tmpdir(), `${jsonFileName}-plugin-${Date.now()}.json`);
+        await pluginApp.generateJson(pluginProject, tempPluginJson);
+        const pluginOutput = await fs.readJson(tempPluginJson);
+        await fs.remove(tempPluginJson);
+        const pluginChildren = (pluginOutput.children ?? [])
+          .filter((entry: any) => entry.name !== 'default')
+          .map((entry: any) => ({
+            ...entry,
+            _source: 'plugin',
+          }));
+        output.children = [...(output.children ?? []), ...pluginChildren];
+      }
     }
 
     const { readme, symbolIdMap, ...trimmedOutput } = output;

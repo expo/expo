@@ -4,7 +4,7 @@ import {
   ContactsSortOrder,
   PartialContactDetails,
   requestPermissionsAsync,
-} from 'expo-contacts/next';
+} from 'expo-contacts';
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput } from 'react-native';
 

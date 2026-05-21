@@ -26,9 +26,11 @@ export function resolveFrom(
   const skipNodePath = !!params?.skipNodePath;
   const followSymlinks = params?.followSymlinks ?? skipNodePath;
 
-  const resolved = path.resolve(fromDirectory, moduleId);
+  let resolved = path.resolve(fromDirectory, moduleId);
+
   // (1) check direct path / exact match
-  if (fs.existsSync(resolved)) {
+  const resolveType = resolveTypeSync(resolved);
+  if (resolveType === ResolveType.FILE) {
     return resolved;
   }
 
@@ -36,9 +38,29 @@ export function resolveFrom(
   for (let ext of exts) {
     ext = ext[0] !== '.' ? `.${ext}` : ext;
     const withExt = resolved + ext;
-    if (fs.existsSync(withExt)) {
+    if (resolveTypeSync(withExt) === ResolveType.FILE) {
       return withExt;
     }
+  }
+
+  const isFileSpecifier = /^\.\.?(?:$|[/\\])/.test(moduleId) || path.isAbsolute(moduleId);
+
+  // (2.2) check against `/index` paths if we've disabled Node resolution or if we're resolving a relative path directly
+  if ((isFileSpecifier || skipNodePath) && !isJSON && resolveType === ResolveType.DIR) {
+    resolved = path.join(resolved, 'index');
+    for (let ext of exts) {
+      ext = ext[0] !== '.' ? `.${ext}` : ext;
+      const withExt = resolved + ext;
+      if (resolveTypeSync(withExt) === ResolveType.FILE) {
+        // NOTE(@kitten): Like above, we don't resolve symlinks when we're not in a node_modules resolution path
+        return withExt;
+      }
+    }
+  }
+
+  // We won't need to continue with Node resolution if we're only resolving paths
+  if (isFileSpecifier) {
+    return null;
   }
 
   // (3) if we're not following symlinks, we try to resolve against `node_modules` folders unresolved
@@ -46,17 +68,36 @@ export function resolveFrom(
     const resolvedDir = path.resolve(fromDirectory);
     const moduleDirs = Module._nodeModulePaths(resolvedDir);
     for (const modulesDir of moduleDirs) {
-      const candidate = path.join(modulesDir, moduleId);
+      let candidate = path.join(modulesDir, moduleId);
+      const resolveType = resolveTypeSync(candidate);
       // (3.1) direct match
-      if (fs.existsSync(candidate)) {
+      if (resolveType === ResolveType.FILE) {
         return candidate;
+      } else if (resolveType === ResolveType.ENOENT) {
+        // Optimization: If the directory itself doesn't exist, there's no point in us continuing
+        // to check for more files in this directory
+        const dirname = path.dirname(candidate);
+        if (dirname !== modulesDir && !fs.existsSync(dirname)) {
+          continue;
+        }
       }
       // (3.2) check against match with extensions
       for (let ext of exts) {
         ext = ext[0] !== '.' ? `.${ext}` : ext;
         const candidateWithExt = candidate + ext;
-        if (fs.existsSync(candidateWithExt)) {
+        if (resolveTypeSync(candidateWithExt) === ResolveType.FILE) {
           return followSymlinks ? maybeResolve(candidateWithExt) : candidateWithExt;
+        }
+      }
+      // (3.3) check against `/index` paths
+      if (!isJSON && resolveType === ResolveType.DIR) {
+        candidate = path.join(candidate, 'index');
+        for (let ext of exts) {
+          ext = ext[0] !== '.' ? `.${ext}` : ext;
+          const candidateWithExt = candidate + ext;
+          if (resolveTypeSync(candidateWithExt) === ResolveType.FILE) {
+            return followSymlinks ? maybeResolve(candidateWithExt) : candidateWithExt;
+          }
         }
       }
     }
@@ -77,6 +118,45 @@ function nativeResolveFrom(fromDirectory: string, moduleId: string): string | nu
     });
   } catch {
     return null;
+  }
+}
+
+function isRealpathFileSync(target: string): boolean {
+  try {
+    const realpath = fs.realpathSync(target);
+    return !!fs.lstatSync(realpath, { throwIfNoEntry: false })?.isFile();
+  } catch {
+    return false;
+  }
+}
+
+const enum ResolveType {
+  FILE = 1,
+  DIR = 2,
+  ENOENT = 0,
+}
+
+function resolveTypeSync(target: string): ResolveType {
+  try {
+    const stat = fs.lstatSync(target, { throwIfNoEntry: false });
+    if (stat) {
+      if (stat.isSymbolicLink()) {
+        return isRealpathFileSync(target) ? ResolveType.FILE : ResolveType.ENOENT;
+      } else if (stat.isFile()) {
+        return ResolveType.FILE;
+      } else if (stat.isDirectory()) {
+        // NOTE(@kitten): We don't support symlinked directories for resolution
+        // Realistically, when we disable Node resolution, symlinked directory resolution
+        // for `/index` is rare, and can be used to exploit symlinks
+        return ResolveType.DIR;
+      } else {
+        return ResolveType.ENOENT;
+      }
+    } else {
+      return ResolveType.ENOENT;
+    }
+  } catch {
+    return ResolveType.ENOENT;
   }
 }
 

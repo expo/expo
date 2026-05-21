@@ -22,6 +22,7 @@ function moduleInterfaceCommand(cli) {
         if (!parsedArgs) {
             return;
         }
+        (0, commandUtils_1.maybePrepareOutputDirectory)(parsedArgs.realOutputPath);
         const { realInputPaths, realOutputPath } = parsedArgs;
         const command = async () => {
             const typeInfo = await (0, commandUtils_1.getFileTypeInformationFromArgs)(parsedArgs);

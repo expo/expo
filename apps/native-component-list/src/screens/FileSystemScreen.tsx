@@ -12,7 +12,7 @@ import type {
   WatchEvent,
 } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,

@@ -1,9 +1,27 @@
 {
   "name": "expo-contacts",
-  "version": "56.0.5",
+  "version": "56.0.6",
   "description": "Provides access to the phone's system contacts.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
+  "exports": {
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json",
+    "./plugin": "./plugin/build/index.js",
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./legacy": {
+      "types": "./build/legacy/index.d.ts",
+      "default": "./src/legacy/index.ts"
+    },
+    "./next": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

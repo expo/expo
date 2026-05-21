@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 import { Directory, File, Paths } from 'expo-file-system';
 import { Platform } from 'expo-modules-core';
 import React from 'react';

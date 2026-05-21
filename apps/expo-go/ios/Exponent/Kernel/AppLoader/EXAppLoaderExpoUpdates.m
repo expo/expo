@@ -21,6 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d980795c5824";
 
+static BOOL isEASUpdateHost(NSString * _Nullable host)
+{
+  return [host isEqualToString:@"u.expo.dev"] || [host isEqualToString:@"staging-u.expo.dev"];
+}
+
 @interface EXAppLoaderExpoUpdates ()
 
 @property (nonatomic, strong, nullable) NSURL *manifestUrl;
@@ -301,7 +306,7 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
     return;
   }
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
-  BOOL isEasUpdate = [_httpManifestUrl.host isEqualToString:@"u.expo.dev"];
+  BOOL isEasUpdate = isEASUpdateHost(_httpManifestUrl.host);
   if (!isEasUpdate && [EXAppLoaderExpoUpdates isHermesBundle:_bundle]) {
     EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
     _error = [manifestResource formatError:[NSError errorWithDomain:EXRuntimeErrorDomain code:0 userInfo:@{

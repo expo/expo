@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 56.0.12 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed brownfield mangling builds writing products outside the Pods build directory. (by [@ry-allan](https://github.com/ry-allan))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
 ## 56.0.11 — 2026-05-19
 
 ### 🐛 Bug fixes

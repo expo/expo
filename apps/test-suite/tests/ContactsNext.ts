@@ -8,7 +8,7 @@ import {
   ContactsSortOrder,
   addContactsChangeListener,
   requestPermissionsAsync,
-} from 'expo-contacts/next';
+} from 'expo-contacts';
 import { Paths, File } from 'expo-file-system';
 import { Platform } from 'react-native';
 

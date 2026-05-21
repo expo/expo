@@ -518,18 +518,6 @@ index 80b1bc3267b..7fe91512213 100644
  include ':app'
 -includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(expoAutolinking.reactNativeGradlePlugin)
-diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
-index 05647d55c75..d16e1efbb3f 100644
---- a/templates/expo-template-bare-minimum/gitignore
-+++ b/templates/expo-template-bare-minimum/gitignore
-@@ -7,6 +7,7 @@ node_modules/
- .expo/
- dist/
- web-build/
-+expo-env.d.ts
- 
- # Native
- *.orig.*
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 index f945940c256..1b7513bd31b 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj

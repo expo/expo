@@ -7,6 +7,7 @@ import { generateModuleTypesCommand } from './commands/generateModuleTypesComman
 import { generateViewTypesCommand } from './commands/generateViewTypesCommand';
 import { inlineModulesInterfaceCommand } from './commands/inlineModulesInterfaceCommand';
 import { moduleInterfaceCommand } from './commands/moduleInterfaceCommand';
+import { preprocessFileCommand } from './commands/preprocessFileCommand';
 import { shortModuleInterfaceCommand } from './commands/shortModuleInterfaceCommand';
 import { typeInformationCommand } from './commands/typeInformationCommand';
 
@@ -31,6 +32,8 @@ async function main(args: string[]) {
   generateModuleTypesCommand(otherCommands);
   generateViewTypesCommand(otherCommands);
   generateJsxIntrinsics(otherCommands);
+  preprocessFileCommand(otherCommands);
+
   await cli.parseAsync(args, { from: 'user' });
 }
 

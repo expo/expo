@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { Platform } from 'react-native';
 
 import { waitFor } from './helpers';

@@ -300,6 +300,7 @@ export type GetFileTypeInformationOptions = {
     /** The desired level of type inference. Defaults to PREPROCESS_AND_INFERENCE if omitted. */
     typeInference?: TypeInferenceOption;
 };
+export declare function withPreparedSingleFile<T>({ input, typeInference }: GetFileTypeInformationOptions, fn: (filePath: string) => Promise<T>): Promise<T>;
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
  * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,

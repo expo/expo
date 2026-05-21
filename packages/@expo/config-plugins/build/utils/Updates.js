@@ -23,6 +23,13 @@ exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringifie
 exports.getUpdatesTimeout = getUpdatesTimeout;
 exports.getUpdatesUseEmbeddedUpdate = getUpdatesUseEmbeddedUpdate;
 exports.resolveRuntimeVersionPolicyAsync = resolveRuntimeVersionPolicyAsync;
+function _requireUtils() {
+  const data = require("@expo/require-utils");
+  _requireUtils = function () {
+    return data;
+  };
+  return data;
+}
 function _sdkRuntimeVersions() {
   const data = require("@expo/sdk-runtime-versions");
   _sdkRuntimeVersions = function () {
@@ -47,13 +54,6 @@ function _getenv() {
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
-    return data;
-  };
-  return data;
-}
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
     return data;
   };
   return data;
@@ -83,8 +83,8 @@ function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const FINGERPRINT_RUNTIME_VERSION_SENTINEL = exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
 function getExpoUpdatesPackageVersion(projectRoot) {
-  const expoUpdatesPackageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo-updates/package.json');
-  if (!expoUpdatesPackageJsonPath || !_fs().default.existsSync(expoUpdatesPackageJsonPath)) {
+  const expoUpdatesPackageJsonPath = (0, _requireUtils().resolveFrom)(projectRoot, 'expo-updates/package.json');
+  if (!expoUpdatesPackageJsonPath) {
     return null;
   }
   const packageJson = JSON.parse(_fs().default.readFileSync(expoUpdatesPackageJsonPath, 'utf8'));

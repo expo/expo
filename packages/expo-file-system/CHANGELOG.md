@@ -4,7 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
 - `File.write()` is now asynchronous and returns a Promise. Use `File.writeSync()` for synchronous behavior. ([#45992](https://github.com/expo/expo/pull/45992) by [@wh201906](https://github.com/wh201906))
 
 ### 🎉 New features
@@ -12,6 +11,12 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.7 — 2026-05-20
+
+### 🛠 Breaking changes
+
+- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
 
 ## 56.0.6 — 2026-05-19
 

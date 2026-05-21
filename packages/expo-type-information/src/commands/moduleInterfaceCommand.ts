@@ -4,6 +4,7 @@ import path from 'path';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
+  maybePrepareOutputDirectory,
   parseCommandArguments,
   runCommandOnWatch,
   TypeInformationCommandCommonAllArguments,
@@ -28,6 +29,7 @@ export function moduleInterfaceCommand(cli: commander.Command) {
       if (!parsedArgs) {
         return;
       }
+      maybePrepareOutputDirectory(parsedArgs.realOutputPath);
       const { realInputPaths, realOutputPath } = parsedArgs;
 
       const command = async () => {

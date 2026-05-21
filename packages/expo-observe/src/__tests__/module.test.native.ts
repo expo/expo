@@ -44,35 +44,53 @@ function loadInit() {
 }
 
 describe('module Proxy', () => {
-  it('strips disableRouterIntegration from the config forwarded to native', () => {
-    const ExpoObserve = loadModule();
-    ExpoObserve.configure({ environment: 'test', disableRouterIntegration: true });
-    expect(mockNative.configure).toHaveBeenCalledWith({ environment: 'test' });
-  });
+  it.each([true, false, undefined])(
+    "forwards a integrations object to native when 'expo-router' is %s",
+    (router) => {
+      const ExpoObserve = loadModule();
+      ExpoObserve.configure({
+        environment: 'test',
+        integrations: { 'expo-router': router },
+      });
+      expect(mockNative.configure).toHaveBeenCalledWith({
+        environment: 'test',
+        integrations: { 'expo-router': router },
+      });
+    }
+  );
 
-  it('calls initRouterIntegration when router is installed and integration is enabled', () => {
+  it("calls initRouterIntegration when router is installed and integrations['expo-router'] is true", () => {
     const ExpoObserve = loadModule();
     const { initRouterIntegration } = loadInit();
-    ExpoObserve.configure({ environment: 'test' });
+    ExpoObserve.configure({
+      environment: 'test',
+      integrations: { 'expo-router': true },
+    });
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
   });
 
-  it('skips initRouterIntegration when disableRouterIntegration is true', () => {
+  it('skips initRouterIntegration by default', () => {
     const ExpoObserve = loadModule();
     const { initRouterIntegration } = loadInit();
-    ExpoObserve.configure({ disableRouterIntegration: true });
+    ExpoObserve.configure({ environment: 'test' });
     expect(initRouterIntegration).not.toHaveBeenCalled();
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+    });
   });
 
-  it('skips initRouterIntegration when router is not installed', () => {
+  it('skips initRouterIntegration when router is not installed, but passes the integrations object unchanged', () => {
     jest.doMock('../integrations/expo-router/router', () => ({
       isRouterInstalled: false,
       optionalRouter: undefined,
     }));
     const ExpoObserve = loadModule();
     const { initRouterIntegration } = loadInit();
-    ExpoObserve.configure({});
+    ExpoObserve.configure({ integrations: { 'expo-router': true } });
     expect(initRouterIntegration).not.toHaveBeenCalled();
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      integrations: { 'expo-router': true },
+    });
   });
 
   it('passes through dispatchEvents and setBundleDefaults to native', () => {

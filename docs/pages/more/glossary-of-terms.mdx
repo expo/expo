@@ -126,7 +126,7 @@ The development server is typically hosted on `http://localhost:8081`. It hosts 
 
 ### Expo Application Services (EAS)
 
-[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction/), [EAS Submit](/submit/introduction/), [EAS Update](/eas-update/introduction/), [EAS Metadata](/eas/metadata/), [EAS Insights](/eas-insights/introduction/), [EAS Hosting](/eas/hosting/introduction/), and [EAS Workflows](/eas/workflows/introduction/).
+[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction/), [EAS Submit](/submit/introduction/), [EAS Update](/eas-update/introduction/), [EAS Metadata](/eas/metadata/), [EAS Insights](/eas-insights/introduction/), [EAS Hosting](/eas/hosting/introduction/), [EAS Workflows](/eas/workflows/introduction/), and [Expo Observe](/eas/observe/introduction/).
 
 ### EAS Build
 
@@ -222,6 +222,10 @@ A file named **expo-module.config.json** that lives in the root directory of a [
 ### Expo Modules API
 
 [Expo Modules API](/modules/module-api/) is a cross-platform API for writing native modules in Kotlin and Swift to add new capabilities to your apps. This API is provided by the library `expo-modules-core` which is included in the `expo` package.
+
+### Expo Observe
+
+[Expo Observe](/eas/observe/introduction/) is a performance monitoring service that tracks how an app performs in production, including cold and warm launch times, time to first render, and time to interactive. It uses the `expo-observe` library to collect metrics from production builds, which can then be viewed in the Observe dashboard.
 
 ### Expo Orbit
 
@@ -419,7 +423,7 @@ The VS Code extension for improving the developer experience of working with app
 
 ### Watchman
 
-The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installed globally. Watchman is maintained by [Meta](#meta).
+A file watcher daemon which [Metro](#metro-bundler) can optionally use to crawl and query a project's files. Watchman contains native code and may cause issues when installed globally. Watchman is maintained by [Meta](#meta).
 
 ### webpack
 

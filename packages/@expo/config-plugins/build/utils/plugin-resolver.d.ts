@@ -7,7 +7,7 @@ export declare const pluginFileName = "app.plugin.js";
  *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
  *     - Resolve the config plugin as-is
  *   2. If the reference a module? e.g. `expo-font`
- *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
+ *     - Resolve the root `app.plugin.{js,cjs,mjs,ts,cts,mts}` file within the module
  *   3. Does the module have a valid config plugin in the `main` field?
  *     - Resolve the `main` entry point as config plugin
  */

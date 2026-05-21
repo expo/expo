@@ -14,6 +14,7 @@ exports.getPodspecFilePath = getPodspecFilePath;
 exports.getSourceFilesGlobFromPodspecFile = getSourceFilesGlobFromPodspecFile;
 exports.getModuleFilePathsFromPodspec = getModuleFilePathsFromPodspec;
 exports.uniqueStrings = uniqueStrings;
+exports.maybePrepareOutputDirectory = maybePrepareOutputDirectory;
 exports.parseCommandArguments = parseCommandArguments;
 exports.getFileTypeInformationFromArgs = getFileTypeInformationFromArgs;
 exports.writeStringToFileOrPrintToConsole = writeStringToFileOrPrintToConsole;
@@ -109,6 +110,9 @@ function sanitizeAndValidateOutputPath(rawPath, isFilePath = true) {
         if (isFilePath && fs_1.default.existsSync(path_1.default.dirname(resolvedPath))) {
             return resolvedPath;
         }
+        if (!isFilePath) {
+            return resolvedPath;
+        }
     }
     catch { }
     return null;
@@ -156,6 +160,17 @@ function getModuleFilePathsFromPodspec(modulePath) {
 function uniqueStrings(strings) {
     return [...new Set(strings)];
 }
+async function maybePrepareOutputDirectory(dirName) {
+    if (!dirName) {
+        return;
+    }
+    try {
+        await fs_1.default.promises.mkdir(dirName, { recursive: true });
+    }
+    catch {
+        console.error(`Error creating the output directory: ${dirName}`);
+    }
+}
 function parseCommandArguments(options, isOutputFile = true) {
     const appJsonPath = options.appJson ?? undefined;
     let realInputPaths = (options.inputPaths ?? [])
@@ -174,7 +189,7 @@ function parseCommandArguments(options, isOutputFile = true) {
     if (options.outputPath) {
         const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath, isOutputFile);
         if (!validatedOutPath) {
-            console.error(`Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a path to an existing directory.'}`);
+            console.error(`Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a valid path to a directory.'}`);
             return null;
         }
         realOutputPath = validatedOutPath;

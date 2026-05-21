@@ -9,7 +9,7 @@ import {
   presentPicker,
   useCalendarPermissions,
   useRemindersPermissions,
-} from 'expo-calendar/next';
+} from 'expo-calendar';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 

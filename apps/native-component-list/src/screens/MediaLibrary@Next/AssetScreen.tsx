@@ -9,7 +9,7 @@ import {
   Query,
   requestPermissionsAsync,
   MediaSubtype,
-} from 'expo-media-library/next';
+} from 'expo-media-library';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
 import {
@@ -215,6 +215,9 @@ const AssetScreen = () => {
             {assetInfo.duration !== null ? `${assetInfo.duration} ms` : 'N/A'}
           </Text>
           <Text style={styles.infoText}>
+            <Text style={styles.bold}>Is Favorite:</Text> {String(assetInfo.isFavorite)}
+          </Text>
+          <Text style={styles.infoText}>
             <Text style={styles.bold}>Media Subtypes:</Text> {mediaSubtypes?.join(', ') || 'N/A'}
           </Text>
           {Platform.OS === 'ios' && (
@@ -275,13 +278,11 @@ const AssetScreen = () => {
             <Pressable style={styles.deleteButton} onPress={handleDeleteAsset}>
               <Text style={styles.deleteButtonText}>Delete Asset</Text>
             </Pressable>
-            {Platform.OS === 'ios' && (
-              <Pressable style={styles.primaryButton} onPress={toggleFavorite}>
-                <Text style={styles.primaryButtonText}>
-                  {assetInfo?.isFavorite ? 'Unmark Favorite' : 'Mark Favorite'}
-                </Text>
-              </Pressable>
-            )}
+            <Pressable style={styles.primaryButton} onPress={toggleFavorite}>
+              <Text style={styles.primaryButtonText}>
+                {assetInfo?.isFavorite ? 'Unmark Favorite' : 'Mark Favorite'}
+              </Text>
+            </Pressable>
           </View>
           {renderAssetInfo()}
         </>

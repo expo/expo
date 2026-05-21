@@ -1,3 +1,4 @@
+import { getOriginalEnvValue } from '@expo/env';
 import JsonFile from '@expo/json-file';
 import crypto from 'crypto';
 import { boolish } from 'getenv';
@@ -26,8 +27,12 @@ export type UserSettingsData = {
 export function getExpoHomeDirectory() {
   const home = homedir();
 
-  if (process.env.__UNSAFE_EXPO_HOME_DIRECTORY) {
-    return process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
+  // Read from the pre-dotenv env — this redirects the directory used for the
+  // auth-token cache and other settings. The `__UNSAFE_` prefix marks it as a
+  // shell-only escape hatch; a project `.env` setting it would hijack credentials.
+  const unsafeHome = getOriginalEnvValue('__UNSAFE_EXPO_HOME_DIRECTORY');
+  if (unsafeHome) {
+    return unsafeHome;
   } else if (boolish('EXPO_STAGING', false)) {
     return path.join(home, '.expo-staging');
   } else if (boolish('EXPO_LOCAL', false)) {

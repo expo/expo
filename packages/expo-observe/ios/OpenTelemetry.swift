@@ -199,7 +199,8 @@ let metricNameMap = [
 
   // Navigation
   "navigation/cold_ttr": "expo.navigation.cold_ttr",
-  "navigation/warm_ttr": "expo.navigation.warm_ttr"
+  "navigation/warm_ttr": "expo.navigation.warm_ttr",
+  "navigation/tti": "expo.navigation.tti",
 ]
 
 nonisolated(unsafe) let formatter = ISO8601DateFormatter()

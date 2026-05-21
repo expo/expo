@@ -1,10 +1,12 @@
 package expo.modules.medialibrary.next.objects.asset.delegates
 
+import android.content.ContentValues
 import android.content.Context
 import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
@@ -20,6 +22,8 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateModified
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateTaken
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetMediaStoreItem
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetIsFavorite
+import expo.modules.medialibrary.next.extensions.resolver.safeUpdate
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePath
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePathAndName
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
@@ -136,8 +140,20 @@ class AssetModernDelegate(
       width = width
         ?: throw AssetPropertyNotFoundException("Width"),
       uri = mediaStoreToAssetAdapter.transformUri(mediaStoreItem.data)
-        ?: throw AssetPropertyNotFoundException("Uri")
+        ?: throw AssetPropertyNotFoundException("Uri"),
+      isFavorite = contentResolver.queryAssetIsFavorite(contentUri)
     )
+  }
+
+  override suspend fun getFavorite(): Boolean =
+    contentResolver.queryAssetIsFavorite(contentUri)
+
+  override suspend fun setFavorite(isFavorite: Boolean): Unit = withContext(Dispatchers.IO) {
+    mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(listOf(contentUri))
+    val values = ContentValues().apply {
+      put(MediaStore.MediaColumns.IS_FAVORITE, if (isFavorite) 1 else 0)
+    }
+    contentResolver.safeUpdate(contentUri, values)
   }
 
   override suspend fun getMimeType(): MimeType {

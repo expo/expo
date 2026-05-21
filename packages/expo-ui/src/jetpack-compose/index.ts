@@ -1,4 +1,3 @@
-import '../State/index.fx';
 import './MaterialSymbolsAssetsTransformer.fx';
 
 export * from './AlertDialog';
@@ -65,6 +64,6 @@ export * from './Box';
 export * from './Row';
 export * from './Column';
 export * from './FlowRow';
-export { useNativeState } from '../State/useNativeState';
+export { useNativeState } from '../State';
 export type { ViewEvent } from '../types';
 export type { PrimitiveBaseProps } from './layout-types';

@@ -1,6 +1,6 @@
 import { Image, ImageErrorEventData } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { Platform } from 'expo-modules-core';
 import { useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
