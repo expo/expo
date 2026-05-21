@@ -55,6 +55,7 @@ const {
 } = _configPlugins().IOSConfig.XcodeUtils;
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
+const DEFAULT_APPICON_NAME = _path().default.basename(IMAGESET_PATH, '.appiconset');
 const withIosIcons = config => {
   config = (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
     await setIconsAsync(config, config.modRequest.projectRoot);
@@ -63,10 +64,12 @@ const withIosIcons = config => {
   config = (0, _configPlugins().withXcodeProject)(config, config => {
     const icon = getIcons(config);
     const projectName = config.modRequest.projectName;
-    if (icon && typeof icon === 'string' && _path().default.extname(icon) === '.icon' && projectName) {
+    if (projectName && icon && typeof icon === 'string' && _path().default.extname(icon) === '.icon') {
       const iconName = _path().default.basename(icon, '.icon');
       setIconName(config.modResults, projectName, iconName);
       addIconFileToProject(config.modResults, projectName, iconName);
+    } else if (projectName && icon) {
+      setIconName(config.modResults, projectName, DEFAULT_APPICON_NAME);
     }
     return config;
   });
