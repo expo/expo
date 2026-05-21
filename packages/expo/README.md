@@ -95,11 +95,15 @@ Expo is a collection of tools and services that work together, but each piece is
 
 ### Expo SDK
 
-A large library of first-party, cross-platform modules covering everything from camera and notifications to file system and sensors — [`expo-camera`](https://docs.expo.dev/versions/latest/sdk/camera/), [`expo-image`](https://docs.expo.dev/versions/latest/sdk/image/), [`expo-notifications`](https://docs.expo.dev/versions/latest/sdk/notifications/), [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/), and [many more](https://docs.expo.dev/versions/latest/). Install any of them with `npx expo install`.
+A large set of first-party, cross-platform modules covering device APIs, media, storage, and system services — [`expo-camera`](https://docs.expo.dev/versions/latest/sdk/camera/), [`expo-image`](https://docs.expo.dev/versions/latest/sdk/image/), [`expo-notifications`](https://docs.expo.dev/versions/latest/sdk/notifications/), [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/), [`expo-sqlite`](https://docs.expo.dev/versions/latest/sdk/sqlite/), [`expo-sensors`](https://docs.expo.dev/versions/latest/sdk/sensors/), and [many more](https://docs.expo.dev/versions/latest/).
+
+Every module is opt-in, fully typed, and maintained by the Expo team — install only what you need with `npx expo install`, and your bundle stays as small as your app demands.
 
 ### Expo Router
 
-A [file-based router](https://docs.expo.dev/router/introduction/) for universal navigation across Android, iOS, and the web — with typed routes, deep linking, and server-side rendering built in. Layouts, modals, and tabs work the same on every platform.
+A [file-based router](https://docs.expo.dev/router/introduction/) for universal navigation across Android, iOS, and the web. Drop a file into `app/` and you have a route — with typed paths, automatic deep linking, and universal-link config generated for you. Layouts, modals, tabs, and stacks compose as React components and look the same on every platform.
+
+Under the hood it builds on [`react-native-screens`](https://github.com/software-mansion/react-native-screens) for true native navigators on mobile, plus a real router on the web. It also brings a fullstack story to React Native: [API routes](https://docs.expo.dev/router/web/api-routes/) and [static rendering](https://docs.expo.dev/router/web/static-rendering/) for SEO-friendly web builds.
 
 ### Expo Modules API
 
