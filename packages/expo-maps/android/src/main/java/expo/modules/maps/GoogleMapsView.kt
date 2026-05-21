@@ -14,6 +14,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -192,30 +193,32 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       )
 
       for ((marker, state) in markerState.value) {
-        val icon = getIconDescriptor(marker)
+        key(marker.id) {
+          val icon = remember(marker.icon) { getIconDescriptor(marker) }
 
-        Marker(
-          state = state,
-          title = marker.title,
-          snippet = marker.snippet,
-          draggable = marker.draggable,
-          anchor = marker.anchor.toOffset(),
-          zIndex = marker.zIndex,
-          icon = icon,
-          onClick = {
-            onMarkerClick(
-              // We can't send icon to js, because it's not serializable
-              // So we need to remove it from the marker record
-              MarkerRecord(
-                id = marker.id,
-                title = marker.title,
-                snippet = marker.snippet,
-                coordinates = marker.coordinates
+          Marker(
+            state = state,
+            title = marker.title,
+            snippet = marker.snippet,
+            draggable = marker.draggable,
+            anchor = marker.anchor.toOffset(),
+            zIndex = marker.zIndex,
+            icon = icon,
+            onClick = {
+              onMarkerClick(
+                // We can't send icon to js, because it's not serializable
+                // So we need to remove it from the marker record
+                MarkerRecord(
+                  id = marker.id,
+                  title = marker.title,
+                  snippet = marker.snippet,
+                  coordinates = marker.coordinates
+                )
               )
-            )
-            !marker.showCallout
-          }
-        )
+              !marker.showCallout
+            }
+          )
+        }
       }
     }
   }
