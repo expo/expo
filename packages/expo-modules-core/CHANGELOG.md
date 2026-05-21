@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Suppress `-Wunused-result` compiler warning in `FrontendConverter.cpp`. ([#46073](https://github.com/expo/expo/pull/46073) by [@tomekzaw](https://github.com/tomekzaw))
+
 ### 💡 Others
 
 ## 56.0.11 — 2026-05-20
