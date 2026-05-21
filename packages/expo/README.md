@@ -110,6 +110,7 @@ A modern Swift and Kotlin [API for writing native modules](https://docs.expo.dev
 - **[EAS Update](https://docs.expo.dev/eas-update/introduction/)** — over-the-air JavaScript and asset updates, with channels and rollbacks.
 - **[EAS Workflows](https://docs.expo.dev/eas-workflows/get-started/)** — CI/CD for building, testing, and releasing your app.
 - **[EAS Hosting](https://docs.expo.dev/eas/hosting/introduction/)** — host your web app and API routes on Expo's edge.
+- **[Expo Launch](https://launch.expo.dev/)** — a guided, browser-based path to ship to the web and App Store without touching configuration. Built on top of EAS.
 
 EAS is optional, but the fastest path from `git push` to the store.
 
