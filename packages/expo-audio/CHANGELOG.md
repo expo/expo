@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `enableConstantBitrateSeeking` option to `AudioPlayerOptions` to enable seeking through AAC/ADTS and MP3 streams that don't include a seek table. ([#46131](https://github.com/expo/expo/pull/46131) by [@isekovanic](https://github.com/isekovanic))
+
 ### 🐛 Bug fixes
 
 - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
