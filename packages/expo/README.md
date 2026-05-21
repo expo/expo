@@ -77,7 +77,7 @@ cd my-app
 npx expo start
 ```
 
-Then open the app on a simulator, a device with [Expo Go](https://expo.dev/go), or the web.
+Then open the app on a simulator, a device with [Expo Go](https://expo.dev/go), or the web. See the [official Quick Start guide](https://docs.expo.dev/get-started/create-a-project/) for a full walkthrough.
 
 Already have a React Native app? Add Expo to it with [`install-expo-modules`](https://docs.expo.dev/bare/installing-expo-modules/):
 
