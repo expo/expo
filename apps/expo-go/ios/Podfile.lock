@@ -108,9 +108,9 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (56.0.7):
     - ExpoModulesCore
-  - ExpoCamera (56.0.5):
+  - ExpoCamera (56.0.6):
     - ExpoModulesCore
-  - ExpoCameraBarcodeScanning (56.0.5):
+  - ExpoCameraBarcodeScanning (56.0.6):
     - ExpoCamera
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -143,14 +143,14 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (56.0.3):
     - ExpoModulesCore
-  - ExpoImage (56.0.6):
+  - ExpoImage (56.0.7):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (56.0.6):
+  - ExpoImage/Tests (56.0.7):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -4653,8 +4653,8 @@ SPEC CHECKSUMS:
   ExpoBlur: caddd80171e5f8f3581ff3d865e99c6465047240
   ExpoBrightness: 49e17a1b53fd0070bc7d7a2255b00051e5c781b4
   ExpoCalendar: a69d854621f6beb28aa57bb3a0cfbfb5174e4217
-  ExpoCamera: 4d44aace75d08eeb91838a7d08345cd57b2c65f5
-  ExpoCameraBarcodeScanning: 25b7b6ce09d5deb09aad0b60cba2fdc1dbccc3e9
+  ExpoCamera: 4f06a19feff4cbddebd86efd07555934ca4b25c0
+  ExpoCameraBarcodeScanning: 28fc7a22048f75744e755b440a599977a0024e48
   ExpoCellular: b7aa904a620e79abd91a78fbc4db704b93793134
   ExpoClipboard: eee843698341fd26d571fd2807800f98abb6123c
   ExpoContacts: 3f4b61dc6db5b593d8ec9ac7468a49eec557f920
@@ -4667,7 +4667,7 @@ SPEC CHECKSUMS:
   ExpoGL: 1e0fbbc03bc28677d1e15f78bf7bb7083c573346
   ExpoGlassEffect: 7d4233dc0727ee2b28dd757eda70e1b6abf662fd
   ExpoHaptics: 89364cf3c3ca2cfd54cafed42f3be3169bab6d42
-  ExpoImage: 08e5a5b1071b1e76793582f152e0e5eebf7269b9
+  ExpoImage: e57c71915f7df993da8be268a631546376338aca
   ExpoImageManipulator: f652875e5ea6b7794d691679dedcfc4809926716
   ExpoImagePicker: 13cfc44f02b3b6230715c138b8682f8832d52433
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
