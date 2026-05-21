@@ -69,6 +69,29 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(image.scale).toBe(1);
         t.expect(image.isAnimated).toBe(false);
       });
+
+      t.it('loads a local SVG asset without crashing', async () => {
+        const image = await Image.loadAsync(require('../assets/expo.svg'));
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+      });
+
+      t.it('preserves the SVG aspect ratio when maxWidth/maxHeight are provided', async () => {
+        const image = await Image.loadAsync(require('../assets/expo.svg'), {
+          maxWidth: 64,
+          maxHeight: 64,
+        });
+
+        t.expect(image.width).toBe(64);
+        t.expect(image.height).toBeLessThan(64);
+        t.expect(image.height).toBeGreaterThan(0);
+        // Aspect ratio should match the viewBox within a small rounding tolerance.
+        const aspect = image.width / image.height;
+        t.expect(Math.abs(aspect - 24 / 22)).toBeLessThan(0.05);
+      });
     });
   }
 
