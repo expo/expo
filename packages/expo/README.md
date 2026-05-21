@@ -59,7 +59,7 @@
 
 ---
 
-Expo is the [officially recommended](https://reactnative.dev/docs/getting-started) framework for building production React Native apps. The `expo` package is its heart — a single dependency that gives you the runtime, the CLI, a curated set of essential modules, and a direct path to the [Expo SDK](https://docs.expo.dev/versions/latest/), [Expo Router](https://docs.expo.dev/router/introduction/), the [Expo Modules API](https://docs.expo.dev/modules/overview/), and [EAS](https://expo.dev/eas). The same project runs on Android, iOS, and the web from a single codebase.
+Expo is the [officially recommended](https://reactnative.dev/docs/getting-started) framework for building production React Native apps. It gives you everything you need to design, develop, and ship universal apps for Android, iOS, and the web from a single codebase — the SDK, the router, the build and update infrastructure, and the tooling — all open source and production-tested.
 
 ## Quick start
 
@@ -71,34 +71,54 @@ cd my-app
 npx expo start
 ```
 
-Already have a React Native app? Add Expo modules to it:
+Then open the app on a simulator, a device with [Expo Go](https://expo.dev/go), or the web.
+
+Already have a React Native app? Add Expo to it with [`install-expo-modules`](https://docs.expo.dev/bare/installing-expo-modules/):
 
 ```
 npx install-expo-modules@latest
 ```
 
-Then install any package from the [Expo SDK](https://docs.expo.dev/versions/latest/) with `npx expo install`:
+## The Expo ecosystem
 
-```
-npx expo install expo-camera expo-router
-```
+Expo is a collection of tools and services that work together, but each piece is independently useful.
 
-## What you get
+### Expo SDK
 
-- **[Expo SDK](https://docs.expo.dev/versions/latest/)** — a large library of first-party, cross-platform modules covering everything from [`expo-camera`](https://docs.expo.dev/versions/latest/sdk/camera/) and [`expo-image`](https://docs.expo.dev/versions/latest/sdk/image/) to [`expo-notifications`](https://docs.expo.dev/versions/latest/sdk/notifications/) and [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/). Install any of them with `npx expo install`.
-- **[Expo Router](https://docs.expo.dev/router/introduction/)** — a file-based router for universal navigation across Android, iOS, and the web, with typed routes, deep linking, and server-side rendering built in.
-- **[Expo Modules API](https://docs.expo.dev/modules/overview/)** — a modern Swift and Kotlin API for writing your own native modules, used by the entire Expo SDK and a growing ecosystem of third-party libraries.
-- **[EAS](https://expo.dev/eas)** — Expo Application Services for cloud builds, app store submissions, over-the-air updates, and CI/CD workflows. Optional, but the fastest path to ship.
-- **[`@expo/cli`](https://github.com/expo/expo/blob/main/packages/%40expo/cli/README.md)** — one interface around Metro and the native toolchain (Xcode, Simulator.app, Android Studio, ADB, …). Generate native projects with `npx expo prebuild`, and keep dependency versions aligned with `npx expo install`.
-- **Core infrastructure** — [`expo-modules-core`](https://github.com/expo/expo/tree/main/packages/expo-modules-core) and [`expo-modules-autolinking`](https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking) handle the native plumbing so you don't have to. Modules are linked into iOS and Android projects automatically.
-- **A minimal essentials bundle** — libraries nearly every app needs, such as [`expo-asset`](https://github.com/expo/expo/tree/main/packages/expo-asset), are included out of the box.
-- **Runtime glue** — a JavaScript entry point that wires up your app at startup: registering the root component, loading fonts with `expo-font`, and enabling Expo Go support when applicable.
+A large library of first-party, cross-platform modules covering everything from camera and notifications to file system and sensors — [`expo-camera`](https://docs.expo.dev/versions/latest/sdk/camera/), [`expo-image`](https://docs.expo.dev/versions/latest/sdk/image/), [`expo-notifications`](https://docs.expo.dev/versions/latest/sdk/notifications/), [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/), and [many more](https://docs.expo.dev/versions/latest/). Install any of them with `npx expo install`.
+
+### Expo Router
+
+A [file-based router](https://docs.expo.dev/router/introduction/) for universal navigation across Android, iOS, and the web — with typed routes, deep linking, and server-side rendering built in. Layouts, modals, and tabs work the same on every platform.
+
+### Expo Modules API
+
+A modern Swift and Kotlin [API for writing native modules](https://docs.expo.dev/modules/overview/). It's what powers the entire Expo SDK and a growing ecosystem of third-party libraries. If you can write Swift or Kotlin, you can extend your app with native code — no Objective-C, no JNI.
+
+### EAS
+
+[Expo Application Services](https://expo.dev/eas) — hosted infrastructure for shipping React Native apps:
+
+- **[EAS Build](https://docs.expo.dev/build/introduction/)** — cloud builds for iOS and Android, no local Xcode or Android Studio setup required.
+- **[EAS Submit](https://docs.expo.dev/submit/introduction/)** — one command to submit to the App Store and Play Store.
+- **[EAS Update](https://docs.expo.dev/eas-update/introduction/)** — over-the-air JavaScript and asset updates, with channels and rollbacks.
+- **[EAS Workflows](https://docs.expo.dev/eas-workflows/get-started/)** — CI/CD for building, testing, and releasing your app.
+- **[EAS Hosting](https://docs.expo.dev/eas/hosting/introduction/)** — host your web app and API routes on Expo's edge.
+
+EAS is optional, but the fastest path from `git push` to the store.
+
+### Tooling
+
+- **[`@expo/cli`](https://github.com/expo/expo/blob/main/packages/%40expo/cli/README.md)** — one interface around Metro and the native toolchain (Xcode, Simulator.app, Android Studio, ADB, …). Generate native projects with `npx expo prebuild`, keep dependency versions aligned with `npx expo install`.
+- **[Config plugins](https://docs.expo.dev/config-plugins/introduction/)** — customize native iOS and Android projects without forking them. No ejecting required.
+- **[Expo Go](https://expo.dev/go)** and **[development builds](https://docs.expo.dev/develop/development-builds/introduction/)** — preview your app on a device in seconds.
+- **[Snack](https://snack.expo.dev)** — try Expo right in your browser, no install needed.
 
 ## Why Expo
 
 - **Universal by default.** One codebase targets Android, iOS, and the web.
-- **No ejecting required.** [Config plugins](https://docs.expo.dev/config-plugins/introduction/) let you customize native code without forking it.
 - **Production-ready.** Used in tens of thousands of apps on the App Store and Play Store.
+- **Customizable all the way down.** Config plugins and the Expo Modules API let you reach the metal when you need to.
 - **Open source.** MIT-licensed, actively developed in the open.
 
 ## Learn more
@@ -106,12 +126,13 @@ npx expo install expo-camera expo-router
 - [Documentation](https://docs.expo.dev) — guides, tutorials, and the full SDK reference.
 - [Tutorial](https://docs.expo.dev/tutorial/introduction/) — build your first universal app step by step.
 - [Examples](https://github.com/expo/examples) — sample projects you can copy from.
-- [Snack](https://snack.expo.dev) — try Expo right in your browser, no install needed.
 - [Changelog](https://expo.dev/changelog) and [blog](https://expo.dev/blog).
 - [Discord & Forums](https://chat.expo.dev) — ask questions and chat with the community.
 
+## About this package
+
+The `expo` package itself is small — it wires together core infrastructure ([`expo-modules-core`](https://github.com/expo/expo/tree/main/packages/expo-modules-core), [`expo-modules-autolinking`](https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking)), the [Expo CLI](https://github.com/expo/expo/blob/main/packages/%40expo/cli/README.md), a minimal essentials bundle (like [`expo-asset`](https://github.com/expo/expo/tree/main/packages/expo-asset)), and the runtime entry point that registers your root component and loads fonts. Most of what you'd think of as "Expo" lives in the other packages linked above.
+
 ## Contributing
 
-This is one of the most-installed packages in the Expo ecosystem — every bit of polish helps. Bug reports, fixes, and improvements are very welcome.
-
-See [CONTRIBUTING](./CONTRIBUTING.md) for how to set up the package locally and submit a change, and the repo-wide [contributing guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md) for general guidelines.
+Bug reports, fixes, and improvements are very welcome. See [CONTRIBUTING](./CONTRIBUTING.md) for how to set up this package locally, and the repo-wide [contributing guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md) for general guidelines.
