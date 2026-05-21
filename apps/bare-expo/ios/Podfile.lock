@@ -384,12 +384,12 @@ PODS:
     - ExpoModulesCore
   - ExpoAudio (56.0.9):
     - ExpoModulesCore
-  - ExpoBackgroundFetch (56.0.12):
+  - ExpoBackgroundFetch (56.0.13):
     - ExpoModulesCore
-  - ExpoBackgroundTask (56.0.12):
+  - ExpoBackgroundTask (56.0.13):
     - ExpoModulesCore
     - ExpoTaskManager
-  - ExpoBackgroundTask/Tests (56.0.12):
+  - ExpoBackgroundTask/Tests (56.0.13):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - ExpoTaskManager
@@ -685,16 +685,16 @@ PODS:
     - ExpoModulesCore
   - ExpoSystemUI (56.0.5):
     - ExpoModulesCore
-  - ExpoTaskManager (56.0.12):
+  - ExpoTaskManager (56.0.13):
     - ExpoModulesCore
     - UMAppLoader
-  - ExpoTaskManager/Tests (56.0.12):
+  - ExpoTaskManager/Tests (56.0.13):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - UMAppLoader
   - ExpoTrackingTransparency (56.0.5):
     - ExpoModulesCore
-  - ExpoUI (56.0.11):
+  - ExpoUI (56.0.12):
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
@@ -3978,8 +3978,8 @@ SPEC CHECKSUMS:
   ExpoAppMetrics: dcae0e266d9a801e9b4daa2d7695f24ca2b13b0d
   ExpoAsset: 873ff4f99d9855e222b832c8acedb6b16e83cb2c
   ExpoAudio: 80f5e1e70e74ba19c2be2ed7c672bcbc12ca1216
-  ExpoBackgroundFetch: 05d655a638fcea0e443c57e8b83993380c22d80d
-  ExpoBackgroundTask: a026157fe6766c164b5e64fc6f87d49ab9089f95
+  ExpoBackgroundFetch: f9d5d47e4729ce771a439f65ce8d00026df272e9
+  ExpoBackgroundTask: 5c8f9f7693f645a98aa59bddfee8ccb4ea5d93eb
   ExpoBattery: a42e918404ceee07a957db4312918ec0c52bc0d6
   ExpoBlob: 3e896c97726abf49bdecf63151e09fb4f7e21195
   ExpoBlur: caddd80171e5f8f3581ff3d865e99c6465047240
@@ -4037,9 +4037,9 @@ SPEC CHECKSUMS:
   ExpoStoreReview: f785057aececd9c63a113c69a82b491e5f90694e
   ExpoSymbols: f83c91f2897d37102b98b9224c603095630be9d0
   ExpoSystemUI: 8f4fb641c6a6ebe2a01dda0fbd3fdd952ab5823a
-  ExpoTaskManager: b0dfa41a1b93e01005c0672a055f7e8373939a38
+  ExpoTaskManager: 23971cc0a92b61ce06c4dfa521c10627013da497
   ExpoTrackingTransparency: a5117d608c3abd938cd40ebcaa2f00049b886a8c
-  ExpoUI: 85a30909c38771a26bc1c4ab7510fe07a5666c22
+  ExpoUI: 556eeaf2686e78f690c8a6779e85412171f3bb76
   ExpoVideo: 8ebbbf65778c5f986d65fc17bb60b79e9d7624e6
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 116c2563d2bd3a1e98326a267020e25fea8af79e

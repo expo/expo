@@ -41,7 +41,7 @@
   "peerDependencies": {
     "@babel/runtime": "^7.20.0",
     "expo": "*",
-    "expo-widgets": "workspace:^56.0.12",
+    "expo-widgets": "workspace:^56.0.13",
     "react-refresh": ">=0.14.0 <1.0.0"
   },
   "peerDependenciesMeta": {
