@@ -69,7 +69,7 @@
   "expo-navigation-bar": "~56.0.3",
   "expo-network": "~56.0.4",
   "expo-notifications": "~56.0.11",
-  "expo-observe": "~56.0.11",
+  "expo-observe": "~56.0.12",
   "expo-print": "~56.0.3",
   "expo-live-photo": "~56.0.3",
   "expo-router": "~56.2.3",

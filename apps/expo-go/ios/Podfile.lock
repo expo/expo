@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (56.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (56.0.0):
+  - Expo (56.0.1):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -52,7 +52,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (56.0.0):
+  - Expo/Tests (56.0.1):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -4643,7 +4643,7 @@ SPEC CHECKSUMS:
   EXConstants: 13f6719b5c0d537be9c7b169d54445b063f95213
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
-  Expo: 58bbb883cc6f2fb7a270d038beffdb59adf7a339
+  Expo: 1947f699c1f4db845a6d7bf63a791d8bc89241be
   ExpoAsset: 051b7b3bf1edecb3d8f3643b0b9dc3e308d43cb4
   ExpoAudio: ad5b6e07a7ff22b89e7683d8a12cf51a54f6b90b
   ExpoBackgroundFetch: 52cefdd114179fba877d76fdcef2aa694cfce0fe

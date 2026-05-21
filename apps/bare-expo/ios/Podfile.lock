@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (56.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (56.0.0):
+  - Expo (56.0.1):
     - ExpoModulesCore
     - ExpoModulesJSI
     - hermes-engine
@@ -299,7 +299,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (56.0.0):
+  - Expo/Tests (56.0.1):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesTestCore
@@ -588,7 +588,7 @@ PODS:
   - ExpoNotifications/Tests (56.0.11):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoObserve (56.0.11):
+  - ExpoObserve (56.0.12):
     - EASClient
     - ExpoAppMetrics
     - ExpoModulesCore
@@ -613,7 +613,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoObserve/Tests (56.0.11):
+  - ExpoObserve/Tests (56.0.12):
     - EASClient
     - ExpoAppMetrics
     - ExpoModulesCore
@@ -3967,7 +3967,7 @@ SPEC CHECKSUMS:
   EXConstants: 13f6719b5c0d537be9c7b169d54445b063f95213
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
-  Expo: bbddb135ce862854a8351782c4ac2923d5ca4898
+  Expo: 0794b44ac16db51ced9ce6a9402f3cdc93aaedce
   expo-dev-client: e7bdc2fee0cedb048f283eafd8439a09b6028a8a
   expo-dev-launcher: 2aec76e53c72eb67e0d0e4a4495337293cd13af9
   expo-dev-menu: 533fd236470d22a1d16bb810fc6823171723a9e1
@@ -3975,7 +3975,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: c652074c8c24bf52bd3201ecd017040c867ba58b
   ExpoAppIntegrity: 43cc62f24c533b960de07b5038568acedc3a567a
   ExpoAppleAuthentication: 47f6f6c6722a7facef29d15397635b785086bc5e
-  ExpoAppMetrics: 886c20aadd776a9af1530fef0b8f70411c4e2be0
+  ExpoAppMetrics: a9aca0e3a26a8d1a57f7f47b9f109f96c1964d95
   ExpoAsset: 051b7b3bf1edecb3d8f3643b0b9dc3e308d43cb4
   ExpoAudio: ad5b6e07a7ff22b89e7683d8a12cf51a54f6b90b
   ExpoBackgroundFetch: 52cefdd114179fba877d76fdcef2aa694cfce0fe
@@ -4023,7 +4023,7 @@ SPEC CHECKSUMS:
   ExpoModulesWorkletsAdapter: 4d065a4e45a12246e2a111fbd4727bb98c74e691
   ExpoNetwork: c9651806f67c5fe93d221f9b4533c98ae6833bb9
   ExpoNotifications: a360386d2944c24e5ce4543d8a5b13d01f994527
-  ExpoObserve: f3bf7aa608758070f6128ac737d775a7ae2227e5
+  ExpoObserve: 546d058d32eae5a794f3131fd7908a7af757a2a4
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0
   ExpoScreenCapture: c388565b6244aec9d96c18941efbee8655b2fec2
   ExpoScreenOrientation: 733d1dc1fa97f2716442d4fa2b0abe1457d9d2dd
