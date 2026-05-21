@@ -37,17 +37,19 @@ function installInWorkspace(
   return fs.realpathSync(installDir);
 }
 
+const resolve = (repoRoot: string, name: string, range: string) =>
+  resolveInstalledPackage(name, range, { repoRoot, workspacePatterns: ['apps/*'] });
+
 describe('resolveInstalledPackage', () => {
   it('returns the install when exactly one workspace has a satisfying version', () => {
     withTempRepo((repoRoot) => {
       const installDir = installInWorkspace(repoRoot, 'apps/expo-go', 'rn-sample', '5.7.0');
       // A second workspace without the dep is skipped.
       fs.mkdirSync(path.join(repoRoot, 'apps/empty'), { recursive: true });
-      const result = resolveInstalledPackage('rn-sample', '~5.7.0', {
-        repoRoot,
-        workspacePatterns: ['apps/*'],
+      assert.deepEqual(resolve(repoRoot, 'rn-sample', '~5.7.0'), {
+        version: '5.7.0',
+        path: installDir,
       });
-      assert.deepEqual(result, { version: '5.7.0', path: installDir });
     });
   });
 
@@ -55,11 +57,7 @@ describe('resolveInstalledPackage', () => {
     withTempRepo((repoRoot) => {
       installInWorkspace(repoRoot, 'apps/bare-expo', 'rn-sample', '5.6.2');
       installInWorkspace(repoRoot, 'apps/expo-go', 'rn-sample', '5.7.0');
-      const result = resolveInstalledPackage('rn-sample', '^5.6.0', {
-        repoRoot,
-        workspacePatterns: ['apps/*'],
-      });
-      assert.equal(result?.version, '5.7.0');
+      assert.equal(resolve(repoRoot, 'rn-sample', '^5.6.0')?.version, '5.7.0');
     });
   });
 
@@ -71,22 +69,17 @@ describe('resolveInstalledPackage', () => {
         '@shopify/react-native-skia',
         '2.6.2'
       );
-      const result = resolveInstalledPackage('@shopify/react-native-skia', '2.6.2', {
-        repoRoot,
-        workspacePatterns: ['apps/*'],
+      assert.deepEqual(resolve(repoRoot, '@shopify/react-native-skia', '2.6.2'), {
+        version: '2.6.2',
+        path: installDir,
       });
-      assert.deepEqual(result, { version: '2.6.2', path: installDir });
     });
   });
 
   it('returns null when no workspace has a satisfying version', () => {
     withTempRepo((repoRoot) => {
       installInWorkspace(repoRoot, 'apps/bare-expo', 'rn-sample', '5.6.2');
-      const result = resolveInstalledPackage('rn-sample', '~5.7.0', {
-        repoRoot,
-        workspacePatterns: ['apps/*'],
-      });
-      assert.equal(result, null);
+      assert.equal(resolve(repoRoot, 'rn-sample', '~5.7.0'), null);
     });
   });
 
@@ -94,20 +87,15 @@ describe('resolveInstalledPackage', () => {
     withTempRepo((repoRoot) => {
       installInWorkspace(repoRoot, 'apps/garbage', 'rn-sample', 'not-a-version');
       const installDir = installInWorkspace(repoRoot, 'apps/ok', 'rn-sample', '5.7.0');
-      const result = resolveInstalledPackage('rn-sample', '^5.0.0', {
-        repoRoot,
-        workspacePatterns: ['apps/*'],
+      assert.deepEqual(resolve(repoRoot, 'rn-sample', '^5.0.0'), {
+        version: '5.7.0',
+        path: installDir,
       });
-      assert.deepEqual(result, { version: '5.7.0', path: installDir });
     });
   });
 
   it('returns null without throwing when the repo root does not exist', () => {
     const missing = path.join(os.tmpdir(), `mono-missing-${Date.now()}`);
-    const result = resolveInstalledPackage('rn-sample', '1.0.0', {
-      repoRoot: missing,
-      workspacePatterns: ['apps/*'],
-    });
-    assert.equal(result, null);
+    assert.equal(resolve(missing, 'rn-sample', '1.0.0'), null);
   });
 });

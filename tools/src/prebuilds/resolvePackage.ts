@@ -39,19 +39,16 @@ export function resolveInstalledPackage(
   for (const pattern of patterns) {
     for (const ws of globSync(pattern, { cwd: repoRoot, absolute: true })) {
       let pkgJson: string;
+      let version: string | undefined;
       try {
         pkgJson = require.resolve(`${packageName}/package.json`, { paths: [ws] });
+        version = JSON.parse(fs.readFileSync(pkgJson, 'utf8')).version;
       } catch {
         continue;
       }
-      let version: string | undefined;
-      try {
-        version = JSON.parse(fs.readFileSync(pkgJson, 'utf8')).version;
-      } catch {
-        /* skip */
-      }
       if (!version || !semver.valid(version) || !semver.satisfies(version, range)) continue;
-      if (!best || semver.gt(version, best.version)) best = { path: path.dirname(pkgJson), version };
+      if (!best || semver.gt(version, best.version))
+        best = { path: path.dirname(pkgJson), version };
     }
   }
   return best;
