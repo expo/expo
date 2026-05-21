@@ -58,7 +58,9 @@ describe('resolvePackageFromPnpmStore', () => {
         storeRoot,
       });
       assert.equal(result?.version, '2.6.2');
-      assert.ok(result?.path.endsWith(path.join(entry, 'node_modules', '@shopify', 'react-native-skia')));
+      assert.ok(
+        result?.path.endsWith(path.join(entry, 'node_modules', '@shopify', 'react-native-skia'))
+      );
     });
   });
 

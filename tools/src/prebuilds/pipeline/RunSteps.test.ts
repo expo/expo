@@ -181,11 +181,10 @@ describe('resolveFlavorTemplatedPath', () => {
 describe('rebindExternalPackagesToBundledVersions', () => {
   it('rewrites path and packageVersion for packages listed in bundledNativeModules', () => {
     const pkg = makePkg('rn-safe-area', [], { path: '/before', packageVersion: '5.6.2' });
-    rebindExternalPackagesToBundledVersions(
-      [pkg],
-      { 'rn-safe-area': '~5.7.0' },
-      () => ({ path: '/after', version: '5.7.0' })
-    );
+    rebindExternalPackagesToBundledVersions([pkg], { 'rn-safe-area': '~5.7.0' }, () => ({
+      path: '/after',
+      version: '5.7.0',
+    }));
     assert.equal(pkg.packageVersion, '5.7.0');
     assert.equal(pkg.path, '/after');
   });
@@ -194,11 +193,7 @@ describe('rebindExternalPackagesToBundledVersions', () => {
     const pkg = makePkg('rn-safe-area', [], { path: '/before', packageVersion: '5.6.2' });
     assert.throws(
       () =>
-        rebindExternalPackagesToBundledVersions(
-          [pkg],
-          { 'rn-safe-area': '~5.7.0' },
-          () => null
-        ),
+        rebindExternalPackagesToBundledVersions([pkg], { 'rn-safe-area': '~5.7.0' }, () => null),
       (err: Error) =>
         err.message.includes('rn-safe-area') &&
         err.message.includes('~5.7.0') &&
@@ -210,14 +205,10 @@ describe('rebindExternalPackagesToBundledVersions', () => {
   it('leaves packages absent from the bundled map untouched', () => {
     const pkg = makePkg('private-pkg', [], { path: '/before', packageVersion: '0.0.1' });
     let resolverCalled = false;
-    rebindExternalPackagesToBundledVersions(
-      [pkg],
-      { 'something-else': '1.0.0' },
-      () => {
-        resolverCalled = true;
-        return null;
-      }
-    );
+    rebindExternalPackagesToBundledVersions([pkg], { 'something-else': '1.0.0' }, () => {
+      resolverCalled = true;
+      return null;
+    });
     assert.equal(resolverCalled, false);
     assert.equal(pkg.packageVersion, '0.0.1');
     assert.equal(pkg.path, '/before');
