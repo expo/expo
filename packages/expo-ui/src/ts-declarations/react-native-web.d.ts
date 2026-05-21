@@ -102,7 +102,32 @@ declare module 'react-native' {
     role?: WebRole;
   }
 
-  export interface ImageStyle {
+  /**
+   * Animations and transitions
+   */
+
+  type AnimationDirection = 'alternate' | 'alternate-reverse' | 'normal' | 'reverse';
+  type AnimationFillMode = 'none' | 'forwards' | 'backwards' | 'both';
+  type AnimationIterationCount = number | 'infinite';
+  type AnimationKeyframes = Record<string, ImageStyle | TextStyle | ViewStyle>;
+  type AnimationPlayState = 'paused' | 'running';
+
+  export interface AnimationStyles {
+    animationDelay?: string;
+    animationDirection?: AnimationDirection;
+    animationDuration?: string;
+    animationFillMode?: AnimationFillMode;
+    animationIterationCount?: AnimationIterationCount;
+    animationKeyframes?: AnimationKeyframes | AnimationKeyframes[];
+    animationPlayState?: AnimationPlayState;
+    animationTimingFunction?: string;
+    transitionDelay?: string;
+    transitionDuration?: string;
+    transitionProperty?: string;
+    transitionTimingFunction?: string;
+  }
+
+  export interface ImageStyle extends AnimationStyles {
     display?: DisplayValue;
     height?: WebDimensionValue;
     width?: WebDimensionValue;
@@ -114,7 +139,7 @@ declare module 'react-native' {
     paddingBottom?: WebDimensionValue;
   }
 
-  export interface TextStyle {
+  export interface TextStyle extends AnimationStyles {
     display?: DisplayValue;
     height?: WebDimensionValue;
     width?: WebDimensionValue;
@@ -124,9 +149,10 @@ declare module 'react-native' {
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
     paddingBottom?: WebDimensionValue;
+    whiteSpace?: 'normal' | 'nowrap' | 'pre' | 'pre-line' | 'pre-wrap';
   }
 
-  export interface ViewStyle {
+  export interface ViewStyle extends AnimationStyles {
     display?: DisplayValue;
     height?: WebDimensionValue;
     width?: WebDimensionValue;
