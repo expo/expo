@@ -1,0 +1,93 @@
+---
+title: User-defined events
+description: Log named events from your app with AppMetrics.logEvent to track product flows, feature usage, and other custom signals visible in the EAS Observe dashboard.
+---
+
+User-defined events let you record arbitrary, named events from your app. Use them to track product flows (such as signup or checkout completion), feature engagement, or any signal specific to your app that the built-in performance metrics do not cover.
+
+Events are persisted on-device, batched, and dispatched on the next flush as OpenTelemetry log records. They appear in the **Events** tab of the EAS Observe dashboard and are queryable from the EAS CLI.
+
+## Log an event
+
+Call `AppMetrics.logEvent` from anywhere in your app:
+
+```tsx
+import { AppMetrics } from 'expo-observe';
+
+function handleSignupComplete() {
+  AppMetrics.logEvent('signup.completed');
+}
+```
+
+The first argument is the event name. Use a stable, dot-separated identifier — the dashboard groups events by exact name.
+
+## Attach attributes
+
+Pass an `attributes` map to record context with the event:
+
+```tsx
+AppMetrics.logEvent('cart.checkout', {
+  attributes: {
+    itemCount: 3,
+    totalUsd: 42.5,
+    coupon: 'WELCOME10',
+    items: ['sku-1', 'sku-2', 'sku-3'],
+  },
+});
+```
+
+Supported attribute value types: `string`, `number`, `boolean`, arrays, and nested objects. Other JS values (`Date`, `undefined`, functions) are dropped.
+
+## Severity
+
+Events default to `"info"` severity. Override with the `severity` option for warnings or errors you want to surface separately in the dashboard:
+
+```tsx
+AppMetrics.logEvent('payment.failed', {
+  severity: 'error',
+  attributes: { reason: 'card_declined' },
+});
+```
+
+Supported severities, from lowest to highest: `"trace"`, `"debug"`, `"info"`, `"warn"`, `"error"`, `"fatal"`.
+
+## Body
+
+Use `body` for a free-form message that complements the structured attributes:
+
+```tsx
+AppMetrics.logEvent('subscription.expired', {
+  body: 'Subscription expired while user was offline; downgrading to free tier.',
+  severity: 'warn',
+  attributes: { previousPlan: 'pro' },
+});
+```
+
+## Naming conventions
+
+- Use lowercase, dot-separated names: `task.completed`, `onboarding.skipped`, `cart.checkout`.
+- Pick a vocabulary and stick to it. The dashboard groups by exact event name, so `cart_checkout` and `cart.checkout` will appear as separate rows.
+- Avoid PII in event names, attribute keys, and attribute values. Everything you pass is visible in the dashboard and is dispatched off-device.
+
+## View events
+
+In the dashboard: open your project and navigate to **Observe → Events**. The default view lists distinct event names with their counts in the selected time range. Click an event name to see individual events with their timestamps, attributes, and the session they belong to.
+
+From the CLI:
+
+```bash
+# List event names with counts
+$ eas observe:events
+
+# Show individual events for a specific event name
+$ eas observe:events cart.checkout
+
+# Show all events across all names (JSON output)
+$ eas observe:events --all-events --json
+```
+
+Run `eas observe:events --help` for the full list of flags (time range, platform, session ID, and more).
+
+## Sampling and retention
+
+Events follow the same dispatch and sampling rules as the rest of EAS Observe. See [Configuration](/eas/observe/configuration) for the `sampleRate` and `dispatchInDebug` options.
