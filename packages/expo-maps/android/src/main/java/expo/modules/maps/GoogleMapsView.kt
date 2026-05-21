@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Point
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.core.graphics.drawable.toBitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -414,12 +414,12 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private fun getIconDescriptor(marker: MarkerRecord): BitmapDescriptor? {
     return marker.icon?.let { icon ->
       val bitmap = if (icon.`is`(toKClass<SharedRef<Drawable>>())) {
-        (icon.get(toKClass<SharedRef<Drawable>>()).ref as? BitmapDrawable)?.bitmap
+        icon.get(toKClass<SharedRef<Drawable>>()).ref.toBitmap()
       } else {
         icon.get(toKClass<SharedRef<Bitmap>>()).ref
       }
 
-      bitmap?.let { BitmapDescriptorFactory.fromBitmap(it) }
+      BitmapDescriptorFactory.fromBitmap(bitmap)
     }
   }
 }
