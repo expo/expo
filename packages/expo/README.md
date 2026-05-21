@@ -152,7 +152,7 @@ EAS is optional, but the fastest path from `git push` to the store.
 
 ## Why Expo
 
-- **Universal by default.** One codebase targets Android, iOS, and the web.
+- **Universal by default.** One codebase targets Android, iOS, and the web — with [tvOS and Android TV](https://docs.expo.dev/guides/building-for-tv/) support too.
 - **Production-ready.** Used in tens of thousands of apps on the App Store and Play Store.
 - **Customizable all the way down.** Config plugins and the Expo Modules API let you reach the metal when you need to.
 - **Open source.** MIT-licensed, actively developed in the open.
