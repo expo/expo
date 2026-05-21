@@ -107,7 +107,7 @@ A modern Swift and Kotlin [API for writing native modules](https://docs.expo.dev
 
 ### Expo UI
 
-[`@expo/ui`](https://docs.expo.dev/versions/latest/sdk/ui/) — a set of truly native UI components backed by SwiftUI on iOS and Jetpack Compose on Android. Use platform controls (pickers, switches, sliders, menus, …) that look and feel exactly like the rest of the OS, from React.
+[Expo UI](https://docs.expo.dev/versions/latest/sdk/ui/) — a set of truly native UI components backed by SwiftUI on iOS and Jetpack Compose on Android. Use platform controls (pickers, switches, sliders, menus, …) that look and feel exactly like the rest of the OS, from React.
 
 ### DOM components
 
