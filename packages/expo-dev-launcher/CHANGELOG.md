@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix xcode build phase ordering.
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-05-21
