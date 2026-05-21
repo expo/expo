@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Update `@shopify/react-native-skia` precompile config for the 2.6.x source layout
+
 ### 💡 Others
 
 ## 56.0.9 — 2026-05-20
