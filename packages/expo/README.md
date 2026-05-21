@@ -107,7 +107,9 @@ Under the hood it builds on [`react-native-screens`](https://github.com/software
 
 ### Expo Modules API
 
-A modern Swift and Kotlin [API for writing native modules](https://docs.expo.dev/modules/overview/). It's what powers the entire Expo SDK and a growing ecosystem of third-party libraries. If you can write Swift or Kotlin, you can extend your app with native code — no Objective-C, no Java, no C++, no JNI.
+A modern Swift and Kotlin [API for writing native modules](https://docs.expo.dev/modules/overview/) — and the foundation the entire Expo SDK and a growing ecosystem of third-party libraries are built on.
+
+You describe a module declaratively: functions, properties, native views, and lifecycle events all live in a small Swift or Kotlin DSL. The framework handles type coercion and the calls between JavaScript and native automatically — no Objective-C, no Java, no C++, no JNI, no boilerplate. Scaffold a new module in seconds with `npx create-expo-module@latest`, ship it as a regular npm package, and have it picked up by Expo's autolinking on iOS and Android.
 
 ### Expo UI
 
