@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed SVG drawables not rendering as Google Maps marker icons, and memoized marker rasterization across recompositions. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-13
