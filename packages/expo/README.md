@@ -21,6 +21,8 @@
   &ensp;•&ensp;
   <a aria-label="expo blog" href="https://expo.dev/blog">📝 Blog</a>
   &ensp;•&ensp;
+  <a aria-label="expo changelog" href="https://expo.dev/changelog">📰 Changelog</a>
+  &ensp;•&ensp;
   <a aria-label="contribute to expo" href="#contributing">👏 Contribute</a>
 </p>
 
@@ -60,6 +62,9 @@
   </a>&nbsp;
   <a aria-label="Follow @expo on LinkedIn" href="https://www.linkedin.com/company/expo-dev" target="_blank">
     <img alt="Expo on LinkedIn" src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=LinkedIn&logoColor=white" target="_blank" />
+  </a>&nbsp;
+  <a aria-label="Subscribe to Expo on YouTube" href="https://www.youtube.com/channel/UCx_YiR733cfqVPRsQ1n8Fag" target="_blank">
+    <img alt="Expo on YouTube" src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=YouTube&logoColor=white" target="_blank" />
   </a>
 
   <p align="center">⭐️ Be sure to star the Expo GitHub repo if you enjoy using the project! ⭐️</p>
@@ -69,7 +74,7 @@
 
 Expo is the [officially recommended](https://reactnative.dev/docs/getting-started) framework for building production React Native apps. It gives you everything you need to design, develop, and ship universal apps for Android, iOS, and the web from a single codebase — the SDK, the router, the build and update infrastructure, and the tooling — all open source and production-tested.
 
-You write your app in React with TypeScript or JavaScript; Expo handles the rest: a Metro-powered dev server with fast refresh, file-based routing that works the same on every platform, a curated SDK of native modules you can drop in, and a path to the App Store and Play Store that doesn't require Xcode or Android Studio on your machine.
+You write your app in React with TypeScript or JavaScript; Expo handles the rest: a Metro-powered dev server with fast refresh, file-based routing that works the same on every platform, and a curated SDK of native modules you can drop in. From there, choose your own path — ship straight to the App Store and Play Store without ever opening Xcode or Android Studio, or reach for development builds and custom native code when your app needs to go further.
 
 Built and maintained in the open by [the Expo team](https://expo.dev/about) and a community of [thousands of contributors](https://github.com/expo/expo/graphs/contributors).
 
@@ -142,6 +147,7 @@ EAS is optional, but the fastest path from `git push` to the store.
 
 - **[Expo CLI](https://docs.expo.dev/more/expo-cli/)** — one interface around Metro and the native toolchain (Xcode, Simulator.app, Android Studio, ADB, …). Keep dependency versions aligned with `npx expo install`.
 - **[Expo Go](https://expo.dev/go)** and **[development builds](https://docs.expo.dev/develop/development-builds/introduction/)** — preview your app on a device in seconds.
+- **[Expo Atlas](https://docs.expo.dev/guides/analyzing-bundles/)** — visual bundle analyzer to inspect what's shipping in your JS.
 - **[Snack](https://snack.expo.dev)** — try Expo right in your browser, no install needed.
 
 ## Why Expo
