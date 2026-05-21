@@ -2317,7 +2317,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context (5.6.2):
+  - react-native-safe-area-context (5.7.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2329,8 +2329,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.6.2)
-    - react-native-safe-area-context/fabric (= 5.6.2)
+    - react-native-safe-area-context/common (= 5.7.0)
+    - react-native-safe-area-context/fabric (= 5.7.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2341,7 +2341,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/common (5.6.2):
+  - react-native-safe-area-context/common (5.7.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2363,7 +2363,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/fabric (5.6.2):
+  - react-native-safe-area-context/fabric (5.7.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3437,7 +3437,7 @@ DEPENDENCIES:
   - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.6_react-native-reanimated@4.3.1_patch_hash=1e34e4_e9da8032dc92e07ee8e9f9de5f82aa13/node_modules/react-native-keyboard-controller`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_57cdd99b2abbd81bf66bfe06e3966bfe/node_modules/@react-native-community/netinfo`)"
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@6.9.1_react-native@0.85.3_@babel+core@7.29.0_@react-native+jest_635cad3fc277b440fe37e814de1bc4f1/node_modules/react-native-pager-view`)"
-  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.3_@babel+core@7.29.0_@react-nati_b5c9982a06f140c157b72454b7505cf1/node_modules/react-native-safe-area-context`)"
+  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.85.3_@babel+core@7.29.0_@react-nati_5218ce1da1bc499456ea2ce83b894307/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.85.3_@babel+core_d06c98e80c699e170f8b37806ce468ec/node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.4.18_react-native-reanimated@4.3.1_patch_hash=1e34e4238541_c7ed8dcc454df7c13ebf24d246f99025/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.1.2/node_modules/@react-native-community/slider`)"
@@ -3851,7 +3851,7 @@ EXTERNAL SOURCES:
   react-native-pager-view:
     :path: "../../../node_modules/.pnpm/react-native-pager-view@6.9.1_react-native@0.85.3_@babel+core@7.29.0_@react-native+jest_635cad3fc277b440fe37e814de1bc4f1/node_modules/react-native-pager-view"
   react-native-safe-area-context:
-    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.3_@babel+core@7.29.0_@react-nati_b5c9982a06f140c157b72454b7505cf1/node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.85.3_@babel+core@7.29.0_@react-nati_5218ce1da1bc499456ea2ce83b894307/node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.85.3_@babel+core_d06c98e80c699e170f8b37806ce468ec/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
@@ -4098,7 +4098,7 @@ SPEC CHECKSUMS:
   react-native-keyboard-controller: 91fb57a926597b9d16c8438bc88f1142a169715c
   react-native-netinfo: 4319d381f35bc11b53dafebd5cd99c04c66a9fb4
   react-native-pager-view: a3cb9627d41fa2f31ad2b312af6e3f10f831f26d
-  react-native-safe-area-context: 91a90d98c310adcc90a511e5aeb6046d7c19d885
+  react-native-safe-area-context: 6b4966397ada0f7dd481e4486a2ef936834861a1
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
   react-native-skia: 93613a9428b7f33530e5e085e95a89f023548320
   react-native-slider: f9910f69950b9953c46e091377c1265b71eb01f0
