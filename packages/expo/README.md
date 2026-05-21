@@ -99,7 +99,7 @@ A [file-based router](https://docs.expo.dev/router/introduction/) for universal 
 
 ### Expo Modules API
 
-A modern Swift and Kotlin [API for writing native modules](https://docs.expo.dev/modules/overview/). It's what powers the entire Expo SDK and a growing ecosystem of third-party libraries. If you can write Swift or Kotlin, you can extend your app with native code — no Objective-C, no JNI.
+A modern Swift and Kotlin [API for writing native modules](https://docs.expo.dev/modules/overview/). It's what powers the entire Expo SDK and a growing ecosystem of third-party libraries. If you can write Swift or Kotlin, you can extend your app with native code — no Objective-C, no Java, no C++, no JNI.
 
 ### EAS
 
