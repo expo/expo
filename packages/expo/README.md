@@ -11,13 +11,13 @@
 <p align="center">
   <a aria-label="expo documentation" href="https://docs.expo.dev">📚 Documentation</a>
   &ensp;•&ensp;
-  <a aria-label="expo api reference" href="https://docs.expo.dev/versions/latest/sdk/expo/">📖 API Reference</a>
-  &ensp;•&ensp;
-  <a aria-label="expo sdk" href="https://docs.expo.dev/versions/latest/">📦 Expo SDK</a>
+  <a aria-label="expo api reference" href="https://docs.expo.dev/versions/latest/">📖 API Reference</a>
   &ensp;•&ensp;
   <a aria-label="expo router" href="https://docs.expo.dev/router/introduction/">🧭 Expo Router</a>
   &ensp;•&ensp;
   <a aria-label="eas" href="https://expo.dev/eas">🚀 EAS</a>
+  &ensp;•&ensp;
+  <a aria-label="expo blog" href="https://expo.dev/blog">📝 Blog</a>
   &ensp;•&ensp;
   <a aria-label="contribute to expo" href="#contributing">👏 Contribute</a>
 </p>
