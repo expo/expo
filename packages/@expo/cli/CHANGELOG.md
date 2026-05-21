@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix launching apps on physical iOS devices causing system-dependent crashes ([#46128](https://github.com/expo/expo/pull/46128) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.1.9 — 2026-05-21
