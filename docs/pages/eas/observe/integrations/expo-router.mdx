@@ -1,13 +1,13 @@
 ---
 title: Expo Router integration
 sidebar_title: Expo Router
-description: Track per-route render and interactive timings by enabling the Expo Router integration for Expo Observe.
+description: Track per-route render and interactive timings by enabling the Expo Router integration for EAS Observe.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 
-Expo Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
+EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ Expo Observe ships an opt-in integration for [Expo Router](/router/introduction/
     The Expo Router integration is available on SDK 56 and later. On earlier SDKs, `expo-observe`
     still tracks app-wide metrics, but per-route navigation events are not emitted.
   </Requirement>
-  <Requirement title="An app already using Expo Observe">
+  <Requirement title="An app already using EAS Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
@@ -118,4 +118,4 @@ Emitted at most once per screen instance within a session.
 - The integration only activates if `expo-router` is installed at runtime. If it is not installed, `useObserve()` and `ObserveRoot` continue to work but no per-route navigation metrics are emitted.
 - The integration must be enabled before mount via `ExpoObserve.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
 - If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
-- For general issues with Expo Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).
+- For general issues with EAS Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).
