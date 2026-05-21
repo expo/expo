@@ -125,9 +125,15 @@ const IOS_PREBUILD_PACKAGES = [
 const PRECOMPILE_BUILD_DIR = path.join(PACKAGES_DIR, 'precompile', '.build');
 const FLAVORS = ['debug', 'release'] as const;
 
+// Shared SPM deps source (monorepo) and per-package bundle destination (standalone).
+// Resolver: precompiled_modules.rb's shared_spm_dep_source_base.
+const SHARED_SPM_DEPS_SOURCE_DIR = '.spm-deps';
+const SHARED_SPM_DEPS_BUNDLE_SUBPATH = path.join('prebuilds', 'spm-deps');
+
 /**
- * Builds iOS xcframeworks for selected packages and copies the output tarballs
- * into each package's `prebuilds/output/` directory so they are included in `npm pack`.
+ * Builds iOS xcframeworks for selected packages and bundles them into each package's
+ * `prebuilds/` directory: per-product tarballs under `prebuilds/output/` and shared SPM
+ * dep xcframeworks under `prebuilds/spm-deps/`. Both are picked up by `npm pack`.
  */
 export const bundleIOSPrebuilds = new Task<TaskArgs>(
   {
@@ -157,7 +163,8 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
         skipCompose: false,
         skipVerify: false,
         verbose: false,
-        bundleSharedDeps: true,
+        // Shared SPM deps ship separately at <pkg>/prebuilds/spm-deps/ (see bundleSharedSpmDepsAsync).
+        bundleSharedDeps: false,
       });
 
       if (result.exitCode !== 0) {
@@ -218,6 +225,8 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
                 }
               }
             }
+
+            await bundleSharedSpmDepsAsync(parcel.pkg.path);
           },
           `Bundled iOS prebuilds into ${pkgName}`
         );
@@ -227,3 +236,47 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
     }
   }
 );
+
+// Copies each shared SPM xcframework this package declares (across all products in its
+// spm.config.json) from .spm-deps/ into <packagePath>/prebuilds/spm-deps/<Name>/<flavor>/.
+// Non-shared SPM packages (not present in .spm-deps/) are silently skipped.
+async function bundleSharedSpmDepsAsync(packagePath: string): Promise<void> {
+  const configPath = path.join(packagePath, 'spm.config.json');
+  if (!fs.existsSync(configPath)) return;
+  let config: any;
+  try {
+    config = JSON.parse(await fs.promises.readFile(configPath, 'utf8'));
+  } catch (e) {
+    logger.warn(`  Failed to parse ${configPath}: ${(e as Error).message}`);
+    return;
+  }
+  const depNames = new Set<string>();
+  for (const product of config.products ?? []) {
+    for (const spm of product.spmPackages ?? []) {
+      if (typeof spm?.productName === 'string') depNames.add(spm.productName);
+    }
+  }
+
+  for (const depName of depNames) {
+    for (const flavor of FLAVORS) {
+      const srcXcfw = path.join(
+        PRECOMPILE_BUILD_DIR,
+        SHARED_SPM_DEPS_SOURCE_DIR,
+        depName,
+        flavor,
+        `${depName}.xcframework`
+      );
+      if (!fs.existsSync(srcXcfw)) continue;
+      const destXcfw = path.join(
+        packagePath,
+        SHARED_SPM_DEPS_BUNDLE_SUBPATH,
+        depName,
+        flavor,
+        `${depName}.xcframework`
+      );
+      await fs.promises.rm(destXcfw, { recursive: true, force: true });
+      await fs.promises.mkdir(path.dirname(destXcfw), { recursive: true });
+      await fs.promises.cp(srcXcfw, destXcfw, { recursive: true });
+    }
+  }
+}

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Include and consume shared SPM dependencies in the precompiled pod / npm publish pipeline. ([#46069](https://github.com/expo/expo/pull/46069) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
