@@ -1,0 +1,106 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`toHavePathname fails with the correct message 1`] = `
+"expect(received).toHavePathname(expected)
+
+Expected: "/xyz"
+Received: "/home""
+`;
+
+exports[`toHavePathname fails with the correct message for a .not assertion 1`] = `
+"expect(received).not.toHavePathname(expected)
+
+Expected: not "/home"
+Received: "/home""
+`;
+
+exports[`toHavePathnameWithParams fails with the correct message 1`] = `
+"expect(received).toHavePathnameWithParams(expected)
+
+Expected: "/xyz"
+Received: "/home?test=true""
+`;
+
+exports[`toHavePathnameWithParams fails with the correct message for a .not assertion 1`] = `
+"expect(received).not.toHavePathnameWithParams(expected)
+
+Expected: not "/home?test=true"
+Received: "/home?test=true""
+`;
+
+exports[`toHaveRouterState fails with the correct message 1`] = `
+"expect(received).toHaveRouterState(expected)
+
+- Expected  -  1
++ Received  + 20
+
+  Object {
+-   "routes": Array [],
++   "routes": Array [
++     Object {
++       "name": "__root",
++       "params": Object {
++         "slug": "home",
++       },
++       "state": Object {
++         "routes": Array [
++           Object {
++             "name": "[slug]",
++             "params": Object {
++               "slug": "home",
++               "test": "true",
++             },
++             "path": "/home?test=true",
++           },
++         ],
++       },
++     },
++   ],
+  }"
+`;
+
+exports[`toHaveRouterState fails with the correct message for a .not assertion 1`] = `
+"expect(received).not.toHaveRouterState(expected)
+
+Expected: not {"routes": [{"name": "__root", "params": {"slug": "home"}, "state": {"routes": [{"name": "[slug]", "params": {"slug": "home", "test": "true"}, "path": "/home?test=true"}]}}]}
+Received: {"routes": [{"name": "__root", "params": {"slug": "home"}, "state": {"routes": [{"name": "[slug]", "params": {"slug": "home", "test": "true"}, "path": "/home?test=true"}]}}]}"
+`;
+
+exports[`toHaveSearchParams fails with the correct message 1`] = `
+"expect(received).toHaveSearchParams(expected)
+
+- Expected  - 1
++ Received  + 2
+
+  Object {
+-   "slug": "xyz",
++   "slug": "home",
++   "test": "true",
+  }"
+`;
+
+exports[`toHaveSearchParams fails with the correct message for a .not assertion 1`] = `
+"expect(received).not.toHaveSearchParams(expected)
+
+Expected: not {"slug": "home", "test": "true"}
+Received: {"slug": "home", "test": "true"}"
+`;
+
+exports[`toHaveSegments fails with the correct message 1`] = `
+"expect(received).toHaveSegments(expected)
+
+- Expected  - 1
++ Received  + 1
+
+  Array [
+-   "xyz",
++   "[slug]",
+  ]"
+`;
+
+exports[`toHaveSegments fails with the correct message for a .not assertion 1`] = `
+"expect(received).not.toHaveSegments(expected)
+
+Expected: not ["[slug]"]
+Received: ["[slug]"]"
+`;
