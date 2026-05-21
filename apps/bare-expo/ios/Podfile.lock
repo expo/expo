@@ -488,7 +488,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (56.0.4):
     - ExpoModulesCore
-  - ExpoLinking (56.0.10):
+  - ExpoLinking (56.0.11):
     - ExpoModulesCore
   - ExpoLivePhoto (56.0.3):
     - ExpoModulesCore
@@ -513,7 +513,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (56.0.3):
     - ExpoModulesCore
-  - ExpoModulesCore (56.0.11):
+  - ExpoModulesCore (56.0.12):
     - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
@@ -537,7 +537,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesCore/Tests (56.0.11):
+  - ExpoModulesCore/Tests (56.0.12):
     - ExpoModulesJSI
     - ExpoModulesTestCore
     - hermes-engine
@@ -568,15 +568,15 @@ PODS:
   - ExpoModulesJSI/Tests (56.0.7):
     - React-Core
     - ReactCommon
-  - ExpoModulesTestCore (56.0.4):
+  - ExpoModulesTestCore (56.0.5):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - ExpoModulesWorklets (56.0.11):
+  - ExpoModulesWorklets (56.0.12):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorkletsAdapter (56.0.11):
+  - ExpoModulesWorkletsAdapter (56.0.12):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesWorklets
@@ -4006,7 +4006,7 @@ SPEC CHECKSUMS:
   ExpoInsights: 5a2d98afbef1e18459b4abaa5e1fb7d23de817cf
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
   ExpoLinearGradient: 16c2b9c6105444883d34958d573725de1293b8d0
-  ExpoLinking: 318c79366d8f6efa696f2ea373d2f717016c247c
+  ExpoLinking: 63319fd84bfa6d2ba4b565fc2af1947c65281478
   ExpoLivePhoto: 3c2bd665a63afa8a465b16b564e4c9ab83ea60eb
   ExpoLocalAuthentication: 93f29833d2a8b957f996eddc05a632eb2bdeaa7d
   ExpoLocalization: cf50efc436b2ec313510131c1ee0e778366d64b0
@@ -4016,11 +4016,11 @@ SPEC CHECKSUMS:
   ExpoMaps: 4cf2ea2eb8d9369fbfa4cc613fe2932619624d59
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
   ExpoMeshGradient: baf62012104fd9c1719de67f88c69958abcd2ed1
-  ExpoModulesCore: 605a046a7bd62fbc568c716281c4b74c7e98cc16
+  ExpoModulesCore: c2f4acdfd58824e00b175b7d610b492ac2c40f97
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
-  ExpoModulesTestCore: 63adc8f54c0db5122aca43f7d09c45b4573089fc
-  ExpoModulesWorklets: 9a4a53a42b7ba7dba435d1fb7aa3a286d6b3a6b9
-  ExpoModulesWorkletsAdapter: 4d065a4e45a12246e2a111fbd4727bb98c74e691
+  ExpoModulesTestCore: 768a9a2b0401e87090bc7280cdb0607ab4cad382
+  ExpoModulesWorklets: 5349d7281651a11e0a5d14f32db8bb47e32c2ff4
+  ExpoModulesWorkletsAdapter: b46254bfa290742e71299210ac4be150f3fab10e
   ExpoNetwork: c9651806f67c5fe93d221f9b4533c98ae6833bb9
   ExpoNotifications: 5b0aed755e6dcb586ef018a90b8f558395ff4b29
   ExpoObserve: ad88fb20690d5ed40de257dba17f60c92aab12fb

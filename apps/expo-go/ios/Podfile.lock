@@ -167,7 +167,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (56.0.4):
     - ExpoModulesCore
-  - ExpoLinking (56.0.10):
+  - ExpoLinking (56.0.11):
     - ExpoModulesCore
   - ExpoLocalAuthentication (56.0.4):
     - ExpoModulesCore
@@ -186,7 +186,7 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
-  - ExpoModulesCore (56.0.11):
+  - ExpoModulesCore (56.0.12):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -216,7 +216,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (56.0.11):
+  - ExpoModulesCore/Tests (56.0.12):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -253,15 +253,15 @@ PODS:
   - ExpoModulesJSI/Tests (56.0.7):
     - React-Core
     - ReactCommon
-  - ExpoModulesTestCore (56.0.4):
+  - ExpoModulesTestCore (56.0.5):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - ExpoModulesWorklets (56.0.11):
+  - ExpoModulesWorklets (56.0.12):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorkletsAdapter (56.0.11):
+  - ExpoModulesWorkletsAdapter (56.0.12):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesWorklets
@@ -4672,18 +4672,18 @@ SPEC CHECKSUMS:
   ExpoImagePicker: 43ec8010b8be784970f1cf5834170745b09ecf6b
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
   ExpoLinearGradient: 16c2b9c6105444883d34958d573725de1293b8d0
-  ExpoLinking: 318c79366d8f6efa696f2ea373d2f717016c247c
+  ExpoLinking: 63319fd84bfa6d2ba4b565fc2af1947c65281478
   ExpoLocalAuthentication: 93f29833d2a8b957f996eddc05a632eb2bdeaa7d
   ExpoLocalization: cf50efc436b2ec313510131c1ee0e778366d64b0
   ExpoLocation: ffb1a2eee4b8d88f0070ba315cb0d57f0c32c7f5
   ExpoLogBox: 7aa03244fe5eeced5129e4ec7ad5bd9a3994378e
   ExpoMailComposer: ea650b89d3b93c7a277b11a8ab7010a7be6d595e
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
-  ExpoModulesCore: 61d2430fec82943bbafc5e666ee7065d84430338
+  ExpoModulesCore: 9e68a9cdadf1a5c960fb6873d3f6d944fef5b71e
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
-  ExpoModulesTestCore: 63adc8f54c0db5122aca43f7d09c45b4573089fc
-  ExpoModulesWorklets: 9a4a53a42b7ba7dba435d1fb7aa3a286d6b3a6b9
-  ExpoModulesWorkletsAdapter: 4d065a4e45a12246e2a111fbd4727bb98c74e691
+  ExpoModulesTestCore: 768a9a2b0401e87090bc7280cdb0607ab4cad382
+  ExpoModulesWorklets: 5349d7281651a11e0a5d14f32db8bb47e32c2ff4
+  ExpoModulesWorkletsAdapter: b46254bfa290742e71299210ac4be150f3fab10e
   ExpoNetwork: c9651806f67c5fe93d221f9b4533c98ae6833bb9
   ExpoNotifications: 5b0aed755e6dcb586ef018a90b8f558395ff4b29
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0

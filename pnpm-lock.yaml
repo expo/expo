@@ -1855,7 +1855,7 @@ importers:
         specifier: workspace:^56.1.2
         version: link:../require-utils
       '@expo/router-server':
-        specifier: workspace:^56.0.10
+        specifier: workspace:^56.0.11
         version: link:../router-server
       '@expo/schema-utils':
         specifier: workspace:^56.0.0
@@ -3497,7 +3497,7 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       babel-preset-expo:
-        specifier: workspace:~56.0.10
+        specifier: workspace:~56.0.11
         version: link:../babel-preset-expo
       expo-asset:
         specifier: workspace:~56.0.13
@@ -3518,7 +3518,7 @@ importers:
         specifier: workspace:~56.0.11
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~56.0.11
+        specifier: workspace:~56.0.12
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -3717,7 +3717,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-crypto
       expo-linking:
-        specifier: workspace:~56.0.10
+        specifier: workspace:~56.0.11
         version: link:../expo-linking
       expo-web-browser:
         specifier: workspace:~56.0.5
@@ -5150,7 +5150,7 @@ importers:
         specifier: workspace:^56.0.4
         version: link:../expo-glass-effect
       expo-linking:
-        specifier: workspace:^56.0.10
+        specifier: workspace:^56.0.11
         version: link:../expo-linking
       expo-server:
         specifier: workspace:^56.0.4

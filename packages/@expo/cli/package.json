@@ -66,7 +66,7 @@
     "@expo/plist": "workspace:^0.7.0",
     "@expo/prebuild-config": "workspace:^56.0.12",
     "@expo/require-utils": "workspace:^56.1.2",
-    "@expo/router-server": "workspace:^56.0.10",
+    "@expo/router-server": "workspace:^56.0.11",
     "@expo/schema-utils": "workspace:^56.0.0",
     "@expo/spawn-async": "^1.8.0",
     "@expo/ws-tunnel": "^1.0.1",
