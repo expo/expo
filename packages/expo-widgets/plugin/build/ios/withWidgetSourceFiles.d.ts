@@ -1,5 +1,5 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-import { WidgetConfig } from './types/WidgetConfig.type';
+import { WidgetConfig } from '../types/WidgetConfig.type';
 type WidgetSourceFilesProps = {
     targetName: string;
     groupIdentifier: string;
