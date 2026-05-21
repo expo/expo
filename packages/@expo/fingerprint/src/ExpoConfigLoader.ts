@@ -28,17 +28,42 @@ async function runAsync(programName: string, args: string[] = []) {
   const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
   const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
 
-  const loadedModules = Object.keys(module._cache)
-    .filter((modulePath) => !loadedModulesBefore.has(modulePath))
-    .map((modulePath) => path.relative(projectRoot, modulePath));
+  const virtualModuleNames = new Set<string>();
+  const loadedModules: string[] = [];
+
+  // TODO(@kitten): Don't rely on `module._cache` for this over Node loader hooks
+  // The module cache isn't reflective of real files necessarily
+  for (const id of Object.keys(module._cache)) {
+    if (loadedModulesBefore.has(id)) {
+      continue;
+    }
+
+    let filename = id;
+
+    const mod = module._cache[id] as any;
+    if (mod != null && mod.filename != null) {
+      filename = mod.filename || id;
+    }
+
+    // NOTE(@kitten): Virtual modules may be placed on `module._cache` and we can't rely on the ID to be accurate
+    // The IDs are also not necessarily paths. We prefer `filename`, and trust they exist, but if the ID mismatches
+    // with the module name, we use the ID, and ignore the filename entirely
+    if (filename !== id) {
+      virtualModuleNames.add(filename);
+      loadedModules.push(id);
+    } else {
+      loadedModules.push(filename);
+    }
+  }
 
   const ignoredPaths = [
     ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
     ...(await loadIgnoredPathsAsync(ignoredFile)),
   ];
-  const filteredLoadedModules = loadedModules.filter(
-    (modulePath) => !isIgnoredPath(modulePath, ignoredPaths)
-  );
+  const filteredLoadedModules = loadedModules
+    .filter((modulePath) => !virtualModuleNames.has(modulePath))
+    .map((modulePath) => path.relative(projectRoot, modulePath))
+    .filter((modulePath) => !isIgnoredPath(modulePath, ignoredPaths));
   const result = JSON.stringify({ config, loadedModules: filteredLoadedModules });
   if (process.send) {
     process.send(result);
