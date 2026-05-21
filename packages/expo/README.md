@@ -69,7 +69,7 @@ Expo is the [officially recommended](https://reactnative.dev/docs/getting-starte
 
 You write your app in React with TypeScript or JavaScript; Expo handles the rest: a Metro-powered dev server with fast refresh, file-based routing that works the same on every platform, a curated SDK of native modules you can drop in, and a path to the App Store and Play Store that doesn't require Xcode or Android Studio on your machine.
 
-Built and maintained in the open by [Expo](https://expo.dev) and a community of [thousands of contributors](https://github.com/expo/expo/graphs/contributors).
+Built and maintained in the open by [the Expo team](https://expo.dev/about) and a community of [thousands of contributors](https://github.com/expo/expo/graphs/contributors).
 
 ## Quick start
 
