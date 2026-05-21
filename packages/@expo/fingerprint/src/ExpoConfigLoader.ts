@@ -164,6 +164,12 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
   '**/node_modules/@babel/**/*',
   '**/node_modules/@expo/**/*',
   '**/node_modules/@jridgewell/**/*',
+  '**/node_modules/cross-spawn/**/*',
+  '**/node_modules/isexe/**/*',
+  '**/node_modules/shebang-command/**/*',
+  '**/node_modules/shebang-regex/**/*',
+  '**/node_modules/semver/**/*',
+  '**/node_modules/typescript/**/*',
   '**/node_modules/expo/config.js',
   '**/node_modules/expo/config-plugins.js',
   `**/node_modules/{${[
