@@ -111,12 +111,8 @@ export const globalCss = css`
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
+    :root {
       ${darkVariables}
     }
-  }
-
-  [data-theme='dark'] {
-    ${darkVariables}
   }
 `;
