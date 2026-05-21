@@ -46,6 +46,7 @@ import kotlin.time.toDuration
 private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
 private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
 private const val UPDATE_ERROR_EVENT = "error"
+private val EAS_UPDATE_HOSTS = setOf("u.expo.dev", "staging-u.expo.dev")
 
 /**
  * Entry point to expo-updates in Expo Go. Fulfills many of the
@@ -266,7 +267,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
             // ReactAndroid will load the bundle on its own in development mode
             if (!manifest.isDevelopmentMode()) {
               val launchAssetFile = launcher.launchAssetFile!!
-              val isEasUpdate = runCatching { URI(manifestUrl).host }.getOrNull() == "u.expo.dev"
+              val isEasUpdate = runCatching { URI(manifestUrl).host }
+                .getOrNull()
+                ?.let(EAS_UPDATE_HOSTS::contains) == true
               if (!isEasUpdate && HermesBundleUtils.isHermesBundle(File(launchAssetFile))) {
                 val errorJson = JSONObject().apply {
                   put("errorCode", "EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED")

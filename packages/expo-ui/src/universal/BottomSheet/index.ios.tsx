@@ -1,4 +1,4 @@
-import { BottomSheet as SwiftUIBottomSheet, Group } from '@expo/ui/swift-ui';
+import { BottomSheet as SwiftUIBottomSheet, Group, Host } from '@expo/ui/swift-ui';
 import {
   frame,
   padding,
@@ -38,15 +38,17 @@ export function BottomSheet({
   }
 
   return (
-    <SwiftUIBottomSheet
-      isPresented={isPresented}
-      onIsPresentedChange={(presented) => {
-        if (!presented) onDismiss();
-      }}
-      fitToContents={!snapPoints || snapPoints.length === 0}
-      testID={testID}>
-      <Group modifiers={presentationModifiers}>{children}</Group>
-    </SwiftUIBottomSheet>
+    <Host style={{ position: 'absolute' }} pointerEvents="none">
+      <SwiftUIBottomSheet
+        isPresented={isPresented}
+        onIsPresentedChange={(presented) => {
+          if (!presented) onDismiss();
+        }}
+        fitToContents={!snapPoints || snapPoints.length === 0}
+        testID={testID}>
+        <Group modifiers={presentationModifiers}>{children}</Group>
+      </SwiftUIBottomSheet>
+    </Host>
   );
 }
 

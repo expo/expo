@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.19.1 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Prevent ENOENT on virtual Node module paths in `ExpoConfigLoader` and check whether module paths correspond to files on disk ([#46092](https://github.com/expo/expo/pull/46092) by [@kitten](https://github.com/kitten))
+
+## 0.19.0 — 2026-05-20
+
+### 🐛 Bug fixes
+
 - Pass original env to Expo / Community CLI sub-commands ([#45834](https://github.com/expo/expo/pull/45834) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

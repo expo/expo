@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.15.0 — 2026-05-20
+
+### 💡 Others
+
 - Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
 
 ## 0.14.21 — 2026-05-06

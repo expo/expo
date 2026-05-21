@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo';
 
-import { worklets } from '../State/optionalWorklets';
+import { worklets } from '../State';
 import { VALUE_SYMBOL } from './modifiers/animation/constants';
 import type { AnimationObject, ChainableAnimationType } from './modifiers/animation/types';
 

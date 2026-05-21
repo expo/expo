@@ -19,6 +19,7 @@ import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
+import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
@@ -981,30 +982,33 @@ export const listSectionMargins = (params?: {
 
 /**
  * Sets the font properties of a view.
- * Supports both custom font families and system fonts with weight and design options.
  *
- * @param params - The font configuration. When `family` is provided, it uses Font.custom().
- * When `family` is not provided, it uses Font.system() with the specified weight and design.
+ * Pass `textStyle` to scale with the user's Dynamic Type setting. Combine
+ * it with `family` to scale a custom font.
  *
  * @example
  * ```tsx
- * // Custom font family
- * <Text modifiers={[font({ family: 'Helvetica', size: 18 })]}>Custom Font Text</Text>
+ * // Scales with Dynamic Type
+ * <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Hello</Text>
  *
- * // System font with weight and design
- * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>System Font Text</Text>
+ * // Custom font that scales relative to the body text style
+ * <Text modifiers={[font({ textStyle: 'body', family: 'Helvetica', size: 18 })]}>Hi</Text>
+ *
+ * // Fixed-size system font (no Dynamic Type scaling)
+ * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>Static</Text>
  * ```
- * @see Official [SwiftUI documentation for `custom(_:size:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:)) and Official [SwiftUI documentation for `system(size:weight:design:)`](https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)).
+ * @see Official SwiftUI documentation for [`system(_:design:weight:)`](https://developer.apple.com/documentation/swiftui/font/system(_:design:weight:)), and [`custom(_:size:relativeTo:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:relativeto:)).
  */
 export const font = (params: {
-  /**
-   * Custom font family name.
-   * If provided, uses `Font.custom()`.
-   */
+  /** Custom font family name. */
   family?: string;
-  /** Font size in points. */
+  /**
+   * Font size in points. Ignored when only `textStyle` is set.
+   *
+   * @default 17
+   */
   size?: number;
-  /** Font weight for system fonts. */
+  /** Font weight. */
   weight?:
     | 'ultraLight'
     | 'thin'
@@ -1015,8 +1019,24 @@ export const font = (params: {
     | 'bold'
     | 'heavy'
     | 'black';
-  /** Font design for system fonts */
+  /** Font design. Applied when no `family` is provided. `Font.custom` always uses the embedded font's own design. */
   design?: 'default' | 'rounded' | 'serif' | 'monospaced';
+  /**
+   * SwiftUI text style. When set, the resulting font scales with the user's
+   * Dynamic Type setting.
+   */
+  textStyle?:
+    | 'largeTitle'
+    | 'title'
+    | 'title2'
+    | 'title3'
+    | 'headline'
+    | 'subheadline'
+    | 'body'
+    | 'callout'
+    | 'footnote'
+    | 'caption'
+    | 'caption2';
 }) => createModifier('font', params);
 /**
  * Asks grid layouts not to offer the view extra size in the specified axes.
@@ -1339,6 +1359,8 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollTargetLayout>
   | ReturnType<typeof id>
   | ReturnType<typeof scrollPosition>
+  | ReturnType<typeof onScrollPhaseChange>
+  | NonNullable<ReturnType<typeof useScrollGeometryChange>>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1429,6 +1451,7 @@ export * from './presentationModifiers';
 export * from './environment';
 export * from './scrollPosition';
 export * from './symbolEffect';
+export * from './scrollObservation';
 export * from './widgets';
 export type {
   TimingAnimationParams,

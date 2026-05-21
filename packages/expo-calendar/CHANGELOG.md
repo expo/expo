@@ -6,13 +6,29 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.8 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.7 — 2026-05-20
+
+### 🛠 Breaking changes
+
+- Promote the object-oriented Calendar API to the root `expo-calendar` import and move the legacy API to `expo-calendar/legacy`. ([#46030](https://github.com/expo/expo/pull/46030) by [@Wenszel](https://github.com/Wenszel))
+
+### 🎉 New features
+
 - [Android][next] Add `calendar.addEventWithForm()` ([#46004](https://github.com/expo/expo/pull/46004) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
 
 - [next] Remove legacy exports ([#45739](https://github.com/expo/expo/pull/45739) by [@Wenszel](https://github.com/Wenszel))
-
-### 💡 Others
 
 ## 56.0.6 — 2026-05-19
 

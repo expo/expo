@@ -43,6 +43,7 @@ export type HostProps = {
     ignoreSafeArea?: 'all' | 'keyboard';
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
+    pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
 } & CommonViewModifierProps;
 /**
  * A hosting component for SwiftUI views.

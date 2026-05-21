@@ -6,7 +6,7 @@ expo-ui is a library of native UI components for React Native, bridging SwiftUI 
 
 Bridge native components to JavaScript with as little abstraction as possible. Native views should be thin wrappers — no added logic, state management, or behavior beyond what the platform component provides. Everything that can be set or controlled from JavaScript should be controlled from JavaScript.
 
-Prefer controlled components: state lives in JS and is passed as props, not managed internally by the native view. Use a prop + callback pattern (e.g. `page` + `onPageChange`) instead of imperative ref methods (e.g. `setPage(index)`). This keeps the source of truth in React and makes components predictable and composable.
+Mirror the native API shape. If the underlying SwiftUI / Compose component exposes imperative methods (e.g. SwiftUI's `ScrollViewProxy.scrollTo`, Compose's `PagerState.animateScrollToPage`), expose them as imperative methods in JS — don't paper them over with a controlled prop + sync layer just for the sake of a "React-y" API.
 
 ## Naming
 

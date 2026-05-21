@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeInferenceOption = exports.BasicType = exports.TypeKind = exports.IdentifierKind = void 0;
 exports.serializeTypeInformation = serializeTypeInformation;
 exports.deserializeTypeInformation = deserializeTypeInformation;
+exports.withPreparedSingleFile = withPreparedSingleFile;
 exports.getFileTypeInformation = getFileTypeInformation;
 const fs = __importStar(require("fs"));
 const os = __importStar(require("os"));
@@ -141,6 +142,19 @@ async function withTempFile(content, fn) {
         await fs.promises.rm(tempDir, { recursive: true, force: true });
     }
 }
+async function withPreparedSingleFile({ input, typeInference }, fn) {
+    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+    if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
+        return fn(input.inputFileAbsolutePaths[0]);
+    }
+    const fileContent = input.type === 'file'
+        ? await mergeFileContents(input.inputFileAbsolutePaths)
+        : input.fileContent;
+    if (shouldPreprocessFile) {
+        return withTempFile((0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent), fn);
+    }
+    return withTempFile(fileContent, fn);
+}
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
  * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
@@ -157,14 +171,8 @@ async function getFileTypeInformation({ input, typeInference, }) {
             typeInference: typeInferenceOn,
         });
     }
-    const fileContent = input.type === 'file'
-        ? await mergeFileContents(input.inputFileAbsolutePaths)
-        : input.fileContent;
-    const preprocessedContent = shouldPreprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent) : fileContent;
-    return withTempFile(preprocessedContent, async (tempFilePath) => {
-        return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(tempFilePath, {
-            typeInference: typeInferenceOn,
-        });
+    return withPreparedSingleFile({ input, typeInference }, async (tempFilePath) => {
+        return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(tempFilePath, { typeInference: typeInferenceOn });
     });
 }
 //# sourceMappingURL=typeInformation.js.map

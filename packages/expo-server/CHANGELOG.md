@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.4 — 2026-05-20
+
+### 🐛 Bug fixes
+
 - Ensure middleware handlers are applied to loader routes ([#45870](https://github.com/expo/expo/pull/45870) by [@kitten](https://github.com/kitten))
 - Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 56.0.3 — 2026-05-19
 

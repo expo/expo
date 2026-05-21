@@ -6,13 +6,37 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.2.5 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- Fix Jest 30 compatibility in testing library by removing internal `expect/build/matchers` import. ([#40184](https://github.com/expo/expo/issues/40184)) ([#44188](https://github.com/expo/expo/pull/44188) by [@mvincentong](https://github.com/mvincentong))
+
+## 56.2.4 — 2026-05-21
+
+### 💡 Others
+
+- [docs] Remove references to react-navigation's docs ([#46072](https://github.com/expo/expo/pull/46072) by [@Ubax](https://github.com/Ubax))
+
+## 56.2.3 — 2026-05-20
+
+### 🎉 New features
+
 - Support disabling NativeTabs Material Symbols (`md`) icons on Android via the `EXPO_ROUTER_DISABLE_NATIVE_TABS_MD` environment variable ([#45857](https://github.com/expo/expo/pull/45857) by [@Ubax](https://github.com/Ubax))
+- Remove expo-image dependency ([#45862](https://github.com/expo/expo/pull/45862) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
 - Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Add `segments` to `unstable_navigationEvents` page events `pagePreloaded`, `pageFocused`, `pageBlurred`, `pageRemoved` ([#46019](https://github.com/expo/expo/pull/46019) by [@Ubax](https://github.com/Ubax))
 
 ## 56.2.2 — 2026-05-19
 

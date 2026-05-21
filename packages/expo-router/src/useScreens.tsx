@@ -419,6 +419,7 @@ function AnalyticsListeners({
       unstable_navigationEvents.emit('pagePreloaded', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
+        segments: routeInfo.segments,
         screenId,
       });
     }
@@ -430,12 +431,13 @@ function AnalyticsListeners({
         unstable_navigationEvents.emit('pageRemoved', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
+          segments: routeInfo.segments,
           screenId,
         });
       };
     }
     return () => {};
-  }, [routeInfo?.params, routeInfo?.pathname, screenId]);
+  }, [routeInfo?.params, routeInfo?.pathname, routeInfo?.segments, screenId]);
 
   // Emit `pageFocused` from an effect — not during render — so it fires after the
   // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
@@ -444,11 +446,12 @@ function AnalyticsListeners({
       unstable_navigationEvents.emit('pageFocused', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
+        segments: routeInfo.segments,
         screenId,
       });
       hasBlurredRef.current = false;
     }
-  }, [isFocused, routeInfo?.pathname, routeInfo?.params, screenId]);
+  }, [isFocused, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
 
   useEffect(() => {
     if (routeInfo) {
@@ -459,6 +462,7 @@ function AnalyticsListeners({
           unstable_navigationEvents.emit('pageFocused', {
             pathname: routeInfo.pathname,
             params: routeInfo.params,
+            segments: routeInfo.segments,
             screenId,
           });
           hasBlurredRef.current = false;
@@ -468,6 +472,7 @@ function AnalyticsListeners({
         unstable_navigationEvents.emit('pageBlurred', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
+          segments: routeInfo.segments,
           screenId,
         });
         hasBlurredRef.current = true;
@@ -478,7 +483,7 @@ function AnalyticsListeners({
       };
     }
     return () => {};
-  }, [navigation, routeInfo?.pathname, routeInfo?.params, screenId]);
+  }, [navigation, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
 
   return null;
 }

@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Query, Asset, requestPermissionsAsync } from 'expo-media-library/next';
+import { Query, Asset, requestPermissionsAsync } from 'expo-media-library';
 import { useEffect, useState } from 'react';
 import {
   View,

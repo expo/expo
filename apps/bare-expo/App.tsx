@@ -69,6 +69,9 @@ function useLoaded() {
 ExpoObserve.configure({
   dispatchingEnabled: true,
   sampleRate: 0.9,
+  integrations: {
+    'react-navigation': true,
+  },
 });
 
 export default function Main() {

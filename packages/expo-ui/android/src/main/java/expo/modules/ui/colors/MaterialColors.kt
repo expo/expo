@@ -13,6 +13,7 @@ import com.google.android.material.color.utilities.MaterialDynamicColors
 import com.google.android.material.color.utilities.SchemeTonalSpot
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.ui.ExpoColorScheme
 
 /**
@@ -21,6 +22,7 @@ import expo.modules.ui.ExpoColorScheme
  */
 internal val isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
+@OptimizedRecord
 internal class MaterialColorsOptions : Record {
   @Field val scheme: ExpoColorScheme? = null
 

@@ -1,5 +1,5 @@
 import type { Ref } from 'react';
-import type { ObservableState } from '../../State/useNativeState';
+import { type ObservableState } from '../../State';
 import type { ViewEvent } from '../../types';
 import type { CommonViewModifierProps } from '../types';
 /**

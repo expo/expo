@@ -1,5 +1,5 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
-import * as Calendar from 'expo-calendar';
+import * as Calendar from 'expo-calendar/legacy';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
