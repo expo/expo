@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Use non-selection `List` initializer in `List` when `selection` prop is not provided. ([#XXXX](https://github.com/expo/expo/pull/XXXX) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Use non-selection `List` initializer in `List` when `selection` prop is not provided. ([#46101](https://github.com/expo/expo/pull/46101) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
