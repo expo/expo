@@ -95,6 +95,11 @@ public final class ImageModule: Module {
         view.sdImageView.accessibilityLabel = label
       }
 
+      Prop("accessibilityElementsHidden") { (view, hidden: Bool?) in
+        view.accessibilityElementsHidden = hidden ?? false
+        view.sdImageView.accessibilityElementsHidden = hidden ?? false
+      }
+
       Prop("recyclingKey") { (view, key: String?) in
         view.recyclingKey = key
       }
