@@ -112,7 +112,11 @@ it('can pass options via elements', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-    android: { icon: { type: 'drawableResource', name: 'test' }, selectedIcon: undefined },
+    android: {
+      icon: { type: 'drawableResource', name: 'test' },
+      // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+      selectedIcon: { type: 'drawableResource', name: 'test' },
+    },
   } as TabsScreenProps);
 });
 
@@ -235,7 +239,11 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-      android: { icon: { type: 'drawableResource', name: 'homepod' }, selectedIcon: undefined },
+      android: {
+        icon: { type: 'drawableResource', name: 'homepod' },
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: { type: 'drawableResource', name: 'homepod' },
+      },
     } as TabsScreenProps);
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
@@ -1071,7 +1079,11 @@ describe('Dynamic options', () => {
           type: 'drawableResource',
           name: 'test',
         },
-        selectedIcon: undefined,
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: {
+          type: 'drawableResource',
+          name: 'test',
+        },
       },
     } as TabsScreenProps);
   });

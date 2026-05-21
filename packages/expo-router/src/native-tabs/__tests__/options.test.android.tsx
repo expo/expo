@@ -100,7 +100,7 @@ describe('Icons', () => {
   //     ).toThrow('You can only use one type of icon (Icon or Icon.Drawable) for a single tab');
   //   });
 
-  it('does not set selectedIcon when using sf with string on Android', () => {
+  it('uses drawable for both icon and selectedIcon on Android when sf with string is also provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
@@ -114,14 +114,19 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toBeUndefined();
-    expect(TabsScreen.mock.calls[0][0].android?.icon?.type).toBe('drawableResource');
-    if (TabsScreen.mock.calls[0][0].android?.icon?.type !== 'drawableResource')
-      throw new Error('Icon type is not drawableResource');
-    expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('stairs');
+    // selectedIcon mirrors icon — sf-selected does not leak in, and the drawable default
+    // is reused (temporary fallback for the react-native-screens upstream bug).
+    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+      type: 'drawableResource',
+      name: 'stairs',
+    });
+    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+      type: 'drawableResource',
+      name: 'stairs',
+    });
   });
 
-  it('does not set selectedIcon when using sf with object on Android', () => {
+  it('uses drawable for both icon and selectedIcon on Android when sf with object is also provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
@@ -138,11 +143,16 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toBeUndefined();
-    expect(TabsScreen.mock.calls[0][0].android?.icon?.type).toBe('drawableResource');
-    if (TabsScreen.mock.calls[0][0].android?.icon?.type !== 'drawableResource')
-      throw new Error('Icon type is not drawableResource');
-    expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('stairs');
+    // sf-selected does not leak into the Android selectedIcon; the drawable default is
+    // mirrored instead (temporary fallback for the react-native-screens upstream bug).
+    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+      type: 'drawableResource',
+      name: 'stairs',
+    });
+    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+      type: 'drawableResource',
+      name: 'stairs',
+    });
   });
 });
 
