@@ -132,7 +132,7 @@ EAS is optional, but the fastest path from `git push` to the store.
 
 ### Tooling
 
-- **[`@expo/cli`](https://github.com/expo/expo/blob/main/packages/%40expo/cli/README.md)** — one interface around Metro and the native toolchain (Xcode, Simulator.app, Android Studio, ADB, …). Keep dependency versions aligned with `npx expo install`.
+- **[Expo CLI](https://docs.expo.dev/more/expo-cli/)** — one interface around Metro and the native toolchain (Xcode, Simulator.app, Android Studio, ADB, …). Keep dependency versions aligned with `npx expo install`.
 - **[Expo Go](https://expo.dev/go)** and **[development builds](https://docs.expo.dev/develop/development-builds/introduction/)** — preview your app on a device in seconds.
 - **[Snack](https://snack.expo.dev)** — try Expo right in your browser, no install needed.
 
