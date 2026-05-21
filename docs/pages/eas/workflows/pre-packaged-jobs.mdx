@@ -547,7 +547,7 @@ You can reference the following outputs in subsequent jobs:
 
 #### Hooks
 
-Hooks are supported for this job. Available hooks:
+The following hooks are supported for the Submit job:
 
 - `before_submit`: steps to run before the submission starts.
 - `after_submit`: steps to run after the submission completes.
@@ -851,7 +851,7 @@ jobs:
 
 ## Maestro
 
-Run Maestro tests on a Android emulator or iOS Simulator build.
+Run Maestro tests on an Android Emulator or iOS Simulator build.
 
 > **important** Maestro tests are in [alpha](/more/release-statuses/#alpha).
 
@@ -903,7 +903,7 @@ You can pass the following parameters into the `params` list:
 
 #### Hooks
 
-Hooks are supported for this job. Available hooks:
+The following hooks are supported for the Maestro job:
 
 - `before_maestro_tests`: steps to run before the tests start.
 - `after_maestro_tests`: steps to run after the tests complete.
@@ -935,7 +935,7 @@ jobs:
 
 <Collapsible summary="Maestro test with sharding">
 
-This workflow runs Maestro tests on an Android emulator build with 3 shards and 2 retries for failed tests.
+This workflow runs Maestro tests on an Android Emulator build with 3 shards and 2 retries for failed tests.
 
 ```yaml .eas/workflows/maestro-sharded.yml
 name: Sharded Maestro Test
@@ -999,7 +999,7 @@ jobs:
 
 <Collapsible summary="Recording screen and using a specific device">
 
-This workflow runs Maestro tests on an Android emulator build with a specific device and records the screen.
+This workflow runs Maestro tests on an Android Emulator build with a specific device and records the screen.
 
 ```yaml .eas/workflows/maestro-sharded.yml
 name: Pixel E2E Test
@@ -1039,9 +1039,9 @@ The assets will be available within the "Maestro Test Results" artifact in the A
 
 </Collapsible>
 
-<Collapsible summary="Report Maestro artifacts to an external service">
+<Collapsible summary="Report Maestro artifacts to Slack">
 
-This workflow saves screenshots and recordings to `MAESTRO_TESTS_DIR`, then runs a script after the tests finish to upload those files or send a summary to an external service.
+This workflow saves screenshots and recordings to `MAESTRO_TESTS_DIR`, then runs a script after the tests finish to upload those files or send a summary to Slack.
 
 ```yaml .eas/workflows/maestro-report-artifacts.yml
 name: Maestro Artifact Reporting
@@ -1052,7 +1052,7 @@ jobs:
     type: maestro
     environment: preview
     env:
-      REPORTING_WEBHOOK_URL: ${{ env.REPORTING_WEBHOOK_URL }}
+      SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
     params:
       build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
       flow_path: ./maestro/flows
@@ -1122,7 +1122,7 @@ You can pass the following parameters into the `params` list:
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
 
-Hooks are supported for this job. Available hooks:
+The following hooks are supported for the Maestro Cloud job:
 
 - `before_maestro_cloud`: steps to run before the Maestro Cloud upload.
 - `after_maestro_cloud`: steps to run after the Maestro Cloud upload.
@@ -1148,7 +1148,7 @@ You can also define additional outputs for this job using [`jobs.<job_id>.output
 
 ### Examples
 
-Here are some practical examples of using the Maestro job:
+Here are some practical examples of using the Maestro Cloud job:
 
 <Collapsible summary="Basic Maestro Cloud test">
 

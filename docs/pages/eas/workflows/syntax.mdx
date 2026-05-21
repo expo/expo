@@ -443,7 +443,7 @@ jobs:
 
 ### `jobs.<job_id>.hooks`
 
-Some pre-packaged jobs support hooks to run additional steps before or after the main job action (for example, `maestro-cloud`, `maestro-test`, and `submit`). Hook names are job-specific; see the job's documentation for the available hook keys.
+Some pre-packaged jobs support hooks to run additional steps before or after the main job action (for example, `maestro-cloud`, `maestro`, and `submit`). Hook names are job-specific. See the job's documentation for the available hook keys.
 
 ```yaml
 jobs:
@@ -1268,7 +1268,7 @@ jobs:
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
-      android_system_image_package: string # optional. Android emulator system image package to use.
+      android_system_image_package: string # optional. Android Emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
       output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
     hooks:
