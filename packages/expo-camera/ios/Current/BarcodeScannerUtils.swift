@@ -60,6 +60,7 @@ class BarcodeScannerUtils {
     return result
   }
 
+  #if !targetEnvironment(macCatalyst)
   @available(iOS 16.0, *)
   static func visionDataScannerObjectToDictionary(item: RecognizedItem.Barcode) -> [String: Any] {
     var result = [String: Any]()
@@ -82,6 +83,7 @@ class BarcodeScannerUtils {
 
     return result
   }
+  #endif
 
   static func addEmptyCornerPoints(to result: inout [String: Any]) {
     result["cornerPoints"] = []
