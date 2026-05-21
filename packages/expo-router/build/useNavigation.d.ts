@@ -1,8 +1,9 @@
 import type { NavigationProp, NavigationState } from './react-navigation/native';
 import type { Href } from './types';
 /**
- * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
- * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a
+ * Returns the navigation object for the current route. Mirrors the React Navigation
+ * [`navigation` object](https://reactnavigation.org/docs/navigation-object). Use it to
+ * imperatively access layout-specific functionality like `navigation.openDrawer()` in a
  * [Drawer](/router/advanced/drawer/) layout.
  *
  * @example
@@ -49,8 +50,9 @@ import type { Href } from './types';
  * @param parent Provide an absolute path such as `/(root)` to the parent route or a relative path like `../../` to the parent route.
  * @returns The navigation object for the current route.
  *
- * @see React Navigation documentation on [navigation dependent functions](https://reactnavigation.org/docs/navigation-object/#navigator-dependent-functions)
- * for more information.
+ * @see The full navigation API is available directly from `expo-router` — no
+ * `@react-navigation/*` install required. For the navigator-dependent functions reference,
+ * see [navigation dependent functions](https://reactnavigation.org/docs/navigation-object/#navigator-dependent-functions).
  */
 export declare function useNavigation<T = Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
     getState(): NavigationState | undefined;
