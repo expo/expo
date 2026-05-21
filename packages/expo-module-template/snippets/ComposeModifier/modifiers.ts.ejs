@@ -1,7 +1,7 @@
-import { createModifier } from '@expo/ui/jetpack-compose/modifiers';
+import { createModifier, type ModifierConfig } from '@expo/ui/jetpack-compose/modifiers';
 
 export const <%= project.composeModifierName.charAt(0).toLowerCase() + project.composeModifierName.slice(1) %> = (params: {
   color?: number;
   width?: number;
   cornerRadius?: number;
-}) => createModifier('<%= project.composeModifierName.charAt(0).toLowerCase() + project.composeModifierName.slice(1) %>', params);
+}): ModifierConfig => createModifier('<%= project.composeModifierName.charAt(0).toLowerCase() + project.composeModifierName.slice(1) %>', params);

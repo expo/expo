@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
-import { type CommonViewModifierProps } from '@expo/ui/jetpack-compose';
+import { type PrimitiveBaseProps } from '@expo/ui/jetpack-compose';
 import { createViewModifierEventListener } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
-export interface <%- project.composeViewName %>Props extends CommonViewModifierProps {
+export interface <%- project.composeViewName %>Props extends PrimitiveBaseProps {
   title: string;
   children?: React.ReactNode;
 }

@@ -28,6 +28,9 @@
   "homepage": "<%- repo %>#readme",
   "dependencies": {},
   "devDependencies": {
+<% if (usesExpoUI) { -%>
+    "@expo/ui": "^56.0.10",
+<% } -%>
     "@babel/core": "^7.26.0",
     "@types/jest": "^29.2.1",
     "@types/react": "~19.1.1",

@@ -12,10 +12,10 @@ buildscript {
 plugins {
   id 'com.android.library'
   id 'expo-module-gradle-plugin'
-<% if (usesCompose) { -%>
-  id 'org.jetbrains.kotlin.plugin.compose'
-<% } -%>
 }
+<% if (usesCompose) { -%>
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+<% } -%>
 
 group = '<%- project.package %>'
 version = '<% if (type === 'remote') { %><%- project.version %><% } else { %>0.1.0<% } %>'

@@ -25,6 +25,6 @@ fun FunctionalComposableScope.<%- project.composeViewName %>Content(props: <%- p
     )
   ) {
     Text(props.title)
-    Children()
+    Children(composableScope)
   }
 }
