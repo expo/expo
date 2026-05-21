@@ -6,6 +6,7 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { Button } from '@/components/Button';
 import { CrashReportsSection } from '@/components/CrashReportsSection';
 import { Divider } from '@/components/Divider';
+import { GlobalAttributesSection } from '@/components/GlobalAttributesSection';
 import { JSAnimation } from '@/components/JSAnimation';
 import { LogEventsSection } from '@/components/LogEventsSection';
 import { useTheme } from '@/utils/theme';
@@ -27,9 +28,11 @@ export default function Debug() {
       style={{ backgroundColor: theme.background.screen }}
       contentContainerStyle={styles.container}>
       <LogEventsSection />
-      {typeof AppMetrics.logEvent === 'function' ? <Divider /> : null}
+      <Divider />
       <CrashReportsSection />
       {typeof AppMetrics.triggerCrash === 'function' ? <Divider /> : null}
+      <GlobalAttributesSection />
+      <Divider />
       <Button
         title={showAnimation ? 'Hide JS Animation' : 'Show JS Animation'}
         onPress={() => setShowAnimation(!showAnimation)}
