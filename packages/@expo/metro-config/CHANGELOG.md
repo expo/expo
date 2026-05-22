@@ -21,6 +21,7 @@
 ### 🐛 Bug fixes
 
 - Add missing HTML attribute escaping for inserted asset URLs ([#45848](https://github.com/expo/expo/pull/45848) by [@kitten](https://github.com/kitten))
+- Derive chunk renaming from intrinsic hash of topological transitive async chunks ([#46003](https://github.com/expo/expo/pull/46003) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
