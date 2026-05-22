@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Upgrade react-native-screens to 4.25.2 ([@Ubax](https://github.com/Ubax))
+- Upgrade react-native-screens to 4.25.2 ([@Ubax](https://github.com/Ubax)) ([#46142](https://github.com/expo/expo/pull/46142) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
