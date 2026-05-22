@@ -2562,6 +2562,9 @@ importers:
       '@expo/metro':
         specifier: ~56.0.0
         version: 56.0.0
+      '@expo/require-utils':
+        specifier: workspace:^56.1.2
+        version: link:../require-utils
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
