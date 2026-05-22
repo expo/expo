@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Default `ios.usePrecompiledModules` to `true` so the plugin matches the Podfile default (precompiled modules enabled) instead of silently disabling them.
+- [iOS] Default `ios.usePrecompiledModules` to `true` so the plugin matches the Podfile default (precompiled modules enabled) instead of silently disabling them. ([#46159](https://github.com/expo/expo/pull/46159) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
