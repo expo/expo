@@ -80,15 +80,21 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
     const fileName = this.#getFileName(key);
     const targetTemp = fileDir + path.sep + getTmpName(fileName);
     const targetPath = fileDir + path.sep + fileName;
+    let renamed = false;
     try {
       await fs.promises.writeFile(targetTemp, buffer);
       await renameWithRetry(targetTemp, targetPath);
+      renamed = true;
     } catch (err: any) {
       // The cache root can disappear underneath us if a parallel process clears the cache root
       if (err?.code !== 'ENOENT') throw err;
       this.#prepare = undefined;
       await this.prepare();
       await fs.promises.writeFile(targetTemp, buffer);
+      await renameWithRetry(targetTemp, targetPath);
+      renamed = true;
+    } finally {
+      if (!renamed) await fs.promises.unlink(targetTemp).catch(() => {});
     }
   }
 
