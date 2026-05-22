@@ -21,7 +21,7 @@ If you need lower-level control over platform-specific paging behavior or modifi
 Optionally, install [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) if you need either of the following:
 
 - **Animated `setPage` on iOS.** Without worklets, iOS `setPage` falls back to a non-animated jump. Android animates regardless.
-- **Per-frame `onPageScroll` callbacks that stay on the UI thread.** When your `onPageScroll` handler is itself a worklet, it runs synchronously on the UI thread every frame instead of hopping to JS. Without worklets the callback still fires — it just runs on the JS thread.
+- **Per-frame `onPageScroll` callbacks that stay on the UI thread.** When your `onPageScroll` handler is itself a worklet, it runs synchronously on the UI thread every frame instead of hopping to JS. Without worklets the callback still fires &mdash; it just runs on the JS thread.
 
 ## Migrating from `react-native-pager-view`
 
@@ -36,7 +36,7 @@ import PagerView from '@expo/ui/community/pager-view';
 Before you swap, you should know what changes:
 
 - `orientation="vertical"`, `keyboardDismissMode`, `overdrag`, and `overScrollMode` are not supported.
-- The `usePagerView` hook is not provided — use a `ref` instead.
+- The `usePagerView` hook is not provided &mdash; use a `ref` instead.
 - On iOS, `onPageScroll` and `onPageScrollStateChanged` only fire on iOS 18+.
 
 See [Platform behavior](#platform-behavior) for the full list.

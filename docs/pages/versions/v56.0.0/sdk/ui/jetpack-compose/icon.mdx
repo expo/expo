@@ -11,9 +11,9 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **info** For cross-platform usage, see the universal [`Icon`](../universal/icon) — it renders the appropriate native component per platform.
+> **info** For cross-platform usage, see the universal [`Icon`](../universal/icon) &mdash; it renders the appropriate native component per platform.
 
-An icon component for rendering Material Symbol XML vector drawables in Jetpack Compose. The recommended source is [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) — it ships Google's [Material Symbols](https://fonts.google.com/icons) as individual asset subpaths, so Metro only bundles the icons you actually import. For other styles (rounded, sharp, filled) or custom axes, the package's [CLI](#custom-styles-via-expomaterial-symbols-cli) downloads any variant directly into your project.
+An icon component for rendering Material Symbol XML vector drawables in Jetpack Compose. Use [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) as the icon source. It ships Google's [Material Symbols](https://fonts.google.com/icons) as individual asset subpaths, so Metro only bundles the icons you import. For other styles (rounded, sharp, filled) or custom axes, the package's [CLI](#custom-styles-via-expomaterial-symbols-cli) downloads any variant directly into your project.
 
 <ContentSpotlight
   variant="component"
@@ -27,7 +27,7 @@ An icon component for rendering Material Symbol XML vector drawables in Jetpack 
 
 <APIInstallSection />
 
-Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) to use the bundled icons. For a different style or custom axes, see [Custom styles](#custom-styles-via-expomaterial-symbols-cli) — no install needed.
+Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) to use the bundled icons. For a different style or custom axes, see [Custom styles](#custom-styles-via-expomaterial-symbols-cli) &mdash; no install needed.
 
 <Terminal cmd={['$ npx expo install @expo/material-symbols']} />
 
@@ -35,7 +35,7 @@ Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@ex
 
 ### Basic icon
 
-Import any icon directly from its own subpath of `@expo/material-symbols` — each icon resolves to a Metro asset that `Icon` can render natively. For local XML files you add to your project, use `require()` instead (see [Custom styles](#custom-styles-via-expomaterial-symbols-cli) below).
+Import any icon directly from its own subpath of `@expo/material-symbols` &mdash; each icon resolves to a Metro asset that `Icon` can render natively. For local XML files you add to your project, use `require()` instead (see [Custom styles](#custom-styles-via-expomaterial-symbols-cli) below).
 
 ```tsx BasicIcon.tsx
 import { Host, Icon } from '@expo/ui/jetpack-compose';
