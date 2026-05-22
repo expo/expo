@@ -18,7 +18,7 @@ const { getProjectName } = IOSConfig.XcodeUtils;
 
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
-const DEFAULT_APPICON_NAME = path.basename(IMAGESET_PATH, '.appiconset');
+const DEFAULT_APPICON_NAME = 'AppIcon';
 
 export const withIosIcons: ConfigPlugin = (config) => {
   config = withDangerousMod(config, [

@@ -55,7 +55,7 @@ const {
 } = _configPlugins().IOSConfig.XcodeUtils;
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
-const DEFAULT_APPICON_NAME = _path().default.basename(IMAGESET_PATH, '.appiconset');
+const DEFAULT_APPICON_NAME = 'AppIcon';
 const withIosIcons = config => {
   config = (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
     await setIconsAsync(config, config.modRequest.projectRoot);
