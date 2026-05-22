@@ -15,14 +15,14 @@ concurrency:
 jobs:
   build:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 26.2
-        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby
