@@ -54,9 +54,9 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
   }
 
   async get(key: Buffer): Promise<T | null | undefined> {
+    const filePath = this.#getFileDir(key) + path.sep + this.#getFileName(key);
     let data: Buffer;
     try {
-      const filePath = this.#getFileDir(key) + path.sep + this.#getFileName(key);
       data = await fs.promises.readFile(filePath);
     } catch (err: any) {
       if (err.code === 'ENOENT') {
@@ -64,7 +64,13 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
       }
       throw err;
     }
-    return this.#packr.decode(data);
+
+    try {
+      return this.#packr.decode(data);
+    } catch (err) {
+      fs.promises.unlink(filePath).catch(() => {});
+      return null;
+    }
   }
 
   async set(key: Buffer, value: T): Promise<void> {
