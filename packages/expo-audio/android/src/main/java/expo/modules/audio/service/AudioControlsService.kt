@@ -280,8 +280,6 @@ class AudioControlsService : MediaSessionService() {
 
   private fun postOrStartForegroundNotification(startInForeground: Boolean) {
     if (startInForeground) {
-      // Foreground promotion must run synchronously: dispatching through mainQueue can blow
-      // the 5s startForegroundService() deadline on slower devices or a busy main thread.
       postOrStartForegroundNotificationNow(startInForeground = true)
       return
     }
