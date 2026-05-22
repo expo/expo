@@ -23,7 +23,7 @@ const resolveConfigFromPath = (filePath: string, projectRoot: string): string | 
   const inputPath = path.resolve(process.cwd(), filePath);
   const normalized = `.${path.sep}${path.relative(projectRoot, inputPath)}`;
   const resolved = resolveFrom(projectRoot, normalized, { extensions: configExtensions });
-  return resolved ?? path.resolve(projectRoot, filePath);
+  return resolved ?? inputPath;
 };
 
 const resolvePackageJsonConfig = (searchPath: string): ResolvePackageJsonResult | null => {
