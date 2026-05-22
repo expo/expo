@@ -117,7 +117,15 @@ if (oxlintChangedFiles !== null && oxlintChangedFiles.length === 0) {
     ...oxlintChangedFiles,
     '--type-aware',
     ...(isCI ? ['--format=github'] : []),
-  ]);
+  ]).then(result => {
+    if (result.status !== 0 && result.output.includes('No files found to lint')) {
+      return {
+        status: 0,
+        output: 'No lintable files changed (all changed files are in ignorePatterns).',
+      };
+    }
+    return result;
+  });
 } else {
   oxlintPromise = runAsync('oxlint', oxlintArgs);
 }
