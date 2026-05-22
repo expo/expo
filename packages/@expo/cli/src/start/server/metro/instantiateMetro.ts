@@ -37,6 +37,7 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
+import { loadMetroConfigFileAsync } from './loadMetroConfigFile';
 
 // prettier-ignore
 export const event = events('metro', (t) => [
@@ -218,10 +219,13 @@ export async function loadMetroConfigAsync(
 
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
-  const configPath = env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined;
-  const resolvedConfig = await resolveConfig(configPath, projectRoot);
   const defaultConfig = getDefaultConfig(projectRoot);
+  const resolvedConfig = await loadMetroConfigFileAsync({
+    projectRoot,
+    serverRoot,
+    // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
+    overrideConfigPath: env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined,
+  });
 
   let config: ConfigT = resolvedConfig.isEmpty
     ? defaultConfig
