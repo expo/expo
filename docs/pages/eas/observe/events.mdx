@@ -3,6 +3,8 @@ title: User-defined events
 description: Log named events from your app to track custom signals visible in the EAS Observe dashboard.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 User-defined events let you record arbitrary, named events from your app. Use them to track any signal specific to your app that the built-in performance metrics do not cover.
 
 Events are persisted on-device, batched, and dispatched on the next flush as OpenTelemetry log records. They appear in the **Events** tab of the EAS Observe dashboard and are queryable from the EAS CLI.
