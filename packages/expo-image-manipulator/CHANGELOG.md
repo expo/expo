@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Throw an error when requested mime type is not supported.
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-21
