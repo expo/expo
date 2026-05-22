@@ -37,6 +37,15 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
    */
   @JavaScriptActor
   public init(_ runtime: JavaScriptRuntime) {
+    try! self.init(deferredIn: runtime)
+  }
+
+  /**
+   Creates a new promise whose resolver or rejecter must be called from the outside,
+   propagating construction failures to the caller.
+   */
+  @JavaScriptActor
+  public init(deferredIn runtime: JavaScriptRuntime) throws {
     self.runtime = runtime
 
     // Create function that is the promise setup. It is called immediately on `callAsConstructor`.
@@ -46,13 +55,13 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       return .undefined
     }
 
-    self.object = try! runtime
+    self.object = try runtime
       .global()
       .getPropertyAsFunction(.cached(runtime, "Promise"))
       .callAsConstructor(setup.asValue())
       .getObject()
 
-    try! setUpCallbacks()
+    try setUpCallbacks()
   }
 
   @JavaScriptActor

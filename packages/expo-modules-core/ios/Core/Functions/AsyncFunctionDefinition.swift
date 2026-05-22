@@ -14,6 +14,7 @@ internal protocol AnyAsyncFunctionDefinition: AnyFunctionDefinition {
   func runOnQueue(_ queue: DispatchQueue?) -> Self
 }
 
+
 /**
  The default queue used for module's async function calls.
  */
@@ -186,7 +187,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      let promise = JavaScriptPromise(try appContext.runtime)
+      let promise = try JavaScriptPromise(deferredIn: appContext.runtime)
       let promiseValue = promise.asValue()
 
       self.call(appContext, this: this, arguments: arguments) { [promise] result in
@@ -209,5 +210,4 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     return self
   }
 }
-
 
