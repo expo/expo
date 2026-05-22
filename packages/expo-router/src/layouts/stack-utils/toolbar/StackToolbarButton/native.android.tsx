@@ -22,9 +22,12 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
     return null;
   }
 
+  // `tint={null}` tells `<Icon>` to draw the source in its original colors.
+  // `undefined` would fall back to `LocalContentColor`, i.e. the IconButton's
+  // content color, which is still a tint.
   const tintColor =
     props.imageRenderingMode === 'original'
-      ? undefined
+      ? null
       : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
 
   return (
