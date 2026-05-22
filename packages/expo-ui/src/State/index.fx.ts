@@ -3,8 +3,12 @@
 import { installOnUIRuntime } from 'expo';
 
 import { worklets } from './optionalWorklets';
+import {
+  EXPO_SHARED_OBJECT_ID_KEY,
+  isExpoUISharedObject,
+  type ExpoUISharedObject,
+} from './sharedObjectBrand';
 
-type NativeSharedObject = { __expo_shared_object_id__: number };
 type PackedSharedObject = { objectId: number };
 
 let _serializerRegistered = false;
@@ -24,20 +28,15 @@ function registerSharedObjectSerializer(): void {
 
   const { registerCustomSerializable } = worklets;
 
-  registerCustomSerializable<NativeSharedObject, PackedSharedObject>({
+  registerCustomSerializable<ExpoUISharedObject, PackedSharedObject>({
     name: 'ExpoSharedObject',
-    determine: (value): value is NativeSharedObject => {
+    determine: (value): value is ExpoUISharedObject => {
       'worklet';
-      return (
-        value != null &&
-        typeof value === 'object' &&
-        '__expo_shared_object_id__' in value &&
-        (value as any).__expo_shared_object_id__ !== 0
-      );
+      return isExpoUISharedObject(value);
     },
     pack: (value) => {
       'worklet';
-      return { objectId: value.__expo_shared_object_id__ };
+      return { objectId: value[EXPO_SHARED_OBJECT_ID_KEY] };
     },
     unpack: (packed) => {
       'worklet';
