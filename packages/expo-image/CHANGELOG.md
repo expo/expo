@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix loading local assets.
+
 ### 💡 Others
 
 ## 56.0.8 — 2026-05-21

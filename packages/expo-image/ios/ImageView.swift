@@ -840,7 +840,16 @@ public final class ImageView: ExpoView {
 }
 
 func localAssetName(from url: URL?) -> String? {
-  guard let url, url.scheme == nil else {
+  guard let url else {
+    return nil
+  }
+
+  if url.scheme == "file", !FileManager.default.fileExists(atPath: url.path) {
+    let name = url.lastPathComponent
+    return name.isEmpty ? nil : name
+  }
+
+  guard url.scheme == nil else {
     return nil
   }
 
