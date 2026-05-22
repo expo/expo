@@ -106,14 +106,14 @@ In the above example, when the app user visits `/blog/my-post`, the page is rend
 
 You can customize the root HTML document by creating a **src/app/+html.tsx** file. This component wraps all routes and runs only on the server.
 
-The [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, and CSS are included in the response:
+The [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext) hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, and CSS are included in the response:
 
 - `htmlAttributes`: attributes to add to the `<html>` element
 - `bodyAttributes`: attributes to add to the `<body>` element
 - `headNodes`: React nodes for the `<head>` element (metadata, CSS, and other assets)
 - `bodyNodes`: React nodes for the `<body>` element (fonts and other deferred assets)
 
-> **info** When creating a custom **+html.tsx** template, you must use all properties returned to you by [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext). Otherwise, your server-side rendered HTML may appear broken or your app may not function correctly.
+> **info** When creating a custom **+html.tsx** template, you must use all properties returned to you by [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext). Otherwise, your server-side rendered HTML may appear broken or your app may not function correctly.
 
 ```tsx src/app/+html.tsx
 import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';
@@ -155,7 +155,7 @@ export default function Root({ children }: { children: ReactNode }) {
 The **+html.tsx** file is only used by the server renderer and never by client code. This means:
 
 - It will be run by `expo-server` during server rendering
-- It is not rehydrated on the client, and should only use [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) React hook
+- It is not rehydrated on the client, and should only use [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext) React hook
 - You may not import global CSS in `+html.tsx` (use the [Root Layout](/router/basics/navigation-layouts/#root-layout) for styles)
 - You may not call browser APIs like `window` or `document` in your `+html.tsx`
 
@@ -163,9 +163,9 @@ All `+html.tsx` components are expected to render the `children` prop they recei
 
 ## Metadata
 
-Routes may export a [`generateMetadata`](/versions/unversioned/sdk/server/#generatemetadatafunctionrequest-params) function to define per-page metadata such as title, description, and [Open Graph](https://ogp.me/) tags. This function runs on the server before rendering begins, and its result is injected into the `<head>` of the HTML document via the `headNodes` provided by [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) in your [Root HTML](#root-html) component.
+Routes may export a [`generateMetadata`](/versions/latest/sdk/server/#generatemetadatafunctionrequest-params) function to define per-page metadata such as title, description, and [Open Graph](https://ogp.me/) tags. This function runs on the server before rendering begins, and its result is injected into the `<head>` of the HTML document via the `headNodes` provided by [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext) in your [Root HTML](#root-html) component.
 
-Export a [`generateMetadata`](/versions/unversioned/sdk/server/#generatemetadatafunctionrequest-params) function from your route file and return a [`Metadata`](/versions/unversioned/sdk/server/#metadata) object. The function receives the incoming request and route parameters, which you can use to generate metadata dynamically:
+Export a [`generateMetadata`](/versions/latest/sdk/server/#generatemetadatafunctionrequest-params) function from your route file and return a [`Metadata`](/versions/latest/sdk/server/#metadata) object. The function receives the incoming request and route parameters, which you can use to generate metadata dynamically:
 
 ```tsx src/app/blog/[id].tsx
 import { Text } from 'react-native';
@@ -193,7 +193,7 @@ export default function BlogPost() {
 }
 ```
 
-The `generateMetadata` function executes on the server and is stripped from the client bundle, similar to [data loaders](/router/web/data-loaders). For a full list of supported metadata fields, see the [`Metadata`](/versions/unversioned/sdk/server/#metadata) type in the `expo-server` API reference.
+The `generateMetadata` function executes on the server and is stripped from the client bundle, similar to [data loaders](/router/web/data-loaders). For a full list of supported metadata fields, see the [`Metadata`](/versions/latest/sdk/server/#metadata) type in the `expo-server` API reference.
 
 ### Using `<Head>` with server rendering
 

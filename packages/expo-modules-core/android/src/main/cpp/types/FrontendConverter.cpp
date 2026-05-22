@@ -775,7 +775,7 @@ jobject SynchronizableFrontendConverter::convert(
 bool SynchronizableFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
   try {
     // TODO(@lukmccall): find a better way to check this without throwing exception
-    worklets::extractSerializableOrThrow(rt, value);
+    (void)worklets::extractSerializableOrThrow(rt, value);
     return true;
   } catch (...) {
     return false;

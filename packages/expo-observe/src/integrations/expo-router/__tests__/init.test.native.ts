@@ -127,6 +127,33 @@ describe('initListeners', () => {
     });
   });
 
+  it('seeds dispatchTime and isAppLaunch=true for the initial screen so a later markInteractive can compute navigation TTI', async () => {
+    focus(events, 'a');
+    await flushAsync();
+
+    // The initial focus is treated as if the app launch dispatched the
+    // navigation — without this, useObserveForRouter has no dispatchTime to
+    // diff against and the navigation `tti` metric is silently skipped.
+    expect(storage.screenTimes['a']).toEqual({
+      dispatchTime: expect.any(Number),
+      isAppLaunch: true,
+    });
+  });
+
+  it('seeds isAppLaunch=false on subsequent navigated focuses so markInteractive can label the tti metric', async () => {
+    focus(events, 'a');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(storage.screenTimes['b']).toEqual({
+      dispatchTime: expect.any(Number),
+      isAppLaunch: false,
+    });
+  });
+
   it('records cold_ttr with isAppLaunch=false on subsequent focuses of a new screen', async () => {
     dispatch(events, 'NAVIGATE');
     focus(events, 'a');

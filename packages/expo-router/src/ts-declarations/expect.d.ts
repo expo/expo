@@ -1,8 +1,3 @@
-declare module 'expect/build/matchers' {
-  const matchers: any;
-  export default matchers;
-}
-
 declare namespace jest {
   interface Matchers<R, T = unknown> {
     toHavePathname(pathname: string): R;

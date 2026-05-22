@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 56.2.5 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- Fix Jest 30 compatibility in testing library by removing internal `expect/build/matchers` import. ([#40184](https://github.com/expo/expo/issues/40184)) ([#44188](https://github.com/expo/expo/pull/44188) by [@mvincentong](https://github.com/mvincentong))
+
+## 56.2.4 — 2026-05-21
+
+### 💡 Others
+
+- [docs] Remove references to react-navigation's docs ([#46072](https://github.com/expo/expo/pull/46072) by [@Ubax](https://github.com/Ubax))
+
 ## 56.2.3 — 2026-05-20
 
 ### 🎉 New features

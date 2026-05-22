@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-05-08T17:16:55.564Z"
+    "fetchedAt": "2026-05-21T11:09:35.811Z"
   },
-  "totalSkills": 13,
+  "totalSkills": 14,
   "skills": [
     {
       "name": "building-native-ui",
@@ -20,6 +20,11 @@
       "name": "expo-api-routes",
       "description": "Guidelines for creating API routes in Expo Router with EAS Hosting.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-api-routes/SKILL.md"
+    },
+    {
+      "name": "expo-brownfield",
+      "description": "Integrate Expo and React Native into an existing native iOS or Android app. Use when the user mentions brownfield, embedding React Native in a native app, AAR/XCFramework, or adding Expo to an existing Kotlin/Swift project. Covers both the isolated approach and the integrated approach.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-brownfield/SKILL.md"
     },
     {
       "name": "expo-cicd-workflows",

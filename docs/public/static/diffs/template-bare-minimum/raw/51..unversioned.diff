@@ -709,18 +709,6 @@ index 80b1bc3267b..7fe91512213 100644
  include ':app'
 -includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(expoAutolinking.reactNativeGradlePlugin)
-diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
-index 05647d55c75..d16e1efbb3f 100644
---- a/templates/expo-template-bare-minimum/gitignore
-+++ b/templates/expo-template-bare-minimum/gitignore
-@@ -7,6 +7,7 @@ node_modules/
- .expo/
- dist/
- web-build/
-+expo-env.d.ts
- 
- # Native
- *.orig.*
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 index f945940c256..39fa5afe55b 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
@@ -1034,37 +1022,6 @@ index 00000000000..8361941afc2
 +//
 +// Use this file to import your target's public headers that you would like to expose to Swift.
 +//
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
-new file mode 100644
-index 00000000000..255637e0fdb
---- /dev/null
-+++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
-@@ -0,0 +1,21 @@
-+{
-+  "images" : [
-+    {
-+      "filename" : "SplashScreenLegacy.png",
-+      "idiom" : "universal",
-+      "scale" : "1x"
-+    },
-+    {
-+      "idiom" : "universal",
-+      "scale" : "2x"
-+    },
-+    {
-+      "idiom" : "universal",
-+      "scale" : "3x"
-+    }
-+  ],
-+  "info" : {
-+    "author" : "xcode",
-+    "version" : 1
-+  }
-+}
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png
-new file mode 100644
-index 00000000000..bbf8e9e6016
-Binary files /dev/null and b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png differ
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 index 53d78e89033..596dc7ce6b5 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
@@ -1220,7 +1177,7 @@ index 24eec3df5cb..58d21796e1d 100644
 +    </resources>
  </document>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 57c1dd38343..a2af7b4a5de 100644
+index 57c1dd38343..c3158e3fb9b 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
 @@ -4,39 +4,43 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
@@ -1243,10 +1200,10 @@ index 57c1dd38343..a2af7b4a5de 100644
 +end
 +
 +ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
-+ENV['RCT_USE_RN_DEP'] ||= '0' if podfile_properties['ios.buildReactNativeFromSource'] == 'true'
-+ENV['RCT_USE_PREBUILT_RNCORE'] ||= '0' if podfile_properties['ios.buildReactNativeFromSource'] == 'true'
++ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
++ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 +ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
-+ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == '1'
++ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
 +
 +prepare_react_native_project!
@@ -1317,7 +1274,7 @@ index 57c1dd38343..a2af7b4a5de 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 563853071f0..e6346b6d456 100644
+index 563853071f0..3e151175775 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -1326,11 +1283,11 @@ index 563853071f0..e6346b6d456 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "51.0.56",
 +  "license": "0BSD",
-+  "version": "55.0.14",
++  "version": "56.0.13",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -10,12 +11,9 @@
+@@ -10,12 +11,14 @@
      "web": "expo start --web"
    },
    "dependencies": {
@@ -1338,12 +1295,16 @@ index 563853071f0..e6346b6d456 100644
 -    "expo-status-bar": "~1.12.1",
 -    "react": "18.2.0",
 -    "react-native": "0.74.5"
--  },
++    "expo": "~56.0.0-preview.13",
++    "expo-status-bar": "~56.0.4",
++    "react": "19.2.3",
++    "react-native": "0.85.3"
+   },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~55.0.2",
-+    "expo-status-bar": "~55.0.4",
-+    "react": "19.2.3",
-+    "react-native": "0.85.0"
++  "publishConfig": {
++    "executableFiles": [
++      "./android/gradlew"
++    ]
    }
  }

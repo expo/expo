@@ -90,6 +90,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // already persisted eagerly in `OnCreate`, so this is purely about
           // ordering startup-metric writes ahead of caller-driven log events.
           saveStartupMetricsIfNotSaved()
+          // Globals merge happens inside `sessionManager.addLogs` so every
+          // persistence path picks them up.
           sessionManager.addLogs(
             listOf(
               LogRecord(
@@ -105,6 +107,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
             sessionId = appSessionId
           )
         }
+      }
+
+      Function("setGlobalAttributes") { attributes: Map<String, Any?>? ->
+        GlobalAttributes.set(attributes)
       }
 
       OnCreate {

@@ -1,0 +1,121 @@
+---
+title: Expo Router integration
+sidebar_title: Expo Router
+description: Track per-route render and interactive timings by enabling the Expo Router integration for EAS Observe.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Step } from '~/ui/components/Step';
+
+EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Expo SDK 56 or later">
+    The Expo Router integration is available on SDK 56 and later. On earlier SDKs, `expo-observe`
+    still tracks app-wide metrics, but per-route navigation events are not emitted.
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+  <Requirement title="Expo Router installed in the app">
+    The integration depends on `expo-router` at runtime. If the package is not installed, the
+    integration becomes a silent no-op.
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## Enable the integration
+
+> **warning** The integration must be enabled before mount and cannot be toggled at runtime. Calling `configure()` after the app has mounted, or toggling the flag mid-session, throws an error.
+
+Call `ExpoObserve.configure()` with the `expo-router` integration flag at module scope, before any screen mounts:
+
+```tsx src/app/_layout.tsx
+import ExpoObserve from 'expo-observe';
+
+ExpoObserve.configure({
+  integrations: { 'expo-router': true },
+});
+```
+
+</Step>
+
+<Step label="2">
+
+## Call `useObserve()` in your screens
+
+Use the `useObserve()` hook to get a `markInteractive` that is automatically scoped to the current route. The emitted event is tagged with the screen's route pattern.
+
+```tsx src/app/(tabs)/index.tsx
+import { useObserve } from 'expo-observe';
+import { useEffect } from 'react';
+
+export default function Home() {
+  const { markInteractive } = useObserve();
+
+  useEffect(() => {
+    markInteractive();
+  }, [markInteractive]);
+
+  return (/* your screen content */);
+}
+```
+
+> **info** If the integration is disabled or `expo-router` is not installed, `useObserve()` falls back to the global `AppMetrics.markInteractive`. You can leave the hook in place regardless of integration state.
+
+</Step>
+
+## Metrics
+
+### Per-route first render (`cold_ttr`)
+
+**What it measures:** Time from when a navigation action is dispatched (for example, a link click) to when the destination screen first becomes focused. For the very first focus after app launch, the measurement is taken from when the JS bundle is loaded, and the event includes `isAppLaunch: true`.
+
+Emitted at most once per screen instance within a session.
+
+**Event params:**
+
+| Param         | Type      | Description                                                                    |
+| ------------- | --------- | ------------------------------------------------------------------------------ |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                     |
+| `url`         | `string`  | Resolved pathname for the navigation.                                          |
+| `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).                   |
+| `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
+
+### Per-route warm render (`warm_ttr`)
+
+**What it measures:** Same as `cold_ttr`, but for screens that were already rendered before focus, typically because they were preloaded via [`<Link prefetch />`](/router/basics/navigation/#prefetching) or the user navigated back to them.
+
+**Event params:**
+
+| Param         | Type     | Description                                                  |
+| ------------- | -------- | ------------------------------------------------------------ |
+| `routeName`   | `string` | Route pattern, for example `/(tabs)/sessions/[sessionId]`.   |
+| `url`         | `string` | Resolved pathname for the navigation.                        |
+| `routeParams` | `object` | Resolved route params (for example, `{ sessionId: 'abc' }`). |
+
+### Per-route time to interactive (`tti`)
+
+**What it measures:** Time from when a navigation action is dispatched to when `markInteractive()` is called on the destination screen. Only the first call per navigation is recorded, so it is safe to call `markInteractive()` multiple times.
+
+**Event params:**
+
+| Param         | Type     | Description                                                          |
+| ------------- | -------- | -------------------------------------------------------------------- |
+| `routeName`   | `string` | Route pattern, for example `/(tabs)/sessions/[sessionId]`.           |
+| `url`         | `string` | Resolved pathname.                                                   |
+| `routeParams` | `object` | Resolved route params.                                               |
+| `...`         | `any`    | Any custom params passed via `markInteractive({ params: { ... } })`. |
+
+## Notes and troubleshooting
+
+- `routeName` is a pattern (`/(tabs)/sessions/[sessionId]`), not a resolved URL (`/sessions/abc`). This keeps metrics stable across distinct param values so the dashboard buckets them together. Resolved values are still available on the event via `url` and `routeParams`.
+- Calls to `router.prefetch()` do not count as a user navigation and never seed a `cold_ttr` or `warm_ttr` measurement. The next user-driven navigation to that route emits `warm_ttr` because the screen has already rendered.
+- The integration only activates if `expo-router` is installed at runtime. If it is not installed, `useObserve()` and `ObserveRoot` continue to work but no per-route navigation metrics are emitted.
+- The integration must be enabled before mount via `ExpoObserve.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
+- If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
+- For general issues with EAS Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).

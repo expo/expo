@@ -2,52 +2,32 @@
 /**
  * Replace XCFramework for Debug/Release Configuration
  *
- * This script extracts the correct flavor tarball to switch between debug and release
- * xcframeworks. It's invoked from a CocoaPods script_phase before each compile
- * to ensure the correct XCFramework variant is linked.
+ * Per-pod product swap: extracts <xcframeworksDir>/artifacts/<module>-<config>.tar.gz
+ * over <Product>.xcframework, gated on <xcframeworksDir>/artifacts/.last_build_configuration.
+ * Sibling shared-dep symlinks under <xcframeworksDir>/ are preserved (only the product
+ * xcframework is wiped before re-extracting).
  *
- * Directory structure:
- *   <xcframeworks_dir>/
- *     artifacts/
- *       <Product>-debug.tar.gz         (tarball, source of truth)
- *       <Product>-release.tar.gz       (tarball, source of truth)
- *       .last_build_configuration
- *     <Product>.xcframework/           (real dir, extracted from tarball)
- *     <Dependency>.xcframework/        (real dir, if any, extracted from same tarball)
+ * Shared-dep repoint (each --shared entry): atomically replaces
+ * <xcframeworksDir>/<Name>.xcframework with a symlink to <source_base>/<config>/<Name>.xcframework
+ * and writes <xcframeworksDir>/artifacts/<Name>.last_config. The owner pod (decided at pod
+ * install time by ensure_shared_spm_deps) receives --shared args for each dep it owns.
  *
  * Usage:
- *   node replace-xcframework.js -c <CONFIG> -m <MODULE_NAME> -x <XCFRAMEWORKS_DIR>
- *
- * Arguments:
- *   -c, --config  Build configuration: "debug" or "release"
- *   -m, --module  Module/product name (used for tarball lookup and logging)
- *   -x, --xcframeworks  Path to the pod directory (Pods/<PodName>/)
- *
- * The script:
- *   1. Finds the tarball: <xcframeworksDir>/artifacts/<module>-<config>.tar.gz
- *   2. Checks artifacts/.last_build_configuration — skips if unchanged
- *   3. Removes all *.xcframework directories in xcframeworksDir
- *   4. Extracts the tarball: tar -xzf ... -C <xcframeworksDir>
- *   5. Writes the new config to artifacts/.last_build_configuration
+ *   node replace-xcframework.js -c <CONFIG> -m <MODULE> -x <XCFRAMEWORKS_DIR>
+ *                               [--shared <Name>:<source_base>]...
  *
  * Based on React Native's replace-rncore-version.js pattern.
  */
 
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { spawnSync } = require('child_process');
 
 const LOG_PREFIX = '[Expo XCFramework]';
 
-// Parse command line arguments
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = {
-    config: null,
-    module: null,
-    xcframeworksDir: null,
-  };
-
+  const result = { config: null, module: null, xcframeworksDir: null, sharedDeps: [] };
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
       case '-c':
@@ -62,116 +42,120 @@ function parseArgs() {
       case '--xcframeworks':
         result.xcframeworksDir = args[++i];
         break;
+      case '-s':
+      case '--shared': {
+        const spec = args[++i] || '';
+        const colon = spec.indexOf(':');
+        if (colon === -1) {
+          console.error(`${LOG_PREFIX} Invalid --shared (expected "<Name>:<source_base>"): ${spec}`);
+          process.exit(1);
+        }
+        result.sharedDeps.push({ name: spec.slice(0, colon), sourceBase: spec.slice(colon + 1) });
+        break;
+      }
     }
   }
-
   return result;
 }
 
-function main() {
-  const args = parseArgs();
-
-  // Validate arguments
-  if (!args.config || !args.module || !args.xcframeworksDir) {
-    console.error(
-      'Usage: replace-xcframework.js -c <CONFIG> -m <MODULE_NAME> -x <XCFRAMEWORKS_DIR>'
-    );
-    console.error('  -c, --config  Build configuration: "debug" or "release"');
-    console.error('  -m, --module  Module/product name');
-    console.error('  -x, --xcframeworks  Path to the xcframeworks directory');
-    process.exit(1);
+function readState(file) {
+  try {
+    return fs.existsSync(file) ? fs.readFileSync(file, 'utf8').trim() : null;
+  } catch {
+    return null;
   }
+}
 
-  // Normalize config to lowercase
-  const configLower = args.config.toLowerCase();
-  if (configLower !== 'debug' && configLower !== 'release') {
-    console.error(
-      `${LOG_PREFIX} Invalid configuration: ${args.config}. Must be "debug" or "release".`
-    );
-    process.exit(1);
-  }
-
-  const xcframeworksDir = args.xcframeworksDir;
-  const moduleName = args.module;
-
-  // Validate xcframeworksDir exists
+function processPerPodSwap(args, configLower) {
+  const { xcframeworksDir, module: moduleName } = args;
   if (!fs.existsSync(xcframeworksDir) || !fs.statSync(xcframeworksDir).isDirectory()) {
     console.error(`${LOG_PREFIX} ${moduleName}: Directory not found: ${xcframeworksDir}`);
     process.exit(1);
   }
 
-  // Ensure artifacts directory exists
   const artifactsDir = path.join(xcframeworksDir, 'artifacts');
   fs.mkdirSync(artifactsDir, { recursive: true });
-
-  // Find the tarball for the requested configuration (stored in artifacts/)
   const tarballPath = path.join(artifactsDir, `${moduleName}-${configLower}.tar.gz`);
   const lastConfigFile = path.join(artifactsDir, '.last_build_configuration');
 
-  // Check if tarball exists
   if (!fs.existsSync(tarballPath)) {
-    console.error(
-      `${LOG_PREFIX} ${moduleName}: Tarball not found at ${tarballPath}, skipping.`
-    );
+    console.error(`${LOG_PREFIX} ${moduleName}: Tarball not found at ${tarballPath}, skipping.`);
     return;
   }
 
-  // Read last build configuration
-  let lastConfig = null;
-  if (fs.existsSync(lastConfigFile)) {
-    try {
-      lastConfig = fs.readFileSync(lastConfigFile, 'utf8').trim();
-    } catch (e) {
-      // Ignore read errors — will proceed with extraction
-    }
-  }
-
-  // Check if configuration has changed
+  const lastConfig = readState(lastConfigFile);
   if (lastConfig === configLower) {
     console.log(`${LOG_PREFIX} ${moduleName}: Already extracted ${configLower}, skipping.`);
     return;
   }
 
-  // Remove all existing *.xcframework directories
-  const entries = fs.readdirSync(xcframeworksDir);
-  for (const entry of entries) {
-    if (!entry.endsWith('.xcframework')) continue;
-    const entryPath = path.join(xcframeworksDir, entry);
-
-    try {
-      const stat = fs.lstatSync(entryPath);
-      if (stat.isDirectory() || stat.isSymbolicLink()) {
-        fs.rmSync(entryPath, { recursive: true, force: true });
-      }
-    } catch (e) {
-      console.error(`${LOG_PREFIX} ${moduleName}: Warning: failed to remove ${entry}: ${e.message}`);
+  // Only remove the product xcframework — shared-dep symlinks staged by
+  // ensure_shared_spm_deps are repointed separately below via --shared.
+  const productXcfw = path.join(xcframeworksDir, `${moduleName}.xcframework`);
+  try {
+    fs.rmSync(productXcfw, { recursive: true, force: true });
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      console.error(`${LOG_PREFIX} ${moduleName}: failed to remove product xcframework: ${e.message}`);
     }
   }
 
-  // Extract the tarball using spawnSync to avoid shell interpretation of paths
-  const result = spawnSync('tar', ['-xzf', tarballPath, '-C', xcframeworksDir], {
-    stdio: 'pipe',
-  });
-
+  const result = spawnSync('tar', ['-xzf', tarballPath, '-C', xcframeworksDir], { stdio: 'pipe' });
   if (result.status !== 0) {
-    const stderr = result.stderr ? result.stderr.toString().trim() : 'unknown error';
-    console.error(`${LOG_PREFIX} ${moduleName}: Failed to extract tarball: ${stderr}`);
+    console.error(`${LOG_PREFIX} ${moduleName}: tar failed: ${result.stderr?.toString().trim()}`);
     process.exit(1);
   }
 
-  // Write last build configuration
-  try {
-    fs.writeFileSync(lastConfigFile, configLower);
-  } catch (e) {
-    console.error(`${LOG_PREFIX} ${moduleName}: Warning: failed to write config file: ${e.message}`);
+  fs.writeFileSync(lastConfigFile, configLower);
+  console.log(
+    lastConfig
+      ? `${LOG_PREFIX} ${moduleName}: Switched from ${lastConfig} to ${configLower}.`
+      : `${LOG_PREFIX} ${moduleName}: Extracted ${configLower} tarball.`
+  );
+}
+
+function repointSharedDep(xcframeworksDir, name, sourceBase, configLower) {
+  const artifactsDir = path.join(xcframeworksDir, 'artifacts');
+  fs.mkdirSync(artifactsDir, { recursive: true });
+  const stateFile = path.join(artifactsDir, `${name}.last_config`);
+  const linkPath = path.join(xcframeworksDir, `${name}.xcframework`);
+
+  // Trust the state file only when the symlink is still present — an externally
+  // deleted symlink (e.g. clear_cocoapods_cache wiping the pod dir) must trigger
+  // a re-link even if the state file claims the right config.
+  if (readState(stateFile) === configLower && fs.existsSync(linkPath)) return;
+
+  const target = path.join(sourceBase, configLower, `${name}.xcframework`);
+  if (!fs.existsSync(target)) {
+    console.error(
+      `${LOG_PREFIX} Shared dep ${name}: target not found at ${target}. Run the precompile prebuild pipeline for the ${configLower} flavor, or ensure prebuilds/spm-deps/${name}/${configLower}/${name}.xcframework ships with the consuming package.`
+    );
+    process.exit(1);
   }
 
-  if (lastConfig && lastConfig !== configLower) {
-    console.log(
-      `${LOG_PREFIX} ${moduleName}: Switched from ${lastConfig} to ${configLower} (extracted tarball).`
+  fs.rmSync(linkPath, { recursive: true, force: true });
+  fs.symlinkSync(target, linkPath);
+  fs.writeFileSync(stateFile, configLower);
+  console.log(`${LOG_PREFIX} Shared dep ${name}: repointed to ${configLower} (${target}).`);
+}
+
+function main() {
+  const args = parseArgs();
+  if (!args.config || !args.module || !args.xcframeworksDir) {
+    console.error(
+      'Usage: replace-xcframework.js -c <CONFIG> -m <MODULE> -x <XCFRAMEWORKS_DIR> [--shared <Name>:<source_base>]...'
     );
-  } else {
-    console.log(`${LOG_PREFIX} ${moduleName}: Extracted ${configLower} tarball.`);
+    process.exit(1);
+  }
+  const configLower = args.config.toLowerCase();
+  if (configLower !== 'debug' && configLower !== 'release') {
+    console.error(`${LOG_PREFIX} Invalid configuration: ${args.config}. Must be "debug" or "release".`);
+    process.exit(1);
+  }
+
+  processPerPodSwap(args, configLower);
+  for (const dep of args.sharedDeps) {
+    repointSharedDep(args.xcframeworksDir, dep.name, dep.sourceBase, configLower);
   }
 }
 

@@ -133,6 +133,10 @@ export function sanitizeAndValidateOutputPath(
     if (isFilePath && fs.existsSync(path.dirname(resolvedPath))) {
       return resolvedPath;
     }
+
+    if (!isFilePath) {
+      return resolvedPath;
+    }
   } catch {}
 
   return null;
@@ -189,6 +193,17 @@ export function uniqueStrings(strings: string[]): string[] {
   return [...new Set(strings)];
 }
 
+export async function maybePrepareOutputDirectory(dirName?: string) {
+  if (!dirName) {
+    return;
+  }
+  try {
+    await fs.promises.mkdir(dirName, { recursive: true });
+  } catch {
+    console.error(`Error creating the output directory: ${dirName}`);
+  }
+}
+
 export function parseCommandArguments(
   options: TypeInformationCommandCommonAllArguments,
   isOutputFile: boolean = true
@@ -216,7 +231,7 @@ export function parseCommandArguments(
     const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath, isOutputFile);
     if (!validatedOutPath) {
       console.error(
-        `Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a path to an existing directory.'}`
+        `Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a valid path to a directory.'}`
       );
       return null;
     }
