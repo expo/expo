@@ -8,12 +8,13 @@ export type ExpoUISharedObject = {
 
 export function isExpoUISharedObject(value: unknown): value is ExpoUISharedObject {
   'worklet';
-  const objectId = (value as { [EXPO_SHARED_OBJECT_ID_KEY]?: number })[EXPO_SHARED_OBJECT_ID_KEY];
+  if (value == null || typeof value !== 'object') {
+    return false;
+  }
+  const obj = value as Partial<ExpoUISharedObject>;
   return (
-    value != null &&
-    typeof value === 'object' &&
-    EXPO_SHARED_OBJECT_ID_KEY in value &&
-    objectId !== 0 &&
-    (value as Partial<ExpoUISharedObject>)[EXPO_UI_SHARED_OBJECT_BRAND] === true
+    obj[EXPO_UI_SHARED_OBJECT_BRAND] === true &&
+    typeof obj[EXPO_SHARED_OBJECT_ID_KEY] === 'number' &&
+    obj[EXPO_SHARED_OBJECT_ID_KEY] !== 0
   );
 }
