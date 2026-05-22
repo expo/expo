@@ -87,7 +87,7 @@ function getChangedFiles(extensions) {
 const isCI = process.env.CI === 'true';
 const oxlintArgs = [process.cwd(), '--type-aware'];
 if (isCI) {
-  oxlintArgs.push('--format=github');
+  oxlintArgs.push('--format=github', '--threads=1');
 }
 
 // oxfmt formats JS/TS and markdown; oxlint only lints JS/TS (md/mdx are in its ignorePatterns).
@@ -99,42 +99,37 @@ const oxlintExts = ['js', 'cjs', 'ts', 'jsx', 'tsx'];
 const oxfmtChangedFiles = getChangedFiles(oxfmtExts);
 const oxlintChangedFiles = getChangedFiles(oxlintExts);
 
-let oxfmtPromise;
+let oxfmtResult;
 if (oxfmtChangedFiles !== null && oxfmtChangedFiles.length === 0) {
-  oxfmtPromise = Promise.resolve({ status: 0, output: 'No formattable files changed.' });
+  oxfmtResult = { status: 0, output: 'No formattable files changed.' };
 } else if (oxfmtChangedFiles !== null) {
-  oxfmtPromise = runAsync('oxfmt', ['--check', ...oxfmtChangedFiles]);
+  oxfmtResult = await runAsync('oxfmt', ['--check', ...oxfmtChangedFiles]);
 } else {
   const mdxFiles = globSync('**/*.mdx', { cwd: process.cwd() });
-  oxfmtPromise = runAsync('oxfmt', ['--check', process.cwd(), ...mdxFiles]);
+  oxfmtResult = await runAsync('oxfmt', ['--check', process.cwd(), ...mdxFiles]);
 }
 
-let oxlintPromise;
+let oxlintResult;
 if (oxlintChangedFiles !== null && oxlintChangedFiles.length === 0) {
-  oxlintPromise = Promise.resolve({ status: 0, output: 'No lintable files changed.' });
+  oxlintResult = { status: 0, output: 'No lintable files changed.' };
 } else if (oxlintChangedFiles !== null) {
-  oxlintPromise = runAsync('oxlint', [
+  oxlintResult = await runAsync('oxlint', [
     ...oxlintChangedFiles,
     '--type-aware',
-    ...(isCI ? ['--format=github'] : []),
-  ]).then(result => {
-    if (result.status !== 0 && result.output.includes('No files found to lint')) {
-      return {
-        status: 0,
-        output: 'No lintable files changed (all changed files are in ignorePatterns).',
-      };
-    }
-    return result;
-  });
+    ...(isCI ? ['--format=github', '--threads=1'] : []),
+  ]);
+  if (oxlintResult.status !== 0 && oxlintResult.output.includes('No files found to lint')) {
+    oxlintResult = {
+      status: 0,
+      output: 'No lintable files changed (all changed files are in ignorePatterns).',
+    };
+  }
 } else {
-  oxlintPromise = runAsync('oxlint', oxlintArgs);
+  oxlintResult = await runAsync('oxlint', oxlintArgs);
 }
-const tscPromise = runAsync('tsc', ['--noEmit', '--pretty']);
-const eslintPromise = runEslint();
-const oxfmtResult = await oxfmtPromise;
-const oxlintResult = await oxlintPromise;
-const tscResult = await tscPromise;
-const eslintResult = await eslintPromise;
+
+const tscResult = await runAsync('tsc', ['--noEmit', '--pretty']);
+const eslintResult = await runEslint();
 
 /** Rebase annotation file paths from cwd-relative to repo-root-relative for GitHub Actions. */
 const workingDir = basename(process.cwd());
