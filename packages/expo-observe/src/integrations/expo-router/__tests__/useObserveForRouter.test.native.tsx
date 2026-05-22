@@ -42,6 +42,7 @@ jest.mock('../router', () => {
     isRouterInstalled: true,
     __useRoute: useRoute,
     __useNavigation: useNavigation,
+    __useCurrentRouteInfo: useCurrentRouteInfo,
   };
 });
 
@@ -49,6 +50,8 @@ const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
 const mockUseRoute = (routerModule as unknown as { __useRoute: jest.Mock }).__useRoute;
 const mockUseNavigation = (routerModule as unknown as { __useNavigation: jest.Mock })
   .__useNavigation;
+const mockUseCurrentRouteInfo = (routerModule as unknown as { __useCurrentRouteInfo: jest.Mock })
+  .__useCurrentRouteInfo;
 
 function wrapper(storage: RouterIntegrationStorage | null) {
   return ({ children }: { children: ReactNode }) => (
@@ -66,12 +69,17 @@ beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   mockUseRoute.mockReturnValue({ key: 'screen-a' });
   mockUseNavigation.mockReturnValue({ isFocused: () => true });
+  mockUseCurrentRouteInfo.mockReturnValue({
+    pathname: '/test',
+    params: { x: '1' },
+    segments: ['test'],
+  });
   storage = createRouterIntegrationStorage();
 });
 
 describe('useObserveForRouter', () => {
   it('records TTI from dispatchTime on the first call when focused', async () => {
-    storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
     const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
@@ -87,23 +95,129 @@ describe('useObserveForRouter', () => {
       routeName: '/test',
       name: 'tti',
       value: 0.3,
-      params: { routeParams: { x: '1' } },
+      params: { isAppLaunch: false, routeParams: { x: '1' }, url: '/test' },
     });
   });
 
+  it.each<[string[], string, Record<string, string | string[]>, string]>([
+    [[], '/', {}, '/'],
+    [['(tabs)'], '/', {}, '/(tabs)'],
+    [['(tabs)', '(home)'], '/', {}, '/(tabs)/(home)'],
+    [['users', '[id]'], '/users/42', { id: '42' }, '/users/[id]'],
+    [['files', '[...path]'], '/files/a/b/c', { path: ['a', 'b', 'c'] }, '/files/[...path]'],
+    [
+      ['(tabs)', 'sessions', '[sessionId]'],
+      '/sessions/1234',
+      { sessionId: '1234' },
+      '/(tabs)/sessions/[sessionId]',
+    ],
+  ])(
+    'useCurrentRouteInfo(segments=%s, pathname=%s, params=%s) records routeName=%s',
+    async (segments, pathname, routeParams, expectedRouteName) => {
+      mockUseCurrentRouteInfo.mockReturnValue({ pathname, params: routeParams, segments });
+      storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
+      jest.spyOn(performance, 'now').mockReturnValue(1300);
+
+      const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+      await act(async () => {
+        await result.current!();
+      });
+
+      expect(AppMetrics.markInteractive).toHaveBeenCalledWith({
+        routeName: expectedRouteName,
+        params: { url: pathname },
+      });
+      expect(mockAddCustomMetric).toHaveBeenCalledWith({
+        sessionId: 'session-1',
+        timestamp: expect.any(String),
+        category: 'navigation',
+        routeName: expectedRouteName,
+        name: 'tti',
+        value: 0.3,
+        params: { isAppLaunch: false, routeParams, url: pathname },
+      });
+    }
+  );
+
+  it('records TTI with isAppLaunch=true when the initial screen was seeded by app launch', async () => {
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: true };
+    jest.spyOn(performance, 'now').mockReturnValue(1300);
+
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(mockAddCustomMetric).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'tti',
+        value: 0.3,
+        params: { isAppLaunch: true, routeParams: { x: '1' }, url: '/test' },
+      })
+    );
+  });
+
   it('calls AppMetrics.markInteractive when the screen is focused', async () => {
-    storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     const arg = { params: { x: 'payload' } };
     await act(async () => {
       await result.current!({ ...arg });
     });
-    expect(AppMetrics.markInteractive).toHaveBeenCalledWith({ ...arg, routeName: '/test' });
+    expect(AppMetrics.markInteractive).toHaveBeenCalledWith({
+      params: { x: 'payload', url: '/test' },
+      routeName: '/test',
+    });
+  });
+
+  it('records the navigation TTI metric only once when markInteractive is called twice without a new navigation', async () => {
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
+    const nowSpy = jest.spyOn(performance, 'now');
+
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+
+    nowSpy.mockReturnValue(1300);
+    await act(async () => {
+      await result.current!();
+    });
+    nowSpy.mockReturnValue(1500);
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not record TTI metric when the screen is re-focused after navigating away (A → B → A)', async () => {
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
+    const nowSpy = jest.spyOn(performance, 'now');
+
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+
+    nowSpy.mockReturnValue(1300);
+    await act(async () => {
+      await result.current!();
+    });
+
+    // Simulate navigating away to B and back to A: the focus listener would
+    // overwrite dispatchTime on screen-a with the new action's dispatch time.
+    storage.screenTimes['screen-a'] = {
+      ...storage.screenTimes['screen-a'],
+      dispatchTime: 2000,
+    };
+
+    nowSpy.mockReturnValue(2300);
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric).toHaveBeenNthCalledWith(1, expect.objectContaining({ value: 0.3 }));
   });
 
   it('does not call AppMetrics.markInteractive when the screen is not focused, but still computes TTI', async () => {
     mockUseNavigation.mockReturnValue({ isFocused: () => false });
-    storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
     const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
@@ -119,7 +233,7 @@ describe('useObserveForRouter', () => {
       routeName: '/test',
       name: 'tti',
       value: 0.3,
-      params: { routeParams: { x: '1' } },
+      params: { isAppLaunch: false, routeParams: { x: '1' }, url: '/test' },
     });
   });
 
@@ -187,7 +301,7 @@ describe('useObserveForRouter', () => {
 
     isInitMock.mockReturnValue(true);
     expect(() => rerender(undefined)).toThrow(
-      "[expo-observe] Router integration was toggled during a screen's lifecycle. Call `ExpoObserve.configure({ disableRouterIntegration })` once at startup before any screen mounts."
+      "[expo-observe] Router integration was toggled during a screen's lifecycle. Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
     );
   });
 });

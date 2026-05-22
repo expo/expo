@@ -1,5 +1,6 @@
 import AppMetrics from 'expo-app-metrics';
 
+import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
 import { type RouterIntegrationStorage } from './storage';
 
@@ -27,7 +28,6 @@ export function initListeners(
   const cleanup = new Set<() => void>();
 
   const unsubscribeAction = navigationEvents.addListener('actionDispatched', (event) => {
-    // TODO(@ubax): Handle screen preloading
     // PRELOAD comes from router.prefetch() — a route warm-up, not a user
     // navigation — so it must not seed dispatchTime.
     if (event.actionType === 'PRELOAD') return;
@@ -38,6 +38,13 @@ export function initListeners(
   });
   cleanup.add(unsubscribeAction);
 
+  const unsubscribePreload = navigationEvents.addListener('pagePreloaded', (e) => {
+    // The screen rendered as part of a preload. Mark it as already rendered so
+    // the eventual `pageFocused` resolves to `warm_ttr` rather than `cold_ttr`.
+    storage.renderedScreensIds.add(e.screenId);
+  });
+  cleanup.add(unsubscribePreload);
+
   const unsubscribeFocus = navigationEvents.addListener('pageFocused', async (e) => {
     // Snapshot both clocks once so every metric written below is stamped with
     // the moment the focus event fired, not the moment `addCustomMetricToSession`
@@ -46,23 +53,34 @@ export function initListeners(
     const timestamp = new Date().toISOString();
     const isInitial = !storage.renderedScreensIds.has(e.screenId);
     storage.renderedScreensIds.add(e.screenId);
+    const name = isInitial ? 'cold_ttr' : 'warm_ttr';
     const mainSessionId = (await AppMetrics.getMainSession())?.id;
     if (!mainSessionId) {
       return;
     }
 
+    const routePattern = buildRoutePattern(e.segments);
+
     if (!storage.hasRecordedInitialTtr) {
       // Stored in seconds to match the OTel `unit = "s"` convention
       const appLaunchTtrSeconds = (now - appLaunchTime) / 1000;
       storage.hasRecordedInitialTtr = true;
+      // Seed dispatchTime so a later markInteractive on the initial screen can
+      // diff against app launch — symmetric with the navigated-focus branch
+      // below, which seeds dispatchTime from the last pending action.
+      storage.screenTimes[e.screenId] = {
+        ...storage.screenTimes[e.screenId],
+        dispatchTime: appLaunchTime,
+        isAppLaunch: true,
+      };
       AppMetrics.addCustomMetricToSession({
         sessionId: mainSessionId,
         timestamp,
         category: 'navigation',
-        name: 'ttr',
-        routeName: e.pathname,
+        name,
+        routeName: routePattern,
         value: appLaunchTtrSeconds,
-        params: { isInitial, isAppLaunch: true, routeParams: e.params },
+        params: { isAppLaunch: true, routeParams: e.params, url: e.pathname },
       });
       return;
     }
@@ -75,16 +93,17 @@ export function initListeners(
       storage.screenTimes[e.screenId] = {
         ...storage.screenTimes[e.screenId],
         dispatchTime,
+        isAppLaunch: false,
       };
 
       AppMetrics.addCustomMetricToSession({
         sessionId: mainSessionId,
         timestamp,
         category: 'navigation',
-        name: 'ttr',
-        routeName: e.pathname,
+        name,
+        routeName: routePattern,
         value: (now - dispatchTime) / 1000,
-        params: { isInitial, isAppLaunch: false, routeParams: e.params },
+        params: { isAppLaunch: false, routeParams: e.params, url: e.pathname },
       });
     }
     storage.pendingActions.length = 0;

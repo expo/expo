@@ -1,16 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPluginConfig = void 0;
+const APPLE_BUNDLE_IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9-]*(\.[A-Za-z0-9-]+)*$/;
 const getPluginConfig = (props, config) => {
     const targetName = getTargetName(props, config);
     return {
-        bundleIdentifier: getBundleIdentifier(props, config, targetName),
+        bundleIdentifier: validateBundleIdentifier(getBundleIdentifier(props, config, targetName), 'ios.bundleIdentifier'),
         targetName,
         buildReactNativeFromSource: props?.buildReactNativeFromSource ?? false,
         multipleFrameworks: props?.multipleFrameworks ?? false,
     };
 };
 exports.getPluginConfig = getPluginConfig;
+const validateBundleIdentifier = (value, fieldName) => {
+    if (typeof value !== 'string' || !APPLE_BUNDLE_IDENTIFIER.test(value)) {
+        throw new Error(`Invalid ${fieldName} ${JSON.stringify(value)}: must be a valid Apple bundle identifier (e.g. com.example.app). Update your app config and re-run prebuild.`);
+    }
+    return value;
+};
 const getTargetName = (props, config) => {
     // If name is passed through plugin props use that value
     if (props?.targetName) {

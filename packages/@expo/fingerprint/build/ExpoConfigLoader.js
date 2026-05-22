@@ -26,15 +26,56 @@ async function runAsync(programName, args = []) {
     const loadedModulesBefore = new Set(Object.keys(module_1.default._cache));
     const { getConfig } = require((0, resolve_from_1.default)(path_1.default.resolve(projectRoot), 'expo/config'));
     const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
-    const loadedModules = Object.keys(module_1.default._cache)
-        .filter((modulePath) => !loadedModulesBefore.has(modulePath))
-        .map((modulePath) => path_1.default.relative(projectRoot, modulePath));
+    const virtualModuleNames = new Set();
+    const loadedModules = [];
+    // TODO(@kitten): Don't rely on `module._cache` for this over Node loader hooks
+    // The module cache isn't reflective of real files necessarily
+    for (const id of Object.keys(module_1.default._cache)) {
+        if (loadedModulesBefore.has(id)) {
+            continue;
+        }
+        let filename = id;
+        const mod = module_1.default._cache[id];
+        if (mod != null && mod.filename != null) {
+            filename = mod.filename || id;
+        }
+        // NOTE(@kitten): Virtual modules may be placed on `module._cache` and we can't rely on the ID to be accurate
+        // The IDs are also not necessarily paths. We prefer `filename`, and trust they exist, but if the ID mismatches
+        // with the module name, we use the ID, and ignore the filename entirely
+        if (filename !== id) {
+            virtualModuleNames.add(filename);
+            loadedModules.push(id);
+        }
+        else {
+            loadedModules.push(filename);
+        }
+    }
     const ignoredPaths = [
         ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
         ...(await loadIgnoredPathsAsync(ignoredFile)),
     ];
-    const filteredLoadedModules = loadedModules.filter((modulePath) => !(0, Path_1.isIgnoredPath)(modulePath, ignoredPaths));
-    const result = JSON.stringify({ config, loadedModules: filteredLoadedModules });
+    const filteredLoadedModules = loadedModules.filter((modulePath) => !virtualModuleNames.has(modulePath));
+    const existingLoadedModules = (await Promise.all(filteredLoadedModules.map(async (modulePath) => {
+        const relativePath = path_1.default.relative(projectRoot, modulePath);
+        if ((0, Path_1.isIgnoredPath)(relativePath, ignoredPaths)) {
+            return null;
+        }
+        try {
+            const stat = await promises_1.default.stat(modulePath);
+            if (!stat.isFile()) {
+                return null;
+            }
+            return relativePath;
+        }
+        catch (error) {
+            // Filter out virtual paths / non-existent files
+            if (error.code === 'ENOENT') {
+                return null;
+            }
+            throw error;
+        }
+    }))).filter((modulePath) => modulePath != null);
+    const result = JSON.stringify({ config, loadedModules: existingLoadedModules });
     if (node_process_1.default.send) {
         node_process_1.default.send(result);
     }
@@ -100,6 +141,14 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
     '**/node_modules/@babel/**/*',
     '**/node_modules/@expo/**/*',
     '**/node_modules/@jridgewell/**/*',
+    '**/node_modules/cross-spawn/**/*',
+    '**/node_modules/isexe/**/*',
+    '**/node_modules/shebang-command/**/*',
+    '**/node_modules/shebang-regex/**/*',
+    '**/node_modules/semver/**/*',
+    '**/node_modules/slugify/**/*',
+    '**/node_modules/typescript/**/*',
+    '**/node_modules/expo/config/**/*',
     '**/node_modules/expo/config.js',
     '**/node_modules/expo/config-plugins.js',
     `**/node_modules/{${[

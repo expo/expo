@@ -87,9 +87,9 @@ jobs:
           EOF
 
           if [[ "${{ env.ACTIONS_STEP_DEBUG }}" == "true" ]]; then
-            ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate --debug > ../expo/fingerprint-${{ matrix.os }}.json
+            ${{ github.workspace }}/packages/@expo/fingerprint/bin/cli.js fingerprint:generate --debug > ${{ github.workspace }}/fingerprint-${{ matrix.os }}.json
           else
-            ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ../expo/fingerprint-${{ matrix.os }}.json
+            ${{ github.workspace }}/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ${{ github.workspace }}/fingerprint-${{ matrix.os }}.json
           fi
       - name: 💾 Create fingerprint from the temp project (Windows)
         if: ${{ startsWith(matrix.os, 'windows') }}
@@ -119,9 +119,9 @@ jobs:
           "@ | Set-Content fingerprint.config.js
 
           if ($env:ACTIONS_STEP_DEBUG -eq "true") {
-            node ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate --debug > ../expo/fingerprint-${{ matrix.os }}.json
+            node ${{ github.workspace }}/packages/@expo/fingerprint/bin/cli.js fingerprint:generate --debug > ${{ github.workspace }}/fingerprint-${{ matrix.os }}.json
           } else {
-            node ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ../expo/fingerprint-${{ matrix.os }}.json
+            node ${{ github.workspace }}/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ${{ github.workspace }}/fingerprint-${{ matrix.os }}.json
           }
       - name: 📤 Upload fingerprint
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 56.0.6 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- [Android] Fixed SVG drawables not rendering as Google Maps marker icons, and memoized marker rasterization across recompositions. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 56.0.5 — 2026-05-13
+
+### 💡 Others
+
 - Updated permission hook imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.4 — 2026-05-11

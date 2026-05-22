@@ -312,6 +312,7 @@ export const general = [
         makePage('modules/native-module-tutorial.mdx'),
         makePage('modules/native-view-tutorial.mdx'),
         makePage('modules/inline-modules-tutorial.mdx'),
+        makePage('modules/type-generation-tutorial.mdx'),
         makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
         makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
         makePage('modules/third-party-library.mdx'),
@@ -321,6 +322,7 @@ export const general = [
       makeSection('Reference', [
         makePage('modules/module-api.mdx'),
         makePage('modules/inline-modules-reference.mdx'),
+        makePage('modules/type-generation-reference.mdx'),
         makePage('modules/android-lifecycle-listeners.mdx'),
         makePage('modules/appdelegate-subscribers.mdx'),
         makePage('modules/autolinking.mdx'),
@@ -589,11 +591,12 @@ export const eas = [
     ),
   ]),
   makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
-  makeSection('Expo Observe', [
+  makeSection('EAS Observe', [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
     makePage('eas/observe/configuration.mdx'),
+    makePage('eas/observe/integrations/expo-router.mdx'),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),

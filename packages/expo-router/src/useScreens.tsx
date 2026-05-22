@@ -6,7 +6,8 @@ import type { LoadedRoute, RouteNode } from './Route';
 import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
-import { useCurrentRouteInfo } from './hooks';
+// Direct import to prevent a require cycle
+import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
@@ -410,12 +411,15 @@ function AnalyticsListeners({
   const hasBlurredRef = React.useRef(true);
   const routeInfo = useCurrentRouteInfo();
 
+  const isFocused = navigation.isFocused();
+
   if (isFirstRenderRef.current) {
     isFirstRenderRef.current = false;
-    if (routeInfo) {
-      unstable_navigationEvents.emit('pageWillRender', {
+    if (routeInfo && !isFocused) {
+      unstable_navigationEvents.emit('pagePreloaded', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
+        segments: routeInfo.segments,
         screenId,
       });
     }
@@ -427,23 +431,27 @@ function AnalyticsListeners({
         unstable_navigationEvents.emit('pageRemoved', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
+          segments: routeInfo.segments,
           screenId,
         });
       };
     }
     return () => {};
-  }, [routeInfo?.params, routeInfo?.pathname, screenId]);
+  }, [routeInfo?.params, routeInfo?.pathname, routeInfo?.segments, screenId]);
 
-  const isFocused = navigation.isFocused();
-
-  if (isFocused && routeInfo) {
-    unstable_navigationEvents.emit('pageFocused', {
-      pathname: routeInfo.pathname,
-      params: routeInfo.params,
-      screenId,
-    });
-    hasBlurredRef.current = false;
-  }
+  // Emit `pageFocused` from an effect — not during render — so it fires after the
+  // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
+  useEffect(() => {
+    if (isFocused && routeInfo && hasBlurredRef.current) {
+      unstable_navigationEvents.emit('pageFocused', {
+        pathname: routeInfo.pathname,
+        params: routeInfo.params,
+        segments: routeInfo.segments,
+        screenId,
+      });
+      hasBlurredRef.current = false;
+    }
+  }, [isFocused, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
 
   useEffect(() => {
     if (routeInfo) {
@@ -454,6 +462,7 @@ function AnalyticsListeners({
           unstable_navigationEvents.emit('pageFocused', {
             pathname: routeInfo.pathname,
             params: routeInfo.params,
+            segments: routeInfo.segments,
             screenId,
           });
           hasBlurredRef.current = false;
@@ -463,6 +472,7 @@ function AnalyticsListeners({
         unstable_navigationEvents.emit('pageBlurred', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
+          segments: routeInfo.segments,
           screenId,
         });
         hasBlurredRef.current = true;
@@ -473,7 +483,7 @@ function AnalyticsListeners({
       };
     }
     return () => {};
-  }, [navigation, routeInfo?.pathname, routeInfo?.params, screenId]);
+  }, [navigation, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
 
   return null;
 }

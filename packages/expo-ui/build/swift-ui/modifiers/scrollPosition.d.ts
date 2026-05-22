@@ -1,5 +1,5 @@
 import type { UnitPointValue } from '.';
-import { type ObservableState } from '../../State/useNativeState';
+import { type ObservableState } from '../../State';
 /**
  * Attaches a stable identifier to a view so it can be referenced by scroll target bindings.
  * Use with `scrollTargetLayout()` on the containing stack and the `scrollPosition` modifier on a scrollable container.

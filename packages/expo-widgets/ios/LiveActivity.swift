@@ -66,7 +66,7 @@ final class LiveActivity: SharedObject {
     pushTokenObserverTask = Task {
       for await data in activity.pushTokenUpdates {
         let token = data.reduce("") { $0 + String(format: "%02x", $1) }
-        emit(event: onTokenReceived, arguments: [
+        emit(event: onTokenReceived, payload: [
           "activityId": activity.id,
           "pushToken": token
         ])

@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 56.0.7 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.6 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `itf14` barcode type not detecting generic Interleaved 2 of 5 barcodes, so behavior matches Android's `FORMAT_ITF`. ([#44796](https://github.com/expo/expo/pull/44796) by [@mduchev](https://github.com/mduchev))
+
+## 56.0.4 — 2026-05-13
+
+### 💡 Others
+
 - Updated permission hook imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.3 — 2026-05-06

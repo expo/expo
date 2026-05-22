@@ -14,4 +14,16 @@ public protocol AnyModule: AnyObject, AnyArgument {
    */
   @ModuleDefinitionBuilder
   func definition() -> ModuleDefinition
+
+  /// Returns definitions synthesized from `@JS`-annotated members by the `@ExpoModule` macro.
+  /// Framework-internal: the leading underscore signals this is not part of the public API and
+  /// should only be called by `expo-modules-core` itself. Modules that don't use the macro fall
+  /// back to the default empty implementation.
+  func _exposedDefinition() -> [AnyDefinition]
+}
+
+public extension AnyModule {
+  func _exposedDefinition() -> [AnyDefinition] {
+    return []
+  }
 }

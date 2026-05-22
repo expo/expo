@@ -17,10 +17,10 @@ export function ExploreExamples() {
       <div
         className={mergeClasses(
           'my-4 inline-grid w-full grid-cols-4 gap-8',
-          'max-xl-gutters:grid-cols-2',
-          'max-lg-gutters:grid-cols-4',
-          'max-md-gutters:grid-cols-2',
-          'max-sm-gutters:grid-cols-1'
+          'max-xl:grid-cols-2',
+          'max-lg:grid-cols-4',
+          'max-md:grid-cols-2',
+          'max-sm:grid-cols-1'
         )}>
         <GridBox
           title="StickerSmash"

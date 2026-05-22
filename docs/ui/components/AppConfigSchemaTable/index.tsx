@@ -89,12 +89,12 @@ function AppConfigProperty({
       className={mergeClasses(
         'mb-0! rounded-none! border-b-0! shadow-none!',
         '[&]:first-of-type:rounded-t-md!',
-        '[&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b!',
+        '[&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default!',
         'px-4 py-3'
       )}>
       <PropertyName name={name} nestingLevel={nestingLevel} />
       {deprecated && (
-        <InlineHelp size="sm" type="warning" className="border-palette-yellow5 mt-2">
+        <InlineHelp size="sm" type="warning" className="mt-2 border-palette-yellow5">
           <span className="font-bold">Deprecated</span>
         </InlineHelp>
       )}
@@ -114,7 +114,7 @@ function AppConfigProperty({
                       {typeData.pattern ? (
                         <>
                           <CODE>string</CODE> matching the following pattern:{' '}
-                          <code className="text-default text-sm">{typeData.pattern}</code>
+                          <code className="text-sm text-default">{typeData.pattern}</code>
                         </>
                       ) : (
                         <CODE>string</CODE>
@@ -155,7 +155,7 @@ function AppConfigProperty({
                 } else {
                   return (
                     <CodeBlock
-                      className="text-secondary text-balance"
+                      className="text-balance text-secondary"
                       inline
                       key={`${name}-${index}`}>
                       {oneOfType}
@@ -184,7 +184,7 @@ function AppConfigProperty({
         {!canHaveMultipleValues && nestingLevel > 0 && (
           <CALLOUT theme="secondary" tag="span">
             &emsp;&bull;&emsp;Path:{' '}
-            <code className="text-secondary px-1 wrap-break-word">
+            <code className="px-1 wrap-break-word text-secondary">
               {parent}.{name}
             </code>
           </CALLOUT>

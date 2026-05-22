@@ -140,7 +140,7 @@ iOS colors automatically adapt to the system appearance (light/dark mode) and ac
 
 ## Cross-platform usage
 
-The `Color` API is platform-specific. Use `useMemo` to select the appropriate color for each platform:
+The `Color` API is platform-specific. Use `Platform.select` to select the appropriate color for each platform:
 
 ```tsx
 import { Platform, View, Text } from 'react-native';

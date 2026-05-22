@@ -15,8 +15,11 @@ export function ResourceSavingView({ visible, children, style, ...rest }: Props)
       <View
         // @ts-expect-error: hidden exists on web, but not in React Native
         hidden={!visible}
-        style={[{ display: visible ? 'flex' : 'none' }, styles.container, style]}
-        pointerEvents={visible ? 'auto' : 'none'}
+        style={[
+          { pointerEvents: visible ? 'auto' : 'none', display: visible ? 'flex' : 'none' },
+          styles.container,
+          style,
+        ]}
         {...rest}>
         {children}
       </View>
@@ -25,9 +28,12 @@ export function ResourceSavingView({ visible, children, style, ...rest }: Props)
 
   return (
     <View
-      style={[styles.container, style]}
-      // box-none doesn't seem to work properly on Android
-      pointerEvents={visible ? 'auto' : 'none'}>
+      style={[
+        // box-none doesn't seem to work properly on Android
+        { pointerEvents: visible ? 'auto' : 'none' },
+        styles.container,
+        style,
+      ]}>
       <View
         collapsable={false}
         removeClippedSubviews={
@@ -35,8 +41,10 @@ export function ResourceSavingView({ visible, children, style, ...rest }: Props)
           // This is an workaround for a bug where the clipped view never re-appears
           Platform.OS === 'ios' || Platform.OS === 'macos' ? !visible : true
         }
-        pointerEvents={visible ? 'auto' : 'none'}
-        style={visible ? styles.attached : styles.detached}>
+        style={[
+          { pointerEvents: visible ? 'auto' : 'none' },
+          visible ? styles.attached : styles.detached,
+        ]}>
         {children}
       </View>
     </View>

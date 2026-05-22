@@ -1,12 +1,12 @@
 import { NativeModule } from 'expo';
-import type { ExpoAppMetricsModuleType, LogEventOptions, Metric, MetricAttributes } from './types';
+import type { ExpoAppMetricsModuleType, LogAttributeValue, LogEventOptions, Metric, MetricAttributes } from './types';
 export * from './types';
 declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleType {
     addCustomMetricToSession(metric: Metric): Promise<void>;
     markFirstRender(): Promise<void>;
     markInteractive(attributes?: MetricAttributes): Promise<void>;
     logEvent(name: string, options?: LogEventOptions): void;
-    getStoredEntries(): Promise<never[]>;
+    setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null): void;
     clearStoredEntries(): Promise<void>;
     getAllSessions(): Promise<never[]>;
     simulateCrashReport(): void;

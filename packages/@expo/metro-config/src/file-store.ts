@@ -27,7 +27,7 @@ function isInsideOsTmpdir(target: string): boolean {
 // Returns false if the caller should fall back to a synchronous remove.
 // `maxRetries` covers the Windows case where files just closed can briefly
 // fail to delete with EBUSY/EPERM.
-function tryRenameAndDeleteAsync(root: string): boolean {
+export function tryRenameAndDeleteAsync(root: string): boolean {
   if (!isInsideOsTmpdir(root)) {
     return false;
   }

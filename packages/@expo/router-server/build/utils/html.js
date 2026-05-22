@@ -33,6 +33,9 @@ const ESCAPED_CHARACTERS = {
 function escapeUnsafeCharacters(str) {
     return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match] ?? match);
 }
+function escapeHtmlAttribute(value) {
+    return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
 /**
  * Returns a newline-separated `<link rel="preload">` and `<link rel="stylesheet">` pair for each
  * CSS href.
@@ -42,10 +45,13 @@ function escapeUnsafeCharacters(str) {
  */
 function createInjectedCssAsString(hrefs) {
     return hrefs
-        .flatMap((href) => [
-        `<link rel="preload" href="${href}" as="style">`,
-        `<link rel="stylesheet" href="${href}">`,
-    ])
+        .flatMap((href) => {
+        const safeHref = escapeHtmlAttribute(href);
+        return [
+            `<link rel="preload" href="${safeHref}" as="style">`,
+            `<link rel="stylesheet" href="${safeHref}">`,
+        ];
+    })
         .join('\n');
 }
 /**
@@ -55,7 +61,7 @@ function createInjectedCssAsString(hrefs) {
  * HTML document's `<body>` element.
  */
 function createInjectedScriptsAsString(srcs) {
-    return srcs.map((src) => `<script src="${src}" defer></script>`).join('\n');
+    return srcs.map((src) => `<script src="${escapeHtmlAttribute(src)}" defer></script>`).join('\n');
 }
 /**
  * Returns the string content of the hydration flag script, which sets the

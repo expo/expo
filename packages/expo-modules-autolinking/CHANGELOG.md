@@ -8,9 +8,52 @@
 
 ### 🐛 Bug fixes
 
-[iOS] Added fallback to source for missing framework slice. ([#45664](https://github.com/expo/expo/pull/45664) by [@chrfalch](https://github.com/chrfalch))
+### 💡 Others
+
+## 56.0.11 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- [iOS] Update `@shopify/react-native-skia` precompile config for the 2.6.x source layout ([#46081](https://github.com/expo/expo/pull/46081) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.10 — 2026-05-21
+
+### 🎉 New features
+
+- [iOS] Include and consume shared SPM dependencies in the precompiled pod / npm publish pipeline. ([#46069](https://github.com/expo/expo/pull/46069) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.9 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- Fix Hermes version resolution polarity in `precompiled_modules.rb` so external prebuilt artifacts are looked up under the V1 Hermes subfolder by default, matching `hermes-engine.podspec`. ([#46053](https://github.com/expo/expo/pull/46053) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 56.0.8 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `pod install` failing with `bad component (expected absolute path component)` for precompiled Expo modules when the project lives under a path containing non-ASCII characters (e.g. emoji). ([#45779](https://github.com/expo/expo/pull/45779) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`. ([#45742](https://github.com/expo/expo/pull/45742) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Wire the macro plugin flag into `ExpoModulesCore`'s own xcconfig so SourceKit can resolve `#externalMacro` references in core source files. ([#45778](https://github.com/expo/expo/pull/45778) by [@tsapeta](https://github.com/tsapeta))
+- Disallow devtools plugins to point to `webpageRoot` outside of their own bounds ([#45841](https://github.com/expo/expo/pull/45841) by [@kitten](https://github.com/kitten))
+
+## 56.0.6 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+### 🐛 Bug fixes
+
+[iOS] Added fallback to source for missing framework slice. ([#45664](https://github.com/expo/expo/pull/45664) by [@chrfalch](https://github.com/chrfalch))
 
 ## 56.0.4 — 2026-05-11
 

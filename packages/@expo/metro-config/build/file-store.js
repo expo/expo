@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileStore = void 0;
+exports.tryRenameAndDeleteAsync = tryRenameAndDeleteAsync;
 const FileStore_1 = __importDefault(require("@expo/metro/metro-cache/stores/FileStore"));
 const fs_1 = __importDefault(require("fs"));
 const os_1 = __importDefault(require("os"));

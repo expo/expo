@@ -99,10 +99,10 @@ Before you create your app, you have to create the **apps** directory. This dire
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-55 apps/cool-app'],
-    yarn: ['$ yarn create expo-app --template default@sdk-55 apps/cool-app'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-55 apps/cool-app'],
-    bun: ['$ bun create expo --template default@sdk-55 apps/cool-app'],
+    npm: ['$ npx create-expo-app@latest --template default@sdk-56 apps/cool-app'],
+    yarn: ['$ yarn create expo-app --template default@sdk-56 apps/cool-app'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-56 apps/cool-app'],
+    bun: ['$ bun create expo --template default@sdk-56 apps/cool-app'],
   }}
 />
 
@@ -121,7 +121,7 @@ Let's go back to the root and create the **packages** directory. This directory 
     npm: ['$ mkdir -p packages/cool-package && cd packages/cool-package && npm init'],
     yarn: ['$ mkdir -p packages/cool-package && cd packages/cool-package && yarn init'],
     pnpm: ['$ mkdir -p packages/cool-package && cd packages/cool-package && pnpm init'],
-    bun: ['$ mkdir -p packages/cool-package && cd packages/cool-package && bun init --minimal'],
+    bun: ['$ mkdir -p packages/cool-package && cd packages/cool-package && bun init -y'],
   }}
 />
 
@@ -245,6 +245,10 @@ Often, duplicate dependencies won't cause any problems. However, native modules 
 From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true` in your **app.json** to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [autolinking](/modules/autolinking/) links for your native builds.
 
 From **SDK 55**, this is enabled automatically for apps in monorepos.
+
+#### Monorepos with TV projects
+
+See the [Building for TV](/guides/building-for-tv/#modify-dependencies-for-tv) dependencies section for the special `react-native` dependency requirements when a TV project is contained in a monorepo with other Expo projects.
 
 ### Script '...' does not exist
 

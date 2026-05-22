@@ -4,6 +4,7 @@ description: Learn how to use the native toolbar in Stack navigation with Expo R
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
 > **important** `Stack.Toolbar` is an [alpha](/more/release-statuses/#alpha) API available on Android in **Expo SDK 56** and later, and on iOS in **Expo SDK 55** and later. The API is subject to breaking changes.
@@ -108,6 +109,41 @@ The easiest way to add icons on iOS is to use [SF Symbols](https://developer.app
 You can browse available symbols in Apple's SF Symbols app.
 
 > **info** SF Symbols are an iOS-only feature.
+
+### Material Symbols (Android only)
+
+The recommended source of icons for Android is [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) library. It ships Google's [Material Symbols](https://fonts.google.com/icons) as individual asset subpaths, so Metro only bundles the icons you actually import.
+
+<Terminal cmd={['$ npx expo install @expo/material-symbols']} />
+
+Import any icon directly from its own subpath and pass it to the `icon` prop:
+
+```tsx
+import Star from '@expo/material-symbols/star.xml';
+import Share from '@expo/material-symbols/share.xml';
+import MoreVert from '@expo/material-symbols/more_vert.xml';
+
+<Stack.Toolbar.Button icon={Star} onPress={() => {}} />
+<Stack.Toolbar.Button icon={Share} onPress={() => {}} />
+<Stack.Toolbar.Menu icon={MoreVert}>{/* ... */}</Stack.Toolbar.Menu>
+```
+
+Vector drawables are tinted with the toolbar's tint color by default. Pass `iconRenderingMode="original"` to preserve the source colors.
+
+> **info** Material Symbols XML drawables are an Android-only feature. On iOS, use SF Symbols instead.
+
+#### Using the same icon on Android and iOS
+
+`Stack.Toolbar.Button`'s `icon` prop accepts both an `ImageSourcePropType` (Android) and an SF Symbol name (iOS). To use a single component for both platforms, branch on `process.env.EXPO_OS` and pass the platform-appropriate value. Metro replaces `process.env.EXPO_OS` with a string literal at build time, then tree-shakes the branch that doesn't match the current platform — so the Material Symbols XML drawable never ships in the iOS bundle, and the SF Symbol name never ships in the Android bundle:
+
+```tsx
+import Star from '@expo/material-symbols/star.xml';
+
+<Stack.Toolbar.Button
+  icon={process.env.EXPO_OS === 'ios' ? 'star.fill' : Star}
+  onPress={() => {}}
+/>;
+```
 
 ### Custom images
 
@@ -609,13 +645,12 @@ export default function DocumentScreen() {
 
 <Collapsible summary="Liquid glass toolbar buttons flicker in dark mode on iOS 26">
 
-Toolbar buttons with liquid glass styling may flicker or flash their background when navigating between screens in dark mode on iOS 26. This happens because React Navigation's default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
+Toolbar buttons with liquid glass styling may flicker or flash their background when navigating between screens in dark mode on iOS 26. This happens because the default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
 
-To fix this, wrap your root layout with `<ThemeProvider>` from `@react-navigation/native` using the appropriate theme:
+To fix this, wrap your root layout with `<ThemeProvider>` from `expo-router` using the appropriate theme:
 
 ```tsx src/app/_layout.tsx
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { ThemeProvider, DarkTheme, DefaultTheme, Stack } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
 export default function RootLayout() {
@@ -637,11 +672,10 @@ export default function RootLayout() {
 
 A white flash between screen transitions usually means the navigation stack is using a light background while your app uses a dark theme. This is especially noticeable when screens contain toolbar items, as the flash contrasts with the toolbar styling.
 
-To fix this, wrap your root layout with React Navigation's `<ThemeProvider>` and pass the appropriate theme:
+To fix this, wrap your root layout with Expo Router's `<ThemeProvider>` and pass the appropriate theme:
 
 ```tsx src/app/_layout.tsx
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { ThemeProvider, DarkTheme, DefaultTheme, Stack } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
 export default function RootLayout() {
@@ -711,7 +745,7 @@ export default function Home() {
 
 </Collapsible>
 
-<Collapsible summary="Custom icons are the only supported icon type on Android">
+<Collapsible summary="Android icons must be image sources">
 
 On Android, `icon` must be an `ImageSourcePropType`. For example `require('./icon.png')` or `{ uri: '...' }`.
 

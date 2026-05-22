@@ -626,6 +626,12 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
                     },
@@ -826,6 +832,7 @@ exports[`built-in plugins introspects mods 1`] = `
         },
         "expoPlist": {
           "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
           "EXUpdatesRuntimeVersion": "1.0",
@@ -1263,6 +1270,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
                     },
@@ -1443,6 +1456,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "expoPlist": {
           "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
           "EXUpdatesRuntimeVersion": "1.0",

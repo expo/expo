@@ -15,10 +15,11 @@
 #   - Cleans .swiftinterface files for cross-compiler compatibility
 #
 # Usage:
-#   PODS_ROOT=/path/to/Pods ./build-xcframework.sh [--clean]
+#   ./build-xcframework.sh [--clean]
 #
 # Environment:
-#   PODS_ROOT       (required) Path to the CocoaPods Pods directory
+#   PODS_ROOT       Path to the CocoaPods Pods directory. Defaults to
+#                   $EXPO_ROOT_DIR/apps/bare-expo/ios/Pods (set by direnv).
 #   PLATFORM_NAME   (optional) Build for a specific platform (e.g. iphoneos, iphonesimulator).
 #                   When unset, builds for both iphoneos and iphonesimulator.
 
@@ -35,6 +36,8 @@ SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+
+resolve_pods_root "$PACKAGE_DIR"
 
 CLEAN=false
 
@@ -74,6 +77,10 @@ SOURCE_FILES=(
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
   "${PACKAGE_DIR}/scripts/create-stub-xcframework.sh"
   "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+  # JSI headers we compile against. `cat` follows the symlinks CocoaPods
+  # installs into Pods/Headers/Public so the real header contents get hashed.
+  "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
+  "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi-inl.h"
 )
 
 compute_hash() {
@@ -271,8 +278,14 @@ if [[ -f "${PODS_ROOT}/Local Podspecs/React-Core.podspec.json" ]]; then
   SOURCE_FILES+=("${PODS_ROOT}/Local Podspecs/React-Core.podspec.json")
 fi
 
-# Generate the module map for the `jsi` Clang module.
-env PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+# Generate the module map for the `jsi` Clang module. Set the env vars inline
+# instead of via `env`: pnpm's virtual-store paths contain `=` characters
+# (e.g. `patch_hash=…`), and BSD `env` parses positional args containing `=`
+# as additional NAME=VALUE assignments — so `env FOO=bar /pnpm/path=with/equals`
+# never finds a command, silently dumps the environment, and exits 0. The
+# parent `set -eo pipefail` doesn't catch that, the modulemap never gets
+# written, and xcodebuild later fails with `no such module 'jsi'`.
+PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
 GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 

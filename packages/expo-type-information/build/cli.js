@@ -8,6 +8,7 @@ const generateModuleTypesCommand_1 = require("./commands/generateModuleTypesComm
 const generateViewTypesCommand_1 = require("./commands/generateViewTypesCommand");
 const inlineModulesInterfaceCommand_1 = require("./commands/inlineModulesInterfaceCommand");
 const moduleInterfaceCommand_1 = require("./commands/moduleInterfaceCommand");
+const preprocessFileCommand_1 = require("./commands/preprocessFileCommand");
 const shortModuleInterfaceCommand_1 = require("./commands/shortModuleInterfaceCommand");
 const typeInformationCommand_1 = require("./commands/typeInformationCommand");
 async function main(args) {
@@ -24,11 +25,12 @@ async function main(args) {
     (0, inlineModulesInterfaceCommand_1.inlineModulesInterfaceCommand)(cli);
     (0, shortModuleInterfaceCommand_1.shortModuleInterfaceCommand)(cli);
     (0, generateMocksForFileCommand_1.generateMocksForFileCommand)(cli);
-    const otherCommands = cli.command('other').description('internal or very specific commands');
+    const otherCommands = cli.command('other').description('Internal or very specific commands');
     (0, typeInformationCommand_1.typeInformationCommand)(otherCommands);
     (0, generateModuleTypesCommand_1.generateModuleTypesCommand)(otherCommands);
     (0, generateViewTypesCommand_1.generateViewTypesCommand)(otherCommands);
     (0, generateJSXIntrinsicsCommand_1.generateJsxIntrinsics)(otherCommands);
+    (0, preprocessFileCommand_1.preprocessFileCommand)(otherCommands);
     await cli.parseAsync(args, { from: 'user' });
 }
 main(process.argv.slice(2));

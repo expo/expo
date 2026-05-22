@@ -27,7 +27,7 @@ struct UpdatesConfigTests {
     #expect(config.checkOnLaunch == .ErrorRecoveryOnly)
     #expect(config.codeSigningConfiguration != nil)
     #expect(config.enableExpoUpdatesProtocolV0CompatibilityMode == false)
-    #expect(config.enableBsdiffPatchSupport == false)
+    #expect(config.enableBsdiffPatchSupport == true)
     #expect(config.runtimeVersion == "fake-version-1")
     #expect(config.hasEmbeddedUpdate == true)
   }

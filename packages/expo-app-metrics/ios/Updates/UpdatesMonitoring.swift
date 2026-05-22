@@ -26,7 +26,15 @@ internal class UpdatesMonitoring: MetricReporter {
             updatesInfo: updatesInfo
           )
           AppInfo.current = patched
-          AppMetrics.storage.currentEntry.app = patched
+          do {
+            try AppMetrics.database?.updateAppUpdatesInfoForActiveSessions(
+              updateId: updatesInfo.updateId,
+              runtimeVersion: updatesInfo.runtimeVersion,
+              requestHeadersJSON: encodeAsJSONString(updatesInfo.requestHeaders)
+            )
+          } catch {
+            logger.warn("[AppMetrics] Failed to patch app updates info on active sessions: \(error.localizedDescription)")
+          }
         }
       }
     }

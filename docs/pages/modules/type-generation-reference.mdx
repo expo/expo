@@ -1,0 +1,154 @@
+---
+title: Type generation reference
+description: A reference for the expo-type-information package.
+packageName: 'expo-type-information'
+---
+
+import APISection from '~/components/plugins/APISection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **warning** The `expo-type-information` library works only on macOS. Available for SDK 56 and later.
+
+The `expo-type-information` package provides tools to automatically generate TypeScript interface for Swift modules. It consists of multiple parts:
+
+- Swift parser based on `sourcekitten`: a parser that can retrieve and structure the type information from a Swift Expo module.
+- Type Abstraction: an abstraction over type information relevant for Expo modules, the parser returns the information in this abstracted way.
+- TypeScript AST Emitter: a set of functions which help with generating TypeScript code.
+- CLI: a command-line tool, which integrates the above functionalities.
+
+## Configuration
+
+Install the `expo-type-information` library:
+
+<Terminal cmd={['$ npx expo install expo-type-information']} />
+
+To use this package you also need to have `sourcekitten` installed. You can use macOS package manager like Homebrew.
+
+<Terminal cmd={['$ brew install sourcekitten']} />
+
+## CLI reference
+
+### Common CLI options
+
+Every CLI command in this library uses the following common options for configuration. The only exception is the `inline-modules-interface` which has slightly different options.
+
+| Flag                                   | Description                                                                                                                                                                                                                                                      | Default            |
+| :------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------- |
+| `-i, --input-paths <filePaths...>`     | Paths to Swift files for some module, glob patterns are allowed.                                                                                                                                                                                                 |                    |
+| `-m --module-path <modulePath>`        | Path to Expo module root directory.                                                                                                                                                                                                                              |                    |
+| `-o, --output-path <filePath>`         | Path to save the generated output. If this option is not provided the generated output is printed to console.                                                                                                                                                    |                    |
+| `-t, --type-inference <typeInference>` | Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`. | `SIMPLE_INFERENCE` |
+| `-w --watcher`                         | Starts a watcher that checks for changes in input-path file.                                                                                                                                                                                                     |                    |
+
+### Main commands
+
+#### `module-interface`
+
+Generates a full TypeScript interface for a Swift module. It consists of:
+
+- **types.ts** file with all types defined in the module
+- **module.ts** with the native module definition
+- **view.tsx** for each view defined in the module
+- **index.ts** file which reexports some functions
+
+> Accepts standard [Common CLI options](#common-cli-options).
+
+#### `inline-modules-interface`
+
+Creates a TypeScript interface for every Swift inline module in the project. The interface consists of two files:
+
+- **Module.generated.ts**: This is regenerated with each run of the command
+- **Module.tsx**: This one is not regenerated if you change it
+
+**Options:**
+| Flag | Description | Default |
+| :--- | :--- | :--- |
+| `-a --app-json <appJsonPath>` | A path to the [app config](/workflow/configuration/) file where the `inline.modules.watchedDirectories` are defined. | |
+| `-w --watcher` | Starts a watcher that checks for changes in inline modules files. | |
+| `-t, --type-inference <typeInference>` | Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`. | `SIMPLE_INFERENCE` |
+
+---
+
+#### `short-module-interface`
+
+Creates a short TypeScript interface for an Expo module. Overwrites **ModuleName.generated.ts** and creates **ModuleName.ts** if not present. Can be used with inline-modules.
+
+> Accepts standard [Common CLI options](#common-cli-options).
+
+#### `generate-mocks-for-file`
+
+Generates mocks for a given expo module.
+
+> Accepts standard [Common CLI options](#common-cli-options).
+
+### Other commands
+
+These commands are internal or very specific.
+
+> All commands in this section accept the standard [Common CLI options](#common-cli-options).
+
+#### `other type-information`
+
+Parses Swift module type information and outputs a `FileTypeInformation` JSON.
+
+#### `other generate-module-types`
+
+Generates a type declaration file content for a module.
+
+#### `other generate-view-types`
+
+Generates a type declaration file for a native View.
+
+#### `other generate-jsx-intrinsics`
+
+Generates a declaration file for a View, updates JSX intrinsics with the View props.
+
+#### `other preprocess-file`
+
+Print the preprocessed file(s) in the state right before parsing them using `sourcekitten`. It helps with checking how the `--module-path`, `--input-path`, and `--type-inference` options affect the parsed file.
+
+<APISection
+  forceVersion="unversioned"
+  packageName="expo-type-information"
+  headersMapping={{
+    TypeInformationAbstraction: 'Type information abstraction',
+    TypescriptGeneration: 'TypeScript generation',
+    TypeInfoTypes: 'Type Information Types',
+    Mocks: 'Mock generation',
+  }}
+/>
+
+## Swift parser limitations
+
+`expo-type-information` library uses `sourcekitten` to parse the Swift file. Parsing a Swift file is a complex task and not everything is now implemented.
+
+<Collapsible summary="Known issues about the current version of parsing the Swift file">
+
+- Nested classes will not be resolved fully.
+
+  `Sourcekitten` has a limit on resolving nested closures, so classes defined in your module may not be fully resolved. This is the reason why if there is a DSL `Class` in a module, its methods will have their return types `unresolved`.
+
+- Return type resolution, `PREPROCESS_AND_INFERENCE` inference option.
+
+  When the return type of a closure is not provided explicitly, the tool needs to infer it.
+  One of the ways of doing it in `sourcekitten` is when there is a `return identifier` statement we can ask about the type of the `identifier`.
+  The third inference option, `PREPROCESS_AND_INFERENCE`, rewrites the file such that for each `return expression` statement
+  a new `let return_expression = expression; return return_expression;` is inserted so that we can ask about the identifier type.
+  Rewriting is known to sometimes have issues (mostly because of strings and comments) so it may not always work.
+  There is also currently no way to resolve a `return`-less return, when the return expression is a tail expression of the closure.
+
+- Unsupported Expo Module DSL declarations.
+
+  Not all of the DSL declarations are parsed right now, and some are not parsed in every context. For example `Events` are parsed inside a `View` but not in a Module definition.
+
+- Using Unicode characters breaks `sourcekitten` offsets.
+
+</Collapsible>
+### Supported Expo modules DSL declarations
+
+| Feature                      | Notes and limitations                                                                                                           |
+| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| **Expo DSL Declarations**    | Supports parsing for: `AsyncFunction`, `Constant`, `Constructor`, `Events`, `Function`, `Name`, `Prop`, `Property`, and `View`. |
+| **Swift `struct` & `class`** | Must conform to the `Record` protocol. Only properties marked with the `@Field` annotation are parsed.                          |
+| **Swift `enum`**             | Basic cases are supported. Values associated with enum cases are not currently parsed.                                          |

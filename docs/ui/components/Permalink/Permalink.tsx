@@ -59,9 +59,9 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
       <Button
         theme="quaternary"
         className={mergeClasses(
-          'duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all',
+          'relative my-auto inline-flex size-6.25 min-w-6.25 justify-center p-0 transition-all duration-default',
           'invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100',
-          isDeepNested && 'size-[22px] min-w-[22px]',
+          isDeepNested && 'size-5.5 min-w-5.5',
           props.additionalProps?.className
         )}
         href={'#' + heading.slug}

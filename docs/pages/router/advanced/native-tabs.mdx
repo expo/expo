@@ -149,7 +149,9 @@ When you want to customize the tab bar item, we recommend using the components A
 
 You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `md` prop for Android material symbols, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
 
-Alternatively, you can pass `{default: ..., selected: ...}` to either the `sf` or `src` prop to specify different icons for the default and selected states (currently not supported on Android).
+Alternatively, you can pass `{default: ..., selected: ...}` to the `sf`, `xcasset`, `drawable`, `md`, or `src` prop to specify different icons for the default and selected states.
+
+> **info** On Android, distinct selected icons for `src`, `drawable` and `md` require SDK 56 or later (powered by `react-native-screens` 4.25+). On earlier SDKs the selected variant is ignored and the default icon is used in both states.
 
 <Tabs>
 
@@ -162,7 +164,10 @@ export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'house', selected: 'house.fill' }}
+          md={{ default: 'home', selected: 'home_filled' }}
+        />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Icon src={require('../../../assets/setting_icon.png')} />
@@ -691,6 +696,48 @@ export default function TabLayout() {
 
 </Tabs>
 
+### Disabled tabs
+
+> **info** The `disabled` prop is available in SDK 56 and later.
+
+You can prevent native selection of a tab by setting the `disabled` prop on the `NativeTabs.Trigger` component. When `true`, tapping the tab in the tab bar does not change the focused tab. The tab remains visible - use `hidden` if you want to remove it from the tab bar entirely.
+
+> **Note:** `disabled` only suppresses the native tap interaction. It is not a "protected" or authorization gate - JavaScript navigation such as `router.push('/settings')` or `<Link href="/settings" />` still navigates to the tab.
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings" disabled>
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+You can also toggle `disabled` dynamically from inside a screen.
+
+```tsx src/app/checkout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { View } from 'react-native';
+
+export default function CheckoutScreen() {
+  const isProcessing = useIsProcessing();
+  return (
+    <View>
+      <NativeTabs.Trigger disabled={isProcessing} />
+      {/* ... */}
+    </View>
+  );
+}
+```
+
 ### iOS 26 features
 
 > **info** To use features described in this section, compile your app with Xcode 26 or higher.
@@ -943,19 +990,24 @@ const styles = StyleSheet.create({
 });
 ```
 
-### Disabling keyboard avoidance on Android
+### Keyboard avoidance on Android
 
-By default, when the keyboard is displayed on Android, the native tabs automatically adjust to avoid being obscured. You can disable this behavior by changing the [`android.softwareKeyboardLayoutMode`](/versions/latest/config/app/#softwarekeyboardlayoutmode) property to `pan` in your app config file:
+By default on Android, the keyboard overlays the native tab bar. To have the tab bar lift above the keyboard instead, pass the `tabBarRespectsIMEInsets` prop on `NativeTabs`:
 
-```json app.json
-{
-  "expo": {
-    "android": {
-      "softwareKeyboardLayoutMode": "pan"
-    }
-  }
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs tabBarRespectsIMEInsets>
+      <NativeTabs.Trigger name="index" />
+      <NativeTabs.Trigger name="profile" />
+    </NativeTabs>
+  );
 }
 ```
+
+> **info** Requires Android 11 or later and the app config field [`android.softwareKeyboardLayoutMode`](/versions/latest/config/app/#softwarekeyboardlayoutmode) set to `"resize"` (the Expo default). Toggling this prop while the keyboard is open takes effect only after the keyboard closes.
 
 ### Safe area handling
 
@@ -1291,12 +1343,12 @@ export default function HomeScreen() {
 
 <Collapsible summary="White background flashes when switching tabs on iOS 26">
 
-This happens because React Navigation's default theme uses a white background color. To fix this, wrap your app in React Navigation's `ThemeProvider` with the appropriate theme.
+This happens because the default theme uses a white background color. To fix this, wrap your app in Expo Router's `ThemeProvider` with the appropriate theme.
 
 **For apps supporting both light and dark modes:**
 
 ```tsx src/app/_layout.tsx
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useColorScheme } from 'react-native';
 
@@ -1321,7 +1373,7 @@ export default function TabLayout() {
 **For dark-mode-only apps:**
 
 ```tsx src/app/_layout.tsx
-import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -1365,14 +1417,14 @@ export default function HomeScreen() {
 
 <Collapsible summary="Liquid glass header buttons flicker in dark mode on iOS 26">
 
-Header buttons with liquid glass styling may flicker or flash their background when switching tabs in dark mode on iOS 26. This happens because React Navigation's default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
+Header buttons with liquid glass styling may flicker or flash their background when switching tabs in dark mode on iOS 26. This happens because the default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
 
-The fix is the same as for the white background flash issue: wrap your layout with `<ThemeProvider>` from `@react-navigation/native` using the appropriate theme.
+The fix is the same as for the white background flash issue: wrap your layout with `<ThemeProvider>` from `expo-router` using the appropriate theme.
 
 **For apps supporting both light and dark modes:**
 
 ```tsx app/_layout.tsx
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useColorScheme } from 'react-native';
 
@@ -1397,7 +1449,7 @@ export default function TabLayout() {
 **For dark-mode-only apps:**
 
 ```tsx app/_layout.tsx
-import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {

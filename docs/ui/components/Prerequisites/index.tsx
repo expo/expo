@@ -67,7 +67,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
       <details
         id={heading.current.slug}
         className={mergeClasses(
-          'border-default mb-3 scroll-m-4 rounded-md border p-0',
+          'mb-3 scroll-m-4 rounded-md border border-default p-0',
           '[[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
@@ -109,13 +109,13 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               onClick={() => {
                 setIsOpen(true);
               }}
-              className="hocus:bg-element ml-1 inline rounded-md p-1"
+              className="ml-1 inline rounded-md p-1 hocus:bg-element"
               aria-label="Permalink">
-              <PermalinkIcon className="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible" />
+              <PermalinkIcon className="invisible inline-flex icon-sm group-hover:visible group-focus-visible:visible" />
             </LinkBase>
           </div>
           <div>
-            <p className="text-secondary text-sm">
+            <p className="text-sm text-secondary">
               {numberOfRequirements} requirement{numberOfRequirements === 1 ? '' : 's'}
             </p>
           </div>
@@ -131,7 +131,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             {requirementChildren.map((child, index) => (
               <div
                 key={index}
-                className={mergeClasses('border-default flex items-baseline gap-1.5 border-t p-5')}>
+                className={mergeClasses('flex items-baseline gap-1.5 border-t border-default p-5')}>
                 {numberOfRequirements > 1 && (
                   <p className="mb-2 text-right font-medium">{index + 1}.</p>
                 )}

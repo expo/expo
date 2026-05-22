@@ -50,7 +50,7 @@ export function addCommonOptions(command: commander.Command): commander.Command 
       '-i, --input-paths <filePaths...>',
       'Paths to Swift files for some module, glob patterns are allowed.'
     )
-    .option('-m --module-path <modulePath>', 'Path to expo module root directory.')
+    .option('-m --module-path <modulePath>', 'Path to Expo module root directory.')
     .option(
       '-o, --output-path <filePath>',
       'Path to save the generated output. If this option is not provided the generated output is printed to console.'
@@ -58,7 +58,7 @@ export function addCommonOptions(command: commander.Command): commander.Command 
     .option(
       '-t, --type-inference <typeInference>',
       // TODO(@HubertBer) Fix the PREPROCESS_AND_INFERENCE option.
-      'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE. Note that the last option rarely fails for some modules, use the 2nd or 1st in that case.',
+      'Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.',
       'SIMPLE_INFERENCE'
     )
     .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
@@ -133,6 +133,10 @@ export function sanitizeAndValidateOutputPath(
     if (isFilePath && fs.existsSync(path.dirname(resolvedPath))) {
       return resolvedPath;
     }
+
+    if (!isFilePath) {
+      return resolvedPath;
+    }
   } catch {}
 
   return null;
@@ -189,6 +193,17 @@ export function uniqueStrings(strings: string[]): string[] {
   return [...new Set(strings)];
 }
 
+export async function maybePrepareOutputDirectory(dirName?: string) {
+  if (!dirName) {
+    return;
+  }
+  try {
+    await fs.promises.mkdir(dirName, { recursive: true });
+  } catch {
+    console.error(`Error creating the output directory: ${dirName}`);
+  }
+}
+
 export function parseCommandArguments(
   options: TypeInformationCommandCommonAllArguments,
   isOutputFile: boolean = true
@@ -216,7 +231,7 @@ export function parseCommandArguments(
     const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath, isOutputFile);
     if (!validatedOutPath) {
       console.error(
-        `Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a path to an existing directory.'}`
+        `Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a valid path to a directory.'}`
       );
       return null;
     }

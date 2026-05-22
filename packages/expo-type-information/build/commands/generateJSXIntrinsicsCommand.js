@@ -4,7 +4,9 @@ exports.generateJsxIntrinsics = generateJsxIntrinsics;
 const commandUtils_1 = require("./commandUtils");
 const typescriptGeneration_1 = require("../typescriptGeneration");
 function generateJsxIntrinsics(cli) {
-    return (0, commandUtils_1.addCommonOptions)(cli.command('generate-jsx-intrinsics')).action(async (options) => {
+    return (0, commandUtils_1.addCommonOptions)(cli.command('generate-jsx-intrinsics'))
+        .description('Generates a declaration file for a View, updates JSX intrinsics with the View props.')
+        .action(async (options) => {
         const parsedArgs = await (0, commandUtils_1.parseCommandArguments)(options);
         if (!parsedArgs) {
             return;

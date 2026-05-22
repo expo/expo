@@ -2,11 +2,12 @@ package expo.modules.appmetrics.storage
 
 import android.content.Context
 import android.util.Log
-import androidx.room.withTransaction
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import expo.modules.appmetrics.TAG
+import expo.modules.appmetrics.GlobalAttributes
+import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
@@ -84,24 +85,6 @@ class SessionManager(
     database.sessionDao().insert(session)
   }
 
-  suspend fun startSessionWithIdAndMetricsAt(
-    id: String,
-    metrics: List<Metric>,
-    timestamp: String,
-    metadata: AppMetadata? = null,
-    environment: String? = null
-  ) {
-    database.withTransaction {
-      startSessionWithIdAt(
-        sessionId = id,
-        timestamp = timestamp,
-        metadata = metadata,
-        environment = environment
-      )
-      addMetrics(metrics, sessionId = id)
-    }
-  }
-
   suspend fun stopSession(sessionId: String) {
     database.sessionDao().stopSessionAt(
       sessionId,
@@ -113,7 +96,12 @@ class SessionManager(
     metrics: List<Metric>,
     sessionId: String
   ) {
-    val metricsWithSession = metrics.map { it.copy(sessionId = sessionId) }
+    val metricsWithSession = metrics.map { metric ->
+      metric.copy(
+        sessionId = sessionId,
+        params = mergeGlobalAttributesIntoJsonString(metric.params)
+      )
+    }
     database.metricDao().insertAll(metricsWithSession)
     val metricIds = metricsWithSession.map { it.metricId }
     metricsInsertListeners.forEach { listener ->
@@ -128,12 +116,6 @@ class SessionManager(
   suspend fun getAllSessions(): List<SessionWithMetrics> = database.sessionDao().getAll()
 
   suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
-
-  suspend fun getAllActiveSessions(): List<SessionWithMetrics> = database.sessionDao().getAllActiveSessions()
-
-  suspend fun removeSessions(session: List<SessionWithMetrics>) {
-    database.sessionDao().delete(session.map { it.session })
-  }
 
   suspend fun clearAllData() {
     database.sessionDao().deleteAll()
@@ -156,7 +138,12 @@ class SessionManager(
     logs: List<LogRecord>,
     sessionId: String
   ) {
-    val logsWithSession = logs.map { it.copy(sessionId = sessionId) }
+    val logsWithSession = logs.map { log ->
+      log.copy(
+        sessionId = sessionId,
+        attributes = mergeGlobalAttributesIntoJsonString(log.attributes)
+      )
+    }
     database.logDao().insertAll(logsWithSession)
     val logIds = logsWithSession.map { it.logId }
     logsInsertListeners.forEach { listener ->
@@ -223,5 +210,21 @@ class SessionManager(
             .filter { it.logId in logIdSet }
         )
       }
+  }
+
+  /**
+   * Decodes a JSON-encoded `params` / `attributes` column, folds the current
+   * [GlobalAttributes] snapshot into it, and re-encodes. Returns the original
+   * string when there's nothing to merge in — empty globals, or a non-null
+   * input that couldn't be parsed as a JSON object (we preserve whatever the
+   * caller wrote rather than silently replacing it).
+   */
+  private fun mergeGlobalAttributesIntoJsonString(json: String?): String? {
+    val existing = json?.let { JsonAny.decodeJsonStringToMap(it) }
+    if (json != null && existing == null) {
+      return json
+    }
+    val merged = GlobalAttributes.mergeWith(existing) ?: return json
+    return JsonAny.encodeMapToJsonString(merged)
   }
 }

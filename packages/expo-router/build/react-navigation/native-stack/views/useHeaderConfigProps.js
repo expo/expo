@@ -5,9 +5,9 @@ exports.useHeaderConfigProps = useHeaderConfigProps;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
-const elements_1 = require("../../elements");
 const FontProcessor_1 = require("./FontProcessor");
 const color_1 = require("../../../utils/color");
+const elements_1 = require("../../elements");
 const native_1 = require("../../native");
 const processBarButtonItems = (items, colors, fonts) => {
     return items

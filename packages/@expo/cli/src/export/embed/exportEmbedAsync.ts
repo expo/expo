@@ -35,7 +35,7 @@ import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
-import { copyPublicFolderAsync } from '../publicFolder';
+import { copyPublicFolderAsync, getPublicFolderPath } from '../publicFolder';
 import type { BundleAssetWithFileHashes, ExportAssetMap } from '../saveAssets';
 import { persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
@@ -92,10 +92,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       // Copy the eager bundleOutput and assets to the new locations.
       await removeAsync(options.bundleOutput);
 
-      copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
+      await copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
 
       if (eagerBundleOptions.options.assetsDest && options.assetsDest) {
-        copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
+        await copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
       }
 
       console.log('info: Copied output to binary:', options.bundleOutput);
@@ -148,7 +148,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
     // Copy public folder for dom components only if
     hasDomComponents
       ? copyPublicFolderAsync(
-          path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER),
+          getPublicFolderPath(projectRoot),
           path.join(domComponentProxyOutputDir, DOM_COMPONENTS_BUNDLE_DIR)
         )
       : null,

@@ -31,11 +31,11 @@ After installing one or more packages, you can import them into your JavaScript 
 
 ```ts
 import { CameraView } from 'expo-camera';
-import * as Contacts from 'expo-contacts';
+import { Contact } from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
 ```
 
-This allows you to write [`Contacts.getContactsAsync()`](./sdk/contacts#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or start the phone's camera and take photos.
+This allows you to write [`Contact.getAll()`](./sdk/contacts#contactgetalloptions) and read the contacts from the device, read the gyroscope sensor to detect device movement, or start the phone's camera and take photos.
 
 ## All Expo SDK packages work in any React Native app
 
@@ -71,7 +71,7 @@ New Expo SDK versions are released three times each year. Between these releases
 
 ### Canary releases
 
-Canary releases represent a snapshot of the state of the `main` branch at the time they are published. Canary package versions include `-canary` in the name, along with the date and commit hash, such as `55.0.0-canary-20260121-a63c0dd`. To install the latest canary release:
+Canary releases represent a snapshot of the state of the `main` branch at the time they are published. Canary package versions include `-canary` in the name, along with the date and commit hash, such as `56.0.0-canary-20260506-03817f5`. To install the latest canary release:
 
 <Terminal
   cmd={[

@@ -85,7 +85,7 @@ function Header(props) {
             return { height, width };
         });
     };
-    const { layout = frame, modal = false, back, title, headerTitle: customTitle, headerTitleAlign = react_native_1.Platform.OS === 'ios' ? 'center' : 'left', headerLeft = back ? (props) => (0, jsx_runtime_1.jsx)(HeaderBackButton_1.HeaderBackButton, { ...props }) : undefined, headerSearchBarOptions, headerTransparent, headerTintColor, headerBackground, headerRight, headerTitleAllowFontScaling: titleAllowFontScaling, headerTitleStyle: titleStyle, headerLeftContainerStyle: leftContainerStyle, headerRightContainerStyle: rightContainerStyle, headerTitleContainerStyle: titleContainerStyle, headerBackButtonDisplayMode = react_native_1.Platform.OS === 'ios' ? 'default' : 'minimal', headerBackTitleStyle, headerBackgroundContainerStyle: backgroundContainerStyle, headerStyle: customHeaderStyle, headerShadowVisible, headerPressColor, headerPressOpacity, headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top, } = props;
+    const { layout = frame, modal = false, back, title, headerTitle: customTitle, headerTitleAlign = process.env.EXPO_OS === 'ios' ? 'center' : 'left', headerLeft = back ? (props) => (0, jsx_runtime_1.jsx)(HeaderBackButton_1.HeaderBackButton, { ...props }) : undefined, headerSearchBarOptions, headerTransparent, headerTintColor, headerBackground, headerRight, headerTitleAllowFontScaling: titleAllowFontScaling, headerTitleStyle: titleStyle, headerLeftContainerStyle: leftContainerStyle, headerRightContainerStyle: rightContainerStyle, headerTitleContainerStyle: titleContainerStyle, headerBackButtonDisplayMode = process.env.EXPO_OS === 'ios' ? 'default' : 'minimal', headerBackTitleStyle, headerBackgroundContainerStyle: backgroundContainerStyle, headerStyle: customHeaderStyle, headerShadowVisible, headerPressColor, headerPressOpacity, headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top, } = props;
     const defaultHeight = (0, getDefaultHeaderHeight_1.getDefaultHeaderHeight)(layout, modal, headerStatusBarHeight);
     const { height = defaultHeight, maxHeight, minHeight, backfaceVisibility, backgroundColor, borderBlockColor, borderBlockEndColor, borderBlockStartColor, borderBottomColor, borderBottomEndRadius, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStartRadius, borderBottomWidth, borderColor, borderCurve, borderEndColor, borderEndEndRadius, borderEndStartRadius, borderEndWidth, borderLeftColor, borderLeftWidth, borderRadius, borderRightColor, borderRightWidth, borderStartColor, borderStartEndRadius, borderStartStartRadius, borderStartWidth, borderStyle, borderTopColor, borderTopEndRadius, borderTopLeftRadius, borderTopRightRadius, borderTopStartRadius, borderTopWidth, borderWidth, boxShadow, elevation, filter, mixBlendMode, opacity, shadowColor, shadowOffset, shadowOpacity, shadowRadius, transform, transformOrigin, ...unsafeStyles } = react_native_1.StyleSheet.flatten(customHeaderStyle || {});
     if (process.env.NODE_ENV !== 'production') {
@@ -198,22 +198,28 @@ function Header(props) {
     const headerTitle = typeof customTitle !== 'function'
         ? (props) => (0, jsx_runtime_1.jsx)(HeaderTitle_1.HeaderTitle, { ...props })
         : customTitle;
-    return ((0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [{ height, minHeight, maxHeight, opacity, transform }], children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [react_native_1.StyleSheet.absoluteFill, backgroundContainerStyle], children: headerBackground ? (headerBackground({ style: backgroundStyle })) : ((0, jsx_runtime_1.jsx)(HeaderBackground_1.HeaderBackground, { pointerEvents: 
-                    // Allow touch through the header when background color is transparent
-                    headerTransparent &&
-                        (backgroundStyle.backgroundColor === 'transparent' ||
-                            (backgroundStyle.backgroundColor &&
-                                (0, color_1.Color)(backgroundStyle.backgroundColor)?.alpha() === 0))
-                        ? 'none'
-                        : 'auto', style: backgroundStyle })) }), (0, jsx_runtime_1.jsx)(react_native_1.View, { pointerEvents: "none", style: { height: headerStatusBarHeight } }), (0, jsx_runtime_1.jsxs)(react_native_1.View, { pointerEvents: "box-none", style: [
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { style: [styles.boxNone, { height, minHeight, maxHeight, opacity, transform }], children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { style: [react_native_1.StyleSheet.absoluteFill, styles.boxNone, backgroundContainerStyle], children: headerBackground ? (headerBackground({ style: backgroundStyle })) : ((0, jsx_runtime_1.jsx)(HeaderBackground_1.HeaderBackground, { style: [
+                        {
+                            // Allow touch through the header when background color is transparent
+                            pointerEvents: headerTransparent &&
+                                (backgroundStyle.backgroundColor === 'transparent' ||
+                                    (backgroundStyle.backgroundColor &&
+                                        (0, color_1.Color)(backgroundStyle.backgroundColor)?.alpha() === 0))
+                                ? 'none'
+                                : 'auto',
+                        },
+                        backgroundStyle,
+                    ] })) }), (0, jsx_runtime_1.jsx)(react_native_1.View, { style: [styles.pointerEventsNone, { height: headerStatusBarHeight }] }), (0, jsx_runtime_1.jsxs)(react_native_1.View, { style: [
                     styles.content,
-                    react_native_1.Platform.OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH ? styles.large : null,
-                ], children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [
+                    process.env.EXPO_OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH
+                        ? styles.large
+                        : null,
+                ], children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { style: [
                             styles.start,
                             !searchBarVisible && headerTitleAlign === 'center' && styles.expand,
                             { marginStart: insets.left },
                             leftContainerStyle,
-                        ], children: leftButton }), react_native_1.Platform.OS === 'ios' || !searchBarVisible ? ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [
+                        ], children: leftButton }), process.env.EXPO_OS === 'ios' || !searchBarVisible ? ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { style: [
                                     styles.title,
                                     {
                                         // Avoid the title from going offscreen or overlapping buttons
@@ -239,14 +245,14 @@ function Header(props) {
                                     tintColor: headerTintColor,
                                     onLayout: onTitleLayout,
                                     style: titleStyle,
-                                }) }), (0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [styles.end, styles.expand, { marginEnd: insets.right }, rightContainerStyle], children: [rightButton, headerSearchBarOptions ? ((0, jsx_runtime_1.jsx)(HeaderButton_1.HeaderButton, { tintColor: iconTintColor, pressColor: headerPressColor, pressOpacity: headerPressOpacity, onPress: () => {
+                                }) }), (0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { style: [styles.end, styles.expand, { marginEnd: insets.right }, rightContainerStyle], children: [rightButton, headerSearchBarOptions ? ((0, jsx_runtime_1.jsx)(HeaderButton_1.HeaderButton, { tintColor: iconTintColor, pressColor: headerPressColor, pressOpacity: headerPressOpacity, onPress: () => {
                                             setSearchBarVisible(true);
                                             headerSearchBarOptions?.onOpen?.();
-                                        }, children: (0, jsx_runtime_1.jsx)(HeaderIcon_1.HeaderIcon, { source: search_icon_png_1.default, tintColor: iconTintColor }) })) : null] })] })) : null, react_native_1.Platform.OS === 'ios' || searchBarVisible ? ((0, jsx_runtime_1.jsx)(HeaderSearchBar_1.HeaderSearchBar, { ...headerSearchBarOptions, visible: searchBarVisible, onClose: () => {
+                                        }, children: (0, jsx_runtime_1.jsx)(HeaderIcon_1.HeaderIcon, { source: search_icon_png_1.default, tintColor: iconTintColor }) })) : null] })] })) : null, process.env.EXPO_OS === 'ios' || searchBarVisible ? ((0, jsx_runtime_1.jsx)(HeaderSearchBar_1.HeaderSearchBar, { ...headerSearchBarOptions, visible: searchBarVisible, onClose: () => {
                             setSearchBarVisible(false);
                             headerSearchBarOptions?.onClose?.();
                         }, tintColor: headerTintColor, style: [
-                            react_native_1.Platform.OS === 'ios'
+                            process.env.EXPO_OS === 'ios'
                                 ? [
                                     react_native_1.StyleSheet.absoluteFill,
                                     { paddingTop: headerStatusBarHeight ? 0 : 4 },
@@ -260,19 +266,23 @@ const styles = react_native_1.StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'stretch',
+        pointerEvents: 'box-none',
     },
     large: {
         marginHorizontal: 5,
     },
     title: {
+        pointerEvents: 'box-none',
         justifyContent: 'center',
     },
     start: {
+        pointerEvents: 'box-none',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
     end: {
+        pointerEvents: 'box-none',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
@@ -280,6 +290,12 @@ const styles = react_native_1.StyleSheet.create({
     expand: {
         flexGrow: 1,
         flexBasis: 0,
+    },
+    boxNone: {
+        pointerEvents: 'box-none',
+    },
+    pointerEventsNone: {
+        pointerEvents: 'none',
     },
 });
 //# sourceMappingURL=Header.js.map

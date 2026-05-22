@@ -147,6 +147,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Menu replacement',
+    route: 'ui/community-menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMenuScreen'));
+    },
+  },
+  {
+    name: 'Community PagerView replacement',
+    route: 'ui/community-pager-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPagerViewScreen'));
+    },
+  },
+  {
     name: 'Switch component',
     route: 'ui/switch',
     options: {},
@@ -363,6 +379,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Snackbar component',
+    route: 'ui/snackbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SnackbarScreen'));
+    },
+  },
+  {
     name: 'Tooltip component',
     route: 'ui/tooltip',
     options: {},
@@ -376,6 +400,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
+  {
+    name: 'Loading Indicator component',
+    route: 'ui/loading-indicator',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LoadingIndicatorScreen'));
     },
   },
 ];

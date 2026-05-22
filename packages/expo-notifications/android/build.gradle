@@ -5,14 +5,15 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.6'
+version = '56.0.12'
 
 android {
   namespace "expo.modules.notifications"
   defaultConfig {
     versionCode 21
-    versionName '56.0.6'
+    versionName '56.0.12'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    consumerProguardFiles 'proguard-rules.pro'
   }
 
   buildFeatures {

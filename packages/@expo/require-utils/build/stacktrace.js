@@ -12,9 +12,9 @@ function nodeModule() {
   };
   return data;
 }
-function _nodeUrl() {
-  const data = _interopRequireDefault(require("node:url"));
-  _nodeUrl = function () {
+function _nodePath() {
+  const data = _interopRequireDefault(require("node:path"));
+  _nodePath = function () {
     return data;
   };
   return data;
@@ -121,11 +121,7 @@ function wrapCallSite(site, state) {
     state.curPosition = null;
     return String(site);
   }
-
-  // `originalSource` is a `file://` URL. `fileURLToPath` correctly handles drive letters
-  // and percent-encoded characters; a naive `file://` strip would yield `/C:/foo/bar.ts`
-  // on Windows.
-  const originalSource = entry.originalSource.startsWith('file://') ? _nodeUrl().default.fileURLToPath(entry.originalSource) : entry.originalSource;
+  const originalSource = maybeFileURLToPath(entry.originalSource);
 
   // Node's runtime exposes a `name` field on the source map entry even though
   // `@types/node` omits it from `SourceMapping`. Read it defensively.
@@ -154,6 +150,18 @@ function wrapCallSite(site, state) {
   wrapped.getColumnNumber = () => position.column;
   wrapped.getScriptNameOrSourceURL = () => position.source;
   return String(wrapped);
+}
+function maybeFileURLToPath(maybeFileURL) {
+  if (maybeFileURL.startsWith('file://')) {
+    let pathname = maybeFileURL.slice('file://'.length);
+    if (pathname[0] === '/') pathname = pathname.slice(1);
+    try {
+      pathname = decodeURIComponent(pathname);
+    } catch {}
+    return _nodePath().default.sep !== '/' ? pathname.replaceAll('/', _nodePath().default.sep) : '/' + pathname;
+  } else {
+    return maybeFileURL;
+  }
 }
 function cloneCallSite(site) {
   // We need a plain object whose JS getters mirror the original site's, but whose

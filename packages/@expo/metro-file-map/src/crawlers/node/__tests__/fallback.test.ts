@@ -4,6 +4,10 @@ import { RootPathUtils } from '../../../lib/RootPathUtils';
 import type { FallbackFilesystem } from '../../../types';
 import createFallbackFilesystem, { isFallbackDir } from '../fallback';
 
+// memfs is POSIX-only; pin to POSIX path semantics
+// TODO(@kitten): Fork the test for posix v windows
+jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
+
 const rootDir = '/project';
 
 function createFallback(

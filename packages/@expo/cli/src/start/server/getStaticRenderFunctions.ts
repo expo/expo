@@ -14,6 +14,7 @@ import type { ExpoMetroOptions } from './middleware/metroOptions';
 import { createBundleUrlPath } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
+import { isPathInside } from '../../utils/dir';
 import { SilentError } from '../../utils/errors';
 import { toPosixPath } from '../../utils/filePath';
 import { profile } from '../../utils/profile';
@@ -26,7 +27,7 @@ export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
   // Cannot be accessed using Metro's server API, we need to move the file
   // into the project root and try again.
-  if (!path.relative(projectRoot, otherFile).startsWith('..' + path.sep)) {
+  if (!isPathInside(otherFile, projectRoot)) {
     return otherFile;
   }
 

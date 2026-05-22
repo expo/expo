@@ -4,10 +4,10 @@
 
 #include <string>
 #include <vector>
-#include <jsi/jsi.h>
 
 #include "CppError.h"
 #include "HostObjectCallbacks.h"
+#include "IRuntimeCompat.h"
 
 namespace jsi = facebook::jsi;
 
@@ -47,7 +47,7 @@ public:
     return _callbacks.getPropertyNames();
   }
 
-  inline static jsi::Object makeObject(jsi::Runtime &runtime, HostObjectCallbacks callbacks) {
+  inline static jsi::Object makeObject(jsi::IRuntime &runtime, HostObjectCallbacks callbacks) {
     return jsi::Object::createFromHostObject(runtime, std::make_shared<HostObject>(callbacks));
   }
 

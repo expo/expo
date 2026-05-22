@@ -453,7 +453,7 @@ describe('type imports', () => {
       `import { createStackNavigator, type StackScreenProps } from '@react-navigation/stack';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(
+    expect(output.replace(/\r\n/g, '\n')).toBe(
       [
         `import { useNavigation, type NavigationProp } from "expo-router/react-navigation";`,
         `import { createStackNavigator, type StackScreenProps } from "expo-router/js-stack";`,

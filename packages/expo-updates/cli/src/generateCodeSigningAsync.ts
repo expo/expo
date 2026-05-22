@@ -51,7 +51,9 @@ export async function generateCodeSigningAsync(
 
   await Promise.all([
     fs.writeFile(path.join(keyOutputDir, 'public-key.pem'), keyPairPEM.publicKeyPEM),
-    fs.writeFile(path.join(keyOutputDir, 'private-key.pem'), keyPairPEM.privateKeyPEM),
+    fs.writeFile(path.join(keyOutputDir, 'private-key.pem'), keyPairPEM.privateKeyPEM, {
+      mode: 0o600,
+    }),
     fs.writeFile(path.join(certificateOutputDir, 'certificate.pem'), certificatePEM),
   ]);
 

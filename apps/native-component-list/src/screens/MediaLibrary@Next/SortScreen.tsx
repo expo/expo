@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { MediaType, requestPermissionsAsync, Query, AssetField } from 'expo-media-library/next';
+import { MediaType, requestPermissionsAsync, Query, AssetField } from 'expo-media-library';
 import { useEffect, useState } from 'react';
 import {
   View,
@@ -179,7 +179,6 @@ const SortScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fafafa',
     paddingTop: 20,
   },
   status: {

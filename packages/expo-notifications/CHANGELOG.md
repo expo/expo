@@ -10,6 +10,38 @@
 
 ### 💡 Others
 
+## 56.0.12 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.11 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [android] Apply bundled `proguard-rules.pro` via `consumerProguardFiles` so the `-keep class expo.modules.notifications.**` rule is added to consumer apps' R8 pass. ([#45974](https://github.com/expo/expo/pull/45974) by [@jiunshinn](https://github.com/jiunshinn))
+
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [ios] Dispatch foreground notification completion handler on the main thread to prevent SIGTRAP / `BSPreconditionFailure` on iOS 16. ([#45096](https://github.com/expo/expo/pull/45096) by [@qutrek](https://github.com/qutrek))
+
+### 💡 Others
+
 - Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.6 — 2026-05-11

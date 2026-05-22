@@ -19,7 +19,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLIError = void 0;
 __exportStar(require("./android"), exports);
-__exportStar(require("./commands"), exports);
 __exportStar(require("./constants"), exports);
 __exportStar(require("./config"), exports);
 var error_1 = require("./error");

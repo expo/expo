@@ -3,6 +3,7 @@
 // two `import * as nodeModule` references are distinct wrapper objects. `jest.mock`
 // replaces module resolution for all importers.
 import * as nodeModule from 'node:module';
+import path from 'node:path';
 
 import { callSiteToString, installSourceMapStackTrace } from '../stacktrace';
 
@@ -374,9 +375,10 @@ describe('source-mapped frames', () => {
   }
 
   it('rewrites a mapped frame to its original source position', () => {
+    const componentPath = path.sep === '/' ? '/orig/Component.tsx' : 'orig\\Component.tsx';
     mockSourceMap({
       '/bundle.js': {
-        originalSource: '/orig/Component.tsx',
+        originalSource: componentPath,
         originalLine: 41,
         originalColumn: 9,
         name: null,
@@ -390,10 +392,9 @@ describe('source-mapped frames', () => {
       columnNumber: 100,
       functionName: 'render',
     });
-    expect(prepareStackTrace(new Error('e'), [site])).toMatchInlineSnapshot(`
-"Error: e
-    at render (/orig/Component.tsx:42:10)"
-`);
+    expect(prepareStackTrace(new Error('e'), [site])).toBe(
+      `Error: e\n    at render (${componentPath}:42:10)`
+    );
   });
 
   it('converts file:// originalSource via fileURLToPath', () => {
@@ -413,10 +414,7 @@ describe('source-mapped frames', () => {
       columnNumber: 1,
       functionName: 'render',
     });
-    expect(prepareStackTrace(new Error('e'), [site])).toMatchInlineSnapshot(`
-"Error: e
-    at render (/orig/Component.tsx:1:1)"
-`);
+    expect(prepareStackTrace(new Error('e'), [site])).toMatch(/at render \(.*Component\.tsx:1:1\)/);
   });
 
   it('falls back to V8 format when findSourceMap returns null', () => {
@@ -454,9 +452,10 @@ describe('source-mapped frames', () => {
   });
 
   it('uses sourceURL when getFileName is null', () => {
+    const xPath = path.sep === '/' ? '/orig/x.tsx' : 'orig\\x.tsx';
     mockSourceMap({
       'http://localhost:8081/bundle.js': {
-        originalSource: '/orig/x.tsx',
+        originalSource: xPath,
         originalLine: 0,
         originalColumn: 0,
         name: null,
@@ -470,10 +469,9 @@ describe('source-mapped frames', () => {
       columnNumber: 1,
       functionName: 'render',
     });
-    expect(prepareStackTrace(new Error('e'), [site])).toMatchInlineSnapshot(`
-"Error: e
-    at render (/orig/x.tsx:1:1)"
-`);
+    expect(prepareStackTrace(new Error('e'), [site])).toBe(
+      `Error: e\n    at render (${xPath}:1:1)`
+    );
   });
 
   it('falls back to V8 format when scriptName is missing entirely', () => {
@@ -529,9 +527,10 @@ describe('source-mapped frames', () => {
   });
 
   it("carries source-map name forward as the previous frame's function name", () => {
+    const appPath = path.sep === '/' ? '/orig/App.tsx' : 'orig\\App.tsx';
     mockSourceMap({
       '/bundle.js': {
-        originalSource: '/orig/App.tsx',
+        originalSource: appPath,
         originalLine: 9,
         originalColumn: 4,
         name: 'render',
@@ -553,17 +552,16 @@ describe('source-mapped frames', () => {
       columnNumber: 2,
       functionName: 'minified_b',
     });
-    expect(prepareStackTrace(new Error('e'), [innerSite, outerSite])).toMatchInlineSnapshot(`
-"Error: e
-    at render (/orig/App.tsx:10:5)
-    at minified_b (/orig/App.tsx:10:5)"
-`);
+    expect(prepareStackTrace(new Error('e'), [innerSite, outerSite])).toBe(
+      `Error: e\n    at render (${appPath}:10:5)\n    at minified_b (${appPath}:10:5)`
+    );
   });
 
   it('mixes mapped and unmapped frames in a single stack', () => {
+    const appPath = path.sep === '/' ? '/orig/App.tsx' : 'orig\\App.tsx';
     mockSourceMap({
       '/bundle.js': {
-        originalSource: '/orig/App.tsx',
+        originalSource: appPath,
         originalLine: 41,
         originalColumn: 9,
         name: null,
@@ -589,11 +587,9 @@ describe('source-mapped frames', () => {
         typeName: 'Module',
       }),
     ];
-    expect(prepareStackTrace(new Error('e'), sites)).toMatchInlineSnapshot(`
-"Error: e
-    at render (/orig/App.tsx:42:10)
-    at Module._compile (node:internal/modules/cjs/loader:1234:14)"
-`);
+    expect(prepareStackTrace(new Error('e'), sites)).toBe(
+      `Error: e\n    at render (${appPath}:42:10)\n    at Module._compile (node:internal/modules/cjs/loader:1234:14)`
+    );
   });
 });
 

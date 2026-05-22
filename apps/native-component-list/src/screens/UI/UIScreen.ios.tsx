@@ -75,6 +75,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Menu replacement',
+    route: 'ui/community-menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMenuScreen'));
+    },
+  },
+  {
+    name: 'Community PagerView replacement',
+    route: 'ui/community-pager-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPagerViewScreen'));
+    },
+  },
+  {
     name: 'TabView component',
     route: 'ui/tabview',
     options: {},
@@ -128,6 +144,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MenuScreen'));
+    },
+  },
+  {
+    name: 'AlertDialog component',
+    route: 'ui/alert-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AlertDialogScreen'));
     },
   },
   {
@@ -227,6 +251,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Swipe Actions',
+    route: 'ui/swipe-actions',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SwipeActionsScreen'));
+    },
+  },
+  {
     name: 'Animation Modifier',
     route: 'ui/animation-modifier',
     options: {},
@@ -240,6 +272,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ContentTransitionScreen'));
+    },
+  },
+  {
+    name: 'Symbol Effect',
+    route: 'ui/symbol-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SymbolEffectScreen'));
     },
   },
   {

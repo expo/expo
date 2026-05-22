@@ -24,6 +24,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
@@ -89,6 +90,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // already persisted eagerly in `OnCreate`, so this is purely about
           // ordering startup-metric writes ahead of caller-driven log events.
           saveStartupMetricsIfNotSaved()
+          // Globals merge happens inside `sessionManager.addLogs` so every
+          // persistence path picks them up.
           sessionManager.addLogs(
             listOf(
               LogRecord(
@@ -104,6 +107,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
             sessionId = appSessionId
           )
         }
+      }
+
+      Function("setGlobalAttributes") { attributes: Map<String, Any?>? ->
+        GlobalAttributes.set(attributes)
       }
 
       OnCreate {
@@ -158,8 +165,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      AsyncFunction("getStoredEntries") Coroutine { -> sessionManager.getAllSessions() }
-
       AsyncFunction("getAllSessions") Coroutine { ->
         sessionManager.getAllSessions().map { JsSession.fromSessionWithMetrics(it) }
       }
@@ -184,10 +189,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     scope.launch {
       sessionManager.updateEnvironmentForActiveSessions(environment)
     }
-  }
-
-  fun getEnvironment(): String? {
-    return AppMetricsPreferences.getEnvironment(context)
   }
 
   override fun updatesStateDidChange(event: Map<String, Any>) {
@@ -215,6 +216,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   }
 }
 
+@OptimizedRecord
 data class MetricAttributes(
   @Field val routeName: String? = null,
   @Field val params: Map<String, Any>? = null

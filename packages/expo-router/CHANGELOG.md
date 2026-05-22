@@ -6,9 +6,87 @@
 
 ### 🎉 New features
 
-- Add a name to injected suspense boundaries for easier debugging ([#45501](https://github.com/expo/expo/pull/45501) by [@rubennorte](https://github.com/rubennorte))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.2.5 — 2026-05-21
 
 ### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- Fix Jest 30 compatibility in testing library by removing internal `expect/build/matchers` import. ([#40184](https://github.com/expo/expo/issues/40184)) ([#44188](https://github.com/expo/expo/pull/44188) by [@mvincentong](https://github.com/mvincentong))
+
+## 56.2.4 — 2026-05-21
+
+### 💡 Others
+
+- [docs] Remove references to react-navigation's docs ([#46072](https://github.com/expo/expo/pull/46072) by [@Ubax](https://github.com/Ubax))
+
+## 56.2.3 — 2026-05-20
+
+### 🎉 New features
+
+- Support disabling NativeTabs Material Symbols (`md`) icons on Android via the `EXPO_ROUTER_DISABLE_NATIVE_TABS_MD` environment variable ([#45857](https://github.com/expo/expo/pull/45857) by [@Ubax](https://github.com/Ubax))
+- Remove expo-image dependency ([#45862](https://github.com/expo/expo/pull/45862) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Add `segments` to `unstable_navigationEvents` page events `pagePreloaded`, `pageFocused`, `pageBlurred`, `pageRemoved` ([#46019](https://github.com/expo/expo/pull/46019) by [@Ubax](https://github.com/Ubax))
+
+## 56.2.2 — 2026-05-19
+
+### 🎉 New features
+
+- Upgrade react-native-screens to 4.25.1 ([#45965](https://github.com/expo/expo/pull/45965) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Always use HTTP POST when invoking RSC server actions ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- [Internal] Canonicalize RSC component ID minting ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+- [Internal] Remove RSC render context and remove render store global ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
+
+## 56.2.1 — 2026-05-15
+
+### 🎉 New features
+
+- Expose `selectedIcon` in native tabs on Android. `NativeTabs.Trigger.Icon` now accepts `{ default, selected }` for the `drawable` and `md` props, matching the existing iOS `sf`/`xcasset` behaviour. ([#45780](https://github.com/expo/expo/pull/45780) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Prevent route modules from being eagerly validated when they don't contribute to the current platform or are otherwise removed ([#45766](https://github.com/expo/expo/pull/45766) by [@kitten](https://github.com/kitten))
+- Preserve `headerTitleAlign` set on parent navigator options when `Stack.Title` does not specify `style.textAlign` ([#42110](https://github.com/expo/expo/pull/42110) by [@Quaid5050](https://github.com/Quaid5050))
+- [web] Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
+- Pass `null` route params through `useLocalSearchParams` instead of stringifying them to `"null"` ([#34950](https://github.com/expo/expo/pull/34950) by [@hassankhan](https://github.com/hassankhan))
+- Add missing HTML attribute sanitization to vendored react-helmet-async ([#45851](https://github.com/expo/expo/pull/45851) by [@kitten](https://github.com/kitten))
+
+## 56.2.0 — 2026-05-13
+
+### 🎉 New features
+
+- add `disabled` prop to native tab triggers ([#45671](https://github.com/expo/expo/pull/45671) by [@Ubax](https://github.com/Ubax))
+- Add `tabBarRespectsIMEInsets` Android property to `NativeTabs` ([#45679](https://github.com/expo/expo/pull/45679) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Emit `pageFocused` navigation event after the focused screen has committed, so consumers like expo-observe report accurate TTR for heavy screens. ([@Ubax](https://github.com/Ubax)) ([#45723](https://github.com/expo/expo/pull/45723) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- expose `pagePreloaded` listener ([#45725](https://github.com/expo/expo/pull/45725) by [@Ubax](https://github.com/Ubax))
+
+## 56.1.4 — 2026-05-13
+
+### 🎉 New features
+
+- Add a name to injected suspense boundaries for easier debugging ([#45501](https://github.com/expo/expo/pull/45501) by [@rubennorte](https://github.com/rubennorte))
 
 ### 💡 Others
 
@@ -38,6 +116,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+- Move `pointerEvents` from component prop to style property in react-navigation views. ([#45519](https://github.com/expo/expo/pull/45519) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 56.1.0 — 2026-05-07
 

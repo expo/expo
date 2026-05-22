@@ -5,13 +5,14 @@ description: Learn how to monitor the usage of your Expo and React Native app af
 
 import { LogrocketIcon } from '@expo/styleguide-icons/custom/LogrocketIcon';
 import { SentryIcon } from '@expo/styleguide-icons/custom/SentryIcon';
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-Once your app is released, you can track anonymized usage data to give you insights on how users use your app. This data includes which updates are in use, when users experience bugs, and more.
+Once your app is released, you can track anonymized usage data to give you insights on how users use your app. This data includes which updates are in use, when users experience bugs, how the app performs in production, and more.
 
 ## EAS Insights
 
@@ -29,6 +30,24 @@ Get started with the following guide:
   description="Learn how to use EAS Insights to monitor your app."
   href="/eas-insights/introduction/"
   Icon={DataIcon}
+/>
+
+## EAS Observe
+
+[EAS Observe](/eas/observe/introduction/) is a performance monitoring service from Expo that tracks how your app performs in production. It gives you visibility in startup metrics (such as cold launch time, time to first render, and time to interactive) from real app user sessions, rendering performance, and app user experience across different devices, networks, and conditions.
+
+<ContentSpotlight
+  alt="Performance metrics on the EAS Observe dashboard."
+  src="/static/images/expo-observe/dashboard.png"
+/>
+
+Get started with the following guide:
+
+<BoxLink
+  title="EAS Observe"
+  description="Learn how to use EAS Observe to monitor your app's performance."
+  href="/eas/observe/introduction/"
+  Icon={ActivityIcon}
 />
 
 ## LogRocket

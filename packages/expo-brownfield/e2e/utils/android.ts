@@ -3,6 +3,7 @@ import path from 'path';
 
 import { addPlugin, prebuildProject } from './project';
 import { PluginProps } from './types';
+import { listFiles } from './test';
 
 // SECTION: Validation functions
 
@@ -32,9 +33,7 @@ export const validateBrownfieldFiles = (
       expect(fs.existsSync(filePath)).toBe(true);
     } catch (error) {
       const filename = path.basename(filePath);
-      const files = fs
-        .readdirSync(brownfieldPath, { recursive: true })
-        .filter((file) => path.basename(file) === filename);
+      const files = listFiles(brownfieldPath).filter((file) => path.basename(file) === filename);
       throw new Error(
         `File at path: ${filePath} not found\nDid you mean any of the following files?\n${files.join('\n')}`
       );
