@@ -96,7 +96,12 @@ export async function loadMetroConfigFileAsync(
         }
       }
 
+      // Protect against `serverRoot === '/'` edge case
+      const prevDir = searchPath;
       searchPath = path.dirname(searchPath);
+      if (prevDir === searchPath) {
+        break;
+      }
     }
   }
 
