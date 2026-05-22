@@ -1,11 +1,40 @@
-import { useImperativeHandle, useRef } from 'react';
-import { TextInput as RNTextInput, StyleSheet, useColorScheme } from 'react-native';
+import { useImperativeHandle, useRef, useState } from 'react';
+import { TextInput as RNTextInput, StyleSheet } from 'react-native';
 
 import { useNativeState } from '../State';
 import type { TextInputProps } from './types';
+import { colors, durations, easings, shadows } from '../web';
 
 const styles = StyleSheet.create({
-  darkInput: { color: '#fff' },
+  input: {
+    backgroundColor: colors.background,
+    borderColor: colors.gray[200],
+    borderRadius: 8,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    boxShadow: '0 1px 0 rgba(0, 0, 0, 0.02)',
+    boxSizing: 'border-box',
+    color: colors.gray[900],
+    display: 'flex',
+    fontSize: 14,
+    height: 40,
+    outlineStyle: 'solid',
+    outlineWidth: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 0,
+    transitionDuration: durations.fast,
+    transitionProperty: 'border-color, box-shadow, background-color',
+    transitionTimingFunction: easings.standard,
+    width: '100%',
+  },
+  focused: {
+    borderColor: colors.primary[500],
+    boxShadow: shadows.focus,
+  },
+  multiline: {
+    height: 'auto',
+    paddingVertical: 11,
+  },
 });
 
 export function TextInput({
@@ -45,7 +74,7 @@ export function TextInput({
   onSelectionChange,
   selectTextOnFocus,
 }: TextInputProps) {
-  const isDark = useColorScheme() === 'dark';
+  const [focused, setFocused] = useState(false);
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = value ?? fallback;
@@ -79,7 +108,7 @@ export function TextInput({
       ref={innerRef}
       value={state.value}
       placeholder={placeholder}
-      placeholderTextColor={placeholderTextColor}
+      placeholderTextColor={placeholderTextColor ?? colors.gray[500]}
       autoFocus={autoFocus}
       editable={editable}
       readOnly={readOnly}
@@ -98,15 +127,15 @@ export function TextInput({
       returnKeyType={returnKeyType}
       enterKeyHint={enterKeyHint}
       cursorColor={cursorColor}
-      style={[
-        isDark && styles.darkInput,
-        style,
-        textStyle,
-        textAlign && textAlign !== 'auto' ? { textAlign } : null,
-      ]}
       onSubmitEditing={onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined}
-      onFocus={onFocus ? () => onFocus() : undefined}
-      onBlur={onBlur ? () => onBlur() : undefined}
+      onFocus={() => {
+        setFocused(true);
+        onFocus?.();
+      }}
+      onBlur={() => {
+        setFocused(false);
+        onBlur?.();
+      }}
       onChangeText={(text) => {
         state.value = text;
         onChangeText?.(text);
@@ -129,6 +158,14 @@ export function TextInput({
               }
             : undefined
       }
+      style={[
+        styles.input,
+        focused && styles.focused,
+        multiline && styles.multiline,
+        style,
+        textStyle,
+        textAlign && textAlign !== 'auto' ? { textAlign } : null,
+      ]}
     />
   );
 }

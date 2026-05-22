@@ -90,11 +90,9 @@ export function Checkbox({ value, onValueChange, label, disabled = false, testID
         tabIndex={-1}
         style={({ hovered }) => [
           styles.pressable,
-
           hovered && styles.hovered,
           value && styles.checked,
           focusVisible && styles.focused,
-
           disabled && [styles.disabled, value && styles.disabledChecked],
         ]}>
         {value && (

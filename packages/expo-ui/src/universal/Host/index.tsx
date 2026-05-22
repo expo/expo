@@ -45,7 +45,7 @@ export function Host({
   ...rest
 }: UniversalHostProps) {
   const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
-  const primaryColorScale = useMemo(() => generatePrimaryColorScale('#4630eb'), []);
+  const primaryColorScale = useMemo(() => generatePrimaryColorScale('#4630eb'), []); // #007aff
 
   const dir =
     layoutDirection === 'leftToRight'
