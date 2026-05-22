@@ -20,7 +20,8 @@ interface ResolvePackageJsonResult {
 const configExtensions = ['.js', '.cjs', '.mjs', '.json', '.ts', '.cts', '.mts'];
 
 const resolveConfigFromPath = (filePath: string, projectRoot: string): string | null => {
-  const normalized = `.${path.sep}${path.relative(projectRoot, path.resolve(projectRoot, filePath))}`;
+  const inputPath = path.resolve(process.cwd(), filePath);
+  const normalized = `.${path.sep}${path.relative(projectRoot, inputPath)}`;
   const resolved = resolveFrom(projectRoot, normalized, { extensions: configExtensions });
   return resolved ?? path.resolve(projectRoot, filePath);
 };
