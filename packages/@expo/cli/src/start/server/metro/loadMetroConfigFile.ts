@@ -77,6 +77,12 @@ export async function loadMetroConfigFileAsync(
     let searchPath = startPath;
     while (searchPath === stopPath || isPathInside(searchPath, stopPath)) {
       configPath = resolveFrom(searchPath, './metro.config', { extensions: configExtensions });
+
+      // Metro searches for .config/metro.[ext] next
+      if (configPath == null) {
+        configPath = resolveFrom(searchPath, './.config/metro', { extensions: configExtensions });
+      }
+
       if (configPath == null && searchPath === startPath) {
         // At each level, also check the package.json for "metro" entry
         // NOTE(@kitten): Metro actually searches in each package.json upwards, but we're dropping
