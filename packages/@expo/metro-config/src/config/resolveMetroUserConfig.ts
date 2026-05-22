@@ -4,9 +4,12 @@ import { resolveFrom, loadModuleSync } from '@expo/require-utils';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { isPathInside } from '../../../utils/dir';
+function isPathInside(child: string, parent: string): boolean {
+  const relative = path.relative(parent, child);
+  return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+}
 
-interface LoadMetroConfigParams {
+export interface LoadMetroConfigParams {
   serverRoot: string;
   projectRoot: string;
   overrideConfigPath?: string | undefined;
@@ -66,7 +69,7 @@ const loadConfigFile = async (configPath: string): Promise<RawMetroConfig> => {
 
 const _resolutionCache = new Map<string, string>();
 
-export async function loadMetroConfigFileAsync(
+export async function resolveMetroUserConfig(
   params: LoadMetroConfigParams
 ): Promise<ResolveMetroConfigResult> {
   let configPath: string | null = null;

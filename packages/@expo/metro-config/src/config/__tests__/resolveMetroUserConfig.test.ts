@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import path from 'node:path';
 
-import { loadMetroConfigFileAsync } from '../loadMetroConfigFile';
+import { resolveMetroUserConfig } from '../resolveMetroUserConfig';
 
 // NOTE: Bypass `require()` so the test loader reads from memfs and evaluates inline.
 jest.mock('@expo/require-utils', () => {
@@ -17,7 +17,7 @@ jest.mock('@expo/require-utils', () => {
 
 const cwdSpy = jest.spyOn(process, 'cwd');
 
-// NOTE: `loadMetroConfigFile.ts` caches resolved paths by projectRoot at the module level.
+// NOTE: `resolveMetroUserConfig.ts` caches resolved paths by projectRoot at the module level.
 // Tests rely on a unique projectRoot per test to avoid cross-test cache pollution.
 let counter = 0;
 let serverRoot: string;
@@ -34,11 +34,11 @@ afterEach(() => {
   cwdSpy.mockReset();
 });
 
-describe(loadMetroConfigFileAsync, () => {
+describe(resolveMetroUserConfig, () => {
   it('returns an empty result when no config is found', async () => {
     vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.isEmpty).toBe(true);
     expect(result.filepath).toBe(path.join(projectRoot, 'metro.config.stub.js'));
@@ -50,7 +50,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/metro.config.js`]: 'module.exports = { cacheVersion: "js" };',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.isEmpty).toBe(false);
     expect(result.filepath).toBe(path.join(projectRoot, 'metro.config.js'));
@@ -62,7 +62,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/metro.config.json`]: JSON.stringify({ cacheVersion: 'json' }),
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.filepath).toBe(path.join(projectRoot, 'metro.config.json'));
     expect(result.config).toEqual({ cacheVersion: 'json' });
@@ -74,7 +74,7 @@ describe(loadMetroConfigFileAsync, () => {
         'const cfg: { cacheVersion: string } = { cacheVersion: "ts" }; export default cfg;',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.config).toEqual({ cacheVersion: 'ts' });
   });
@@ -85,7 +85,7 @@ describe(loadMetroConfigFileAsync, () => {
         'Object.defineProperty(exports, "__esModule", { value: true }); exports.default = { cacheVersion: "esm" };',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.config).toEqual({ cacheVersion: 'esm' });
   });
@@ -95,7 +95,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/metro.config.js`]: 'module.exports = (base) => ({ cacheVersion: "fn" });',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(typeof result.config).toBe('function');
     expect((result.config as any)({})).toEqual({ cacheVersion: 'fn' });
@@ -106,7 +106,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/.config/metro.js`]: 'module.exports = { cacheVersion: "dotconfig" };',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.filepath).toBe(path.join(projectRoot, '.config', 'metro.js'));
     expect(result.config).toEqual({ cacheVersion: 'dotconfig' });
@@ -117,7 +117,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/package.json`]: JSON.stringify({ metro: { cacheVersion: 'pkg' } }),
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.filepath).toBe(path.join(projectRoot, 'package.json'));
     expect(result.config).toEqual({ cacheVersion: 'pkg' });
@@ -128,7 +128,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/package.json`]: JSON.stringify({ name: 'app' }),
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.isEmpty).toBe(true);
   });
@@ -139,7 +139,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/metro.config.json`]: JSON.stringify({ from: 'json' }),
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.config).toEqual({ from: 'js' });
   });
@@ -150,7 +150,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/.config/metro.js`]: 'module.exports = { from: "dotconfig" };',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.config).toEqual({ from: 'metro.config' });
   });
@@ -161,7 +161,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/package.json`]: JSON.stringify({ metro: { from: 'pkg' } }),
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.config).toEqual({ from: 'metro.config' });
   });
@@ -173,7 +173,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/package.json`]: '{}',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.filepath).toBe(path.join(serverRoot, 'metro.config.js'));
     expect(result.config).toEqual({ cacheVersion: 'workspace' });
@@ -188,7 +188,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/package.json`]: '{}',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.isEmpty).toBe(true);
   });
@@ -201,7 +201,7 @@ describe(loadMetroConfigFileAsync, () => {
       [`${projectRoot}/package.json`]: '{}',
     });
 
-    const result = await loadMetroConfigFileAsync({ projectRoot, serverRoot });
+    const result = await resolveMetroUserConfig({ projectRoot, serverRoot });
 
     expect(result.isEmpty).toBe(true);
   });
@@ -213,7 +213,7 @@ describe(loadMetroConfigFileAsync, () => {
         [`${projectRoot}/package.json`]: '{}',
       });
 
-      const result = await loadMetroConfigFileAsync({
+      const result = await resolveMetroUserConfig({
         projectRoot,
         serverRoot,
         overrideConfigPath: '/elsewhere/custom.config.js',
@@ -230,7 +230,7 @@ describe(loadMetroConfigFileAsync, () => {
       });
       cwdSpy.mockReturnValue('/elsewhere');
 
-      const result = await loadMetroConfigFileAsync({
+      const result = await resolveMetroUserConfig({
         projectRoot,
         serverRoot,
         overrideConfigPath: './custom.config.js',

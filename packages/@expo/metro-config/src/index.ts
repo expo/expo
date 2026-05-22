@@ -1,2 +1,2 @@
-export * from './config/loadConfig';
+export * from './config/loadUserConfig';
 export * from './ExpoMetroConfig';
