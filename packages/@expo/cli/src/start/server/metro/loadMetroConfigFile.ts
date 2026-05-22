@@ -64,12 +64,16 @@ const loadConfigFile = async (configPath: string): Promise<RawMetroConfig> => {
   return await (mod.__esModule ? mod.default : mod);
 };
 
+const _resolutionCache = new Map<string, string>();
+
 export async function loadMetroConfigFileAsync(
   params: LoadMetroConfigParams
 ): Promise<ResolveMetroConfigResult> {
   let configPath: string | null = null;
   if (params.overrideConfigPath) {
     configPath = resolveConfigFromPath(params.overrideConfigPath, params.projectRoot);
+  } else if (_resolutionCache.has(params.projectRoot)) {
+    configPath = _resolutionCache.get(params.projectRoot)!;
   } else {
     // NOTE(@kitten): Metro usually traverses beyond the server root, but we deem this unsafe
     const startPath = path.resolve(params.projectRoot);
@@ -102,6 +106,11 @@ export async function loadMetroConfigFileAsync(
       if (prevDir === searchPath) {
         break;
       }
+    }
+
+    // We want to avoid doing this whole search again since it's very expensive
+    if (configPath != null) {
+      _resolutionCache.set(params.projectRoot, configPath);
     }
   }
 

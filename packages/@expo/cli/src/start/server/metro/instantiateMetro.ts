@@ -9,7 +9,7 @@ import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
+import { mergeConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
 import { getDefaultConfig } from '@expo/metro-config';
