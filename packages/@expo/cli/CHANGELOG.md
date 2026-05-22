@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Disable sextant QR code rendering for Zed due to regression ([#46148](https://github.com/expo/expo/pull/46148) by [@kitten](https://github.com/kitten))
+- Offload Metro user config resolution to `@expo/metro-config`'s `loadUserConfig` ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
 
 ## 56.1.10 — 2026-05-21
 
