@@ -19,7 +19,7 @@ function handleSignupComplete() {
 }
 ```
 
-The first argument is the event name. Use a stable, dot-separated identifier - the dashboard groups events by exact name.
+The first argument is the event name. Use a stable, dot-separated identifier. The dashboard groups events by exact name.
 
 ## Attach attributes
 
@@ -67,23 +67,25 @@ AppMetrics.logEvent('subscription.expired', {
 
 - Use lowercase, dot-separated names: `task.completed`, `onboarding.skipped`, `cart.checkout`.
 - Pick a vocabulary and stick to it. The dashboard groups by exact event name, so `cart_checkout` and `cart.checkout` will appear as separate rows.
-- Avoid PII in event names, attribute keys, and attribute values. Everything you pass is visible in the dashboard and is dispatched off-device.
+- Avoid Personally Identifiable Information (PII) in event names, attribute keys, and attribute values. Everything you pass is visible in the dashboard and is dispatched off-device.
 
 ## View events
 
-In the dashboard: open your project and navigate to **Observe → Events**. The default view lists distinct event names with their counts in the selected time range. Click an event name to see individual events with their timestamps, attributes, and the session they belong to.
+In the dashboard: open your project and navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe). The default view lists distinct event names with their counts in the selected time range. Click an event name to see individual events with their timestamps, attributes, and the session they belong to.
 
 From the CLI:
 
-```bash
-# List event names with counts
-$ eas observe:events
-
-# Show individual events for a specific event name
-$ eas observe:events cart.checkout
-
-# Show all events across all names (JSON output)
-$ eas observe:events --all-events --json
-```
+<Terminal
+  cmd={[
+    '# List event names with counts',
+    '$ eas observe:events',
+    '',
+    '# Show individual events for a specific event name',
+    '$ eas observe:events cart.checkout',
+    '',
+    '# Show all events across all names (JSON output)',
+    '$ eas observe:events --all-events --json',
+  ]}
+/>
 
 Run `eas observe:events --help` for the full list of flags (time range, platform, session ID, and more).
