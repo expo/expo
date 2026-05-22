@@ -28,7 +28,7 @@ function Screen(props) {
     const { options, androidAppearance, contentRenderer } = props;
     const shared = (0, NativeTabsView_shared_1.useSharedScreenProps)(props);
     const androidIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.icon);
-    const androidSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.selectedIcon);
+    const androidSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.selectedIcon ?? shared.icon);
     const content = (0, jsx_runtime_1.jsx)(NativeTabsView_shared_1.ScreenContent, { options: options, contentRenderer: contentRenderer });
     const wrappedContent = (0, react_1.useMemo)(() => {
         if (!options.disableAutomaticContentInsets) {

@@ -74,7 +74,9 @@ function Screen(props: InternalTabScreenProps) {
   const shared = useSharedScreenProps(props);
 
   const androidIcon = convertOptionsIconToScreensPropsIcon(shared.icon);
-  const androidSelectedIcon = convertOptionsIconToScreensPropsIcon(shared.selectedIcon);
+  const androidSelectedIcon = convertOptionsIconToScreensPropsIcon(
+    shared.selectedIcon ?? shared.icon
+  );
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => {
