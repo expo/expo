@@ -137,6 +137,7 @@ declare module 'react-native' {
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
     paddingBottom?: WebDimensionValue;
+    [key: `--${string}`]: string;
   }
 
   export interface TextStyle extends AnimationStyles {
@@ -150,6 +151,7 @@ declare module 'react-native' {
     paddingTop?: WebDimensionValue;
     paddingBottom?: WebDimensionValue;
     whiteSpace?: 'normal' | 'nowrap' | 'pre' | 'pre-line' | 'pre-wrap';
+    [key: `--${string}`]: string;
   }
 
   export interface ViewStyle extends AnimationStyles {
@@ -163,5 +165,6 @@ declare module 'react-native' {
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
     paddingBottom?: WebDimensionValue;
+    [key: `--${string}`]: string;
   }
 }
