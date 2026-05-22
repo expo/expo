@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`.
+
 ### 💡 Others
 
 ## 56.0.9 — 2026-05-21

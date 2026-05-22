@@ -64,8 +64,14 @@ class AudioControlsService : MediaSessionService() {
   var playbackListener: Player.Listener? = null
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    val currentPlayerRef = currentPlayer?.ref ?: return super.onStartCommand(intent, flags, startId)
-    val context = appContext ?: return super.onStartCommand(intent, flags, startId)
+    ensureForegroundNotification()
+
+    val currentPlayerRef = currentPlayer?.ref
+    val context = appContext
+    if (currentPlayerRef == null || context == null) {
+      stopForeground(STOP_FOREGROUND_REMOVE)
+      return super.onStartCommand(intent, flags, startId)
+    }
 
     context.mainQueue.launch {
       when (intent?.action) {
@@ -90,6 +96,35 @@ class AudioControlsService : MediaSessionService() {
     postOrStartForegroundNotification(startInForeground = false)
     return super.onStartCommand(intent, flags, startId)
   }
+
+  private fun ensureForegroundNotification() {
+    val notification = buildNotification() ?: buildPlaceholderNotification()
+    try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        startForeground(
+          notificationId,
+          notification,
+          ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+        )
+      } else {
+        startForeground(notificationId, notification)
+      }
+    } catch (e: Exception) {
+      appContext?.jsLogger?.error(
+        getPlaybackServiceErrorMessage("Failed to promote the expo-audio playback service to foreground"),
+        e
+      )
+    }
+  }
+
+  private fun buildPlaceholderNotification(): Notification =
+    NotificationCompat.Builder(this, CHANNEL_ID)
+      .setSmallIcon(androidx.media3.session.R.drawable.media3_icon_circular_play)
+      .setContentTitle("‎")
+      .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
+      .setSilent(true)
+      .setShowWhen(false)
+      .build()
 
   override fun onCreate() {
     super.onCreate()
@@ -244,11 +279,17 @@ class AudioControlsService : MediaSessionService() {
   }
 
   private fun postOrStartForegroundNotification(startInForeground: Boolean) {
+    if (startInForeground) {
+      // Foreground promotion must run synchronously: dispatching through mainQueue can blow
+      // the 5s startForegroundService() deadline on slower devices or a busy main thread.
+      postOrStartForegroundNotificationNow(startInForeground = true)
+      return
+    }
     appContext?.let {
       it.mainQueue.launch {
-        postOrStartForegroundNotificationNow(startInForeground)
+        postOrStartForegroundNotificationNow(startInForeground = false)
       }
-    } ?: postOrStartForegroundNotificationNow(startInForeground)
+    } ?: postOrStartForegroundNotificationNow(startInForeground = false)
   }
 
   private fun postOrStartForegroundNotificationNow(startInForeground: Boolean) {
