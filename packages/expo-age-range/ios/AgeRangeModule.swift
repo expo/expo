@@ -65,8 +65,25 @@ public class AgeRangeModule: Module, @unchecked Sendable {
         try await AgeRangeService.shared.showSignificantUpdateAcknowledgment(in: windowScene, updateDescription: updateDescription)
       } catch AgeRangeService.Error.notAvailable {
         throw AgeRangeNotAvailableException()
-      } catch AgeRangeService.Error.invalidRequest {
-        throw AgeRangeInvalidRequestException()
+      }
+    }
+
+    AsyncFunction("getRequiredRegulatoryFeaturesAsync") { () -> [String]? in
+      guard #available(iOS 26.4, *) else {
+        return nil
+      }
+      do {
+        let features = try await AgeRangeService.shared.requiredRegulatoryFeatures
+        return features.map { feature in
+          switch feature {
+          case .declaredAgeRangeRequired: "declaredAgeRangeRequired"
+          case .significantAppChangeRequiresAdultNotification: "significantAppChangeRequiresAdultNotification"
+          case .significantAppChangeRequiresParentalConsent: "significantAppChangeRequiresParentalConsent"
+          @unknown default: "unknown"
+          }
+        }
+      } catch AgeRangeService.Error.notAvailable {
+        throw AgeRangeNotAvailableException()
       }
     }
   }

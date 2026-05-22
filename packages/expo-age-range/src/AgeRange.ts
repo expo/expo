@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 import ExpoAgeRange from './ExpoAgeRange';
-import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
+import type { AgeRangeRequest, AgeRangeResponse, RegulatoryFeature } from './ExpoAgeRange.types';
 
 /**
  * Prompts the user to share their age range with the app. Responses may be cached by the OS for future requests.
@@ -69,4 +69,18 @@ export async function showSignificantUpdateAcknowledgementAsync(
   if (Platform.OS === 'ios') {
     return ExpoAgeRange.showSignificantUpdateAcknowledgementAsync(updateDescription);
   }
+}
+
+/**
+ * Returns the set of regulatory features that the OS reports as required for the current user.
+ *
+ * Use this to discover which age-assurance obligations apply.
+ *
+ * Resolves with `null` on iOS earlier than 26.4 and on Android and web — treat
+ * `null` as "unknown" rather than "no features required".
+ *
+ * @platform ios 26.4+
+ */
+export async function getRequiredRegulatoryFeaturesAsync(): Promise<RegulatoryFeature[] | null> {
+  return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
 }

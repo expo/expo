@@ -1,2 +1,2 @@
 export * from './AgeRange';
-export type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
+export type { AgeRangeRequest, AgeRangeResponse, RegulatoryFeature } from './ExpoAgeRange.types';

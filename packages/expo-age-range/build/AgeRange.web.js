@@ -7,4 +7,7 @@ export async function isEligibleForAgeFeaturesAsync() {
 export async function showSignificantUpdateAcknowledgementAsync(_updateDescription) {
     // no-op on web
 }
+export async function getRequiredRegulatoryFeaturesAsync() {
+    return null;
+}
 //# sourceMappingURL=AgeRange.web.js.map

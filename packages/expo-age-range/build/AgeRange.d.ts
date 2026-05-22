@@ -1,4 +1,4 @@
-import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
+import type { AgeRangeRequest, AgeRangeResponse, RegulatoryFeature } from './ExpoAgeRange.types';
 /**
  * Prompts the user to share their age range with the app. Responses may be cached by the OS for future requests.
  * @return A promise that resolves with user's age range response, or rejects with an error.
@@ -54,4 +54,15 @@ export declare function isEligibleForAgeFeaturesAsync(): Promise<boolean | null>
  * @platform ios 26.4+
  */
 export declare function showSignificantUpdateAcknowledgementAsync(updateDescription: string): Promise<void>;
+/**
+ * Returns the set of regulatory features that the OS reports as required for the current user.
+ *
+ * Use this to discover which age-assurance obligations apply.
+ *
+ * Resolves with `null` on iOS earlier than 26.4 and on Android and web — treat
+ * `null` as "unknown" rather than "no features required".
+ *
+ * @platform ios 26.4+
+ */
+export declare function getRequiredRegulatoryFeaturesAsync(): Promise<RegulatoryFeature[] | null>;
 //# sourceMappingURL=AgeRange.d.ts.map

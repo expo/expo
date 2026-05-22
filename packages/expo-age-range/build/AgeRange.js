@@ -63,4 +63,17 @@ export async function showSignificantUpdateAcknowledgementAsync(updateDescriptio
         return ExpoAgeRange.showSignificantUpdateAcknowledgementAsync(updateDescription);
     }
 }
+/**
+ * Returns the set of regulatory features that the OS reports as required for the current user.
+ *
+ * Use this to discover which age-assurance obligations apply.
+ *
+ * Resolves with `null` on iOS earlier than 26.4 and on Android and web — treat
+ * `null` as "unknown" rather than "no features required".
+ *
+ * @platform ios 26.4+
+ */
+export async function getRequiredRegulatoryFeaturesAsync() {
+    return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
+}
 //# sourceMappingURL=AgeRange.js.map

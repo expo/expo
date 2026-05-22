@@ -68,6 +68,23 @@ export default function AgeRangeScreen() {
     }
   };
 
+  const getRequiredRegulatoryFeatures = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      const features = await AgeRange.getRequiredRegulatoryFeaturesAsync();
+      setResult(
+        features === null
+          ? 'null (unsupported on this OS / platform)'
+          : `Required regulatory features: ${JSON.stringify(features, null, 2)}`
+      );
+    } catch (err: any) {
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
   const faultyRequestAgeRange = async () => {
     setError(null);
     setResult(null);
@@ -108,6 +125,11 @@ export default function AgeRangeScreen() {
       <Button
         onPress={showSignificantUpdate}
         title="Show Significant Update Acknowledgement (iOS)"
+        style={styles.button}
+      />
+      <Button
+        onPress={getRequiredRegulatoryFeatures}
+        title="Get Required Regulatory Features (iOS 26.4+)"
         style={styles.button}
       />
       <Button
