@@ -9,7 +9,7 @@ export declare const createWebComponent: <T extends ElementType>(type: T) => (pr
     focusable?: boolean;
     style?: Style;
     testID?: string;
-}>) => import("react").ReactElement<Simplify<Omit<ComponentProps<T>, "style" | "focusable" | "testID"> & {
+}>) => import("react").ReactElement<Simplify<Omit<ComponentProps<T>, "style" | "testID" | "focusable"> & {
     focusable?: boolean;
     style?: Style;
     testID?: string;

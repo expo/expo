@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     opacity: 0,
     pointerEvents: 'none',
+    margin: 0,
     width: 0,
     height: 0,
   },

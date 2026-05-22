@@ -17,6 +17,14 @@ const styles = StyleSheet.create({
   viewDisabled: {
     cursor: 'auto',
   },
+  input: {
+    position: 'absolute',
+    opacity: 0,
+    pointerEvents: 'none',
+    margin: 0,
+    width: 0,
+    height: 0,
+  },
   pressable: {
     backgroundColor: colors.background,
     borderColor: colors.gray[300],
@@ -49,14 +57,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray[400],
     borderColor: colors.gray[400],
   },
-  input: {
-    ...StyleSheet.absoluteFill,
-    height: '100%',
-    width: '100%',
-    pointerEvents: 'none',
-    margin: 0,
-    opacity: 0,
-  },
   text: {
     userSelect: 'none',
     lineHeight: 20,
@@ -71,9 +71,21 @@ export function Checkbox({ value, onValueChange, label, disabled = false, testID
 
   return (
     <View
-      role="label"
       aria-disabled={disabled}
+      role="label"
       style={[styles.view, disabled && styles.viewDisabled]}>
+      <Input
+        type="checkbox"
+        focusable
+        onFocus={onFocus}
+        onBlur={onBlur}
+        checked={value}
+        onChange={({ target: { checked } }) => onValueChange(checked)}
+        disabled={disabled}
+        data-testid={testID}
+        style={styles.input}
+      />
+
       <Pressable
         tabIndex={-1}
         style={({ hovered }) => [
@@ -85,18 +97,6 @@ export function Checkbox({ value, onValueChange, label, disabled = false, testID
 
           disabled && [styles.disabled, value && styles.disabledChecked],
         ]}>
-        <Input
-          type="checkbox"
-          focusable
-          onFocus={onFocus}
-          onBlur={onBlur}
-          checked={value}
-          onChange={({ target: { checked } }) => onValueChange(checked)}
-          disabled={disabled}
-          data-testid={testID}
-          style={styles.input}
-        />
-
         {value && (
           <svg
             xmlns="http://www.w3.org/2000/svg"
