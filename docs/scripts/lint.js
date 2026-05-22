@@ -87,7 +87,7 @@ function getChangedFiles(extensions) {
 const isCI = process.env.CI === 'true';
 const oxlintArgs = [process.cwd(), '--type-aware'];
 if (isCI) {
-  oxlintArgs.push('--format=github');
+  oxlintArgs.push('--format=github', '--threads=1');
 }
 
 // oxfmt formats JS/TS and markdown; oxlint only lints JS/TS (md/mdx are in its ignorePatterns).
@@ -116,7 +116,7 @@ if (oxlintChangedFiles !== null && oxlintChangedFiles.length === 0) {
   oxlintResult = await runAsync('oxlint', [
     ...oxlintChangedFiles,
     '--type-aware',
-    ...(isCI ? ['--format=github'] : []),
+    ...(isCI ? ['--format=github', '--threads=1'] : []),
   ]);
   if (oxlintResult.status !== 0 && oxlintResult.output.includes('No files found to lint')) {
     oxlintResult = {
