@@ -18,6 +18,16 @@ function ensureShardDirs(root: string): Promise<void> {
   return Promise.all(tasks).then(() => undefined);
 }
 
+async function renameWithRetry(from: string, to: string): Promise<void> {
+  try {
+    await fs.promises.rename(from, to);
+  } catch (err: any) {
+    if (err?.code !== 'EPERM' && err?.code !== 'EBUSY') throw err;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await fs.promises.rename(from, to);
+  }
+}
+
 const getTmpName = (name: string): string => `.tmp${pid}_${name}`;
 
 class BinaryFileStore<T> extends UpstreamFileStore<T> {
@@ -72,7 +82,7 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
     const targetPath = fileDir + path.sep + fileName;
     try {
       await fs.promises.writeFile(targetTemp, buffer);
-      await fs.promises.rename(targetTemp, targetPath);
+      await renameWithRetry(targetTemp, targetPath);
     } catch (err: any) {
       // The cache root can disappear underneath us if a parallel process clears the cache root
       if (err?.code !== 'ENOENT') throw err;
