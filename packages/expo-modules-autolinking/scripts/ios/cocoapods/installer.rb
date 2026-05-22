@@ -19,6 +19,14 @@ module Pod
     def expo_add_modules_to_patch(modules)
       framework_modules_to_patch.concat(modules)
     end
+
+    # Pod names of Expo modules registered by `use_expo_modules!`.
+    # Used at post-install time to reconcile their deployment targets
+    # with ExpoModulesCore's, so an adapter declaring a lower platform
+    # value in its podspec doesn't fail the Swift module-import check.
+    def expo_autolinked_pod_names
+      @expo_autolinked_pod_names ||= []
+    end
   end
 
   class Installer
@@ -50,6 +58,14 @@ module Pod
 
       # Run all precompiled module post-install configuration
       Expo::PrecompiledModules.perform_post_install(self)
+
+      # Raise every autolinked Expo module's deployment target to at least
+      # ExpoModulesCore's. CocoaPods + react_native_post_install only raise
+      # pods to RN's iOS floor, which can leave Expo adapters declaring a
+      # lower platform value below ExpoModulesCore's requirement, leading to
+      # "Compiling for iOS 15.1, but module 'ExpoModulesCore' has a minimum deployment target of iOS 16.4"
+      # type of message
+      reconcile_expo_module_deployment_targets()
     end
 
     define_method(:run_podfile_pre_install_hooks) do
@@ -83,6 +99,57 @@ module Pod
     end
 
     private
+
+    # Mapping from Pod::Platform symbol to the Xcode build setting key
+    # that stores its deployment target.
+    EXPO_DEPLOYMENT_TARGET_KEYS = {
+      ios: 'IPHONEOS_DEPLOYMENT_TARGET',
+      osx: 'MACOSX_DEPLOYMENT_TARGET',
+      tvos: 'TVOS_DEPLOYMENT_TARGET',
+    }.freeze
+
+    # See call site in perform_post_install_actions for rationale.
+    def reconcile_expo_module_deployment_targets
+      expo_pod_names = @podfile.expo_autolinked_pod_names.to_set
+      return if expo_pod_names.empty?
+
+      core_target = self.pod_targets.find { |t| t.pod_name == 'ExpoModulesCore' }
+      core_spec = core_target&.root_spec
+      return if core_spec.nil?
+
+      required = EXPO_DEPLOYMENT_TARGET_KEYS
+        .map { |platform, key| [key, core_spec.deployment_target(platform)] }
+        .reject { |_, value| value.nil? || value.empty? }
+        .to_h
+      return if required.empty?
+
+      bumped = []
+      self.target_installation_results.pod_target_installation_results.each do |pod_name, result|
+        next unless expo_pod_names.include?(pod_name)
+        next if pod_name == 'ExpoModulesCore'
+
+        target_bumped = false
+        result.native_target.build_configurations.each do |config|
+          required.each do |key, required_version|
+            current = config.build_settings[key]
+            # nil means the pod doesn't target this platform — don't create a setting for it.
+            next if current.nil?
+            if Gem::Version.new(current) < Gem::Version.new(required_version)
+              config.build_settings[key] = required_version
+              target_bumped = true
+            end
+          end
+        end
+        bumped << pod_name if target_bumped
+      end
+
+      unless bumped.empty?
+        ios_required = required['IPHONEOS_DEPLOYMENT_TARGET'] || '?'
+        Pod::UI.puts "[Expo] ".blue +
+          "Raised deployment target to #{ios_required} for #{bumped.size} Expo modules (matching ExpoModulesCore)".yellow
+        self.pods_project.save
+      end
+    end
 
     # Ensures every slice declared by ExpoModulesJSI's podspec exists in
     # `Products/ExpoModulesJSI.xcframework`. CocoaPods only runs
