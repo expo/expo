@@ -3,7 +3,6 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.appmetrics.AppMetricsModule
-import expo.modules.appmetrics.GlobalAttributes
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -73,10 +72,6 @@ class ObserveModule : Module() {
         val resolvedEnvironment = config.environment
           ?: ObservePreferences.getBundleDefaults(context)?.environment
         resolvedEnvironment?.let { appMetricsModule.setEnvironment(it) }
-      }
-
-      Function("setGlobalAttributes") { attributes: Map<String, Any?>? ->
-        GlobalAttributes.set(attributes)
       }
 
       Function("setBundleDefaults") { defaults: BundleDefaults ->

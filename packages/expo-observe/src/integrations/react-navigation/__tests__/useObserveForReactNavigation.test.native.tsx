@@ -213,7 +213,7 @@ describe('useObserveForReactNavigation', () => {
 
     initModule.isInitialized.mockReturnValue(true);
     expect(() => rerender(undefined)).toThrow(
-      "[expo-observe] React Navigation integration was toggled during a screen's lifecycle. Call `ExpoObserve.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
+      "[expo-observe] React Navigation integration was toggled during a screen's lifecycle. Call `Observe.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
     );
   });
 
