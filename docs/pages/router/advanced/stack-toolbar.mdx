@@ -134,7 +134,7 @@ Vector drawables are tinted with the toolbar's tint color by default. Pass `icon
 
 #### Using the same icon on Android and iOS
 
-`Stack.Toolbar.Button`'s `icon` prop accepts both an `ImageSourcePropType` (Android) and an SF Symbol name (iOS). To use a single component for both platforms, branch on `process.env.EXPO_OS` and pass the platform-appropriate value. Metro replaces `process.env.EXPO_OS` with a string literal at build time, then tree-shakes the branch that doesn't match the current platform &mdash; so the Material Symbols XML drawable never ships in the iOS bundle, and the SF Symbol name never ships in the Android bundle:
+`Stack.Toolbar.Button`'s `icon` prop accepts both an `ImageSourcePropType` (Android) and an SF Symbol name (iOS). To use a single component for both platforms, branch on `process.env.EXPO_OS` and pass the platform-appropriate value. Metro replaces `process.env.EXPO_OS` with a string literal at build time, then tree-shakes the branch that doesn't match the current platform — so the Material Symbols XML drawable never ships in the iOS bundle, and the SF Symbol name never ships in the Android bundle:
 
 ```tsx
 import Star from '@expo/material-symbols/star.xml';
@@ -755,7 +755,7 @@ You can also use [`Stack.Toolbar.Icon`](/versions/latest/sdk/router/stack/#stack
 
 <Collapsible summary="Spacer requires an explicit width on Android">
 
-Flexible spacers (`<Stack.Toolbar.Spacer />` with no `width`) are iOS-only. On Android, a `Stack.Toolbar.Spacer` without a `width` renders nothing &mdash; pass a fixed `width` such as `<Stack.Toolbar.Spacer width={24} />` in every placement.
+Flexible spacers (`<Stack.Toolbar.Spacer />` with no `width`) are iOS-only. On Android, a `Stack.Toolbar.Spacer` without a `width` renders nothing — pass a fixed `width` such as `<Stack.Toolbar.Spacer width={24} />` in every placement.
 
 </Collapsible>
 

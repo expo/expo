@@ -93,8 +93,8 @@ Defines a native synchronous function that will be exported to JavaScript. Synch
 
 #### Arguments
 
-- **name**: `String` &mdash; Name of the function that you'll call from JavaScript.
-- **body**: `(args...) -> ReturnType` &mdash; The closure to run when the function is called.
+- **name**: `String` — Name of the function that you'll call from JavaScript.
+- **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
 
 The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin because this component must be implemented separately for each arity.
 
@@ -134,8 +134,8 @@ Defines a JavaScript function that always returns a `Promise` and whose native c
 
 #### Arguments
 
-- **name**: `String` &mdash; Name of the function that you'll call from JavaScript.
-- **body**: `(args...) -> ReturnType` &mdash; The closure to run when the function is called.
+- **name**: `String` — Name of the function that you'll call from JavaScript.
+- **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
 
 If the type of the last argument is `Promise`, the function will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an exception.
 The function can receive up to 8 arguments (including the promise).
@@ -236,8 +236,8 @@ Defines a new property directly on the JavaScript object that represents a nativ
 
 To declare a read-only property, you can use a shorthanded syntax that requires two arguments:
 
-- **name**: `String` &mdash; Name of the property that you'll use from JavaScript.
-- **getter**: `() -> PropertyType` &mdash; The closure to run when the getter for a property was called.
+- **name**: `String` — Name of the property that you'll use from JavaScript.
+- **getter**: `() -> PropertyType` — The closure to run when the getter for a property was called.
 
 <CodeBlocksTable>
 
@@ -257,9 +257,9 @@ Property("foo") {
 
 In the case of the mutable property, both the getter and the setter closure are needed (using the syntax below is also possible to declare a property with only a setter):
 
-- **name**: `String` &mdash; Name of the property that you'll use from JavaScript.
-- **getter**: `() -> PropertyType` &mdash; The closure to run when the getter for a property was called.
-- **setter**: `(newValue: PropertyType) -> void` &mdash; The closure to run when the setter for a property was called.
+- **name**: `String` — Name of the property that you'll use from JavaScript.
+- **getter**: `() -> PropertyType` — The closure to run when the getter for a property was called.
+- **setter**: `(newValue: PropertyType) -> void` — The closure to run when the setter for a property was called.
 
 <CodeBlocksTable>
 
@@ -304,8 +304,8 @@ Such async functions automatically receive an instance of the native view as the
 
 #### Arguments
 
-- **viewType** &mdash; The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending--expoview).
-- **definition**: `() -> ViewDefinition` &mdash; A builder of the view definition.
+- **viewType** — The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending--expoview).
+- **definition**: `() -> ViewDefinition` — A builder of the view definition.
 
 <CodeBlocksTable>
 
@@ -429,42 +429,42 @@ Defines module's lifecycle listener that is called when the app context owning t
 
 Defines the listener that is called when the app is about to enter the foreground mode.
 
-> **Note:** This function is not available on Android &mdash; you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
+> **Note:** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnAppEntersBackground" platforms={["ios"]} headerNestingLevel={4}>
 
 Defines the listener that is called when the app enters the background mode.
 
-> **Note:** This function is not available on Android &mdash; you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
+> **Note:** This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnAppBecomesActive" platforms={["ios"]} headerNestingLevel={4}>
 
 Defines the listener that is called when the app becomes active again (after `OnAppEntersForeground`).
 
-> **Note:** This function is not available on Android &mdash; you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
+> **Note:** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnActivityEntersForeground" platforms={["android"]} headerNestingLevel={4}>
 
 Defines the activity lifecycle listener that is called right after the activity is resumed.
 
-> **Note:** This function is not available on iOS &mdash; you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
+> **Note:** This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnActivityEntersBackground" platforms={["android"]} headerNestingLevel={4}>
 
 Defines the activity lifecycle listener that is called right after the activity is paused.
 
-> **Note:** This function is not available on iOS &mdash; you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
+> **Note:** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="OnActivityDestroys" platforms={["android"]} headerNestingLevel={4}>
 
 Defines the activity lifecycle listener that is called when the activity owning the JavaScript context is about to be destroyed.
 
-> **Note:** This function is not available on iOS &mdash; you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
+> **Note:** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </PaddedAPIBox>
 
@@ -474,11 +474,11 @@ Defines the activity lifecycle listener that is called when the activity launche
 
 #### Arguments
 
-- **activity** &mdash; The Android activity that received the result.
-- **payload** &mdash; An object containing data about the activity result.
-  - **requestCode**: `Int` &mdash; The request code originally supplied to `startActivityForResult`, used to identify the source of the result.
-  - **resultCode**: `Int` &mdash; The result code returned by the child activity (for example, `Activity.RESULT_OK` or `Activity.RESULT_CANCELED`).
-  - **data** &mdash; An optional intent that carries the result data returned from the launched activity. Can be `null`.
+- **activity** — The Android activity that received the result.
+- **payload** — An object containing data about the activity result.
+  - **requestCode**: `Int` — The request code originally supplied to `startActivityForResult`, used to identify the source of the result.
+  - **resultCode**: `Int` — The result code returned by the child activity (for example, `Activity.RESULT_OK` or `Activity.RESULT_CANCELED`).
+  - **data** — An optional intent that carries the result data returned from the launched activity. Can be `null`.
 
 ```kotlin Kotlin
 AsyncFunction('someFunc') {
@@ -498,7 +498,7 @@ Defines the activity lifecycle listener that is called when the activity receive
 
 #### Arguments
 
-- **intent**: `Intent` &mdash; The new intent was delivered to the activity. For more information about the `Intent` type, visit: [https://developer.android.com/reference/android/content/Intent](https://developer.android.com/reference/android/content/Intent).
+- **intent**: `Intent` — The new intent was delivered to the activity. For more information about the `Intent` type, visit: [https://developer.android.com/reference/android/content/Intent](https://developer.android.com/reference/android/content/Intent).
 
 ```kotlin Kotlin
 OnNewIntent { intent ->
@@ -575,9 +575,9 @@ Defines a setter for the view prop of given name.
 
 #### Arguments
 
-- **name**: `String` &mdash; Name of view prop that you want to define a setter.
-- **defaultValue**: `ValueType` &mdash; Optional default value used when the setter is called with `null`.
-- **setter**: `(view: ViewType, value: ValueType) -> ()` &mdash; Closure that is invoked when the view rerenders.
+- **name**: `String` — Name of view prop that you want to define a setter.
+- **defaultValue**: `ValueType` — Optional default value used when the setter is called with `null`.
+- **setter**: `(view: ViewType, value: ValueType) -> ()` — Closure that is invoked when the view rerenders.
 
 This property can only be used within a [`View`](#view) closure.
 
@@ -737,8 +737,8 @@ Enables the view to be used as a view group. Definition components that are acce
 
 #### Arguments
 
-- **viewType** &mdash; The class of the native view. Note that the provided class must inherit from the Android `ViewGroup`.
-- **definition**: `() -> ViewGroupDefinition` &mdash; A builder of the view group definition.
+- **viewType** — The class of the native view. Note that the provided class must inherit from the Android `ViewGroup`.
+- **definition**: `() -> ViewGroupDefinition` — A builder of the view group definition.
 
 This property can only be used within a [`View`](#view) closure.
 
@@ -756,7 +756,7 @@ Defines action that adds a child view to the view group.
 
 #### Arguments
 
-- **action**: `(parent: ParentType, child: ChildType, index: Int) -> ()` &mdash; An action that adds a child view to the view group.
+- **action**: `(parent: ParentType, child: ChildType, index: Int) -> ()` — An action that adds a child view to the view group.
 
 This property can only be used within a [`GroupView`](#groupview) closure.
 
@@ -774,7 +774,7 @@ Defines action the retrieves the number of child views in the view group.
 
 #### Arguments
 
-- **action**: `(parent: ParentType) -> Int` &mdash; A function that returns number of child views.
+- **action**: `(parent: ParentType) -> Int` — A function that returns number of child views.
 
 This property can only be used within a [`GroupView`](#groupview) closure.
 
@@ -792,7 +792,7 @@ Defines action that retrieves a child view at a specific index from the view gro
 
 #### Arguments
 
-- **action**: `(parent: ParentType, index: Int) -> ChildType` &mdash; A function that retrieves a child view at a specific index from the view group.
+- **action**: `(parent: ParentType, index: Int) -> ChildType` — A function that retrieves a child view at a specific index from the view group.
 
 This property can only be used within a [`GroupView`](#groupview) closure.
 
@@ -810,7 +810,7 @@ Defines action that removes a specific child view from the view group.
 
 #### Arguments
 
-- **action**: `(parent: ParentType, child: ChildType) -> ()` &mdash; A function that remove a specific child view from the view group.
+- **action**: `(parent: ParentType, child: ChildType) -> ()` — A function that remove a specific child view from the view group.
 
 This property can only be used within a [`GroupView`](#groupview) closure.
 
@@ -828,7 +828,7 @@ Defines action that removes a child view at a specific index from the view group
 
 #### Arguments
 
-- **action**: `(parent: ParentType, child: ChildType) -> ()` &mdash; A function that removes a child view at a specific index from the view group.
+- **action**: `(parent: ParentType, child: ChildType) -> ()` — A function that removes a child view at a specific index from the view group.
 
 This property can only be used within a [`GroupView`](#groupview) closure.
 
@@ -842,7 +842,7 @@ RemoveChildViewAt { parent, index ->
 
 ## Argument types
 
-Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures &mdash; more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and cast on its own. The Expo Modules API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
+Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and cast on its own. The Expo Modules API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
 
 <PaddedAPIBox header="Primitives">
 
@@ -1275,9 +1275,9 @@ Function("foo") { bar: Either<String, Int> ->
 
 The implementation for three Either types is currently provided out of the box, allowing you to use up to four different subtypes.
 
-- `Either<FirstType, SecondType>` &mdash; A container for one of two types.
-- `EitherOfThree<FirstType, SecondType, ThirdType>` &mdash; A container for one of three types.
-- `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` &mdash; A container for one of four types.
+- `Either<FirstType, SecondType>` — A container for one of two types.
+- `EitherOfThree<FirstType, SecondType, ThirdType>` — A container for one of three types.
+- `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
 
 </PaddedAPIBox>
 

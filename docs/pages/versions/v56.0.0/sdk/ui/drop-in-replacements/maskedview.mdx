@@ -25,9 +25,9 @@ Under the hood this component bridges arbitrary React Native children into the p
 - Update the import from `import MaskedView from '@react-native-masked-view/masked-view'` to `import { MaskedView } from '@expo/ui/community/masked-view'`.
 - The `androidRenderingMode` prop is not supported. The Compose-based implementation always uses an offscreen graphics layer, so the prop has no equivalent and is omitted from the public types.
 - Web is not implemented. On web, children render unmasked and a one-time console warning is logged. For web targets, prefer the CSS primitive that fits your specific case:
-  - **Gradient text**: `background-clip: text` with `color: 'transparent'` and a CSS gradient/image as the background.
-  - **Alpha fade**: `mask-image: linear-gradient(...)` (or `WebkitMaskImage`) directly on the content view.
-  - **Shape mask** (circle, rounded rectangle, and so on): `clip-path: circle(...)` / `inset(...)` / `path(...)`, or `border-radius` + `overflow: 'hidden'`.
+  - **Gradient text** — `background-clip: text` with `color: 'transparent'` and a CSS gradient/image as the background.
+  - **Alpha fade** — `mask-image: linear-gradient(...)` (or `WebkitMaskImage`) directly on the content view.
+  - **Shape mask** (circle, rounded rectangle, and so on) — `clip-path: circle(...)` / `inset(...)` / `path(...)`, or `border-radius` + `overflow: 'hidden'`.
 
 ## Basic usage
 
@@ -60,7 +60,7 @@ export default function MaskedViewExample() {
 
 ## Alpha-fade mask
 
-Only the alpha channel of the `maskElement` matters: opaque pixels reveal content, transparent pixels hide it. Use a `LinearGradient` (from `expo-linear-gradient`) that goes from opaque to transparent &mdash; `'black'` (for example) to `'transparent'` below &mdash; to fade content out along an axis.
+Only the alpha channel of the `maskElement` matters: opaque pixels reveal content, transparent pixels hide it. Use a `LinearGradient` (from `expo-linear-gradient`) that goes from opaque to transparent — `'black'` (for example) to `'transparent'` below — to fade content out along an axis.
 
 ```tsx AlphaFadeExample.tsx
 import { MaskedView } from '@expo/ui/community/masked-view';
