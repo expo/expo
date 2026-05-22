@@ -16,4 +16,15 @@ describe('ExpoAgeRange', () => {
     // The mock represents the unsupported / unknown case (iOS < 26.2, Android, web).
     await expect(ExpoAgeRange.isEligibleForAgeFeaturesAsync()).resolves.toBeNull();
   });
+
+  it(`invokes showSignificantUpdateAcknowledgementAsync`, async () => {
+    await expect(
+      ExpoAgeRange.showSignificantUpdateAcknowledgementAsync('test update')
+    ).resolves.toBeUndefined();
+  });
+
+  it(`invokes getRequiredRegulatoryFeaturesAsync and resolves with null on unsupported platforms`, async () => {
+    // The mock represents the unsupported / unknown case (iOS < 26.4, Android, web).
+    await expect(ExpoAgeRange.getRequiredRegulatoryFeaturesAsync()).resolves.toBeNull();
+  });
 });

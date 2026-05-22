@@ -74,6 +74,9 @@ export async function showSignificantUpdateAcknowledgementAsync(updateDescriptio
  * @platform ios 26.4+
  */
 export async function getRequiredRegulatoryFeaturesAsync() {
-    return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
+    if (Platform.OS === 'ios') {
+        return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
+    }
+    return null;
 }
 //# sourceMappingURL=AgeRange.js.map

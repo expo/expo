@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `showSignificantUpdateAcknowledgementAsync` and `getRequiredRegulatoryFeaturesAsync` to expose Apple's significant app change acknowledgement flow and required regulatory features (iOS 26.4+). ([#43519](https://github.com/expo/expo/pull/43519) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

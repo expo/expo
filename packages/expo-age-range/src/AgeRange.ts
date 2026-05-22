@@ -82,5 +82,8 @@ export async function showSignificantUpdateAcknowledgementAsync(
  * @platform ios 26.4+
  */
 export async function getRequiredRegulatoryFeaturesAsync(): Promise<RegulatoryFeature[] | null> {
-  return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
+  if (Platform.OS === 'ios') {
+    return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
+  }
+  return null;
 }

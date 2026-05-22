@@ -52,9 +52,8 @@ public class AgeRangeModule: Module, @unchecked Sendable {
         return
       }
 
-      let windowScene: UIWindowScene? = await MainActor.run {
-        UIApplication.shared.connectedScenes
-          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+      let windowScene: UIWindowScene? = await MainActor.run { [appContext] in
+        appContext?.utilities?.currentViewController()?.view?.window?.windowScene
       }
 
       guard let windowScene else {
