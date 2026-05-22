@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix loading local assets.
+- [iOS] Fix loading local assets. ([#46169](https://github.com/expo/expo/pull/46169) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
