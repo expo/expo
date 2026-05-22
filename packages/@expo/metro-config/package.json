@@ -10,11 +10,6 @@
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
-    "./exports": {
-      "types": "./build/exports.d.ts",
-      "require": "./build/exports.js",
-      "default": "./build/exports.js"
-    },
     "./babel-transformer": {
       "types": "./build/babel-transformer.d.ts",
       "require": "./build/babel-transformer.js",
@@ -57,9 +52,7 @@
   "files": [
     "build",
     "file-store",
-    "babel-transformer",
-    "exports.d.ts",
-    "exports.js"
+    "babel-transformer"
   ],
   "dependencies": {
     "@babel/code-frame": "^7.20.0",
