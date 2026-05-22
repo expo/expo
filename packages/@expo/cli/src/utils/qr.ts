@@ -31,8 +31,10 @@ function supportsSextants() {
   const isWindowsTerminal = process.platform === 'win32' && !!process.env.WT_SESSION?.length;
   const isGhostty = process.env.TERM_PROGRAM === 'ghostty';
   const isWezterm = process.env.TERM_PROGRAM === 'WezTerm';
+  // NOTE(@kitten): Zed regressed on rendering sextants
+  const isZed = process.env.TERM_PROGRAM === 'zed';
   const isKitty = !!process.env.KITTY_WINDOW_ID?.length;
-  const isAlacritty = !!process.env.ALACRITTY_WINDOW_ID?.length;
+  const isAlacritty = !!process.env.ALACRITTY_WINDOW_ID?.length && !isZed;
   return isWindowsTerminal || isGhostty || isWezterm || isKitty || isAlacritty;
 }
 

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Disable sextant QR code rendering for Zed due to regression ([#46148](https://github.com/expo/expo/pull/46148) by [@kitten](https://github.com/kitten))
+
 ## 55.0.32 — 2026-05-21
 
 ### 🐛 Bug fixes
