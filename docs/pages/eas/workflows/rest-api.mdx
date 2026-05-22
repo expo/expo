@@ -75,13 +75,13 @@ curl -X POST "https://api.expo.dev/v2/workflows/dispatch" \
 | 403    | The token does not have access to the given `appId`.                                                |
 | 404    | The Git ref does not exist in the linked repository, or the workflow file is not found on that ref. |
 
-## Check a workflow run's status
+## Get a workflow run
 
 ```text
-GET /v2/workflows/runs/:workflowRunId/status
+GET /v2/workflows/runs/:workflowRunId
 ```
 
-Use this to poll for completion after triggering a run. The endpoint returns the run's current status only, so it is cheap to call on a short interval.
+Returns the workflow run and the jobs it contains. Use it to poll for completion after triggering a run, or to render a run's details in your own UI.
 
 ### Response
 
@@ -89,12 +89,36 @@ Use this to poll for completion after triggering a run. The endpoint returns the
 {
   "data": {
     "id": "019d9d17-013a-7e05-89aa-4aa83ff68c32",
-    "status": "in-progress"
+    "status": "in-progress",
+    "url": "https://expo.dev/accounts/acme/projects/example/workflows/019d9d17-013a-7e05-89aa-4aa83ff68c32",
+    "gitCommitHash": "564b61ebdd403d28b5dc616a12ce160b91585b5b",
+    "gitCommitMessage": "Add home screen",
+    "requestedGitRef": "refs/heads/main",
+    "triggerEventType": "MANUAL",
+    "createdAt": "2026-05-22T15:04:11.000Z",
+    "updatedAt": "2026-05-22T15:05:42.000Z",
+    "jobs": [
+      {
+        "id": "019d9d17-1a3f-7c10-bdee-5f2811a9d6ad",
+        "key": "build_ios",
+        "name": "Build iOS",
+        "type": "build",
+        "status": "in-progress",
+        "requiredJobKeys": [],
+        "environment": "production",
+        "outputs": {},
+        "errors": [],
+        "buildId": "f9609423-5072-4ea2-a0a5-c345eedf2c2a",
+        "submissionId": null,
+        "createdAt": "2026-05-22T15:04:11.000Z",
+        "updatedAt": "2026-05-22T15:04:42.000Z"
+      }
+    ]
   }
 }
 ```
 
-`status` is one of:
+`status` on the run is one of:
 
 | Value             | Meaning                                                             |
 | ----------------- | ------------------------------------------------------------------- |
@@ -104,6 +128,21 @@ Use this to poll for completion after triggering a run. The endpoint returns the
 | `success`         | The run finished and every job succeeded. Terminal.                 |
 | `failure`         | The run finished with at least one failed job. Terminal.            |
 | `canceled`        | The run was canceled before it finished. Terminal.                  |
+
+Each entry in `jobs` includes its own `status`, one of:
+
+| Value             | Meaning                                                              |
+| ----------------- | -------------------------------------------------------------------- |
+| `new`             | The job is queued.                                                   |
+| `in-progress`     | The job is running.                                                  |
+| `action-required` | The job is paused and waiting on a manual action, such as approval.  |
+| `pending-cancel`  | A cancellation has been requested but the job has not stopped yet.   |
+| `success`         | The job succeeded. Terminal.                                         |
+| `failure`         | The job failed. Terminal.                                            |
+| `canceled`        | The job was canceled. Terminal.                                      |
+| `skipped`         | The job was skipped because a required upstream job did not succeed. |
+
+`outputs` contains any values the job set with `outputs:` in the workflow file. Secrets that were referenced when those values were written are replaced with placeholders before being returned. `buildId` and `submissionId` are present on jobs of `type: build` and `type: submission` and link to the underlying EAS Build or EAS Submit record.
 
 ### Example
 
@@ -117,7 +156,7 @@ RUN_ID=$(curl -s -X POST "https://api.expo.dev/v2/workflows/dispatch" \
   | jq -r '.data.id')
 
 while true; do
-  STATUS=$(curl -s "https://api.expo.dev/v2/workflows/runs/$RUN_ID/status" \
+  STATUS=$(curl -s "https://api.expo.dev/v2/workflows/runs/$RUN_ID" \
     -H "Authorization: Bearer $EXPO_TOKEN" \
     | jq -r '.data.status')
   echo "status: $STATUS"
