@@ -2,7 +2,6 @@ import { requireNativeModule } from 'expo';
 import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
 
 import { worklets } from './optionalWorklets';
-import { brandExpoUISharedObject } from './sharedObjectBrand';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -22,9 +21,7 @@ export function useWorkletProp(
       return null;
     }
     try {
-      return brandExpoUISharedObject(
-        new ExpoUI.WorkletCallback(worklets.createSerializable(callback))
-      );
+      return new ExpoUI.WorkletCallback(worklets.createSerializable(callback));
     } catch {
       const name = propName ? `'${propName}'` : 'The callback';
       throw new Error(

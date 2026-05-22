@@ -3,7 +3,6 @@ import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
 import { useRef } from 'react';
 
 import { worklets } from './optionalWorklets';
-import { brandExpoUISharedObject } from './sharedObjectBrand';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -56,7 +55,6 @@ export function useNativeState<T>(initialValue: T): ObservableState<T> {
   const initialValueRef = useRef(initialValue);
   return useReleasingSharedObject(() => {
     const state = new ExpoUI.ObservableState({ value: initialValueRef.current });
-    brandExpoUISharedObject(state);
     defineValueProperty(state);
     defineOnChangeProperty(state);
     return state;
@@ -123,9 +121,7 @@ function defineOnChangeProperty(state: NativeObservableState): void {
         );
       }
       currentFn = fn;
-      const callback = brandExpoUISharedObject(
-        new ExpoUI.WorkletCallback(worklets.createSerializable(fn))
-      );
+      const callback = new ExpoUI.WorkletCallback(worklets.createSerializable(fn));
       state.setOnChange(callback);
     },
   });
