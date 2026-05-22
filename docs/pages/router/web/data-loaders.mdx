@@ -335,7 +335,7 @@ With server rendering, loaders execute on every request. This means:
 
 ### `createStaticLoader`
 
-Use [`createStaticLoader`](/versions/unversioned/sdk/server/#createstaticloaderfn) for routes that only need route parameters. The callback only receives the route params, and is safe to use with both static and server rendering:
+Use [`createStaticLoader`](/versions/latest/sdk/server/#createstaticloaderfn) for routes that only need route parameters. The callback only receives the route params, and is safe to use with both static and server rendering:
 
 ```tsx src/app/posts/[postId].tsx
 import { Text, View } from 'react-native';
@@ -360,7 +360,7 @@ export default function Post() {
 
 ### `createServerLoader`
 
-Use [`createServerLoader`](/versions/unversioned/sdk/server/#createserverloaderfn) for routes that need access to the incoming HTTP request. The callback receives an [`ImmutableRequest`](/versions/latest/sdk/server/#immutablerequest) and the route params as arguments:
+Use [`createServerLoader`](/versions/latest/sdk/server/#createserverloaderfn) for routes that need access to the incoming HTTP request. The callback receives an [`ImmutableRequest`](/versions/latest/sdk/server/#immutablerequest) and the route params as arguments:
 
 ```tsx src/app/profile.tsx
 import { Text, View } from 'react-native';

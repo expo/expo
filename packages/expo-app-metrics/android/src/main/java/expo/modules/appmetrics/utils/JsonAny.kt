@@ -66,4 +66,16 @@ object JsonAny {
       JsonObject.serializer(),
       JsonObject(map.mapValues { (_, v) -> toElement(v) })
     )
+
+  /**
+   * Inverse of [encodeMapToJsonString]. Returns `null` if the JSON does not
+   * parse or does not decode to an object — callers can treat that as an
+   * absent map. The inner values are decoded by [fromElement] so the result
+   * round-trips with [toElement].
+   */
+  fun decodeJsonStringToMap(json: String): Map<String, Any?>? {
+    val element = runCatching { Json.parseToJsonElement(json) }.getOrNull() ?: return null
+    val obj = element as? JsonObject ?: return null
+    return obj.mapValues { (_, v) -> fromElement(v) }
+  }
 }

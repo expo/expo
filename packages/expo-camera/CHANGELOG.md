@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 56.0.7 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.6 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.5 — 2026-05-13
 
 ### 🐛 Bug fixes

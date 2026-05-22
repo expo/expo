@@ -90,5 +90,22 @@
   "devDependencies": {
     "@expo/metro": "~56.0.0",
     "@babel/core": "^7.26.0"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./bin/expo-module-babel",
+      "./bin/expo-module-clean",
+      "./bin/expo-module-configure",
+      "./bin/expo-module-eslint",
+      "./bin/expo-module-jest",
+      "./bin/expo-module-lint",
+      "./bin/expo-module-prepare",
+      "./bin/expo-module-prepublishOnly",
+      "./bin/expo-module-readme",
+      "./bin/expo-module-test",
+      "./bin/expo-module-tsc",
+      "./bin/expo-module-typecheck",
+      "./bin/expo-module.js"
+    ]
   }
 }

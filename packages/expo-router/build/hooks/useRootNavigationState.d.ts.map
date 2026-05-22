@@ -1,1 +1,1 @@
-{"version":3,"file":"useRootNavigationState.d.ts","sourceRoot":"","sources":["../../src/hooks/useRootNavigationState.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAkB,eAAe,EAAE,MAAM,4BAA4B,CAAC;AAGlF;;;;;;;;;;;;;;GAcG;AACH,wBAAgB,sBAAsB,IAAI,eAAe,CAWxD"}
+{"version":3,"file":"useRootNavigationState.d.ts","sourceRoot":"","sources":["../../src/hooks/useRootNavigationState.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAkB,eAAe,EAAE,MAAM,4BAA4B,CAAC;AAGlF;;;;;;;;;;;;;;;;;;;GAmBG;AACH,wBAAgB,sBAAsB,IAAI,eAAe,CAWxD"}

@@ -1,6 +1,12 @@
 import { NativeModule, registerWebModule } from 'expo';
 
-import type { ExpoAppMetricsModuleType, LogEventOptions, Metric, MetricAttributes } from './types';
+import type {
+  ExpoAppMetricsModuleType,
+  LogAttributeValue,
+  LogEventOptions,
+  Metric,
+  MetricAttributes,
+} from './types';
 
 export * from './types';
 
@@ -11,6 +17,7 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   async markFirstRender() {}
   async markInteractive(attributes?: MetricAttributes) {}
   logEvent(name: string, options?: LogEventOptions) {}
+  setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null) {}
   async clearStoredEntries() {}
   async getAllSessions() {
     return [];
