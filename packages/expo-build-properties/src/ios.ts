@@ -47,7 +47,7 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
     },
     {
       propName: 'EXPO_USE_PRECOMPILED_MODULES',
-      propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? false).toString(),
+      propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? true).toString(),
     },
   ],
   'withIosBuildProperties'

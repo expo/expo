@@ -442,7 +442,7 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * When enabled, sets the `EXPO_USE_PRECOMPILED_MODULES` environment variable to `1`
    * during `pod install`, which causes matching modules to be linked as vendored frameworks.
    *
-   * @default false
+   * @default true
    */
   usePrecompiledModules?: boolean;
 }
