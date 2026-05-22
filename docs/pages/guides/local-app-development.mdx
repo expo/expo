@@ -43,7 +43,7 @@ To build your project locally you can use compile commands from Expo CLI which g
 The above commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app. Each command performs two steps: it compiles and installs the native binary on your device or emulator, then starts the Metro bundler to serve your JavaScript or TypeScript code.
 
 - These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building, if they do not exist yet. If they already exist, this will be skipped.
-- You can also add the `--device` flag to select a device to run the app on — you can select a physically connected device or emulator/simulator.
+- You can also add the `--device` flag to select a device to run the app on &mdash; you can select a physically connected device or emulator/simulator.
 - You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production build of your app](/deploy/build-project/#release-builds-locally). Note that these builds are not signed and you cannot submit them to app stores. To sign your production build, see [Local app production](/guides/local-app-production/).
 - **Android only**: Starting in SDK 54, you can pass the `--variant debugOptimized` variant for faster development iteration. See [Compiling Android in Expo CLI reference](/more/expo-cli/#compiling-android) for more information.
 

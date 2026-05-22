@@ -161,7 +161,7 @@ The dev server exposes `/_expo/open` so external tools, such as cloud agents, re
 | Method | Effect                                                                                                                                                    |
 | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `GET`  | Dry run: returns the deep link as JSON. Safe to call across tunnels.                                                                                      |
-| `POST` | Opens the project locally — equivalent to pressing <kbd>I</kbd> / <kbd>A</kbd> / <kbd>W</kbd> in the **Terminal UI**. Restricted to same-origin requests. |
+| `POST` | Opens the project locally &mdash; equivalent to pressing <kbd>I</kbd> / <kbd>A</kbd> / <kbd>W</kbd> in the **Terminal UI**. Restricted to same-origin requests. |
 
 #### Query params
 
@@ -172,7 +172,7 @@ The dev server exposes `/_expo/open` so external tools, such as cloud agents, re
   - `custom`: force the development-build deep link (`<scheme>://expo-development-client/?url=…`).
   - `unknown`: force the disambiguation `/_expo/loading` page, letting the device decide between Expo Go and the dev build.
 
-The endpoint reflects mid-run state changes — pressing <kbd>S</kbd> to toggle between Expo Go and the dev client, or installing `expo-dev-client` while the server is running, both show up on the next request.
+The endpoint reflects mid-run state changes &mdash; pressing <kbd>S</kbd> to toggle between Expo Go and the dev client, or installing `expo-dev-client` while the server is running, both show up on the next request.
 
 #### GET response
 

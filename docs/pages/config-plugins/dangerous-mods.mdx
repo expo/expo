@@ -10,7 +10,7 @@ Dangerous mods in Expo provide direct access to native project files through str
 
 <Collapsible summary="Why are they considered dangerous?">
 
-Automated direct source code manipulation does not typically compose well. For example, if a dangerous mod replaces text in a source file, and a subsequent dangerous mod expects the original text to be there (perhaps it uses the original text as an anchor for a regular expression) then it is unlikely produce the desired result — depending on how it is written, it may either throw an error or log. Other types of mods are less prone to this type of problem, although it can happen with mods that manipulate source files directly like `withAndroidManifest` and `withPodfile`.
+Automated direct source code manipulation does not typically compose well. For example, if a dangerous mod replaces text in a source file, and a subsequent dangerous mod expects the original text to be there (perhaps it uses the original text as an anchor for a regular expression) then it is unlikely produce the desired result &mdash; depending on how it is written, it may either throw an error or log. Other types of mods are less prone to this type of problem, although it can happen with mods that manipulate source files directly like `withAndroidManifest` and `withPodfile`.
 
 Unlike standard mods, which can run multiple times safely, dangerous mods are rarely guaranteed to be idempotent. Running the same dangerous mod multiple times may produce different results, cause duplicate modifications, or break the target file entirely.
 

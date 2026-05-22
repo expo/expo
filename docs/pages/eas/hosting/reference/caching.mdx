@@ -36,9 +36,9 @@ If multiple cache directives are passed, each is separated from the last by a co
 
 Several response directives determine whether a cached response may be cached or returned to a client:
 
-- `public` — Indicates any cache (including EAS Hosting) may store the response. Without it, it's implied that the response is not shared between multiple requests.
-- `private` — Indicates the response is intended for a single user and may only be cached by a browser.
-- `no-store` or `no-cache` — Indicates that this response may never be cached or stored.
+- `public` &mdash; Indicates any cache (including EAS Hosting) may store the response. Without it, it's implied that the response is not shared between multiple requests.
+- `private` &mdash; Indicates the response is intended for a single user and may only be cached by a browser.
+- `no-store` or `no-cache` &mdash; Indicates that this response may never be cached or stored.
 
 For example, specifying `public, max-age=3600` specifies that EAS Hosting is (additionally to a user's browser) allowed to store the response for 3600 seconds. However, `private, max-age=3600` means only the user's browser may store the response for 3600 seconds, while EAS Hosting will not cache it.
 
