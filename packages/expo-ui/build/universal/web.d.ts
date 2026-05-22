@@ -8,9 +8,11 @@ type Style = StyleProp<ImageStyle | TextStyle | ViewStyle>;
 export declare const createWebComponent: <T extends ElementType>(type: T) => (props: Merge<ComponentProps<T>, {
     focusable?: boolean;
     style?: Style;
-}>) => import("react").ReactElement<Simplify<Omit<ComponentProps<T>, "style" | "focusable"> & {
+    testID?: string;
+}>) => import("react").ReactElement<Simplify<Omit<ComponentProps<T>, "style" | "focusable" | "testID"> & {
     focusable?: boolean;
     style?: Style;
+    testID?: string;
 }>, string | import("react").JSXElementConstructor<any>>;
 export declare const css: (strings: TemplateStringsArray, ...values: unknown[]) => string;
 export declare const colors: {

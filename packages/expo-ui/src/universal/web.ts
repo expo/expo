@@ -13,7 +13,7 @@ type Style = StyleProp<ImageStyle | TextStyle | ViewStyle>;
 
 export const createWebComponent =
   <T extends ElementType>(type: T) =>
-  (props: Merge<ComponentProps<T>, { focusable?: boolean; style?: Style }>) =>
+  (props: Merge<ComponentProps<T>, { focusable?: boolean; style?: Style; testID?: string }>) =>
     unstable_createElement(type, props);
 
 export const css = (strings: TemplateStringsArray, ...values: unknown[]): string =>
