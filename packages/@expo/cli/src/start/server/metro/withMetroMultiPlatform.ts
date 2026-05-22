@@ -605,10 +605,18 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ) {
-      const doResolve = getStrictResolver(context, platform);
+      // TODO(@kitten): replace and abstract doResolve logic, since it's unsafe and inefficient
+      function doResolve(moduleName: string) {
+        const projectRootContext: ResolutionContext = {
+          ...context,
+          nodeModulesPaths: [],
+          originModulePath: projectRootOriginPath,
+          disableHierarchicalLookup: false,
+        };
+        return getStrictResolver(projectRootContext, platform)(moduleName);
+      }
 
-      const result = doResolve(moduleName);
-
+      const result = getStrictResolver(context, platform)(moduleName);
       if (result.type !== 'sourceFile') {
         return result;
       }
@@ -742,6 +750,7 @@ export function withExtendedResolver(
         if (hmrModule) return hmrModule;
 
         if (useExpoUnstableLogBox) {
+          // TODO(@kitten): This can never resolve with isolated dependencies
           const logBoxModule = doReplace(
             'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
             '@expo/log-box/swap-rn-logbox.js'

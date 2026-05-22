@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix launching apps on physical iOS devices causing system-dependent crashes ([#46128](https://github.com/expo/expo/pull/46128) by [@kitten](https://github.com/kitten))
+- Fix post-rewrite resolutions failing since they may be resolved from a random module path ([#46172](https://github.com/expo/expo/pull/46172) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
