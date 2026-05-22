@@ -26,7 +26,7 @@ If you need lower-level control, use those primitives directly.
 
 - Update the import from `import Slider from '@react-native-community/slider'` to `import Slider from '@expo/ui/community/slider'`.
 - `onSlidingStart`, `onSlidingComplete`, `tapToSeek`, `StepMarker`, `renderStepNumber`, `thumbImage`, `minimumTrackImage`, `maximumTrackImage`, `trackImage`, `accessibilityUnits`, `accessibilityIncrements`, `testID`, and `ref.updateValue` are not yet supported.
-- On iOS, `maximumTrackTintColor` and `thumbTintColor` have no visual effect — SwiftUI's `Slider` only exposes the minimum (active) track tint. `minimumTrackTintColor` works on both platforms.
+- On iOS, `maximumTrackTintColor` and `thumbTintColor` have no visual effect because SwiftUI's `Slider` only exposes the minimum (active) track tint. `minimumTrackTintColor` works on both platforms.
 
 ## Basic usage
 
