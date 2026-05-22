@@ -22,6 +22,7 @@
 - Add missing adb shell quoting where necessary ([#45853](https://github.com/expo/expo/pull/45853) by [@kitten](https://github.com/kitten))
 - Escape content inserted into interstitial page ([#45839](https://github.com/expo/expo/pull/45839) by [@kitten](https://github.com/kitten))
 - Fix inverted path check in Metro middleware ([#46006](https://github.com/expo/expo/pull/46006) by [@kitten](https://github.com/kitten))
+- Fix launching apps on physical iOS devices causing system-dependent crashes ([#46128](https://github.com/expo/expo/pull/46128) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
