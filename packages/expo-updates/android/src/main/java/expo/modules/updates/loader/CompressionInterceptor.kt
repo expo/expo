@@ -59,14 +59,11 @@ object CompressionInterceptor : Interceptor {
     val body = response.body ?: return response
     val encoding = response.header("Content-Encoding") ?: return response
 
-    val decompressedSource = when {
-      encoding.equals("zstd", ignoreCase = true) ->
-        body.source().zstdDecompress().buffer()
-      encoding.equals("br", ignoreCase = true) ->
-        BrotliInputStream(body.source().inputStream()).source().buffer()
-      encoding.equals("gzip", ignoreCase = true) ->
-        GzipSource(body.source()).buffer()
-      else -> return response
+    val decompressedSource = when (encoding.lowercase()) {
+      "zstd" -> body.source().zstdDecompress().buffer()
+      "br" -> BrotliInputStream(body.source().inputStream()).source().buffer()
+      "gzip" -> GzipSource(body.source()).buffer()
+      else -> response
     }
 
     return response.newBuilder()
