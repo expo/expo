@@ -853,18 +853,23 @@ public final class ImageView: ExpoView {
 }
 
 func localAssetName(from url: URL?) -> String? {
-  guard let url, url.scheme == nil else {
+  guard let url else {
     return nil
   }
 
-  var path = url.path
-  guard !path.isEmpty else {
+  // `ExpoModulesCore` converts scheme-less URI strings from JS via
+  // `URL(fileURLWithPath:)`, so asset names like "my_image" arrive here with
+  // `scheme == "file"`. Accept those alongside truly scheme-less URLs; reject
+  // remote/SF Symbol/blurhash/etc. schemes.
+  if let scheme = url.scheme, scheme != "file" {
     return nil
   }
 
+  // Use `relativePath` so we recover the original input ("my_image") instead of
+  // the absolute path it resolves to against the file:// base
+  var path = url.relativePath
   if path.hasPrefix("/") {
     path.removeFirst()
   }
-
   return path.isEmpty ? nil : path
 }

@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix `placeholder` failing to load images from the asset catalog (xcassets).
+- [iOS] Fix native asset names (xcassets) not loading when passed from JS, since `ExpoModulesCore` wraps scheme-less URIs as `file://` URLs that the new `localAssetName` helper was rejecting (regression after #45686)
 
 ### 💡 Others
 
