@@ -4,8 +4,6 @@ link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writ
 level: error
 scope: raw
 nonword: true
-# Look for ' - ' (space, hyphen, space), ' -- ' (space, two hyphens, space), or '—' (Unicode em-dash, U+2014)
+# Look for literal Unicode em dashes (U+2014) in source.
 swap:
-  ' - ': ' &mdash; '
-  ' -- ': ' &mdash; '
   '—': '&mdash;'
