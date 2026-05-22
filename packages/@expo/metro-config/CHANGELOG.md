@@ -14,6 +14,7 @@
 
 - Switch Metro config resolution to `@expo/require-utils`, aligning with `@expo/config` and `@expo/config-plugins` ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
 - Drop support for loading Metro configs outside the server root, from yaml files, and from `package.json:metro` outside the project root ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
+- [Internal] Remove `@expo/metro-config/exports` ([#46164](https://github.com/expo/expo/pull/46164) by [@kitten](https://github.com/kitten))
 
 ## 56.0.11 — 2026-05-20
 
