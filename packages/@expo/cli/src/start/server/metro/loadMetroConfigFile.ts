@@ -70,17 +70,23 @@ export async function loadMetroConfigFileAsync(
   if (params.overrideConfigPath) {
     configPath = resolveConfigFromPath(params.overrideConfigPath, params.projectRoot);
   } else {
+    const startPath = path.resolve(params.projectRoot);
+    const stopPath = path.resolve(params.serverRoot);
+
     // Search upwards until the server root
-    let searchPath = path.resolve(params.projectRoot);
-    while (searchPath === params.serverRoot || isPathInside(searchPath, params.serverRoot)) {
+    let searchPath = startPath;
+    while (searchPath === stopPath || isPathInside(searchPath, stopPath)) {
       configPath = resolveFrom(searchPath, './metro.config', { extensions: configExtensions });
-      if (configPath == null) {
+      if (configPath == null && searchPath === startPath) {
         // At each level, also check the package.json for "metro" entry
+        // NOTE(@kitten): Metro actually searches in each package.json upwards, but we're dropping
+        // support for this, since this is very unexpected
         const packageJsonResult = resolvePackageJsonConfig(searchPath);
         if (packageJsonResult) {
           configPath = packageJsonResult.filePath;
           break;
         }
+      } else if (configPath == null) {
         searchPath = path.dirname(searchPath);
       } else {
         break;
