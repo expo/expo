@@ -71,12 +71,13 @@ export async function loadMetroConfigFileAsync(
   if (params.overrideConfigPath) {
     configPath = resolveConfigFromPath(params.overrideConfigPath, params.projectRoot);
   } else {
+    // NOTE(@kitten): Metro usually traverses beyond the server root, but we deem this unsafe
     const startPath = path.resolve(params.projectRoot);
     const stopPath = path.resolve(params.serverRoot);
 
     // Search upwards until the server root
     let searchPath = startPath;
-    while (searchPath === stopPath || isPathInside(searchPath, stopPath)) {
+    while (configPath == null && (searchPath === stopPath || isPathInside(searchPath, stopPath))) {
       configPath = resolveFrom(searchPath, './metro.config', { extensions: configExtensions });
 
       // Metro searches for .config/metro.[ext] next
@@ -93,11 +94,9 @@ export async function loadMetroConfigFileAsync(
           configPath = packageJsonResult.filePath;
           break;
         }
-      } else if (configPath == null) {
-        searchPath = path.dirname(searchPath);
-      } else {
-        break;
       }
+
+      searchPath = path.dirname(searchPath);
     }
   }
 
