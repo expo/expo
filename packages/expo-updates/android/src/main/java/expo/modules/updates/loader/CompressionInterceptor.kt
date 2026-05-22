@@ -63,7 +63,7 @@ object CompressionInterceptor : Interceptor {
       "zstd" -> body.source().zstdDecompress().buffer()
       "br" -> BrotliInputStream(body.source().inputStream()).source().buffer()
       "gzip" -> GzipSource(body.source()).buffer()
-      else -> response
+      else -> return response
     }
 
     return response.newBuilder()
