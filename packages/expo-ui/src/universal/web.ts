@@ -9,11 +9,20 @@ import {
 
 type Simplify<T> = { [K in keyof T]: T[K] };
 type Merge<A, B> = Simplify<Omit<A, keyof B> & B>;
-type Style = StyleProp<ImageStyle | TextStyle | ViewStyle>;
+
+type WebComponentProps<T extends ElementType> = Merge<
+  ComponentProps<T>,
+  {
+    dataSet?: Record<string, string | undefined>;
+    focusable?: boolean;
+    style?: StyleProp<ImageStyle | TextStyle | ViewStyle>;
+    testID?: string;
+  }
+>;
 
 export const createWebComponent =
   <T extends ElementType>(type: T) =>
-  (props: Merge<ComponentProps<T>, { focusable?: boolean; style?: Style; testID?: string }>) =>
+  (props: WebComponentProps<T>) =>
     unstable_createElement(type, props);
 
 export const css = (strings: TemplateStringsArray, ...values: unknown[]): string =>
@@ -103,6 +112,7 @@ export const easings = {
 export const shadows = {
   button: 'var(--eui-shadow-button)',
   focus: '0 0 0 3px color-mix(in oklab, var(--eui-primary-500) 35%, transparent)',
+  input: '0 1px 0 rgba(0, 0, 0, 0.02)',
 };
 
 export const globalCss = css`

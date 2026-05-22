@@ -97,7 +97,7 @@ declare module 'react-native' {
   }
 
   export interface ViewProps extends WebAccessibilityProps {
-    dataSet?: Record<string, string>;
+    dataSet?: Record<string, string | undefined>;
     dir?: string;
     role?: WebRole;
   }
@@ -153,6 +153,7 @@ declare module 'react-native' {
   }
 
   export interface ViewStyle extends AnimationStyles {
+    appearance?: 'none' | 'auto';
     display?: DisplayValue;
     height?: WebDimensionValue;
     width?: WebDimensionValue;

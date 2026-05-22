@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderStyle: 'solid',
     borderWidth: 1,
-    boxShadow: '0 1px 0 rgba(0, 0, 0, 0.02)',
+    boxShadow: shadows.input,
     boxSizing: 'border-box',
     color: colors.gray[900],
     display: 'flex',
@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
     transitionDuration: durations.fast,
     transitionProperty: 'border-color, box-shadow, background-color',
     transitionTimingFunction: easings.standard,
-    width: '100%',
   },
   focused: {
     borderColor: colors.primary[500],

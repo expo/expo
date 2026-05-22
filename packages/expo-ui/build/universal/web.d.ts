@@ -4,14 +4,16 @@ type Simplify<T> = {
     [K in keyof T]: T[K];
 };
 type Merge<A, B> = Simplify<Omit<A, keyof B> & B>;
-type Style = StyleProp<ImageStyle | TextStyle | ViewStyle>;
-export declare const createWebComponent: <T extends ElementType>(type: T) => (props: Merge<ComponentProps<T>, {
+type WebComponentProps<T extends ElementType> = Merge<ComponentProps<T>, {
+    dataSet?: Record<string, string | undefined>;
     focusable?: boolean;
-    style?: Style;
+    style?: StyleProp<ImageStyle | TextStyle | ViewStyle>;
     testID?: string;
-}>) => import("react").ReactElement<Simplify<Omit<ComponentProps<T>, "style" | "testID" | "focusable"> & {
+}>;
+export declare const createWebComponent: <T extends ElementType>(type: T) => (props: WebComponentProps<T>) => import("react").ReactElement<Simplify<Omit<ComponentProps<T>, "style" | "testID" | "dataSet" | "focusable"> & {
+    dataSet?: Record<string, string | undefined>;
     focusable?: boolean;
-    style?: Style;
+    style?: StyleProp<ImageStyle | TextStyle | ViewStyle>;
     testID?: string;
 }>, string | import("react").JSXElementConstructor<any>>;
 export declare const css: (strings: TemplateStringsArray, ...values: unknown[]) => string;
@@ -55,6 +57,7 @@ export declare const easings: {
 export declare const shadows: {
     button: string;
     focus: string;
+    input: string;
 };
 export declare const globalCss: string;
 export {};
