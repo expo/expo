@@ -51,7 +51,8 @@ function _AssetContents() {
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const {
-  getProjectName
+  getProjectName,
+  unquote
 } = _configPlugins().IOSConfig.XcodeUtils;
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
@@ -69,7 +70,9 @@ const withIosIcons = config => {
       setIconName(config.modResults, projectName, iconName);
       addIconFileToProject(config.modResults, projectName, iconName);
     } else if (projectName && icon) {
+      const previousIconNames = getIconNames(config.modResults, projectName);
       setIconName(config.modResults, projectName, DEFAULT_APPICON_NAME);
+      removeIconFilesFromProject(config.modResults, projectName, previousIconNames);
     }
     return config;
   });
@@ -267,5 +270,33 @@ function addIconFileToProject(project, projectName, iconName) {
     isBuildFile: true,
     verbose: true
   });
+}
+function getIconNames(project, projectName) {
+  const [, target] = (0, _Target().findNativeTargetByName)(project, projectName);
+  const configurations = _configPlugins().IOSConfig.XcodeUtils.getBuildConfigurationsForListId(project, target.buildConfigurationList);
+  return Array.from(new Set(configurations.map(([, config]) => config?.buildSettings?.ASSETCATALOG_COMPILER_APPICON_NAME).filter(iconName => typeof iconName === 'string').map(unquote)));
+}
+function removeIconFilesFromProject(project, projectName, iconNames) {
+  const [targetUuid] = (0, _Target().findNativeTargetByName)(project, projectName);
+  const groupKey = project.findPBXGroupKey({
+    name: projectName
+  });
+  for (const iconName of iconNames) {
+    removeIconFileFromProject(project, `${projectName}/${iconName}.icon`, targetUuid, groupKey);
+  }
+}
+function removeIconFileFromProject(project, iconPath, targetUuid, groupKey) {
+  const file = {
+    basename: _path().default.basename(iconPath),
+    group: 'Resources',
+    path: iconPath,
+    target: targetUuid
+  };
+  project.removeFromPbxBuildFileSection(file);
+  project.removeFromPbxFileReferenceSection(file);
+  if (groupKey) {
+    project.removeFromPbxGroup(file, groupKey);
+  }
+  project.removeFromPbxResourcesBuildPhase(file);
 }
 //# sourceMappingURL=withIosIcons.js.map

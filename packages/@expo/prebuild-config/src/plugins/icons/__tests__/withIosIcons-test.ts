@@ -128,10 +128,7 @@ describe('iOS Icons', () => {
 describe(withIosIcons, () => {
   const projectRoot = '/app';
   const pbxprojPath = 'ios/HelloWorld.xcodeproj/project.pbxproj';
-  const generatedAppIconName = path.basename(
-    'Images.xcassets/AppIcon.appiconset',
-    '.appiconset'
-  );
+  const generatedAppIconName = path.basename('Images.xcassets/AppIcon.appiconset', '.appiconset');
 
   afterEach(() => {
     vol.reset();
@@ -167,6 +164,47 @@ describe(withIosIcons, () => {
     expect(output).not.toContain('ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;');
   });
 
+  it('removes stale .icon resource references when switching back to a PNG icon', () => {
+    vol.fromJSON({ [pbxprojPath]: rnFixture[pbxprojPath] }, projectRoot);
+
+    const project = xcode.project(path.join(projectRoot, pbxprojPath));
+    project.parseSync();
+
+    withIosIcons({
+      slug: 'HelloWorld',
+      version: '1',
+      name: 'HelloWorld',
+      platforms: ['ios'],
+      ios: {
+        icon: 'assets/AppIcon.icon',
+      },
+      modResults: project,
+      modRequest: {
+        projectName: 'HelloWorld',
+      },
+    } as any);
+
+    expect(project.writeSync()).toContain('AppIcon.icon');
+
+    withIosIcons({
+      slug: 'HelloWorld',
+      version: '1',
+      name: 'HelloWorld',
+      platforms: ['ios'],
+      ios: {
+        icon: '/app/assets/icon.png',
+      },
+      modResults: project,
+      modRequest: {
+        projectName: 'HelloWorld',
+      },
+    } as any);
+
+    const output = project.writeSync();
+    expect(output).toContain(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`);
+    expect(output).not.toContain('AppIcon.icon');
+  });
+
   it('does not reset the Xcode app icon name when no icon is configured', () => {
     const projectWithCustomIconName = rnFixture[pbxprojPath].replace(
       new RegExp(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`, 'g'),
@@ -191,9 +229,7 @@ describe(withIosIcons, () => {
 
     const output = project.writeSync();
     expect(output).toContain('ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;');
-    expect(output).not.toContain(
-      `ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`
-    );
+    expect(output).not.toContain(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`);
   });
 });
 

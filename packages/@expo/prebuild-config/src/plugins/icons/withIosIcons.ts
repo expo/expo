@@ -14,7 +14,7 @@ import path from 'path';
 import type { ContentsJson, ContentsJsonImage } from './AssetContents';
 import { writeContentsJsonAsync } from './AssetContents';
 
-const { getProjectName } = IOSConfig.XcodeUtils;
+const { getProjectName, unquote } = IOSConfig.XcodeUtils;
 
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
@@ -38,7 +38,9 @@ export const withIosIcons: ConfigPlugin = (config) => {
       setIconName(config.modResults, projectName, iconName);
       addIconFileToProject(config.modResults, projectName, iconName);
     } else if (projectName && icon) {
+      const previousIconNames = getIconNames(config.modResults, projectName);
       setIconName(config.modResults, projectName, DEFAULT_APPICON_NAME);
+      removeIconFilesFromProject(config.modResults, projectName, previousIconNames);
     }
     return config;
   });
@@ -282,4 +284,51 @@ function addIconFileToProject(project: any, projectName: string, iconName: strin
     isBuildFile: true,
     verbose: true,
   });
+}
+
+function getIconNames(project: any, projectName: string): string[] {
+  const [, target] = findNativeTargetByName(project, projectName);
+  const configurations = IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
+    project,
+    target.buildConfigurationList
+  );
+
+  return Array.from(
+    new Set(
+      configurations
+        .map(([, config]) => (config as any)?.buildSettings?.ASSETCATALOG_COMPILER_APPICON_NAME)
+        .filter((iconName): iconName is string => typeof iconName === 'string')
+        .map(unquote)
+    )
+  );
+}
+
+function removeIconFilesFromProject(project: any, projectName: string, iconNames: string[]): void {
+  const [targetUuid] = findNativeTargetByName(project, projectName);
+  const groupKey = project.findPBXGroupKey({ name: projectName });
+
+  for (const iconName of iconNames) {
+    removeIconFileFromProject(project, `${projectName}/${iconName}.icon`, targetUuid, groupKey);
+  }
+}
+
+function removeIconFileFromProject(
+  project: any,
+  iconPath: string,
+  targetUuid: string,
+  groupKey?: string
+): void {
+  const file = {
+    basename: path.basename(iconPath),
+    group: 'Resources',
+    path: iconPath,
+    target: targetUuid,
+  };
+
+  project.removeFromPbxBuildFileSection(file);
+  project.removeFromPbxFileReferenceSection(file);
+  if (groupKey) {
+    project.removeFromPbxGroup(file, groupKey);
+  }
+  project.removeFromPbxResourcesBuildPhase(file);
 }
