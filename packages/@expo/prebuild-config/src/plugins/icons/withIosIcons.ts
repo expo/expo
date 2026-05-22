@@ -101,7 +101,10 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
   if (typeof icon === 'string' && path.extname(icon) === '.icon') {
-    return await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot);
+    if (await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot)) {
+      await removeGeneratedIconImagesAsync(iosNamedProjectRoot);
+    }
+    return;
   }
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
@@ -238,7 +241,7 @@ async function addLiquidGlassIcon(
   iconPath: string,
   projectRoot: string,
   iosNamedProjectRoot: string
-): Promise<void> {
+): Promise<boolean> {
   const iconName = path.basename(iconPath, '.icon');
   const sourceIconPath = path.join(projectRoot, iconPath);
   const targetIconPath = path.join(iosNamedProjectRoot, `${iconName}.icon`);
@@ -248,10 +251,18 @@ async function addLiquidGlassIcon(
       'icon',
       `Liquid glass icon file not found at path: ${iconPath}`
     );
-    return;
+    return false;
   }
 
   await fs.promises.cp(sourceIconPath, targetIconPath, { recursive: true });
+  return true;
+}
+
+async function removeGeneratedIconImagesAsync(iosNamedProjectRoot: string): Promise<void> {
+  await fs.promises.rm(path.join(iosNamedProjectRoot, IMAGESET_PATH), {
+    force: true,
+    recursive: true,
+  });
 }
 
 /**

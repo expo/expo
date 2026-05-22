@@ -282,6 +282,115 @@ describe('e2e: iOS icons', () => {
     expect(contents.images.length).toBe(1);
   });
 });
+
+describe('e2e: iOS liquid glass icon cleanup', () => {
+  const iconPath = path.resolve(__dirname, '../../__tests__/fixtures/icon.png');
+  const projectRoot = '/app';
+  const generatedIconPath =
+    'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png';
+  const generatedIconContentsPath =
+    'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json';
+
+  beforeEach(() => {
+    const icon = fsReal.readFileSync(iconPath);
+
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/app/assets/AppIcon.icon/icon.json': JSON.stringify({
+          version: 1,
+          format: 'liquid-glass-icon',
+        }),
+        '/app/assets/AppIcon.icon/Assets/App-Icon-512x512@1x.png': 'icon-data',
+      },
+      projectRoot
+    );
+
+    vol.mkdirpSync('/app/assets');
+    vol.writeFileSync('/app/assets/icon.png', icon);
+  });
+
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('removes generated PNG app icon files when switching to a .icon directory', async () => {
+    await setIconsAsync(
+      {
+        slug: 'HelloWorld',
+        version: '1',
+        name: 'HelloWorld',
+        platforms: ['ios', 'android'],
+        icon: '/app/assets/icon.png',
+      },
+      projectRoot
+    );
+
+    let after = getDirFromFS(vol.toJSON(), projectRoot);
+    expect(after[generatedIconPath]).toBeDefined();
+    expect(after[generatedIconContentsPath]).toBeDefined();
+
+    await setIconsAsync(
+      {
+        slug: 'HelloWorld',
+        version: '1',
+        name: 'HelloWorld',
+        platforms: ['ios', 'android'],
+        ios: {
+          icon: 'assets/AppIcon.icon',
+        },
+      },
+      projectRoot
+    );
+
+    after = getDirFromFS(vol.toJSON(), projectRoot);
+    expect(after[generatedIconPath]).toBeUndefined();
+    expect(after[generatedIconContentsPath]).toBeUndefined();
+    expect(after['ios/HelloWorld/AppIcon.icon/icon.json']).toBe(
+      JSON.stringify({
+        version: 1,
+        format: 'liquid-glass-icon',
+      })
+    );
+  });
+
+  it('keeps generated PNG app icon files when the .icon directory is missing', async () => {
+    (WarningAggregator.addWarningIOS as jest.Mock).mockClear();
+
+    await setIconsAsync(
+      {
+        slug: 'HelloWorld',
+        version: '1',
+        name: 'HelloWorld',
+        platforms: ['ios', 'android'],
+        icon: '/app/assets/icon.png',
+      },
+      projectRoot
+    );
+
+    await setIconsAsync(
+      {
+        slug: 'HelloWorld',
+        version: '1',
+        name: 'HelloWorld',
+        platforms: ['ios', 'android'],
+        ios: {
+          icon: 'assets/DoesNotExist.icon',
+        },
+      },
+      projectRoot
+    );
+
+    const after = getDirFromFS(vol.toJSON(), projectRoot);
+    expect(after[generatedIconPath]).toBeDefined();
+    expect(after[generatedIconContentsPath]).toBeDefined();
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'icon',
+      'Liquid glass icon file not found at path: assets/DoesNotExist.icon'
+    );
+  });
+});
+
 describe('e2e: iOS icons with fallback image', () => {
   const projectRoot = '/app';
   beforeAll(async () => {

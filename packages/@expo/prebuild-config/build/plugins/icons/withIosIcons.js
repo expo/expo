@@ -117,7 +117,10 @@ async function setIconsAsync(config, projectRoot) {
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
   if (typeof icon === 'string' && _path().default.extname(icon) === '.icon') {
-    return await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot);
+    if (await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot)) {
+      await removeGeneratedIconImagesAsync(iosNamedProjectRoot);
+    }
+    return;
   }
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
@@ -238,9 +241,16 @@ async function addLiquidGlassIcon(iconPath, projectRoot, iosNamedProjectRoot) {
   const targetIconPath = _path().default.join(iosNamedProjectRoot, `${iconName}.icon`);
   if (!_fs().default.existsSync(sourceIconPath)) {
     _configPlugins().WarningAggregator.addWarningIOS('icon', `Liquid glass icon file not found at path: ${iconPath}`);
-    return;
+    return false;
   }
   await _fs().default.promises.cp(sourceIconPath, targetIconPath, {
+    recursive: true
+  });
+  return true;
+}
+async function removeGeneratedIconImagesAsync(iosNamedProjectRoot) {
+  await _fs().default.promises.rm(_path().default.join(iosNamedProjectRoot, IMAGESET_PATH), {
+    force: true,
     recursive: true
   });
 }
