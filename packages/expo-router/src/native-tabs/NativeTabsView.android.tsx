@@ -10,11 +10,15 @@ import {
   useSharedScreenProps,
 } from './NativeTabsView.shared';
 import { createAndroidScreenAppearance } from './appearance';
-import { SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES, type NativeTabsViewProps } from './types';
+import {
+  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
+  type NativeTabOptions,
+  type NativeTabsViewProps,
+} from './types';
 import { convertOptionsIconToScreensPropsIcon } from './utils/optionsIconConverter';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { disableIndicator, tabBarRespectsIMEInsets, tabs, unstable_nativeProps } = props;
+  const { tabBarRespectsIMEInsets, tabs, unstable_nativeProps } = props;
   const {
     android: rawAndroidProps,
     ios: _ignoredRawIosProps,
@@ -24,23 +28,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   const { selectedScreenKey, provenance } = useSelectedScreenKey(props);
   const onTabSelected = useOnTabSelectedHandler(props.onTabChange);
 
-  // TODO(@ubax): add per screen labelVisibilityMode + validation function
-  let labelVisibilityMode = props.labelVisibilityMode;
-  if (labelVisibilityMode && !supportedTabBarItemLabelVisibilityModesSet.has(labelVisibilityMode)) {
-    console.warn(
-      `Unsupported labelVisibilityMode: ${labelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`
-    );
-    labelVisibilityMode = undefined;
-  }
-
-  const androidAppearances = tabs.map((tab) =>
-    createAndroidScreenAppearance({
-      options: tab.options,
-      tintColor: props.tintColor,
-      rippleColor: props.rippleColor,
-      disableIndicator,
-      labelVisibilityMode,
-    })
+  const androidAppearances = useMemo(
+    () => tabs.map((tab) => createAndroidScreenAppearance(sanitizeAndroidOptions(tab.options))),
+    [tabs]
   );
 
   const children = tabs.map((tab, index) => (
@@ -124,3 +114,16 @@ function Screen(props: InternalTabScreenProps) {
 const supportedTabBarItemLabelVisibilityModesSet = new Set<string>(
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES
 );
+
+function sanitizeAndroidOptions(options: NativeTabOptions): NativeTabOptions {
+  if (
+    options.labelVisibilityMode &&
+    !supportedTabBarItemLabelVisibilityModesSet.has(options.labelVisibilityMode)
+  ) {
+    console.warn(
+      `Unsupported labelVisibilityMode: ${options.labelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`
+    );
+    return { ...options, labelVisibilityMode: undefined };
+  }
+  return options;
+}
