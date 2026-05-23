@@ -36,16 +36,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
    Creates a new promise whose resolver or rejecter must be called from the outside (also known as a deferred promise).
    */
   @JavaScriptActor
-  public init(_ runtime: JavaScriptRuntime) {
-    try! self.init(deferredIn: runtime)
-  }
-
-  /**
-   Creates a new promise whose resolver or rejecter must be called from the outside,
-   propagating construction failures to the caller.
-   */
-  @JavaScriptActor
-  public init(deferredIn runtime: JavaScriptRuntime) throws {
+  public init(_ runtime: JavaScriptRuntime) throws {
     self.runtime = runtime
 
     // Create function that is the promise setup. It is called immediately on `callAsConstructor`.

@@ -7,15 +7,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `create deferred promise`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
-
-    #expect(promise.isDeferred == true)
-}
-
-  @Test
-  func `create deferred promise with convenience initializer`() {
-    let runtime = JavaScriptRuntime()
-    let promise = JavaScriptPromise(runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     #expect(promise.isDeferred == true)
   }
@@ -26,14 +18,14 @@ struct JavaScriptPromiseTests {
     try runtime.eval("globalThis.Promise = undefined")
 
     #expect(throws: Error.self) {
-      _ = try JavaScriptPromise(deferredIn: runtime)
+      _ = try JavaScriptPromise(runtime)
     }
   }
 
   @Test
   func `resolve promise with value`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     promise.resolve(JavaScriptValue(runtime, 42))
 
@@ -44,7 +36,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `resolve promise with string`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     promise.resolve(JavaScriptValue(runtime, "hello"))
 
@@ -55,7 +47,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `resolve promise with object`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     let obj = runtime.createObject()
     obj.setProperty("value", value: 42)
@@ -69,7 +61,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `reject promise with error`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     struct TestError: Error {
       var localizedDescription: String { "Test error message" }
@@ -113,7 +105,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `asValue returns promise object`() throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
     let value = promise.asValue()
 
     #expect(value.isObject())
@@ -122,7 +114,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `promise can be passed to JavaScript`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     runtime.global().setProperty("testPromise", value: promise.asValue())
     promise.resolve(42)
@@ -135,7 +127,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `promise can be chained in JavaScript`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     runtime.global().setProperty("testPromise", value: promise.asValue())
 
@@ -153,7 +145,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `resolve with boolean`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     promise.resolve(JavaScriptValue(runtime, true))
 
@@ -164,7 +156,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `resolve with null`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     promise.resolve(JavaScriptValue.null)
 
@@ -175,7 +167,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `resolve with undefined`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     promise.resolve(JavaScriptValue.undefined)
 
@@ -186,7 +178,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `resolve with array`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     promise.resolve([1, 2, 3])
 
@@ -201,8 +193,8 @@ struct JavaScriptPromiseTests {
   @Test
   func `multiple promises resolve independently`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise1 = try JavaScriptPromise(deferredIn: runtime)
-    let promise2 = try JavaScriptPromise(deferredIn: runtime)
+    let promise1 = try JavaScriptPromise(runtime)
+    let promise2 = try JavaScriptPromise(runtime)
 
     promise1.resolve(10)
     promise2.resolve(20)
@@ -257,7 +249,7 @@ struct JavaScriptPromiseTests {
   @Test
   func `resolve promise from a task`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(deferredIn: runtime)
+    let promise = try JavaScriptPromise(runtime)
 
     // Resolve from a task
     Task.detached {
@@ -273,9 +265,9 @@ struct JavaScriptPromiseTests {
   func `promise all`() async throws {
     let runtime = JavaScriptRuntime()
 
-    let promise1 = try JavaScriptPromise(deferredIn: runtime)
-    let promise2 = try JavaScriptPromise(deferredIn: runtime)
-    let promise3 = try JavaScriptPromise(deferredIn: runtime)
+    let promise1 = try JavaScriptPromise(runtime)
+    let promise2 = try JavaScriptPromise(runtime)
+    let promise3 = try JavaScriptPromise(runtime)
 
     runtime.global().setProperty("p1", value: promise1.asValue())
     runtime.global().setProperty("p2", value: promise2.asValue())
@@ -301,8 +293,8 @@ struct JavaScriptPromiseTests {
   func `promise race`() async throws {
     let runtime = JavaScriptRuntime()
 
-    let promise1 = try JavaScriptPromise(deferredIn: runtime)
-    let promise2 = try JavaScriptPromise(deferredIn: runtime)
+    let promise1 = try JavaScriptPromise(runtime)
+    let promise2 = try JavaScriptPromise(runtime)
 
     runtime.global().setProperty("p1", value: promise1.asValue())
     runtime.global().setProperty("p2", value: promise2.asValue())
@@ -324,4 +316,3 @@ struct JavaScriptPromiseTests {
     #expect(promise.isDeferred == false)
   }
 }
-

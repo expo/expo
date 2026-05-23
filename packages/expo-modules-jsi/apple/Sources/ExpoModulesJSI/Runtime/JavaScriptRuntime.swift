@@ -367,7 +367,7 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   @JavaScriptActor
   public func createAsyncFunction(_ name: String, _ function: sending @escaping AsyncFunctionClosure) -> JavaScriptFunction {
     return createFunction(name) { this, arguments in
-      let promise = try JavaScriptPromise(deferredIn: self)
+      let promise = try JavaScriptPromise(self)
 
       // Arguments buffer needs to be copied to ensure safe async access.
       let argumentsRef = arguments.copy().ref()
