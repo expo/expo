@@ -34,7 +34,10 @@ const SWIFT_SYMBOL_PATTERNS = [
     /_\w+_swiftoverride_/,
     /_Z\w+swift/,
     /get_witness_table /,
+    /get_type_metadata /,
+    /type metadata accessor /,
 ];
+const VALID_C_IDENT = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const isSwiftSymbol = (line) => SWIFT_SYMBOL_PATTERNS.some((re) => re.test(line));
 const LOG_FILE_NAME = 'expo-brownfield-mangle.log';
 /**
@@ -186,7 +189,9 @@ const extractCategorySelectors = (lines, classes) => {
     }
     return Array.from(new Set(selectors));
 };
-const prefixSymbols = (prefix, symbols) => symbols.map((sym) => `${sym}=${prefix}${sym}`);
+const prefixSymbols = (prefix, symbols) => symbols
+    .filter((sym) => VALID_C_IDENT.test(sym))
+    .map((sym) => `${sym}=${prefix}${sym}`);
 /**
  * Property setter/getter pairs need symmetric handling so that `setFoo:` →
  * `set<Prefix>Foo:` and `foo` → `<Prefix>foo` both round-trip. Lifted from
