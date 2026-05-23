@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Drop invalid mangling defines and skip script-only pods when `multipleFrameworks: true` is enabled, fixing `Macro name must be an identifier` and `Argument list too long` build failures. ([#46208](https://github.com/expo/expo/pull/46208) by [@ShadiBlitz](https://github.com/ShadiBlitz))
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-05-23
