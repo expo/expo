@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Scope the `@expo/ui` worklet SharedObject serializer to SharedObjects created by `@expo/ui`. ([#46139](https://github.com/expo/expo/pull/46139) by [@roitium](https://github.com/roitium))
-
 ### 💡 Others
+
+## 56.0.13 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- Scope the `@expo/ui` worklet SharedObject serializer to SharedObjects created by `@expo/ui`. ([#46139](https://github.com/expo/expo/pull/46139) by [@roitium](https://github.com/roitium))
 
 ## 56.0.12 — 2026-05-21
 

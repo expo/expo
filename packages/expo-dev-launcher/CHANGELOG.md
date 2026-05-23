@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix xcode build phase ordering. ([#46125](https://github.com/expo/expo/pull/46125) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 56.0.15 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix xcode build phase ordering. ([#46125](https://github.com/expo/expo/pull/46125) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.14 — 2026-05-21
 

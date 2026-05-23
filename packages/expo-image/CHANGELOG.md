@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.9 — 2026-05-23
+
+### 🐛 Bug fixes
+
 - [iOS] Fix `placeholder` failing to load images from the asset catalog (xcassets). ([#46170](https://github.com/expo/expo/pull/46170) by [@zhelezkov](https://github.com/zhelezkov))
 - [iOS] Fix xcasset images not loading from JS due to `file://` scheme mismatch. ([#46170](https://github.com/expo/expo/pull/46170) by [@zhelezkov](https://github.com/zhelezkov))
-
-### 💡 Others
 
 ## 56.0.8 — 2026-05-21
 
