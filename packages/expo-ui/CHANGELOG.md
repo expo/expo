@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix `shape` prop on `TextField` / `OutlinedTextField`. ([#46206](https://github.com/expo/expo/pull/46206) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-23
