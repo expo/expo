@@ -147,8 +147,12 @@ public class AudioModule: Module {
         player.id
       }
 
-      Property("isAudioSamplingSupported") {
-        true
+      Property("isAudioSamplingSupported") { player in
+        player.isAudioSamplingSupported
+      }
+
+      Property("isPitchControlSupported") { player in
+        player.isPitchControlSupported
       }
 
       Property("isBuffering") { player in
@@ -179,6 +183,12 @@ public class AudioModule: Module {
         player.shouldCorrectPitch
       }.set { (player, shouldCorrectPitch: Bool) in
         player.shouldCorrectPitch = shouldCorrectPitch
+      }
+
+      Property("pitch") { player in
+        player.pitch
+      }.set { (player, pitch: Double) in
+        player.pitch = Float(pitch)
       }
 
       Property("currentTime") { player in

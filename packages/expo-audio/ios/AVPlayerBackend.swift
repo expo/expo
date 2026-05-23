@@ -54,6 +54,21 @@ class AVPlayerBackend: AudioPlayerBackendProtocol {
     set { ref.isMuted = newValue }
   }
 
+  var pitch: Float {
+    get { return 0.0 }
+    set {
+      if newValue != 0.0 {
+        log.warn("[expo-audio] Pitch shifting is not supported on iOS when using AVPlayer.")
+      }
+    }
+  }
+
+  var supportsPitchCorrectionQuality: Bool { true }
+  var isAudioSamplingSupported: Bool {
+    guard let source = source, let url = source.uri else { return false }
+    return !url.absoluteString.contains(".m3u8")
+  }
+
   var duration: Double {
     let seconds = ref.currentItem?.duration.seconds ?? 0.0
     return seconds.isNaN ? 0.0 : seconds

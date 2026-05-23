@@ -58,7 +58,29 @@ class AudioPlayer(
   statusEventName = PLAYBACK_STATUS_UPDATE
 ),
   LockScreenPlayable {
+  private var _playbackRate: Float = 1.0f
   var preservesPitch = true
+    set(value) {
+      field = value
+      applyPlaybackParameters()
+    }
+  private var _pitch: Float = 0f
+
+  var pitch: Float
+    get() = _pitch
+    set(value) {
+      val clamped = value.coerceIn(-24f, 24f)
+      _pitch = clamped
+      applyPlaybackParameters()
+    }
+
+  private fun applyPlaybackParameters() {
+    val pitchFactor = Math.pow(2.0, (_pitch / 12.0).toDouble()).toFloat()
+    val speed = _playbackRate
+    val pitch = if (preservesPitch) pitchFactor else speed * pitchFactor
+    ref.playbackParameters = PlaybackParameters(speed, pitch)
+  }
+
 
   // Lock screen controls
   override var isActiveForLockScreen = false
@@ -134,9 +156,8 @@ class AudioPlayer(
   }
 
   override fun setPlaybackRate(rate: Float) {
-    val playbackRate = rate.coerceIn(0.1f, 2.0f)
-    val pitch = if (preservesPitch) 1f else playbackRate
-    ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
+    _playbackRate = rate.coerceIn(0.1f, 2.0f)
+    applyPlaybackParameters()
   }
 
   private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->

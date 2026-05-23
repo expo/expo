@@ -44,6 +44,7 @@ interface Props {
   setPosition: (position: number) => Promise<any>;
   setIsLooping: (isLooping: boolean) => void;
   setVolume: (volume: number, audioPan?: number) => void;
+  setPitch?: (pitch: number) => void;
 
   // Status
   isLoaded: boolean;
@@ -51,6 +52,7 @@ interface Props {
   loop: boolean;
   volume: number;
   audioPan: number;
+  pitch?: number;
   playbackRate: number;
   currentTime: number;
   currentOffsetFromLive?: number | null;
@@ -239,6 +241,17 @@ export default function Player(props: Props) {
           }}
         />
       </View>
+      {props.setPitch && (
+        <View style={styles.container}>
+          <PitchSlider
+            pitch={props.pitch ?? 0}
+            disabled={!props.isLoaded}
+            onValueChanged={(value) => {
+              props.setPitch?.(value);
+            }}
+          />
+        </View>
+      )}
 
       <View style={[styles.container, styles.buttonsContainer]}>
         {(props.extraButtons ?? []).map((button) => {
@@ -376,6 +389,65 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
   );
 }
 
+function PitchSlider({
+  pitch,
+  disabled,
+  color = Colors.tintColor,
+  onValueChanged,
+}: {
+  pitch: number;
+  disabled: boolean;
+  color?: string;
+  onValueChanged: (value: number) => void;
+}) {
+  const [value, setValue] = React.useState(pitch);
+
+  React.useEffect(() => {
+    setValue(pitch);
+  }, [pitch]);
+
+  const height = 36;
+  return (
+    <View
+      style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }, { flex: 1 }]}
+      pointerEvents={disabled ? 'none' : 'auto'}>
+      <TouchableOpacity
+        style={{ alignItems: 'center', width: height, height, justifyContent: 'center' }}
+        onPress={() => {
+          setValue(0);
+          onValueChanged(0);
+        }}>
+        <Ionicons name="musical-notes-outline" size={24} color={color} />
+      </TouchableOpacity>
+      <Slider
+        value={value === 0 ? 0.0001 : value}
+        maximumValue={24}
+        minimumValue={-24}
+        style={{ height, flex: 1 }}
+        thumbTintColor={color}
+        minimumTrackTintColor={color}
+        onSlidingComplete={(value) => {
+          onValueChanged(value);
+        }}
+        onValueChange={(val) => {
+          setValue(val);
+        }}
+      />
+      <Text
+        style={{
+          width: 90,
+          textAlign: 'right',
+          fontSize: 12,
+          color: Colors.tintColor,
+          alignSelf: 'center',
+          fontWeight: 'bold',
+        }}>
+        {value === 0 ? '0.0 semitones' : `${value > 0 ? '+' : ''}${value.toFixed(1)} semitones`}
+      </Text>
+    </View>
+  );
+}
+
 function PanSlider({
   audioPan,
   color = Colors.tintColor,
@@ -404,7 +476,7 @@ function PanSlider({
         <Ionicons name="barcode-outline" size={24} color={color} />
       </View>
       <Slider
-        value={value}
+        value={value === 0 ? 0.0001 : value}
         maximumValue={1}
         minimumValue={-1}
         style={{ height, flex: 1 }}

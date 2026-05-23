@@ -39,6 +39,7 @@ export default function AudioScreen(props: any) {
       <AudioPlayer
         source="https://dai.google.com/linear/hls/event/Sid4xiTQTkCT1SLu6rjUSQ/master.m3u8"
         style={styles.player}
+        crossOrigin="anonymous"
       />
       <HeadingText>Remote asset with downloadFirst</HeadingText>
       <AudioPlayer
