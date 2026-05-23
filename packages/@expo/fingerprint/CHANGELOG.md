@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed unstable fingerprint on Windows. ([#46196](https://github.com/expo/expo/pull/46196) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint from `expo-modules-jsi`. ([#46187](https://github.com/expo/expo/pull/46187) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
