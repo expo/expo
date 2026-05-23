@@ -41,6 +41,7 @@ exports.DEFAULT_IGNORE_PATHS = [
     '**/ios/.xcode.env.local',
     '**/ios/**/project.xcworkspace',
     '**/ios/*.xcworkspace/xcuserdata/**/*',
+    '**/.swiftpm/**/*',
     // System files that differ from machine to machine
     '**/.DS_Store',
     // Ignore all expo configs because we will read expo config in a HashSourceContents already
@@ -53,8 +54,8 @@ exports.DEFAULT_IGNORE_PATHS = [
     // https://github.com/expo/expo/blob/d0e39858ead9a194d90990f89903e773b9d33582/packages/expo-updates/ios/EXUpdates.podspec#L51-L58
     '**/node_modules/expo-sqlite/ios/sqlite3.[ch]',
     '**/node_modules/expo-updates/ios/EXUpdates/BSPatch/bspatch.c',
-    // expo-modules-jsi has build artifacts after prebuild
-    '**/node_modules/expo-modules-jsi/apple/Products/**/*',
+    // expo-modules-jsi has build artifacts
+    '**/node_modules/expo-modules-jsi/apple/{Products,.build,.DerivedData,.generated}/**/*',
     // Ignore nested node_modules
     '**/node_modules/**/node_modules/**',
     // Ignore node binaries that might be platform dependent
