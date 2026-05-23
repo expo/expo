@@ -100,16 +100,19 @@ module Pod
 
     private
 
-    # Mapping from Pod::Platform symbol to the Xcode build setting key
-    # that stores its deployment target.
-    EXPO_DEPLOYMENT_TARGET_KEYS = {
-      ios: 'IPHONEOS_DEPLOYMENT_TARGET',
-      osx: 'MACOSX_DEPLOYMENT_TARGET',
-      tvos: 'TVOS_DEPLOYMENT_TARGET',
-    }.freeze
-
     # See call site in perform_post_install_actions for rationale.
+    # This runs AFTER the user's `post_install` hook, so it will overwrite any
+    # deployment target a consumer set there for an Expo module. That is
+    # intentional — the bumped pod list is logged so the override is visible.
     def reconcile_expo_module_deployment_targets
+      # Mapping from Pod::Platform symbol to the Xcode build setting key
+      # that stores its deployment target.
+      deployment_target_keys = {
+        ios: 'IPHONEOS_DEPLOYMENT_TARGET',
+        osx: 'MACOSX_DEPLOYMENT_TARGET',
+        tvos: 'TVOS_DEPLOYMENT_TARGET',
+      }
+
       expo_pod_names = @podfile.expo_autolinked_pod_names.to_set
       return if expo_pod_names.empty?
 
@@ -117,14 +120,17 @@ module Pod
       core_spec = core_target&.root_spec
       return if core_spec.nil?
 
-      required = EXPO_DEPLOYMENT_TARGET_KEYS
+      required = deployment_target_keys
         .map { |platform, key| [key, core_spec.deployment_target(platform)] }
         .reject { |_, value| value.nil? || value.empty? }
         .to_h
       return if required.empty?
 
       bumped = []
-      self.target_installation_results.pod_target_installation_results.each do |pod_name, result|
+      self.target_installation_results.pod_target_installation_results.each_value do |result|
+        # Keys in pod_target_installation_results are target names, which can
+        # differ from pod names under scoped targets — use pod_name explicitly.
+        pod_name = result.target.pod_name
         next unless expo_pod_names.include?(pod_name)
         next if pod_name == 'ExpoModulesCore'
 
@@ -133,7 +139,9 @@ module Pod
           required.each do |key, required_version|
             current = config.build_settings[key]
             # nil means the pod doesn't target this platform — don't create a setting for it.
-            next if current.nil?
+            # Empty string or an xcconfig reference (e.g. `$(inherited)`) means we can't
+            # compare versions, so leave it alone.
+            next if current.nil? || current.empty? || current.start_with?('$')
             if Gem::Version.new(current) < Gem::Version.new(required_version)
               config.build_settings[key] = required_version
               target_bumped = true
@@ -144,9 +152,9 @@ module Pod
       end
 
       unless bumped.empty?
-        ios_required = required['IPHONEOS_DEPLOYMENT_TARGET'] || '?'
+        summary = required.map { |key, value| "#{key.sub('_DEPLOYMENT_TARGET', '')}=#{value}" }.join(' ')
         Pod::UI.puts "[Expo] ".blue +
-          "Raised deployment target to #{ios_required} for #{bumped.size} Expo modules (matching ExpoModulesCore)".yellow
+          "Raised deployment target (#{summary}) for #{bumped.size} Expo modules matching ExpoModulesCore: #{bumped.join(', ')}".yellow
         self.pods_project.save
       end
     end
