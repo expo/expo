@@ -4,6 +4,7 @@ import type { ColorValue } from 'react-native';
 
 import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
 import type { ModifierConfig, ViewEvent } from '../../types';
+import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -210,7 +211,12 @@ type BaseTextFieldProps = {
   onValueChange?: (value: string) => void;
   /** A callback triggered when the field gains or loses focus. */
   onFocusChanged?: (focused: boolean) => void;
-  shape?: object;
+  /**
+   * Shape used for the field's container outline / fill. Use the helpers from
+   * `Shape` (e.g. `<Shape.Pill />` or `<Shape.RoundedCorner cornerRadii={...} />`).
+   * Defaults to the Material `OutlinedTextFieldDefaults.shape` / `TextFieldDefaults.shape`.
+   */
+  shape?: ShapeJSXElement;
   modifiers?: ModifierConfig[];
   /** Slot children (e.g. `TextField.Label`, `TextField.Placeholder`). */
   children?: React.ReactNode;
@@ -241,7 +247,7 @@ type NativeTextFieldProps = Omit<
 > & {
   variant: 'filled' | 'outlined';
   colors?: TextFieldColors;
-  shape?: object;
+  shape?: ShapeRecordProps;
   children?: React.ReactNode;
   value?: number | null;
   selection?: number | null;
@@ -269,6 +275,7 @@ function useTransformedProps(
     onValueChange,
     onFocusChanged,
     onSelectionChange,
+    shape,
     ...restProps
   } = props;
 
@@ -280,6 +287,7 @@ function useTransformedProps(
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     variant,
+    shape: parseJSXShape(shape),
     children,
     value: getStateId(value),
     selection: getStateId(selection),
