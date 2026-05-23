@@ -6,6 +6,7 @@ import ExpoModulesCore
 public final class ImageViewProps: UIBaseViewProps {
   @Field var uiImage: String?
   @Field var systemName: String?
+  @Field var assetName: String?
   @Field var size: Double?
   @Field var color: Color?
   @Field var variableValue: Double?
@@ -28,6 +29,18 @@ public struct ImageView: ExpoSwiftUI.View {
           return Image(systemName: systemName, variableValue: props.variableValue)
         }
         return Image(systemName: systemName)
+      }()
+
+      image
+        .font(.system(size: CGFloat(props.size ?? 24)))
+        .foregroundColor(props.color)
+        .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+    } else if let assetName = props.assetName {
+      let image: Image = {
+        if #available(iOS 16.0, tvOS 16.0, *) {
+          return Image(assetName, variableValue: props.variableValue)
+        }
+        return Image(assetName)
       }()
 
       image

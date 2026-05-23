@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component.
+
 ### 🐛 Bug fixes
 
 - Scope the `@expo/ui` worklet SharedObject serializer to SharedObjects created by `@expo/ui`. ([#46139](https://github.com/expo/expo/pull/46139) by [@roitium](https://github.com/roitium))
