@@ -53,12 +53,14 @@ export interface SharedBuildConfigFields {
   reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 
   /**
-   * Enable the experimental Hermes V1 engine.
+   * Use the Hermes V1 engine, which provides faster startup times, improved runtime
+   * performance, and reduced memory usage.
    *
-   * In React Native 0.83, using Hermes V1 requires building React Native from source.
-   * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+   * Hermes V1 is the default JavaScript engine starting in SDK 56. To opt out and use
+   * the legacy Hermes engine, set this to `false`. Disabling Hermes V1 requires building
+   * React Native from source, so you must also set `buildReactNativeFromSource` to `true`.
    *
-   * @default false
+   * @default true
    */
   useHermesV1?: boolean;
 }

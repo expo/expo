@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `useHermesV1` reference to document its current default of `true` (Hermes V1 is the default engine since SDK 56) and that disabling it requires `buildReactNativeFromSource`. ([#PR](https://github.com/expo/expo/pull/PR) by [@yaminyassin](https://github.com/yaminyassin))
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-05-23
