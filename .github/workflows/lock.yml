@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   action:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - uses: dessant/lock-threads@1bf7ec25051fe7c00bdd17e6a7cf3d7bfb7dc771 # v5
