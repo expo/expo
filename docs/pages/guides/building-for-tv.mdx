@@ -9,6 +9,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -145,21 +146,37 @@ The following walkthrough describes the steps required to modify an Expo project
 
 ### Modify dependencies for TV
 
-In **package.json**, modify the `react-native` dependency to use the TV repo, and exclude this dependency from [`npx expo install` version validation](/more/expo-cli/#configuring-dependency-validation).
+In **package.json**, modify the `react-native` dependency to use the TV repo.
 
-> **Warning** The `react-native-tvos` version must match the Expo SDK you are using. For example, Expo SDK 56 uses React Native 0.85, so you should use `react-native-tvos@0.85-stable` (the latest 0.85 version) as shown below. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use for older SDKs.
+<Tabs>
 
-> **Warning** When upgrading an Expo TV project to a new version of the SDK, the `react-native-tvos` version **must be upgraded manually**. It will not be automatically updated by `npx expo install expo@latest --fix`.
-
-> **Warning** If you have more than one Expo project in a monorepo, and one of them is modified for TV, then all of them should be modified to use the React Native TV package as described here, even if some of the projects are not configured to target TV. This avoids possible conflicts between the project dependencies, while still supporting mobile development fully on all the projects.
-> {/* prettier-ignore */}
-
+<Tab label="SDK 56 and later">
 ```json package.json
 {
   /* @hide ... */ /* @end */
   "dependencies": {
     /* @hide ... */ /* @end */
     "react-native": "npm:react-native-tvos@0.85-stable"
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+The `react-native-tvos` version must match the Expo SDK you are using. For example, Expo SDK 56 uses React Native 0.85, so you should use `react-native-tvos@0.85-stable` (the latest 0.85 version) as shown above. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use.
+
+In SDK 56 and later, the dependency on the TV repo will be correctly upgraded when [upgrading your project to a newer SDK version](/workflow/upgrading-expo-sdk-walkthrough/#upgrade-the-expo-sdk).
+
+</Tab>
+
+<Tab label="SDK 55 and earlier">
+You will need to exclude the `react-native` dependency from [`npx expo install` version validation](/more/expo-cli/#configuring-dependency-validation).
+
+```json package.json
+{
+  /* @hide ... */ /* @end */
+  "dependencies": {
+    /* @hide ... */ /* @end */
+    "react-native": "npm:react-native-tvos@0.83-stable"
     /* @hide ... */ /* @end */
   },
   "expo": {
@@ -169,6 +186,17 @@ In **package.json**, modify the `react-native` dependency to use the TV repo, an
   }
 }
 ```
+
+The `react-native-tvos` version must match the Expo SDK you are using. For example, Expo SDK 55 uses React Native 0.83, so you should use `react-native-tvos@0.83-stable` (the latest 0.83 version) as shown above. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use.
+
+> **Warning** If upgrading an Expo TV project to SDK 55 or earlier, the `react-native-tvos` version **must be upgraded manually**. It will not be automatically updated by `npx expo install expo@latest --fix`.
+
+</Tab>
+
+</Tabs>
+
+> **Warning** If you have more than one Expo project in a monorepo, and one of them is modified for TV, then all of them should be modified to use the React Native TV package as described here, even if some of the projects are not configured to target TV. This avoids possible conflicts between the project dependencies, while still supporting mobile development fully on all the projects.
+> {/* prettier-ignore */}
 
 </Step>
 
