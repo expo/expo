@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-On Android and iOS, recordings are saved in the app's cache directory by default. The system may delete cache files when the device runs low on storage. To keep new recordings in a more persistent location, pass `{ ...RecordingPresets.HIGH_QUALITY, directory: 'document' }` to `useAudioRecorder` or `prepareToRecordAsync()` to store them under the app's document directory. For existing recordings already saved in cache, use the returned recording URI to move them with [`expo-file-system`](./filesystem/).
+On Android and iOS, Expo Audio saves recordings in the app's cache directory by default. The system may delete cache files when the device runs low on storage. To keep new recordings in a more persistent location, pass `{ ...RecordingPresets.HIGH_QUALITY, directory: 'document' }` to `useAudioRecorder` or `prepareToRecordAsync()`. This stores them under the app's document directory. For existing recordings already saved in cache, use the returned recording URI to move them with [`expo-file-system`](./filesystem/).
 
 ### Playing audio in the background
 
