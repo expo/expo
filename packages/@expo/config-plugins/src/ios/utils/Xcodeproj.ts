@@ -19,10 +19,10 @@ import type {
   XCConfigurationList,
   XcodeProject,
 } from 'xcode';
-import xcode from 'xcode';
 import pbxFile from 'xcode/lib/pbxFile';
 
 import { trimQuotes } from './string';
+import { project as xcodeShimProject } from './xcodeShim';
 import { addWarningIOS } from '../../utils/warnings';
 import * as Paths from '../Paths';
 
@@ -335,9 +335,10 @@ export function ensureGroupRecursively(project: XcodeProject, filepath: string):
  */
 export function getPbxproj(projectRoot: string): XcodeProject {
   const projectPath = Paths.getPBXProjectPath(projectRoot);
-  const project = xcode.project(projectPath);
-  project.parseSync();
-  return project;
+  // Route through the @bacons/xcode-backed shim. The shim mirrors the legacy
+  // `xcode` package's API surface, so third-party consumers receiving a
+  // pbxproj via `mods.ios.xcodeproj` keep working unchanged.
+  return xcodeShimProject(projectPath).parseSync() as unknown as XcodeProject;
 }
 
 /**

@@ -64,6 +64,8 @@ export { compileModsAsync, withDefaultBaseMods, evalModsAsync } from './plugins/
 
 export { PluginError } from './utils/errors';
 
+export { unstable_project } from './unstable';
+
 export const BaseMods = {
   withGeneratedBaseMods,
   provider,

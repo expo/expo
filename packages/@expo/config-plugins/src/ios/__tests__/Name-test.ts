@@ -49,8 +49,8 @@ describe(setProductName, () => {
 
   it(`sets the iOS PRODUCT_NAME value on every build configuration of the application target`, () => {
     for (const [input, output] of [
-      ['My Cool Thing', `"MyCoolThing"`],
-      ['h"&<world/>🚀', `"hworld"`],
+      ['My Cool Thing', 'MyCoolThing'],
+      ['h"&<world/>🚀', 'hworld'],
     ]) {
       // Ensure the value can be parsed and written.
       const project = setProductNameForRoot({ name: input, slug: '' }, projectRoot);
@@ -61,7 +61,9 @@ describe(setProductName, () => {
         nativeTarget.buildConfigurationList
       );
 
-      // PRODUCT_NAME should be set (and quoted) on every configuration of the app target.
+      // PRODUCT_NAME should be set on every configuration of the app target.
+      // Values are stored unquoted; the serializer wraps them at write time
+      // only when the heuristic deems it necessary (spaces, special chars).
       expect(buildConfigurations.length).toBeGreaterThan(0);
       for (const [, buildConfig] of buildConfigurations) {
         expect(buildConfig.buildSettings.PRODUCT_NAME).toBe(output);
@@ -72,9 +74,10 @@ describe(setProductName, () => {
   it(`writes the PRODUCT_NAME to the serialized pbxproj`, () => {
     const project = setProductNameForRoot({ name: 'My Cool Thing', slug: '' }, projectRoot);
     const output = project.writeSync();
-    // The new PRODUCT_NAME should be present in the serialized output.
-    expect(output).toContain('PRODUCT_NAME = "MyCoolThing"');
-    // The default PRODUCT_NAME (HelloWorld) should no longer be referenced as the value.
+    // The sanitized PRODUCT_NAME is a safe identifier, so it serializes
+    // unquoted (`PRODUCT_NAME = MyCoolThing;`). Either form is valid pbxproj.
+    expect(output).toMatch(/PRODUCT_NAME = (MyCoolThing|"MyCoolThing");/);
+    // The default PRODUCT_NAME (HelloWorld) should no longer appear.
     expect(output).not.toMatch(/PRODUCT_NAME = HelloWorld;/);
   });
 });
