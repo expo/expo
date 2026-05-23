@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Native view config attributes now carry a `process` function that unwraps shared objects to their registry id, so callers can pass shared objects directly as view props instead of unwrapping them manually. ([#46212](https://github.com/expo/expo/pull/46212) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.12 — 2026-05-21
 
 ### 🐛 Bug fixes

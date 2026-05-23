@@ -8,8 +8,8 @@ import { type Component, type ComponentType, createRef, PureComponent } from 're
 import { type ReactNativeElement, findNodeHandle, type HostComponent } from 'react-native';
 import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
-import { requireNativeModule } from './requireNativeModule';
 import { SharedObject } from './SharedObject';
+import { requireNativeModule } from './requireNativeModule';
 
 // To make the transition from React Native's `requireNativeComponent` to Expo's
 // `requireNativeViewManager` as easy as possible, `requireNativeViewManager` is a drop-in
