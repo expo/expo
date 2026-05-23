@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for storing recordings in the app document directory on Android and iOS.
+
 ### 🐛 Bug fixes
 
 - [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`. ([#46147](https://github.com/expo/expo/pull/46147) by [@alanjhughes](https://github.com/alanjhughes))
