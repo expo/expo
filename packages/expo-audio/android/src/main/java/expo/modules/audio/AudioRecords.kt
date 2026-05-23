@@ -33,7 +33,6 @@ class AudioMode(
 // Data class because we want `equals`
 @OptimizedRecord
 data class RecordingOptions(
-  @Field val directory: RecordingDirectory?,
   @Field val extension: String,
   @Field val sampleRate: Double?,
   @Field val numberOfChannels: Double?,
@@ -42,7 +41,8 @@ data class RecordingOptions(
   @Field val audioEncoder: AndroidAudioEncoder?,
   @Field val maxFileSize: Int?,
   @Field val isMeteringEnabled: Boolean = false,
-  @Field val audioSource: RecordingSource?
+  @Field val audioSource: RecordingSource?,
+  @Field val directory: RecordingDirectory?
 ) : Record
 
 enum class RecordingDirectory(val value: String) : Enumerable {

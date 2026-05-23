@@ -223,16 +223,41 @@ class AudioRecorder(
     isPrepared = false
   }
 
-  private fun createRecorder(options: RecordingOptions) =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+  private fun createRecorder(options: RecordingOptions): MediaRecorder {
+    val outputFilePath = createRecordingFilePath(options)
+    val mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       MediaRecorder(context)
     } else {
       MediaRecorder()
-    }.apply {
-      setRecordingOptions(this, options)
     }
 
-  private fun setRecordingOptions(recorder: MediaRecorder, options: RecordingOptions) {
+    try {
+      setRecordingOptions(mediaRecorder, options, outputFilePath)
+    } catch (e: Exception) {
+      mediaRecorder.release()
+      throw e
+    }
+
+    return mediaRecorder
+  }
+
+  private fun createRecordingFilePath(options: RecordingOptions): String {
+    val filename = "recording-${UUID.randomUUID()}${options.extension}"
+    val parentDirectory = when (options.directory ?: RecordingDirectory.CACHE) {
+      RecordingDirectory.CACHE -> _appContext.cacheDirectory
+      RecordingDirectory.DOCUMENT -> _appContext.persistentFilesDirectory
+    }
+    val directory = File(parentDirectory, "Audio")
+    try {
+      ensureDirExists(directory)
+    } catch (e: IOException) {
+      // This only occurs in the case that the scoped path is not in this experience's scope,
+      // which is never true.
+    }
+    return File(directory, filename).absolutePath
+  }
+
+  private fun setRecordingOptions(recorder: MediaRecorder, options: RecordingOptions, outputFilePath: String) {
     if (!hasRecordingPermissions()) {
       return
     }
@@ -261,23 +286,10 @@ class AudioRecorder(
         setMaxFileSize(it.toLong())
       }
 
-      val filename = "recording-${UUID.randomUUID()}${options.extension}"
-      try {
-        val parentDirectory = when (options.directory ?: RecordingDirectory.CACHE) {
-          RecordingDirectory.CACHE -> _appContext.cacheDirectory
-          RecordingDirectory.DOCUMENT -> _appContext.persistentFilesDirectory
-        }
-        val directory = File(parentDirectory, "Audio")
-        ensureDirExists(directory)
-        val file = File(directory, filename)
-        filePath = file.absolutePath
-      } catch (e: IOException) {
-        // This only occurs in the case that the scoped path is not in this experience's scope,
-        // which is never true.
-      }
+      filePath = outputFilePath
       setOnErrorListener(this@AudioRecorder)
       setOnInfoListener(this@AudioRecorder)
-      setOutputFile(filePath)
+      setOutputFile(outputFilePath)
       isPrepared = false
     }
   }

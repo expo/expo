@@ -28,6 +28,8 @@ const recordAndStop = async (recorder: AudioRecorder) => {
   await recorder.stop();
 };
 
+const normalizeFileUriForComparison = (uri: string) => uri.replace('file:///private/', 'file:///');
+
 const retryForStatus = (recorder: AudioRecorder, status: Partial<RecorderState>) =>
   asyncRetry(
     async (bail, retriesCount) => {
@@ -262,7 +264,11 @@ export async function test(t) {
               throw new Error('Expected recorder.uri to be set after preparing a recording');
             }
             t.expect(recordingUri).toContain('file:///');
-            t.expect(recordingUri.startsWith(expectedRootUri)).toBe(true);
+            t.expect(
+              normalizeFileUriForComparison(recordingUri).startsWith(
+                normalizeFileUriForComparison(expectedRootUri)
+              )
+            ).toBe(true);
 
             await recordAndStop(currentRecorder);
 

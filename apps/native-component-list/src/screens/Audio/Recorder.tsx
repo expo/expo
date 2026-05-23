@@ -1,13 +1,6 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import {
-  useAudioRecorder,
-  useAudioRecorderState,
-  AudioModule,
-  RecordingStatus,
-  RecordingOptions,
-  RecordingPresets,
-  RecordingDirectory,
-} from 'expo-audio';
+import { useAudioRecorder, useAudioRecorderState, AudioModule, RecordingPresets } from 'expo-audio';
+import type { RecordingDirectory, RecordingOptions, RecordingStatus } from 'expo-audio';
 import React, { useEffect } from 'react';
 import {
   Alert,

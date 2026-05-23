@@ -88,10 +88,19 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
 
     if let options {
+      let newRecorder: AVAudioRecorder
+      do {
+        newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
+      } catch {
+        currentState = .error
+        try? session.setActive(false)
+        throw error
+      }
+
       currentOptions = options
       currentSessionOptions = sessionOptions
       ref.delegate = nil
-      ref = AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
+      ref = newRecorder
       ref.delegate = recordingDelegate
     }
 
@@ -234,9 +243,9 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ])
   }
 
-  private func recordingDirectory(for options: RecordingOptions) -> URL? {
+  private func recordingDirectory(for options: RecordingOptions) throws -> URL {
     guard let fileSystem = appContext?.fileSystem else {
-      return nil
+      throw Exceptions.AppContextLost()
     }
     let path = (options.directory ?? .cache) == .document ? fileSystem.documentDirectory : fileSystem.cachesDirectory
     return URL(fileURLWithPath: path)

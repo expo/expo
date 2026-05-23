@@ -411,7 +411,7 @@ public class AudioModule: Module {
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
         let recordingDir = try recordingDirectory(for: options.directory)
-        let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
+        let avRecorder = try AudioUtils.createRecorder(directory: recordingDir, with: options)
         let recorder = AudioRecorder(avRecorder, options: options)
         recorder.owningRegistry = self.registry
         recorder.allowsRecording = allowsRecording
