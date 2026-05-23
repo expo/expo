@@ -4,6 +4,7 @@ import type { RecordingDirectory, RecordingOptions, RecordingStatus } from 'expo
 import React, { useEffect } from 'react';
 import {
   Alert,
+  Platform,
   ScrollView,
   StyleProp,
   StyleSheet,
@@ -24,6 +25,8 @@ type RecorderProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+const supportsRecordingDirectory = Platform.OS === 'android' || Platform.OS === 'ios';
+
 export default function Recorder({ onDone, style }: RecorderProps) {
   const [state, setState] = React.useState<RecordingStatus>({
     id: 'initial',
@@ -40,10 +43,13 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   const [useAtTime, setUseAtTime] = React.useState(false);
   const [useForDuration, setUseForDuration] = React.useState(false);
   const currentRecorderOptions = React.useMemo<RecordingOptions>(
-    () => ({
-      ...recorderOptions,
-      directory: recordingDirectory,
-    }),
+    () =>
+      supportsRecordingDirectory
+        ? {
+            ...recorderOptions,
+            directory: recordingDirectory,
+          }
+        : recorderOptions,
     [recorderOptions, recordingDirectory]
   );
 
@@ -105,6 +111,30 @@ export default function Recorder({ onDone, style }: RecorderProps) {
         onPress={() => setRecorderOptions(options)}
         title={`${recorderOptions === options ? '✓ ' : ''}${title}`}
       />
+    );
+  };
+
+  const renderDirectoryOptions = () => {
+    if (!supportsRecordingDirectory) {
+      return null;
+    }
+
+    return (
+      <View style={styles.optionRow}>
+        <BodyText style={styles.optionText}>Directory</BodyText>
+        <View style={styles.directoryButtons}>
+          <Button
+            onPress={() => setRecordingDirectory('cache')}
+            title={`${recordingDirectory === 'cache' ? '✓ ' : ''}Cache`}
+            buttonStyle={styles.directoryButton}
+          />
+          <Button
+            onPress={() => setRecordingDirectory('document')}
+            title={`${recordingDirectory === 'document' ? '✓ ' : ''}Document`}
+            buttonStyle={styles.directoryButton}
+          />
+        </View>
+      </View>
     );
   };
 
@@ -204,21 +234,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
       {/* Recording Options */}
       <View style={styles.optionsContainer}>
-        <View style={styles.optionRow}>
-          <BodyText style={styles.optionText}>Directory</BodyText>
-          <View style={styles.directoryButtons}>
-            <Button
-              onPress={() => setRecordingDirectory('cache')}
-              title={`${recordingDirectory === 'cache' ? '✓ ' : ''}Cache`}
-              buttonStyle={styles.directoryButton}
-            />
-            <Button
-              onPress={() => setRecordingDirectory('document')}
-              title={`${recordingDirectory === 'document' ? '✓ ' : ''}Document`}
-              buttonStyle={styles.directoryButton}
-            />
-          </View>
-        </View>
+        {renderDirectoryOptions()}
         <View style={styles.optionRow}>
           <BodyText style={styles.optionText}>Record at Time (3s delay - iOS only)</BodyText>
           <Switch value={useAtTime} onValueChange={setUseAtTime} />
