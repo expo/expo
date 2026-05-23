@@ -8,6 +8,17 @@ private enum AudioConstants {
 
 public class AudioPlayer: SharedObject, Playable, LockScreenPlayable {
   let id = UUID().uuidString
+  var pitch: Float {
+    get { backend.pitch }
+    set {
+      _pitch = newValue
+      backend.pitch = newValue
+    }
+  }
+
+  var isPitchControlSupported: Bool {
+    return backend is AVAudioEngineBackend
+  }
   var isActiveForLockScreen = false
   var metadata: Metadata?
   var lockScreenOptions: LockScreenOptions?
@@ -31,6 +42,9 @@ public class AudioPlayer: SharedObject, Playable, LockScreenPlayable {
   private var preloadedPlayer: AVPlayer?
 
   var wasPlaying: Bool = false
+  private var _volume: Float = 1.0
+  private var _isMuted: Bool = false
+  private var _pitch: Float = 0.0
 
   init(interval: Double, source: AudioSource?, preloadedPlayer: AVPlayer? = nil) {
     self.interval = interval
@@ -54,8 +68,14 @@ public class AudioPlayer: SharedObject, Playable, LockScreenPlayable {
       preloadedPlayer = nil
     }
 
-    backend.onStatusUpdate = { [weak self] status in
+    backend.onStatusUpdate = { [weak self] backendStatus in
       guard let self else { return }
+      // Merge the backend's partial update into AudioPlayer.currentStatus() so that
+      // fields like shouldCorrectPitch, currentTime, pitch, id, loop, mute, didJustFinish
+      // are always present in every event. Without this, JS receives undefined for those
+      // fields, causing Bool cast exceptions and NaN display in the UI.
+      var status = self.currentStatus()
+      status.merge(backendStatus) { _, new in new }
       self.emit(event: AudioConstants.playbackStatus, payload: status)
       if self.isActiveForLockScreen {
         MediaController.shared.updateNowPlayingInfo(for: self)
@@ -78,6 +98,9 @@ public class AudioPlayer: SharedObject, Playable, LockScreenPlayable {
     backend.currentRate = currentRate
     backend.isLooping = isLooping
     backend.samplingEnabled = samplingEnabled
+    backend.volume = _volume
+    backend.isMuted = _isMuted
+    backend.pitch = _pitch
     // volume is maintained by the new backend initialization default usually, but we could sync it
   }
 
@@ -107,12 +130,18 @@ public class AudioPlayer: SharedObject, Playable, LockScreenPlayable {
 
   var volume: Float {
     get { backend.volume }
-    set { backend.volume = newValue }
+    set {
+      _volume = newValue
+      backend.volume = newValue
+    }
   }
 
   var isMuted: Bool {
     get { backend.isMuted }
-    set { backend.isMuted = newValue }
+    set {
+      _isMuted = newValue
+      backend.isMuted = newValue
+    }
   }
 
   var duration: Double { backend.duration }
@@ -122,6 +151,8 @@ public class AudioPlayer: SharedObject, Playable, LockScreenPlayable {
   var isLoaded: Bool { backend.isLoaded }
   var isPlaying: Bool { backend.isPlaying }
   var isBuffering: Bool { backend.isBuffering }
+  var supportsPitchCorrectionQuality: Bool { backend.supportsPitchCorrectionQuality }
+  var isAudioSamplingSupported: Bool { backend.isAudioSamplingSupported }
 
   // MARK: - Proxied Methods
 
@@ -190,6 +221,7 @@ public class AudioPlayer: SharedObject, Playable, LockScreenPlayable {
     status["mute"] = isMuted
     status["currentTime"] = currentTime
     status["didJustFinish"] = false
+    status["pitch"] = pitch
     return status
   }
 

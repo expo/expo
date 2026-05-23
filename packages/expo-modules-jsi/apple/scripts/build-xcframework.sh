@@ -373,8 +373,13 @@ PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
 if [[ -n "${REACT_NATIVE_PATH:-}" && -d "${REACT_NATIVE_PATH}" ]]; then
   RN_ROOT="$(cd "$REACT_NATIVE_PATH" && pwd)"
 else
-  RN_ROOT="$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null \
-    || echo "${PODS_ROOT}/../../node_modules/react-native")"
+  if RN_ROOT_NODE=$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null); then
+    RN_ROOT="$(cd "${RN_ROOT_NODE}" && pwd)"
+  elif [[ -d "${PODS_ROOT}/../../../../node_modules/react-native" ]]; then
+    RN_ROOT="$(cd "${PODS_ROOT}/../../../../node_modules/react-native" && pwd)"
+  else
+    RN_ROOT="$(cd "${PODS_ROOT}/../../node_modules/react-native" && pwd)"
+  fi
 fi
 
 mode="$( [[ -d "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" ]] && echo "prebuilt RN" || echo "source-built RN")"

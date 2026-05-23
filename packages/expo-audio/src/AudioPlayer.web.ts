@@ -18,6 +18,7 @@ import {
   safeDuration,
 } from './AudioUtils.web';
 import { mediaSessionController } from './MediaSessionController.web';
+import { WebPitchShifter } from './WebPitchShifter';
 
 export const activePlayers = new Set<AudioPlayerWeb>();
 
@@ -44,6 +45,7 @@ export class AudioPlayerWeb
   isAudioSamplingSupported = false;
   isBuffering = false;
   shouldCorrectPitch = false;
+  private _pitch = 0;
 
   private src: AudioSource = null;
   private media: HTMLAudioElement;
@@ -53,6 +55,8 @@ export class AudioPlayerWeb
   private crossOrigin?: 'anonymous' | 'use-credentials';
   private analyser: AnalyserNode | null = null;
   private sourceNode: MediaElementAudioSourceNode | null = null;
+  private pitchShifter: WebPitchShifter | null = null;
+
   private samplingFrameId: number | null = null;
   private samplingEnabled = false;
   private samplingBuffer: Float32Array<ArrayBuffer> | null = null;
@@ -101,6 +105,31 @@ export class AudioPlayerWeb
     this.media.playbackRate = value;
   }
 
+  get isPitchControlSupported(): boolean {
+    if (this._isCrossOrigin() && !this.media.crossOrigin) {
+      return false;
+    }
+    return true;
+  }
+
+  get pitch(): number {
+    return this._pitch;
+  }
+
+  set pitch(value: number) {
+    const clamped = Math.max(-24.0, Math.min(24.0, value));
+    if (clamped !== 0 && !this.isPitchControlSupported) {
+      console.warn(
+        `[expo-audio] Pitch shifting is disabled because the audio source is cross-origin and the 'crossOrigin' option is not configured. Falling back to pitch = 0. To enable pitch shifting, please set the 'crossOrigin' option to 'anonymous' (or 'use-credentials') on your AudioPlayer and configure CORS headers on your server.`
+      );
+      this._pitch = 0;
+      this._updateAudioRouting();
+      return;
+    }
+    this._pitch = clamped;
+    this._updateAudioRouting();
+  }
+
   get volume(): number {
     return this.media.volume;
   }
@@ -126,6 +155,17 @@ export class AudioPlayerWeb
     }
     this.media.play();
     this.isPlaying = true;
+
+    const hasPitch = Math.abs(this._pitch) >= 0.01;
+    if (this.sourceNode || hasPitch || this.samplingEnabled) {
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch((err) => {
+          console.warn('[expo-audio] Failed to resume AudioContext:', err);
+        });
+      }
+    }
+
     this.startSampling();
   }
 
@@ -147,10 +187,21 @@ export class AudioPlayerWeb
     this.isPlaying = false;
     this.loaded = false;
     this.media = this._createMediaElement();
+    activePlayers.add(this);
 
     if (wasSampling) {
       this.setAudioSamplingEnabled(true);
     }
+
+    if (this._pitch !== 0) {
+      if (!this.isPitchControlSupported) {
+        console.warn(
+          `[expo-audio] Pitch shifting is disabled for the new source because it is cross-origin and the 'crossOrigin' option is not configured. Falling back to pitch = 0.`
+        );
+        this._pitch = 0;
+      }
+    }
+    this._updateAudioRouting();
 
     if (mediaSessionState) {
       mediaSessionController.setActivePlayer(
@@ -181,28 +232,8 @@ export class AudioPlayerWeb
         return;
       }
 
-      if (this.analyser) {
-        return;
-      }
-
-      const ctx = getAudioContext();
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-
-      if (!this.sourceNode) {
-        this.sourceNode = ctx.createMediaElementSource(this.media);
-      }
-
-      this.analyser = ctx.createAnalyser();
-      this.analyser.fftSize = 2048;
-
-      this.sourceNode.disconnect();
-      this.sourceNode.connect(this.analyser);
-      this.analyser.connect(ctx.destination);
-
-      this.samplingBuffer = new Float32Array(this.analyser.frequencyBinCount);
       this.samplingEnabled = true;
+      this._updateAudioRouting();
 
       if (this.isPlaying) {
         this.startSampling();
@@ -210,20 +241,84 @@ export class AudioPlayerWeb
       this.isAudioSamplingSupported = true;
     } else {
       this.stopSampling();
+      this.samplingEnabled = false;
+      this._updateAudioRouting();
+    }
+  }
 
+  private _updateAudioRouting(): void {
+    const hasPitch = Math.abs(this._pitch) >= 0.01;
+    const hasSampling = this.samplingEnabled;
+
+    if (!hasPitch && !hasSampling) {
+      if (this.pitchShifter) {
+        this.pitchShifter.disconnect();
+        this.pitchShifter = null;
+      }
       if (this.analyser) {
         this.analyser.disconnect();
         this.analyser = null;
       }
-
       if (this.sourceNode) {
         const ctx = getAudioContext();
         this.sourceNode.disconnect();
         this.sourceNode.connect(ctx.destination);
       }
+      return;
+    }
 
-      this.samplingBuffer = null;
-      this.samplingEnabled = false;
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+
+    if (!this.sourceNode) {
+      this.sourceNode = ctx.createMediaElementSource(this.media);
+    }
+
+    this.sourceNode.disconnect();
+
+    if (hasPitch) {
+      if (!this.pitchShifter) {
+        this.pitchShifter = new WebPitchShifter(ctx);
+      }
+      this.pitchShifter.setPitch(this._pitch);
+    } else {
+      if (this.pitchShifter) {
+        this.pitchShifter.disconnect();
+        this.pitchShifter = null;
+      }
+    }
+
+    if (hasSampling) {
+      if (!this.analyser) {
+        this.analyser = ctx.createAnalyser();
+        this.analyser.fftSize = 2048;
+        this.samplingBuffer = new Float32Array(this.analyser.frequencyBinCount);
+      } else {
+        this.analyser.disconnect();
+      }
+    } else {
+      if (this.analyser) {
+        this.analyser.disconnect();
+        this.analyser = null;
+        this.samplingBuffer = null;
+      }
+    }
+
+    // Connect nodes in the chain
+    if (hasPitch && hasSampling) {
+      this.sourceNode.connect(this.pitchShifter!.input);
+      this.pitchShifter!.output.disconnect();
+      this.pitchShifter!.output.connect(this.analyser!);
+      this.analyser!.connect(ctx.destination);
+    } else if (hasPitch) {
+      this.sourceNode.connect(this.pitchShifter!.input);
+      this.pitchShifter!.output.disconnect();
+      this.pitchShifter!.output.connect(ctx.destination);
+    } else if (hasSampling) {
+      this.sourceNode.connect(this.analyser!);
+      this.analyser!.connect(ctx.destination);
     }
   }
 
@@ -262,6 +357,11 @@ export class AudioPlayerWeb
   remove(): void {
     mediaSessionController.clear(this);
     this.stopSampling();
+
+    if (this.pitchShifter) {
+      this.pitchShifter.disconnect();
+      this.pitchShifter = null;
+    }
 
     if (this.analyser) {
       this.analyser.disconnect();
@@ -314,7 +414,15 @@ export class AudioPlayerWeb
 
   _isCrossOrigin(): boolean {
     try {
-      return new URL(this.media.src).origin !== window.location.origin;
+      const src = this.media.src;
+      if (src.startsWith('data:')) {
+        return false;
+      }
+      if (src.startsWith('blob:')) {
+        const nestedUrl = src.slice(5);
+        return new URL(nestedUrl).origin !== window.location.origin;
+      }
+      return new URL(src).origin !== window.location.origin;
     } catch {
       return false;
     }

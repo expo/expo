@@ -162,6 +162,19 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   shouldCorrectPitch: boolean;
 
   /**
+   * The current independent pitch of the audio in semitones.
+   *
+   * **Range:** `-24.0` to `24.0` semitones.
+   */
+  pitch: number;
+
+  /**
+   * Boolean value indicating whether independent pitch control is supported for the current audio source on the platform.
+   * On Web, this returns `false` if the audio source is cross-origin and CORS has not been configured.
+   */
+  isPitchControlSupported: boolean;
+
+  /**
    * The current status of the audio player.
    * @hidden
    */

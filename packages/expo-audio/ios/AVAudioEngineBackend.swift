@@ -4,6 +4,9 @@ import AVFoundation
 class AVAudioEngineBackend: AudioPlayerBackendProtocol {
   let id: String
   let interval: Double
+
+  var supportsPitchCorrectionQuality: Bool { false }
+  var isAudioSamplingSupported: Bool { true }
   
   var shouldCorrectPitch = true {
     didSet {
