@@ -7,7 +7,7 @@ import resolveFrom from 'resolve-from';
 
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync } from './Utils';
+import { getFileBasedHashSourceAsync, maybeGetRealPathAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
 
@@ -184,7 +184,7 @@ async function parseCoreAutolinkingSourcesAsync({
     ? `react-native core autolinking dir for ${platform}`
     : 'react-native core autolinking dir';
   const results: HashSource[] = [];
-  const { root } = config;
+  const root = await maybeGetRealPathAsync(config.root);
   const autolinkingConfig: Record<string, any> = {};
   for (const [depName, depData] of Object.entries<any>(config.dependencies)) {
     try {

@@ -227,11 +227,12 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
     try {
         const reasons = ['expoAutolinkingAndroid'];
         const results = [];
+        const realProjectRoot = await (0, Utils_1.maybeGetRealPathAsync)(projectRoot);
         const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', 'android', '--json'], { cwd: projectRoot });
         const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
         for (const module of config.modules) {
             for (const project of module.projects) {
-                const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, project.sourceDir));
+                const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(realProjectRoot, project.sourceDir));
                 project.sourceDir = filePath; // use relative path for the dir
                 debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                 results.push({ type: 'dir', filePath, reasons });
@@ -239,17 +240,17 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
                 if (project.aarProjects) {
                     for (const aarProject of project.aarProjects) {
                         // use relative path for aarProject fields
-                        aarProject.aarFilePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.aarFilePath));
-                        aarProject.projectDir = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.projectDir));
+                        aarProject.aarFilePath = (0, Path_1.toPosixPath)(path_1.default.relative(realProjectRoot, aarProject.aarFilePath));
+                        aarProject.projectDir = (0, Path_1.toPosixPath)(path_1.default.relative(realProjectRoot, aarProject.projectDir));
                     }
                 }
                 if (typeof project.shouldUsePublicationScriptPath === 'string') {
-                    project.shouldUsePublicationScriptPath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, project.shouldUsePublicationScriptPath));
+                    project.shouldUsePublicationScriptPath = (0, Path_1.toPosixPath)(path_1.default.relative(realProjectRoot, project.shouldUsePublicationScriptPath));
                 }
             }
             if (module.plugins) {
                 for (const plugin of module.plugins) {
-                    const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, plugin.sourceDir));
+                    const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(realProjectRoot, plugin.sourceDir));
                     plugin.sourceDir = filePath; // use relative path for the dir
                     debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                     results.push({ type: 'dir', filePath, reasons });
@@ -259,8 +260,8 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
             if (module.aarProjects) {
                 for (const aarProject of module.aarProjects) {
                     // use relative path for aarProject fields
-                    aarProject.aarFilePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.aarFilePath));
-                    aarProject.projectDir = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.projectDir));
+                    aarProject.aarFilePath = (0, Path_1.toPosixPath)(path_1.default.relative(realProjectRoot, aarProject.aarFilePath));
+                    aarProject.projectDir = (0, Path_1.toPosixPath)(path_1.default.relative(realProjectRoot, aarProject.projectDir));
                 }
             }
         }
@@ -296,11 +297,12 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options, expoAutol
     try {
         const reasons = ['expoAutolinkingIos'];
         const results = [];
+        const realProjectRoot = await (0, Utils_1.maybeGetRealPathAsync)(projectRoot);
         const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', platform, '--json'], { cwd: projectRoot });
         const config = JSON.parse(stdout);
         for (const module of config.modules) {
             for (const pod of module.pods) {
-                const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, pod.podspecDir));
+                const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(realProjectRoot, pod.podspecDir));
                 pod.podspecDir = filePath; // use relative path for the dir
                 debug(`Adding expo-modules-autolinking ios dir - ${chalk_1.default.dim(filePath)}`);
                 results.push({ type: 'dir', filePath, reasons });

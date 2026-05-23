@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed unstable fingerprint on Windows. ([#46196](https://github.com/expo/expo/pull/46196) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Pin E2E test to SDK 55 templates and exclude native-toolchain node modules (`cross-spawn`, `typescript`, etc.) from config loading. ([#46194](https://github.com/expo/expo/pull/46194) by [@kudo](https://github.com/kudo))
