@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Inherit `ios.deploymentTarget` from app config for generated widget extension targets.
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-21
