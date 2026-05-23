@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix precompiled XCFramework builds resolving the task service helper.
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-21
