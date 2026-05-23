@@ -91,7 +91,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       currentOptions = options
       currentSessionOptions = sessionOptions
       ref.delegate = nil
-      ref = AudioUtils.createRecorder(directory: recordingDirectory, with: options)
+      ref = AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
       ref.delegate = recordingDelegate
     }
 
@@ -234,11 +234,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ])
   }
 
-  private var recordingDirectory: URL? {
-    guard let cachesDir = appContext?.fileSystem?.cachesDirectory else {
+  private func recordingDirectory(for options: RecordingOptions) -> URL? {
+    guard let fileSystem = appContext?.fileSystem else {
       return nil
     }
-    return URL(fileURLWithPath: cachesDir)
+    let path = (options.directory ?? .cache) == .document ? fileSystem.documentDirectory : fileSystem.cachesDirectory
+    return URL(fileURLWithPath: path)
   }
 
   override func sharedObjectWillRelease() {

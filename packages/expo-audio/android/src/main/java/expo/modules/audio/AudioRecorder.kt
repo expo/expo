@@ -263,7 +263,11 @@ class AudioRecorder(
 
       val filename = "recording-${UUID.randomUUID()}${options.extension}"
       try {
-        val directory = File(context.cacheDir, "Audio")
+        val parentDirectory = when (options.directory ?: RecordingDirectory.CACHE) {
+          RecordingDirectory.CACHE -> _appContext.cacheDirectory
+          RecordingDirectory.DOCUMENT -> _appContext.persistentFilesDirectory
+        }
+        val directory = File(parentDirectory, "Audio")
         ensureDirExists(directory)
         val file = File(directory, filename)
         filePath = file.absolutePath

@@ -6,6 +6,7 @@ import {
   RecordingStatus,
   RecordingOptions,
   RecordingPresets,
+  RecordingDirectory,
 } from 'expo-audio';
 import React, { useEffect } from 'react';
 import {
@@ -41,8 +42,17 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   const [recorderOptions, setRecorderOptions] = React.useState<RecordingOptions>(
     RecordingPresets.HIGH_QUALITY
   );
+  const [recordingDirectory, setRecordingDirectory] = React.useState<RecordingDirectory>('cache');
+  const [lastUri, setLastUri] = React.useState<string | null>(null);
   const [useAtTime, setUseAtTime] = React.useState(false);
   const [useForDuration, setUseForDuration] = React.useState(false);
+  const currentRecorderOptions = React.useMemo<RecordingOptions>(
+    () => ({
+      ...recorderOptions,
+      directory: recordingDirectory,
+    }),
+    [recorderOptions, recordingDirectory]
+  );
 
   useEffect(() => {
     (async () => {
@@ -53,7 +63,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     })();
   }, []);
 
-  const audioRecorder = useAudioRecorder(recorderOptions, (status) => {
+  const audioRecorder = useAudioRecorder(currentRecorderOptions, (status) => {
     if (status.mediaServicesDidReset) {
       console.warn('[Recorder] Media services were reset');
       Alert.alert(
@@ -70,8 +80,9 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     setState(status);
 
     // Handle automatic recording completion (from forDuration or atTime+forDuration)
-    if (status.isFinished && !status.hasError && status.url && onDone) {
-      onDone(status.url);
+    if (status.isFinished && !status.hasError && status.url) {
+      setLastUri(status.url);
+      onDone?.(status.url);
     }
   });
 
@@ -117,9 +128,10 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   };
 
   const stop = async () => {
-    if (onDone) {
-      await audioRecorder.stop();
-      onDone(audioRecorder.uri!);
+    await audioRecorder.stop();
+    if (audioRecorder.uri) {
+      setLastUri(audioRecorder.uri);
+      onDone?.(audioRecorder.uri);
     }
     setState((state) => ({ ...state, options: undefined, durationMillis: 0 }));
   };
@@ -200,6 +212,21 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       {/* Recording Options */}
       <View style={styles.optionsContainer}>
         <View style={styles.optionRow}>
+          <BodyText style={styles.optionText}>Directory</BodyText>
+          <View style={styles.directoryButtons}>
+            <Button
+              onPress={() => setRecordingDirectory('cache')}
+              title={`${recordingDirectory === 'cache' ? '✓ ' : ''}Cache`}
+              buttonStyle={styles.directoryButton}
+            />
+            <Button
+              onPress={() => setRecordingDirectory('document')}
+              title={`${recordingDirectory === 'document' ? '✓ ' : ''}Document`}
+              buttonStyle={styles.directoryButton}
+            />
+          </View>
+        </View>
+        <View style={styles.optionRow}>
           <BodyText style={styles.optionText}>Record at Time (3s delay - iOS only)</BodyText>
           <Switch value={useAtTime} onValueChange={setUseAtTime} />
         </View>
@@ -221,13 +248,21 @@ export default function Recorder({ onDone, style }: RecorderProps) {
         <Button
           onPress={async () => {
             onDone?.('');
-            await audioRecorder.prepareToRecordAsync(recorderOptions);
+            await audioRecorder.prepareToRecordAsync(currentRecorderOptions);
           }}
           disabled={recorderState.canRecord}
           title="Prepare Recording"
           style={[!recorderState.canRecord && { backgroundColor: 'gray' }]}
         />
       </View>
+      {!!lastUri && (
+        <View style={styles.uriContainer}>
+          <BodyText style={styles.uriLabel}>URI</BodyText>
+          <BodyText selectable style={styles.uriText}>
+            {lastUri}
+          </BodyText>
+        </View>
+      )}
       <View style={styles.centerer}>
         {renderRecorderButtons()}
         <BodyText style={{ fontWeight: 'bold', marginVertical: 10 }}>
@@ -277,6 +312,13 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
   },
+  directoryButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  directoryButton: {
+    minWidth: 88,
+  },
   optionsStatus: {
     fontSize: 14,
     color: Colors.tintColor,
@@ -288,6 +330,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 5,
+  },
+  uriContainer: {
+    marginHorizontal: 20,
+    marginVertical: 8,
+  },
+  uriLabel: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  uriText: {
+    fontSize: 12,
   },
   icon: {
     padding: 8,
