@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated E2E test to use SDK 56 templates. ([#46194](https://github.com/expo/expo/pull/46194) by [@kudo](https://github.com/kudo))
+
 ## 0.19.2 — 2026-05-23
 
 _This version does not introduce any user-facing changes._
