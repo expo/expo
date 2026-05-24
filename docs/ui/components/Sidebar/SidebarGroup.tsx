@@ -36,39 +36,22 @@ import { SidebarTitle } from './SidebarTitle';
 import { SidebarNodeProps } from './types';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
-  const {
-    chapters,
-    setChapters,
-    getStartedChapters,
-    setGetStartedChapters,
-    cicdChapters,
-    setCicdChapters,
-  } = useTutorialChapterCompletion();
+  const { getChapters, isCompleted, resetTutorial } = useTutorialChapterCompletion();
   const router = useRouter();
 
   const title = route.sidebarTitle ?? route.name;
   const Icon = route.hideIcon ? undefined : getIconElement(title);
 
   if (route.children?.[0]?.section === 'EAS tutorial') {
-    const allChaptersCompleted = chapters.every(chapter => chapter.completed);
-    const completedChaptersCount = chapters.filter(chapter => chapter.completed).length;
+    const chapters = getChapters('EAS_TUTORIAL');
     const totalChapters = chapters.length;
+    const completedChaptersCount = chapters.filter(c => isCompleted('EAS_TUTORIAL', c.slug)).length;
+    const allChaptersCompleted = completedChaptersCount === totalChapters;
     const progressPercentage = (completedChaptersCount / totalChapters) * 100;
 
     if (allChaptersCompleted) {
       reportEasTutorialCompleted();
     }
-
-    const isChapterCompleted = (childSlug: string) => {
-      return chapters.some(chapter => chapter.slug === childSlug && chapter.completed);
-    };
-
-    const resetTutorial = () => {
-      if (allChaptersCompleted) {
-        const resetChapters = chapters.map(chapter => ({ ...chapter, completed: false }));
-        setChapters(resetChapters);
-      }
-    };
 
     return (
       <div className="mb-5">
@@ -84,8 +67,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           </div>
         )}
         {route.children.map(child => {
-          const childSlug = child.href;
-          const completed = isChapterCompleted(childSlug);
+          const completed = isCompleted('EAS_TUTORIAL', normalizeSlug(child.href));
           const isSelected = isRouteActive(child, router?.asPath, router?.pathname);
 
           return (
@@ -108,7 +90,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
         })}
         {allChaptersCompleted && (
           <Button
-            onClick={resetTutorial}
+            onClick={() => {
+              resetTutorial('EAS_TUTORIAL');
+            }}
             theme="secondary"
             className="flex w-full items-center justify-center"
             href="/tutorial/eas/introduction/">
@@ -120,21 +104,13 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   }
 
   if (route.children?.[0]?.section === 'CI/CD tutorial') {
-    const allCicdChaptersCompleted = cicdChapters.every(chapter => chapter.completed);
-    const completedCicdChaptersCount = cicdChapters.filter(chapter => chapter.completed).length;
-    const totalCicdChapters = cicdChapters.length;
+    const chapters = getChapters('CICD_TUTORIAL');
+    const totalCicdChapters = chapters.length;
+    const completedCicdChaptersCount = chapters.filter(c =>
+      isCompleted('CICD_TUTORIAL', c.slug)
+    ).length;
+    const allCicdChaptersCompleted = completedCicdChaptersCount === totalCicdChapters;
     const progressPercentageForCicd = (completedCicdChaptersCount / totalCicdChapters) * 100;
-
-    const isCicdChapterCompleted = (childSlug: string) => {
-      return cicdChapters.some(chapter => chapter.slug === childSlug && chapter.completed);
-    };
-
-    const resetCicdTutorial = () => {
-      if (allCicdChaptersCompleted) {
-        const resetChapters = cicdChapters.map(chapter => ({ ...chapter, completed: false }));
-        setCicdChapters(resetChapters);
-      }
-    };
 
     return (
       <div className="mb-5">
@@ -150,8 +126,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           </div>
         )}
         {route.children.map(child => {
-          const childSlug = child.href;
-          const completed = isCicdChapterCompleted(childSlug);
+          const completed = isCompleted('CICD_TUTORIAL', normalizeSlug(child.href));
 
           return (
             <SidebarLink
@@ -165,7 +140,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
         })}
         {allCicdChaptersCompleted && (
           <Button
-            onClick={resetCicdTutorial}
+            onClick={() => {
+              resetTutorial('CICD_TUTORIAL');
+            }}
             theme="secondary"
             className="flex w-full items-center justify-center"
             href="/tutorial/cicd/introduction/">
@@ -177,27 +154,15 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   }
 
   if (route.children?.[0]?.section === 'Expo tutorial') {
-    const allGetStartedChaptersCompleted = getStartedChapters.every(chapter => chapter.completed);
-    const completedGetStartedChaptersCount = getStartedChapters.filter(
-      chapter => chapter.completed
+    const chapters = getChapters('GET_STARTED');
+    const totalGetStartedChapters = chapters.length;
+    const completedGetStartedChaptersCount = chapters.filter(c =>
+      isCompleted('GET_STARTED', c.slug)
     ).length;
-    const totalGetStartedChapters = getStartedChapters.length;
+    const allGetStartedChaptersCompleted =
+      completedGetStartedChaptersCount === totalGetStartedChapters;
     const progressPercentageForGetStarted =
       (completedGetStartedChaptersCount / totalGetStartedChapters) * 100;
-
-    const isGetStartedChapterCompleted = (childSlug: string) => {
-      return getStartedChapters.some(chapter => chapter.slug === childSlug && chapter.completed);
-    };
-
-    const resetGetStartedTutorial = () => {
-      if (allGetStartedChaptersCompleted) {
-        const resetChapters = getStartedChapters.map(chapter => ({
-          ...chapter,
-          completed: false,
-        }));
-        setGetStartedChapters(resetChapters);
-      }
-    };
 
     return (
       <div className="mb-5">
@@ -213,8 +178,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           </div>
         )}
         {route.children.map(child => {
-          const childSlug = child.href;
-          const completed = isGetStartedChapterCompleted(childSlug);
+          const completed = isCompleted('GET_STARTED', normalizeSlug(child.href));
           const isSelected = isRouteActive(child, router?.asPath, router?.pathname);
 
           return (
@@ -237,7 +201,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
         })}
         {allGetStartedChaptersCompleted && (
           <Button
-            onClick={resetGetStartedTutorial}
+            onClick={() => {
+              resetTutorial('GET_STARTED');
+            }}
             theme="secondary"
             className="flex w-full items-center justify-center"
             href="/tutorial/eas/introduction/">
@@ -271,6 +237,10 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
     </div>
   );
 };
+
+function normalizeSlug(href: string) {
+  return href.length > 1 && href.endsWith('/') ? href.slice(0, -1) : href;
+}
 
 function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
   if (info.name === parentGroup?.name) {
