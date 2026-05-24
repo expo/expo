@@ -7,6 +7,7 @@ import semverRangeSubset from 'semver/ranges/subset';
 
 import type { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
+import { filterDependenciesBlockedByPackageManagerAgeGateAsync } from './packageManagerReleaseAge';
 import {
   correctReactNativeTvVersion,
   isReactNativeTvProjectAsync,
@@ -200,6 +201,11 @@ export async function getVersionedDependenciesAsync(
       (dep) => !incorrectAndExcludedDeps.includes(dep.packageName)
     );
   }
+
+  incorrectDeps = await filterDependenciesBlockedByPackageManagerAgeGateAsync(
+    projectRoot,
+    incorrectDeps
+  );
 
   return incorrectDeps;
 }
