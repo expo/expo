@@ -1,8 +1,8 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runCommand } from './commands';
 import CLIError from './error';
 import { withSpinner } from './spinner';
 import type { AndroidConfig, BuildVariant } from './types';
@@ -23,11 +23,23 @@ export const findBrownfieldLibrary = (): string | undefined => {
       .readdirSync(androidPath, { withFileTypes: true })
       .filter((item) => item.isDirectory());
     const brownfieldLibrary = subdirectories.find((directory) => {
-      const directoryPath = path.join(androidPath, directory.name);
-      const files = fs.readdirSync(directoryPath, { recursive: true });
-      return files.some(
-        (file) => typeof file === 'string' && file.endsWith('ReactNativeHostManager.kt')
-      );
+      const directoryPath = path.resolve(androidPath, directory.name);
+      const directories = [directoryPath];
+
+      let target: string | undefined;
+      while ((target = directories.shift()) != null) {
+        const entries = fs.readdirSync(target, { withFileTypes: true });
+        for (const entry of entries) {
+          const childPath = path.join(target, entry.name);
+          if (entry.isDirectory()) {
+            directories.push(childPath);
+          } else if (entry.isFile()) {
+            if (entry.name === 'ReactNativeHostManager.kt') return true;
+          }
+        }
+      }
+
+      return false;
     });
 
     if (brownfieldLibrary) {
@@ -89,9 +101,9 @@ export const runTask = async (task: string, verbose: boolean, dryRun: boolean) =
 
   return withSpinner({
     operation: () =>
-      runCommand('./gradlew', [task], {
+      spawnAsync('./gradlew', [task], {
         cwd: path.join(process.cwd(), 'android'),
-        verbose,
+        stdio: verbose ? 'inherit' : 'pipe',
       }),
     loaderMessage: 'Running task: ' + task,
     successMessage: 'Running task: ' + task + ' succeeded',

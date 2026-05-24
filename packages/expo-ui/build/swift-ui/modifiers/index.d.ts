@@ -12,6 +12,9 @@ import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
+import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
+import { id, scrollPosition } from './scrollPosition';
+import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { widgetAccentedRenderingMode, widgetURL } from './widgets';
 /**
@@ -131,6 +134,15 @@ export declare const onAppear: (handler: () => void) => ModifierConfig;
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ondisappear(perform:)).
  */
 export declare const onDisappear: (handler: () => void) => ModifierConfig;
+/**
+ * Calls the handler whenever the view's geometry changes. Sizes are in points.
+ * @param handler - Function called with the new size.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
+ */
+export declare const onGeometryChange: (handler: (size: {
+    width: number;
+    height: number;
+}) => void) => ModifierConfig;
 /**
  * Marks a view as refreshable. Adds pull-to-refresh functionality.
  * @param handler - Async function to call when refresh is triggered.
@@ -456,7 +468,21 @@ export declare const scrollDismissesKeyboard: (mode: "automatic" | "never" | "in
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldisabled(_:)).
  */
 export declare const scrollDisabled: (disabled?: boolean) => ModifierConfig;
-type UnitPointValue = 'zero' | 'topLeading' | 'top' | 'topTrailing' | 'leading' | 'center' | 'trailing' | 'bottomLeading' | 'bottom' | 'bottomTrailing';
+/**
+ * Controls the visibility of scroll indicators for scrollable views.
+ * Mirrors SwiftUI's `scrollIndicators(_:axes:)` modifier.
+ * @param visibility - Indicator visibility:
+ * - `'automatic'`: platform-default behavior.
+ * - `'visible'`: prefer showing indicators (may still be hidden by the system).
+ * - `'hidden'`: prefer hiding indicators (may still be shown by the system).
+ * - `'never'`: never show indicators.
+ * @param axes - Axes to apply the visibility to. Defaults to `'both'`.
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrollindicators(_:axes:)).
+ */
+export declare const scrollIndicators: (visibility: "automatic" | "visible" | "hidden" | "never", axes?: "vertical" | "horizontal" | "both") => ModifierConfig;
+export type UnitPointValue = 'zero' | 'topLeading' | 'top' | 'topTrailing' | 'leading' | 'center' | 'trailing' | 'bottomLeading' | 'bottom' | 'bottomTrailing';
 /**
  * Sets the default anchor point for a scroll view's content.
  * @param anchor - The anchor point for initial scroll position and content size changes, or `null` to reset.
@@ -687,6 +713,15 @@ export declare const textSelection: (value: boolean) => ModifierConfig;
  */
 export declare const lineSpacing: (value: number) => ModifierConfig;
 /**
+ * Sets the total line height for text in this view.
+ * @param value - The line height in points.
+ * @platform ios 26.0+
+ * @platform macos 26.0+
+ * @platform tvos 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/lineheight(_:)).
+ */
+export declare const lineHeight: (value: number) => ModifierConfig;
+/**
  * Sets the line limit for text in the view.
  *
  * Four variants matching SwiftUI:
@@ -745,33 +780,41 @@ export declare const listSectionMargins: (params?: {
 }) => ModifierConfig;
 /**
  * Sets the font properties of a view.
- * Supports both custom font families and system fonts with weight and design options.
  *
- * @param params - The font configuration. When `family` is provided, it uses Font.custom().
- * When `family` is not provided, it uses Font.system() with the specified weight and design.
+ * Pass `textStyle` to scale with the user's Dynamic Type setting. Combine
+ * it with `family` to scale a custom font.
  *
  * @example
  * ```tsx
- * // Custom font family
- * <Text modifiers={[font({ family: 'Helvetica', size: 18 })]}>Custom Font Text</Text>
+ * // Scales with Dynamic Type
+ * <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Hello</Text>
  *
- * // System font with weight and design
- * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>System Font Text</Text>
+ * // Custom font that scales relative to the body text style
+ * <Text modifiers={[font({ textStyle: 'body', family: 'Helvetica', size: 18 })]}>Hi</Text>
+ *
+ * // Fixed-size system font (no Dynamic Type scaling)
+ * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>Static</Text>
  * ```
- * @see Official [SwiftUI documentation for `custom(_:size:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:)) and Official [SwiftUI documentation for `system(size:weight:design:)`](https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)).
+ * @see Official SwiftUI documentation for [`system(_:design:weight:)`](https://developer.apple.com/documentation/swiftui/font/system(_:design:weight:)), and [`custom(_:size:relativeTo:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:relativeto:)).
  */
 export declare const font: (params: {
-    /**
-     * Custom font family name.
-     * If provided, uses `Font.custom()`.
-     */
+    /** Custom font family name. */
     family?: string;
-    /** Font size in points. */
+    /**
+     * Font size in points. Ignored when only `textStyle` is set.
+     *
+     * @default 17
+     */
     size?: number;
-    /** Font weight for system fonts. */
+    /** Font weight. */
     weight?: "ultraLight" | "thin" | "light" | "regular" | "medium" | "semibold" | "bold" | "heavy" | "black";
-    /** Font design for system fonts */
+    /** Font design. Applied when no `family` is provided. `Font.custom` always uses the embedded font's own design. */
     design?: "default" | "rounded" | "serif" | "monospaced";
+    /**
+     * SwiftUI text style. When set, the resulting font scales with the user's
+     * Dynamic Type setting.
+     */
+    textStyle?: "largeTitle" | "title" | "title2" | "title3" | "headline" | "subheadline" | "body" | "callout" | "footnote" | "caption" | "caption2";
 }) => ModifierConfig;
 /**
  * Asks grid layouts not to offer the view extra size in the specified axes.
@@ -926,7 +969,7 @@ export declare const resizable: (capInsets?: {
  * This provides type safety for the modifiers array.
  * @hidden
  */
-export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof luminanceToAlpha> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof rotation3DEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof monospacedDigit> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof defaultScrollAnchor> | ReturnType<typeof defaultScrollAnchorForRole> | ReturnType<typeof scrollTargetBehavior> | ReturnType<typeof scrollTargetLayout> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof keyboardType> | ReturnType<typeof autocorrectionDisabled> | ReturnType<typeof onSubmit> | ReturnType<typeof textInputAutocapitalization> | ReturnType<typeof textContentType> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle> | ReturnType<typeof contentTransition> | ReturnType<typeof resizable> | ReturnType<typeof widgetAccentedRenderingMode> | ReturnType<typeof widgetURL> | ReturnType<typeof containerBackground>;
+export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof luminanceToAlpha> | ReturnType<typeof onDisappear> | ReturnType<typeof onGeometryChange> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof rotation3DEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof monospacedDigit> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof scrollIndicators> | ReturnType<typeof defaultScrollAnchor> | ReturnType<typeof defaultScrollAnchorForRole> | ReturnType<typeof scrollTargetBehavior> | ReturnType<typeof scrollTargetLayout> | ReturnType<typeof id> | ReturnType<typeof scrollPosition> | ReturnType<typeof onScrollPhaseChange> | NonNullable<ReturnType<typeof useScrollGeometryChange>> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineHeight> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof keyboardType> | ReturnType<typeof autocorrectionDisabled> | ReturnType<typeof onSubmit> | ReturnType<typeof textInputAutocapitalization> | ReturnType<typeof textContentType> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle> | ReturnType<typeof contentTransition> | ReturnType<typeof resizable> | ReturnType<typeof symbolEffect> | ReturnType<typeof widgetAccentedRenderingMode> | ReturnType<typeof widgetURL> | ReturnType<typeof containerBackground>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.
@@ -960,6 +1003,9 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export * from './scrollPosition';
+export * from './symbolEffect';
+export * from './scrollObservation';
 export * from './widgets';
 export type { TimingAnimationParams, SpringAnimationParams, InterpolatingSpringAnimationParams, ChainableAnimationType, } from './animation/types';
 //# sourceMappingURL=index.d.ts.map

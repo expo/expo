@@ -14,6 +14,7 @@ import type { ExpoMetroOptions } from './middleware/metroOptions';
 import { createBundleUrlPath } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
+import { isPathInside } from '../../utils/dir';
 import { SilentError } from '../../utils/errors';
 import { toPosixPath } from '../../utils/filePath';
 import { profile } from '../../utils/profile';
@@ -23,34 +24,10 @@ const debug = require('debug')('expo:start:server:getStaticRenderFunctions') as 
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
-
-// Support unhandled rejections
-
-declare global {
-  namespace NodeJS {
-    interface Process {
-      isBun?: boolean;
-    }
-  }
-}
-
-// Detect if running in Bun
-if (!process.isBun) {
-  require('source-map-support').install({
-    retrieveSourceMap(source: string) {
-      if (cachedSourceMaps.has(source)) {
-        return cachedSourceMaps.get(source);
-      }
-      return null;
-    },
-  });
-}
-
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
   // Cannot be accessed using Metro's server API, we need to move the file
   // into the project root and try again.
-  if (!path.relative(projectRoot, otherFile).startsWith('..' + path.sep)) {
+  if (!isPathInside(otherFile, projectRoot)) {
     return otherFile;
   }
 
@@ -99,10 +76,11 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
   filename: string,
+  sourceMap: string | undefined,
   isExporting: boolean
 ): T {
   // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
-  const contents = evalMetroNoHandling(projectRoot, script, filename);
+  const contents = evalMetroNoHandling(projectRoot, script, filename, sourceMap);
 
   if (!contents) {
     // This can happen if ErrorUtils isn't working correctly on web and failing to throw an error when a module throws.
@@ -136,7 +114,12 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   }, {} as any);
 }
 
-export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
+export function evalMetroNoHandling(
+  projectRoot: string,
+  src: string,
+  filename: string,
+  sourceMap?: string
+) {
   augmentLogs(projectRoot);
 
   // NOTE(@kitten): `require-from-string` derives a base path from the filename we pass it,
@@ -148,5 +131,8 @@ export function evalMetroNoHandling(projectRoot: string, src: string, filename: 
     debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
   }
 
-  return profile(evalModule, 'eval-metro-bundle')(src, filename);
+  return profile(evalModule, 'eval-metro-bundle')(src, filename, {
+    cache: false,
+    sourceMap,
+  });
 }

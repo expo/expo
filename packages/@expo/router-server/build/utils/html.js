@@ -7,10 +7,12 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.escapeUnsafeCharacters = escapeUnsafeCharacters;
-exports.createInjectedCssElements = createInjectedCssElements;
-exports.createInjectedScriptElements = createInjectedScriptElements;
-exports.getHydrationFlagScript = getHydrationFlagScript;
-exports.createLoaderDataScript = createLoaderDataScript;
+exports.createInjectedCssAsString = createInjectedCssAsString;
+exports.createInjectedScriptsAsString = createInjectedScriptsAsString;
+exports.getHydrationFlagScriptContents = getHydrationFlagScriptContents;
+exports.getHydrationFlagScriptAsString = getHydrationFlagScriptAsString;
+exports.getLoaderDataScriptContents = getLoaderDataScriptContents;
+exports.createLoaderDataScriptAsString = createLoaderDataScriptAsString;
 exports.serializeHelmetToHtml = serializeHelmetToHtml;
 // See: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/packages/next-urql/src/htmlescape.ts#L10
 // License: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/LICENSE
@@ -31,6 +33,9 @@ const ESCAPED_CHARACTERS = {
 function escapeUnsafeCharacters(str) {
     return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match] ?? match);
 }
+function escapeHtmlAttribute(value) {
+    return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
 /**
  * Returns a newline-separated `<link rel="preload">` and `<link rel="stylesheet">` pair for each
  * CSS href.
@@ -38,12 +43,15 @@ function escapeUnsafeCharacters(str) {
  * Used by both `renderStaticContent()` and `serializeHtml()` to inject CSS bundles into the HTML
  * document's `<body>` element.
  */
-function createInjectedCssElements(hrefs) {
+function createInjectedCssAsString(hrefs) {
     return hrefs
-        .flatMap((href) => [
-        `<link rel="preload" href="${href}" as="style">`,
-        `<link rel="stylesheet" href="${href}">`,
-    ])
+        .flatMap((href) => {
+        const safeHref = escapeHtmlAttribute(href);
+        return [
+            `<link rel="preload" href="${safeHref}" as="style">`,
+            `<link rel="stylesheet" href="${safeHref}">`,
+        ];
+    })
         .join('\n');
 }
 /**
@@ -52,8 +60,17 @@ function createInjectedCssElements(hrefs) {
  * Used by both `renderStaticContent()` and `serializeHtml()` to inject JavaScript bundles into the
  * HTML document's `<body>` element.
  */
-function createInjectedScriptElements(srcs) {
-    return srcs.map((src) => `<script src="${src}" defer></script>`).join('\n');
+function createInjectedScriptsAsString(srcs) {
+    return srcs.map((src) => `<script src="${escapeHtmlAttribute(src)}" defer></script>`).join('\n');
+}
+/**
+ * Returns the string content of the hydration flag script, which sets the
+ * `__EXPO_ROUTER_HYDRATE__` global flag to `true`.
+ *
+ * @see {@link getHydrationFlagScriptAsString} for the full `<script>` tag wrapper.
+ */
+function getHydrationFlagScriptContents() {
+    return `globalThis.__EXPO_ROUTER_HYDRATE__=true;`;
 }
 /**
  * Returns a module script that sets the `__EXPO_ROUTER_HYDRATE__` global flag, which tells the
@@ -62,8 +79,18 @@ function createInjectedScriptElements(srcs) {
  *
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
-function getHydrationFlagScript() {
-    return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+function getHydrationFlagScriptAsString() {
+    return `<script type="module">${getHydrationFlagScriptContents()}</script>`;
+}
+/**
+ * Returns the string content of the loader data script, which sets
+ * `globalThis.__EXPO_ROUTER_LOADER_DATA__` to the given data using double-serialized JSON.
+ *
+ * @see {@link createLoaderDataScriptAsString} for the full `<script>` tag wrapper.
+ */
+function getLoaderDataScriptContents(data) {
+    const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+    return `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`;
 }
 /**
  * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
@@ -72,9 +99,8 @@ function getHydrationFlagScript() {
  * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
  * @see https://v8.dev/blog/cost-of-javascript-2019#json
  */
-function createLoaderDataScript(data) {
-    const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
-    return `<script id="expo-router-data">globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});</script>`;
+function createLoaderDataScriptAsString(data) {
+    return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
 }
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'];
 /**

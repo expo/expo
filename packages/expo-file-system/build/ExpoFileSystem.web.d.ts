@@ -10,6 +10,10 @@ declare class FileSystemUploadTask {
         status: number;
         headers: {};
     }>;
+    addListener(): {
+        remove: () => void;
+    };
+    release(): void;
     cancel(): void;
 }
 declare class FileSystemDownloadTask {
@@ -18,6 +22,10 @@ declare class FileSystemDownloadTask {
         resumeData: string;
     };
     resume(): Promise<null>;
+    addListener(): {
+        remove: () => void;
+    };
+    release(): void;
     cancel(): void;
 }
 declare const _default: {

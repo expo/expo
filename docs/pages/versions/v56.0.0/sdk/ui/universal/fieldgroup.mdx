@@ -1,0 +1,86 @@
+---
+title: FieldGroup
+description: A scrollable container of grouped settings-style rows.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A scrollable container for grouped settings-style rows, mirroring the look of an iOS Settings screen. Compose `FieldGroup.Section` (for explicit groups), `FieldGroup.SectionHeader`, and `FieldGroup.SectionFooter` slots inside.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Sectioned form
+
+```tsx FieldGroupExample.tsx
+import { useState } from 'react';
+import { Host, FieldGroup, Switch, Text } from '@expo/ui';
+
+export default function FieldGroupExample() {
+  const [notifications, setNotifications] = useState(true);
+  const [analytics, setAnalytics] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <FieldGroup>
+        <FieldGroup.Section title="Notifications">
+          <Switch label="Push" value={notifications} onValueChange={setNotifications} />
+          <Switch label="Email" value={analytics} onValueChange={setAnalytics} />
+        </FieldGroup.Section>
+
+        <FieldGroup.Section title="About">
+          <Text>Version 1.0.0</Text>
+        </FieldGroup.Section>
+      </FieldGroup>
+    </Host>
+  );
+}
+```
+
+### Custom section header and footer
+
+Use `FieldGroup.SectionHeader` and `FieldGroup.SectionFooter` to render fully styled header/footer slots in place of the default `title` text.
+
+```tsx FieldGroupSlotsExample.tsx
+import { useState } from 'react';
+import { Host, FieldGroup, Switch, Text } from '@expo/ui';
+
+export default function FieldGroupSlotsExample() {
+  const [enabled, setEnabled] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <FieldGroup>
+        <FieldGroup.Section>
+          <FieldGroup.SectionHeader>
+            <Text textStyle={{ fontSize: 16, fontWeight: '700' }}>Privacy</Text>
+          </FieldGroup.SectionHeader>
+
+          <Switch label="Share usage" value={enabled} onValueChange={setEnabled} />
+
+          <FieldGroup.SectionFooter>
+            <Text textStyle={{ fontSize: 12, color: '#8E8E93' }}>
+              Helps us improve the app. You can disable this at any time.
+            </Text>
+          </FieldGroup.SectionFooter>
+        </FieldGroup.Section>
+      </FieldGroup>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { FieldGroup } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/fieldgroup" apiName="FieldGroup" />

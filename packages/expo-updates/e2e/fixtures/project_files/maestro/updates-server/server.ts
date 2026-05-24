@@ -38,6 +38,7 @@ let messages: any[] = [];
 let responsesToServe: any[] = [];
 
 let updateRequest: Request | null = null;
+let assetRequest: Request | null = null;
 
 let manifestToServe: null = null;
 let manifestHeadersToServe: { [x: string]: any } | null = null;
@@ -82,6 +83,7 @@ function stop() {
   messages = [];
   responsesToServe = [];
   updateRequest = null;
+  assetRequest = null;
   manifestToServe = null;
   manifestHeadersToServe = null;
   serveChannel = null;
@@ -104,10 +106,12 @@ app.use(express.json({ limit: '200kb' }));
 app.use(
   '/static',
   (
-    req: { url: string; headers: Record<string, string | undefined> },
+    req: any,
     res: any,
     next: () => void
   ) => {
+    console.log('Requested static file: ', JSON.stringify(req.headers, null, 2));
+    assetRequest = req;
     requestedStaticFiles.push(path.basename(req.url));
     next();
   }
@@ -465,6 +469,15 @@ app.get('/last-request-headers', (_: Request, res: Response) => {
     return;
   }
   res.status(200).json(updateRequest.headers).end();
+  return;
+});
+
+app.get('/last-asset-request-headers', (_: Request, res: Response) => {
+  if (!assetRequest) {
+    res.status(404).send('No asset request');
+    return;
+  }
+  res.status(200).json(assetRequest.headers).end();
   return;
 });
 

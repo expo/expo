@@ -41,7 +41,7 @@ If you plan to contribute to the documentation, run `npm run setup:docs`.
 
 ### Set up Android
 
-If you plan to contribute to Android, run `npm run setup:native`. This command does the following for you:
+If you plan to contribute to Android, run `pnpm run setup:native`. This command does the following for you:
 
 - Downloads submodules (like `react-native`) with `git submodule update --init`
 - Ensures pnpm is installed
@@ -62,6 +62,23 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 ```
 
 `ANDROID_SDK_ROOT` environmental variable should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
+
+### (Optional) Speed up Android native builds with ccache
+
+[ccache](https://ccache.dev/) caches C/C++ compilation results so rebuilds of native code are nearly instant when source files haven't changed.
+
+1. Install ccache: `brew install ccache`
+2. Add to your `~/.zshrc` (or `~/.bashrc`):
+   ```sh
+   export CMAKE_C_COMPILER_LAUNCHER="ccache"
+   export CMAKE_CXX_COMPILER_LAUNCHER="ccache"
+   ```
+3. Enable precompiled header support (required by some modules like `expo-modules-core`):
+   ```sh
+   ccache -o sloppiness=pch_defines,time_macros
+   ```
+
+The repo's `.envrc` automatically sets `CCACHE_BASEDIR` via direnv, so cache is shared across git worktrees with no extra setup.
 
 ### Set up iOS
 
@@ -109,7 +126,7 @@ Note that we generally do not accept PRs that bump versions of native dependenci
 
 All modules should adhere to the style guides which can be found here:
 
-- [Creating Unimodules](guides/Creating%20Unimodules.md)
+- [Expo Module Infrastructure](guides/Expo%20Module%20Infrastructure.md)
 - [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
 - [Updating Changelogs](guides/contributing/Updating%20Changelogs.md)
 
@@ -181,7 +198,7 @@ To keep CI green, please make sure of the following:
 
 ### If you edited the docs directory:
 
-  - Any change to the current SDK version should also be in the unversioned copy as well. Example:
+  - Any changes to docs for the current SDK version should also be applied to the unversioned copy. The current docs SDK version is defined in [`docs/package.json`](./docs/package.json), and the versioning workflow is described in [docs/README.md](./docs/README.md#update-latest-version-of-api-reference-docs). Example:
     - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
     - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
   - You don't need to run the docs tests locally. Just ensure the links you include aren't broken, the format is correct, and the changes are following our [writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).

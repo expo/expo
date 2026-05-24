@@ -21,6 +21,7 @@ import {
   StackHeader,
   StackScreen,
   StackSearchBar,
+  StackTitle,
   StackToolbar,
   appendScreenStackPropsToOptions,
   mapProtectedScreen,
@@ -624,6 +625,7 @@ const Stack = Object.assign(
     Protected,
     Header: StackHeader,
     SearchBar: StackSearchBar,
+    Title: StackTitle,
     Toolbar: StackToolbar,
   }
 );

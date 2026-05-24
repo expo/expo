@@ -7,13 +7,16 @@
 import type { types as t } from '@babel/core';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
+import type { PackedMap, SerializableSourceMap } from './packedMap';
 import type { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
 export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
+export type ModuleSourceMap = SerializableSourceMap | MetroSourceMapSegmentTuple[];
 export type JsOutput = {
     data: {
         code: string;
         lineCount: number;
-        map: MetroSourceMapSegmentTuple[];
+        map: ModuleSourceMap;
+        readonly __packedMap?: PackedMap;
         functionMap: FBSourceFunctionMap | null;
         css?: {
             code: string;

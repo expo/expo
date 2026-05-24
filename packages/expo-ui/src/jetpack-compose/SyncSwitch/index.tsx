@@ -1,8 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { type ObservableState } from '../../State/useNativeState';
-import { useWorkletProp } from '../../State/useWorkletProp';
-import { getStateId } from '../../State/utils';
+import { getStateId, type ObservableState, useWorkletProp } from '../../State';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 

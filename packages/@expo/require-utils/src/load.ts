@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 import * as nodeModule from 'node:module';
+import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
 import type * as ts from 'typescript';
 
 import { annotateError, formatDiagnostic } from './codeframe';
+import { installSourceMapStackTrace } from './stacktrace';
 import { toCommonJS } from './transform';
 
 declare module 'node:module' {
@@ -19,6 +21,9 @@ declare global {
         filename: string,
         format?: 'module' | 'commonjs' | 'commonjs-typescript' | 'module-typescript' | 'typescript'
       ): unknown;
+    }
+    export interface Process {
+      isBun?: boolean;
     }
   }
 }
@@ -82,6 +87,8 @@ function toFormat(filename: string, isLegacy: boolean): Format | null {
 
 export interface ModuleOptions {
   paths?: string[];
+  sourceMap?: string;
+  cache?: boolean;
 }
 
 function toRealDirname(filePath: string): string {
@@ -105,24 +112,136 @@ function toRealDirname(filePath: string): string {
   }
 }
 
+const hasModuleSourceMapsSupport = typeof nodeModule.setSourceMapsSupport === 'function';
+
+interface SourceMapsState {
+  enabled: boolean;
+  nodeModules?: boolean;
+  generatedCode?: boolean;
+}
+
+function getSourceMapsState(): SourceMapsState {
+  return typeof nodeModule.getSourceMapsSupport === 'function'
+    ? nodeModule.getSourceMapsSupport()
+    : { enabled: !!process.sourceMapsEnabled };
+}
+
+function setSourceMapsState(state: SourceMapsState): void {
+  if (hasModuleSourceMapsSupport) {
+    nodeModule.setSourceMapsSupport(state.enabled, {
+      nodeModules: state.nodeModules ?? false,
+      generatedCode: state.generatedCode ?? false,
+    });
+  } else {
+    process.setSourceMapsEnabled(state.enabled);
+  }
+}
+
+function makeSourceMapTempPath(filename: string) {
+  let basename = path.basename(filename);
+  const queryIdx = basename.search(/[?#]/);
+  if (queryIdx >= 0) {
+    basename = basename.slice(0, queryIdx);
+  }
+  return path.join(os.tmpdir(), `require-utils-${process.pid}-${basename}.map`);
+}
+
+function stripSourceMappingURL(code: string): string {
+  return code.replace(/^[ \t]*\/\/[#@][ \t]+sourceMappingURL=.*$/gm, '');
+}
+
 function compileModule(code: string, filename: string, opts: ModuleOptions) {
   const format = toFormat(filename, false);
+  const shouldCache = opts.cache ?? true;
   const prependPaths = opts.paths ?? [];
   // See: https://github.com/nodejs/node/blob/ff080948666f28fbd767548d26bea034d30bc277/lib/internal/modules/cjs/loader.js#L767
   // If we get a symlinked path instead of the realpath, we assume the realpath is needed for Node module resolution
   const basePath = toRealDirname(filename);
   const nodeModulePaths = nodeModule._nodeModulePaths(basePath);
   const paths = [...prependPaths, ...nodeModulePaths];
+
+  let inputCode = code;
+
+  // We may get a Metro SSR relative path here, which isn't a valid absolute path, and we need to normalize
+  // the filename before proceeding
+  let compileFilename = filename;
+  if (opts.sourceMap) {
+    const queryIdx = filename.search(/[?#]/);
+    const basePart = queryIdx >= 0 ? filename.slice(0, queryIdx) : filename;
+    const queryPart = queryIdx >= 0 ? filename.slice(queryIdx) : '';
+    if (!path.isAbsolute(basePart)) {
+      compileFilename = path.resolve(basePart) + queryPart;
+    }
+  }
+
+  let mapPath: string | undefined;
+  let priorSourceMapsState: SourceMapsState | undefined;
+  if (opts.sourceMap && !process.isBun) {
+    try {
+      mapPath = makeSourceMapTempPath(compileFilename);
+      fs.writeFileSync(mapPath, opts.sourceMap);
+    } catch (error: any) {
+      mapPath = undefined;
+      // If we fail to write the source map, we can still continue without it, but log a warning since it's likely a misconfiguration
+      console.warn(
+        `Warning: Failed to write source map for ${filename} to ${mapPath}. Source maps will be unavailable for this module.\n${error?.message || error}`
+      );
+    }
+
+    if (mapPath) {
+      inputCode = stripSourceMappingURL(code);
+      // NOTE(@kitten): This needs to be a plain absolute path because Node rejects file: URLs
+      // On Windows, it additionally needs to be a URL.pathname-like format (POSIX with a leading slash)
+      if (path.sep !== '/') {
+        mapPath = `/${mapPath.replaceAll(path.sep, '/')}`;
+      }
+      inputCode += `\n//# sourceMappingURL=${mapPath}`;
+
+      priorSourceMapsState = getSourceMapsState();
+      installSourceMapStackTrace();
+      setSourceMapsState({ enabled: true, nodeModules: true });
+    }
+  }
+
+  const mod = Object.assign(new nodeModule.Module(compileFilename, parent), {
+    filename: compileFilename,
+    paths,
+  });
+
+  const childIdx = parent?.children?.indexOf(mod) ?? -1;
+  if (childIdx >= 0) {
+    parent.children!.splice(childIdx, 1);
+  }
+
   try {
-    const mod = Object.assign(new nodeModule.Module(filename, parent), { filename, paths });
-    mod._compile(code, filename, format != null ? format : undefined);
+    mod._compile(inputCode, compileFilename, format != null ? format : undefined);
     mod.loaded = true;
-    require.cache[filename] = mod;
-    parent?.children?.splice(parent.children.indexOf(mod), 1);
+    if (shouldCache) {
+      require.cache[compileFilename] = mod;
+      if (compileFilename !== filename) {
+        require.cache[filename] = mod;
+      }
+    }
     return mod;
   } catch (error: any) {
-    delete require.cache[filename];
+    if (shouldCache) {
+      delete require.cache[compileFilename];
+      if (compileFilename !== filename) {
+        delete require.cache[filename];
+      }
+    }
     throw error;
+  } finally {
+    if (mapPath) {
+      // Restore, so subsequent requires of node_modules won't have their source-maps read
+      setSourceMapsState(priorSourceMapsState ?? { enabled: false });
+      // Node parses source maps eagerly during _compile, so the file can be removed now.
+      try {
+        fs.unlinkSync(mapPath);
+      } catch {
+        /* noop */
+      }
+    }
   }
 }
 
@@ -134,6 +253,8 @@ function evalModule(
   opts: ModuleOptions = {},
   format: Format = toFormat(filename, true)
 ) {
+  const shouldCache = opts.cache ?? true;
+
   let inputCode = code;
   let inputFilename = filename;
   let diagnostic: ts.Diagnostic | undefined;
@@ -198,7 +319,7 @@ function evalModule(
 
   try {
     const mod = compileModule(inputCode, inputFilename, opts);
-    if (inputFilename !== filename) {
+    if (shouldCache && inputFilename !== filename) {
       require.cache[filename] = mod;
     }
     return mod.exports;

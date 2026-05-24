@@ -67,7 +67,7 @@ const getAnimateToValue = ({ closing: isClosing, layout: currentLayout, gestureD
     }
     return (0, getDistanceForDirection_1.getDistanceForDirection)(currentLayout, currentGestureDirection, currentDirection === 'rtl');
 };
-const defaultOverlay = ({ style }) => style ? (0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "none", style: [styles.overlay, style] }) : null;
+const defaultOverlay = ({ style }) => style ? (0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { style: [styles.overlay, style] }) : null;
 function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImpact = GESTURE_VELOCITY_IMPACT, overlay = defaultOverlay, animated, interpolationIndex, opening, closing, next, current, gesture, layout, insets, direction, pageOverflowEnabled, gestureDirection, onOpen, onClose, onTransition, onGestureBegin, onGestureCanceled, onGestureEnd, children, overlayEnabled, gestureResponseDistance, transitionSpec, preloaded, styleInterpolator, containerStyle: customContainerStyle, contentStyle, }) {
     const didInitiallyAnimate = React.useRef(false);
     const lastToValueRef = React.useRef(undefined);
@@ -350,12 +350,12 @@ function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImp
                     opacity: current,
                 }, 
                 // Make sure that this view isn't removed. If this view is removed, our style with animated value won't apply
-                collapsable: false })) : null, overlayEnabled ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { pointerEvents: "box-none", style: react_native_1.StyleSheet.absoluteFill, children: overlay({ style: overlayStyle }) })) : null, (0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [styles.container, containerStyle, customContainerStyle], children: (0, jsx_runtime_1.jsx)(GestureHandler_1.PanGestureHandler, { enabled: layout.width !== 0 && gestureEnabled, onGestureEvent: onGestureEvent, onHandlerStateChange: onGestureStateChange, ...(0, gestureActivationCriteria_1.gestureActivationCriteria)({
+                collapsable: false })) : null, overlayEnabled ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [styles.overlayContainer, react_native_1.StyleSheet.absoluteFill], children: overlay({ style: overlayStyle }) })) : null, (0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { style: [styles.container, containerStyle, customContainerStyle], children: (0, jsx_runtime_1.jsx)(GestureHandler_1.PanGestureHandler, { enabled: layout.width !== 0 && gestureEnabled, onGestureEvent: onGestureEvent, onHandlerStateChange: onGestureStateChange, ...(0, gestureActivationCriteria_1.gestureActivationCriteria)({
                         layout,
                         direction,
                         gestureDirection,
                         gestureResponseDistance,
-                    }), children: (0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { pointerEvents: "box-none", needsOffscreenAlphaCompositing: hasOpacityStyle(cardStyle), style: [styles.container, cardStyle], children: [shadowEnabled && shadowStyle && !isTransparent ? ((0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "none", style: [
+                    }), children: (0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { needsOffscreenAlphaCompositing: hasOpacityStyle(cardStyle), style: [styles.container, cardStyle], children: [shadowEnabled && shadowStyle && !isTransparent ? ((0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { style: [
                                     styles.shadow,
                                     gestureDirection === 'horizontal'
                                         ? [styles.shadowHorizontal, styles.shadowStart]
@@ -371,13 +371,19 @@ function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImp
 const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,
+        pointerEvents: 'box-none',
     },
     overlay: {
         flex: 1,
         backgroundColor: '#000',
+        pointerEvents: 'none',
+    },
+    overlayContainer: {
+        pointerEvents: 'box-none',
     },
     shadow: {
         position: 'absolute',
+        pointerEvents: 'none',
     },
     shadowHorizontal: {
         top: 0,

@@ -48,7 +48,10 @@ function resolveHrefStringWithSegments(href, { segments = [], params = {} } = {}
         const url = new URL(href, `http://hostname/${base}`);
         href = `${url.pathname}${url.search}`;
     }
-    return href;
+    // Collapse leading slashes so a scheme-relative `//host/...` href — whether
+    // smuggled in directly or produced by URL resolution above — cannot route
+    // navigation cross-origin.
+    return href.replace(/^\/+/, '/');
 }
 function createQualifiedPathname(pathname, params) {
     for (const [key, value = ''] of Object.entries(params)) {

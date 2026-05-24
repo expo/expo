@@ -2,11 +2,20 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
+import expo.modules.appmetrics.logevents.LogEventOptions
+import expo.modules.appmetrics.logevents.Severity
+import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
+import expo.modules.appmetrics.logevents.validateEventBody
+import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.memory.MemoryMetricsManager
+import expo.modules.appmetrics.storage.JsMetric
+import expo.modules.appmetrics.storage.JsSession
+import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
+import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -15,12 +24,14 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.runBlocking
 
 class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val context: Context
@@ -39,6 +50,11 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
   lateinit var sessionManager: SessionManager
 
+  // Tracks the in-flight session-row INSERT kicked off in `OnCreate`. `OnDestroy`
+  // joins it before stamping `endTimestamp` so the UPDATE doesn't race with the
+  // INSERT and silently no-op.
+  private var sessionStartJob: Job? = null
+
   private var didSaveStartupMetrics: Boolean = false
 
   // Lazy-initialized metadata - created once when first needed
@@ -55,22 +71,67 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       Function("markInteractive") { attributes: MetricAttributes? ->
-        AppStartupManager.markInteractive(attributes?.routeName, attributes?.params)
+        AppStartupManager.markInteractive(context, attributes?.routeName, attributes?.params)
 
         scope.launch {
           saveStartupMetricsIfNotSaved()
         }
       }
 
+      Function("logEvent") { name: String, options: LogEventOptions? ->
+        val validatedName = validateEventName(name) ?: return@Function
+        val validatedBody = validateEventBody(options?.body)
+        val sanitized = sanitizeLogEventAttributes(options?.attributes)
+        val severity = options?.severity ?: Severity.INFO
+
+        scope.launch {
+          // Attach any pending startup metrics first so the session has them
+          // alongside whatever's being logged. The session row itself is
+          // already persisted eagerly in `OnCreate`, so this is purely about
+          // ordering startup-metric writes ahead of caller-driven log events.
+          saveStartupMetricsIfNotSaved()
+          // Globals merge happens inside `sessionManager.addLogs` so every
+          // persistence path picks them up.
+          sessionManager.addLogs(
+            listOf(
+              LogRecord(
+                sessionId = appSessionId,
+                timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
+                name = validatedName,
+                body = validatedBody,
+                severity = severity.rawValue,
+                attributes = sanitized.attributes?.let { JsonAny.encodeMapToJsonString(it) },
+                droppedAttributesCount = sanitized.droppedCount
+              )
+            ),
+            sessionId = appSessionId
+          )
+        }
+      }
+
+      Function("setGlobalAttributes") { attributes: Map<String, Any?>? ->
+        GlobalAttributes.set(attributes)
+      }
+
       OnCreate {
         sessionManager = SessionManager(context)
 
-        // Deactivate all sessions from previous app runs
-        scope.launch {
+        appSessionId = sessionManager.createSessionId()
+
+        // Persist the session row eagerly so it's visible to readers
+        // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
+        // metrics arrive. Older app runs are deactivated in the same coroutine
+        // to keep the order well-defined. The `Job` is captured so `OnDestroy`
+        // can wait for the INSERT before stamping `endTimestamp`.
+        sessionStartJob = scope.launch {
           sessionManager.deactivateAllSessionsBefore(moduleCreationTimestamp)
+          sessionManager.startSessionWithIdAt(
+            sessionId = appSessionId,
+            timestamp = TimeUtils.getProcessStartTimestamp(),
+            metadata = metadata
+          )
         }
 
-        appSessionId = sessionManager.createSessionId()
         memoryMetricsManager = MemoryMetricsManager(
           context = context,
           sessionManager = sessionManager
@@ -92,7 +153,21 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         subscription?.remove()
       }
 
-      AsyncFunction("getStoredEntries") Coroutine { -> sessionManager.getAllSessions() }
+      OnDestroy {
+        // `modulesQueue` is cancelled immediately after this hook returns, so
+        // run the UPDATE on the calling thread to make sure the end timestamp
+        // is persisted before teardown. Joining `sessionStartJob` first
+        // guarantees the INSERT lands before the UPDATE so the stamp doesn't
+        // silently no-op on a missing row.
+        runBlocking {
+          sessionStartJob?.join()
+          sessionManager.stopSession(appSessionId)
+        }
+      }
+
+      AsyncFunction("getAllSessions") Coroutine { ->
+        sessionManager.getAllSessions().map { JsSession.fromSessionWithMetrics(it) }
+      }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
         return@Coroutine memoryMetricsManager.takeMemorySnapshot(sessionId)
@@ -100,30 +175,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
 
-      Function("startSession") {
-        val sessionId = sessionManager.createSessionId()
-        val timestamp = TimeUtils.getCurrentTimestampInISOFormat()
-        val sessionMetadata = metadata
-
-        scope.launch {
-          sessionManager.startSessionWithIdAt(
-            sessionId = sessionId,
-            timestamp = timestamp,
-            metadata = sessionMetadata
-          )
-        }
-
-        return@Function sessionId
+      AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
+        sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
       }
 
-      Function("stopSession") { sessionId: String ->
-        scope.launch {
-          sessionManager.stopSession(sessionId = sessionId)
-        }
-      }
-
-      AsyncFunction("addCustomMetricToSession") Coroutine { sessionId: String, metric: PartialMetric ->
-        sessionManager.addMetrics(listOf(metric.toMetric(sessionId)), sessionId = sessionId)
+      AsyncFunction("getMainSession") Coroutine { ->
+        sessionManager.getSessionById(appSessionId)?.let { JsSession.fromSessionWithMetrics(it) }
       }
     }
 
@@ -134,17 +191,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     }
   }
 
-  fun getEnvironment(): String? {
-    return AppMetricsPreferences.getEnvironment(context)
-  }
-
   override fun updatesStateDidChange(event: Map<String, Any>) {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
         scope.launch {
-          // Ensure the session row exists before inserting the metric,
-          // since the session may not have been saved yet if the download
-          // completes before markInteractive or app backgrounding.
+          // Attach any pending startup metrics first so the download-time
+          // metric lands alongside them. The session row itself is already
+          // persisted eagerly in `OnCreate`.
           saveStartupMetricsIfNotSaved()
           sessionManager.addMetrics(listOf(metric), sessionId = appSessionId)
         }
@@ -155,38 +208,15 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   // TODO(@lukmccall): Potential race condition - multiple coroutines could enter the block simultaneously, causing duplicates.
   internal suspend fun saveStartupMetricsIfNotSaved() {
     if (!didSaveStartupMetrics) {
-      // This function should be called, after all startup events are collected
-      // This seems to be the best place right now, because it will not slow down the app startup
-      sessionManager.startSessionWithIdAndMetricsAt(
-        id = appSessionId,
-        timestamp = TimeUtils.getProcessStartTimestamp(),
-        metrics = AppStartupManager.metrics,
-        metadata = metadata
-      )
+      // The session row is written eagerly in `OnCreate`, so we only need to
+      // attach the startup metrics here once they've been collected.
+      sessionManager.addMetrics(AppStartupManager.metrics, sessionId = appSessionId)
       didSaveStartupMetrics = true
     }
   }
 }
 
-data class PartialMetric(
-  @Field val category: String,
-  @Field val name: String,
-  @Field val value: Double,
-  @Field val routeName: String? = null,
-  @Field val params: Map<String, Any>? = null
-) : Record {
-  fun toMetric(sessionId: String): Metric =
-    Metric(
-      sessionId = sessionId,
-      timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
-      category = category,
-      name = name,
-      value = value,
-      routeName = routeName,
-      params = params?.let { Json.encodeToString(it) }
-    )
-}
-
+@OptimizedRecord
 data class MetricAttributes(
   @Field val routeName: String? = null,
   @Field val params: Map<String, Any>? = null

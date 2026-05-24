@@ -1,7 +1,7 @@
 extends: existence
 message: "Don't put a period at the end of a heading."
 nonword: true
-level: warning
+level: error
 scope: heading
 action:
   name: edit

@@ -1,5 +1,9 @@
 import chalk from 'chalk';
 
+// NOTE(@kitten): LogRespectingTerminal in instantiateMetro regressed on fatal errors and
+// logs may be swallowed before exiting. We redirect them to a direct write when we're about to exit
+let isExiting = false;
+
 export function time(label?: string): void {
   console.time(label);
 }
@@ -9,6 +13,14 @@ export function timeEnd(label?: string): void {
 }
 
 export function error(...message: string[]): void {
+  if (isExiting) {
+    // `console.error` may be patched to route through an async stderr queue
+    // (see LogRespectingTerminal in instantiateMetro.ts). On the exit path
+    // that queue has no chance to drain before `process.exit`, so write
+    // synchronously to bypass it.
+    process.stderr.write(message.join(' ') + '\n');
+    return;
+  }
   console.error(...message);
 }
 
@@ -19,10 +31,18 @@ export function exception(e: Error): void {
 }
 
 export function warn(...message: string[]): void {
+  if (isExiting) {
+    process.stderr.write(message.map((value) => chalk.yellow(value)).join(' ') + '\n');
+    return;
+  }
   console.warn(...message.map((value) => chalk.yellow(value)));
 }
 
 export function log(...message: string[]): void {
+  if (isExiting) {
+    process.stdout.write(message.join(' ') + '\n');
+    return;
+  }
   console.log(...message);
 }
 
@@ -38,19 +58,16 @@ export function clear(): void {
 
 /** Log a message and exit the current process. If the `code` is non-zero then `console.error` will be used instead of `console.log`. */
 export function exit(message: string | Error, code: number = 1): never {
+  isExiting = true;
   if (message instanceof Error) {
     exception(message);
-    process.exit(code);
-  }
-
-  if (message) {
+  } else if (message) {
     if (code === 0) {
       log(message);
     } else {
       error(message);
     }
   }
-
   process.exit(code);
 }
 

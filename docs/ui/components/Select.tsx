@@ -62,15 +62,15 @@ export function Select({
             />
           }
           className={mergeClasses(
-            'min-h-[36px] transform-none justify-between truncate px-3',
+            'min-h-9 transform-none justify-between truncate px-3',
             !value && 'text-quaternary',
-            size === 'lg' && 'min-h-[52px]',
+            size === 'lg' && 'min-h-13',
             className
           )}
           {...{ 'data-testid': testID }}>
           <SelectPrimitive.Value
             placeholder={
-              <div className="text-quaternary text-left text-sm leading-tight whitespace-pre-wrap">
+              <div className="text-left text-sm leading-tight whitespace-pre-wrap text-quaternary">
                 {placeholder}
               </div>
             }
@@ -82,17 +82,17 @@ export function Select({
         <SelectPrimitive.Content
           // z-[605] to be above the dialogs (601)
           className={mergeClasses(
-            'border-default bg-overlay relative z-[605] max-w-[87.5vw] overflow-hidden rounded-md border shadow-md',
-            'max-md-gutters:max-w-[unset]'
+            'relative z-605 max-w-[87.5vw] overflow-hidden rounded-md border border-default bg-overlay shadow-md',
+            'max-md:max-w-[unset]'
           )}
           data-orientation="horizontal">
-          <SelectPrimitive.ScrollUpButton className="bg-element flex h-7 items-center justify-center rounded-t-md">
+          <SelectPrimitive.ScrollUpButton className="flex h-7 items-center justify-center rounded-t-md bg-element">
             <ChevronUpIcon className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollUpButton>
           <SelectPrimitive.Viewport>
             <SelectPrimitive.Group>
               {optionsLabel && (
-                <SelectPrimitive.Label className="text-tertiary cursor-default px-3 pt-2 pb-1 text-xs">
+                <SelectPrimitive.Label className="cursor-default px-3 pt-2 pb-1 text-xs text-tertiary">
                   {optionsLabel}
                 </SelectPrimitive.Label>
               )}
@@ -103,12 +103,12 @@ export function Select({
                   className={mergeClasses(
                     'flex h-9 cursor-pointer items-center justify-between rounded-none! px-3 py-2',
                     'hocus:bg-hover hocus:outline-0',
-                    size === 'lg' && 'h-[56px]'
+                    size === 'lg' && 'h-14'
                   )}>
                   <SelectPrimitive.ItemText>
                     <div
                       className={mergeClasses(
-                        'text-default flex items-center gap-2 text-left text-sm leading-tight font-normal whitespace-pre-wrap',
+                        'flex items-center gap-2 text-left text-sm leading-tight font-normal whitespace-pre-wrap text-default',
                         size === 'lg' && 'text-lg'
                       )}>
                       {leftSlot}
@@ -127,7 +127,7 @@ export function Select({
                   <SelectPrimitive.ItemIndicator>
                     <CheckIcon
                       className={mergeClasses(
-                        'icon-sm text-icon-secondary shrink-0',
+                        'icon-sm shrink-0 text-icon-secondary',
                         size === 'lg' && 'icon-md'
                       )}
                     />
@@ -136,7 +136,7 @@ export function Select({
               ))}
             </SelectPrimitive.Group>
           </SelectPrimitive.Viewport>
-          <SelectPrimitive.ScrollDownButton className="bg-element flex h-7 items-center justify-center rounded-b-md">
+          <SelectPrimitive.ScrollDownButton className="flex h-7 items-center justify-center rounded-b-md bg-element">
             <ChevronDownIcon className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollDownButton>
         </SelectPrimitive.Content>
@@ -148,7 +148,7 @@ export function Select({
     return (
       <div className="flex flex-col gap-1">
         {typeof caption === 'string' ? (
-          <p className="text-tertiary text-sm font-medium">{caption}</p>
+          <p className="text-sm font-medium text-tertiary">{caption}</p>
         ) : (
           caption
         )}

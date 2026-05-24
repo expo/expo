@@ -1,6 +1,6 @@
 {
   "name": "expo-sqlite",
-  "version": "55.0.10",
+  "version": "56.0.4",
   "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -63,11 +63,12 @@
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "better-sqlite3": "^11.6.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react-error-boundary": "^4.0.11"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   }

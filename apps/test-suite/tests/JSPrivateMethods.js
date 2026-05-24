@@ -100,43 +100,46 @@ export function test({ describe, it, xit, expect }) {
         expect(foo.test()).toBe('barbaz');
       });
 
-      // From: private-method/read-only/exec.js
-      it('private method is read-only (assignment throws)', () => {
-        expect(() => {
-          class Foo {
-            #bar() {}
-            constructor() {
-              this.#bar = 1;
+      // NOTE(@kitten): These don't compile in production, so need to be left out
+      if (__DEV__) {
+        // From: private-method/read-only/exec.js
+        it('private method is read-only (assignment throws)', () => {
+          expect(() => {
+            class Foo {
+              #bar() {}
+              constructor() {
+                this.#bar = 1;
+              }
             }
-          }
-          new Foo();
-        }).toThrow();
-      });
+            new Foo();
+          }).toThrow();
+        });
 
-      // From: private-method/reassignment/exec.js
-      it('private method compound assignment throws', () => {
-        expect(() => {
-          class Foo {
-            #bar() {}
-            constructor() {
-              this.#bar += 1;
+        // From: private-method/reassignment/exec.js
+        it('private method compound assignment throws', () => {
+          expect(() => {
+            class Foo {
+              #bar() {}
+              constructor() {
+                this.#bar += 1;
+              }
             }
-          }
-          new Foo();
-        }).toThrow();
-      });
+            new Foo();
+          }).toThrow();
+        });
 
-      it('private method increment throws', () => {
-        expect(() => {
-          class Foo {
-            #bar() {}
-            constructor() {
-              this.#bar++;
+        it('private method increment throws', () => {
+          expect(() => {
+            class Foo {
+              #bar() {}
+              constructor() {
+                this.#bar++;
+              }
             }
-          }
-          new Foo();
-        }).toThrow();
-      });
+            new Foo();
+          }).toThrow();
+        });
+      }
 
       // From: private-method/class-binding/exec.js
       it('class name binding preserved inside private method', () => {
@@ -461,32 +464,34 @@ export function test({ describe, it, xit, expect }) {
         expect(foo.test()).toBe(42);
       });
 
-      it('getter-only private accessor throws on set', () => {
-        expect(() => {
-          class Foo {
-            get #bar() {
-              return 1;
+      if (__DEV__) {
+        it('getter-only private accessor throws on set', () => {
+          expect(() => {
+            class Foo {
+              get #bar() {
+                return 1;
+              }
+              constructor() {
+                this.#bar = 2;
+              }
             }
-            constructor() {
-              this.#bar = 2;
-            }
-          }
-          new Foo();
-        }).toThrow();
-      });
+            new Foo();
+          }).toThrow();
+        });
 
-      // In loose mode, setter-only accessor does not throw on get — returns undefined instead.
-      xit('setter-only private accessor throws on get', () => {
-        expect(() => {
-          class Foo {
-            set #bar(v) {}
-            constructor() {
-              const x = this.#bar;
+        // In loose mode, setter-only accessor does not throw on get — returns undefined instead.
+        xit('setter-only private accessor throws on get', () => {
+          expect(() => {
+            class Foo {
+              set #bar(v) {}
+              constructor() {
+                const x = this.#bar;
+              }
             }
-          }
-          new Foo();
-        }).toThrow();
-      });
+            new Foo();
+          }).toThrow();
+        });
+      }
 
       it('private accessor available during field initialization', () => {
         class Foo {
@@ -600,28 +605,30 @@ export function test({ describe, it, xit, expect }) {
       });
 
       // From: private-static-method/read-only/exec.js
-      it('static private method is read-only', () => {
-        expect(() => {
-          class Foo {
-            static #bar() {}
-            static {
-              Foo.#bar = 1;
+      if (__DEV__) {
+        it('static private method is read-only', () => {
+          expect(() => {
+            class Foo {
+              static #bar() {}
+              static {
+                Foo.#bar = 1;
+              }
             }
-          }
-        }).toThrow();
-      });
+          }).toThrow();
+        });
 
-      // From: private-static-method/reassignment/exec.js
-      it('static private method compound assignment throws', () => {
-        expect(() => {
-          class Foo {
-            static #bar() {}
-            static {
-              Foo.#bar += 1;
+        // From: private-static-method/reassignment/exec.js
+        it('static private method compound assignment throws', () => {
+          expect(() => {
+            class Foo {
+              static #bar() {}
+              static {
+                Foo.#bar += 1;
+              }
             }
-          }
-        }).toThrow();
-      });
+          }).toThrow();
+        });
+      }
 
       // From: private-static-method/super/exec.js
       it('super access from static private method', () => {
@@ -746,18 +753,20 @@ export function test({ describe, it, xit, expect }) {
         expect(Foo.test()).toBe(42);
       });
 
-      it('static getter-only throws on set', () => {
-        expect(() => {
-          class Foo {
-            static get #bar() {
-              return 1;
+      if (__DEV__) {
+        it('static getter-only throws on set', () => {
+          expect(() => {
+            class Foo {
+              static get #bar() {
+                return 1;
+              }
+              static {
+                Foo.#bar = 2;
+              }
             }
-            static {
-              Foo.#bar = 2;
-            }
-          }
-        }).toThrow();
-      });
+          }).toThrow();
+        });
+      }
     });
 
     describe('inheritance and isolation', () => {

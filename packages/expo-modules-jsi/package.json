@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-jsi",
-  "version": "55.0.0",
+  "version": "56.0.7",
   "description": "The JavaScript Interface for Expo Modules",
   "main": "index.js",
   "sideEffects": [],
@@ -36,5 +36,13 @@
   "devDependencies": {},
   "peerDependencies": {
     "react-native": "*"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./apple/scripts/build-xcframework.sh",
+      "./apple/scripts/create-stub-xcframework.sh",
+      "./apple/scripts/generate-modulemap.sh",
+      "./apple/scripts/test.sh"
+    ]
   }
 }

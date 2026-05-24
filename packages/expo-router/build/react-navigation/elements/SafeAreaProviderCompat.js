@@ -7,7 +7,14 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const useFrameSize_1 = require("./useFrameSize");
-const { width = 0, height = 0 } = react_native_1.Dimensions.get('window');
+function getInitialFrameSize() {
+    if (react_native_1.Platform.OS === 'web') {
+        return { width: 0, height: 0 };
+    }
+    const { width = 0, height = 0 } = react_native_1.Dimensions.get('window');
+    return { width, height };
+}
+const { width, height } = getInitialFrameSize();
 // To support SSR on web, we need to have empty insets for initial values
 // Otherwise there can be mismatch between SSR and client output
 // We also need to specify empty values to support tests environments

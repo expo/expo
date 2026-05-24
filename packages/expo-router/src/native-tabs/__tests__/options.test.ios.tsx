@@ -5,11 +5,11 @@ import { Button, View } from 'react-native';
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { Badge, Icon, Label } from '../../primitives';
 import { renderRouter, within } from '../../testing-library';
-import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView as _NativeTabsView } from '../NativeTabsView';
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
+import { appendIconOptions } from '../utils/optionsIconConverter';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -146,6 +146,10 @@ it('when no options are passed, default ones are used', () => {
     nativeProps: undefined,
     disableAutomaticContentInsets: undefined,
     contentStyle: undefined,
+    rippleColor: undefined,
+    disableIndicator: undefined,
+    labelVisibilityMode: undefined,
+    tintColor: undefined,
   } as NativeTabOptions);
 });
 
@@ -890,6 +894,105 @@ describe('Tab options', () => {
       expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(true);
       // Tab without explicit value inherits from NativeTabs
       expect(call.tabs[1]!.options.disableTransparentOnScrollEdge).toBe(false);
+    });
+  });
+
+  describe('disabled', () => {
+    it.each([true, false] as const)(
+      'When disabled is %p on a layout trigger, passes it down',
+      (value) => {
+        renderRouter({
+          _layout: () => (
+            <NativeTabs>
+              <NativeTabs.Trigger name="index" disabled={value} />
+            </NativeTabs>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(NativeTabsView).toHaveBeenCalledTimes(1);
+        const call = NativeTabsView.mock.calls[0]![0];
+        expect(call.tabs[0]!.options.disabled).toBe(value);
+      }
+    );
+
+    it('When disabled is not set on trigger, it stays undefined in options', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options.disabled).toBeUndefined();
+    });
+
+    it('Screen-mode trigger can set disabled dynamically', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => (
+          <View testID="index">
+            <NativeTabs.Trigger name="index" disabled />
+          </View>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      // Two renders: initial layout, then update after the screen mounts and calls setOptions
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      const initial = NativeTabsView.mock.calls[0]![0];
+      const afterFocus = NativeTabsView.mock.calls[1]![0];
+      expect(initial.tabs[0]!.options.disabled).toBeUndefined();
+      expect(afterFocus.tabs[0]!.options.disabled).toBe(true);
+    });
+
+    it('Screen-mode trigger that omits disabled does not clobber the layout value', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" disabled />
+          </NativeTabs>
+        ),
+        index: () => (
+          <View testID="index">
+            <NativeTabs.Trigger name="index" />
+          </View>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      // The layout value must survive the screen-mode setOptions call.
+      const lastCall = NativeTabsView.mock.calls.at(-1)![0];
+      expect(lastCall.tabs[0]!.options.disabled).toBe(true);
+    });
+
+    it('Screen-mode disabled={false} overrides a layout disabled={true}', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" disabled />
+          </NativeTabs>
+        ),
+        index: () => (
+          <View testID="index">
+            <NativeTabs.Trigger name="index" disabled={false} />
+          </View>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      const lastCall = NativeTabsView.mock.calls.at(-1)![0];
+      expect(lastCall.tabs[0]!.options.disabled).toBe(false);
     });
   });
 });

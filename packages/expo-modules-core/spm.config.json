@@ -46,7 +46,8 @@
           "headerPattern": "**/*.h",
           "exclude": [
             "Tests/**",
-            "Worklets/**"
+            "Worklets/**",
+            "WorkletsAdapter/**"
           ],
           "fileMapping": [
             {
@@ -88,7 +89,8 @@
             "Tests/**",
             "BridgeModule/**",
             "Views/**",
-            "Worklets/**"
+            "Worklets/**",
+            "WorkletsAdapter/**"
           ],
           "dependencies": [
             "Hermes",
@@ -105,6 +107,106 @@
             "CoreGraphics",
             "CoreMedia",
             "SwiftUI"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ExpoModulesWorklets",
+      "podName": "ExpoModulesWorklets",
+      "platforms": [
+        "iOS(.v16)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-jsi/ExpoModulesJSI"
+      ],
+      "swiftLanguageVersions": [
+        "6.0"
+      ],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoModulesWorklets_ios_objc",
+          "moduleName": "ExpoModulesWorklets",
+          "path": "ios/Worklets",
+          "pattern": "**/*.{m,mm}",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-jsi/ExpoModulesJSI",
+            "ExpoModulesCore"
+          ],
+          "linkedFrameworks": [
+            "Foundation"
+          ],
+          "includeDirectories": [
+            "."
+          ]
+        },
+        {
+          "type": "swift",
+          "name": "ExpoModulesWorklets",
+          "path": "ios/Worklets",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-jsi/ExpoModulesJSI",
+            "ExpoModulesCore",
+            "ExpoModulesWorklets_ios_objc"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ExpoModulesWorkletsAdapter",
+      "podName": "ExpoModulesWorkletsAdapter",
+      "sourceOnly": true,
+      "platforms": [
+        "iOS(.v16)"
+      ],
+      "autolinkWhen": {
+        "podName": "RNWorklets"
+      },
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-jsi/ExpoModulesJSI",
+        "ExpoModulesWorklets",
+        "RNWorklets"
+      ],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoModulesWorkletsAdapter",
+          "path": "ios/WorkletsAdapter",
+          "pattern": "**/*.{m,mm}",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-jsi/ExpoModulesJSI",
+            "ExpoModulesCore",
+            "ExpoModulesWorklets",
+            "RNWorklets"
+          ],
+          "linkedFrameworks": [
+            "Foundation"
+          ],
+          "includeDirectories": [
+            "."
           ]
         }
       ]

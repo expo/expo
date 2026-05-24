@@ -3,6 +3,7 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.appmetrics.AppMetricsModule
+import expo.modules.appmetrics.GlobalAttributes
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -10,7 +11,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class Config(
   @Field val environment: String? = null,
   @Field val dispatchingEnabled: Boolean? = null,
@@ -18,6 +21,7 @@ class Config(
   @Field val sampleRate: Double? = null
 ) : Record
 
+@OptimizedRecord
 class BundleDefaults(
   @Field val environment: String = "",
   @Field val isJsDev: Boolean = false
@@ -50,7 +54,10 @@ class ObserveModule : Module() {
         observabilityManager.scheduleBackgroundDispatch()
       }
 
-      AsyncFunction("dispatchEvents") Coroutine { -> observabilityManager.dispatchUnsentMetrics() }
+      AsyncFunction("dispatchEvents") Coroutine { ->
+        observabilityManager.dispatchUnsentMetrics()
+        observabilityManager.dispatchUnsentLogs()
+      }
 
       Function("configure") { config: Config ->
         ObservePreferences.setConfig(
@@ -66,6 +73,10 @@ class ObserveModule : Module() {
         val resolvedEnvironment = config.environment
           ?: ObservePreferences.getBundleDefaults(context)?.environment
         resolvedEnvironment?.let { appMetricsModule.setEnvironment(it) }
+      }
+
+      Function("setGlobalAttributes") { attributes: Map<String, Any?>? ->
+        GlobalAttributes.set(attributes)
       }
 
       Function("setBundleDefaults") { defaults: BundleDefaults ->

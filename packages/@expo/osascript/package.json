@@ -1,6 +1,6 @@
 {
   "name": "@expo/osascript",
-  "version": "2.4.2",
+  "version": "2.6.0",
   "description": "Tools for running an osascripts in Node",
   "license": "MIT",
   "keywords": [
@@ -36,7 +36,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@expo/spawn-async": "^1.7.2"
+    "@expo/spawn-async": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

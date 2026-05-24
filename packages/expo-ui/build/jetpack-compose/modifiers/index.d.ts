@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { type AnimatedValue } from './animation';
+import { type AnimatedValue, type AnimationSpec } from './animation';
 export { type ExpoModifier, type ModifierConfig } from '../../types';
 export { animated, spring, tween, snap, keyframes, type AnimationSpec, type AnimatedValue, } from './animation';
 export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
@@ -82,9 +82,13 @@ export declare const imePadding: () => import("./createModifier").ModifierConfig
 export declare const offset: (x: number, y: number) => import("./createModifier").ModifierConfig;
 /**
  * Sets the background color.
- * @param color - Color string (hex, e.g., '#FF0000').
+ * Pass an `animationSpec` to smoothly animate between colors when the prop changes (backed by `animateColorAsState`).
+ * @param color - A color string (hex, e.g., `'#FF0000'`).
+ * @param options.animationSpec - Optional spec — animate between color changes.
  */
-export declare const background: (color: ColorValue) => import("./createModifier").ModifierConfig;
+export declare const background: (color: ColorValue, options?: {
+    animationSpec?: AnimationSpec;
+}) => import("./createModifier").ModifierConfig;
 /**
  * Adds a border around the view.
  * @param borderWidth - Border width in dp.
@@ -195,6 +199,21 @@ export declare const clickable: (handler: () => void, options?: {
     indication?: boolean;
 }) => import("./createModifier").ModifierConfig;
 /**
+ * Makes the view respond to both click and long-click gestures.
+ * Wraps Compose's `Modifier.combinedClickable`. Useful for triggering a `DropdownMenu`
+ * on long-press while keeping a separate short-press action.
+ * @param handlers.onClick - Function to call on a short tap.
+ * @param handlers.onLongClick - Function to call on a long press.
+ * @param options - Optional configuration.
+ * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
+ */
+export declare const combinedClickable: (handlers: {
+    onClick?: () => void;
+    onLongClick?: () => void;
+}, options?: {
+    indication?: boolean;
+}) => import("./createModifier").ModifierConfig;
+/**
  * Makes the view selectable, like a radio button row.
  * @param selected - Whether the item is currently selected.
  * @param handler - Function to call when the item is clicked.
@@ -229,10 +248,24 @@ export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void
     minFractionVisible?: number;
 }) => import("./createModifier").ModifierConfig;
 /**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export declare const onSizeChanged: (handler: (size: {
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.
  */
 export declare const testID: (tag: string) => import("./createModifier").ModifierConfig;
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export declare const semantics: (params: {
+    contentType?: string;
+}) => import("./createModifier").ModifierConfig;
 type MaterialShapeName = 'cookie4Sided' | 'cookie6Sided' | 'cookie7Sided' | 'cookie9Sided' | 'cookie12Sided' | 'clover4Leaf' | 'clover8Leaf' | 'softBurst' | 'boom' | 'oval' | 'pill' | 'triangle' | 'diamond' | 'pentagon' | 'sunny' | 'verySunny' | 'fan' | 'pixelCircle' | 'pixelTriangle' | 'ghostish' | 'bun' | 'heart' | 'arch' | 'slanted' | 'puffy' | 'puffyDiamond';
 type CornerRadii = {
     topStart?: number;

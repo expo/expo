@@ -40,6 +40,16 @@ program
     .action(async function () {
     await (0, commands_1.buildIos)(this);
 });
+// mangle (internal: invoked by scripts/ios/mangle.rb during pod install)
+program
+    .command('mangle', { hidden: true })
+    .description('Internal: regenerate brownfield mangling xcconfig')
+    .option('--context-json <json>', 'inline JSON describing the mangling context')
+    .option('--context-file <path>', 'path to a JSON file describing the mangling context')
+    .option('--verbose', 'forward all output to the terminal')
+    .action(async function () {
+    await (0, commands_1.mangle)(this);
+});
 // tasks:android
 program
     .command('tasks:android')

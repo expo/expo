@@ -6,7 +6,7 @@ description: Learn a simple but powerful process for safely deploying updates to
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-When you have an app with multiple binary versions in production (this is common &mdash; users do not always stay up to date with your latest store release), it's important to understand what code is running on which versions and to be able to specifically target a particular version with a hotfix.
+When you have an app with multiple binary versions in production (this is common — users do not always stay up to date with your latest store release), it's important to understand what code is running on which versions and to be able to specifically target a particular version with a hotfix.
 
 EAS Update provides "channels", "branches", and "runtime versions" to help you determine which app version to target, to help you with bookkeeping to understand the state of your deployments, and to support a variety of [deployment patterns](/eas-update/deployment-patterns/).
 
@@ -105,7 +105,7 @@ Development builds can load updates from any channel, provided the runtime versi
 
 Run `eas update --channel staging` to publish an update to staging. This will make your hotfix immediately available to users of staging builds with the targeted runtime version.
 
-Your staging environment will be Google Play Beta or TestFlight &mdash; the "beta track" on respective app stores. You may alternatively use internal distribution, but deploying to a store beta track is generally recommended when you are staging code for a production release since users are able to access it without any knowledge of internal processes for distributing the app (while using internal distribution would require users to download the app from an expo.dev URL).
+Your staging environment will be Google Play Beta or TestFlight — the "beta track" on respective app stores. You may alternatively use internal distribution, but deploying to a store beta track is generally recommended when you are staging code for a production release since users are able to access it without any knowledge of internal processes for distributing the app (while using internal distribution would require users to download the app from an expo.dev URL).
 
 A common practice for creating staging builds is to always create one whenever you upload a production build to a store. This allows you to have a staging build with an identical runtime to the production build, which you can use to test your updates before rolling them out to production. With EAS Build, this means running `eas build --profile staging --auto-submit` every time you run `eas build --profile production --auto-submit`.
 

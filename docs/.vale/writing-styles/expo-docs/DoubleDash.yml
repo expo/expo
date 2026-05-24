@@ -1,0 +1,9 @@
+extends: existence
+message: 'Use an em dash instead of a double dash.'
+link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#use-mdash'
+level: error
+scope: text
+nonword: true
+# Look for prose like "word -- word" without flagging JSX props, code blocks, or Markdown separators.
+tokens:
+  - "[A-Za-z0-9][A-Za-z0-9'’_-]*\\s--\\s[A-Za-z0-9][A-Za-z0-9'’_-]*"

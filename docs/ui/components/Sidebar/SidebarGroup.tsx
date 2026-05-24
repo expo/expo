@@ -79,7 +79,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="text-tertiary ml-2 text-sm">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="ml-2 text-sm text-tertiary">{`${completedChaptersCount} of ${totalChapters}`}</p>
             </div>
           </div>
         )}
@@ -97,12 +97,12 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                 {child.sidebarTitle ?? child.name}
                 {child.hasVideoLink &&
                   (!isSelected ? (
-                    <PlaySquareIcon className="icon-xs text-icon-secondary ml-1 inline" />
+                    <PlaySquareIcon className="ml-1 inline icon-xs text-icon-secondary" />
                   ) : (
-                    <PlaySquareDuotoneIcon className="icon-xs text-palette-blue11 ml-1 inline" />
+                    <PlaySquareDuotoneIcon className="ml-1 inline icon-xs text-palette-blue11" />
                   ))}
               </span>
-              {completed && <CheckIcon className="icon-sm ml-auto" />}
+              {completed && <CheckIcon className="ml-auto icon-sm" />}
             </SidebarLink>
           );
         })}
@@ -208,7 +208,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
-              <p className="text-tertiary ml-2 text-sm">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
+              <p className="ml-2 text-sm text-tertiary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
             </div>
           </div>
         )}
@@ -226,12 +226,12 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                 {child.sidebarTitle ?? child.name}
                 {child.hasVideoLink &&
                   (!isSelected ? (
-                    <PlaySquareIcon className="icon-xs text-icon-secondary ml-1 inline" />
+                    <PlaySquareIcon className="ml-1 inline icon-xs text-icon-secondary" />
                   ) : (
-                    <PlaySquareDuotoneIcon className="icon-xs text-palette-blue11 ml-1 inline" />
+                    <PlaySquareDuotoneIcon className="ml-1 inline icon-xs text-palette-blue11" />
                   ))}
               </span>
-              {completed && <CheckIcon className="icon-sm ml-auto" />}
+              {completed && <CheckIcon className="ml-auto icon-sm" />}
             </SidebarLink>
           );
         })}
@@ -318,7 +318,7 @@ function getIconElement(iconName?: string) {
       return Dataflow03Icon;
     case 'EAS Hosting':
       return Cloud01Icon;
-    case 'Expo Observe':
+    case 'EAS Observe':
       return ActivityIcon;
     case 'Expo Modules API':
       return CpuChip01Icon;

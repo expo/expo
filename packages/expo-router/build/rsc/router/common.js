@@ -7,20 +7,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LOCATION_ID = exports.SHOULD_SKIP_ID = exports.PARAM_KEY_SKIP = void 0;
-exports.getComponentIds = getComponentIds;
+exports.LOCATION_ID = exports.SHOULD_SKIP_ID = exports.PARAM_KEY_SKIP = exports.mintComponentId = exports.getComponentIds = void 0;
 exports.getInputString = getInputString;
 exports.parseInputString = parseInputString;
-function getComponentIds(path) {
-    const pathItems = path.split('/').filter(Boolean);
-    const idSet = new Set();
-    for (let index = 0; index <= pathItems.length; ++index) {
-        const id = [...pathItems.slice(0, index), 'layout'].join('/');
-        idSet.add(id);
-    }
-    idSet.add([...pathItems, 'page'].join('/'));
-    return Array.from(idSet);
-}
+var idMinting_1 = require("./idMinting");
+Object.defineProperty(exports, "getComponentIds", { enumerable: true, get: function () { return idMinting_1.getComponentIds; } });
+Object.defineProperty(exports, "mintComponentId", { enumerable: true, get: function () { return idMinting_1.mintComponentId; } });
 function getInputString(path) {
     if (!path.startsWith('/')) {
         throw new Error('Path should start with `/`');

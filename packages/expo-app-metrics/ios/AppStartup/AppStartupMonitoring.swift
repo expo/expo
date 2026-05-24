@@ -102,19 +102,21 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       markers.timeToInteractive = currentTime
 
       if let tti = markers.getTTI() {
-        var params = params
         let frameMetrics = frameMetricsRecorder.stop()
-        if frameMetrics.expectedFrames > 0 {
-          params["frameRate.slowFrames"] = frameMetrics.slowFrames
-          params["frameRate.frozenFrames"] = frameMetrics.frozenFrames
-          params["frameRate.totalDelay"] = frameMetrics.freezeTime
-        }
+        let deviceState = await DeviceConditions.deviceState()
+        let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
+        let mergedParams = MetricParamsBuilder.build(
+          userParams: params,
+          frameMetrics: frameMetrics,
+          deviceState: deviceState,
+          networkPath: networkPath
+        )
         let metric = Metric(
           category: .appStartup,
           name: "timeToInteractive",
           value: tti,
           routeName: routeName,
-          params: params.isEmpty ? nil : params
+          params: mergedParams.isEmpty ? nil : mergedParams
         )
         reportMetric(metric)
       }

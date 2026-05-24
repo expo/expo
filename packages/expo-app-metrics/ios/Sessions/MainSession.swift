@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import Foundation
+
 /**
  Main session starts from launching the app to its termination. Some metrics like the app startup can only be tracked once and globally.
  In the future this class will also hold subsessions such as for time spent on a specific screen/route or user-initiated sessions.
@@ -8,12 +10,6 @@ public final class MainSession: Session, @unchecked Sendable {
   let appStartupMonitor = AppStartupMonitoring()
   let updatesMonitor = UpdatesMonitoring()
   let frameMetricsRecorder = FrameMetricsRecorder()
-
-  /**
-   Crash report associated with this session, if the app crashed during it.
-   Mutations go through `storeCrashReport(_:)` so they happen on the actor.
-   */
-  nonisolated(unsafe) public private(set) var crashReport: CrashReport?
 
   // MARK: - Metrics
 
@@ -42,34 +38,19 @@ public final class MainSession: Session, @unchecked Sendable {
   // MARK: - Crash reports
 
   /**
-   Stores a crash report on this session and logs it. The caller is responsible for
-   committing the storage.
+   Persists a crash report attributed to this session. Replaces any previously stored report for
+   this session id (only one crash per session is meaningful).
    */
   @AppMetricsActor
   func storeCrashReport(_ crashReport: CrashReport) {
-    if self.crashReport != nil {
-      logger.warn("[AppMetrics] Replacing existing crash report on session \(self.id)")
-    } else {
-      logger.warn("[AppMetrics] Received crash report:\n\(crashReport)")
+    logger.warn("[AppMetrics] Received crash report:\n\(crashReport)")
+    guard let payload = encodeAsJSONString(crashReport) else {
+      return
     }
-    self.crashReport = crashReport
-  }
-
-  // MARK: - Codable
-
-  private enum CodingKeys: String, CodingKey {
-    case crashReport
-  }
-
-  required init(from decoder: any Decoder) throws {
-    let values = try decoder.container(keyedBy: CodingKeys.self)
-    crashReport = try values.decodeIfPresent(CrashReport.self, forKey: .crashReport)
-    try super.init(from: decoder)
-  }
-
-  public override func encode(to encoder: any Encoder) throws {
-    try super.encode(to: encoder)
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    try container.encodeIfPresent(crashReport, forKey: .crashReport)
+    do {
+      try AppMetrics.database?.setCrashReport(sessionId: self.id, payload: payload)
+    } catch {
+      logger.warn("[AppMetrics] Failed to persist crash report for session \(self.id): \(error.localizedDescription)")
+    }
   }
 }

@@ -42,9 +42,12 @@ const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
 const useNavigation_1 = require("./useNavigation");
 /**
  * Hook to run an effect whenever a route is **focused**. Similar to
- * [`React.useEffect`](https://react.dev/reference/react/useEffect).
+ * [`React.useEffect`](https://react.dev/reference/react/useEffect), but the effect re-runs
+ * each time the screen comes into focus, and the optional cleanup function runs when the
+ * screen loses focus — not on unmount. This makes it the right primitive for refetching
+ * data, restarting subscriptions, or resetting transient screen state every time a user
+ * returns to the route.
  *
- * This can be used to perform side-effects such as fetching data or subscribing to events.
  * The passed callback should be wrapped in [`React.useCallback`](https://react.dev/reference/react/useCallback)
  * to avoid running the effect too often.
  *
@@ -85,7 +88,7 @@ function useFocusEffect(effect, do_not_pass_a_second_prop) {
             '    // Your code here\n' +
             '  }, [depA, depB])\n' +
             ');\n\n' +
-            'See usage guide: https://reactnavigation.org/docs/use-focus-effect';
+            'See usage guide: https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect-do_not_pass_a_second_prop';
         console.error(message);
     }
     React.useEffect(() => {
@@ -120,7 +123,7 @@ function useFocusEffect(effect, do_not_pass_a_second_prop) {
                             '    fetchData();\n' +
                             '  }, [someId])\n' +
                             ');\n\n' +
-                            'See usage guide: https://reactnavigation.org/docs/use-focus-effect';
+                            'See usage guide: https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect-do_not_pass_a_second_prop';
                 }
                 else {
                     message += ` You returned '${JSON.stringify(destroy)}'.`;

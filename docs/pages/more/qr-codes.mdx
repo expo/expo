@@ -4,6 +4,7 @@ description: Reference for the QR code generator at qr.expo.dev.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 qr.expo.dev is a cloud function that generates Expo-branded QR codes. This function creates QR codes for [EAS Update](/eas-update/introduction/), which are used to preview updates in [development builds](/develop/development-builds/introduction/) and Expo Go.
 
@@ -39,22 +40,22 @@ The following parameters apply to the `/eas-update` endpoint.
 
 The following base query parameters can be included with any request to `/eas-update`.
 
-| Param                    | Required | Default    | Description                                                                                                                                                       |
-| ------------------------ | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `slug`                   | No       | exp        | Use [`slug`](/versions/latest/config/app/#slug) from [app config](/workflow/configuration/) to target a development build. Otherwise use "exp" to target Expo Go. |
-| `appScheme` (deprecated) | No       | exp        | Replaced by `slug`. Use `slug` instead.                                                                                                                           |
-| `host`                   | No       | u.expo.dev | The hostname of the server that handles update requests.                                                                                                          |
-| `format`                 | No       | svg        | Endpoints respond with SVGs by default. To receive a plain text URL, use `url`.                                                                                   |
+| Param                    | Required   | Default    | Description                                                                                                                                                       |
+| ------------------------ | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `slug`                   | <NoIcon /> | exp        | Use [`slug`](/versions/latest/config/app/#slug) from [app config](/workflow/configuration/) to target a development build. Otherwise use "exp" to target Expo Go. |
+| `appScheme` (deprecated) | <NoIcon /> | exp        | Replaced by `slug`. Use `slug` instead.                                                                                                                           |
+| `host`                   | <NoIcon /> | u.expo.dev | The hostname of the server that handles update requests.                                                                                                          |
+| `format`                 | <NoIcon /> | svg        | Endpoints respond with SVGs by default. To receive a plain text URL, use `url`.                                                                                   |
 
 ### Update by device traits
 
 Preview and production builds make requests to the EAS Update service with `runtimeVersion` and `channel` properties. You can emulate this behavior with the following query parameters:
 
-| Param            | Required | Description                                                       |
-| ---------------- | -------- | ----------------------------------------------------------------- |
-| `projectId`      | Yes      | The ID of the project                                             |
-| `runtimeVersion` | Yes      | The [runtime version](/eas-update/runtime-versions/) of the build |
-| `channel`        | Yes      | The channel name of the build                                     |
+| Param            | Required    | Description                                                       |
+| ---------------- | ----------- | ----------------------------------------------------------------- |
+| `projectId`      | <YesIcon /> | The ID of the project                                             |
+| `runtimeVersion` | <YesIcon /> | The [runtime version](/eas-update/runtime-versions/) of the build |
+| `channel`        | <YesIcon /> | The channel name of the build                                     |
 
 #### Example
 
@@ -66,9 +67,9 @@ https://qr.expo.dev/eas-update?projectId=your-project-id&runtimeVersion=your-run
 
 You can create a QR code for a specific update given its platform-specific ID.
 
-| Param      | Required | Description          |
-| ---------- | -------- | -------------------- |
-| `updateId` | Yes      | The ID of the update |
+| Param      | Required    | Description          |
+| ---------- | ----------- | -------------------- |
+| `updateId` | <YesIcon /> | The ID of the update |
 
 #### Example
 
@@ -80,10 +81,10 @@ https://qr.expo.dev/eas-update?updateId=your-update-id
 
 You can create a QR code for an update group given the update's group ID.
 
-| Param       | Required | Description                |
-| ----------- | -------- | -------------------------- |
-| `projectId` | Yes      | The ID of the project      |
-| `groupId`   | Yes      | The ID of the update group |
+| Param       | Required    | Description                |
+| ----------- | ----------- | -------------------------- |
+| `projectId` | <YesIcon /> | The ID of the project      |
+| `groupId`   | <YesIcon /> | The ID of the update group |
 
 #### Example
 
@@ -95,10 +96,10 @@ https://qr.expo.dev/eas-update?projectId=your-project-id&groupId=your-update-id
 
 You can create a QR code with a branch's ID, which will return the latest update available on that branch.
 
-| Param       | Required | Description           |
-| ----------- | -------- | --------------------- |
-| `projectId` | Yes      | The ID of the project |
-| `branchId`  | Yes      | The ID of the branch  |
+| Param       | Required    | Description           |
+| ----------- | ----------- | --------------------- |
+| `projectId` | <YesIcon /> | The ID of the project |
+| `branchId`  | <YesIcon /> | The ID of the branch  |
 
 #### Example
 
@@ -110,10 +111,10 @@ https://qr.expo.dev/eas-update?projectId=your-project-id&branchId=your-branch-id
 
 You can create a QR code with a channel's ID, which will return the latest update available on the branch or branches that are mapped to that channel.
 
-| Param       | Required | Description           |
-| ----------- | -------- | --------------------- |
-| `projectId` | Yes      | The ID of the project |
-| `channelId` | Yes      | The ID of the channel |
+| Param       | Required    | Description           |
+| ----------- | ----------- | --------------------- |
+| `projectId` | <YesIcon /> | The ID of the project |
+| `channelId` | <YesIcon /> | The ID of the channel |
 
 #### Example
 

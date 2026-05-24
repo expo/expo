@@ -39,6 +39,9 @@ export function NativeTabsNavigator({
   indicatorColor,
   badgeTextColor,
   shadowColor,
+  rippleColor,
+  disableIndicator,
+  labelVisibilityMode,
   screenListeners,
   ...rest
 }: InternalNativeTabsProps) {
@@ -82,6 +85,10 @@ export function NativeTabsNavigator({
       indicatorColor,
       badgeTextColor,
       shadowColor,
+      rippleColor,
+      disableIndicator,
+      labelVisibilityMode,
+      tintColor: rest.tintColor,
     },
   });
 

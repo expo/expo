@@ -52,7 +52,9 @@ Projects can configure how Babel is used by modifying the [**babel.config.js**](
 
 ### Bare workflow
 
-Describes the approach when the native projects (in the **android** and **ios** directories) are versioned in Git and maintained manually. It's typical for **existing "bare" React Native apps** where you manually make changes to the native projects. There is freedom to customize them but also high maintenance overhead.
+> **warning** [**Deprecated**](/more/release-statuses/#deprecated): Expo no longer separates "managed" and "bare" workflows. All projects use the same architecture based on Continuous Native Generation (CNG). Run `npx expo prebuild` to generate native directories when you need native access. Config plugins let you customize native configuration declaratively.
+
+Describes the approach when the native projects (in the **android** and **ios** directories) are versioned in Git and maintained manually. It's typical for **existing React Native apps** where you manually make changes to the native projects. There is freedom to customize them but also high maintenance overhead.
 
 This is in contrast to using [app config and prebuild](/workflow/continuous-native-generation), where the native projects are not versioned. Instead, they are generated on demand using the `npx expo prebuild`, which is the [recommended approach](/workflow/continuous-native-generation).
 
@@ -90,7 +92,7 @@ A standalone command-line tool (CLI) for bootstrapping new React Native apps wit
 
 ### create-expo-module
 
-A standalone command line tool (CLI) for creating Expo modules and adding platform support to existing modules. See [`create-expo-module` reference](/more/create-expo-module/) for more information.
+A standalone command-line tool (CLI) for creating Expo modules and adding platform support to existing modules. See [`create-expo-module` reference](/more/create-expo-module/) for more information.
 
 ### create-react-native-app
 
@@ -124,7 +126,7 @@ The development server is typically hosted on `http://localhost:8081`. It hosts 
 
 ### Expo Application Services (EAS)
 
-[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction/), [EAS Submit](/submit/introduction/), [EAS Update](/eas-update/introduction/), [EAS Metadata](/eas/metadata/), [EAS Insights](/eas-insights/introduction/), [EAS Hosting](/eas/hosting/introduction/), and [EAS Workflows](/eas/workflows/introduction/).
+[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction/), [EAS Submit](/submit/introduction/), [EAS Update](/eas-update/introduction/), [EAS Metadata](/eas/metadata/), [EAS Insights](/eas-insights/introduction/), [EAS Hosting](/eas/hosting/introduction/), [EAS Workflows](/eas/workflows/introduction/), and [EAS Observe](/eas/observe/introduction/).
 
 ### EAS Build
 
@@ -150,6 +152,10 @@ The **eas.json** file used to configure [EAS CLI](#eas-cli). For more informatio
 
 A command-line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the [EAS CLI](#eas-cli) package and should be used to improve the iOS submission process. For more information, see [EAS Metadata](/eas/metadata/).
 
+### EAS Observe
+
+[EAS Observe](/eas/observe/introduction/) is a performance monitoring service that tracks how an app performs in production, including cold and warm launch times, time to first render, and time to interactive. It uses the `expo-observe` library to collect metrics from production builds, which can then be viewed in the Observe dashboard.
+
 ### EAS Update
 
 1. The cloud hosting service [EAS Update](/eas-update/introduction/) from [EAS](#expo-application-services-eas) that is used for OTA Updates.
@@ -173,7 +179,7 @@ A synonym for an app that usually implies something more single-use and smaller 
 
 ### Expo Atlas
 
-[Expo Atlas](/atlas/introduction/) is a tool for visualizing JavaScript bundles. It is used to inspect bundle size and identify which libraries contribute to the production bundle.
+[Expo Atlas](/guides/analyzing-bundles/) is a tool for visualizing JavaScript bundles. It is used to inspect bundle size and identify which libraries contribute to the production bundle.
 
 ### Expo Autolinking
 
@@ -417,7 +423,7 @@ The VS Code extension for improving the developer experience of working with app
 
 ### Watchman
 
-The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installed globally. Watchman is maintained by [Meta](#meta).
+A file watcher daemon which [Metro](#metro-bundler) can optionally use to crawl and query a project's files. Watchman contains native code and may cause issues when installed globally. Watchman is maintained by [Meta](#meta).
 
 ### webpack
 

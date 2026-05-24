@@ -1,7 +1,8 @@
 import { NavigationBar, NavigationBarStyle } from 'expo-navigation-bar';
 import * as React from 'react';
-import { Platform, ScrollView, Text } from 'react-native';
+import { Platform, ScrollView } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
 
@@ -10,7 +11,9 @@ export default function NavigationBarScreen() {
     <ScrollView>
       <Page>
         {Platform.OS !== 'android' && (
-          <Text style={{ marginVertical: 8, fontSize: 16 }}>⚠️ NavigationBar is Android-only</Text>
+          <BodyText style={{ marginVertical: 8, fontSize: 16 }}>
+            ⚠️ NavigationBar is Android-only
+          </BodyText>
         )}
         <Section title="Appearance">
           <StyleExample />

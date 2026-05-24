@@ -1,3 +1,4 @@
+import Foundation
 import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
@@ -124,6 +125,29 @@ class ImageResizingSpec: ExpoSpec {
           expect(size.width) == contentSize.width   // 37
           expect(size.height) == contentSize.height // 21
         }
+      }
+    }
+
+    describe("local asset names") {
+      it("preserves relative asset names") {
+        expect(localAssetName(from: URL(string: "app_icon"))) == "app_icon"
+      }
+
+      it("removes a leading slash from absolute paths") {
+        expect(localAssetName(from: URL(string: "/app_icon"))) == "app_icon"
+      }
+
+      it("handles file URLs produced by ExpoModulesCore for scheme-less JS strings") {
+        // `ExpoModulesCore`'s `convertToUrl` wraps scheme-less JS strings via
+        // `URL(fileURLWithPath:)`, which is how asset names actually reach the native side.
+        expect(localAssetName(from: URL(fileURLWithPath: "app_icon"))) == "app_icon"
+        expect(localAssetName(from: URL(fileURLWithPath: "/app_icon"))) == "app_icon"
+        expect(localAssetName(from: URL(fileURLWithPath: "Images/MyIcon"))) == "Images/MyIcon"
+      }
+
+      it("ignores urls with a scheme") {
+        expect(localAssetName(from: URL(string: "https://example.com/app_icon.png"))).to(beNil())
+        expect(localAssetName(from: URL(string: "sf:/star"))).to(beNil())
       }
     }
   }

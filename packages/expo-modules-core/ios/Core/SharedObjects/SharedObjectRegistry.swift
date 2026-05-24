@@ -182,6 +182,17 @@ public final class SharedObjectRegistry: Sendable {
   }
 
   /**
+   Variant of `toJavaScriptValue(_:)` that looks up by id rather than by native object.
+   */
+  @JavaScriptActor
+  internal func toJavaScriptValue(sharedObjectId id: SharedObjectId) -> JavaScriptValue? {
+    let pair = state.withLock { state in
+      return state.pairs[id]
+    }
+    return pair?.javaScript.lock()?.asValue()
+  }
+
+  /**
    Gets the JS shared object that is paired with a given native object.
    */
   internal func toJavaScriptObject(_ nativeObject: SharedObject) -> JavaScriptObject? {

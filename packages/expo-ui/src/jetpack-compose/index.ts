@@ -1,4 +1,3 @@
-import '../State/index.fx';
 import './MaterialSymbolsAssetsTransformer.fx';
 
 export * from './AlertDialog';
@@ -27,13 +26,29 @@ export * from './Slider';
 export * from './Spacer';
 export * from './Switch';
 export * from './SyncSwitch';
-export * from './TextField';
+export {
+  TextField,
+  OutlinedTextField,
+  type TextFieldProps,
+  type TextFieldRef,
+  type TextFieldCapitalization,
+  type TextFieldImeAction,
+  type TextFieldKeyboardOptions,
+  type TextFieldKeyboardType,
+  type TextFieldKeyboardActions,
+  type TextFieldColors,
+} from './TextField';
 export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';
 export * from './Carousel';
-export * from './HorizontalPager';
+export {
+  HorizontalPager,
+  type HorizontalPagerHandle,
+  type HorizontalPagerProps,
+} from './HorizontalPager';
 export * from './SearchBar';
+export * from './Snackbar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
 export * from './FloatingActionButton';
@@ -42,12 +57,13 @@ export * from './RadioButton';
 export * from './Surface';
 export { type TextProps, Text } from './Text';
 export * from './Tooltip';
+export * from './LoadingIndicator';
 
 export * from './AnimatedVisibility';
 export * from './Box';
 export * from './Row';
 export * from './Column';
 export * from './FlowRow';
-export { useNativeState } from '../State/useNativeState';
+export { useNativeState } from '../State';
 export type { ViewEvent } from '../types';
 export type { PrimitiveBaseProps } from './layout-types';

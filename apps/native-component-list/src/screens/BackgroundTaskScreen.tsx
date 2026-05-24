@@ -6,6 +6,7 @@ import * as TaskManager from 'expo-task-manager';
 import React, { useEffect } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
 
@@ -78,12 +79,14 @@ export default function BackgroundTaskScreen() {
 
   const renderText = () => {
     if (!lastRunDate) {
-      return <Text>There was no Background Task call yet.</Text>;
+      return <BodyText>There was no Background Task call yet.</BodyText>;
     }
     return (
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-        <Text>Last background task was invoked at:</Text>
-        <Text style={styles.boldText}>{format('yyyy-MM-dd hh:mm:ss:SSS', lastRunDate)}</Text>
+        <BodyText>Last background task was invoked at:</BodyText>
+        <BodyText style={styles.boldText}>
+          {format('yyyy-MM-dd hh:mm:ss:SSS', lastRunDate)}
+        </BodyText>
       </View>
     );
   };
@@ -91,12 +94,12 @@ export default function BackgroundTaskScreen() {
   return (
     <View style={styles.screen}>
       <View style={styles.textContainer}>
-        <Text>
+        <BodyText>
           Background Task Service:
           <Text style={styles.boldText}>
             {status ? BackgroundTask.BackgroundTaskStatus[status] : null}
           </Text>
-        </Text>
+        </BodyText>
       </View>
       <View style={styles.textContainer}>{renderText()}</View>
       <Button
@@ -112,9 +115,9 @@ export default function BackgroundTaskScreen() {
       />
       {Platform.OS === 'ios' ? (
         <View style={styles.textContainer}>
-          <Text style={{ textAlign: 'center' }}>
+          <BodyText style={{ textAlign: 'center' }}>
             Try trigger expiry handler on next run (loops 1000 times waiting 30s each)
-          </Text>
+          </BodyText>
           <Button
             buttonStyle={styles.button}
             title={
@@ -130,13 +133,13 @@ export default function BackgroundTaskScreen() {
               }
             }}
           />
-          <Text style={{ textAlign: 'center' }}>Expiry was last trigger at:</Text>
+          <BodyText style={{ textAlign: 'center' }}>Expiry was last trigger at:</BodyText>
           {expiryWasTriggered ? (
-            <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>
+            <BodyText style={{ textAlign: 'center', fontWeight: 'bold' }}>
               {format('yyyy-MM-dd hh:mm:ss:SSS', new Date(+expiryWasTriggered))}
-            </Text>
+            </BodyText>
           ) : (
-            <Text style={{ textAlign: 'center' }}>Never</Text>
+            <BodyText style={{ textAlign: 'center' }}>Never</BodyText>
           )}
         </View>
       ) : null}

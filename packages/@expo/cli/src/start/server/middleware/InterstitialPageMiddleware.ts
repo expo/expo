@@ -23,6 +23,15 @@ const debug = require('debug')(
   'expo:start:server:middleware:interstitialPage'
 ) as typeof console.log;
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export const LoadingEndpoint = '/_expo/loading';
 
 export class InterstitialPageMiddleware extends ExpoMiddleware {
@@ -48,14 +57,17 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
       path.resolve(__dirname, '../../../../../static/loading-page/index.html');
     let content = (await readFile(templatePath)).toString('utf-8');
 
-    content = content.replace(/{{\s*AppName\s*}}/, appName);
-    content = content.replace(/{{\s*Path\s*}}/, this.projectRoot);
-    content = content.replace(/{{\s*Scheme\s*}}/, this.options.scheme ?? 'Unknown');
+    content = content.replace(/{{\s*AppName\s*}}/, escapeHtml(appName));
+    content = content.replace(/{{\s*Path\s*}}/, escapeHtml(this.projectRoot));
+    content = content.replace(/{{\s*Scheme\s*}}/, escapeHtml(this.options.scheme ?? 'Unknown'));
     content = content.replace(
       /{{\s*ProjectVersionType\s*}}/,
       `${projectVersion.type === 'sdk' ? 'SDK' : 'Runtime'} version`
     );
-    content = content.replace(/{{\s*ProjectVersion\s*}}/, projectVersion.version ?? 'Undetected');
+    content = content.replace(
+      /{{\s*ProjectVersion\s*}}/,
+      escapeHtml(projectVersion.version ?? 'Undetected')
+    );
 
     return content;
   }

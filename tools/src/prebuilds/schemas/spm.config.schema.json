@@ -186,6 +186,10 @@
                     },
                     "required": [ "script", "output" ],
                     "additionalProperties": false
+                },
+                "sourceOnly": {
+                    "type": "boolean",
+                    "description": "When true, the product is never prebuilt as an xcframework. The prebuild flow skips it entirely — it does not generate sources, build, or resolve its externalDependencies. The product entry remains so autolinking (`autolinkWhen`) can still register the matching CocoaPods source pod. Use this for companion adapters that must always compile from source because they bridge to a peer pod that may not be present."
                 }
             },
             "required": [ "name", "podName", "targets" ],

@@ -10,6 +10,7 @@ import { parentPort, workerData } from 'node:worker_threads';
 
 import {
   buildAgentInstructions,
+  buildPageSpecificNote,
   shouldAppendAgentInstructions,
   urlPathFromHtmlPath,
 } from './agent-instructions.ts';
@@ -192,13 +193,18 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
 
     const mdxPath = findMdxSource(htmlPath, outDir, pagesDir);
     const frontmatter = mdxPath ? extractFrontmatter(mdxPath) : null;
+    const pathname = urlPathFromHtmlPath(relHtmlPath);
     const agentBlock = shouldAppendAgentInstructions(markdown)
-      ? buildAgentInstructions(urlPathFromHtmlPath(relHtmlPath))
+      ? buildAgentInstructions(pathname)
       : null;
+    const pageNote = buildPageSpecificNote(pathname);
 
     const parts: string[] = [];
     if (frontmatter) {
       parts.push(frontmatter);
+    }
+    if (pageNote) {
+      parts.push(pageNote);
     }
     if (agentBlock) {
       parts.push(agentBlock);

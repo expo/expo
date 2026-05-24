@@ -8,6 +8,9 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`TextInput`](../universal/textinput) — it renders the appropriate native component per platform.
 
 Expo UI provides two text field components that match the official Jetpack Compose [TextField API](https://developer.android.com/develop/ui/compose/text/user-input): `TextField` (filled) and `OutlinedTextField` (outlined border). Both variants share the same props and support composable slot children for label, placeholder, icons, prefix, suffix, and supporting text.
 
@@ -15,6 +18,14 @@ Expo UI provides two text field components that match the official Jetpack Compo
 | -------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Filled   | Solid background with a bottom indicator line. | Default text input style following Material3 design. Use for most forms and input fields.                     |
 | Outlined | Transparent background with a border outline.  | Alternative style that provides a distinct visual boundary. Use when filled fields blend into the background. |
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/textfield/android-light.webp"
+  darkSrc="/static/images/expo-ui/textfield/android-dark.webp"
+  alt="Filled and outlined Material 3 text fields"
+/>
 
 ## Installation
 
@@ -199,7 +210,7 @@ export default function ErrorStateExample() {
 
 ### Imperative ref
 
-Use a ref to imperatively set text, focus, or blur the text field.
+Use a ref to imperatively set text, clear the field, change the selection, or move focus.
 
 ```tsx ImperativeRefExample.tsx
 import { useRef, useState } from 'react';
@@ -219,9 +230,17 @@ export default function ImperativeRefExample() {
           </TextField.Label>
         </TextField>
         <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
-          <Button onClick={() => ref.current?.setText('Hello!')}>
+          <Button onClick={() => ref.current?.setText('Hello world')}>
             <Text>Set text</Text>
           </Button>
+          <Button onClick={() => ref.current?.clear()}>
+            <Text>Clear</Text>
+          </Button>
+          <Button onClick={() => ref.current?.setSelection(0, 5)}>
+            <Text>Select first word</Text>
+          </Button>
+        </Row>
+        <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
           <Button onClick={() => ref.current?.focus()}>
             <Text>Focus</Text>
           </Button>
@@ -230,6 +249,54 @@ export default function ImperativeRefExample() {
           </Button>
         </Row>
       </Column>
+    </Host>
+  );
+}
+```
+
+### Worklet text masking
+
+When `onValueChange` is marked with the `'worklet'` directive, it runs synchronously on the UI thread, so writes to [`useNativeState`](usenativestate) observables inside the callback take effect before the next frame. There is no flicker between the typed text and the masked text. The example below masks a phone number as the user types and writes both `value` and `selection` from the worklet to keep the cursor at the end of the formatted value.
+
+> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+
+```tsx WorkletPhoneMaskExample.tsx
+import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+import { useEffectEvent } from 'react';
+
+export default function WorkletPhoneMaskExample() {
+  const phone = useNativeState('');
+  const selection = useNativeState({ start: 0, end: 0 });
+
+  const handleValueChange = useEffectEvent((v: string) => {
+    'worklet';
+    const digits = v.replace(/\D/g, '').slice(0, 10);
+    let formatted = digits;
+    if (digits.length > 6) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    } else if (digits.length > 3) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    }
+    if (formatted !== v) {
+      phone.value = formatted;
+      // Snaps to end for demo. Real masks need smarter cursor handling.
+      selection.value = { start: formatted.length, end: formatted.length };
+    }
+  });
+
+  return (
+    <Host matchContents>
+      <TextField
+        value={phone}
+        selection={selection}
+        keyboardOptions={{ keyboardType: 'phone' }}
+        modifiers={[fillMaxWidth()]}
+        onValueChange={handleValueChange}>
+        <TextField.Placeholder>
+          <Text>(555) 123-4567</Text>
+        </TextField.Placeholder>
+      </TextField>
     </Host>
   );
 }

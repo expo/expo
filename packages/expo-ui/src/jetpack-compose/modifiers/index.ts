@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 
-import { type AnimatedValue } from './animation';
+import { type AnimatedValue, type AnimationSpec } from './animation';
 import { createModifier, createModifierWithEventListener } from './createModifier';
 export { type ExpoModifier, type ModifierConfig } from '../../types';
 export {
@@ -142,9 +142,12 @@ export const offset = (x: number, y: number) => createModifier('offset', { x, y 
 
 /**
  * Sets the background color.
- * @param color - Color string (hex, e.g., '#FF0000').
+ * Pass an `animationSpec` to smoothly animate between colors when the prop changes (backed by `animateColorAsState`).
+ * @param color - A color string (hex, e.g., `'#FF0000'`).
+ * @param options.animationSpec - Optional spec — animate between color changes.
  */
-export const background = (color: ColorValue) => createModifier('background', { color });
+export const background = (color: ColorValue, options?: { animationSpec?: AnimationSpec }) =>
+  createModifier('background', { color, animationSpec: options?.animationSpec });
 
 /**
  * Adds a border around the view.
@@ -292,6 +295,31 @@ export const clickable = (handler: () => void, options?: { indication?: boolean 
   });
 
 /**
+ * Makes the view respond to both click and long-click gestures.
+ * Wraps Compose's `Modifier.combinedClickable`. Useful for triggering a `DropdownMenu`
+ * on long-press while keeping a separate short-press action.
+ * @param handlers.onClick - Function to call on a short tap.
+ * @param handlers.onLongClick - Function to call on a long press.
+ * @param options - Optional configuration.
+ * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
+ */
+export const combinedClickable = (
+  handlers: { onClick?: () => void; onLongClick?: () => void },
+  options?: { indication?: boolean }
+) =>
+  createModifierWithEventListener(
+    'combinedClickable',
+    (params: { event: 'click' | 'longClick' }) => {
+      if (params.event === 'click') {
+        handlers.onClick?.();
+      } else if (params.event === 'longClick') {
+        handlers.onLongClick?.();
+      }
+    },
+    { indication: options?.indication ?? true }
+  );
+
+/**
  * Makes the view selectable, like a radio button row.
  * @param selected - Whether the item is currently selected.
  * @param handler - Function to call when the item is clicked.
@@ -347,6 +375,15 @@ export const onVisibilityChanged = (
     }
   );
 
+/**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export const onSizeChanged = (handler: (size: { width: number; height: number }) => void) =>
+  createModifierWithEventListener('onSizeChanged', (size: { width: number; height: number }) =>
+    handler(size)
+  );
+
 // =============================================================================
 // Utility Modifiers
 // =============================================================================
@@ -356,6 +393,11 @@ export const onVisibilityChanged = (
  * @param tag - Test ID string.
  */
 export const testID = (tag: string) => createModifier('testID', { testID: tag });
+
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export const semantics = (params: { contentType?: string }) => createModifier('semantics', params);
 
 // =============================================================================
 // Clip Modifier & Shapes

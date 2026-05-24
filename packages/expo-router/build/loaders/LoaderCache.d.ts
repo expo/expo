@@ -9,6 +9,11 @@ export declare class LoaderCache {
     private data;
     private errors;
     private promises;
+    private version;
+    private listeners;
+    subscribe: (listener: () => void) => (() => void);
+    getSnapshot: () => number;
+    invalidateAll(): void;
     getData<T = unknown>(path: string): T | undefined;
     hasData(path: string): boolean;
     getError(path: string): Error | undefined;

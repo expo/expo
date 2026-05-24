@@ -1,10 +1,10 @@
-import { unstable_getMaterialSymbolSourceAsync } from 'expo-symbols';
+import { unstable_getMaterialSymbolSourceAsync, type AndroidSymbol } from 'expo-symbols';
 
 import { convertComponentSrcToImageSource } from './icon';
-import { NativeTabsTriggerPromiseIcon, type MaterialIcon } from '../common/elements';
+import { NativeTabsTriggerPromiseIcon } from '../common/elements';
 
 export function convertMaterialIconNameToImageSource(
-  name: MaterialIcon['md']
+  name: AndroidSymbol
 ): ReturnType<typeof convertComponentSrcToImageSource> {
   return convertComponentSrcToImageSource(
     <NativeTabsTriggerPromiseIcon

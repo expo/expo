@@ -8,8 +8,19 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`Spacer`](../universal/spacer) — it renders the appropriate native component per platform.
 
 Expo UI Spacer matches the official Jetpack Compose [Spacer](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Spacer) API and is used to add flexible or fixed-size space between elements in a layout.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/spacer/android-light.webp"
+  darkSrc="/static/images/expo-ui/spacer/android-dark.webp"
+  alt="Two boxes pushed to opposite ends of a Row by a Spacer with weight modifier"
+/>
 
 ## Installation
 

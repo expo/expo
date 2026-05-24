@@ -22,7 +22,7 @@ const native_1 = require("../../../toolbar/native");
  *
  * - Use `placement="left"` to customize the left side of the header.
  * - Use `placement="right"` to customize the right side of the header.
- * - Use `placement="bottom"` (default) to show a bottom toolbar (iOS only).
+ * - Use `placement="bottom"` (default) to show a bottom toolbar.
  *
  * If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
@@ -77,6 +77,7 @@ const native_1 = require("../../../toolbar/native");
  * ```
  *
  * @experimental
+ * @platform android
  * @platform ios
  */
 const StackToolbar = (props) => {

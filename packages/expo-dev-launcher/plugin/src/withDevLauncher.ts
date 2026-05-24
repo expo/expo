@@ -46,6 +46,7 @@ const withStripLocalNetworkKeysForRelease: ConfigPlugin = (config) => {
 
     project.addBuildPhase([], 'PBXShellScriptBuildPhase', buildPhaseName, nativeTargetId, {
       shellPath: '/bin/sh',
+      inputPaths: ['"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)"'],
       shellScript: `# Strip dev-launcher-specific local network permission keys from non-Debug builds
 # This only removes _expo._tcp Bonjour services and the dev-launcher usage description.
 # Other Bonjour services and custom descriptions are preserved for production use.

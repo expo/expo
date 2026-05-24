@@ -19,7 +19,7 @@ import { Step } from '~/ui/components/Step';
 
 Expo Router is a file-based router for React Native and web applications. It allows you to manage navigation between screens in your app, allowing users to move seamlessly between different parts of your app's UI, using the same components on multiple platforms (Android, iOS, and web).
 
-Expo Router brings the best file-system routing concepts from the web to a universal application &mdash; allowing your routing to work across every platform. When a file is added to the **app** directory, the file automatically becomes a route in your navigation.
+Expo Router brings the best file-system routing concepts from the web to a universal application — allowing your routing to work across every platform. When a file is added to the **app** directory, the file automatically becomes a route in your navigation.
 
 ## Quick start
 
@@ -29,14 +29,14 @@ We recommend creating a new Expo app using `create-expo-app` to create a project
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-55'],
-    yarn: ['$ yarn create expo-app --template default@sdk-55'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-55'],
-    bun: ['$ bun create expo --template default@sdk-55'],
+    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
+    bun: ['$ bun create expo --template default@sdk-56'],
   }}
 />
 
-> **Note:** During the SDK 55 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-55` to create an SDK 55 project.
+> **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project.
 
 </Step>
 
@@ -47,7 +47,7 @@ Now, you can start your project by running:
 <Terminal cmd={['$ npx expo start']} />
 
 - To view your app on a mobile device, we recommend starting with [Expo Go](/get-started/set-up-your-environment/#how-would-you-like-to-develop). As your application grows in complexity and you need more control, you can create a [development build](/develop/development-builds/introduction/).
-- Open the project in a web browser by pressing <kbd>w</kbd> in the Terminal UI. Press <kbd>a</kbd> for Android (Android Studio is required), or <kbd>i</kbd> for iOS (macOS with Xcode is required).
+- Open the project in a web browser by pressing <kbd>W</kbd> in the Terminal UI. Press <kbd>A</kbd> for Android (Android Studio is required), or <kbd>I</kbd> for iOS (macOS with Xcode is required).
 
 </Step>
 
@@ -74,7 +74,7 @@ Now, you can start your project by running:
 
 ## Key features
 
-- **Native**: Built on top of our powerful [React Navigation suite](https://reactnavigation.org/), Expo Router navigation is truly native and platform-optimized by default.
+- **Native**: Built on top of [React Native Screens](https://github.com/software-mansion/react-native-screens), Expo Router navigation is truly native and platform-optimized by default.
 - **Shareable**: Every screen in your app is automatically [deep linkable](/linking/overview/), making any route in your app shareable with links.
 - **Offline-first**: Apps are cached and run offline-first, with automatic updates when you publish a new version. Handles all incoming native URLs without a network connection or server.
 - **Optimized**: Routes are automatically optimized with [lazy-evaluation in production](/router/web/async-routes/), and deferred bundling in development.
@@ -124,9 +124,7 @@ Yes, Expo Router is the framework for universal React Native apps. Due to the de
 
 <Collapsible summary="Why should I use Expo Router over React Navigation?">
 
-Expo Router and React Navigation are both libraries from the Expo team. We built Expo Router on top of React Navigation to enable the benefits of file-based routing. Expo Router is a superset of React Navigation, meaning you can use any React Navigation components and APIs with Expo Router.
-
-If file-based routing isn't right for your project, you can drop down to React Navigation and set up routes, types, and links manually.
+Expo Router takes a file-based approach, where routes are derived from your file structure from the **app** directory. It also has built-in support for typed routes, automatic deep linking, and static rendering for the web. React Navigation lets you define navigators and routes manually in code. Choose whichever model fits your project.
 
 </Collapsible>
 

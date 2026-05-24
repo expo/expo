@@ -80,6 +80,14 @@ export const UIUniversalScreens = [
     },
   },
   {
+    name: `${SCREEN_NAME_PREFIX}Collapsible`,
+    route: 'ui-universal/collapsible',
+    options: { title: 'Collapsible' },
+    getComponent() {
+      return optionalRequire(() => require('./CollapsibleScreen'));
+    },
+  },
+  {
     name: `${SCREEN_NAME_PREFIX}FieldGroup`,
     route: 'ui-universal/field-group',
     options: { title: 'FieldGroup' },
@@ -88,11 +96,51 @@ export const UIUniversalScreens = [
     },
   },
   {
+    name: `${SCREEN_NAME_PREFIX}List`,
+    route: 'ui-universal/list',
+    options: { title: 'List' },
+    getComponent() {
+      return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: `${SCREEN_NAME_PREFIX}Picker`,
+    route: 'ui-universal/picker',
+    options: { title: 'Picker' },
+    getComponent() {
+      return optionalRequire(() => require('./PickerScreen'));
+    },
+  },
+  {
+    name: `${SCREEN_NAME_PREFIX}RNHostView`,
+    route: 'ui-universal/rn-host-view',
+    options: { title: 'RNHostView' },
+    getComponent() {
+      return optionalRequire(() => require('./RNHostViewScreen'));
+    },
+  },
+  {
     name: `${SCREEN_NAME_PREFIX}Spacer`,
     route: 'ui-universal/spacer',
     options: { title: 'Spacer' },
     getComponent() {
       return optionalRequire(() => require('./SpacerScreen'));
+    },
+  },
+  {
+    name: `${SCREEN_NAME_PREFIX}Icon`,
+    route: 'ui-universal/icon',
+    options: { title: 'Icon' },
+    getComponent() {
+      return optionalRequire(() => require('./IconScreen'));
+    },
+  },
+  {
+    name: `${SCREEN_NAME_PREFIX}TextInput`,
+    route: 'ui-universal/text-input',
+    options: { title: 'TextInput' },
+    getComponent() {
+      return optionalRequire(() => require('./TextInputScreen'));
     },
   },
 ];

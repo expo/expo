@@ -60,6 +60,14 @@ function getMetroBundlerGetter() {
       hasVirtualModule: jest.fn((path) => false),
       setVirtualModule: jest.fn(),
       transformFile,
+      _depGraph: {
+        doesFileExist: jest.fn(() => false),
+        _fileSystem: {
+          lookup: jest.fn(() => ({ exists: false })),
+          hierarchicalLookup: jest.fn(() => null),
+        },
+      },
+      getWatcher: jest.fn(() => ({ addListener: jest.fn() })),
     } as any;
   });
 }
@@ -133,7 +141,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -159,86 +166,10 @@ describe(withExtendedResolver, () => {
     );
   });
 
-  it(`resolves against tsconfig baseUrl`, async () => {
-    mockMinFs();
-
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-      isTsconfigPathsEnabled: true,
-    });
-
-    const platform = 'ios';
-
-    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
-
-    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-
-    expect(getResolveFunc()).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        extraNodeModules: {},
-        mainFields: ['react-native', 'browser', 'main'],
-        preferNativePlatform: true,
-      }),
-      '/src/react-native',
-      platform
-    );
-  });
-
-  it(`resolves against tsconfig baseUrl without paths`, async () => {
-    mockMinFs();
-
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: { baseUrl: '/src' },
-      isTsconfigPathsEnabled: true,
-    });
-
-    const platform = 'ios';
-
-    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
-
-    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-
-    expect(getResolveFunc()).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        extraNodeModules: {},
-        mainFields: ['react-native', 'browser', 'main'],
-        preferNativePlatform: true,
-      }),
-      '/src/react-native',
-      platform
-    );
-  });
-
-  it(`does not alias react-native-web in initial resolution with baseUrl on web`, async () => {
-    mockMinFs();
-
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-      isTsconfigPathsEnabled: true,
-    });
-
-    const platform = 'web';
-
-    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
-
-    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toHaveBeenCalledWith(
-      expect.objectContaining({
-        mainFields: ['browser', 'module', 'main'],
-        preferNativePlatform: false,
-      }),
-      '/src/react-native',
-      platform
-    );
-  });
-
   it(`resolves to react-native-web on web`, async () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
       isTsconfigPathsEnabled: false,
     });
 
@@ -261,7 +192,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
       isTsconfigPathsEnabled: false,
     });
 
@@ -297,7 +227,6 @@ describe(withExtendedResolver, () => {
         mockMinFs();
 
         const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-          tsconfig: {},
           isTsconfigPathsEnabled: false,
         });
 
@@ -319,7 +248,6 @@ describe(withExtendedResolver, () => {
       mockMinFs();
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
       });
 
@@ -341,7 +269,6 @@ describe(withExtendedResolver, () => {
       mockMinFs();
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
       });
 
@@ -368,7 +295,6 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
       });
 
@@ -395,7 +321,6 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
       });
 
@@ -418,8 +343,8 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
-        isTsconfigPathsEnabled: true,
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -446,8 +371,8 @@ describe(withExtendedResolver, () => {
     );
     const platform = 'ios';
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
-      isTsconfigPathsEnabled: true,
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), '@expo/vector-icons', platform);
@@ -467,7 +392,6 @@ describe(withExtendedResolver, () => {
     });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
 
@@ -502,7 +426,6 @@ describe(withExtendedResolver, () => {
     });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
 
@@ -531,7 +454,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
 
@@ -565,7 +487,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -607,7 +528,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -649,7 +569,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -718,7 +637,6 @@ describe(withExtendedResolver, () => {
       });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -752,7 +670,6 @@ describe(withExtendedResolver, () => {
     );
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
@@ -786,7 +703,6 @@ describe(withExtendedResolver, () => {
 
     const config = asMetroConfig({ projectRoot: '/root/' });
     const modified = withExtendedResolver(config, {
-      tsconfig: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
@@ -806,7 +722,6 @@ describe(withExtendedResolver, () => {
   describe('built-in externals', () => {
     function getModifiedConfig(props: { isExporting?: boolean } = {}) {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isExporting: props.isExporting,
         isTsconfigPathsEnabled: false,
         getMetroBundler: getMetroBundlerGetter(),
@@ -835,8 +750,6 @@ describe(withExtendedResolver, () => {
           });
 
           [
-            'source-map-support',
-            'source-map-support/register.js',
             'react',
             '@radix-ui/accordion',
             '@babel/runtime/helpers/interopRequireDefault',
@@ -943,44 +856,123 @@ describe(withExtendedResolver, () => {
 
       expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
+  });
 
-    it(`does not extern source-map-support in server environments that are bundling for standalone exports`, async () => {
-      const result = getModifiedConfig({ isExporting: true }).resolver.resolveRequest!(
-        getNodeResolverContext({
-          customResolverOptions: {
-            exporting: true,
-          },
-        }),
-        'source-map-support',
-        'web'
-      );
+  describe('EXPO_ROUTER_DISABLE_NATIVE_TABS_MD', () => {
+    const materialConverterAndroidPath =
+      '/root/node_modules/expo-router/build/native-tabs/utils/materialIconConverter.android.js';
+    const materialConverterNotImplementedPath =
+      '/root/node_modules/expo-router/build/native-tabs/utils/materialIconConverter-not-implemented.js';
 
-      expect(result).toEqual({
-        type: 'empty',
-      });
-
-      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    afterEach(() => {
+      delete process.env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
     });
 
-    it(`does not extern source-map-support in client environment`, async () => {
-      const result = getModifiedConfig().resolver.resolveRequest!(
-        getResolverContext(),
-        'source-map-support',
-        'web'
+    function mockMaterialConverterResolver() {
+      jest.mocked(getResolveFunc()).mockImplementation((_context, moduleName, _platform) => {
+        if (moduleName.endsWith('materialIconConverter-not-implemented.js')) {
+          return { type: 'sourceFile', filePath: materialConverterNotImplementedPath };
+        }
+        return { type: 'sourceFile', filePath: materialConverterAndroidPath };
+      });
+    }
+
+    it('rewrites the Android Material Symbols converter to the not-implemented stub when set on Android', () => {
+      mockMinFs();
+      process.env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD = 'true';
+      mockMaterialConverterResolver();
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        './materialIconConverter',
+        'android'
       );
 
       expect(result).toEqual({
-        type: 'empty',
+        type: 'sourceFile',
+        filePath: materialConverterNotImplementedPath,
+      });
+    });
+
+    it('leaves the resolved path untouched when the flag is unset', () => {
+      mockMinFs();
+      mockMaterialConverterResolver();
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
-      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        './materialIconConverter',
+        'android'
+      );
+
+      expect(result).toEqual({
+        type: 'sourceFile',
+        filePath: materialConverterAndroidPath,
+      });
+    });
+
+    it('leaves the resolved path untouched on iOS even when the flag is set', () => {
+      mockMinFs();
+      process.env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD = 'true';
+      mockMaterialConverterResolver();
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        './materialIconConverter',
+        'ios'
+      );
+
+      expect(result).toEqual({
+        type: 'sourceFile',
+        filePath: materialConverterAndroidPath,
+      });
+    });
+
+    it('does not rewrite unrelated Android paths when the flag is set', () => {
+      mockMinFs();
+      process.env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD = 'true';
+
+      const optionsConverterAndroidPath =
+        '/root/node_modules/expo-router/build/native-tabs/utils/optionsIconConverter.android.js';
+      jest.mocked(getResolveFunc()).mockImplementation((_context, _moduleName, _platform) => {
+        return { type: 'sourceFile', filePath: optionsConverterAndroidPath };
+      });
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        './optionsIconConverter',
+        'android'
+      );
+
+      expect(result).toEqual({
+        type: 'sourceFile',
+        filePath: optionsConverterAndroidPath,
+      });
     });
   });
 
   describe('with fallback module resolver', () => {
     function getModifiedConfig() {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
         getMetroBundler: getMetroBundlerGetter() as any,
       });
@@ -1357,7 +1349,6 @@ describe(withExtendedResolver, () => {
   describe('with autolinking module resolver', () => {
     function getModifiedConfig(input: AutolinkingModuleResolverInput) {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         autolinkingModuleResolverInput: input,
         isTsconfigPathsEnabled: false,
         getMetroBundler: getMetroBundlerGetter() as any,

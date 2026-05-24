@@ -11,6 +11,9 @@ type HistoryRecord = {
   path: string;
 };
 
+/**
+ * @deprecated Will be removed in a future SDK.
+ */
 export function createMemoryHistory() {
   let index = 0;
   let items: HistoryRecord[] = [];

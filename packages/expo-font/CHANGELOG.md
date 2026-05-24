@@ -4,6 +4,40 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.5 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Sanitize values in web font loader and Android config plugin ([#45887](https://github.com/expo/expo/pull/45887) by [@kitten](https://github.com/kitten))
+
+## 56.0.4 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- [android] include xml-fonts in the `getLoadedFonts()` list ([#43860](https://github.com/expo/expo/pull/43860) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -18,6 +52,18 @@
 ### 💡 Others
 
 - Export `ServerFontResourceDescriptor` type for external usage ([#45116](https://github.com/expo/expo/pull/45116) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.7 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.4 — 2026-02-16
 

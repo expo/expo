@@ -90,9 +90,11 @@ Add a deep linking `scheme` and enable [typed routes](/router/reference/typed-ro
 
 ```json app.json
 {
-  "scheme": "your-app-scheme",
-  "experiments": {
-    "typedRoutes": true
+  "expo": {
+    "scheme": "your-app-scheme",
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
 ```
@@ -105,8 +107,10 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ```json app.json
 {
-  "web": {
-    "bundler": "metro"
+  "expo": {
+    "web": {
+      "bundler": "metro"
+    }
   }
 }
 ```

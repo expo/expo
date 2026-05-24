@@ -1,50 +1,28 @@
-import AppMetrics, { type Metric } from 'expo-app-metrics';
-import ExpoObserve from 'expo-observe';
+import AppMetrics from 'expo-app-metrics';
+import ExpoObserve, { useObserve } from 'expo-observe';
 import { checkForUpdateAsync, fetchUpdateAsync, reloadAsync, useUpdates } from 'expo-updates';
-import { useCallback, useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Divider } from '@/components/Divider';
-import { JSONView } from '@/components/JSONView';
-import { useRouterMetricsHelpers } from '@/router-metrics-integration';
 import { useTheme } from '@/utils/theme';
 
 export default function Index() {
   const theme = useTheme();
-  const [metrics, setMetrics] = useState<Metric[]>([]);
-  const [showEntries, setShowEntries] = useState(false);
   const { isUpdateAvailable, isUpdatePending, availableUpdate, currentlyRunning } = useUpdates();
 
-  const { markPageInteractive } = useRouterMetricsHelpers();
-
-  const updateStoredEntries = useCallback(async () => {
-    const events = await AppMetrics.getStoredEntries();
-    setMetrics(events);
-  }, []);
-
-  useEffect(() => {
-    updateStoredEntries();
-  }, [updateStoredEntries]);
+  const { markInteractive } = useObserve();
 
   async function handleMarkInteractive() {
-    await AppMetrics.markInteractive();
-    await markPageInteractive();
-    await updateStoredEntries();
+    await markInteractive();
   }
 
   async function handleDispatchEvents() {
     await ExpoObserve.dispatchEvents();
-    await updateStoredEntries();
   }
 
   async function handleClearStoredEntries() {
     await AppMetrics.clearStoredEntries();
-    await updateStoredEntries();
-  }
-
-  async function handleGetStoredEntries() {
-    await updateStoredEntries();
   }
 
   async function handleCheckForUpdate() {
@@ -66,7 +44,6 @@ export default function Index() {
       <Button title="Mark as interactive" onPress={handleMarkInteractive} theme="secondary" />
       <Button title="Dispatch events" onPress={handleDispatchEvents} theme="secondary" />
       <Button title="Clear stored entries" onPress={handleClearStoredEntries} theme="secondary" />
-      <Button title="Get stored entries" onPress={handleGetStoredEntries} theme="secondary" />
       <Button title="Check for update" onPress={() => handleCheckForUpdate()} theme="secondary" />
       {isUpdateAvailable && !isUpdatePending ? (
         <Button
@@ -90,21 +67,6 @@ export default function Index() {
       </Text>
 
       <Divider />
-
-      <View style={styles.header}>
-        {metrics.length === 0 ? (
-          <Text style={[styles.countText, { color: theme.text.default }]}>No stored entries</Text>
-        ) : (
-          <Button
-            title={
-              showEntries ? `Hide entries (${metrics.length})` : `View entries (${metrics.length})`
-            }
-            onPress={() => setShowEntries(!showEntries)}
-          />
-        )}
-      </View>
-
-      {showEntries && metrics.length ? <JSONView value={metrics} /> : null}
     </ScrollView>
   );
 }
@@ -112,15 +74,6 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-  },
-  header: {
-    marginBottom: 20,
-  },
-  countText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
   },
   contentContainer: {
     paddingBottom: Platform.select({ ios: 30, android: 150 }),

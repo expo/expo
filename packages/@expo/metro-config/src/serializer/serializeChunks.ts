@@ -17,11 +17,13 @@ import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import path from 'path';
 
+import { precomputeChunkFilenames } from './computeChunkFilenames';
 import { stringToUUID } from './debugId';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import type { SerialAsset } from './serializerAssets';
+import { appendDebugIdToSourceMap, sourceMapString } from './sourceMap';
 import type { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
@@ -33,16 +35,6 @@ function getBuildHermesBundleAsync() {
     _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
   }
   return _buildHermesBundleAsync;
-}
-
-// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString -> @babel/traverse at startup
-let _sourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-function getSourceMapString() {
-  if (!_sourceMapString) {
-    _sourceMapString =
-      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-  }
-  return _sourceMapString;
 }
 
 let _baseJSBundleWithDependencies: typeof import('./fork/baseJSBundle').baseJSBundleWithDependencies;
@@ -134,10 +126,14 @@ export async function graphToSerialAssetsAsync(
     }
   }
 
+  // TODO(@kitten): unclear why `isExporting` is hardcoded below
+  const recomputeChunkNames = !!(options as ExpoSerializerOptions).serializerOptions?.exporting;
+
   const jsAssets = await serializeChunksAsync(
     chunks,
     config.serializer ?? {},
-    serializeChunkOptions
+    serializeChunkOptions,
+    recomputeChunkNames
   );
 
   // TODO: Can this be anything besides true?
@@ -198,7 +194,7 @@ export class Chunk {
     return this.graph.transformOptions.platform;
   }
 
-  private getFilename(src: string) {
+  getFilename(src: string) {
     return !this.options.serializerOptions?.exporting
       ? this.name
       : getExportPathForDependencyWithOptions(this.name, {
@@ -208,7 +204,7 @@ export class Chunk {
         });
   }
 
-  private getStableChunkSource(serializerConfig: Partial<SerializerConfigT>) {
+  getStableChunkSource(serializerConfig: Partial<SerializerConfigT>) {
     return this.options.dev
       ? ''
       : this.serializeToCodeWithTemplates(serializerConfig, {
@@ -220,10 +216,6 @@ export class Chunk {
           sourceMapUrl: undefined,
           debugId: undefined,
         }).code;
-  }
-
-  private getFilenameForConfig(serializerConfig: Partial<SerializerConfigT>) {
-    return this.getFilename(this.getStableChunkSource(serializerConfig));
   }
 
   private serializeToCodeWithTemplates(
@@ -261,12 +253,41 @@ export class Chunk {
   }
 
   hasAbsolutePath(absolutePath: string): boolean {
-    return [...this.deps].some((module) => module.path === absolutePath);
+    for (const dep of this.deps) {
+      if (dep.path === absolutePath) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private _asyncTargets?: Set<Chunk>;
+
+  getAsyncChunkTargets(chunkByPath: Map<string, Chunk>): Set<Chunk> {
+    if (this._asyncTargets) {
+      return this._asyncTargets;
+    }
+    const targets = new Set<Chunk>();
+    this._asyncTargets = targets;
+    if (this.options.includeAsyncPaths) {
+      return targets;
+    }
+    for (const module of this.deps) {
+      for (const dep of module.dependencies.values()) {
+        if (isResolvedDependency(dep) && dep.data.data.asyncType) {
+          const target = chunkByPath.get(dep.absolutePath);
+          // NOTE(kitten): Chunk merges can leave async imports pointing at non-async
+          // (entry/vendor) chunks; those are loaded eagerly so we skip them here.
+          if (target?.isAsync) targets.add(target);
+        }
+      }
+    }
+    return targets;
   }
 
   private getComputedPathsForAsyncDependencies(
-    serializerConfig: Partial<SerializerConfigT>,
-    chunks: Chunk[]
+    chunksByPath: Map<string, Chunk>,
+    filenamesByChunk: Map<Chunk, string>
   ) {
     const baseUrl = getBaseUrlOption(this.graph, this.options);
     // Only calculate production paths when all chunks are being exported.
@@ -278,20 +299,18 @@ export class Chunk {
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
         if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
-          const chunkContainingModule = chunks.find((chunk) =>
-            chunk.hasAbsolutePath(dependency.absolutePath)
-          );
+          const chunkContainingModule = chunksByPath.get(dependency.absolutePath);
           assert(
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
           );
 
-          // NOTE(kitten): We shouldn't have any async imports on non-async chunks
-          // However, due to how chunks merge, some async imports may now be pointing
-          // at entrypoint (or vendor) chunks. We omit the path so that the async import
-          // helper doesn't reload and reevaluate the entrypoint.
           if (chunkContainingModule.isAsync) {
-            const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+            const moduleIdName = filenamesByChunk.get(chunkContainingModule);
+            assert(
+              moduleIdName,
+              'Precomputed filename missing for async chunk: ' + chunkContainingModule.name
+            );
             computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
           }
         }
@@ -300,7 +319,7 @@ export class Chunk {
     return computedAsyncModulePaths;
   }
 
-  private getAdjustedSourceMapUrl(serializerConfig: Partial<SerializerConfigT>): string | null {
+  private getAdjustedSourceMapUrl(filename: string): string | null {
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
       return this.options.sourceMapUrl ?? null;
@@ -318,7 +337,6 @@ export class Chunk {
     const isAbsolute = platform !== 'web';
 
     const baseUrl = getBaseUrlOption(this.graph, this.options);
-    const filename = this.getFilenameForConfig(serializerConfig);
     const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
     const pathname =
       (isAbsoluteBaseUrl ? '' : baseUrl.replace(/\/+$/, '')) +
@@ -356,12 +374,27 @@ export class Chunk {
 
   private serializeToCode(
     serializerConfig: Partial<SerializerConfigT>,
-    { debugId, chunks, preModules }: { debugId: string; chunks: Chunk[]; preModules: Set<Module> }
+    {
+      debugId,
+      chunksByPath,
+      filenamesByChunk,
+      filename,
+      preModules,
+    }: {
+      debugId: string;
+      chunksByPath: Map<string, Chunk>;
+      filenamesByChunk: Map<Chunk, string>;
+      filename: string;
+      preModules: Set<Module>;
+    }
   ) {
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
-      sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
-      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
+      sourceMapUrl: this.getAdjustedSourceMapUrl(filename) ?? undefined,
+      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(
+        chunksByPath,
+        filenamesByChunk
+      ),
       debugId,
       preModules,
     });
@@ -374,11 +407,12 @@ export class Chunk {
 
   async serializeToAssetsAsync(
     serializerConfig: Partial<SerializerConfigT>,
-    chunks: Chunk[],
+    chunksByPath: Map<string, Chunk>,
+    filenamesByChunk: Map<Chunk, string>,
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
-    // Create hash without wrapping to prevent it changing when the wrapping changes.
-    const outputFile = this.getFilenameForConfig(serializerConfig);
+    const outputFile = filenamesByChunk.get(this);
+    assert(outputFile, 'Precomputed filename missing for chunk: ' + this.name);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
 
@@ -394,7 +428,9 @@ export class Chunk {
     }
 
     const jsCode = this.serializeToCode(serializerConfig, {
-      chunks,
+      chunksByPath,
+      filenamesByChunk,
+      filename: outputFile,
       debugId,
       preModules: new Set(finalPreModules),
     });
@@ -407,9 +443,11 @@ export class Chunk {
       type: 'js',
       metadata: {
         isAsync: this.isAsync,
-        requires: [...this.requiredChunks.values()].map((chunk) =>
-          chunk.getFilenameForConfig(serializerConfig)
-        ),
+        requires: [...this.requiredChunks.values()].map((chunk) => {
+          const filename = filenamesByChunk.get(chunk);
+          assert(filename, 'Precomputed filename missing for required chunk: ' + chunk.name);
+          return filename;
+        }),
         // Provide a list of module paths that can be used for matching chunks to routes.
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
@@ -424,20 +462,13 @@ export class Chunk {
 
     const assets: SerialAsset[] = [jsAsset];
 
-    const mutateSourceMapWithDebugId = (sourceMap: string) => {
-      // TODO: Upstream this so we don't have to parse the source map back and forth.
-      if (!debugId) {
-        return sourceMap;
-      }
-      // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
-      // we don't need to disambiguate between multiple source maps.
-      const sourceMapObject = JSON.parse(sourceMap);
-      sourceMapObject.debugId = debugId;
-      // NOTE: Sentry does this, but bun does not.
-      // sourceMapObject.debug_id = debugId;
-      return JSON.stringify(sourceMapObject);
-    };
-
+    // debugId is passed into `sourceMapString` so the bundler-map path
+    // emits it inline rather than a JSON.parse + JSON.stringify
+    // roundtrip; the Hermes branch below has to splice into a finished
+    // JSON string because `buildHermesBundleAsync` is opaque.
+    // NOTE: skipped for inline source maps since they don't need
+    // disambiguation. We only emit `debugId` (Sentry also reads
+    // `debug_id`, but bun doesn't).
     if (
       // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
       includeSourceMaps &&
@@ -466,13 +497,13 @@ export class Chunk {
         return module;
       });
 
-      // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-      const sourceMap = mutateSourceMapWithDebugId(
-        getSourceMapString()(modules, {
-          excludeSource: false,
-          ...this.options,
-        })
-      );
+      // TODO: We may not need to set `debugId` on the bundler sourcemap when
+      // Hermes is enabled, since we ship a separate `.hbc.map` for that case.
+      const sourceMap = sourceMapString(modules, {
+        excludeSource: false,
+        ...this.options,
+        debugId,
+      });
 
       assets.push({
         filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
@@ -528,7 +559,9 @@ export class Chunk {
         }
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
-        assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);
+        assets[1].source = debugId
+          ? appendDebugIdToSourceMap(hermesBundleOutput.sourcemap, debugId)
+          : hermesBundleOutput.sourcemap;
         assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
     }
@@ -796,21 +829,50 @@ function createRuntimeChunk(
   chunks.add(runtimeChunk);
 }
 
+function makeChunkByPathLookupMap(chunks: Set<Chunk>): Map<string, Chunk> {
+  const chunkByPath = new Map<string, Chunk>();
+  for (const chunk of chunks) {
+    for (const module of chunk.deps) {
+      if (!chunkByPath.has(module.path)) {
+        chunkByPath.set(module.path, chunk);
+      }
+    }
+  }
+  return chunkByPath;
+}
+
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
-  options: SerializeChunkOptions
+  options: SerializeChunkOptions,
+  recomputeChunkNames: boolean
 ) {
   const jsAssets: SerialAsset[] = [];
 
-  const chunksArray = [...chunks.values()];
-  await Promise.all(
-    chunksArray.map(async (chunk) => {
-      jsAssets.push(
-        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options))
-      );
-    })
-  );
+  const chunksByPath = makeChunkByPathLookupMap(chunks);
+  const filenamesByChunk = precomputeChunkFilenames({
+    chunks,
+    chunksByPath,
+    serializerConfig,
+    recomputeChunkNames,
+  });
 
+  const serializeTasks: Promise<unknown>[] = [];
+  for (const chunk of chunks) {
+    serializeTasks.push(
+      (async () => {
+        jsAssets.push(
+          ...(await chunk.serializeToAssetsAsync(
+            serializerConfig,
+            chunksByPath,
+            filenamesByChunk,
+            options
+          ))
+        );
+      })()
+    );
+  }
+
+  await Promise.all(serializeTasks);
   return jsAssets;
 }

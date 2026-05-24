@@ -12,6 +12,7 @@ import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
 
@@ -66,12 +67,12 @@ export default function BackgroundFetchScreen() {
 
   const renderText = () => {
     if (!fetchDate) {
-      return <Text>There was no BackgroundFetch call yet.</Text>;
+      return <BodyText>There was no BackgroundFetch call yet.</BodyText>;
     }
     return (
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-        <Text>Last background fetch was invoked at:</Text>
-        <Text style={styles.boldText}>{format('yyyy-MM-dd hh:mm:ss:SSS', fetchDate)}</Text>
+        <BodyText>Last background fetch was invoked at:</BodyText>
+        <BodyText style={styles.boldText}>{format('yyyy-MM-dd hh:mm:ss:SSS', fetchDate)}</BodyText>
       </View>
     );
   };
@@ -79,10 +80,10 @@ export default function BackgroundFetchScreen() {
   return (
     <View style={styles.screen}>
       <View style={styles.textContainer}>
-        <Text>
+        <BodyText>
           Background fetch status:{' '}
           <Text style={styles.boldText}>{status ? BackgroundFetchStatus[status] : null}</Text>
-        </Text>
+        </BodyText>
       </View>
       <View style={styles.textContainer}>{renderText()}</View>
       <Button

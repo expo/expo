@@ -90,7 +90,7 @@ describe(resolveGradlePropsAsync, () => {
     });
   });
 
-  it(`returns the device architectures in a comma separated string`, async () => {
+  it(`returns the first compatible device architecture in a string`, async () => {
     jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([testDevice]);
     jest.mocked(getDeviceABIsAsync).mockResolvedValueOnce([DeviceABI.armeabiV7a, DeviceABI.x86]);
 
@@ -99,28 +99,23 @@ describe(resolveGradlePropsAsync, () => {
       appName: 'app',
       buildType: 'debug',
       flavors: [],
-      architectures: 'armeabi-v7a,x86',
+      architectures: 'armeabi-v7a',
     });
   });
 
-  it(`returns unique device ABIs`, async () => {
+  it(`returns compatible device ABI`, async () => {
     jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([testDevice]);
-    jest
-      .mocked(getDeviceABIsAsync)
-      .mockResolvedValueOnce([
-        DeviceABI.x86,
-        DeviceABI.arm64v8a,
-        DeviceABI.arm64v8a,
-        DeviceABI.x8664,
-        DeviceABI.x8664,
-      ]);
+    jest.mocked(getDeviceABIsAsync).mockResolvedValueOnce([
+      DeviceABI.armeabi, // Not supported, should be ignored
+      DeviceABI.arm64v8a,
+    ]);
 
     expect(await resolveGradlePropsAsync('/', {}, testDevice)).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildType: 'debug',
       flavors: [],
-      architectures: 'x86,arm64-v8a,x86_64',
+      architectures: 'arm64-v8a',
     });
   });
 });

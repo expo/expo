@@ -1,3 +1,18 @@
+import type { LogAttributeValue } from 'expo-app-metrics';
+
+/**
+ * Value types accepted as attribute values in `setGlobalAttributes` and the
+ * other Observe APIs. Strings, numbers, and booleans are stored as typed
+ * primitives; arrays and nested maps preserve their structure.
+ */
+export type ObserveAttribute = LogAttributeValue;
+
+/**
+ * A map of attribute key to value, as accepted by `setGlobalAttributes` and
+ * other Observe APIs that take a free-form attributes payload.
+ */
+export type ObserveAttributes = Record<string, ObserveAttribute>;
+
 export type Config = {
   /**
    * The environment for observability events
@@ -45,7 +60,34 @@ export type Config = {
    * @default undefined - metrics from all devices are sent
    */
   sampleRate?: number;
+  /**
+   * Opt in to per-integration behavior.
+   */
+  integrations?: IntegrationsConfig;
 };
+
+export interface IntegrationsConfig {
+  /**
+   * Enables the `expo-router` integration, which records navigation metrics
+   * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
+   *
+   * Requires `expo-router` to be installed.
+   *
+   * @default false
+   */
+  'expo-router'?: boolean;
+  /**
+   * Enables the `@react-navigation/native` integration, which records
+   * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
+   *
+   * Requires `@react-navigation/native` to be installed and the app tree
+   * to be wrapped in `<ObserveNavigationContainer>` instead of the stock
+   * `<NavigationContainer>`.
+   *
+   * @default false
+   */
+  'react-navigation'?: boolean;
+}
 
 export interface ExpoObserveModuleType {
   dispatchEvents(): Promise<void>;
@@ -53,6 +95,20 @@ export interface ExpoObserveModuleType {
    * Configures observability settings.
    */
   configure(config: Config): void;
+  /**
+   * Sets attributes merged into every subsequent metric and log event.
+   * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
+   * object to clear.
+   *
+   * @example
+   * ```ts
+   * ExpoObserve.setGlobalAttributes({
+   *   subscription_tier: 'pro',
+   *   experiment_variant: 'B',
+   * });
+   * ```
+   */
+  setGlobalAttributes(attributes?: ObserveAttributes | null): void;
   /**
    * Pushes JS-bundle-derived facts (`process.env.NODE_ENV`, `__DEV__`) into native
    * storage. Called automatically once when the package is first imported; should

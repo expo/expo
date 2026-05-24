@@ -198,6 +198,10 @@ public class Manifest: NSObject {
     return expoClientConfigRootObject()?.optionalValue(forKey: "experiments")
   }
 
+  public func expoGoUsername() -> String? {
+    return expoGoConfigRootObject()?.optionalValue(forKey: "username")
+  }
+
   public func developer() -> [String: Any]? {
     return expoGoConfigRootObject()?.optionalValue(forKey: "developer")
   }

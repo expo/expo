@@ -4,6 +4,54 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.7 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.6 — 2026-05-20
+
+### 🛠 Breaking changes
+
+- Promote the object-oriented Contacts API to the root `expo-contacts` import and move the legacy API to `expo-contacts/legacy`. ([#46037](https://github.com/expo/expo/pull/46037) by [@Wenszel](https://github.com/Wenszel))
+
+### 🐛 Bug fixes
+
+- Fix `expo-contacts/next` throwing `Cannot find native module 'ExpoContactsNext'` when imported on web by adding a web shim. ([#46018](https://github.com/expo/expo/pull/46018) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.5 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-13
+
+### 💡 Others
+
+- Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - [next] Fix permission functions, presentPicker cancel, presentAccessPicker types ([#44847](https://github.com/expo/expo/pull/44847) by [@Wenszel](https://github.com/Wenszel))
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
@@ -11,12 +59,34 @@
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
-### 🐛 Bug fixes
-
 ### 💡 Others
 
 - Mark legacy API deprecated ([#44845](https://github.com/expo/expo/pull/44845) by [@Wenszel](https://github.com/Wenszel))
 - [next] Improve contact observer implementation ([#44773](https://github.com/expo/expo/pull/44773) by [@Wenszel](https://github.com/Wenszel))
+
+## 55.0.14 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-25
 

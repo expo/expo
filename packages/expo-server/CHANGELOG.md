@@ -6,16 +6,65 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.4 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- Ensure middleware handlers are applied to loader routes ([#45870](https://github.com/expo/expo/pull/45870) by [@kitten](https://github.com/kitten))
+- Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
+
+## 56.0.3 — 2026-05-19
+
+### 💡 Others
+
+- Constrain `expo-platform` input to known values ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
+
+## 56.0.2 — 2026-05-13
+
+### 💡 Others
+
+- Add guards for `AbortController` state for `vendor/http` conversion ([#45676](https://github.com/expo/expo/pull/45676) by [@kitten](https://github.com/kitten))
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🎉 New features
+
 - Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
 - Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+- Add `createStaticLoader()` and `createServerLoader()` helpers ([#45401](https://github.com/expo/expo/pull/45401) by [@hassankhan](https://github.com/hassankhan))
+
+### 💡 Others
+
+- Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.9 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- Omit origin from redirect `Location` header value; discovered by @yavuzselimkolbasar - thank you! ([#44782](https://github.com/expo/expo/pull/44782) by [@kitten](https://github.com/kitten))
+- Replace invalid platform basepath stripping regex with slicing; discovered by @yavuzselimkolbasar - thank you! ([#44783](https://github.com/expo/expo/pull/44783) by [@kitten](https://github.com/kitten))
+
+## 55.0.7 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 - 2026-02-26
 
 ### 🐛 Bug fixes
 
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`
-- Omit origin from redirect `Location` header value; discovered by @yavuzselimkolbasar - thank you! ([#44782](https://github.com/expo/expo/pull/44782) by [@kitten](https://github.com/kitten))
-- Replace invalid platform basepath stripping regex with slicing; discovered by @yavuzselimkolbasar - thank you! ([#44783](https://github.com/expo/expo/pull/44783) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 55.0.5 — 2026-02-25
 

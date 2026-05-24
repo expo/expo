@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Player from './Player';
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
 
@@ -136,27 +137,27 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
             setEnabled((e) => !e);
           }}
         />
-        <Text>Lock screen buttons:</Text>
+        <BodyText>Lock screen buttons:</BodyText>
         <View style={styles.optionRow}>
           <Checkbox
             value={options?.showSeekForward}
             onValueChange={() => toggleButton(LockScreenButton.SEEK_FORWARD)}
           />
-          <Text style={styles.optionsText}>Seek forward</Text>
+          <BodyText style={styles.optionsText}>Seek forward</BodyText>
         </View>
         <View style={styles.optionRow}>
           <Checkbox
             value={options?.showSeekBackward}
             onValueChange={() => toggleButton(LockScreenButton.SEEK_BACKWARD)}
           />
-          <Text style={styles.optionsText}>Seek backward</Text>
+          <BodyText style={styles.optionsText}>Seek backward</BodyText>
         </View>
         <View style={styles.optionRow}>
           <Checkbox
             value={options?.isLiveStream ?? false}
             onValueChange={() => setOptions((o) => ({ ...o, isLiveStream: !o?.isLiveStream }))}
           />
-          <Text style={styles.optionsText}>Force live stream</Text>
+          <BodyText style={styles.optionsText}>Force live stream</BodyText>
         </View>
         <View style={styles.statusInfo}>
           <Text style={styles.statusText}>isLive: {String(status.isLive)}</Text>

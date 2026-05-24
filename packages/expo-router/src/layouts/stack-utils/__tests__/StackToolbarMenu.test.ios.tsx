@@ -650,6 +650,95 @@ describe('StackToolbarMenu component', () => {
       );
     });
   });
+
+  describe('image icon warning in bottom placement', () => {
+    const originalEnv = process.env.NODE_ENV;
+    let consoleSpy: jest.SpyInstance;
+    const imageWarning = expect.stringContaining(
+      'Stack.Toolbar.Menu in placement="bottom" on iOS does not support image icons'
+    );
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalEnv;
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when icon prop is an image source in development', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu icon={{ uri: 'image' }}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('warns when <StackToolbarIcon src> child is used in development', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu>
+            <StackToolbarIcon src={{ uri: 'image' }} />
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn in production', () => {
+      process.env.NODE_ENV = 'production';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu icon={{ uri: 'image' }}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn for SF Symbol string icon', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu icon="ellipsis.circle">
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn for xcasset icon child', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu>
+            <StackToolbarIcon xcasset="custom-icon" />
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
+    });
+  });
 });
 
 describe('StackToolbarMenuAction component', () => {

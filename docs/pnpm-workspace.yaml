@@ -17,3 +17,11 @@ ignoredBuiltDependencies:
   - '@fingerprintjs/fingerprintjs-pro-react'
   - esbuild
   - unrs-resolver
+
+# Reject package versions younger than 24 hours to reduce exposure to
+# supply-chain attacks via freshly published malicious versions. Matches the
+# root expo monorepo's gate.
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - '@expo/*'

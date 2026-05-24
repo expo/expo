@@ -119,7 +119,7 @@ Pod::Spec.new do |s|
     s.static_framework = true
     s.header_dir     = 'ExpoModulesCore'
     s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-    s.exclude_files = ['ios/Tests', 'ios/Worklets']
+    s.exclude_files = ['ios/Tests', 'ios/Worklets', 'ios/WorkletsAdapter']
     s.compiler_flags = compiler_flags
     s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
   end

@@ -4,7 +4,6 @@ import {
   TextFieldKeyboardType,
   TextFieldImeAction,
   TextFieldCapitalization,
-  TextFieldValue,
   OutlinedTextField,
   Button,
   Host,
@@ -28,10 +27,13 @@ export default function TextFieldScreen() {
   const [lastAction, setLastAction] = React.useState('');
   const textRef = React.useRef<TextFieldRef>(null);
 
-  const maskedPhone = useNativeState<TextFieldValue>({
-    text: '',
-    selection: { start: 0, end: 0 },
-  });
+  const maskedPhoneText = useNativeState('');
+  const maskedPhoneSelection = useNativeState({ start: 0, end: 0 });
+
+  const imperativeText = useNativeState('Select me!');
+  const imperativeSelection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const imperativeRef = React.useRef<TextFieldRef>(null);
+  const [imperativeSelDisplay, setImperativeSelDisplay] = React.useState({ start: 0, end: 0 });
 
   const [outlined, setOutlined] = React.useState(false);
   const [enabled, setEnabled] = React.useState(true);
@@ -53,6 +55,16 @@ export default function TextFieldScreen() {
   const [capitalization, setCapitalization] = React.useState<TextFieldCapitalization>('none');
 
   const TextFieldComponent = outlined ? OutlinedTextField : TextField;
+
+  React.useEffect(() => {
+    fieldValue.onChange = (newValue) => {
+      'worklet';
+      console.log('Value changed to:', newValue);
+    };
+    return () => {
+      fieldValue.onChange = null;
+    };
+  }, []);
 
   const sharedProps = {
     ref: textRef,
@@ -146,12 +158,13 @@ export default function TextFieldScreen() {
           <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
             <ComposeText style={{ typography: 'labelLarge' }}>Worklet Phone Masking</ComposeText>
             <TextField
-              value={maskedPhone}
+              value={maskedPhoneText}
+              selection={maskedPhoneSelection}
               keyboardOptions={{ keyboardType: 'phone' }}
               modifiers={[fillMaxWidth()]}
               onValueChange={(v) => {
                 'worklet';
-                const digits = v.text.replace(/\D/g, '').slice(0, 10);
+                const digits = v.replace(/\D/g, '').slice(0, 10);
                 let formatted: string;
                 if (digits.length === 0) {
                   formatted = '';
@@ -162,11 +175,9 @@ export default function TextFieldScreen() {
                 } else {
                   formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
                 }
-                if (formatted !== v.text) {
-                  maskedPhone.value = {
-                    text: formatted,
-                    selection: { start: formatted.length, end: formatted.length },
-                  };
+                if (formatted !== v) {
+                  maskedPhoneText.value = formatted;
+                  maskedPhoneSelection.value = { start: formatted.length, end: formatted.length };
                 }
               }}>
               <TextField.Placeholder>
@@ -176,6 +187,38 @@ export default function TextFieldScreen() {
             <ComposeText style={{ typography: 'bodySmall' }}>
               Formats on the UI thread — no flicker between typed and masked value.
             </ComposeText>
+          </Column>
+        </Card>
+
+        {/* Imperative Selection */}
+        <Card modifiers={cardModifiers}>
+          <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
+            <ComposeText style={{ typography: 'labelLarge' }}>Imperative Selection</ComposeText>
+            <TextField
+              ref={imperativeRef}
+              value={imperativeText}
+              selection={imperativeSelection}
+              onSelectionChange={setImperativeSelDisplay}
+              modifiers={[fillMaxWidth()]}>
+              <TextField.Placeholder>
+                <ComposeText>Type something...</ComposeText>
+              </TextField.Placeholder>
+            </TextField>
+            <ComposeText style={{ typography: 'bodySmall' }}>
+              {`Selection: ${imperativeSelDisplay.start}–${imperativeSelDisplay.end}`}
+            </ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 8 }}>
+              <Button onClick={() => imperativeRef.current?.setSelection(0, 7)}>
+                <ComposeText>Select 0–7</ComposeText>
+              </Button>
+              <Button
+                onClick={() => {
+                  const len = imperativeText.value.length;
+                  imperativeRef.current?.setSelection(len, len);
+                }}>
+                <ComposeText>Cursor to end</ComposeText>
+              </Button>
+            </Row>
           </Column>
         </Card>
 

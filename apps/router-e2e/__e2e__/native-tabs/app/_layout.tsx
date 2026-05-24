@@ -14,30 +14,38 @@ export default function Layout() {
   const scheme = useColorScheme();
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <NativeTabs>
+      <NativeTabs rippleColor="#f00" labelVisibilityMode="labeled">
         <NativeTabs.Trigger name="index">
           <NativeTabs.Trigger.Label>Index label</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon sf="applewatch.side.right" md="watch" />
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="nested">
-          <NativeTabs.Trigger.Icon
-            sf={{
-              default: 'lock.applewatch',
-              selected: 'lock.open.applewatch',
-            }}
-            drawable="ic_lock_open"
-          />
+        <NativeTabs.Trigger name="nested" rippleColor="#0f0" indicatorColor="#ff0">
+          <NativeTabs.Trigger.Icon drawable="ic_lock_open" />
           <NativeTabs.Trigger.Label hidden={Platform.OS !== 'web'} />
           <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="dynamic">
-          <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
+        <NativeTabs.Trigger
+          name="dynamic"
+          labelVisibilityMode="selected"
+          rippleColor="#00f"
+          indicatorColor="#f0f"
+          disableIndicator>
+          <NativeTabs.Trigger.Icon
+            sf="figure.disc.sports"
+            md={{
+              default: 'sports_hockey',
+              selected: 'sports_soccer',
+            }}
+          />
           <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
           <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="icon-test">
           <NativeTabs.Trigger.Icon
-            src={require('../../../assets/explore_orange.png')}
+            src={{
+              default: require('../../../assets/explore_orange.png'),
+              selected: require('../../../assets/expo-transparent.png'),
+            }}
             renderingMode="original"
           />
           <NativeTabs.Trigger.Label>Original Icon</NativeTabs.Trigger.Label>

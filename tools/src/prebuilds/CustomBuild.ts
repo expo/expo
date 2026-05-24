@@ -111,13 +111,14 @@ async function stagePodsRootAsync(
 
 async function spawnScriptAsync(
   scriptPath: string,
+  args: string[],
   cwd: string,
   env: NodeJS.ProcessEnv,
   label: string
 ): Promise<void> {
   const spinner = createAsyncSpinner(label);
   return new Promise((resolve, reject) => {
-    const child = spawn(scriptPath, [], { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(scriptPath, args, { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
     let stderr = '';
     const pipe = (data: Buffer) => {
       for (const line of data.toString().split('\n')) {
@@ -157,7 +158,8 @@ export async function runCustomBuildAsync(
   product: SPMProduct,
   artifacts: DownloadedDependencies,
   platformFilter: BuildPlatform | undefined,
-  alreadyBuiltProducts?: Set<string>
+  alreadyBuiltProducts?: Set<string>,
+  clean?: boolean
 ): Promise<void> {
   const cb = product.customBuild!;
   const key = customBuildKey(pkg, product);
@@ -173,7 +175,14 @@ export async function runCustomBuildAsync(
   if (sdk) env.PLATFORM_NAME = sdk;
   else delete env.PLATFORM_NAME;
 
-  await spawnScriptAsync(scriptPath, path.dirname(scriptPath), env, `🛠  Building ${product.name}`);
+  const args = clean ? ['--clean'] : [];
+  await spawnScriptAsync(
+    scriptPath,
+    args,
+    path.dirname(scriptPath),
+    env,
+    `🛠  Building ${product.name}`
+  );
   alreadyBuiltProducts?.add(key);
 }
 

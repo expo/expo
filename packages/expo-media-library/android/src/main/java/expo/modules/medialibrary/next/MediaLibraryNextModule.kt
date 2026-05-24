@@ -165,6 +165,14 @@ class MediaLibraryNextModule : Module() {
         self.getWidth()
       }
 
+      AsyncFunction("getFavorite") Coroutine { self: Asset ->
+        self.getFavorite()
+      }
+
+      AsyncFunction("setFavorite") Coroutine { self: Asset, isFavorite: Boolean ->
+        self.setFavorite(isFavorite)
+      }
+
       AsyncFunction("delete") Coroutine { self: Asset ->
         self.delete()
       }

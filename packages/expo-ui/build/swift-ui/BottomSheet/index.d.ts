@@ -16,6 +16,10 @@ export type BottomSheetProps = {
      */
     onIsPresentedChange: (isPresented: boolean) => void;
     /**
+     * Callback function that is called after the `BottomSheet` has been fully dismissed.
+     */
+    onDismiss?: () => void;
+    /**
      * When `true`, the sheet will automatically size itself to fit its content.
      * This sets the presentation detent to match the height of the children.
      * @default false
@@ -25,6 +29,6 @@ export type BottomSheetProps = {
 /**
  * `BottomSheet` presents content from the bottom of the screen.
  */
-declare function BottomSheet(props: BottomSheetProps): import("react/jsx-runtime").JSX.Element;
+declare function BottomSheet(props: BottomSheetProps): import("react/jsx-runtime").JSX.Element | null;
 export { BottomSheet };
 //# sourceMappingURL=index.d.ts.map

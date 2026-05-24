@@ -1,102 +1,57 @@
 #!/bin/bash
 
-# Creates a stub xcframework with a minimal dynamic library so that
-# CocoaPods detects it as a dynamic framework and generates the
-# "[CP] Copy XCFrameworks" and "[CP] Embed Pods Frameworks" build phases.
-# The real xcframework is built by the build-xcframework.sh script at build time.
+# Ensures every required slice in ExpoModulesJSI.xcframework exists with at
+# least a stub binary so CocoaPods detects the package as a dynamic framework
+# and generates the "[CP] Copy XCFrameworks" and "[CP] Embed Pods Frameworks"
+# build phases for every supported platform. The real xcframework is built by
+# build-xcframework.sh at build time.
+#
+# Non-destructive: existing slice binaries (real or stub) are kept; only
+# missing required slices are stamped. Info.plist is rewritten from whatever
+# slices are on disk so additional slices built via Xcode survive.
 
-set -eo pipefail
+set -euo pipefail
 
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
 XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
 
-# Use colors only when run in the terminal
+source "$(dirname "${BASH_SOURCE[0]}")/xcframework-helpers.sh"
+
 BLUE=""; RESET=""
 if [ -t 1 ]; then
   BLUE="\033[34m"
   RESET="\033[0m"
 fi
-echo -e "${BLUE}[Expo]${RESET} Creating stub xcframework for ${PACKAGE_NAME}"
-
-# Platform slices the podspec supports. CocoaPods reads Info.plist at
-# `pod install` time to generate per-slice cases in its xcframework copy
-# script, so every SDK we want to build for must appear here.
-#
-# Format: slice_id|platform|variant|archs
-SLICES=(
-  "ios-arm64|ios||arm64"
-  "ios-arm64_x86_64-simulator|ios|simulator|arm64 x86_64"
-  "tvos-arm64|tvos||arm64"
-  "tvos-arm64_x86_64-simulator|tvos|simulator|arm64 x86_64"
-)
-
-# Always regenerate the Info.plist so it declares every slice. A previous
-# build may have produced an xcframework with only the target platform's
-# slice (e.g. device-only or simulator-only), which would cause CocoaPods
-# to generate a copy script that is missing the other variant.
+echo -e "${BLUE}[Expo]${RESET} Ensuring required slices in ${PACKAGE_NAME}.xcframework"
 
 # The stub binary is only inspected by CocoaPods at install time to detect
 # that this is a dynamic framework — it is never linked against (the real
 # xcframework replaces it before the sources compile). Compile it once and
-# reuse the same binary for every slice.
-STUB_SOURCE="${XCFRAMEWORK_PATH}/.stub-binary"
+# reuse the same binary for every slice that needs stamping.
 mkdir -p "$XCFRAMEWORK_PATH"
+STUB_SOURCE="${XCFRAMEWORK_PATH}/.stub-binary"
 echo "" | clang -x c - -dynamiclib \
   -o "$STUB_SOURCE" \
   -install_name "@rpath/${PACKAGE_NAME}.framework/${PACKAGE_NAME}"
 
-available_libraries=""
-for slice in "${SLICES[@]}"; do
-  IFS='|' read -r slice_id platform variant archs <<<"$slice"
-  slice_dir="${XCFRAMEWORK_PATH}/${slice_id}/${PACKAGE_NAME}.framework"
-  mkdir -p "$slice_dir"
-  if [[ ! -f "${slice_dir}/${PACKAGE_NAME}" ]]; then
-    cp "$STUB_SOURCE" "${slice_dir}/${PACKAGE_NAME}"
+for slice_id in "${EXPO_MODULES_JSI_REQUIRED_SLICE_IDS[@]}"; do
+  slice_dir="${XCFRAMEWORK_PATH}/${slice_id}"
+  framework_dir="${slice_dir}/${PACKAGE_NAME}.framework"
+  binary_path="${framework_dir}/${PACKAGE_NAME}"
+  hash_file="${slice_dir}/.build-hash"
+
+  mkdir -p "$framework_dir"
+  if [[ ! -f "$binary_path" ]]; then
+    cp "$STUB_SOURCE" "$binary_path"
   fi
-
-  arch_entries=""
-  for arch in $archs; do
-    arch_entries+="        <string>${arch}</string>
-"
-  done
-
-  variant_entry=""
-  if [[ -n "$variant" ]]; then
-    variant_entry="      <key>SupportedPlatformVariant</key>
-      <string>${variant}</string>
-"
+  # Empty hash marks the slice as a stub. build-xcframework.sh treats any
+  # mismatch (including stub vs. real source hash) as needing a rebuild.
+  if [[ ! -f "$hash_file" ]]; then
+    : > "$hash_file"
   fi
-
-  available_libraries+="    <dict>
-      <key>BinaryPath</key>
-      <string>${PACKAGE_NAME}.framework/${PACKAGE_NAME}</string>
-      <key>LibraryIdentifier</key>
-      <string>${slice_id}</string>
-      <key>LibraryPath</key>
-      <string>${PACKAGE_NAME}.framework</string>
-      <key>SupportedArchitectures</key>
-      <array>
-${arch_entries}      </array>
-      <key>SupportedPlatform</key>
-      <string>${platform}</string>
-${variant_entry}    </dict>
-"
 done
+
 rm -f "$STUB_SOURCE"
 
-cat > "${XCFRAMEWORK_PATH}/Info.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>AvailableLibraries</key>
-  <array>
-${available_libraries}  </array>
-  <key>CFBundlePackageType</key>
-  <string>XFWK</string>
-  <key>XCFrameworkFormatVersion</key>
-  <string>1.0</string>
-</dict>
-</plist>
-PLIST
+write_xcframework_plist "$XCFRAMEWORK_PATH" "$PACKAGE_NAME"

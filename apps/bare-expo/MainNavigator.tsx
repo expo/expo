@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
+import { LinkingOptions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
@@ -10,6 +10,7 @@ import { Platform } from 'react-native';
 import { TestStackNavigator } from 'test-suite/TestStackNavigator';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppMetrics } from 'expo-observe';
+import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
 
 type NavigationRouteConfigMap = React.ComponentType;
 
@@ -164,7 +165,7 @@ export default function MainNavigator() {
   }
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer
+      <ObserveNavigationContainer
         linking={linking}
         initialState={initialState}
         onStateChange={(state) => {
@@ -179,7 +180,7 @@ export default function MainNavigator() {
           <Switch.Screen name="main" component={TabNavigator} />
         </Switch.Navigator>
         <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
-      </NavigationContainer>
+      </ObserveNavigationContainer>
     </GestureHandlerRootView>
   );
 }

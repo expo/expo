@@ -190,16 +190,16 @@ The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides
 Map the font file using the `useFonts` hook in a top-level component such as the root layout (**src/app/\_layout.tsx**) file in your project:
 
 ```tsx src/app/_layout.tsx
-/* @info Import <CODE>useFonts</CODE> hook from <CODE>expo-font</CODE>. */ import { useFonts } from 'expo-font'; /* @end */
-/* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
+/* @info Import `useFonts` hook from `expo-font`. */ import { useFonts } from 'expo-font'; /* @end */
+/* @info Import `SplashScreen` so that when the fonts are not loaded, we can continue to show `SplashScreen`. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
 import {useEffect} from 'react';
 
-/* @info This prevents <CODE>SplashScreen</CODE> from auto hiding while the fonts are in loading state. */
+/* @info This prevents `SplashScreen` from auto hiding while the fonts are in loading state. */
 SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function RootLayout() {
-  /* @info Map the font file using <CODE>useFonts</CODE> hook. */
+  /* @info Map the font file using `useFonts` hook. */
   const [loaded, error] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
@@ -325,20 +325,20 @@ After installing the font package, map the font using the `useFonts` hook in a t
 
 ```tsx src/app/_layout.tsx
 // Rest of the import statements
-/* @info Import <CODE>Inter_900Black</CODE> and <CODE>useFonts</CODE> hook from <CODE>@expo-google-fonts/inter</CODE>*/
+/* @info Import `Inter_900Black` and `useFonts` hook from `@expo-google-fonts/inter`*/
 import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
 /* @end */
-/* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */
+/* @info Import `SplashScreen` so that when the fonts are not loaded, we can continue to show `SplashScreen`. */
 import * as SplashScreen from 'expo-splash-screen';
 /* @end */
 import {useEffect} from 'react';
 
-/* @info This prevents <CODE>SplashScreen</CODE> from auto hiding while the fonts are in loading state. */
+/* @info This prevents `SplashScreen` from auto hiding while the fonts are in loading state. */
 SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function RootLayout() {
-  /* @info Map the font file using <CODE>useFonts</CODE> hook. */
+  /* @info Map the font file using `useFonts` hook. */
   const [loaded, error] = useFonts({
     Inter_900Black,
   });

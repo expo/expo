@@ -1,5 +1,5 @@
-import type { PermissionResponse } from 'expo-modules-core';
-import { PermissionStatus, UnavailabilityError } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 
 import type { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 import { LocationAccuracy } from './Location.types';
@@ -177,6 +177,28 @@ export default {
       );
       resolve(watchId);
     });
+  },
+
+  async watchMotionActivityImplAsync(_watchId: number): Promise<void> {
+    console.warn('Location.watchMotionActivityAsync: is not supported on web');
+  },
+
+  async getMotionActivityPermissionsAsync(): Promise<PermissionResponse> {
+    return {
+      status: PermissionStatus.UNDETERMINED,
+      granted: false,
+      canAskAgain: false,
+      expires: 'never',
+    };
+  },
+
+  async requestMotionActivityPermissionsAsync(): Promise<PermissionResponse> {
+    return {
+      status: PermissionStatus.UNDETERMINED,
+      granted: false,
+      canAskAgain: false,
+      expires: 'never',
+    };
   },
 
   async requestForegroundPermissionsAsync(): Promise<PermissionResponse> {
