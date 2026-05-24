@@ -34,7 +34,7 @@ public final class SharedObjectRegistry: Sendable {
   /**
    Weak reference to the app context for the registry.
    */
-  private weak let appContext: AppContext?
+  private weak var appContext: AppContext?
 
   internal struct State: Sendable {
     /**
