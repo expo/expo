@@ -133,7 +133,14 @@ async function isLegacyEslintConfigured(projectRoot: string) {
 async function isEslintConfigured(projectRoot: string) {
   debug('Ensuring ESLint is configured in', projectRoot);
 
-  const eslintConfigFiles = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs'];
+  const eslintConfigFiles = [
+    'eslint.config.js',
+    'eslint.config.mjs',
+    'eslint.config.cjs',
+    'eslint.config.ts',
+    'eslint.config.mts',
+    'eslint.config.cts',
+  ];
   for (const configFile of eslintConfigFiles) {
     const configPath = findFileInParents(projectRoot, configFile);
 
