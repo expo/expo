@@ -52,7 +52,7 @@ To receive PR preview updates, reviewers need a preview build with `expo-updates
 
 <Terminal cmd={['$ eas build --profile preview --platform all']} />
 
-Since `expo-updates` is a native library, this build embeds both its native code and the channel from **eas.json**. Running the above command will also allow EAS CLI to generate [credentials](/app-signing/app-credentials/) the first time we trigger a preview build.
+Since `expo-updates` is a native library, this build embeds both its native code and the channel from **eas.json**. Running the above command also allows EAS CLI to generate [credentials](/app-signing/app-credentials/) the first time we trigger a preview build.
 
 </Requirement>
 
@@ -64,15 +64,14 @@ Teams use preview builds for stakeholder testing. Members install the build on t
 
 <PreviewPipeline />
 
-Like development builds, we will add fingerprints to avoid unnecessary rebuilds when native code doesn't change.
+Like development builds, we add fingerprints to avoid unnecessary rebuilds when native code doesn't change.
 
 <Step label="1">
 
 ### Add a preview.yml
 
-Inside **.eas/workflows/**, let's add a new file called **preview.yml**. This workflow file will use the `preview` profile.
+Inside **.eas/workflows/**, let's add a new file called **preview.yml**. This workflow file uses the `preview` profile.
 
-```yaml preview.yml
 name: Preview builds
 
 jobs:
@@ -132,7 +131,7 @@ Run the workflow manually using the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-In the EAS dashboard, notice that the workflow follows the same fingerprint pattern we implemented for development builds. Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to the `main` branch without changing native code, the workflow will skip the build jobs since compatible builds already exist.
+In the EAS dashboard, notice that the workflow follows the same fingerprint pattern we implemented for development builds. Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to the `main` branch without changing native code, the workflow skips the build jobs since compatible builds already exist.
 
 <ContentSpotlight
   alt="EAS Workflows preview run where the fingerprint and get-build jobs skip the build jobs because compatible Android and iOS builds already exist."
@@ -167,7 +166,6 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 
 Let's update **preview.yml** to add a `notify` job after the build jobs. The `notify` job uses `webhook_url` and `message` parameters, or a `payload` parameter for rich formatting with [Slack Block Kit](https://docs.slack.dev/block-kit). We have to add the webhook URL directly in the workflow file.
 
-```yaml preview.yml
 name: Preview builds
 
 jobs:
@@ -238,7 +236,6 @@ EAS Workflows provides a [`github-comment`](/eas/workflows/pre-packaged-jobs/#gi
 
 Inside **.eas/workflows/**, let's add a new file called **pr-preview.yml**. This workflow runs when a pull request is created using the `on.pull_request` trigger. It only publishes an update using the `update` job type and then posts a comment on the PR with the link to the update.
 
-```yaml pr-preview.yml
 name: PR Preview
 
 on:
@@ -276,7 +273,7 @@ Now, let's make a visible change in the Expo project (for example, change a text
   cmdCopy="git add . && git commit -m 'Test PR preview' && git push origin test-preview"
 />
 
-Open a pull request from `test-preview` to `main` on GitHub. The workflow will run automatically after we have created a pull request. On the EAS dashboard, we can verify that the `publish_preview` job runs first and the `comment` job runs after it succeeds.
+Open a pull request from `test-preview` to `main` on GitHub. The workflow runs automatically after we have created a pull request. On the EAS dashboard, we can verify that the `publish_preview` job runs first and the `comment` job runs after it succeeds.
 
 <ContentSpotlight
   alt="EAS Workflows pull-request preview run showing the publish_preview job followed by the comment job that posts the update link to GitHub."

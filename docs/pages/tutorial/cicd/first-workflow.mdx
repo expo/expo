@@ -10,7 +10,7 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this chapter, we will create our first EAS Workflows job.
+In this chapter, we create our first EAS Workflows job.
 
 ## Learning outcomes
 
@@ -80,7 +80,7 @@ To run the workflow on the EAS dashboard, run the following command from a termi
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/hello.yml']} />
 
-The `eas workflow:run` command uploads the workflow file to EAS and runs any job defined inside the file. After it runs, the EAS CLI prints a URL to the EAS dashboard where we can watch the job.
+The `eas workflow:run` command uploads the workflow file to EAS. It then runs any job defined inside the file and the EAS CLI prints a URL to the EAS dashboard where we can watch the job.
 
 </Step>
 
@@ -106,7 +106,7 @@ Switch to the **Workflow file** tab. This is the workflow file we wrote in Step 
 
 ## Automatically run a workflow
 
-Running `eas workflow:run` from the terminal works for a one-off, but most teams want workflows that fire automatically on GitHub events. Automatic triggers mean no one has to remember to run a workflow and the workflow's configuration lives in the repository alongside the code it builds.
+Running `eas workflow:run` from the terminal works for a one-off, but most teams want workflows that fire automatically on GitHub events. Automatic triggers mean no one has to remember to run a workflow. The workflow's configuration lives in the repository alongside the code it builds.
 
 > **info** **Note:** A trigger is a rule that tells a CI/CD pipeline when to start. It defines the event (such as a code push or a pull request) that causes the pipeline to run automatically instead of requiring manual execution.
 
@@ -178,7 +178,7 @@ In the EAS dashboard, notice that the **Workflow graph** tab shows the commit me
 
 ## Other trigger types
 
-Other trigger types we will use later in this tutorial:
+Other trigger types we use later in this tutorial:
 
 - `on.pull_request`: Runs when a pull request opens or updates against a matching branch
 - `on.push` with `tags`: Runs when a matching tag pattern is pushed to the GitHub repository
@@ -186,7 +186,7 @@ Other trigger types we will use later in this tutorial:
 
 ## Chain jobs together
 
-So far, we have implemented a single job in our workflow file. A workflow file can have multiple jobs and a job's input can depend on the output of the previous job. Let's chain multiple jobs together in a workflow file.
+So far, we have implemented a single job in our workflow file. A workflow file can have multiple jobs. A job's input can depend on the output of the previous job. Let's chain multiple jobs together in a workflow file.
 
 <Step label="1">
 
@@ -242,7 +242,7 @@ Open the EAS dashboard link shared by the EAS CLI. Under **Logs**, notice that t
 
 ## Clean up
 
-After this chapter, delete the **hello.yml** file because we are not going to use it in the next chapters. If we prefer to keep it, remove the `on.push` trigger so it does not fire on every push to `main`.
+After this chapter, delete the **hello.yml** file because we do not use it in the next chapters. If we prefer to keep it, remove the `on.push` trigger so it does not fire on every push to `main`.
 
 ## Summary
 

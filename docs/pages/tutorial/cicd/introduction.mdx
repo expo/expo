@@ -33,7 +33,7 @@ jobs:
       profile: development
 ```
 
-That is the entire file. EAS handles the environment, compiles the native code, stores the artifact, and notifies our team. We will write more workflows like this one throughout the tutorial.
+That is the entire file. EAS handles the environment, compiles the native code, stores the artifact, and notifies our team. We write more workflows like this one throughout the tutorial.
 
 ## What is EAS Workflows and why use it?
 
@@ -49,7 +49,7 @@ The tutorial has three phases:
 - **Testing and releasing.** Run E2E tests with Maestro in a workflow, then create a production workflow that uses fingerprinting to choose between a native build and an OTA update.
 - **Extensions.** Switch production triggers from branches to version tags and deploy web builds with [EAS Hosting](/eas/hosting/introduction/).
 
-After this tutorial, we will know how to set up a CI/CD pipeline for an Expo app.
+After this tutorial, we know how to set up a CI/CD pipeline for an Expo app.
 
 ## Before we write any YAML
 
@@ -73,7 +73,7 @@ An Expo app can target three deployment targets by default. Each one uses a diff
 
 <Collapsible summary="Build profiles">
 
-[EAS Build](/build/introduction/) is a service for building app binaries for our Expo projects. It supports three build profiles by default: `development`, `preview`, and `production`. Each profile corresponds to a different stage of development. We are going to use each of these three profiles in this tutorial.
+[EAS Build](/build/introduction/) is a service for building app binaries for our Expo projects. It supports three build profiles by default: `development`, `preview`, and `production`. Each profile corresponds to a different stage of development. We use each of these three profiles in this tutorial.
 
 </Collapsible>
 
@@ -94,13 +94,13 @@ Depending on the change, we use one service or the other. EAS Workflows wires th
 
 > **info** **Tip:** Already have an Expo project set up with EAS Build and EAS Update? Skip to the next chapter.
 
-This tutorial is a hands-on experience. To make progress, we need an existing Expo project that uses [Continuous Native Generation](/workflow/continuous-native-generation/) to follow along and set it up on our machine and EAS with the following requirements:
+This tutorial is a hands-on experience. To make progress, we need an existing Expo project that uses [Continuous Native Generation](/workflow/continuous-native-generation/). Set it up on our machine and EAS with the following requirements:
 
 <Prerequisites>
 
 <Requirement title="An Expo account">
 
-We will need to [sign up](https://expo.dev/signup) for an Expo account.
+We need to [sign up](https://expo.dev/signup) for an Expo account.
 
 </Requirement>
 
@@ -152,7 +152,7 @@ This generates an **eas.json** file in the root of our project and creates an EA
 
 <Requirement title="GitHub repository linked with EAS dashboard">
 
-We will need a GitHub repository for the project. We can create a new repository or use an existing one. Then, connect the GitHub repository to EAS:
+We need a GitHub repository for the project. We can create a new repository or use an existing one. Then, connect the GitHub repository to EAS:
 
 1. Navigate to the project's [GitHub settings](https://expo.dev/accounts/[account]/projects/[projectName]/github) on the EAS dashboard.
 2. Follow the UI in the dashboard to install the Expo GitHub app.
@@ -172,7 +172,7 @@ Only needed if we add automated app store submission as an adaptation after Chap
 
 EAS Workflows files live inside the **.eas/workflows/** directory at the root of an Expo project. If we have used GitHub Actions before, those workflows live in **.github/workflows/**.
 
-The trigger syntax (`on.push`, `on.pull_request`, and so on) is similar to GitHub Actions, but not identical. The biggest difference is pre-packaged jobs. There is no `runs-on` or setup step for us to write. When we set `type: build`, EAS handles the environment and the build artifacts for us. We will cover these differences throughout the tutorial.
+The trigger syntax (`on.push`, `on.pull_request`, and so on) is similar to GitHub Actions, but not identical. The biggest difference is pre-packaged jobs. There is no `runs-on` or setup step for us to write. When we set `type: build`, EAS handles the environment and the build artifacts for us. We cover these differences throughout the tutorial.
 
 ## Next step
 

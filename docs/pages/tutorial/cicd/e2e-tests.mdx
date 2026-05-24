@@ -169,7 +169,7 @@ on:
 
 ### Run on demand with a label
 
-To run E2E tests only when needed, use the [`on.pull_request_labeled`](/eas/workflows/syntax/#onpull_request_labeled) trigger. It accepts a `labels` parameter, and the workflow will only run when one of those labels is added to a pull request. For example, we can use the `test` label to trigger our E2E tests workflow:
+To run E2E tests only when needed, use the [`on.pull_request_labeled`](/eas/workflows/syntax/#onpull_request_labeled) trigger. It accepts a `labels` parameter, and the workflow only runs when one of those labels is added to a pull request. For example, we can use the `test` label to trigger our E2E tests workflow:
 
 ```yaml .eas/workflows/e2e-tests.yml
 on:

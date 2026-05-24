@@ -9,7 +9,7 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Our workflows from previous chapters cover Android and iOS, and EAS Workflows can also deploy the web build of an Expo project to [EAS Hosting](/eas/hosting/introduction/) alongside the same release.
+Our workflows from previous chapters cover Android and iOS. EAS Workflows can also deploy the web build of an Expo project to [EAS Hosting](/eas/hosting/introduction/) alongside the same release.
 
 ## Learning outcomes
 
@@ -55,7 +55,7 @@ Setting `prod: true` is the difference between a preview deployment and a produc
 
 ### Add a deploy_web job
 
-Open **.eas/workflows/preview.yml** and add a `deploy_web` job. This new job will run in parallel with existing build jobs because it has no `needs` dependency.
+Open **.eas/workflows/preview.yml** and add a `deploy_web` job. This new job runs in parallel with existing build jobs because it has no `needs` dependency.
 
 ```yaml .eas/workflows/preview.yml
 name: Preview builds
@@ -68,7 +68,7 @@ jobs:
     type: deploy
 ```
 
-With no `prod` parameter, this will deploy as a non-production version. Each push gets a unique URL like `https://awesome-project--abc123.expo.app`.
+With no `prod` parameter, this deploys as a non-production version. Each push gets a unique URL like `https://awesome-project--abc123.expo.app`.
 
 </Step>
 
@@ -76,7 +76,7 @@ With no `prod` parameter, this will deploy as a non-production version. Each pus
 
 ### Push the workflow change to the repository
 
-Commit the change to `preview.yml` and push it to the `main` branch of the GitHub repository so that EAS Workflows can pick up the change from the default branch.
+Commit the change to **preview.yml** and push it to the `main` branch of the GitHub repository so that EAS Workflows can pick up the change from the default branch.
 
 <Terminal
   cmd={[
@@ -125,7 +125,7 @@ The production workflow from [Chapter 6, Step 1](/tutorial/cicd/tag-based-releas
 
 ### Add a deploy_web job
 
-Open **.eas/workflows/production.yml** and add a `deploy_web` job. This new job will run in parallel with existing build jobs because it has no `needs` dependency.
+Open **.eas/workflows/production.yml** and add a `deploy_web` job. This new job runs in parallel with existing build jobs because it has no `needs` dependency.
 
 ```yaml .eas/workflows/production.yml
 name: Deploy to production

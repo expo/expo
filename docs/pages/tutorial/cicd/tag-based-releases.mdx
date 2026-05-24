@@ -20,7 +20,7 @@ Pushing to a release branch runs the production workflow on every commit, whethe
 
 ## Tags as release events
 
-EAS Workflows supports tag-based triggers through [`on.push`](/eas/workflows/syntax/#onpush) with a `tags` list. The workflow runs only when a tag matching a glob pattern is pushed to the remote. Unlike a branch that can be updated over time, a Git tag is a one-time event tied to a specific commit and version, which makes it well-suited for marking releases.
+EAS Workflows supports tag-based triggers through [`on.push`](/eas/workflows/syntax/#onpush) with a `tags` list. The workflow runs only when a tag matching a glob pattern is pushed to the remote. A Git tag is a one-time event tied to a specific commit and version, unlike a branch that can be updated over time. That makes tags well-suited for marking releases.
 
 A tag-based release workflow fits teams that:
 
@@ -159,7 +159,7 @@ The workflow triggers on the `v0.1.0` tag. Open the EAS dashboard, and under **W
   className="max-w-160"
 />
 
-Since this is the first production run with the fingerprint generated for a tag-based release, the `build` jobs run for both Android and iOS. Subsequent tags that point to TypeScript/JavaScript changes will skip the build jobs and go straight to `update` jobs.
+Since this is the first production run with the fingerprint generated for a tag-based release, the `build` jobs run for both Android and iOS. Subsequent tags that point to TypeScript/JavaScript changes skip the build jobs and go straight to `update` jobs.
 
 <ContentSpotlight
   alt="EAS Workflows dashboard showing parallel Android and iOS production build jobs for a v0.1.0 tag release."
