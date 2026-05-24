@@ -41,14 +41,14 @@ export function TutorialNode({ data, sourcePosition, targetPosition }: Props) {
   const accent = accentStyles[data.accent] ?? accentStyles.default;
 
   return (
-    <div className="border-default bg-default w-50 cursor-default rounded-md border px-3 py-2 shadow-xs">
+    <div className="w-50 cursor-default rounded-md border border-default bg-default px-3 py-2 shadow-xs">
       {targetPosition && <Handle type="target" position={targetPosition} className="opacity-40" />}
       <div className="flex items-center gap-2">
         <div className={mergeClasses('size-2.5 shrink-0 rounded-full', accent.dot)} />
         <div className="flex flex-col overflow-hidden">
           <span className="text-sm font-medium">{data.label}</span>
           {data.secondaryLabel && (
-            <span className="text-secondary text-xs">{data.secondaryLabel}</span>
+            <span className="text-xs text-secondary">{data.secondaryLabel}</span>
           )}
         </div>
       </div>
