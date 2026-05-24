@@ -33,19 +33,16 @@ export const lintAsync = async (
 
   // TODO(@kitten): The direct require is fine, since we assume `expo > @expo/cli` does not depend on eslint
   // However, it'd be safer to replace this with resolve-from, or another way of requiring via the project root
-  const { loadESLint } = require('eslint');
+  const mod = require('eslint') as typeof import('eslint');
 
-  const mod = await import('eslint');
-
-  let ESLint: typeof import('eslint').ESLint;
   // loadESLint is >= 8.57.0 (https://github.com/eslint/eslint/releases/tag/v8.57.0) https://github.com/eslint/eslint/pull/18098
-  if ('loadESLint' in mod) {
-    ESLint = await loadESLint({ cwd: options.projectRoot });
-  } else {
+  if (!('loadESLint' in mod)) {
     throw new CommandError(
       'npx expo lint requires ESLint version 8.57.0 or greater. Upgrade eslint or use npx eslint directly.'
     );
   }
+
+  const ESLint = await mod.loadESLint({ cwd: options.projectRoot });
 
   const version = ESLint?.version;
 
