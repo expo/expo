@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed `defaultLaunchURL` being ignored on cold start when no recently-opened app was cached. ([#46185](https://github.com/expo/expo/pull/46185) by [@kaihirota](https://github.com/kaihirota))
+- [iOS] Declare matching `outputPaths` on build phase to prevent a dependency cycle when the main target embeds an app extension. ([#46204](https://github.com/expo/expo/issues/46204) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
