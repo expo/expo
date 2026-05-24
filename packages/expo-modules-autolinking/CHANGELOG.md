@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Align precompile feature flags for `react-native-worklets@0.8.3` and `react-native-reanimated@4.3.1` with upstream defaults.
+
 ### 💡 Others
 
 ## 56.0.12 — 2026-05-23
