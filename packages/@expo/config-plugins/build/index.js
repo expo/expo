@@ -43,7 +43,8 @@ var _exportNames = {
   compileModsAsync: true,
   withDefaultBaseMods: true,
   evalModsAsync: true,
-  PluginError: true
+  PluginError: true,
+  unstable_project: true
 };
 exports.IOSConfig = exports.History = exports.CodeGenerator = exports.BaseMods = exports.AndroidConfig = void 0;
 Object.defineProperty(exports, "PluginError", {
@@ -81,6 +82,12 @@ Object.defineProperty(exports, "isValidAndroidAssetName", {
   enumerable: true,
   get: function () {
     return _validations().isValidAndroidAssetName;
+  }
+});
+Object.defineProperty(exports, "unstable_project", {
+  enumerable: true,
+  get: function () {
+    return _unstable().unstable_project;
   }
 });
 Object.defineProperty(exports, "withAndroidColors", {
@@ -436,6 +443,13 @@ function _modCompiler() {
 function _errors() {
   const data = require("./utils/errors");
   _errors = function () {
+    return data;
+  };
+  return data;
+}
+function _unstable() {
+  const data = require("./unstable");
+  _unstable = function () {
     return data;
   };
   return data;

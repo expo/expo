@@ -28,6 +28,7 @@ export { isValidAndroidAssetName, assertValidAndroidAssetName } from './utils/va
 export { withStaticPlugin } from './plugins/withStaticPlugin';
 export { compileModsAsync, withDefaultBaseMods, evalModsAsync } from './plugins/mod-compiler';
 export { PluginError } from './utils/errors';
+export { unstable_project } from './unstable';
 export declare const BaseMods: {
     withGeneratedBaseMods: typeof withGeneratedBaseMods;
     provider: typeof provider;

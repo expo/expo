@@ -45,13 +45,6 @@ function _slugify() {
   };
   return data;
 }
-function _xcode() {
-  const data = _interopRequireDefault(require("xcode"));
-  _xcode = function () {
-    return data;
-  };
-  return data;
-}
 function _pbxFile() {
   const data = _interopRequireDefault(require("xcode/lib/pbxFile"));
   _pbxFile = function () {
@@ -62,6 +55,13 @@ function _pbxFile() {
 function _string() {
   const data = require("./string");
   _string = function () {
+    return data;
+  };
+  return data;
+}
+function _xcodeShim() {
+  const data = require("./xcodeShim");
+  _xcodeShim = function () {
     return data;
   };
   return data;
@@ -335,9 +335,10 @@ function ensureGroupRecursively(project, filepath) {
  */
 function getPbxproj(projectRoot) {
   const projectPath = Paths().getPBXProjectPath(projectRoot);
-  const project = _xcode().default.project(projectPath);
-  project.parseSync();
-  return project;
+  // Route through the @bacons/xcode-backed shim. The shim mirrors the legacy
+  // `xcode` package's API surface, so third-party consumers receiving a
+  // pbxproj via `mods.ios.xcodeproj` keep working unchanged.
+  return (0, _xcodeShim().project)(projectPath).parseSync();
 }
 
 /**
