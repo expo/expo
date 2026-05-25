@@ -54,7 +54,7 @@ function ObserveNavigationContainerImpl(
 
   useAssertValueDoesNotChange(
     initialized,
-    `[expo-observe] React Navigation integration was toggled after ObserveNavigationContainer mounted. Call \`ExpoObserve.configure({ integrations: { 'react-navigation': true } })\` before rendering ObserveNavigationContainer.`
+    `[expo-observe] React Navigation integration was toggled after ObserveNavigationContainer mounted. Call \`Observe.configure({ integrations: { 'react-navigation': true } })\` before rendering ObserveNavigationContainer.`
   );
 
   useEffect(() => {

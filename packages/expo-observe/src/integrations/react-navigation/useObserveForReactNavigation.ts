@@ -21,7 +21,7 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
   useAssertValueDoesNotChange(
     initialized,
     "[expo-observe] React Navigation integration was toggled during a screen's lifecycle. " +
-      "Call `ExpoObserve.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
+      "Call `Observe.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
   );
 
   const screenId = route?.key;
