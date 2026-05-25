@@ -10,6 +10,17 @@ import expo.modules.kotlin.AppContext
 <% } %>import expo.modules.kotlin.views.ExpoView
 
 class <%- project.viewName %>(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+  private val label = TextView(context).apply {
+    gravity = Gravity.CENTER
+  }
+<% if (project.features.includes('SharedObject')) { %>
+  var sharedObject: <%- project.sharedObjectName %>? = null
+    set(value) {
+      field = value
+      updateLabel()
+    }
+
+<% } -%>
 <% if (project.features.includes('ViewEvent')) { %>  private val onTap by EventDispatcher<Unit>()
 
 <% } %>  init {
@@ -19,14 +30,15 @@ class <%- project.viewName %>(context: Context, appContext: AppContext) : ExpoVi
       gravity = Gravity.CENTER
       setBackgroundColor(Color.parseColor("#aabbcc"))
     }
-    val label = TextView(context).apply {
-      text = "<%- project.name %> - native view<% if (project.features.includes('ViewEvent')) { %>\nTap the view to emit a view event<% } %>"
-      gravity = Gravity.CENTER
-    }
+    updateLabel()
     container.addView(label)
     addView(container)
 <% if (project.features.includes('ViewEvent')) { %>    setOnClickListener {
       onTap(Unit)
     }
 <% } %>  }
+
+  private fun updateLabel() {
+    label.text = "<%- project.name %> - native view<% if (project.features.includes('ViewEvent')) { %>\nTap the view to emit a view event<% } %><% if (project.features.includes('SharedObject')) { %>\nShared object count: ${sharedObject?.count ?: 0}<% } %>"
+  }
 }

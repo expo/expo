@@ -1,10 +1,27 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
 
-import { <%- project.viewName %>Props } from './<%- project.name %>.types';
+import { <% if (project.features.includes('SharedObject')) { %>Native<%- project.viewName %>Props, <% } %><%- project.viewName %>Props } from './<%- project.name %>.types';
 
-const NativeView: React.ComponentType<<%- project.viewName %>Props> = requireNativeView('<%- project.name %>');
+const NativeView: React.ComponentType<<% if (project.features.includes('SharedObject')) { %>Native<%- project.viewName %>Props<% } else { %><%- project.viewName %>Props<% } %>> = requireNativeView('<%- project.name %>');
 
+<% if (project.features.includes('SharedObject')) { -%>
+function getSharedObjectId(object: unknown): number | null {
+  return (object as { __expo_shared_object_id__?: number } | null)?.__expo_shared_object_id__ ?? null;
+}
+
+<% } -%>
 export default function <%- project.viewName %>(props: <%- project.viewName %>Props) {
+<% if (project.features.includes('SharedObject')) { -%>
+  const { sharedObject, ...nativeProps } = props;
+
+  return (
+    <NativeView
+      {...nativeProps}
+      sharedObject={sharedObject == null ? null : getSharedObjectId(sharedObject)}
+    />
+  );
+<% } else { -%>
   return <NativeView {...props} />;
+<% } -%>
 }

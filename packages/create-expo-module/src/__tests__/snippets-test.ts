@@ -30,6 +30,13 @@ const mockData = {
   type: 'standalone' as const,
 };
 
+function getMockDataWithFeatures(features: string[]) {
+  return {
+    ...mockData,
+    project: { ...mockData.project, features },
+  };
+}
+
 // Path to the actual snippets directory in the template package
 const SNIPPETS_DIR = path.resolve(__dirname, '../../../../packages/expo-module-template/snippets');
 
@@ -80,6 +87,27 @@ describe('buildViewSnippets', () => {
   it('includes ViewEvent block when ViewEvent selected', async () => {
     const result = await buildViewSnippets(SNIPPETS_DIR, ['View', 'ViewEvent'], mockData, 'swift');
     expect(result).toContain('Events("onTap")');
+  });
+
+  it('should include shared object prop when view and shared object are selected', async () => {
+    const result = await buildViewSnippets(
+      SNIPPETS_DIR,
+      ['View', 'SharedObject'],
+      getMockDataWithFeatures(['View', 'SharedObject']),
+      'swift'
+    );
+    expect(result).toContain('Prop("sharedObject")');
+    expect(result).toContain('sharedObject: MyModuleModuleSharedObject?');
+  });
+
+  it('should not include shared object prop when view is not selected', async () => {
+    const result = await buildViewSnippets(
+      SNIPPETS_DIR,
+      ['SharedObject'],
+      getMockDataWithFeatures(['SharedObject']),
+      'swift'
+    );
+    expect(result.trim()).toBe('');
   });
 });
 
@@ -178,6 +206,17 @@ describe('buildAppSnippets', () => {
     const result = await buildAppSnippets(SNIPPETS_DIR, ['SharedObject'], mockData, 'imports');
     expect(result).toContain('useMyModuleModuleSharedObject');
   });
+
+  it('should pass shared object to view jsx when both features are selected', async () => {
+    const dataWithViewAndSharedObject = getMockDataWithFeatures(['View', 'SharedObject']);
+    const result = await buildAppSnippets(
+      SNIPPETS_DIR,
+      ['View', 'SharedObject'],
+      dataWithViewAndSharedObject,
+      'jsx'
+    );
+    expect(result).toContain('sharedObject={sharedObject}');
+  });
 });
 
 describe('copyFileSnippets', () => {
@@ -221,6 +260,28 @@ describe('copyFileSnippets', () => {
       await copyFileSnippets(SNIPPETS_DIR, [], mockData, tmpDir);
       const entries = await fs.promises.readdir(tmpDir);
       expect(entries).toHaveLength(0);
+    } finally {
+      await fs.promises.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it('should generate view wrapper that forwards shared object id', async () => {
+    const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'snippets-test-'));
+    const dataWithViewAndSharedObject = getMockDataWithFeatures(['View', 'SharedObject']);
+    try {
+      await copyFileSnippets(
+        SNIPPETS_DIR,
+        ['View', 'SharedObject'],
+        dataWithViewAndSharedObject,
+        tmpDir
+      );
+      const viewTsx = path.join(tmpDir, 'src', `${mockData.project.viewName}.tsx`);
+      const content = await fs.promises.readFile(viewTsx, 'utf8');
+      expect(content).toContain('NativeMyModuleViewProps');
+      expect(content).toContain('__expo_shared_object_id__');
+      expect(content).toContain(
+        'sharedObject={sharedObject == null ? null : getSharedObjectId(sharedObject)}'
+      );
     } finally {
       await fs.promises.rm(tmpDir, { recursive: true, force: true });
     }
