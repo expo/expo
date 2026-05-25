@@ -49,8 +49,7 @@ public final class FileSystemModule: Module {
       } else {
         try file.write(content, append: append)
       }
-    }
-    if let content: TypedArray = content.get() {
+    } else if let content: TypedArray = content.get() {
       try file.write(content, append: append)
     }
   }

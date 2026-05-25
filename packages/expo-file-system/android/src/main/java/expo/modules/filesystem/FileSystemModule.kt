@@ -43,8 +43,7 @@ class FileSystemModule : Module() {
           file.write(it, append)
         }
       }
-    }
-    if (content.`is`(TypedArray::class)) {
+    } else if (content.`is`(TypedArray::class)) {
       content.get(TypedArray::class).let {
         file.write(it, append)
       }

@@ -203,8 +203,8 @@ describe('expo-file-system behavioral mock', () => {
     const dir = new Directory(Paths.cache, 'info-dir');
     dir.create();
     const creationTime = dir.info().creationTime;
-    dir.createFile('a.txt', null).write('abc');
-    dir.createFile('b.txt', null).write('de');
+    dir.createFile('a.txt', null).writeSync('abc');
+    dir.createFile('b.txt', null).writeSync('de');
 
     expect(dir.info()).toMatchObject({
       exists: true,
@@ -278,7 +278,7 @@ describe('expo-file-system behavioral mock', () => {
     expect(creationTime).toBeGreaterThan(0);
     expect(file.modificationTime).toBe(creationTime);
 
-    file.write('hello');
+    file.writeSync('hello');
     expect(file.size).toBe(5);
     expect(file.creationTime).toBe(creationTime);
     expect(file.modificationTime).toBeGreaterThan(creationTime!);
@@ -392,7 +392,7 @@ describe('expo-file-system behavioral mock', () => {
     function makeFile(name: string, contents = 'hello'): File {
       const file = new File(Paths.cache, name);
       file.create();
-      file.write(contents);
+      file.writeSync(contents);
       return file;
     }
 
@@ -432,7 +432,7 @@ describe('expo-file-system behavioral mock', () => {
       const file = dir.createFile('x.txt', 'text/plain');
       expect(file.type).toBe('text/plain');
 
-      file.write('hello');
+      file.writeSync('hello');
       expect(file.type).toBe('text/plain');
 
       const handle = file.open(FileMode.Truncate);
