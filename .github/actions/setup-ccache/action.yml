@@ -75,7 +75,10 @@ runs:
         # In our case we exclude ctime and mtime so cache is hit based on file content.
         # time_macros might help if in included modules there are macros like __TIME__ which would trigger a cache miss.
         # system_headers: avoids hashing NDK sysroot headers that don't change between builds.
-        echo "CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime,time_macros,system_headers,pch_defines" >> $GITHUB_ENV
+        echo "CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime,time_macros,pch_defines" >> $GITHUB_ENV
+
+        # Speeds up the process on cache misses by skipping the preprocessing step.
+        echo "CCACHE_DEPEND=true" >> $GITHUB_ENV
 
         # Replaces compiler with ccache.
         echo "CMAKE_C_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
