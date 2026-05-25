@@ -4,7 +4,7 @@ export async function requestAgeRangeAsync(_) {
 export async function isEligibleForAgeFeaturesAsync() {
     return null;
 }
-export async function showSignificantUpdateAcknowledgementAsync(_updateDescription) {
+export async function showSignificantUpdateAcknowledgmentAsync(_updateDescription) {
     // no-op on web
 }
 export async function getRequiredRegulatoryFeaturesAsync() {

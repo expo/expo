@@ -20,7 +20,7 @@ export async function isEligibleForAgeFeaturesAsync(): Promise<boolean | null> {
   return null;
 }
 
-export async function showSignificantUpdateAcknowledgementAsync(
+export async function showSignificantUpdateAcknowledgmentAsync(
   _updateDescription: string
 ): Promise<void> {}
 

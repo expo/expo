@@ -64,7 +64,7 @@ export type RegulatoryFeature = 'declaredAgeRangeRequired' | 'significantAppChan
 export interface ExpoAgeRangeModule extends NativeModule {
     requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
     isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
-    showSignificantUpdateAcknowledgementAsync(updateDescription: string): Promise<void>;
+    showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
     getRequiredRegulatoryFeaturesAsync(): Promise<RegulatoryFeature[] | null>;
 }
 //# sourceMappingURL=ExpoAgeRange.types.d.ts.map

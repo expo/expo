@@ -57,16 +57,10 @@ export default function AgeRangeScreen() {
     setError(null);
     setResult(null);
 
-    if (Platform.OS !== 'ios') {
-      setResult('No-op on this platform.');
-      return;
-    }
-
     try {
-      await AgeRange.showSignificantUpdateAcknowledgementAsync(
+      await AgeRange.showSignificantUpdateAcknowledgmentAsync(
         'This is a developer-specified message.'
       );
-      setResult('User acknowledged the update.');
     } catch (err: any) {
       setError(err.message || 'Unknown error occurred');
       Alert.alert('Error', err.message || 'Unknown error occurred');
@@ -129,7 +123,7 @@ export default function AgeRangeScreen() {
       <Button onPress={requestAgeRange} title="Request Age Range" style={styles.button} />
       <Button
         onPress={showSignificantUpdate}
-        title="Show Significant Update Acknowledgement (iOS 26.4+)"
+        title="Show Significant Update Acknowledgment (iOS 26.4+)"
         style={styles.button}
       />
       <Button

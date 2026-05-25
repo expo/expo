@@ -47,7 +47,7 @@ public class AgeRangeModule: Module, @unchecked Sendable {
       }
     }
 
-    AsyncFunction("showSignificantUpdateAcknowledgementAsync") { (updateDescription: String) in
+    AsyncFunction("showSignificantUpdateAcknowledgmentAsync") { (updateDescription: String) in
       guard #available(iOS 26.4, *) else {
         return
       }
@@ -73,12 +73,12 @@ public class AgeRangeModule: Module, @unchecked Sendable {
       }
       do {
         let features = try await AgeRangeService.shared.requiredRegulatoryFeatures
-        return features.map { feature in
+        return features.compactMap { feature -> String? in
           switch feature {
           case .declaredAgeRangeRequired: "declaredAgeRangeRequired"
           case .significantAppChangeRequiresAdultNotification: "significantAppChangeRequiresAdultNotification"
           case .significantAppChangeRequiresParentalConsent: "significantAppChangeRequiresParentalConsent"
-          @unknown default: "unknown"
+          @unknown default: nil
           }
         }
       } catch AgeRangeService.Error.notAvailable {

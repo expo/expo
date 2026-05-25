@@ -78,6 +78,6 @@ export type RegulatoryFeature =
 export interface ExpoAgeRangeModule extends NativeModule {
   requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
   isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
-  showSignificantUpdateAcknowledgementAsync(updateDescription: string): Promise<void>;
+  showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
   getRequiredRegulatoryFeaturesAsync(): Promise<RegulatoryFeature[] | null>;
 }

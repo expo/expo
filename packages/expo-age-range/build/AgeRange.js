@@ -53,14 +53,22 @@ export async function isEligibleForAgeFeaturesAsync() {
 }
 /**
  * Displays a system-provided interface for people to acknowledge a significant app update.
+ *
+ * Only on iOS 26.4+, this presents an update acknowledgement dialog and resolves once the user confirms it, or rejects with an error.
+ * On unsupported platforms this resolves immediately without showing any UI.
+ *
+ * Call [`getRequiredRegulatoryFeaturesAsync`](#agerangegetrequiredregulatoryfeaturesasync) first to
+ * determine whether the user actually needs to acknowledge a significant change — only invoke
+ * this function when the returned features include `'significantAppChangeRequiresAdultNotification'`.
+ * Doing so avoids prompting users who are not subject to the regulation.
+ *
  * @param updateDescription A description of the significant update to show to the user.
- * @return A promise that resolves when the user acknowledges the update, or rejects with an error.
  *
  * @platform ios 26.4+
  */
-export async function showSignificantUpdateAcknowledgementAsync(updateDescription) {
+export async function showSignificantUpdateAcknowledgmentAsync(updateDescription) {
     if (Platform.OS === 'ios') {
-        return ExpoAgeRange.showSignificantUpdateAcknowledgementAsync(updateDescription);
+        return ExpoAgeRange.showSignificantUpdateAcknowledgmentAsync(updateDescription);
     }
 }
 /**

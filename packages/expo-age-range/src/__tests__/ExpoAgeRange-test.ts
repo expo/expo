@@ -17,9 +17,9 @@ describe('ExpoAgeRange', () => {
     await expect(ExpoAgeRange.isEligibleForAgeFeaturesAsync()).resolves.toBeNull();
   });
 
-  it(`invokes showSignificantUpdateAcknowledgementAsync`, async () => {
+  it(`invokes showSignificantUpdateAcknowledgmentAsync`, async () => {
     await expect(
-      ExpoAgeRange.showSignificantUpdateAcknowledgementAsync('test update')
+      ExpoAgeRange.showSignificantUpdateAcknowledgmentAsync('test update')
     ).resolves.toBeUndefined();
   });
 
