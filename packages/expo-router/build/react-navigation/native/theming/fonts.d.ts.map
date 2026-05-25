@@ -1,1 +1,1 @@
-{"version":3,"file":"fonts.d.ts","sourceRoot":"","sources":["../../../../src/react-navigation/native/theming/fonts.tsx"],"names":[],"mappings":"AAOA,eAAO,MAAM,KAAK;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAuDkC,CAAC"}
+{"version":3,"file":"fonts.d.ts","sourceRoot":"","sources":["../../../../src/react-navigation/native/theming/fonts.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,KAAK,EAAE,MAAM,UAAU,CAAC;AA8DtC,eAAO,MAAM,KAAK,EAAE,KAAK,CAAC,OAAO,CAKZ,CAAC"}

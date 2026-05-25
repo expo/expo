@@ -3,9 +3,9 @@ import { I18nManager } from 'react-native';
 
 import { useBackButton } from './useBackButton';
 import { useDocumentTitle } from './useDocumentTitle';
+import { useImperativeApiEmitter } from './useImperativeApiEmitter';
 import { useLinking } from './useLinking';
 import { useThenable } from './useThenable';
-import { useImperativeApiEmitter } from '../imperative-api';
 import type {
   DocumentTitleOptions,
   LinkingOptions,

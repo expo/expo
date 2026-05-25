@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow importing from the `expo-router` entry point in React Server Components by moving client-only hooks out of `imperative-api`, replacing `Platform.select` with `process.env.EXPO_OS` in the vendored React Navigation theme fonts, and lazy-evaluating `Easing` calls in the vendored bottom-tabs transition specs. ([#46229](https://github.com/expo/expo/pull/46229) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 56.2.6 — 2026-05-23
@@ -49,6 +51,7 @@
 ### 🐛 Bug fixes
 
 - Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
+- Allow importing from the `expo-router` entry point in React Server Components by moving client-only hooks out of `imperative-api` and replacing `Platform.select` with `process.env.EXPO_OS` in the vendored React Navigation theme fonts. ([#46229](https://github.com/expo/expo/pull/46229) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

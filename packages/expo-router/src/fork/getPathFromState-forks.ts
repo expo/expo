@@ -2,7 +2,8 @@ import * as queryString from 'query-string';
 
 import type { Options, State, StringifyConfig } from './getPathFromState';
 import { matchDynamicName, matchGroupName } from '../matchers';
-import { validatePathConfig as RNValidatePathConfig, type Route } from '../react-navigation/native';
+import { validatePathConfig as RNValidatePathConfig } from '../react-navigation/core/validatePathConfig';
+import type { Route } from '../react-navigation/routers/types';
 
 export type ExpoOptions = {
   preserveDynamicRoutes?: boolean;

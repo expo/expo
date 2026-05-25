@@ -42,9 +42,9 @@ exports.getPathWithConventionsCollapsed = getPathWithConventionsCollapsed;
 exports.isDynamicPart = isDynamicPart;
 const queryString = __importStar(require("query-string"));
 const matchers_1 = require("../matchers");
-const native_1 = require("../react-navigation/native");
+const validatePathConfig_1 = require("../react-navigation/core/validatePathConfig");
 function validatePathConfig({ preserveDynamicRoutes, preserveGroups, shouldEncodeURISegment, ...options }) {
-    (0, native_1.validatePathConfig)(options);
+    (0, validatePathConfig_1.validatePathConfig)(options);
 }
 function fixCurrentParams(allParams, route, stringify) {
     // Better handle array params

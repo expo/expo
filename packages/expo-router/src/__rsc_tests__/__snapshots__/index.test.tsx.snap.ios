@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`default import supports RSC 1`] = `
+"2:I["src/link/ExpoLink.tsx",[],"ExpoLink",1]
+1:{"name":"Link","env":"Server","key":null,"owner":null,"props":{"href":"/"}}
+0:D"$1"
+0:["$","$L2",null,{"href":"/"},"$1"]"
+`;
