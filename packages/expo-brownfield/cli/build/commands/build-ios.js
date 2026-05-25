@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
 const buildIos = async (command) => {
-    await (0, utils_1.validatePrebuild)('ios');
-    const config = (0, utils_1.resolveBuildConfigIos)(command.opts());
+    const opts = command.opts();
+    await (0, utils_1.validatePrebuild)('ios', { dryRun: !!opts.dryRun });
+    const config = (0, utils_1.resolveBuildConfigIos)(opts);
     (0, utils_1.printIosConfig)(config);
     await (0, utils_1.buildFramework)(config);
     if (config.output !== 'frameworks') {
