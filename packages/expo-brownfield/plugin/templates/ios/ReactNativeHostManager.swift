@@ -10,8 +10,9 @@ import UIKit
 internal import EXDevMenu
 #endif
 
-public class ReactNativeHostManager {
-  public static let shared = ReactNativeHostManager()
+@objc
+public class ReactNativeHostManager: NSObject {
+  @objc public static let shared = ReactNativeHostManager()
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
@@ -19,11 +20,14 @@ public class ReactNativeHostManager {
   private var devMenuInitialized: Bool = false
   private var turboModuleClasses: [String: AnyClass] = [:]
 
+  private override init() {
+    super.init()
+  }
   /**
    * Initializes ReactNativeHostManager instance
    * Instance can be initialized only once
    */
-  public func initialize(turboModuleClasses: [String: AnyClass] = [:]) {
+  @objc public func initialize(turboModuleClasses: [String: AnyClass] = [:]) {
     if firstLoadInitialized {
       return
     }
@@ -38,7 +42,7 @@ public class ReactNativeHostManager {
   /**
    * Creates the React Native view using RCTReactNativeFactory
    */
-  public func loadView(
+  @objc public func loadView(
     moduleName: String = "main",
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
@@ -72,7 +76,7 @@ public class ReactNativeHostManager {
    * Cleans up the previous instance of React Native
    * to prevent memory leaks
    */
-  public func cleanupPreviousInstance() {
+  @objc public func cleanupPreviousInstance() {
     if let rootViewFactory = reactNativeFactory?.rootViewFactory {
       rootViewFactory.setValue(nil, forKey: "_reactHost")
       reactNativeDelegate = nil

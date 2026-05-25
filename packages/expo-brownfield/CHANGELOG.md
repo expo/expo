@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Make `ReactNativeHostManager` accessible directly to Objective-C. ([@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
