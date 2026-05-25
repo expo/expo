@@ -9,13 +9,13 @@ import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-The EAS REST API exposes endpoints for triggering a workflow and reading run details. All endpoints live under `https://api.expo.dev` and accept and return JSON.
+The EAS REST API exposes endpoints for triggering a workflow and reading run details. All endpoints live under `https://api.expo.dev`. Requests and responses are JSON.
 
 ## Authentication
 
 Both endpoints require an EAS access token, sent as a bearer token in the `Authorization` header.
 
-For production integrations, create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) on the account that owns the project and give it a scoped role. The token then represents the bot, not a person. You can revoke it without affecting any user. A [personal access token](/accounts/programmatic-access/#personal-access-tokens) also works for one-off scripts.
+For production integrations, create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) on the account that owns the project and give it a scoped role. The token then represents the robot user, not a person. You can revoke it without affecting any user. A [personal access token](/accounts/programmatic-access/#personal-access-tokens) also works for one-off scripts.
 
 ```text
 Authorization: Bearer <EXPO_TOKEN>
@@ -82,7 +82,7 @@ Returns `200 OK` with the new workflow run ID and a link to the run in the dashb
 GET /v2/workflows/runs/:workflowRunId
 ```
 
-Returns the workflow run and the jobs it contains. Use it to poll for completion after triggering a run, or to render a run's details in your own UI.
+Returns the workflow run and the jobs it contains. Use this endpoint to poll for completion after triggering a run, or to render a run's details in your own UI.
 
 ### Response
 
@@ -119,7 +119,7 @@ Returns the workflow run and the jobs it contains. Use it to poll for completion
 }
 ```
 
-`status` on the run is one of:
+The run's `status` is one of:
 
 | Value             | Meaning                                                             |
 | ----------------- | ------------------------------------------------------------------- |
@@ -143,7 +143,7 @@ Each entry in `jobs` includes its own `status`, one of:
 | `canceled`        | The job was canceled. Terminal.                                      |
 | `skipped`         | The job was skipped because a required upstream job did not succeed. |
 
-`outputs` contains any values the job set with `outputs:` in the workflow file, with referenced secrets replaced by placeholders. Jobs of `type: build` include `buildId`, and jobs of `type: submission` include `submissionId`, which link to the underlying EAS Build or EAS Submit record.
+`outputs` contains any values the job sets with `outputs:` in the workflow file. Any referenced secrets appear as placeholders in the response. Jobs of `type: build` include `buildId`, and jobs of `type: submission` include `submissionId`. Each ID links to the underlying EAS Build or EAS Submit record.
 
 ### Example
 
