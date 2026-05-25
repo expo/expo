@@ -155,4 +155,23 @@ export function addUserInteractionListener(listener) {
 export function addPushToStartTokenListener(listener) {
     return ExpoWidgetsModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
 }
+/**
+ * Downloads remote images into the shared app group container so widget views can render them by file URI.
+ *
+ * Each image is stored under its stable `key`. Calling this again with the same key replaces the stored file.
+ * Pass returned `uri` values through widget props and render them with `@expo/ui` Image's `uiImage` prop.
+ */
+export function preloadImagesAsync(images) {
+    if (!Array.isArray(images)) {
+        return Promise.reject(new TypeError('The "images" argument must be an array'));
+    }
+    return ExpoWidgetsModule.preloadImagesAsync(images);
+}
+/**
+ * Removes preloaded widget images from the shared app group container.
+ * If `keys` is omitted, all preloaded widget images are removed.
+ */
+export function clearPreloadedImagesAsync(options) {
+    return ExpoWidgetsModule.clearPreloadedImagesAsync(options);
+}
 //# sourceMappingURL=Widgets.js.map

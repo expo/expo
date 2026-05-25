@@ -30,6 +30,10 @@ class LiveActivityFactoryStub {
 }
 const ExpoWidgetsModule = {
     reloadAllWidgets() { },
+    async preloadImagesAsync(_images) {
+        return { images: {}, failed: [] };
+    },
+    async clearPreloadedImagesAsync(_options) { },
     Widget: WidgetStub,
     LiveActivityFactory: LiveActivityFactoryStub,
     LiveActivity: LiveActivityStub,

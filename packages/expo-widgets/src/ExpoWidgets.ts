@@ -6,6 +6,9 @@ import type {
   NativeLiveActivity,
   NativeLiveActivityFactory,
   NativeWidgetObject,
+  WidgetImageClearOptions,
+  WidgetImagePreloadOptions,
+  WidgetImagePreloadResult,
 } from './Widgets.types';
 
 const noopSubscription: EventSubscription = { remove() {} };
@@ -49,6 +52,12 @@ class LiveActivityFactoryStub {
 
 const ExpoWidgetsModule = {
   reloadAllWidgets(): void {},
+  async preloadImagesAsync(
+    _images: WidgetImagePreloadOptions[]
+  ): Promise<WidgetImagePreloadResult> {
+    return { images: {}, failed: [] };
+  },
+  async clearPreloadedImagesAsync(_options?: WidgetImageClearOptions): Promise<void> {},
   Widget: WidgetStub as typeof NativeWidgetObject,
   LiveActivityFactory: LiveActivityFactoryStub as typeof NativeLiveActivityFactory,
   LiveActivity: LiveActivityStub as typeof NativeLiveActivity,

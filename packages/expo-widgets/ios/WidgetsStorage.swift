@@ -1,3 +1,5 @@
+import Foundation
+
 public enum WidgetsStorage {
   public static var appGroupIdentifier: String? = Bundle.main.object(forInfoDictionaryKey: "ExpoWidgetsAppGroupIdentifier") as? String
   static let defaults = UserDefaults(suiteName: appGroupIdentifier)

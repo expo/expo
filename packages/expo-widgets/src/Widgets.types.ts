@@ -148,6 +148,101 @@ export type ExpoTimelineEntry = {
 };
 
 /**
+ * Resize bounds for a preloaded widget image. The original aspect ratio is preserved.
+ */
+export type WidgetImageResizeOptions = {
+  /**
+   * Maximum output width in pixels.
+   */
+  maxWidth?: number;
+  /**
+   * Maximum output height in pixels.
+   */
+  maxHeight?: number;
+};
+
+/**
+ * Options for downloading and storing an image that can be rendered by a widget.
+ */
+export type WidgetImagePreloadOptions = {
+  /**
+   * Stable identifier for this image. Preloading again with the same key replaces the previous file.
+   */
+  key: string;
+  /**
+   * Remote image URL to download.
+   */
+  url: string;
+  /**
+   * HTTP request method. Defaults to `GET`.
+   */
+  method?: string;
+  /**
+   * HTTP request headers.
+   */
+  headers?: Record<string, string>;
+  /**
+   * Optional resize bounds for the stored image.
+   */
+  resize?: WidgetImageResizeOptions;
+};
+
+/**
+ * A preloaded image that can be passed to `@expo/ui` Image as `uiImage`.
+ */
+export type PreloadedWidgetImage = {
+  /**
+   * Stable identifier used when preloading the image.
+   */
+  key: string;
+  /**
+   * File URI in the app group container.
+   */
+  uri: string;
+  /**
+   * Output image width in pixels.
+   */
+  width: number;
+  /**
+   * Output image height in pixels.
+   */
+  height: number;
+  /**
+   * Number of bytes written to disk.
+   */
+  bytes: number;
+};
+
+export type WidgetImagePreloadFailure = {
+  /**
+   * Stable identifier used when preloading the image.
+   */
+  key: string;
+  /**
+   * Error message for this image.
+   */
+  error: string;
+};
+
+export type WidgetImagePreloadResult = {
+  /**
+   * Successfully preloaded images, keyed by the provided stable image keys.
+   */
+  images: Record<string, PreloadedWidgetImage>;
+  /**
+   * Images that could not be preloaded.
+   */
+  failed: WidgetImagePreloadFailure[];
+};
+
+export type WidgetImageClearOptions = {
+  /**
+   * Stable image keys to remove. If omitted, all preloaded widget images are removed.
+   */
+  keys?: string[];
+};
+
+/**
  * Defines the layout sections for an iOS Live Activity.
  */
 export type LiveActivityLayout = {

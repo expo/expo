@@ -1,5 +1,5 @@
 import type { EventSubscription } from 'expo-modules-core';
-import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, NativeLiveActivity, PushTokenEvent, WidgetEnvironment, WidgetTimelineEntry } from './Widgets.types';
+import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, NativeLiveActivity, PushTokenEvent, WidgetEnvironment, WidgetImageClearOptions, WidgetImagePreloadOptions, WidgetImagePreloadResult, WidgetTimelineEntry } from './Widgets.types';
 /**
  * Represents a widget instance. Provides methods to manage the widget's timeline.
  */
@@ -111,4 +111,16 @@ export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['
  * @return An event subscription that can be used to remove the listener.
  */
 export declare function addPushToStartTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']): EventSubscription;
+/**
+ * Downloads remote images into the shared app group container so widget views can render them by file URI.
+ *
+ * Each image is stored under its stable `key`. Calling this again with the same key replaces the stored file.
+ * Pass returned `uri` values through widget props and render them with `@expo/ui` Image's `uiImage` prop.
+ */
+export declare function preloadImagesAsync(images: WidgetImagePreloadOptions[]): Promise<WidgetImagePreloadResult>;
+/**
+ * Removes preloaded widget images from the shared app group container.
+ * If `keys` is omitted, all preloaded widget images are removed.
+ */
+export declare function clearPreloadedImagesAsync(options?: WidgetImageClearOptions): Promise<void>;
 //# sourceMappingURL=Widgets.d.ts.map

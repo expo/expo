@@ -49,6 +49,14 @@ public final class WidgetsModule: Module {
       WidgetCenter.shared.reloadAllTimelines()
     }
 
+    AsyncFunction("preloadImagesAsync") { (images: [WidgetImagePreloadOptions]) in
+      try await WidgetImagePreloader.preloadImages(images)
+    }
+
+    AsyncFunction("clearPreloadedImagesAsync") { (options: WidgetImageClearOptions?) in
+      try WidgetImagePreloader.clearImages(options: options)
+    }
+
     Class("Widget", WidgetObject.self) {
       Constructor { (name: String, layout: String) in
         WidgetObject(name: name, layout: layout)

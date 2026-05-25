@@ -23,3 +23,9 @@ internal final class UpdatedTimelineWithoutLayout: GenericException<String>, @un
     "Cannot update widget timeline without a layout, first register a layout for: \(param)"
   }
 }
+
+internal final class WidgetImageException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Cannot manage widget images: \(param)"
+  }
+}

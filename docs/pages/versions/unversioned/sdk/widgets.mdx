@@ -423,6 +423,58 @@ async function startDeliveryTracking() {
 pushToStartSubscription.remove();
 ```
 
+### Images in widgets and Live Activities
+
+Widgets and Live Activities render outside your app process. Download remote image URLs into shared app group storage before you pass them to a widget or Live Activity. Use `preloadImagesAsync` to store one or more images by stable key, then pass each returned file URI through your props and render it with the `uiImage` prop from `@expo/ui`.
+
+Use `resize` for large remote images so the stored file better matches the widget surface. For more advanced image processing, prepare the image before preloading it.
+
+```tsx
+import { Image, Text, VStack } from '@expo/ui/swift-ui';
+import { frame, resizable } from '@expo/ui/swift-ui/modifiers';
+import { createWidget, preloadImagesAsync } from 'expo-widgets';
+
+type ProfileWidgetProps = {
+  avatarUri?: string;
+  name: string;
+};
+
+const ProfileWidget = (props: ProfileWidgetProps) => {
+  'widget';
+  return (
+    <VStack>
+      {props.avatarUri ? (
+        <Image
+          uiImage={props.avatarUri}
+          modifiers={[resizable(), frame({ width: 64, height: 64 })]}
+        />
+      ) : null}
+      <Text>{props.name}</Text>
+    </VStack>
+  );
+};
+
+const Widget = createWidget('ProfileWidget', ProfileWidget);
+export default Widget;
+
+async function updateProfileWidget() {
+  const result = await preloadImagesAsync([
+    {
+      key: 'profile-avatar',
+      url: 'https://example.com/avatar.jpg',
+      resize: { maxWidth: 128 },
+    },
+  ]);
+
+  Widget.updateSnapshot({
+    avatarUri: result.images['profile-avatar']?.uri,
+    name: 'Alex',
+  });
+}
+```
+
+Calling `preloadImagesAsync` again with the same key replaces the stored file. Use `clearPreloadedImagesAsync({ keys: [...] })` to remove specific images, or call `clearPreloadedImagesAsync()` to remove all images preloaded by `expo-widgets`.
+
 ## API
 
 {/* prettier-ignore */}
