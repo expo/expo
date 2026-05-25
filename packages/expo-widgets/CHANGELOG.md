@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Inherit `ios.deploymentTarget` from app config for generated widget extension targets. ([#46193](https://github.com/expo/expo/pull/46193) by [@eliotgevers](https://github.com/eliotgevers))
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-05-23
