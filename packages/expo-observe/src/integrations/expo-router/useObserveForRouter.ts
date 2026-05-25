@@ -22,7 +22,7 @@ export function useObserveForRouter(): MarkInteractive | null {
   useAssertValueDoesNotChange(
     initialized,
     "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
-      "Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
+      "Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
   );
 
   const screenId = route?.key;

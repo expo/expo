@@ -5,6 +5,7 @@ import path from 'node:path';
 
 import { tryRenameAndDeleteAsync } from './file-store';
 
+const { pid } = process;
 const debug = require('debug')('expo:metro:cache') as typeof console.log;
 
 /** Pre-create shard directories all at once as a preflight task */
@@ -16,6 +17,18 @@ function ensureShardDirs(root: string): Promise<void> {
   }
   return Promise.all(tasks).then(() => undefined);
 }
+
+async function renameWithRetry(from: string, to: string): Promise<void> {
+  try {
+    await fs.promises.rename(from, to);
+  } catch (err: any) {
+    if (err?.code !== 'EPERM' && err?.code !== 'EBUSY') throw err;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await fs.promises.rename(from, to);
+  }
+}
+
+const getTmpName = (name: string): string => `.tmp${pid}_${name}`;
 
 class BinaryFileStore<T> extends UpstreamFileStore<T> {
   #root: string;
@@ -30,7 +43,7 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
 
   constructor(options: Options) {
     super(options);
-    this.#root = options.root;
+    this.#root = path.resolve(options.root);
   }
 
   prepare() {
@@ -41,16 +54,23 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
   }
 
   async get(key: Buffer): Promise<T | null | undefined> {
+    const filePath = this.#getFileDir(key) + path.sep + this.#getFileName(key);
     let data: Buffer;
     try {
-      data = await fs.promises.readFile(this.#getFilePath(key));
+      data = await fs.promises.readFile(filePath);
     } catch (err: any) {
       if (err.code === 'ENOENT') {
         return null;
       }
       throw err;
     }
-    return this.#packr.decode(data);
+
+    try {
+      return this.#packr.decode(data);
+    } catch (err) {
+      fs.promises.unlink(filePath).catch(() => {});
+      return null;
+    }
   }
 
   async set(key: Buffer, value: T): Promise<void> {
@@ -62,15 +82,25 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
 
     const buffer = this.#packr.encode(value);
     await this.prepare();
-    const filePath = this.#getFilePath(key);
+    const fileDir = this.#getFileDir(key);
+    const fileName = this.#getFileName(key);
+    const targetTemp = fileDir + path.sep + getTmpName(fileName);
+    const targetPath = fileDir + path.sep + fileName;
+    let renamed = false;
     try {
-      await fs.promises.writeFile(filePath, buffer);
+      await fs.promises.writeFile(targetTemp, buffer);
+      await renameWithRetry(targetTemp, targetPath);
+      renamed = true;
     } catch (err: any) {
       // The cache root can disappear underneath us if a parallel process clears the cache root
       if (err?.code !== 'ENOENT') throw err;
       this.#prepare = undefined;
       await this.prepare();
-      await fs.promises.writeFile(filePath, buffer);
+      await fs.promises.writeFile(targetTemp, buffer);
+      await renameWithRetry(targetTemp, targetPath);
+      renamed = true;
+    } finally {
+      if (!renamed) await fs.promises.unlink(targetTemp).catch(() => {});
     }
   }
 
@@ -81,12 +111,12 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
     }
   }
 
-  #getFilePath(key: Buffer): string {
-    return path.join(
-      this.#root,
-      key.subarray(0, 1).toString('hex'),
-      key.subarray(1).toString('hex') + '.mp'
-    );
+  #getFileDir(key: Buffer): string {
+    return this.#root + path.sep + key.subarray(0, 1).toString('hex');
+  }
+
+  #getFileName(key: Buffer): string {
+    return key.subarray(1).toString('hex') + '.mp';
   }
 }
 

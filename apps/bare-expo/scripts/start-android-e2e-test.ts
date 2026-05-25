@@ -12,6 +12,7 @@ import {
   getStartMode,
   retryAsync,
   prettyPrintTestSuiteLogs,
+  printImageComparisonServerLogs,
   setupLogger,
   runCustomMaestroFlowsAsync,
   MAESTRO_ENV_VARS,
@@ -125,6 +126,7 @@ async function testAsync(
     console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
     const logs = await getLogs();
     console.log(prettyPrintTestSuiteLogs(logs));
+    await printImageComparisonServerLogs();
     if (!(await isAppRunning())) {
       if (logs.length > 0) {
         console.warn(

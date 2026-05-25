@@ -1,4 +1,5 @@
-import type { LogAttributeValue } from 'expo-app-metrics';
+import type { NativeModule } from 'expo';
+import type { LogAttributeValue, LogEventOptions, MetricAttributes } from 'expo-app-metrics';
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the
  * other Observe APIs. Strings, numbers, and booleans are stored as typed
@@ -10,7 +11,7 @@ export type ObserveAttribute = LogAttributeValue;
  * other Observe APIs that take a free-form attributes payload.
  */
 export type ObserveAttributes = Record<string, ObserveAttribute>;
-export type Config = {
+export type ObserveConfig = {
     /**
      * The environment for observability events
      *
@@ -60,9 +61,9 @@ export type Config = {
     /**
      * Opt in to per-integration behavior.
      */
-    integrations?: IntegrationsConfig;
+    integrations?: ObserveIntegrationsConfig;
 };
-export interface IntegrationsConfig {
+export type ObserveIntegrationsConfig = {
     /**
      * Enables the `expo-router` integration, which records navigation metrics
      * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
@@ -83,13 +84,37 @@ export interface IntegrationsConfig {
      * @default false
      */
     'react-navigation'?: boolean;
-}
-export interface ExpoObserveModuleType {
+};
+export declare class ObserveModule extends NativeModule {
     dispatchEvents(): Promise<void>;
     /**
      * Configures observability settings.
      */
-    configure(config: Config): void;
+    configure(config: ObserveConfig): void;
+    /**
+     * Records a log event against the current main session. The event is
+     * persisted locally and dispatched on the next `dispatchEvents()` flush.
+     *
+     * Severity defaults to `"info"` when not provided.
+     *
+     * @param name Event name.
+     * @param options Optional body, attributes, and severity overrides.
+     */
+    logEvent(name: string, options?: LogEventOptions): void;
+    /**
+     * Marks the first render of the app. Used to compute the `cold_ttr` and
+     * `warm_ttr` metrics.
+     */
+    markFirstRender(): void;
+    /**
+     * Marks the moment the app becomes interactive. Used to compute the `tti`
+     * metric. Custom `routeName` and `params` can be attached via `attributes`.
+     *
+     * > Note: When the `expo-router` or `@react-navigation/native` integration
+     * > is active, prefer `useObserve().markInteractive(...)` — the hook fills
+     * > in `routeName` from the current route, while this raw call does not.
+     */
+    markInteractive(attributes?: MetricAttributes): void;
     /**
      * Sets attributes merged into every subsequent metric and log event.
      * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
@@ -97,7 +122,7 @@ export interface ExpoObserveModuleType {
      *
      * @example
      * ```ts
-     * ExpoObserve.setGlobalAttributes({
+     * Observe.setGlobalAttributes({
      *   subscription_tier: 'pro',
      *   experiment_variant: 'B',
      * });
