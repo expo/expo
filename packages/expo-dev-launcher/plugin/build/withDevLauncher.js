@@ -31,8 +31,6 @@ const withStripLocalNetworkKeysForRelease = (config) => {
         }
         project.addBuildPhase([], 'PBXShellScriptBuildPhase', buildPhaseName, nativeTargetId, {
             shellPath: '/bin/sh',
-            inputPaths: ['"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)"'],
-            outputPaths: ['"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)"'],
             shellScript: `# Strip dev-launcher-specific local network permission keys from non-Debug builds
 # This only removes _expo._tcp Bonjour services and the dev-launcher usage description.
 # Other Bonjour services and custom descriptions are preserved for production use.
@@ -69,6 +67,16 @@ if [ "$CONFIGURATION" != "Debug" ]; then
 fi
 `,
         });
+        const targetPhases = project.pbxNativeTargetSection()[nativeTargetId]?.buildPhases ?? [];
+        const addedIdx = targetPhases.findIndex((p) => p.comment === buildPhaseName);
+        if (addedIdx >= 0) {
+            const [added] = targetPhases.splice(addedIdx, 1);
+            if (added) {
+                const firstEmbedIdx = targetPhases.findIndex((p) => /^Embed |^\[CP\] Embed /.test(p.comment ?? ''));
+                const insertIdx = firstEmbedIdx >= 0 ? firstEmbedIdx : targetPhases.length;
+                targetPhases.splice(insertIdx, 0, added);
+            }
+        }
         return config;
     });
 };
