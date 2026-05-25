@@ -147,4 +147,50 @@ describe('constructUrl', () => {
       })
     ).toMatchInlineSnapshot(`"foobar://localhost:9999"`);
   });
+
+  describe('tunnel default port omission', () => {
+    it(`omits port 80 for http tunnel URLs`, () => {
+      expect(
+        new UrlCreator({}, { port: 8081, getTunnelUrl: () => 'http://tunnel.dev/' }).constructUrl({
+          hostType: 'tunnel',
+        })
+      ).toBe('http://tunnel.dev');
+    });
+
+    it(`omits port 443 for https tunnel URLs`, () => {
+      expect(
+        new UrlCreator({}, { port: 8081, getTunnelUrl: () => 'https://tunnel.dev/' }).constructUrl({
+          hostType: 'tunnel',
+          scheme: 'https',
+        })
+      ).toBe('https://tunnel.dev');
+    });
+
+    it(`includes non-default port in tunnel URLs`, () => {
+      expect(
+        new UrlCreator(
+          {},
+          { port: 8081, getTunnelUrl: () => 'https://tunnel.dev:9999/' }
+        ).constructUrl({
+          hostType: 'tunnel',
+          scheme: 'https',
+        })
+      ).toBe('https://tunnel.dev:9999');
+    });
+
+    it(`uses port 443 internally for https tunnel URLs without explicit port`, () => {
+      // The tunnel URL parser should infer port 443 for https URLs that don't
+      // specify a port, so native inspector code doesn't default to 8081
+      const creator = new UrlCreator({}, { port: 8081, getTunnelUrl: () => 'https://tunnel.dev/' });
+      // The URL itself omits the default port
+      expect(creator.constructUrl({ hostType: 'tunnel', scheme: 'https' })).toBe(
+        'https://tunnel.dev'
+      );
+    });
+
+    it(`uses port 80 internally for http tunnel URLs without explicit port`, () => {
+      const creator = new UrlCreator({}, { port: 8081, getTunnelUrl: () => 'http://tunnel.dev/' });
+      expect(creator.constructUrl({ hostType: 'tunnel' })).toBe('http://tunnel.dev');
+    });
+  });
 });

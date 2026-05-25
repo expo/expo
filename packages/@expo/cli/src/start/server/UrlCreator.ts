@@ -113,10 +113,15 @@ export class UrlCreator {
       return null;
     }
     const parsed = new URL(tunnelUrl);
+    // When no explicit port is present in the tunnel URL, use the default port
+    // for the protocol. Without this, the native inspector code
+    // (RCTInspectorDevServerHelper) defaults to :8081, which doesn't match the
+    // tunnel's actual listening port (80/443).
+    const protocol = options.scheme ?? 'http';
     return {
-      port: parsed.port,
+      port: parsed.port || (protocol === 'https' ? '443' : '80'),
       hostname: parsed.hostname,
-      protocol: options.scheme ?? 'http',
+      protocol,
     };
   }
 
@@ -181,13 +186,17 @@ const getDefaultHostname = (options: CreateURLOptions, gateway: GatewayInfo) => 
   }
 };
 
+function isDefaultPort(protocol: string | undefined, port: string): boolean {
+  return (protocol === 'http' && port === '80') || (protocol === 'https' && port === '443');
+}
+
 function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>): string {
   assert(hostname, 'hostname cannot be inferred.');
   const validProtocol = protocol ? `${protocol}://` : '';
 
   const url = `${validProtocol}${hostname}`;
 
-  if (port) {
+  if (port && !isDefaultPort(protocol, port)) {
     return url + `:${port}`;
   }
 

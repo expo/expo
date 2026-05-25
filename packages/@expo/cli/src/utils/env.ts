@@ -175,6 +175,11 @@ class Env {
     return boolish('EXPO_NO_INSPECTOR_PROXY', false);
   }
 
+  /** Allow the debugger middleware to accept non-loopback connections (e.g. over tunnel). */
+  get EXPO_DANGEROUSLY_ALLOW_REMOTE_DEBUGGING(): boolean {
+    return boolish('EXPO_DANGEROUSLY_ALLOW_REMOTE_DEBUGGING', false);
+  }
+
   /** Disable lazy bundling in Metro bundler. */
   get EXPO_NO_METRO_LAZY() {
     return boolish('EXPO_NO_METRO_LAZY', false);

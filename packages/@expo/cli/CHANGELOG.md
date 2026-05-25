@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add `EXPO_DANGEROUSLY_ALLOW_REMOTE_DEBUGGING` env var to allow the debugger middleware to accept non-loopback connections, enabling debugging over tunnels. ([#45579](https://github.com/expo/expo/pull/45579) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+- Fix tunnel URL port defaulting to 8081 instead of the protocol's default port (80/443) when no explicit port is present. ([#45579](https://github.com/expo/expo/pull/45579) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

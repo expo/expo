@@ -59,26 +59,116 @@ export function createDebugMiddleware({
   // NOTE(cedric): add a temporary websocket to handle Network-related CDP events
   websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
 
-  // Explicitly limit debugger websocket to loopback requests
-  debuggerWebsocketEndpoint.on('connection', (socket, request) => {
-    if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
-      // NOTE: `socket.close` nicely closes the websocket, which will still allow incoming messages
-      // `socket.terminate` instead forcefully closes down the socket
-      socket.terminate();
-    }
-  });
+  const allowRemoteDebugging = env.EXPO_DANGEROUSLY_ALLOW_REMOTE_DEBUGGING;
+  const proxyBaseUrl = getProxyBaseUrl();
+
+  if (!allowRemoteDebugging) {
+    // Explicitly limit debugger websocket to loopback requests
+    debuggerWebsocketEndpoint.on('connection', (socket, request) => {
+      if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
+        // NOTE: `socket.close` nicely closes the websocket, which will still allow incoming messages
+        // `socket.terminate` instead forcefully closes down the socket
+        socket.terminate();
+      }
+    });
+  } else {
+    debuggerWebsocketEndpoint.on('connection', (socket, request) => {
+      // Still validate the origin when allowing remote connections. Accept
+      // connections that match either the local server or the proxy/tunnel URL.
+      if (
+        !isLocalSocket(request.socket) &&
+        !isMatchingOrigin(request, serverBaseUrl) &&
+        !(proxyBaseUrl && isMatchingOrigin(request, proxyBaseUrl))
+      ) {
+        debug(
+          'Rejected remote debugger WebSocket from origin %s (expected %s or %s)',
+          request.headers.origin,
+          serverBaseUrl,
+          proxyBaseUrl
+        );
+        socket.terminate();
+        return;
+      }
+      if (!isLocalSocket(request.socket)) {
+        const remoteAddress = request.socket.remoteAddress ?? 'unknown';
+        reporter.update({
+          type: 'unstable_server_log',
+          level: 'warn',
+          data: [
+            `Remote debugger connection accepted from non-local address: ${remoteAddress}. This is allowed because EXPO_DANGEROUSLY_ALLOW_REMOTE_DEBUGGING is enabled.`,
+          ],
+        });
+      }
+    });
+  }
 
   return {
     debugMiddleware(req, res, next) {
-      // The debugger middleware is skipped entirely if the connection isn't a loopback request
-      if (isLocalSocket(req.socket)) {
-        return middleware(req, res, next);
-      } else {
-        return next();
+      // When behind a reverse proxy that terminates TLS, the local socket is
+      // plain HTTP but the external URL is HTTPS. @react-native/dev-middleware
+      // checks `req.socket.encrypted` to decide between ws:// and wss:// in
+      // the /json response. Temporarily mark the socket as encrypted so the
+      // generated WebSocket URLs use wss://, avoiding mixed-content errors.
+      // This applies to both local and remote requests because the proxy
+      // connects from localhost, making the request appear local.
+      const shouldMarkEncrypted = isRequestOverHttps(req) && !(req.socket as any).encrypted;
+      if (shouldMarkEncrypted) {
+        Object.defineProperty(req.socket, 'encrypted', { value: true, configurable: true });
       }
+      const wrappedNext = shouldMarkEncrypted
+        ? (...args: any[]) => {
+            Object.defineProperty(req.socket, 'encrypted', {
+              value: false,
+              configurable: true,
+            });
+            return next(...args);
+          }
+        : next;
+
+      if (isLocalSocket(req.socket)) {
+        return middleware(req, res, wrappedNext);
+      }
+      if (allowRemoteDebugging) {
+        return middleware(req, res, wrappedNext);
+      }
+      return next();
     },
     debugWebsocketEndpoints: websocketEndpoints,
   };
+}
+
+/**
+ * Get the external proxy/tunnel base URL, if configured. Used for origin
+ * validation when allowing remote debugging connections.
+ */
+function getProxyBaseUrl(): string | null {
+  const proxyUrl = process.env.EXPO_PACKAGER_PROXY_URL;
+  if (!proxyUrl) {
+    return null;
+  }
+  try {
+    const parsed = new URL(proxyUrl);
+    return parsed.origin;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Detect if the original request was made over HTTPS, even when the local
+ * socket is plain HTTP (e.g. behind a TLS-terminating reverse proxy/tunnel).
+ * Only trusts `x-forwarded-proto` when a known proxy URL is configured.
+ */
+function isRequestOverHttps(req: import('http').IncomingMessage): boolean {
+  const proxyUrl = process.env.EXPO_PACKAGER_PROXY_URL;
+  // Only trust x-forwarded-proto when we know there's a proxy in front of us.
+  if (proxyUrl && req.headers['x-forwarded-proto'] === 'https') {
+    return true;
+  }
+  if (proxyUrl && proxyUrl.startsWith('https://')) {
+    return true;
+  }
+  return false;
 }
 
 function createLogger(
