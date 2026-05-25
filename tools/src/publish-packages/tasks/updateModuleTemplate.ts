@@ -86,7 +86,10 @@ async function updateTemplatePackageJsonAsync(
       `${cyan.bold(oldVersion)} -> ${cyan.bold(newVersionRange)}`
     );
 
-    updatedBody = updatedBody.replace(versionRegex, `$1${newVersionRange}$3`);
+    updatedBody = updatedBody.replace(
+      versionRegex,
+      (_, prefix, _old, suffix) => `${prefix}${newVersionRange}${suffix}`
+    );
   }
 
   if (updatedBody === devDepsBlock.body) {
