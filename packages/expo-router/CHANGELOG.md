@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.2.6 — 2026-05-23
+
+### 🎉 New features
+
 - Allow per-tab customization of Android-only props (`rippleColor`, `indicatorColor`, `disableIndicator`, `labelVisibilityMode`) on `NativeTabs.Trigger`. ([@Ubax](https://github.com/Ubax)) ([#45982](https://github.com/expo/expo/pull/45982) by [@Ubax](https://github.com/Ubax))
 - Upgrade react-native-screens to 4.25.2 ([@Ubax](https://github.com/Ubax)) ([#46142](https://github.com/expo/expo/pull/46142) by [@Ubax](https://github.com/Ubax))
 

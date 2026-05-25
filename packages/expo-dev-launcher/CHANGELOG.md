@@ -8,10 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix xcode build phase ordering. ([#46125](https://github.com/expo/expo/pull/46125) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fixed `defaultLaunchURL` being ignored on cold start when no recently-opened app was cached. ([#46185](https://github.com/expo/expo/pull/46185) by [@kaihirota](https://github.com/kaihirota))
 
 ### 💡 Others
+
+## 56.0.15 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix xcode build phase ordering. ([#46125](https://github.com/expo/expo/pull/46125) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.14 — 2026-05-21
 
