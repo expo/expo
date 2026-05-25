@@ -41,17 +41,11 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
     // prefix here too.
     val fusedVariant =
       (brownfieldProject.findProperty("brownfield.fused.variant") as? String)?.lowercase()
-    val variantStripPrefixes: Set<String> =
-      if (fusedVariant == "release") {
-        setOf(
-          "expo.modules.devmenu.",
-          "expo.modules.devlauncher.",
-          "expo.modules.devclient.",
-          "expo.interfaces.devmenu.",
-        )
-      } else {
-        emptySet()
-      }
+    // EXPERIMENT: skip variant-based stripping entirely to test whether the
+    // "all modules physically present" tolerance also holds for the brownfield
+    // fused AAR. `-Pbrownfield.fused.strip-packages=...` still works for ad-hoc
+    // overrides.
+    val variantStripPrefixes: Set<String> = emptySet()
     val extraStrip =
       (brownfieldProject.findProperty("brownfield.fused.strip-packages") as? String)
         ?.split(',')
