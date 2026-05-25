@@ -267,7 +267,10 @@ jobs:
           sudo xcodebuild -runFirstLaunch
       - name: 🍺 Install Maestro
         run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
+          # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
+          # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
+          # the Android emulator in CI.
+          curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.4.0 bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
@@ -457,7 +460,10 @@ jobs:
           path: apps/bare-expo/android/app/build/outputs/apk/release
       - name: 🍺 Install Maestro
         run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
+          # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
+          # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
+          # the Android emulator in CI.
+          curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.4.0 bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
