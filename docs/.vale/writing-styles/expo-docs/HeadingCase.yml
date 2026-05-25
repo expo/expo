@@ -1,7 +1,7 @@
 extends: capitalization
 message: "'%s' should be in sentence case"
 link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#headings'
-level: warning
+level: error
 scope:
   - heading.h2
   - heading.h3
@@ -107,6 +107,7 @@ exceptions:
   - '.*fingerprintignore.*'
   - '.*fingerprint.config.js.*'
   - '.*Generate.*Android.*'
+  - '.*\bGET\b.*'
   - '.*GitHub.*'
   - '.*GitHub Pages.*'
   - '.*Google.*'
@@ -140,6 +141,7 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*MCP*'
+  - '.*Material Symbols.*'
   - '.*MultiBrowse.*'
   - '.*macOS.*'
   - '.*manifest\.json.*'
@@ -156,6 +158,7 @@ exceptions:
   - '.*OAuth.*'
   - '.*OTA.*'
   - '.*OTF.*'
+  - '.*\bPOST\b.*'
   - '.*PostCSS.*'
   - '.*PostHog.*'
   - '.*PRAGMA.*'

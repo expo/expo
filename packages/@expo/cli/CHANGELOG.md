@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 56.1.11 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- Fix launching apps on physical iOS devices causing system-dependent crashes ([#46128](https://github.com/expo/expo/pull/46128) by [@kitten](https://github.com/kitten))
+- Fix post-rewrite resolutions failing since they may be resolved from a random module path ([#46172](https://github.com/expo/expo/pull/46172) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Disable sextant QR code rendering for Zed due to regression ([#46148](https://github.com/expo/expo/pull/46148) by [@kitten](https://github.com/kitten))
+- Offload Metro user config resolution to `@expo/metro-config`'s `loadUserConfig` ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
+
 ## 56.1.10 — 2026-05-21
 
 _This version does not introduce any user-facing changes._

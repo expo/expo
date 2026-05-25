@@ -42,6 +42,7 @@ export const DEFAULT_IGNORE_PATHS = [
   '**/ios/.xcode.env.local',
   '**/ios/**/project.xcworkspace',
   '**/ios/*.xcworkspace/xcuserdata/**/*',
+  '**/.swiftpm/**/*',
 
   // System files that differ from machine to machine
   '**/.DS_Store',
@@ -57,6 +58,9 @@ export const DEFAULT_IGNORE_PATHS = [
   // https://github.com/expo/expo/blob/d0e39858ead9a194d90990f89903e773b9d33582/packages/expo-updates/ios/EXUpdates.podspec#L51-L58
   '**/node_modules/expo-sqlite/ios/sqlite3.[ch]',
   '**/node_modules/expo-updates/ios/EXUpdates/BSPatch/bspatch.c',
+
+  // expo-modules-jsi has build artifacts
+  '**/node_modules/expo-modules-jsi/apple/{Products,.build,.DerivedData,.generated}/**/*',
 
   // Ignore nested node_modules
   '**/node_modules/**/node_modules/**',

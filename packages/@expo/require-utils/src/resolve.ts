@@ -4,7 +4,12 @@ import path from 'node:path';
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];
-  export function _resolveFilename(mod: string, parent?: Partial<Module>): string;
+  export function _resolveFilename(
+    request: string,
+    parent?: { id: string; filename: string; paths: string[] } | string | null,
+    isMain?: boolean,
+    options?: { paths?: string[] }
+  ): string;
   export const _extensions: Record<string, unknown>;
 }
 

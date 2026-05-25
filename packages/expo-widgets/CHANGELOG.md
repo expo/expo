@@ -9,8 +9,13 @@
 ### 🐛 Bug fixes
 
 - Allow string widget family values in the typed config plugin. ([#46133](https://github.com/expo/expo/issues/46133) by [@eliotgevers](https://github.com/eliotgevers))
+- [plugin] Inherit `ios.deploymentTarget` from app config for generated widget extension targets. ([#46193](https://github.com/expo/expo/pull/46193) by [@eliotgevers](https://github.com/eliotgevers))
 
 ### 💡 Others
+
+## 56.0.14 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.13 — 2026-05-21
 

@@ -94,6 +94,7 @@
   "publishConfig": {
     "executableFiles": [
       "./bin/expo-module-babel",
+      "./bin/expo-module-build",
       "./bin/expo-module-clean",
       "./bin/expo-module-configure",
       "./bin/expo-module-eslint",

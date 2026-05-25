@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   ios-build:
+    if: github.repository == 'expo/expo'
     strategy:
       fail-fast: true
       matrix:
@@ -87,6 +88,7 @@ jobs:
           author_name: React Native Nightly (iOS)
 
   android-build:
+    if: github.repository == 'expo/expo'
     strategy:
       fail-fast: true
       matrix:

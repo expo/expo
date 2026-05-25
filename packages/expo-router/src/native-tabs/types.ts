@@ -37,36 +37,151 @@ export type NativeTabsHostNativeProps = Partial<
 >;
 
 export interface NativeTabOptions extends DefaultRouterOptions {
+  /**
+   * @platform android
+   * @platform iOS
+   */
   icon?: SymbolOrImageSource;
+  /**
+   * @platform android
+   * @platform iOS
+   */
   selectedIcon?: SymbolOrImageSource;
+  /**
+   * @platform android
+   * @platform iOS
+   * @platform web
+   */
   title?: string;
+  /**
+   * @platform android
+   * @platform iOS
+   * @platform web
+   */
   badgeValue?: string;
+  /**
+   * @platform android
+   * @platform iOS
+   * @platform web
+   */
   selectedLabelStyle?: NativeTabsLabelStyle;
+  /**
+   * @platform android
+   * @platform iOS
+   * @platform web
+   */
   labelStyle?: NativeTabsLabelStyle;
+  /**
+   * @platform iOS
+   */
   role?: NativeTabsTabBarItemRole;
+  /**
+   * @platform android
+   * @platform iOS
+   */
   selectedIconColor?: ColorValue;
+  /**
+   * @platform iOS
+   */
   selectedBadgeBackgroundColor?: ColorValue;
+  /**
+   * @platform android
+   * @platform iOS
+   * @platform web
+   */
   badgeBackgroundColor?: ColorValue;
+  /**
+   * @platform android
+   * @platform web
+   */
   badgeTextColor?: ColorValue;
+  /**
+   * @platform android
+   * @platform iOS
+   * @platform web
+   */
   backgroundColor?: ColorValue;
+  /**
+   * @platform iOS
+   */
   blurEffect?: NativeTabsBlurEffect;
+  /**
+   * @platform iOS
+   */
   shadowColor?: ColorValue;
+  /**
+   * @platform android
+   * @platform iOS
+   */
   iconColor?: ColorValue;
+  /**
+   * @platform android
+   */
+  tintColor?: ColorValue;
+  /**
+   * @platform iOS
+   */
   disableTransparentOnScrollEdge?: boolean;
+  /**
+   * @platform iOS
+   */
   titlePositionAdjustment?: {
     horizontal?: number;
     vertical?: number;
   };
+  /**
+   * @platform iOS
+   */
   selectedTitlePositionAdjustment?: {
     horizontal?: number;
     vertical?: number;
   };
+  /**
+   * @platform android
+   * @platform web
+   */
   indicatorColor?: ColorValue;
+  /**
+   * @platform android
+   */
+  rippleColor?: ColorValue;
+  /**
+   * @platform android
+   */
+  disableIndicator?: boolean;
+  /**
+   * @platform android
+   */
+  labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
+  /**
+   * @platform android
+   * @platform iOS
+   * @platform web
+   */
   hidden?: boolean;
+  /**
+   * @platform android
+   * @platform iOS
+   */
   disabled?: boolean;
+  /**
+   * @platform iOS
+   */
   specialEffects?: TabsScreenProps['specialEffects'];
+  /**
+   * @platform android
+   * @platform iOS
+   */
   nativeProps?: NativeScreenProps;
+  /**
+   * @platform android
+   * @platform iOS
+   */
   disableAutomaticContentInsets?: boolean;
+  /**
+   * @platform android
+   * @platform iOS
+   */
   contentStyle?: Pick<
     ViewStyle,
     | 'backgroundColor'
@@ -373,6 +488,9 @@ export interface NativeTabsViewProps extends Omit<
   | 'blurEffect'
   | 'indicatorColor'
   | 'badgeTextColor'
+  | 'rippleColor'
+  | 'disableIndicator'
+  | 'labelVisibilityMode'
 > {
   focusedIndex: number;
   /**
@@ -529,6 +647,42 @@ export interface NativeTabTriggerProps {
    * @platform iOS
    */
   disableTransparentOnScrollEdge?: boolean;
+  /**
+   * The color of the ripple effect when this tab is selected - will be visible when other tabs are pressed.
+   *
+   * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+   *
+   * @platform android
+   */
+  rippleColor?: ColorValue;
+  /**
+   * The color of the active indicator for this tab.
+   *
+   * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+   *
+   * @platform android
+   */
+  indicatorColor?: ColorValue;
+  /**
+   * When set to `true`, disables the active indicator for this tab.
+   *
+   * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+   *
+   * @default false
+   *
+   * @platform android
+   */
+  disableIndicator?: boolean;
+  /**
+   * The visibility mode of the tab item label for this tab.
+   *
+   * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+   *
+   * @see [Material Components documentation](https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible)
+   *
+   * @platform android
+   */
+  labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
   /**
    * Listeners for navigation events on this tab.
    *

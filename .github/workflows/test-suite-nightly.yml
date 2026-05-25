@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   ios-build:
+    if: github.repository == 'expo/expo'
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
@@ -87,6 +88,7 @@ jobs:
           author_name: Test Suite Nightly (iOS)
 
   ios-test:
+    if: github.repository == 'expo/expo'
     needs: ios-build
     runs-on: macos-15
     steps:
@@ -153,6 +155,7 @@ jobs:
           author_name: Test Suite Nightly (iOS)
 
   android-build:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
@@ -216,6 +219,7 @@ jobs:
           author_name: Test Suite Nightly (Android)
 
   android-test:
+    if: github.repository == 'expo/expo'
     needs: android-build
     runs-on: ubuntu-24.04
     strategy:
