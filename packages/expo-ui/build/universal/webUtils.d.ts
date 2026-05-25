@@ -61,5 +61,6 @@ export declare const shadows: {
     input: string;
 };
 export declare const globalCss: string;
+export declare const generatePrimaryColorScale: (hex: string) => Record<string, string>;
 export {};
-//# sourceMappingURL=web.d.ts.map
+//# sourceMappingURL=webUtils.d.ts.map

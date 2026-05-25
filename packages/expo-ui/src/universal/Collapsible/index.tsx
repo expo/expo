@@ -2,7 +2,7 @@ import type { SyntheticEvent } from 'react';
 import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import type { CollapsibleProps } from './types';
-import { createWebComponent } from '../web';
+import { createWebComponent } from '../webUtils';
 
 const Details = createWebComponent('details');
 const Summary = createWebComponent('summary');

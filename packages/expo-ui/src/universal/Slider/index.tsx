@@ -1,6 +1,6 @@
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { colors, createWebComponent, css, durations, easings, shadows } from '../web';
+import { colors, createWebComponent, css, durations, easings, shadows } from '../webUtils';
 import type { SliderProps } from './types';
 
 const Input = createWebComponent('input');

@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 
+import { generatePrimaryColorScale, globalCss } from '../webUtils';
 import type { UniversalHostProps } from './types';
-import { generatePrimaryColorScale } from '../colorUtils';
-import { globalCss } from '../web';
 
 const styles = StyleSheet.create({
   matchContents: {

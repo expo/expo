@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { colors, createWebComponent, durations, easings, shadows } from '../web';
+import { colors, createWebComponent, durations, easings, shadows } from '../webUtils';
 import { extractPickerItems } from './PickerItem';
 import type { PickerItemValue, PickerProps } from './types';
 import { useFocusVisible } from '../hooks';

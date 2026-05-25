@@ -3,7 +3,7 @@ import { TextInput as RNTextInput, StyleSheet } from 'react-native';
 
 import { useNativeState } from '../State';
 import type { TextInputProps } from './types';
-import { colors, durations, easings, shadows } from '../web';
+import { colors, durations, easings, shadows } from '../webUtils';
 
 const styles = StyleSheet.create({
   input: {

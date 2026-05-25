@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import type { ButtonProps } from './types';
 import { useFocusVisible, useUniversalLifecycle } from '../hooks';
-import { colors, durations, easings, shadows } from '../web';
+import { colors, durations, easings, shadows } from '../webUtils';
 
 const buttonStyles = StyleSheet.create({
   base: {
