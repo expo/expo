@@ -212,9 +212,9 @@ type BaseTextFieldProps = {
   /** A callback triggered when the field gains or loses focus. */
   onFocusChanged?: (focused: boolean) => void;
   /**
-   * Shape used for the field's container outline / fill. Use the helpers from
-   * `Shape` (e.g. `<Shape.Pill />` or `<Shape.RoundedCorner cornerRadii={...} />`).
-   * Defaults to the Material `OutlinedTextFieldDefaults.shape` / `TextFieldDefaults.shape`.
+   * Shape used for the field's container outline/fill. Use the helpers from
+   * `Shape` (for example, `<Shape.Pill />` or `<Shape.RoundedCorner cornerRadii={...} />`).
+   * Defaults to the Material `OutlinedTextFieldDefaults.shape`/`TextFieldDefaults.shape`.
    */
   shape?: ShapeJSXElement;
   modifiers?: ModifierConfig[];
