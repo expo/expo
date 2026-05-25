@@ -1,6 +1,6 @@
 'use client';
 
-import { requireNativeView, type SharedRef } from 'expo';
+import { requireNativeView, SharedRef } from 'expo';
 import { Fragment, type PropsWithChildren } from 'react';
 import { Platform, StyleSheet, type ViewProps, type ColorValue } from 'react-native';
 
@@ -17,7 +17,7 @@ export interface NativeLinkPreviewActionProps {
   label?: string;
   icon?: string;
   xcassetName?: string;
-  image?: SharedRef<'image'> | null;
+  image?: InstanceType<SharedRef<'image'>> | null;
   imageRenderingMode?: 'template' | 'original';
   children?: React.ReactNode;
   disabled?: boolean;
