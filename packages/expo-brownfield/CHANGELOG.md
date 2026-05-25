@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] `build:ios` now detects a missing iOS workspace and prompts to run `pod install` instead of failing with a vague "Could not find brownfield iOS workspace". ([@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-21
