@@ -294,6 +294,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   // Reset app react host
   [self.delegate destroyReactInstance];
 
+  // Tell expo-linking to clear its cached initial URL so the next React host doesn't pick up
+  // the deep link that originally launched the previous app.
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"ExpoLinkingClearInitialURL" object:self];
+
   if (_devLauncherViewController != nil) {
     [_devLauncherViewController resetHostingController];
   }
