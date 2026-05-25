@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { colors, createWebComponent, css, durations, easings, shadows } from '../web';
 import type { SliderProps } from './types';
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     padding: 0,
     '--_track-bg': colors.gray[200],
     '--_track-fill': colors.primary[500],
-  },
+  } as ViewStyle,
   disabled: {
     cursor: 'auto',
     opacity: 0.5,
@@ -121,7 +121,7 @@ export function Slider({
         disabled={disabled}
         onChange={({ target: { value } }) => onValueChange(Number.parseFloat(value))}
         data-testid={testID}
-        style={[styles.input, { '--_pct': `${pct}%` }, disabled && styles.disabled]}
+        style={[styles.input, { '--_pct': `${pct}%` } as ViewStyle, disabled && styles.disabled]}
       />
     </View>
   );
