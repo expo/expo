@@ -150,7 +150,7 @@ Each entry in `jobs` includes its own `status`, one of:
 
 Trigger a run and poll until it reaches a terminal status:
 
-```sh
+```bash
 RUN_ID=$(curl -s -X POST "https://api.expo.dev/v2/workflows/dispatch" \
   -H "Authorization: Bearer $EXPO_TOKEN" \
   -H "Content-Type: application/json" \
