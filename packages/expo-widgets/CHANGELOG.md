@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [Android] Create base android package. ([#46090](https://github.com/expo/expo/pull/46090) by [@jakex7](https://github.com/jakex7))
+- [plugin] Create config plugin for android. ([#46091](https://github.com/expo/expo/pull/46091) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
