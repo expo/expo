@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improve `randomUUID()` performance on iOS. ([#46122](https://github.com/expo/expo/pull/46122) by [@kudo](https://github.com/kudo))
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._
