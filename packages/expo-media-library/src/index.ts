@@ -114,7 +114,7 @@ export const usePermissions = createPermissionHook<
     requestPermissionsAsync(options?.writeOnly, options?.granularPermissions),
 });
 
-export type { PermissionHookOptions, PermissionResponse } from 'expo';
+export { PermissionStatus, type PermissionHookOptions, type PermissionResponse } from 'expo';
 export type { EventSubscription } from 'expo-modules-core';
 
 /**
