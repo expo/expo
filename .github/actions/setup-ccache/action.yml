@@ -77,9 +77,6 @@ runs:
         # system_headers: avoids hashing NDK sysroot headers that don't change between builds.
         echo "CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime,time_macros,system_headers,pch_defines" >> $GITHUB_ENV
 
-        # Speeds up the process on cache misses by skipping the preprocessing step.
-        echo "CCACHE_DEPEND=true" >> $GITHUB_ENV
-
         # Replaces compiler with ccache.
         echo "CMAKE_C_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
         echo "CMAKE_CXX_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
