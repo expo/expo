@@ -110,7 +110,7 @@
   "react-native-screens": "4.25.1",
   "react-native-safe-area-context": "~5.7.0",
   "react-native-svg": "15.15.4",
-  "react-native-view-shot": "4.0.3",
+  "react-native-view-shot": "5.1.0",
   "react-native-webview": "13.16.1",
   "react-server-dom-webpack": "~19.2.4",
   "sentry-expo": "~7.0.0",
