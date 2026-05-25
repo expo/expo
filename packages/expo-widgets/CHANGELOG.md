@@ -8,7 +8,7 @@
 
 - [Android] Create base android package. ([#46090](https://github.com/expo/expo/pull/46090) by [@jakex7](https://github.com/jakex7))
 - [plugin] Create config plugin for android. ([#46091](https://github.com/expo/expo/pull/46091) by [@jakex7](https://github.com/jakex7))
-- Add APIs for preloading remote images into widget-accessible app group storage.
+- Add APIs for preloading remote images into widget-accessible app group storage. ([#46273](https://github.com/expo/expo/pull/46273) by [@eliotgevers](https://github.com/eliotgevers))
 
 ### 🐛 Bug fixes
 
