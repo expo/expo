@@ -1,8 +1,9 @@
+import { StyleSheet, View } from 'react-native';
+
 import { colors, createWebComponent, durations, easings, shadows } from '../web';
 import { extractPickerItems } from './PickerItem';
 import type { PickerItemValue, PickerProps } from './types';
 import { useFocusVisible } from '../hooks';
-import { StyleSheet, View } from 'react-native';
 
 const Select = createWebComponent('select');
 const Svg = createWebComponent('svg');
