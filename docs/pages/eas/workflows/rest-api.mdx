@@ -55,17 +55,19 @@ Returns `200 OK` with the new workflow run ID and a link to the run in the dashb
 
 ### Example
 
-```sh
-curl -X POST "https://api.expo.dev/v2/workflows/dispatch" \
-  -H "Authorization: Bearer $EXPO_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "appId": "a415eac6-231a-4b38-b481-3255a59f13b8",
-    "gitRef": "main",
-    "fileName": "deploy.yml",
-    "inputs": { "environment": "production" }
-  }'
-```
+<Terminal
+  cmd={[
+    `$ curl -X POST "https://api.expo.dev/v2/workflows/dispatch" \\`,
+    `    -H "Authorization: Bearer $EXPO_TOKEN" \\`,
+    `    -H "Content-Type: application/json" \\`,
+    `    -d '{`,
+    `      "appId": "a415eac6-231a-4b38-b481-3255a59f13b8",`,
+    `      "gitRef": "main",`,
+    `      "fileName": "deploy.yml",`,
+    `      "inputs": { "environment": "production" }`,
+    `    }'`,
+  ]}
+/>
 
 ### Errors
 
