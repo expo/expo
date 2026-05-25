@@ -106,11 +106,11 @@ module Pod
     # intentional — the bumped pod list is logged so the override is visible.
     def reconcile_expo_module_deployment_targets
       # Mapping from Pod::Platform symbol to the Xcode build setting key
-      # that stores its deployment target.
-      deployment_target_keys = {
-        ios: 'IPHONEOS_DEPLOYMENT_TARGET',
-        osx: 'MACOSX_DEPLOYMENT_TARGET',
-        tvos: 'TVOS_DEPLOYMENT_TARGET',
+      # that stores its deployment target and a human-readable label.
+      deployment_targets = {
+        ios:  { key: 'IPHONEOS_DEPLOYMENT_TARGET', label: 'iOS'   },
+        osx:  { key: 'MACOSX_DEPLOYMENT_TARGET',   label: 'macOS' },
+        tvos: { key: 'TVOS_DEPLOYMENT_TARGET',     label: 'tvOS'  },
       }
 
       expo_pod_names = @podfile.expo_autolinked_pod_names.to_set
@@ -120,13 +120,13 @@ module Pod
       core_spec = core_target&.root_spec
       return if core_spec.nil?
 
-      required = deployment_target_keys
-        .map { |platform, key| [key, core_spec.deployment_target(platform)] }
-        .reject { |_, value| value.nil? || value.empty? }
+      required = deployment_targets
+        .map { |platform, info| [info[:key], { label: info[:label], version: core_spec.deployment_target(platform) }] }
+        .reject { |_, info| info[:version].nil? || info[:version].empty? }
         .to_h
       return if required.empty?
 
-      bumped = []
+      bumped = {} # pod_name => Array of bumped platform labels
       self.target_installation_results.pod_target_installation_results.each_value do |result|
         # Keys in pod_target_installation_results are target names, which can
         # differ from pod names under scoped targets — use pod_name explicitly.
@@ -134,27 +134,29 @@ module Pod
         next unless expo_pod_names.include?(pod_name)
         next if pod_name == 'ExpoModulesCore'
 
-        target_bumped = false
+        bumped_platforms = []
         result.native_target.build_configurations.each do |config|
-          required.each do |key, required_version|
+          required.each do |key, info|
             current = config.build_settings[key]
             # nil means the pod doesn't target this platform — don't create a setting for it.
             # Empty string or an xcconfig reference (e.g. `$(inherited)`) means we can't
             # compare versions, so leave it alone.
             next if current.nil? || current.empty? || current.start_with?('$')
-            if Gem::Version.new(current) < Gem::Version.new(required_version)
-              config.build_settings[key] = required_version
-              target_bumped = true
-            end
+            next unless Gem::Version.new(current) < Gem::Version.new(info[:version])
+            config.build_settings[key] = info[:version]
+            bumped_platforms << info[:label] unless bumped_platforms.include?(info[:label])
           end
         end
-        bumped << pod_name if target_bumped
+        bumped[pod_name] = bumped_platforms unless bumped_platforms.empty?
       end
 
       unless bumped.empty?
-        summary = required.map { |key, value| "#{key.sub('_DEPLOYMENT_TARGET', '')}=#{value}" }.join(' ')
-        Pod::UI.puts "[Expo] ".blue +
-          "Raised deployment target (#{summary}) for #{bumped.size} Expo modules matching ExpoModulesCore: #{bumped.join(', ')}".yellow
+        versions_by_label = required.values.map { |info| [info[:label], info[:version]] }.to_h
+        Pod::UI.puts "[Expo] ".blue + "Raised deployment target for Expo modules matching ExpoModulesCore:".yellow
+        bumped.each do |pod_name, platforms|
+          summary = platforms.map { |label| "#{label}=#{versions_by_label[label]}" }.join(' ')
+          Pod::UI.puts "  #{pod_name} (#{summary})".yellow
+        end
         self.pods_project.save
       end
     end
