@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix precompiled XCFramework builds resolving the task service helper. ([#46188](https://github.com/expo/expo/pull/46188) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-05-23

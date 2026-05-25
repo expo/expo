@@ -1,0 +1,38 @@
+buildscript {
+  repositories {
+    google()
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+group = 'expo.modules.widgets'
+version = '56.0.11'
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace "expo.modules.widgets"
+  defaultConfig {
+    versionCode 1
+    versionName '56.0.11'
+  }
+
+  buildFeatures {
+    prefab true
+    compose true
+  }
+}
+
+dependencies {
+  api 'androidx.glance:glance:1.2.0-rc01'
+  api 'androidx.glance:glance-appwidget:1.2.0-rc01'
+}
