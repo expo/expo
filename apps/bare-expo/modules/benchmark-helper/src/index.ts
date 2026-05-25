@@ -1,4 +1,5 @@
-import { NativeModule, Platform, requireNativeModule } from 'expo';
+import { NativeModule, requireNativeModule } from 'expo';
+import { Platform } from 'react-native';
 
 declare class BenchmarkHelperModule extends NativeModule {
   reportFullyDrawn(): void;
