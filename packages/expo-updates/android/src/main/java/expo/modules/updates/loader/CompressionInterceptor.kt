@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package expo.modules.networkaddons
+package expo.modules.updates.loader
 
 import com.squareup.zstd.okio.zstdDecompress
 import okhttp3.Interceptor
