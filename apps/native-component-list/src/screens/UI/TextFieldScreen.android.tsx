@@ -14,6 +14,7 @@ import {
   Row,
   Column,
   FlowRow,
+  Shape,
   Text as ComposeText,
   useNativeState,
 } from '@expo/ui/jetpack-compose';
@@ -53,6 +54,22 @@ export default function TextFieldScreen() {
   const [keyboardType, setKeyboardType] = React.useState<TextFieldKeyboardType>('text');
   const [imeAction, setImeAction] = React.useState<TextFieldImeAction>('default');
   const [capitalization, setCapitalization] = React.useState<TextFieldCapitalization>('none');
+
+  const [shapeVariant, setShapeVariant] = React.useState<'default' | 'pill' | 'rounded' | 'mixed'>(
+    'pill'
+  );
+  const shapeJSX =
+    shapeVariant === 'pill'
+      ? Shape.Pill({})
+      : shapeVariant === 'rounded'
+        ? Shape.RoundedCorner({
+            cornerRadii: { topStart: 16, topEnd: 16, bottomStart: 16, bottomEnd: 16 },
+          })
+        : shapeVariant === 'mixed'
+          ? Shape.RoundedCorner({
+              cornerRadii: { topStart: 24, topEnd: 4, bottomStart: 4, bottomEnd: 24 },
+            })
+          : undefined;
 
   const TextFieldComponent = outlined ? OutlinedTextField : TextField;
 
@@ -219,6 +236,34 @@ export default function TextFieldScreen() {
                 <ComposeText>Cursor to end</ComposeText>
               </Button>
             </Row>
+          </Column>
+        </Card>
+
+        {/* Shape */}
+        <Card modifiers={cardModifiers}>
+          <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
+            <ComposeText style={{ typography: 'labelLarge' }}>Shape</ComposeText>
+            <OutlinedTextField
+              singleLine
+              shape={shapeJSX}
+              modifiers={[fillMaxWidth()]}
+              keyboardOptions={{ keyboardType: 'text' }}>
+              <OutlinedTextField.Placeholder>
+                <ComposeText>Search…</ComposeText>
+              </OutlinedTextField.Placeholder>
+              <OutlinedTextField.LeadingIcon>
+                <ComposeText>🔍</ComposeText>
+              </OutlinedTextField.LeadingIcon>
+            </OutlinedTextField>
+            <ChipGroup
+              options={['default', 'pill', 'rounded', 'mixed']}
+              selected={shapeVariant}
+              onSelect={setShapeVariant}
+            />
+            <ComposeText style={{ typography: 'bodySmall' }}>
+              `default` uses `OutlinedTextFieldDefaults.shape`; the others come from the `Shape` JSX
+              helpers (`Shape.Pill`, `Shape.RoundedCorner`).
+            </ComposeText>
           </Column>
         </Card>
 
