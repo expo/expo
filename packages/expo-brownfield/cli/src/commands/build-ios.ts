@@ -10,8 +10,9 @@ import {
 } from '../utils';
 
 const buildIos = async (command: Command) => {
-  await validatePrebuild('ios');
-  const config = resolveBuildConfigIos(command.opts());
+  const opts = command.opts();
+  await validatePrebuild('ios', { dryRun: !!opts.dryRun });
+  const config = resolveBuildConfigIos(opts);
   printIosConfig(config);
 
   await buildFramework(config);
