@@ -453,6 +453,7 @@ export const eas = [
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
+    makePage('eas/workflows/rest-api.mdx'),
     makePage('eas/workflows/limitations.mdx'),
     makeGroup('Examples', [
       makePage('eas/workflows/examples/introduction.mdx'),
