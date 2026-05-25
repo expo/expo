@@ -65,7 +65,7 @@ public class ReactNativeHostManager: NSObject {
  /**
   * Initializes a React Native instance
   */
-  public func initializeInstance() {
+  @objc public func initializeInstance() {
     let delegate = ReactNativeDelegate(turboModuleClasses: turboModuleClasses)
     reactNativeFactory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
