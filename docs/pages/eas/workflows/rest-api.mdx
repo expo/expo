@@ -35,7 +35,7 @@ Resolves the workflow file on the given Git ref, validates `inputs` against the 
 
 | Field      | Type          | Required | Description                                                                                                                  |
 | ---------- | ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `appId`    | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in **app.json** under `extra.eas.projectId`.                              |
+| `appId`    | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                              |
 | `gitRef`   | string        | Yes      | A branch name (`main`), tag (`v1.0.0`), commit SHA, or fully qualified ref (`refs/heads/main`, `refs/tags/v1.0.0`).          |
 | `fileName` | string        | Yes      | The workflow file name only, such as **deploy.yml**. Do not include the **.eas/workflows/** prefix or any other path segments. |
 | `inputs`   | object        | No       | Values for inputs declared under `on.workflow_dispatch.inputs` in the workflow file. Validated against the declared schema.  |
