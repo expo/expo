@@ -43,6 +43,7 @@ export function Host({
   useViewportSizeMeasurement = false,
   ...rest
 }: UniversalHostProps) {
+  // TODO(@zoontek): add support for the colorScheme and seedColor prop
   const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
   const primaryColorScale = useMemo(() => generatePrimaryColorScale('#007aff'), []);
 
