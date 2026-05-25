@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Create base android package. ([#46090](https://github.com/expo/expo/pull/46090) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 - Allow string widget family values in the typed config plugin. ([#46133](https://github.com/expo/expo/issues/46133) by [@eliotgevers](https://github.com/eliotgevers))
