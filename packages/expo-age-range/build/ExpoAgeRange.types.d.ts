@@ -60,11 +60,11 @@ export type AgeRangeResponse = {
  *
  * @platform ios 26.4+
  */
-export type RegulatoryFeature = 'declaredAgeRangeRequired' | 'significantAppChangeRequiresAdultNotification' | 'significantAppChangeRequiresParentalConsent';
+export type AgeRangeRegulatoryFeature = 'declaredAgeRangeRequired' | 'significantAppChangeRequiresAdultNotification' | 'significantAppChangeRequiresParentalConsent';
 export interface ExpoAgeRangeModule extends NativeModule {
     requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
     isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
     showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
-    getRequiredRegulatoryFeaturesAsync(): Promise<RegulatoryFeature[] | null>;
+    getRequiredRegulatoryFeaturesAsync(): Promise<AgeRangeRegulatoryFeature[] | null>;
 }
 //# sourceMappingURL=ExpoAgeRange.types.d.ts.map

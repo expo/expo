@@ -1,7 +1,11 @@
 import { Platform } from 'react-native';
 
 import ExpoAgeRange from './ExpoAgeRange';
-import type { AgeRangeRequest, AgeRangeResponse, RegulatoryFeature } from './ExpoAgeRange.types';
+import type {
+  AgeRangeRequest,
+  AgeRangeResponse,
+  AgeRangeRegulatoryFeature,
+} from './ExpoAgeRange.types';
 
 /**
  * Prompts the user to share their age range with the app. Responses may be cached by the OS for future requests.
@@ -89,7 +93,9 @@ export async function showSignificantUpdateAcknowledgmentAsync(
  *
  * @platform ios 26.4+
  */
-export async function getRequiredRegulatoryFeaturesAsync(): Promise<RegulatoryFeature[] | null> {
+export async function getRequiredRegulatoryFeaturesAsync(): Promise<
+  AgeRangeRegulatoryFeature[] | null
+> {
   if (Platform.OS === 'ios') {
     return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
   }

@@ -1,4 +1,8 @@
-import type { AgeRangeRequest, AgeRangeResponse, RegulatoryFeature } from './ExpoAgeRange.types';
+import type {
+  AgeRangeRequest,
+  AgeRangeResponse,
+  AgeRangeRegulatoryFeature,
+} from './ExpoAgeRange.types';
 
 export async function requestAgeRangeAsync(_: AgeRangeRequest): Promise<AgeRangeResponse> {
   return { lowerBound: 18, upperBound: null };
@@ -14,6 +18,8 @@ export async function showSignificantUpdateAcknowledgmentAsync(
   // no-op on web
 }
 
-export async function getRequiredRegulatoryFeaturesAsync(): Promise<RegulatoryFeature[] | null> {
+export async function getRequiredRegulatoryFeaturesAsync(): Promise<
+  AgeRangeRegulatoryFeature[] | null
+> {
   return null;
 }
