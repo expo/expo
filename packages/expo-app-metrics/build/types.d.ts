@@ -251,6 +251,20 @@ export interface ExpoAppMetricsModuleType {
      * @param options Optional body, attributes, and severity overrides.
      */
     logEvent(name: string, options?: LogEventOptions): void;
+    /**
+     * Sets attributes merged into every subsequent metric and log event.
+     * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
+     * object to clear.
+     *
+     * @example
+     * ```ts
+     * AppMetrics.setGlobalAttributes({
+     *   subscription_tier: 'pro',
+     *   experiment_variant: 'B',
+     * });
+     * ```
+     */
+    setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null): void;
     clearStoredEntries(): Promise<void>;
     /**
      * Returns all sessions across the current and historical entries,

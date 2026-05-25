@@ -55,6 +55,7 @@ concurrency:
 
 jobs:
   jest-ubuntu:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -98,6 +99,7 @@ jobs:
         run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   jest-windows:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -157,6 +159,7 @@ jobs:
         run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   playwright-ubuntu:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
@@ -216,6 +219,7 @@ jobs:
           retention-days: 30
 
   playwright-windows:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: windows-2022
     strategy:
       fail-fast: false

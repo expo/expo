@@ -100,10 +100,6 @@ export function LogEventsSection() {
   const theme = useTheme();
   const paletteScheme = usePaletteScheme();
 
-  if (typeof AppMetrics.logEvent !== 'function') {
-    return null;
-  }
-
   return (
     <>
       <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Log events</Text>

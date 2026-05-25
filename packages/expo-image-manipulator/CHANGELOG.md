@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 56.0.14 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [Web] Throw an error when requested mime type is not supported. ([#46165](https://github.com/expo/expo/pull/46165) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.12 — 2026-05-21
 
 _This version does not introduce any user-facing changes._

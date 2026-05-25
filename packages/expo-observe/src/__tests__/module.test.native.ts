@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+export {};
+
 const mockNative = {
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
@@ -20,9 +22,22 @@ jest.mock('../integrations/expo-router/init', () => ({
   initListeners: jest.fn(() => () => {}),
 }));
 
+jest.mock('../integrations/react-navigation/reactNavigation', () => ({
+  isReactNavigationInstalled: true,
+  optionalReactNavigation: undefined,
+}));
+
+jest.mock('../integrations/react-navigation/init', () => ({
+  initReactNavigationIntegration: jest.fn(),
+  isInitialized: jest.fn(() => false),
+}));
+
+let warnSpy: jest.SpyInstance;
+
 beforeEach(() => {
   jest.clearAllMocks();
   jest.resetModules();
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.doMock('expo', () => ({ requireNativeModule: jest.fn(() => mockNative) }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
@@ -33,6 +48,14 @@ beforeEach(() => {
     isInitialized: jest.fn(() => false),
     initListeners: jest.fn(() => () => {}),
   }));
+  jest.doMock('../integrations/react-navigation/reactNavigation', () => ({
+    isReactNavigationInstalled: true,
+    optionalReactNavigation: undefined,
+  }));
+  jest.doMock('../integrations/react-navigation/init', () => ({
+    initReactNavigationIntegration: jest.fn(),
+    isInitialized: jest.fn(() => false),
+  }));
 });
 
 function loadModule() {
@@ -41,6 +64,10 @@ function loadModule() {
 
 function loadInit() {
   return require('../integrations/expo-router/init') as typeof import('../integrations/expo-router/init');
+}
+
+function loadReactNavigationInit() {
+  return require('../integrations/react-navigation/init') as typeof import('../integrations/react-navigation/init');
 }
 
 describe('module Proxy', () => {
@@ -56,6 +83,7 @@ describe('module Proxy', () => {
         environment: 'test',
         integrations: { 'expo-router': router },
       });
+      expect(warnSpy).not.toHaveBeenCalled();
     }
   );
 
@@ -67,6 +95,7 @@ describe('module Proxy', () => {
       integrations: { 'expo-router': true },
     });
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('skips initRouterIntegration by default', () => {
@@ -77,12 +106,17 @@ describe('module Proxy', () => {
     expect(mockNative.configure).toHaveBeenCalledWith({
       environment: 'test',
     });
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('skips initRouterIntegration when router is not installed, but passes the integrations object unchanged', () => {
     jest.doMock('../integrations/expo-router/router', () => ({
       isRouterInstalled: false,
       optionalRouter: undefined,
+    }));
+    jest.doMock('../integrations/react-navigation/reactNavigation', () => ({
+      isReactNavigationInstalled: false,
+      optionalReactNavigation: undefined,
     }));
     const ExpoObserve = loadModule();
     const { initRouterIntegration } = loadInit();
@@ -91,6 +125,139 @@ describe('module Proxy', () => {
     expect(mockNative.configure).toHaveBeenCalledWith({
       integrations: { 'expo-router': true },
     });
+  });
+
+  it('warns when expo-router integration is enabled but expo-router is not installed', () => {
+    jest.doMock('../integrations/expo-router/router', () => ({
+      isRouterInstalled: false,
+      optionalRouter: undefined,
+    }));
+    const ExpoObserve = loadModule();
+    ExpoObserve.configure({ integrations: { 'expo-router': true } });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[expo-observe] `integrations: { 'expo-router': true }` was set, but `expo-router` is not installed. The integration will not initialize."
+    );
+  });
+
+  it('warns when react-navigation integration is enabled but @react-navigation/native is not installed', () => {
+    jest.doMock('../integrations/react-navigation/reactNavigation', () => ({
+      isReactNavigationInstalled: false,
+      optionalReactNavigation: undefined,
+    }));
+    const ExpoObserve = loadModule();
+    ExpoObserve.configure({ integrations: { 'react-navigation': true } });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[expo-observe] `integrations: { 'react-navigation': true }` was set, but `@react-navigation/native` is not installed. The integration will not initialize."
+    );
+  });
+
+  it('warns when both integrations resolve to init (router takes precedence)', () => {
+    const ExpoObserve = loadModule();
+    ExpoObserve.configure({
+      integrations: { 'expo-router': true, 'react-navigation': true },
+    });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[expo-observe] Both 'expo-router' and 'react-navigation' integrations are enabled. " +
+        "Only 'expo-router' will initialize; 'react-navigation' will be ignored. "
+    );
+  });
+
+  it('warns once per missing peer but does not also warn about both-enabled when react-navigation is not installed', () => {
+    jest.doMock('../integrations/react-navigation/reactNavigation', () => ({
+      isReactNavigationInstalled: false,
+      optionalReactNavigation: undefined,
+    }));
+    const ExpoObserve = loadModule();
+    ExpoObserve.configure({
+      integrations: { 'expo-router': true, 'react-navigation': true },
+    });
+    // Only the missing-peer warning fires; the 'both enabled' warning is gated
+    // on shouldInitReactNavigationIntegration, which is false here.
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[expo-observe] `integrations: { 'react-navigation': true }` was set, but `@react-navigation/native` is not installed. The integration will not initialize."
+    );
+  });
+
+  it('warns twice when both integrations are enabled but expo-router is not installed', () => {
+    jest.doMock('../integrations/expo-router/router', () => ({
+      isRouterInstalled: false,
+      optionalRouter: undefined,
+    }));
+    const ExpoObserve = loadModule();
+    ExpoObserve.configure({
+      integrations: { 'expo-router': true, 'react-navigation': true },
+    });
+    // Missing-peer fires for expo-router; 'both enabled' is gated on
+    // shouldInitRouterIntegration so it does not fire. react-navigation
+    // initializes alone, no additional warning.
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[expo-observe] `integrations: { 'expo-router': true }` was set, but `expo-router` is not installed. The integration will not initialize."
+    );
+  });
+
+  it("calls initReactNavigationIntegration when integrations['react-navigation'] is true and react-navigation is installed", () => {
+    const ExpoObserve = loadModule();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    ExpoObserve.configure({
+      environment: 'test',
+      integrations: { 'react-navigation': true },
+    });
+    expect(initReactNavigationIntegration).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("initializes react-navigation even when expo-router is installed, as long as 'react-navigation' is the only flag set", () => {
+    const ExpoObserve = loadModule();
+    const { initRouterIntegration } = loadInit();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    ExpoObserve.configure({
+      environment: 'test',
+      integrations: { 'react-navigation': true },
+    });
+    expect(initRouterIntegration).not.toHaveBeenCalled();
+    expect(initReactNavigationIntegration).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('does NOT call initReactNavigationIntegration when both flags are true', () => {
+    const ExpoObserve = loadModule();
+    const { initRouterIntegration } = loadInit();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    ExpoObserve.configure({
+      environment: 'test',
+      integrations: { 'expo-router': true, 'react-navigation': true },
+    });
+    expect(initRouterIntegration).toHaveBeenCalledTimes(1);
+    expect(initReactNavigationIntegration).not.toHaveBeenCalled();
+  });
+
+  it('skips initReactNavigationIntegration when react-navigation is not installed', () => {
+    jest.doMock('../integrations/react-navigation/reactNavigation', () => ({
+      isReactNavigationInstalled: false,
+      optionalReactNavigation: undefined,
+    }));
+    const ExpoObserve = loadModule();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    ExpoObserve.configure({
+      environment: 'test',
+      integrations: { 'react-navigation': true },
+    });
+    expect(initReactNavigationIntegration).not.toHaveBeenCalled();
+  });
+
+  it('skips both integrations by default', () => {
+    const ExpoObserve = loadModule();
+    const { initRouterIntegration } = loadInit();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    ExpoObserve.configure({ environment: 'test' });
+    expect(initRouterIntegration).not.toHaveBeenCalled();
+    expect(initReactNavigationIntegration).not.toHaveBeenCalled();
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('passes through dispatchEvents and setBundleDefaults to native', () => {
@@ -102,6 +269,7 @@ describe('module Proxy', () => {
       environment: 'production',
       isJsDev: false,
     });
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('returns the native function via Reflect.get for unknown props', () => {
@@ -109,5 +277,6 @@ describe('module Proxy', () => {
     expect((ExpoObserve as { dispatchEvents: unknown }).dispatchEvents).toBe(
       mockNative.dispatchEvents
     );
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 });

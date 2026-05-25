@@ -1,14 +1,14 @@
 ---
-title: Configure Expo Observe
+title: Configure EAS Observe
 sidebar_title: Configuration
-description: Control how Expo Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
+description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
 ---
 
-Configure Expo Observe at runtime to fit your app's build setup, environment, and data routing. This page covers the `configure()` and `dispatchEvents()`, enabling metrics in development, using a custom endpoint, and separating data by environment.
+Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers the `configure()` and `dispatchEvents()`, enabling metrics in development, using a custom endpoint, and separating data by environment.
 
 ## `configure()`
 
-Use the `configure()` method to control how Expo Observe behaves at runtime:
+Use the `configure()` method to control how EAS Observe behaves at runtime:
 
 ```tsx
 import ExpoObserve from 'expo-observe';
@@ -61,7 +61,7 @@ A few details worth knowing:
 
 ## Enable metrics in development
 
-By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your Expo Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
+By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your EAS Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
 
 ```tsx
 import ExpoObserve from 'expo-observe';
@@ -75,7 +75,7 @@ A build is treated as a debug build if either the native app is a debug build or
 
 `dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](#configure) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
 
-> **warning** Enable this only when testing your Expo Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
+> **warning** Enable this only when testing your EAS Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
 
 ## Custom endpoint
 

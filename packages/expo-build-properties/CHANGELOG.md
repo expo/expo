@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 56.0.14 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Default `ios.usePrecompiledModules` to `true` so the plugin matches the Podfile default (precompiled modules enabled) instead of silently disabling them. ([#46159](https://github.com/expo/expo/pull/46159) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.12 — 2026-05-20
 
 _This version does not introduce any user-facing changes._

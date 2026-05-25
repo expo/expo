@@ -41,19 +41,31 @@ export type _NoMissingRoutersExports = AssertNever<MissingFromIndexRouters>;
  * The tests below ensure that our exports are compatible with react-navigation exports
  */
 // In order to run these tests you need to add `@react-navigation/*` packages as devDependencies of expo-router
-// pnpm i -D @react-navigation/native @react-navigation/core @react-navigation/elements
+// pnpm i -D @react-navigation/native @react-navigation/core @react-navigation/elements @react-navigation/bottom-tabs @react-navigation/material-top-tabs
 // import type * as RNNativeType from '@react-navigation/native';
 // import type * as RNCoreType from '@react-navigation/core';
 // import type * as RNElementsType from '@react-navigation/elements';
+// import type * as RNBottomTabsType from '@react-navigation/bottom-tabs';
+// import type * as RNMaterialTopTabsType from '@react-navigation/material-top-tabs';
+
+// import * as JsTabs from '../../layouts/Tabs';
+// import * as JsTopTabs from '../../layouts/TopTabs';
 
 // type MissingFromRNNative = Exclude<keyof typeof RNNativeType, keyof typeof Index>;
 // type MissingFromRNCore = Exclude<keyof typeof RNCoreType, keyof typeof Index>;
 // type MissingFromRNElements = Exclude<keyof typeof RNElementsType, keyof typeof Index>;
+// type MissingFromRNBottomTabs = Exclude<keyof typeof RNBottomTabsType, keyof typeof JsTabs>;
+// type MissingFromRNMaterialTopTabs = Exclude<
+//   keyof typeof RNMaterialTopTabsType,
+//   keyof typeof JsTopTabs
+// >;
 
 // // If there is type error here it means we are not exporting everything we should
 // export type _NoMissingRNNativeExports = AssertNever<MissingFromRNNative>;
 // export type _NoMissingRNCoreExports = AssertNever<MissingFromRNCore>;
 // export type _NoMissingRNElementsExports = AssertNever<MissingFromRNElements>;
+// export type _NoMissingRNBottomTabsExports = AssertNever<MissingFromRNBottomTabs>;
+// export type _NoMissingRNMaterialTopTabsExports = AssertNever<MissingFromRNMaterialTopTabs>;
 
 // describe('compatibility check with react-navigation dependencies', () => {
 //   it.each([
@@ -64,6 +76,23 @@ export type _NoMissingRoutersExports = AssertNever<MissingFromIndexRouters>;
 //   ] as const)('re-exports every value from ./$name', async ({ code }) => {
 //     const expected = Object.keys(code);
 //     const missing = expected.filter((key) => !(key in Index));
+//     expect(missing).toEqual([]);
+//   });
+
+//   it.each([
+//     {
+//       name: 'bottom-tabs',
+//       code: require('@react-navigation/bottom-tabs'),
+//       surface: JsTabs,
+//     },
+//     {
+//       name: 'material-top-tabs',
+//       code: require('@react-navigation/material-top-tabs'),
+//       surface: JsTopTabs,
+//     },
+//   ] as const)('re-exports every value from @react-navigation/$name', async ({ code, surface }) => {
+//     const expected = Object.keys(code);
+//     const missing = expected.filter((key) => !(key in surface));
 //     expect(missing).toEqual([]);
 //   });
 // });

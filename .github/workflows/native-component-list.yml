@@ -49,7 +49,7 @@ jobs:
         working-directory: apps/native-component-list
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
-        if: failure() && (github.event.ref == 'refs/heads/main')
+        if: failure() && (github.event.ref == 'refs/heads/main') && github.repository == 'expo/expo'
         with:
           webhook: ${{ secrets.slack_webhook_api }}
           author_name: Build Native Component List

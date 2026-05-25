@@ -262,13 +262,24 @@ export const resolveTypeName = (
       }
       return elementType.name + type;
     } else if (type === 'union' && types?.length) {
-      const isLargeLiteralUnion =
-        types.length > LITERAL_UNION_COLLAPSE_THRESHOLD &&
-        types.every((t: TypeDefinitionData) =>
-          ['literal', 'templateLiteral', 'intrinsic', 'reference', 'tuple'].includes(t.type)
+      const COLLAPSIBLE_LITERAL_KINDS = new Set(['literal', 'templateLiteral']);
+      const literalMembers = types.filter((t: TypeDefinitionData) =>
+        COLLAPSIBLE_LITERAL_KINDS.has(t.type)
+      );
+      if (literalMembers.length > LITERAL_UNION_COLLAPSE_THRESHOLD) {
+        const nonLiteralMembers = types.filter(
+          (t: TypeDefinitionData) => !COLLAPSIBLE_LITERAL_KINDS.has(t.type)
         );
-      if (isLargeLiteralUnion) {
-        return 'See description for available values.';
+        if (nonLiteralMembers.length === 0) {
+          return 'See description for available values.';
+        }
+        return (
+          <>
+            {renderUnion(nonLiteralMembers, { sdkVersion })}
+            <span className="text-quaternary"> | </span>
+            See description for available values.
+          </>
+        );
       }
       return renderUnion(types, { sdkVersion });
     } else if (elementType?.type === 'union' && elementType?.types?.length) {

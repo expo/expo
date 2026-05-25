@@ -12,13 +12,13 @@ React Native consists of both JavaScript and native code. Making this distinctio
 
 ## Developer menu
 
-The **Developer menu** provides access to useful debugging functions. It is built into dev clients and Expo Go. If you are using an emulator, simulator, or have a device connected via USB, you can open this menu by pressing <kbd>m</kbd> in the terminal where Expo CLI has started the development server.
+The **Developer menu** provides access to useful debugging functions. It is built into dev clients and Expo Go. If you are using an emulator, simulator, or have a device connected via USB, you can open this menu by pressing <kbd>M</kbd> in the terminal where Expo CLI has started the development server.
 
 <Collapsible summary="Alternative options to open the Developer menu">
 
 - Android device (without USB): Shake the device vertically.
 - Android Emulator or device (with USB):
-  - Press <kbd>Cmd ⌘</kbd> + <kbd>m</kbd> or <kbd>Ctrl</kbd> + <kbd>m</kbd>.
+  - Press <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> or <kbd>Ctrl</kbd> + <kbd>M</kbd>.
   - Run the following command in the terminal to simulate pressing the menu button:
     <Terminal cmd={['$ adb shell input keyevent 82']} />
 
@@ -26,7 +26,7 @@ The **Developer menu** provides access to useful debugging functions. It is buil
   - Shake the device.
   - Touch three fingers to the screen.
 - iOS Simulator or device (with USB):
-  - Press <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>z</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd>
+  - Press <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>Z</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd>
 
 </Collapsible>
 
@@ -82,7 +82,7 @@ This overlay has capabilities to:
 
 **React Native DevTools** is a modern debugging tool for Expo and React Native apps. It allows you to gain insights into the JavaScript code of your app by accessing the [Console](#interacting-with-the-console), [Sources](#pausing-on-breakpoints), [Network](#inspecting-network-requests-expo-only) (**Expo only**), and [Memory](#inspecting-memory) tabs. It also has **built-in support for React DevTools** such as [Components](#inspecting-components) and [Profiler](#profiling-javascript-performance) tabs. All of these inspectors can be accessed using [dev clients](/more/glossary-of-terms/#dev-clients) or Expo Go.
 
-You can use the React Native DevTools on any app using [Hermes](/guides/using-hermes/). **To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started**. Once you have opened the React Native DevTools, it will appear as below:
+You can use the React Native DevTools on any app using [Hermes](/guides/using-hermes/). **To open it, start your app and press <kbd>J</kbd> in the terminal where Expo was started**. Once you have opened the React Native DevTools, it will appear as below:
 
 <ContentSpotlight
   alt="The React Native DevTools showing one of the files under the Sources tab."
@@ -173,7 +173,7 @@ The **Profiler** tab allows you to record and analyze the performance of your ap
 
 > **warning** VS Code debugger integration is in [alpha](/more/release-statuses/#alpha). For the most stable debugging experience, [use the React Native DevTools](#debugging-with-react-native-devtools).
 
-VS Code is a popular code editor, which has a built-in debugger. This debugger uses the same system as the React Native DevTools &mdash; the inspector protocol.
+VS Code is a popular code editor, which has a built-in debugger. This debugger uses the same system as the React Native DevTools — the inspector protocol.
 
 You can use this debugger with the [Expo Tools](https://github.com/expo/vscode-expo#readme) VS Code extension. This debugger allows you to set breakpoints, inspect variables, and execute code through the debug console.
 
@@ -185,7 +185,7 @@ You can use this debugger with the [Expo Tools](https://github.com/expo/vscode-e
 To start debugging:
 
 - Connect your app
-- Open VS Code command palette (based on your computer, it's either <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>p</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>p</kbd>)
+- Open VS Code command palette (based on your computer, it's either <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>)
 - Run the **Expo: Debug ...** VS Code command.
 
 This will attach VS Code to your running app.
@@ -216,7 +216,7 @@ You can install it via the [release page](https://github.com/jhen0409/react-nati
 
 ### Startup
 
-After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>Cmd ⌘</kbd> + <kbd>t</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>t</kbd> on Linux/Windows) to `8081`. After that, run your project with `npx expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
+After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>Cmd ⌘</kbd> + <kbd>T</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>T</kbd> on Linux/Windows) to `8081`. After that, run your project with `npx expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
 In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
 

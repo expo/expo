@@ -239,10 +239,6 @@ Only apply inline code formatting using back-ticks (``) on programming words and
 - Correct: Make sure you write `async` before the `function` keyword to set up an asynchronous function.
 - Incorrect: Click the `File` menu, then click `Save As` to export the file as a specific file type.
 
-### Use `&mdash;`
-
-In some scenarios, when you split two sentences and use `-`, `--`, or a literal em-dash character (`—`, U+2014), instead use `&mdash;`. Markdown renders that em dash nicely instead of a hyphen (`-`). The literal `—` character is the most common variant inserted by AI-assisted writing, so watch for it during review.
-
 ### Referencing Keyboard shortcuts
 
 Keyboard shortcuts mentioned in the text should use the `<kbd>` element in markdown files. Each key should be wrapped with a separate tag, and plus signs should remain outside the elements:
@@ -261,12 +257,25 @@ A few points to remember:
 
 Do not use emojis in the documentation.
 
-### When to use npm or Yarn
+### Referencing package managers in install commands
 
-To avoid inconsistency when referencing to install global packages with a package manager like npm or Yarn, use npm.
+For install commands shown to readers, use the `<Terminal cmd={{ npm, yarn, pnpm, bun }}>` component so all supported package managers appear as selectable tabs:
 
-- Correct: npm install expo-cli
-- Incorrect: yarn install expo-cli
+```mdx
+<Terminal
+  cmd={{
+    npm: ["$ npx create-expo-app@latest"],
+    yarn: ["$ yarn create expo-app"],
+    pnpm: ["$ pnpm create expo-app"],
+    bun: ["$ bun create expo"],
+  }}
+/>
+```
+
+When a single command must be shown inline (for example, in a paragraph or a one-off shell example), default to npx to keep examples consistent:
+
+- Correct: `npx expo install <package>`
+- Avoid: `yarn add <package>`
 
 ### For collapsible components
 

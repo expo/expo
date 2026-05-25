@@ -5672,7 +5672,7 @@ OAuth 2.0 protocol
           </a>
         </h4>
         <div
-          class="flex flex-row items-start [table_&]:mb-2.5 mb-1"
+          class="flex flex-row items-start in-[table]:mb-2.5 mb-1"
           data-md="api-platforms"
         >
           <span
@@ -7270,7 +7270,7 @@ exports[`APISection expo-pedometer 1`] = `
         </a>
       </h3>
       <div
-        class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
+        class="flex flex-row items-start in-[table]:mb-2.5 mb-0"
         data-md="api-platforms"
       >
         <span

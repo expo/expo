@@ -69,11 +69,19 @@ class ExpoUIModule : Module() {
         callback.worklet = worklet
         callback
       }
+
+      Property("__expo_ui_shared_object__") { _: WorkletCallback ->
+        true
+      }
     }
 
     Class(ObservableState::class) {
       Constructor { initial: Map<String, Any?> ->
         ObservableState(initial["value"])
+      }
+
+      Property("__expo_ui_shared_object__") { _: ObservableState ->
+        true
       }
 
       Function("getValue") { state: ObservableState ->

@@ -1,12 +1,12 @@
 ---
 title: Metrics reference
 sidebar_title: Metrics
-description: A reference of each performance metric tracked by Expo Observe, including concepts and data handling.
+description: A reference of each performance metric tracked by EAS Observe, including concepts and data handling.
 ---
 
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-Reference for the performance metrics Expo Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained.
+Reference for the performance metrics EAS Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained.
 
 ## Concepts
 
@@ -149,7 +149,7 @@ Each TTI event includes extra params to help triage issues:
 - **`expo.device.batteryCharging`** (boolean): Whether the device was plugged in or wirelessly charging. Charging tends to raise sustained CPU performance ceilings on iOS and some Android OEMs, so non-charging samples are the more conservative population to compare against.
 - **`expo.device.thermalState`** (string): One of `nominal`, `fair`, `serious`, `critical`, `unknown`. Sustained `serious`/`critical` states cause the OS to throttle the CPU/GPU and can dramatically slow startup independent of any app change.
 - **`expo.network.connected`** (boolean): Whether the device had an internet-capable network at TTI. If TTI degrades only when this is `true`, the cause is likely a network-bound startup path; if it degrades when `false`, the app is doing more work than it should before showing cached content.
-- **`expo.network.type`** (string): One of `wifi`, `cellular`, `ethernet`, `none`, `other`, `unknown`. Use to compare cellular versus Wi-Fi populations &mdash; large gaps usually point to network-bound startup work. VPN traffic is reported as the underlying transport (typically `wifi` or `cellular`) since the VPN tunnels over it. The value set is intentionally the same on Android and iOS so dashboards don't need per-platform branching.
+- **`expo.network.type`** (string): One of `wifi`, `cellular`, `ethernet`, `none`, `other`, `unknown`. Use to compare cellular versus Wi-Fi populations — large gaps usually point to network-bound startup work. VPN traffic is reported as the underlying transport (typically `wifi` or `cellular`) since the VPN tunnels over it. The value set is intentionally the same on Android and iOS so dashboards don't need per-platform branching.
 
 **How to interpret them:**
 

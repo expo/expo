@@ -8,9 +8,22 @@
 
 ### 🐛 Bug fixes
 
-- Prevent ENOENT on virtual Node module paths in `ExpoConfigLoader` and check whether module paths correspond to files on disk ([#46092](https://github.com/expo/expo/pull/46092) by [@kitten](https://github.com/kitten))
+- Fixed unstable fingerprint on Windows. ([#46196](https://github.com/expo/expo/pull/46196) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint from `expo-modules-jsi`. ([#46187](https://github.com/expo/expo/pull/46187), [#46201](https://github.com/expo/expo/pull/46201) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Updated E2E test to use SDK 56 templates. ([#46194](https://github.com/expo/expo/pull/46194) by [@kudo](https://github.com/kudo))
+
+## 0.19.2 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.1 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Prevent ENOENT on virtual Node module paths in `ExpoConfigLoader` and check whether module paths correspond to files on disk ([#46092](https://github.com/expo/expo/pull/46092) by [@kitten](https://github.com/kitten))
 
 ## 0.19.0 — 2026-05-20
 

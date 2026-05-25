@@ -24,6 +24,7 @@ concurrency:
 
 jobs:
   test:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]

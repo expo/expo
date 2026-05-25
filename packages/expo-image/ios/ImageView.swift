@@ -352,14 +352,19 @@ public final class ImageView: ExpoView {
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
-    let path = localAssetName(from: source.uri)
-
-    if let path, let local = UIImage(named: path) {
+    if let local = localAssetImage(from: source) {
       renderSourceImage(local)
       return true
     }
 
     return false
+  }
+
+  private func localAssetImage(from source: ImageSource) -> UIImage? {
+    guard let path = localAssetName(from: source.uri) else {
+      return nil
+    }
+    return UIImage(named: path)
   }
 
   // MARK: - Placeholder
@@ -409,6 +414,14 @@ public final class ImageView: ExpoView {
     // Exit early if placeholder is not set or there is already an image attached to the view.
     // The placeholder is only used until the first image is loaded.
     guard canDisplayPlaceholder, let placeholder = bestPlaceholder else {
+      return
+    }
+
+    // Asset catalog (xcassets) images aren't resolvable by SDWebImage, so try the
+    // local lookup first — mirroring the proper source path in `maybeRenderLocalAsset`.
+    if let localImage = localAssetImage(from: placeholder) {
+      placeholderImage = localImage
+      displayPlaceholderIfNecessary()
       return
     }
 
@@ -840,18 +853,23 @@ public final class ImageView: ExpoView {
 }
 
 func localAssetName(from url: URL?) -> String? {
-  guard let url, url.scheme == nil else {
+  guard let url else {
     return nil
   }
 
-  var path = url.path
-  guard !path.isEmpty else {
+  // `ExpoModulesCore` converts scheme-less URI strings from JS via
+  // `URL(fileURLWithPath:)`, so asset names like "my_image" arrive here with
+  // `scheme == "file"`. Accept those alongside truly scheme-less URLs; reject
+  // remote/SF Symbol/blurhash/etc. schemes.
+  if let scheme = url.scheme, scheme != "file" {
     return nil
   }
 
+  // Use `relativePath` so we recover the original input ("my_image") instead of
+  // the absolute path it resolves to against the file:// base
+  var path = url.relativePath
   if path.hasPrefix("/") {
     path.removeFirst()
   }
-
   return path.isEmpty ? nil : path
 }

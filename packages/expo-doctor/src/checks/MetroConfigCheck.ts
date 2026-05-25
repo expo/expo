@@ -1,13 +1,10 @@
 import path from 'path';
+import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 import semver from 'semver';
 
 import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
-import {
-  configExistsAsync,
-  loadConfigAsync,
-  loadExpoMetroConfig,
-} from '../utils/metroConfigLoader';
+import { loadMetroUserConfigAsync, getDefaultMetroConfig } from '../utils/metroConfigLoader';
 
 const isSubsetOf = (
   defaultValues: readonly string[] | undefined,
@@ -25,15 +22,16 @@ export class MetroConfigCheck implements DoctorCheck {
 
   async runAsync({ projectRoot, exp }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
-    if (!(await configExistsAsync(projectRoot))) {
+
+    const serverRoot = resolveWorkspaceRoot(projectRoot) ?? projectRoot;
+    const userConfig = await loadMetroUserConfigAsync(projectRoot, serverRoot);
+    if (!userConfig) {
       return {
         isSuccessful: true,
         issues: [],
         advice: [],
       };
     }
-
-    const userConfig = await loadConfigAsync(projectRoot);
 
     if (userConfig.transformer && !('_expoRelativeProjectRoot' in userConfig.transformer)) {
       // If this Expo property isn't set, which is used for cache invalidation, we don't have an Expo-based config
@@ -54,8 +52,7 @@ export class MetroConfigCheck implements DoctorCheck {
       userPaths: readonly string[] | undefined
     ) => isSubsetOf(defaultPaths?.map(resolvePath), userPaths?.map(resolvePath) ?? []);
 
-    const expoMetroConfig = await loadExpoMetroConfig(projectRoot);
-    const defaultConfig = expoMetroConfig.getDefaultConfig(projectRoot);
+    const defaultConfig = getDefaultMetroConfig(projectRoot);
 
     // From SDK 56+, the on-demand filesystem (experiments.onDemandFilesystem) makes `watchFolders`
     // a non-critical configuration that doesn't block file discovery. There's still potential for

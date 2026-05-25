@@ -12,11 +12,7 @@ import { act, fireEvent, renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
 import { BottomAccessoryPlacementContext } from '../hooks';
-import {
-  SUPPORTED_BLUR_EFFECTS,
-  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
-  SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
-} from '../types';
+import { SUPPORTED_BLUR_EFFECTS, SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -846,49 +842,6 @@ describe('Native props validation', () => {
       expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
     }
   );
-  // TODO(@Ubax): move these tests to .android
-  it.skip.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(
-    'supports %s label visibility mode',
-    (labelVisibilityMode) => {
-      renderRouter({
-        _layout: () => (
-          <NativeTabs labelVisibilityMode={labelVisibilityMode}>
-            <NativeTabs.Trigger name="index" />
-          </NativeTabs>
-        ),
-        index: () => <View testID="index" />,
-      });
-
-      expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsHost).toHaveBeenCalledTimes(1);
-      expect(
-        TabsScreen.mock.calls[0][0].android?.standardAppearance?.tabBarItemLabelVisibilityMode
-      ).toBe(labelVisibilityMode);
-    }
-  );
-  it.skip.each([
-    'test',
-    'wrongValue',
-    ...SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((x) => x.toUpperCase()),
-  ])('warns when unsupported %s label visibility mode is used', (labelVisibilityMode) => {
-    renderRouter({
-      _layout: () => (
-        // @ts-expect-error
-        <NativeTabs labelVisibilityMode={labelVisibilityMode}>
-          <NativeTabs.Trigger name="index" />
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-    });
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith(
-      `Unsupported labelVisibilityMode: ${labelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((effect) => `"${effect}"`).join(', ')}`
-    );
-    expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(
-      TabsScreen.mock.calls[0][0].android?.standardAppearance?.tabBarItemLabelVisibilityMode
-    ).toBe(undefined);
-  });
   it.each(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS)(
     'supports %s minimize behavior',
     (minimizeBehavior) => {

@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo';
+import { SharedRef } from 'expo';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -16,7 +16,7 @@ export interface RouterToolbarItemProps {
   title?: string;
   systemImageName?: SFSymbol;
   xcassetName?: string;
-  image?: SharedRef<'image'> | null;
+  image?: InstanceType<SharedRef<'image'>> | null;
   imageRenderingMode?: 'template' | 'original';
   type?: 'normal' | 'fixedSpacer' | 'fluidSpacer' | 'searchBar';
   tintColor?: ColorValue;

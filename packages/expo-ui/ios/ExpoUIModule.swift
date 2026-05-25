@@ -24,6 +24,10 @@ public final class ExpoUIModule: Module {
         return ObservableState(value: initial["value"])
       }
 
+      Property("__expo_ui_shared_object__") { (_: ObservableState) -> Bool in
+        true
+      }
+
       Function("getValue") { (state: ObservableState) -> Any in
         return state.value ?? NSNull()
       }

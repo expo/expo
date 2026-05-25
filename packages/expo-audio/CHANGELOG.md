@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
-
 ### 💡 Others
+
+## 56.0.10 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`. ([#46147](https://github.com/expo/expo/pull/46147) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.9 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.8 — 2026-05-20
 
