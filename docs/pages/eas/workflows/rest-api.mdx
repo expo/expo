@@ -7,10 +7,9 @@ description: Trigger a workflow and check its status from your own systems with 
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
 
-The EAS REST API lets you trigger a workflow and check its status without going through the EAS CLI. Use it from your own CI system, a chat bot, an internal dashboard, or any service that can make HTTP requests.
-
-All endpoints described below live under `https://api.expo.dev` and accept and return JSON.
+The EAS REST API exposes endpoints for triggering a workflow and reading run details. All endpoints live under `https://api.expo.dev` and accept and return JSON.
 
 ## Authentication
 
@@ -33,12 +32,12 @@ Resolves the workflow file on the given Git ref, validates `inputs` against the 
 
 ### Request body
 
-| Field      | Type          | Required | Description                                                                                                                  |
-| ---------- | ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `appId`    | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                              |
-| `gitRef`   | string        | Yes      | A branch name (`main`), tag (`v1.0.0`), commit SHA, or fully qualified ref (`refs/heads/main`, `refs/tags/v1.0.0`).          |
+| Field      | Type          | Required | Description                                                                                                                    |
+| ---------- | ------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `appId`    | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.      |
+| `gitRef`   | string        | Yes      | A branch name (`main`), tag (`v1.0.0`), commit SHA, or fully qualified ref (`refs/heads/main`, `refs/tags/v1.0.0`).            |
 | `fileName` | string        | Yes      | The workflow file name only, such as **deploy.yml**. Do not include the **.eas/workflows/** prefix or any other path segments. |
-| `inputs`   | object        | No       | Values for inputs declared under `on.workflow_dispatch.inputs` in the workflow file. Validated against the declared schema.  |
+| `inputs`   | object        | No       | Values for inputs declared under `on.workflow_dispatch.inputs` in the workflow file. Validated against the declared schema.    |
 
 ### Response
 
@@ -144,11 +143,11 @@ Each entry in `jobs` includes its own `status`, one of:
 | `canceled`        | The job was canceled. Terminal.                                      |
 | `skipped`         | The job was skipped because a required upstream job did not succeed. |
 
-`outputs` contains any values the job set with `outputs:` in the workflow file. Secrets that were referenced when those values were written are replaced with placeholders before being returned. `buildId` and `submissionId` are present on jobs of `type: build` and `type: submission` and link to the underlying EAS Build or EAS Submit record.
+`outputs` contains any values the job set with `outputs:` in the workflow file, with referenced secrets replaced by placeholders. Jobs of `type: build` include `buildId`, and jobs of `type: submission` include `submissionId`, which link to the underlying EAS Build or EAS Submit record.
 
 ### Example
 
-Trigger a run and poll until it reaches a terminal status:
+Save the following as a shell script (or paste into your terminal) to trigger a run and poll until it reaches a terminal status:
 
 ```bash
 RUN_ID=$(curl -s -X POST "https://api.expo.dev/v2/workflows/dispatch" \
