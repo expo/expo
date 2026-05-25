@@ -50,12 +50,8 @@ const styles = StyleSheet.create({
     borderColor: colors.primary[500],
   },
   disabled: {
-    backgroundColor: colors.gray[50],
-    borderColor: colors.gray[200],
-  },
-  disabledChecked: {
-    backgroundColor: colors.gray[400],
-    borderColor: colors.gray[400],
+    cursor: 'auto',
+    opacity: 0.5,
   },
   text: {
     userSelect: 'none',
@@ -90,10 +86,10 @@ export function Checkbox({ value, onValueChange, label, disabled = false, testID
         tabIndex={-1}
         style={({ hovered }) => [
           styles.pressable,
-          hovered && styles.hovered,
+          hovered && !disabled && styles.hovered,
           value && styles.checked,
           focusVisible && styles.focused,
-          disabled && [styles.disabled, value && styles.disabledChecked],
+          disabled && styles.disabled,
         ]}>
         {value && (
           <svg
