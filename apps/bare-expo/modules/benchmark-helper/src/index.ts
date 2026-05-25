@@ -1,4 +1,5 @@
-import { NativeModule, Platform, requireNativeModule } from 'expo';
+import { NativeModule, requireNativeModule } from 'expo';
+import { Platform } from 'expo-modules-core';
 
 declare class BenchmarkHelperModule extends NativeModule {
   reportFullyDrawn(): void;
