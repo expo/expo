@@ -6,6 +6,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
 typealias HorizontalArrangement = Either<HorizontalArrangementDefault, HorizontalArrangementCustom>
 
@@ -29,6 +30,7 @@ enum class HorizontalArrangementDefault(val value: String) : Enumerable {
   }
 }
 
+@OptimizedRecord
 data class HorizontalArrangementCustom(
   @Field val spacedBy: Int? = null
 ) : Record
@@ -61,6 +63,7 @@ enum class VerticalArrangementDefault(val value: String) : Enumerable {
   }
 }
 
+@OptimizedRecord
 data class VerticalArrangementCustom(
   @Field val spacedBy: Int? = null
 ) : Record

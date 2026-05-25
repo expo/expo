@@ -1,5 +1,5 @@
 import AesCryptoModule from './ExpoCryptoAES';
-import { ArrayBufferDecryptOptions, Base64DecryptOptions, AESDecryptOptions, AESEncryptOptions, BinaryInput, AESSealedDataConfig } from './aes.types';
+import type { ArrayBufferDecryptOptions, Base64DecryptOptions, AESDecryptOptions, AESEncryptOptions, BinaryInput, AESSealedDataConfig } from './aes.types';
 export * from './aes.types';
 /**
  * Represents an AES encryption key that can be used for encryption and decryption operations.

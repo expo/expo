@@ -1,152 +1,148 @@
 import { requireNativeView } from 'expo';
-import { Ref } from 'react';
+import type { Ref } from 'react';
 
-import { type ViewEvent } from '../../types';
+import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
+import type { ViewEvent } from '../../types';
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 /**
- * Determines which keyboard to open. For example, `'numeric'`.
- *
- * Available options:
- * - default
- * - numeric
- * - email-address
- * - phone-pad
- * - decimal-pad
- * - ascii-capable
- * - url
- * - numbers-and-punctuation
- * - name-phone-pad
- * - twitter
- * - web-search
- * - ascii-capable-number-pad
- *
- * @default default
- */
-export type TextFieldKeyboardType =
-  | 'default'
-  | 'email-address'
-  | 'numeric'
-  | 'phone-pad'
-  | 'ascii-capable'
-  | 'numbers-and-punctuation'
-  | 'url'
-  | 'name-phone-pad'
-  | 'decimal-pad'
-  | 'twitter'
-  | 'web-search'
-  | 'ascii-capable-number-pad';
-
-/**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
 export type TextFieldRef = {
   setText: (newText: string) => Promise<void>;
+  /** Clear the current text. */
+  clear: () => Promise<void>;
   focus: () => Promise<void>;
   blur: () => Promise<void>;
   /**
-   * Programmatically select text using start and end indices.
+   * Programmatically set the selection range.
    * @platform ios 18.0+ tvos 18.0+
    */
   setSelection: (start: number, end: number) => Promise<void>;
 };
 
+/**
+ * Selection range — `start` and `end` are character offsets into the field's text.
+ */
+export type TextFieldSelection = { start: number; end: number };
+
 export type TextFieldProps = {
   ref?: Ref<TextFieldRef>;
   /**
-   * Initial value that the `TextField` displays when being mounted. As the `TextField` is an uncontrolled component, change the key prop if you need to change the text value.
+   * An observable state that holds the current text.
+   * Create one with `useNativeState('')` or `useNativeState('initial value')`.
+   * If omitted, the field manages its own internal state.
    */
-  defaultValue?: string;
+  text?: ObservableState<string>;
+  /**
+   * Observable state the field writes the current selection to.
+   * Create with `useNativeState<TextFieldSelection>({ start: 0, end: 0 })`.
+   * Use `ref.setSelection(start, end)` to set programmatically.
+   * @platform ios 18.0+ tvos 18.0+
+   */
+  selection?: ObservableState<TextFieldSelection>;
+  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  maxLength?: number;
+  /** If true, the text field will be focused automatically when mounted. @default false */
+  autoFocus?: boolean;
   /**
    * A text that is displayed when the field is empty.
    */
   placeholder?: string;
   /**
-   * A callback triggered when user types in text into the `TextField`.
+   * A callback triggered when the text value changes.
+   *
+   * If the callback is marked with the `'worklet'` directive, it runs synchronously
+   * on the UI thread; otherwise it is delivered asynchronously as a regular JS event.
    */
-  onChangeText?: (value: string) => void;
+  onTextChange?: (text: string) => void;
   /**
-   * A callback triggered when user focuses or blurs the `TextField`.
+   * A callback triggered when the field gains or loses focus.
    */
-  onChangeFocus?: (focused: boolean) => void;
+  onFocusChange?: (focused: boolean) => void;
   /**
-   * A callback triggered when user submits the `TextField` by pressing the return key.
-   */
-  onSubmit?: (value: string) => void;
-  /**
-   * A callback triggered when user selects text in the TextField.
+   * A callback triggered when the text selection range changes.
    * @platform ios 18.0+ tvos 18.0+
    */
-  onChangeSelection?: ({ start, end }: { start: number; end: number }) => void;
+  onSelectionChange?: (selection: { start: number; end: number }) => void;
   /**
-   * If true, the text input can be multiple lines.
-   * While the content will wrap, there's no keyboard button to insert a new line.
+   * The axis along which the text field grows when content exceeds a single line.
+   * - `'horizontal'` — single line (default).
+   * - `'vertical'` — expands vertically for multiline content. Use `lineLimit` modifier to cap visible lines.
+   * @default 'horizontal'
    */
-  multiline?: boolean;
+  axis?: 'horizontal' | 'vertical';
   /**
-   * If true, the text input will add new lines when the user presses the return key.
-   * @default true
+   * Slot children — supports `<TextField.Placeholder>` with a `<Text>` child
+   * (any text-styling modifiers on that `Text` are preserved as the
+   * placeholder's styling).
    */
-  allowNewlines?: boolean;
-  /**
-   * The number of lines to display when `multiline` is set to true.
-   * If the number of lines in the view is above this number, the view scrolls.
-   * @default undefined, which means unlimited lines.
-   */
-  numberOfLines?: number;
-
-  keyboardType?: TextFieldKeyboardType;
-  /**
-   * If true, autocorrection is enabled.
-   * @default true
-   */
-  autocorrection?: boolean;
-
-  /**
-   * If true, the text input will be focused automatically when the component is mounted.
-   * @default false
-   */
-  autoFocus?: boolean;
+  children?: React.ReactNode;
 } & CommonViewModifierProps;
 
 export type NativeTextFieldProps = Omit<
   TextFieldProps,
-  'onChangeText' | 'onSubmit'
-> & {} & ViewEvent<'onValueChanged', { value: string }> &
-  ViewEvent<'onFocusChanged', { value: boolean }> &
-  ViewEvent<'onSelectionChanged', { start: number; end: number }> &
-  ViewEvent<'onSubmit', { value: string }>;
-// We have to work around the `role` and `onPress` props being reserved by React Native.
+  'text' | 'selection' | 'onTextChange' | 'onFocusChange' | 'onSelectionChange'
+> &
+  ViewEvent<'onTextChange', { value: string }> &
+  ViewEvent<'onFocusChange', { value: boolean }> &
+  ViewEvent<'onSelectionChange', { start: number; end: number }> & {
+    text?: number | null;
+    selection?: number | null;
+    onTextChangeSync?: number | null;
+  };
+
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
   'ExpoUI',
   'TextFieldView'
 );
 
-function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-    onValueChanged: (event) => {
-      props.onChangeText?.(event.nativeEvent.value);
-    },
-    onFocusChanged: (event) => {
-      props.onChangeFocus?.(event.nativeEvent.value);
-    },
-    onSelectionChanged: (event) => {
-      props.onChangeSelection?.({ start: event.nativeEvent.start, end: event.nativeEvent.end });
-    },
-    onSubmit: (event) => {
-      props.onSubmit?.(event.nativeEvent.value);
-    },
-  };
+function Placeholder({ children }: { children: React.ReactNode }) {
+  return <Slot name="placeholder">{children}</Slot>;
 }
 
 /**
- * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
+ * Renders a SwiftUI `TextField`.
  */
 export function TextField(props: TextFieldProps) {
-  return <TextFieldNativeView {...transformTextFieldProps(props)} />;
+  const {
+    text,
+    selection,
+    onTextChange,
+    onFocusChange,
+    onSelectionChange,
+    modifiers,
+    ...restProps
+  } = props;
+
+  const isWorklet = !!onTextChange && !!worklets?.isWorkletFunction?.(onTextChange);
+  const workletCallback = useWorkletProp(isWorklet ? onTextChange : undefined, 'onTextChange');
+
+  return (
+    <TextFieldNativeView
+      {...restProps}
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      text={getStateId(text)}
+      selection={getStateId(selection)}
+      onTextChangeSync={getStateId(workletCallback)}
+      onTextChange={
+        !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined
+      }
+      onFocusChange={onFocusChange ? (event) => onFocusChange(event.nativeEvent.value) : undefined}
+      onSelectionChange={
+        onSelectionChange
+          ? (event) =>
+              onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
+          : undefined
+      }
+    />
+  );
 }
+
+TextField.Placeholder = Placeholder;
+
+// Exported for docs api data
+export { type ObservableState };

@@ -9,7 +9,9 @@ import expo.modules.calendar.exceptions.FieldMissingException
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class Attendee : Record {
   // Key "id" should be called "attendeeId",
   // but for now to keep API reverse compatibility it wasn't changed

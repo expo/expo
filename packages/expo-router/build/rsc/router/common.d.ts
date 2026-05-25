@@ -10,7 +10,7 @@ export type RouteProps = {
     query: string;
     hash: string;
 };
-export declare function getComponentIds(path: string): readonly string[];
+export { getComponentIds, mintComponentId, type ComponentIdKind, type ComponentIds, } from './idMinting';
 export declare function getInputString(path: string): string;
 export declare function parseInputString(input: string): string;
 export declare const PARAM_KEY_SKIP = "expo_router_skip";

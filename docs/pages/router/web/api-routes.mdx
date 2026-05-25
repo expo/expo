@@ -357,10 +357,10 @@ export default function middleware(request: Request) {
 
 API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-metro). They have access to all of the language features as your client code:
 
-- [TypeScript](/guides/typescript) &mdash; types and [**tsconfig.json** paths](/guides/typescript/#path-aliases-optional).
-- [Environment variables](/guides/environment-variables) &mdash; server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
-- Node.js standard library &mdash; ensure that you are using the correct version of Node.js locally for your server environment.
-- **babel.config.js** and **metro.config.js** support &mdash; settings work across both client and server code.
+- [TypeScript](/guides/typescript) — types and [**tsconfig.json** paths](/guides/typescript/#path-aliases-optional).
+- [Environment variables](/guides/environment-variables) — server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
+- Node.js standard library — ensure that you are using the correct version of Node.js locally for your server environment.
+- **babel.config.js** and **metro.config.js** support — settings work across both client and server code.
 
 {/* TODO: SSR, redirects, middleware, and so on. */}
 
@@ -674,7 +674,7 @@ import path from 'node:path';
 import { createRequestHandler } from 'expo-server/adapter/netlify';
 
 export default createRequestHandler({
-  /* @info Points to the root <CODE>dist/</CODE> (output) directory */
+  /* @info Points to the root `dist/` (output) directory */
   build: path.join(__dirname, '../../dist/server'),
   /* @end */
 });
@@ -753,7 +753,7 @@ Create a server entry file. All requests will be delegated through this middlewa
 const { createRequestHandler } = require('expo-server/adapter/vercel');
 
 module.exports = createRequestHandler({
-  /* @info Points to the root <CODE>dist/</CODE> (output) directory */
+  /* @info Points to the root `dist/` (output) directory */
   build: require('path').join(__dirname, '../dist/server'),
   /* @end */
 });

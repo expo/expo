@@ -1,26 +1,19 @@
 import universeNodeConfig from 'eslint-config-universe/flat/node.js';
 import universeTypescriptAnalysisConfig from 'eslint-config-universe/flat/shared/typescript-analysis.js';
 import universeWebConfig from 'eslint-config-universe/flat/web.js';
-import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
 import oxlint from 'eslint-plugin-oxlint';
 import unicorn from 'eslint-plugin-unicorn';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
-const TAILWIND_SETTINGS = {
-  entryPoint: 'styles/global.css',
-  callees: ['mergeClasses'],
-  attributes: ['^(container|icon|text)?(c|C)lass(Name)?$'],
-};
-
 // Rules that are still active in ESLint (not migrated to oxlint or oxfmt)
 const ACTIVE_RULES = {
   'no-return-await': 'off',
   'lodash/import-scope': [2, 'method'],
-  'unicorn/better-regex': 'warn',
+  'unicorn/better-regex': 'error',
   'unicorn/prevent-abbreviations': [
-    'warn',
+    'error',
     {
       extendDefaultReplacements: false,
       replacements: {
@@ -52,6 +45,8 @@ const MIGRATED_RULES_MANUAL = {
   '@typescript-eslint/prefer-nullish-coalescing': 'off',
   '@typescript-eslint/return-await': 'off',
   '@next/next/no-img-element': 'off',
+  'import/no-named-as-default': 'off',
+  'import/no-named-as-default-member': 'off',
 };
 
 export default defineConfig([
@@ -61,7 +56,6 @@ export default defineConfig([
     '**/.swc/',
     '**/.wrangler/',
     '**/.worker-test/',
-    '**/.yarn/',
     '**/.vale',
     '**/node_modules',
     '**/out',
@@ -106,38 +100,14 @@ export default defineConfig([
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
     plugins: {
-      'better-tailwindcss': betterTailwindcss,
       lodash,
       unicorn,
-    },
-    settings: {
-      'better-tailwindcss': TAILWIND_SETTINGS,
     },
     rules: {
       ...ACTIVE_RULES,
       '@typescript-eslint/explicit-function-return-type': 'off',
-      'better-tailwindcss/enforce-shorthand-classes': 'error',
-      'better-tailwindcss/no-unknown-classes': [
-        'error',
-        {
-          ignore: [
-            'diff-.+',
-            'react-player',
-            'dark-theme',
-            'dialog-.+',
-            'terminal-snippet',
-            'table-wrapper',
-            'tutorial-code-annotation',
-            'max-sm:.+',
-            'max-medium:.+',
-            'max-md-gutters:.+',
-            '\\[table_&\\]:.+',
-            '\\[table_&\\]',
-          ],
-        },
-      ],
       '@typescript-eslint/naming-convention': [
-        'warn',
+        'error',
         { selector: 'typeLike', format: ['PascalCase'] },
         { selector: 'enumMember', format: ['UPPER_CASE'] },
         {
@@ -172,12 +142,12 @@ export default defineConfig([
           },
         },
       ],
-      '@typescript-eslint/prefer-readonly': 'warn',
-      '@typescript-eslint/prefer-string-starts-ends-with': 'warn',
+      '@typescript-eslint/prefer-readonly': 'error',
+      '@typescript-eslint/prefer-string-starts-ends-with': 'error',
       'react/no-this-in-sfc': 'off',
       'react/no-unescaped-entities': 'off',
       'no-restricted-properties': [
-        'warn',
+        'error',
         {
           object: 'it',
           property: 'only',
@@ -227,7 +197,7 @@ export default defineConfig([
     rules: {
       ...mdx.flat.rules,
       'import/no-unresolved': 'error',
-      'no-unused-vars': ['warn', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
+      'no-unused-vars': ['error', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
       'no-unused-expressions': 'off',
       'no-useless-escape': 'off',
       'no-irregular-whitespace': 'off',

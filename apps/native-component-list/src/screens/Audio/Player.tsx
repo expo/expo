@@ -15,6 +15,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Colors from '../../constants/Colors';
 
 interface Props {
@@ -46,11 +47,13 @@ interface Props {
 
   // Status
   isLoaded: boolean;
+  isLive?: boolean;
   loop: boolean;
   volume: number;
   audioPan: number;
   playbackRate: number;
   currentTime: number;
+  currentOffsetFromLive?: number | null;
   duration: number;
   shouldCorrectPitch: boolean;
   playing: boolean;
@@ -179,22 +182,35 @@ export default function Player(props: Props) {
       </View>
       <View style={styles.container}>
         {_renderPlayPauseButton()}
-        <Slider
-          style={styles.slider}
-          thumbTintColor={Colors.tintColor}
-          value={isScrubbing ? initialScrubbingMillis : props.currentTime}
-          maximumValue={props.duration === Infinity || isNaN(props.duration) ? 0 : props.duration}
-          disabled={!props.isLoaded}
-          minimumTrackTintColor={Colors.tintColor}
-          onSlidingComplete={_playFromPosition}
-          onResponderGrant={() => {
-            setIsScrubbing(true);
-            setInitialScrubbingMillis(props.currentTime);
-          }}
-        />
-        <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
-          {_formatTime(props.currentTime)} / {_formatTime(props.duration)}
-        </Text>
+        {props.isLive ? (
+          <View style={styles.liveBadge}>
+            <Text style={styles.liveBadgeText}>LIVE</Text>
+          </View>
+        ) : (
+          <>
+            <Slider
+              style={styles.slider}
+              thumbTintColor={Colors.tintColor}
+              value={isScrubbing ? initialScrubbingMillis : props.currentTime}
+              maximumValue={
+                props.duration === Infinity || isNaN(props.duration) ? 0 : props.duration
+              }
+              disabled={!props.isLoaded}
+              minimumTrackTintColor={Colors.tintColor}
+              onSlidingComplete={_playFromPosition}
+              onResponderGrant={() => {
+                setIsScrubbing(true);
+                setInitialScrubbingMillis(props.currentTime);
+              }}
+            />
+            <BodyText
+              style={{ width: 100, textAlign: 'right' }}
+              adjustsFontSizeToFit
+              numberOfLines={1}>
+              {_formatTime(props.currentTime)} / {_formatTime(props.duration)}
+            </BodyText>
+          </>
+        )}
         {_renderReplayButton()}
       </View>
 
@@ -527,6 +543,18 @@ const styles = StyleSheet.create({
     margin: 8,
     fontWeight: 'bold',
     color: Colors.errorText,
+  },
+  liveBadge: {
+    backgroundColor: '#E53935',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginLeft: 10,
+  },
+  liveBadgeText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 12,
   },
   buttonsContainer: {
     justifyContent: 'space-evenly',

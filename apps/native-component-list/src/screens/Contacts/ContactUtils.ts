@@ -1,4 +1,4 @@
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 
 export function parseDate({ year, month, day }: { year: number; month: number; day: number }) {
   const nYear = year || new Date().getFullYear();
@@ -103,8 +103,8 @@ export async function deleteGroupWithNameAsync(groupName: string) {
     if (group) {
       await Contacts.removeGroupAsync(group.id!);
     }
-  } catch ({ message }) {
-    console.error(message);
+  } catch (error: any) {
+    console.error(error.message);
   }
 }
 
@@ -116,8 +116,8 @@ export async function removeAllChildrenFromGroupWithNameAsync(groupName: string)
     await Promise.all(
       contacts.map((contact) => Contacts.removeContactFromGroupAsync(contact.id!, groupId!))
     );
-  } catch ({ message }) {
-    console.error(message);
+  } catch (error: any) {
+    console.error(error.message);
   }
 }
 

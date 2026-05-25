@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
-import { type AnimatedValue } from './animation';
-export { type ExpoModifier } from '../../types';
+import { type AnimatedValue, type AnimationSpec } from './animation';
+export { type ExpoModifier, type ModifierConfig } from '../../types';
 export { animated, spring, tween, snap, keyframes, type AnimationSpec, type AnimatedValue, } from './animation';
 export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
 /**
@@ -48,6 +48,18 @@ export declare const width: (value: number) => import("./createModifier").Modifi
  */
 export declare const height: (value: number) => import("./createModifier").ModifierConfig;
 /**
+ * Constrain the size of the wrapped layout only when it would be
+ * otherwise unconstrained: the `minWidth` and `minHeight` constraints
+ * are only applied when the incoming corresponding constraint is `0`.
+ * @param options.minWidth - Minimum width in dp.
+ * @param options.minHeight - Minimum height in dp.
+ * @see [Compose `defaultMinSize` modifier](https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#%28androidx.compose.ui.Modifier%29.defaultMinSize%28androidx.compose.ui.unit.Dp%2Candroidx.compose.ui.unit.Dp%29)
+ */
+export declare const defaultMinSize: (options: {
+    minWidth?: number;
+    minHeight?: number;
+}) => import("./createModifier").ModifierConfig;
+/**
  * Wraps the width to the content size.
  * @param alignment - Optional horizontal alignment ('start', 'centerHorizontally', 'end').
  */
@@ -70,9 +82,13 @@ export declare const imePadding: () => import("./createModifier").ModifierConfig
 export declare const offset: (x: number, y: number) => import("./createModifier").ModifierConfig;
 /**
  * Sets the background color.
- * @param color - Color string (hex, e.g., '#FF0000').
+ * Pass an `animationSpec` to smoothly animate between colors when the prop changes (backed by `animateColorAsState`).
+ * @param color - A color string (hex, e.g., `'#FF0000'`).
+ * @param options.animationSpec - Optional spec — animate between color changes.
  */
-export declare const background: (color: ColorValue) => import("./createModifier").ModifierConfig;
+export declare const background: (color: ColorValue, options?: {
+    animationSpec?: AnimationSpec;
+}) => import("./createModifier").ModifierConfig;
 /**
  * Adds a border around the view.
  * @param borderWidth - Border width in dp.
@@ -167,12 +183,34 @@ export declare const align: (alignment: Alignment) => import("./createModifier")
  */
 export declare const matchParentSize: () => import("./createModifier").ModifierConfig;
 /**
+ * Marks a composable as the anchor for an `ExposedDropdownMenuBox`.
+ * Only works when used inside `ExposedDropdownMenuBox`.
+ * @param type - Anchor type. Currently only `'primaryNotEditable'` is supported.
+ * @param enabled - Whether the anchor is enabled. Defaults to `true`.
+ */
+export declare const menuAnchor: (type?: "primaryNotEditable", enabled?: boolean) => import("./createModifier").ModifierConfig;
+/**
  * Makes the view clickable.
  * @param handler - Function to call when clicked.
  * @param options - Optional configuration.
  * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
  */
 export declare const clickable: (handler: () => void, options?: {
+    indication?: boolean;
+}) => import("./createModifier").ModifierConfig;
+/**
+ * Makes the view respond to both click and long-click gestures.
+ * Wraps Compose's `Modifier.combinedClickable`. Useful for triggering a `DropdownMenu`
+ * on long-press while keeping a separate short-press action.
+ * @param handlers.onClick - Function to call on a short tap.
+ * @param handlers.onLongClick - Function to call on a long press.
+ * @param options - Optional configuration.
+ * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
+ */
+export declare const combinedClickable: (handlers: {
+    onClick?: () => void;
+    onLongClick?: () => void;
+}, options?: {
     indication?: boolean;
 }) => import("./createModifier").ModifierConfig;
 /**
@@ -199,10 +237,35 @@ export declare const toggleable: (value: boolean, handler: () => void, options?:
     role?: "checkbox" | "radioButton" | "switch" | "tab";
 }) => import("./createModifier").ModifierConfig;
 /**
+ * Calls the handler when the composable's visibility changes (for example, enters or leaves the viewport in a lazy list).
+ * @param handler - Function called with `true` when visible, `false` when not.
+ * @param options - Optional configuration.
+ * @param options.minDurationMs - Minimum duration in ms before the callback fires. Default is 0.
+ * @param options.minFractionVisible - Fraction of the view that must be visible (0.0 to 1.0). Default is 1.0.
+ */
+export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void, options?: {
+    minDurationMs?: number;
+    minFractionVisible?: number;
+}) => import("./createModifier").ModifierConfig;
+/**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export declare const onSizeChanged: (handler: (size: {
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.
  */
 export declare const testID: (tag: string) => import("./createModifier").ModifierConfig;
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export declare const semantics: (params: {
+    contentType?: string;
+}) => import("./createModifier").ModifierConfig;
 type MaterialShapeName = 'cookie4Sided' | 'cookie6Sided' | 'cookie7Sided' | 'cookie9Sided' | 'cookie12Sided' | 'clover4Leaf' | 'clover8Leaf' | 'softBurst' | 'boom' | 'oval' | 'pill' | 'triangle' | 'diamond' | 'pentagon' | 'sunny' | 'verySunny' | 'fan' | 'pixelCircle' | 'pixelTriangle' | 'ghostish' | 'bun' | 'heart' | 'arch' | 'slanted' | 'puffy' | 'puffyDiamond';
 type CornerRadii = {
     topStart?: number;
@@ -285,4 +348,18 @@ export declare const Shapes: {
  * @param shape - A shape from `Shapes`, e.g. `Shapes.Circle` or `Shapes.Material.Heart`.
  */
 export declare const clip: (shape: BuiltinShape) => import("./createModifier").ModifierConfig;
+/**
+ * Makes the view vertically scrollable.
+ * Wraps `Modifier.verticalScroll(rememberScrollState())`.
+ * Use on a Column to create a non-lazy scrollable container.
+ */
+export declare const verticalScroll: () => import("./createModifier").ModifierConfig;
+/**
+ * Makes the view horizontally scrollable.
+ * Wraps `Modifier.horizontalScroll(rememberScrollState())`.
+ * Use on a Row to create a non-lazy scrollable container.
+ */
+export declare const horizontalScroll: () => import("./createModifier").ModifierConfig;
+export { createModifier, createModifierWithEventListener } from './createModifier';
+export { createViewModifierEventListener } from './utils';
 //# sourceMappingURL=index.d.ts.map

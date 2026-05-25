@@ -22,7 +22,7 @@ export function getBundler(caller?: any) {
   return 'metro';
 }
 
-export function getPlatform(caller?: any) {
+export function getPlatform(caller?: any): string | null {
   assertExpoBabelCaller(caller);
   if (!caller) return null;
   if (caller.platform) return caller.platform;
@@ -32,7 +32,12 @@ export function getPlatform(caller?: any) {
   }
 
   // unknown
-  return caller.platform;
+  return caller.platform ?? null;
+}
+
+export function getEngine(caller?: any): 'hermes' | 'default' | (string & {}) {
+  assertExpoBabelCaller(caller);
+  return caller?.engine ?? 'default';
 }
 
 export function getPossibleProjectRoot(caller?: any) {
@@ -89,19 +94,24 @@ export function getReactCompiler(caller?: any) {
   return caller?.supportsReactCompiler ?? false;
 }
 
+export function getStaticESM(caller?: any): boolean | undefined {
+  assertExpoBabelCaller(caller);
+  return caller?.supportsStaticESM;
+}
+
 export function getIsServer(caller?: any) {
   assertExpoBabelCaller(caller);
   return caller?.isServer ?? false;
 }
 
+export function getIsDomComponent(caller?: any): boolean {
+  assertExpoBabelCaller(caller);
+  return caller?.isDomComponent ?? false;
+}
+
 export function getIsLoaderBundle(caller?: any) {
   assertExpoBabelCaller(caller);
   return caller?.isLoaderBundle ?? false;
-}
-
-export function getIsHermesV1(caller?: any): boolean {
-  assertExpoBabelCaller(caller);
-  return caller?.isHermesV1 ?? false;
 }
 
 export function getMetroSourceType(caller?: any) {
@@ -129,12 +139,20 @@ export function getBabelRuntimeVersion(caller?: any) {
 export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
   assertExpoBabelCaller(caller);
   const rootModuleId = caller?.routerRoot ?? './app';
-  if (path.isAbsolute(rootModuleId)) {
-    return rootModuleId;
+  const projectRoot = getPossibleProjectRoot(caller);
+  const resolved = path.isAbsolute(rootModuleId)
+    ? rootModuleId
+    : path.join(projectRoot || '/', rootModuleId);
+  // Silently fall back to the default if the configured router root escapes the project root, as a safety net
+  if (projectRoot && !isPathInside(resolved, projectRoot)) {
+    return path.join(projectRoot, 'app');
   }
-  const projectRoot = getPossibleProjectRoot(caller) || '/';
+  return resolved;
+}
 
-  return path.join(projectRoot, rootModuleId);
+function isPathInside(child: string, parent: string): boolean {
+  const relative = path.relative(parent, child);
+  return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
 }
 
 export function getInlineEnvVarsEnabled(caller?: any): boolean {

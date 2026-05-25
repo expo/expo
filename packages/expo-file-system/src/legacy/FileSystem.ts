@@ -2,7 +2,7 @@ import { type EventSubscription, UnavailabilityError, uuid } from 'expo-modules-
 import { Platform } from 'react-native';
 
 import ExponentFileSystem from './ExponentFileSystem';
-import {
+import type {
   DownloadOptions,
   DownloadPauseState,
   FileSystemNetworkTaskProgressCallback,
@@ -12,10 +12,8 @@ import {
   FileSystemAcceptedUploadHttpMethod,
   FileSystemDownloadResult,
   FileSystemRequestDirectoryPermissionsResult,
-  FileSystemSessionType,
   FileSystemUploadOptions,
   FileSystemUploadResult,
-  FileSystemUploadType,
   ProgressEvent,
   ReadingOptions,
   WritingOptions,
@@ -24,6 +22,7 @@ import {
   RelocatingOptions,
   MakeDirectoryOptions,
 } from './FileSystem.types';
+import { FileSystemSessionType, FileSystemUploadType } from './FileSystem.types';
 
 if (!ExponentFileSystem) {
   console.warn(
@@ -598,7 +597,7 @@ const baseCopyAsync = copyAsync;
  * # Migrating an album
  *
  * ```ts
- * import * as MediaLibrary from 'expo-media-library';
+ * import * as MediaLibrary from 'expo-media-library/legacy';
  * import * as FileSystem from 'expo-file-system/legacy';
  * const { StorageAccessFramework } = FileSystem;
  *

@@ -1,6 +1,6 @@
-import { UrlObject } from '../LocationProvider';
-import { LinkToOptions } from '../global-state/routing';
-import { Href } from '../types';
+import type { UrlObject } from '../LocationProvider';
+import type { LinkToOptions } from '../global-state/routing';
+import type { Href } from '../types';
 
 /** Resolve an href object into a fully qualified, relative href. */
 export const resolveHref = (href: Href): string => {
@@ -51,11 +51,13 @@ export function resolveHrefStringWithSegments(
     }
 
     const url = new URL(href, `http://hostname/${base}`);
-
     href = `${url.pathname}${url.search}`;
   }
 
-  return href;
+  // Collapse leading slashes so a scheme-relative `//host/...` href — whether
+  // smuggled in directly or produced by URL resolution above — cannot route
+  // navigation cross-origin.
+  return href.replace(/^\/+/, '/');
 }
 
 function createQualifiedPathname(

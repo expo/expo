@@ -6,6 +6,7 @@
  */
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { resolveRouterModule, type RouterModule } from '@expo/router-server/build/rsc/router';
 import type { EntriesDev } from '@expo/router-server/build/rsc/server';
 import assert from 'assert';
 import { getRscMiddleware } from 'expo-server/private';
@@ -65,9 +66,7 @@ export function createServerComponentsMiddleware(
     routerOptions: Record<string, any>;
   }
 ) {
-  const routerModule = useClientRouter
-    ? require.resolve('@expo/router-server/build/rsc/router/noopRouter')
-    : require.resolve('@expo/router-server/build/rsc/router/expo-definedRouter');
+  const routerModule = resolveRouterModule(useClientRouter);
 
   const rscMiddleware = getRscMiddleware({
     config: {},
@@ -308,9 +307,7 @@ export function createServerComponentsMiddleware(
       return routerCache.get(platform)!;
     }
 
-    const router = await ssrLoadModule<
-      typeof import('@expo/router-server/build/rsc/router/expo-definedRouter')
-    >(
+    const router = await ssrLoadModule<RouterModule>(
       routerModule,
       {
         environment: 'react-server',
@@ -478,20 +475,6 @@ export function createServerComponentsMiddleware(
     return renderer;
   }
 
-  const rscRenderContext = new Map<string, any>();
-
-  function getRscRenderContext(platform: string) {
-    // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
-    if (rscRenderContext.has(platform)) {
-      return rscRenderContext.get(platform)!;
-    }
-
-    const context = {};
-
-    rscRenderContext.set(platform, context);
-    return context;
-  }
-
   async function renderRscToReadableStream(
     {
       input,
@@ -527,10 +510,7 @@ export function createServerComponentsMiddleware(
       assert(body, 'Server request must be provided when method is POST (server actions)');
     }
 
-    const context = getRscRenderContext(platform);
-
-    context['__expo_requestHeaders'] = headers;
-
+    const context = { __expo_requestHeaders: headers };
     const { renderRsc } = await getRscRendererAsync(platform);
 
     return renderRsc(
@@ -540,6 +520,8 @@ export function createServerComponentsMiddleware(
         context,
         config: {},
         input,
+        method,
+        headers: Object.fromEntries(headers.entries()),
         contentType,
       },
       {

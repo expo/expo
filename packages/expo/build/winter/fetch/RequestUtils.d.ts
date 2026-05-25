@@ -1,4 +1,4 @@
-import { type NativeHeadersType } from './NativeRequest';
+import type { NativeHeadersType } from './NativeRequest';
 /**
  * convert a ReadableStream to a Uint8Array
  */

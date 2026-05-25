@@ -9,6 +9,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.common.UIManagerType
@@ -42,6 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import okhttp3.OkHttpClient
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -143,7 +145,8 @@ class AppContext(
       val inlineModulesList = Class.forName("inline.modules.ExpoInlineModulesList").getConstructor()
         .newInstance() as ModulesProvider
       registry.register(inlineModulesList)
-    } catch (_: ClassNotFoundException) {}
+    } catch (_: ClassNotFoundException) {
+    }
   }
 
   /**
@@ -229,6 +232,17 @@ class AppContext(
    */
   val hasActiveReactInstance: Boolean
     get() = runtime.reactContext?.hasActiveReactInstance() == true
+
+  /**
+   * @returns an OkHttpClient instance that can be used to perform network requests
+   * with the same configuration as React Native's networking module. See [com.facebook.react.modules.network.OkHttpClientProvider].
+   * This client will share the same cookie jar and has no timeouts by default.
+   */
+  val okHttpClient: OkHttpClient
+    get() = OkHttpClientProvider.getOkHttpClient()
+
+  fun createOkHttpClientBuilder(): OkHttpClient.Builder =
+    OkHttpClientProvider.createClientBuilder()
 
   /**
    * Provides access to the event emitter

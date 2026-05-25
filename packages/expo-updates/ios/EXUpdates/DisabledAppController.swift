@@ -20,6 +20,8 @@ public class DisabledAppController: InternalAppControllerInterface, UpdatesInter
     return DisabledUpdatesStateChangeSubscription()
   }
 
+  public var requestHeaders: [String : String]?
+
   public var launchedUpdateId: UUID?
 
   public var embeddedUpdateId: UUID?
@@ -29,7 +31,7 @@ public class DisabledAppController: InternalAppControllerInterface, UpdatesInter
   public var reloadScreenManager: Reloadable?
 
   public let isActiveController = false
-  private var isStarted: Bool = false
+  public private(set) var isStarted: Bool = false
   private var startupStartTime: DispatchTime?
   private var startupEndTime: DispatchTime?
 

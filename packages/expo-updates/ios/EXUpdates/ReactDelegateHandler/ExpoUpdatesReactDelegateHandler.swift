@@ -32,10 +32,24 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       return nil
     }
 
+    // If startup already completed, create the real view directly to handle
+    // brownfield re-mounts and simultaneous multi-view scenarios, given that
+    // didStartWithSuccess fires only once per controller lifetime.
+    if controller.isStarted, let launchAssetUrl = controller.launchAssetUrl() {
+      return reactDelegate.reactNativeFactory.recreateRootView(
+        withBundleURL: launchAssetUrl,
+        moduleName: moduleName,
+        initialProps: initialProperties,
+        launchOptions: launchOptions
+      )
+    }
+
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
-    controller.delegate = self
-    controller.start()
+    if !controller.isStarted {
+      controller.delegate = self
+      controller.start()
+    }
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
@@ -83,14 +97,27 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       launchOptions: self.launchOptions
     )
 
-    let window = getWindow()
-    let rootViewController = reactDelegate.createRootViewController()
 #if os(iOS) || os(tvOS)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
-    rootViewController.view = rootView
-    window.rootViewController = rootViewController
-    window.makeKeyAndVisible()
+
+    // In brownfield setups, the deferred root view is embedded within the host app's
+    // view hierarchy (e.g. inside a NavigationController). Replacing the window's root
+    // view controller would break the host app's navigation. Instead, find the view
+    // controller that owns the deferred view and replace its view in-place.
+    if let deferredRootView = self.deferredRootView,
+      let owningViewController = findViewController(for: deferredRootView),
+      owningViewController != getWindow().rootViewController {
+      owningViewController.view = rootView
+    } else {
+      let window = getWindow()
+      let rootViewController = reactDelegate.createRootViewController()
+      rootViewController.view = rootView
+      window.rootViewController = rootViewController
+      window.makeKeyAndVisible()
+    }
 #else
+    let window = getWindow()
+    let rootViewController = reactDelegate.createRootViewController()
     rootViewController.view = rootView
     rootView.frame = window.frame
     window.contentViewController = rootViewController
@@ -132,6 +159,22 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     }
 
     return view
+  }
+
+  /**
+   Finds the nearest view controller that owns the given view by walking
+   up the responder chain. Returns the first UIViewController whose view
+   matches the target view.
+   */
+  private func findViewController(for view: UIView) -> UIViewController? {
+    var responder: UIResponder? = view.next
+    while let current = responder {
+      if let viewController = current as? UIViewController, viewController.view == view {
+        return viewController
+      }
+      responder = current.next
+    }
+    return nil
   }
 #endif
 

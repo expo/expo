@@ -1,4 +1,7 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
+
+import type { AddEventWithFormOptions } from './ExpoCalendar.types';
+import type { DialogEventResult, EntityTypes, Source } from './legacy/Calendar';
 
 const noPermissionResponse: PermissionResponse = {
   status: PermissionStatus.UNDETERMINED,
@@ -7,17 +10,89 @@ const noPermissionResponse: PermissionResponse = {
   expires: 'never',
 };
 
+class ExpoCalendar {
+  constructor(id: string) {
+    throw new Error('Calendar API is not available on web');
+  }
+
+  async addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult> {
+    throw new Error('Calendar API is not available on web');
+  }
+}
+
+class ExpoCalendarEvent {
+  constructor() {
+    throw new Error('Calendar API is not available on web');
+  }
+}
+
+class ExpoCalendarAttendee {
+  constructor() {
+    throw new Error('Calendar API is not available on web');
+  }
+}
+
+class ExpoCalendarReminder {
+  constructor() {
+    throw new Error('Calendar API is not available on web');
+  }
+}
+
 export default {
-  async requestCalendarPermissionsAsync(): Promise<PermissionResponse> {
+  ExpoCalendar,
+  ExpoCalendarEvent,
+  ExpoCalendarAttendee,
+  ExpoCalendarReminder,
+
+  getDefaultCalendar(): ExpoCalendar {
+    throw new Error('Calendar API is not available on web');
+  },
+
+  async getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]> {
+    return [];
+  },
+
+  async listEvents(
+    calendars: string[],
+    startDate: string | Date,
+    endDate: string | Date
+  ): Promise<ExpoCalendarEvent[]> {
+    return [];
+  },
+
+  async getCalendarById(calendarId: string): Promise<ExpoCalendar> {
+    throw new Error('Calendar API is not available on web');
+  },
+
+  async presentPicker(): Promise<ExpoCalendar | null> {
+    throw new Error('Calendar API is not available on web');
+  },
+
+  async getEventById(eventId: string): Promise<ExpoCalendarEvent> {
+    throw new Error('Calendar API is not available on web');
+  },
+
+  async getReminderById(reminderId: string): Promise<ExpoCalendarReminder> {
+    throw new Error('Calendar API is not available on web');
+  },
+
+  async requestCalendarPermissions(): Promise<PermissionResponse> {
     return noPermissionResponse;
   },
-  async getCalendarPermissionsAsync(): Promise<PermissionResponse> {
+
+  async getCalendarPermissions(): Promise<PermissionResponse> {
     return noPermissionResponse;
   },
-  async getRemindersPermissionsAsync(): Promise<PermissionResponse> {
+
+  async requestRemindersPermissions(): Promise<PermissionResponse> {
     return noPermissionResponse;
   },
-  async requestRemindersPermissionsAsync(): Promise<PermissionResponse> {
+
+  async getRemindersPermissions(): Promise<PermissionResponse> {
     return noPermissionResponse;
+  },
+
+  getSourcesSync(): Source[] {
+    return [];
   },
 };

@@ -5,4 +5,6 @@ TopTabs.Screen = Screen;
 
 export { TopTabs };
 
+export * from '../react-navigation/material-top-tabs';
+
 export default TopTabs;

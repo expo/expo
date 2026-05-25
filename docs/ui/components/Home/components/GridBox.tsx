@@ -18,16 +18,16 @@ export function GridBox({ icon, title, link, className }: GridBoxProps) {
     <A
       href={link}
       className={mergeClasses(
-        'group border-default bg-subtle relative flex min-h-[200px] flex-col overflow-hidden rounded-lg border shadow-xs transition',
+        'group relative flex min-h-50 flex-col overflow-hidden rounded-lg border border-default bg-subtle shadow-xs transition',
         '[&_h2]:my-0! [&_h3]:mt-0!',
         'hocus:shadow-sm',
         className
       )}
       isStyled>
-      <div className="flex min-h-[142px] items-center justify-center transition-transform group-hover:scale-105">
+      <div className="flex min-h-35.5 items-center justify-center transition-transform group-hover:scale-105">
         {icon}
       </div>
-      <LABEL className="bg-default flex h-full min-h-[30px] items-center justify-between gap-3 p-4">
+      <LABEL className="flex h-full min-h-7.5 items-center justify-between gap-3 bg-default p-4">
         {title}
         <Icon className="text-icon-secondary" />
       </LABEL>

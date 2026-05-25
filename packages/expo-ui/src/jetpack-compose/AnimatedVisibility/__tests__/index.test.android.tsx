@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react-native';
-import React from 'react';
 import { View } from 'react-native';
 
 import { AnimatedVisibility, EnterTransition, ExitTransition } from '..';
@@ -13,9 +12,10 @@ jest.mock('expo', () => ({
       throw new Error(`Unexpected native view requested: ${args[0]} ${args[1]}`);
     }
     const { View } = require('react-native');
+    const { createElement } = require('react');
     const MockView = (props: any) => {
       mockNativeViewFn(props);
-      return <View {...props} />;
+      return createElement(View, props);
     };
     return MockView;
   }),

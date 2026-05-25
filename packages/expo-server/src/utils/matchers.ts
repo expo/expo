@@ -57,9 +57,13 @@ export function resolveLoaderContextKey(
   return `/${resolved}`;
 }
 
-export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL {
+export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): string {
   const originalQueryParams = url.searchParams.entries();
   const params = parseParams(request, route);
+  // Externality is determined from the *unsubstituted* `route.page` so a
+  // substituted catch-all that happens to contain `//host/...` cannot turn an
+  // internal redirect into an absolute external one.
+  const routePageIsExternal = isAbsoluteHttpUrl(route.page);
   const target = route.page
     .split('/')
     .map((segment) => {
@@ -67,21 +71,24 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
       if ((match = matchDynamicName(segment))) {
         const value = params[match];
         delete params[match];
-        return typeof value === 'string'
-          ? value.split(
-              '/'
-            )[0] /* If we are redirecting from a catch-all route, we need to remove the extra segments */
-          : (value ?? segment);
+        const resolved =
+          typeof value === 'string'
+            ? value.split(
+                '/'
+              )[0] /* If we are redirecting from a catch-all route, we need to remove the extra segments */
+            : (value ?? segment);
+        return routePageIsExternal ? resolved : stripLeadingSlashes(resolved);
       } else if ((match = matchDeepDynamicRouteName(segment))) {
         const value = params[match];
         delete params[match];
-        return value ?? segment;
+        const resolved = value ?? segment;
+        return routePageIsExternal ? resolved : stripLeadingSlashes(resolved);
       } else {
         return segment;
       }
     })
     .join('/');
-  const targetUrl = new URL(target, url.origin);
+  const targetUrl = new URL(target, 'http://localhost');
 
   // NOTE: React Navigation doesn't differentiate between a path parameter
   // and a search parameter. We have to preserve leftover search parameters
@@ -101,7 +108,27 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
     }
   }
 
-  return targetUrl;
+  // Internal routes must never escape to an external host, even if some
+  // substitution path slipped through the sanitization above.
+  if (!routePageIsExternal) {
+    return targetUrl.pathname.replace(/^\/+/, '/') + targetUrl.search;
+  }
+  return targetUrl.hostname === 'localhost'
+    ? targetUrl.pathname + targetUrl.search
+    : targetUrl.toString();
+}
+
+function isAbsoluteHttpUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function stripLeadingSlashes<T>(value: T): T {
+  return typeof value === 'string' ? ((value as string).replace(/^\/+/, '') as T) : value;
 }
 
 /** Match `[page]` -> `page`

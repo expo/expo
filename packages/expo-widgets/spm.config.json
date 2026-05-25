@@ -5,13 +5,14 @@
       "name": "ExpoWidgets",
       "podName": "ExpoWidgets",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-core/ExpoModulesCore",
+        "expo-modules-core/ExpoModulesWorklets",
         "@expo/ui/ExpoUI"
       ],
       "targets": [
@@ -25,6 +26,7 @@
             "React",
             "Hermes",
             "expo-modules-core/ExpoModulesCore",
+            "expo-modules-core/ExpoModulesWorklets",
             "@expo/ui/ExpoUI"
           ],
           "linkedFrameworks": [

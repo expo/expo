@@ -7,13 +7,21 @@ import { requireNativeModule } from 'expo';
 
 import { animation } from './animation/index';
 import { background } from './background';
+import { containerBackground } from './containerBackground';
 import { containerShape } from './containerShape';
 import { contentShape } from './contentShape';
-import { createModifier, createModifierWithEventListener, ModifierConfig } from './createModifier';
+import {
+  createModifier,
+  createModifierWithEventListener,
+  type ModifierConfig,
+} from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
+import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
+import { id, scrollPosition } from './scrollPosition';
+import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { widgetAccentedRenderingMode, widgetURL } from './widgets';
 
@@ -182,6 +190,16 @@ export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
 
 /**
+ * Calls the handler whenever the view's geometry changes. Sizes are in points.
+ * @param handler - Function called with the new size.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
+ */
+export const onGeometryChange = (handler: (size: { width: number; height: number }) => void) =>
+  createModifierWithEventListener('onGeometryChange', (size: { width: number; height: number }) =>
+    handler(size)
+  );
+
+/**
  * Marks a view as refreshable. Adds pull-to-refresh functionality.
  * @param handler - Async function to call when refresh is triggered.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
@@ -212,7 +230,13 @@ export const opacity = (value: number) => createModifier('opacity', { value });
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
 export const clipShape = (
-  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
+  shape:
+    | 'rectangle'
+    | 'circle'
+    | 'capsule'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape',
   cornerRadius?: number
 ) => createModifier('clipShape', { shape, cornerRadius });
 
@@ -569,7 +593,25 @@ export const scrollDismissesKeyboard = (
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
-type UnitPointValue =
+/**
+ * Controls the visibility of scroll indicators for scrollable views.
+ * Mirrors SwiftUI's `scrollIndicators(_:axes:)` modifier.
+ * @param visibility - Indicator visibility:
+ * - `'automatic'`: platform-default behavior.
+ * - `'visible'`: prefer showing indicators (may still be hidden by the system).
+ * - `'hidden'`: prefer hiding indicators (may still be shown by the system).
+ * - `'never'`: never show indicators.
+ * @param axes - Axes to apply the visibility to. Defaults to `'both'`.
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrollindicators(_:axes:)).
+ */
+export const scrollIndicators = (
+  visibility: 'automatic' | 'visible' | 'hidden' | 'never',
+  axes: 'vertical' | 'horizontal' | 'both' = 'both'
+) => createModifier('scrollIndicators', { visibility, axes });
+
+export type UnitPointValue =
   | 'zero'
   | 'topLeading'
   | 'top'
@@ -692,7 +734,13 @@ export const layoutPriority = (priority: number) => createModifier('layoutPriori
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
 export const mask = (
-  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
+  shape:
+    | 'rectangle'
+    | 'circle'
+    | 'capsule'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape',
   cornerRadius?: number
 ) => createModifier('mask', { shape, cornerRadius });
 
@@ -717,10 +765,10 @@ export const backgroundOverlay = (params: {
 
 /**
  * Sets aspect ratio constraint.
- * @param params - Width/height aspect ratio and content mode.
+ * @param params - Optional width/height aspect ratio and content mode.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/aspectratio(_:contentmode:)).
  */
-export const aspectRatio = (params: { ratio: number; contentMode?: 'fit' | 'fill' }) =>
+export const aspectRatio = (params: { ratio?: number; contentMode?: 'fit' | 'fill' }) =>
   createModifier('aspectRatio', params);
 
 /**
@@ -741,7 +789,13 @@ export const glassEffect = (params?: {
     interactive?: boolean;
     tint?: Color;
   };
-  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse' | 'roundedRectangle';
+  shape?:
+    | 'circle'
+    | 'capsule'
+    | 'rectangle'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape';
   cornerRadius?: number;
 }) => createModifier('glassEffect', params);
 
@@ -851,11 +905,40 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
 /**
- * Sets the maximum number of lines that text can occupy in the view.
- * @param limit - The maximum number of lines.
+ * Sets the total line height for text in this view.
+ * @param value - The line height in points.
+ * @platform ios 26.0+
+ * @platform macos 26.0+
+ * @platform tvos 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/lineheight(_:)).
+ */
+export const lineHeight = (value: number) => createModifier('lineHeight', { value });
+/**
+ * Sets the line limit for text in the view.
+ *
+ * Four variants matching SwiftUI:
+ * - `lineLimit()` — no line limit (unlimited lines)
+ * - `lineLimit(5)` — max 5 lines
+ * - `lineLimit(5, { reservesSpace: true })` — max 5 lines, reserves height even when empty (iOS 16+, tvOS 16+)
+ * - `lineLimit({ min: 3, max: 8 })` — range of 3 to 8 lines (iOS 16+, tvOS 16+)
+ *
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linelimit(_:)).
  */
-export const lineLimit = (limit?: number) => createModifier('lineLimit', { limit });
+export function lineLimit(): ModifierConfig;
+export function lineLimit(limit: number, options?: { reservesSpace?: boolean }): ModifierConfig;
+export function lineLimit(range: { min: number; max: number }): ModifierConfig;
+export function lineLimit(
+  limitOrRange?: number | { min: number; max: number },
+  options?: { reservesSpace?: boolean }
+): ModifierConfig {
+  if (typeof limitOrRange === 'object' && limitOrRange !== null) {
+    return createModifier('lineLimit', { min: limitOrRange.min, max: limitOrRange.max });
+  }
+  return createModifier('lineLimit', {
+    limit: limitOrRange,
+    reservesSpace: options?.reservesSpace,
+  });
+}
 /**
  * Sets the header prominence for this view.
  * @param prominence - The prominence to apply.
@@ -899,30 +982,33 @@ export const listSectionMargins = (params?: {
 
 /**
  * Sets the font properties of a view.
- * Supports both custom font families and system fonts with weight and design options.
  *
- * @param params - The font configuration. When `family` is provided, it uses Font.custom().
- * When `family` is not provided, it uses Font.system() with the specified weight and design.
+ * Pass `textStyle` to scale with the user's Dynamic Type setting. Combine
+ * it with `family` to scale a custom font.
  *
  * @example
  * ```tsx
- * // Custom font family
- * <Text modifiers={[font({ family: 'Helvetica', size: 18 })]}>Custom Font Text</Text>
+ * // Scales with Dynamic Type
+ * <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Hello</Text>
  *
- * // System font with weight and design
- * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>System Font Text</Text>
+ * // Custom font that scales relative to the body text style
+ * <Text modifiers={[font({ textStyle: 'body', family: 'Helvetica', size: 18 })]}>Hi</Text>
+ *
+ * // Fixed-size system font (no Dynamic Type scaling)
+ * <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 16 })]}>Static</Text>
  * ```
- * @see Official [SwiftUI documentation for `custom(_:size:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:)) and Official [SwiftUI documentation for `system(size:weight:design:)`](https://developer.apple.com/documentation/swiftui/font/system(size:weight:design:)).
+ * @see Official SwiftUI documentation for [`system(_:design:weight:)`](https://developer.apple.com/documentation/swiftui/font/system(_:design:weight:)), and [`custom(_:size:relativeTo:)`](https://developer.apple.com/documentation/swiftui/font/custom(_:size:relativeto:)).
  */
 export const font = (params: {
-  /**
-   * Custom font family name.
-   * If provided, uses `Font.custom()`.
-   */
+  /** Custom font family name. */
   family?: string;
-  /** Font size in points. */
+  /**
+   * Font size in points. Ignored when only `textStyle` is set.
+   *
+   * @default 17
+   */
   size?: number;
-  /** Font weight for system fonts. */
+  /** Font weight. */
   weight?:
     | 'ultraLight'
     | 'thin'
@@ -933,8 +1019,24 @@ export const font = (params: {
     | 'bold'
     | 'heavy'
     | 'black';
-  /** Font design for system fonts */
+  /** Font design. Applied when no `family` is provided. `Font.custom` always uses the embedded font's own design. */
   design?: 'default' | 'rounded' | 'serif' | 'monospaced';
+  /**
+   * SwiftUI text style. When set, the resulting font scales with the user's
+   * Dynamic Type setting.
+   */
+  textStyle?:
+    | 'largeTitle'
+    | 'title'
+    | 'title2'
+    | 'title3'
+    | 'headline'
+    | 'subheadline'
+    | 'body'
+    | 'callout'
+    | 'footnote'
+    | 'caption'
+    | 'caption2';
 }) => createModifier('font', params);
 /**
  * Asks grid layouts not to offer the view extra size in the specified axes.
@@ -1016,6 +1118,43 @@ export const gridCellAnchor = (
 export const submitLabel = (
   submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
 ) => createModifier('submitLabel', { submitLabel });
+
+/**
+ * Sets the keyboard type for text input views.
+ * @param keyboardType - The type of keyboard to display.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/keyboardtype(_:)).
+ */
+export const keyboardType = (
+  keyboardType:
+    | 'default'
+    | 'email-address'
+    | 'numeric'
+    | 'phone-pad'
+    | 'ascii-capable'
+    | 'numbers-and-punctuation'
+    | 'url'
+    | 'name-phone-pad'
+    | 'decimal-pad'
+    | 'twitter'
+    | 'web-search'
+    | 'ascii-capable-number-pad'
+) => createModifier('keyboardType', { keyboardType });
+
+/**
+ * Disables autocorrection for text input views.
+ * @param disabled - Whether autocorrection is disabled. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/autocorrectiondisabled(_:)).
+ */
+export const autocorrectionDisabled = (disabled: boolean = true) =>
+  createModifier('autocorrectionDisabled', { disabled });
+
+/**
+ * Adds an action to perform when the user submits a value to this view (e.g. pressing return in a text field).
+ * @param handler - Function to call on submit.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onsubmit(of:_:)).
+ */
+export const onSubmit = (handler: () => void) =>
+  createModifierWithEventListener('onSubmit', handler);
 
 /**
  * Sets how often the shift key in the keyboard is automatically enabled.
@@ -1165,6 +1304,7 @@ export type BuiltInModifier =
   | ReturnType<typeof onAppear>
   | ReturnType<typeof luminanceToAlpha>
   | ReturnType<typeof onDisappear>
+  | ReturnType<typeof onGeometryChange>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
@@ -1212,10 +1352,15 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof scrollIndicators>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof scrollTargetBehavior>
   | ReturnType<typeof scrollTargetLayout>
+  | ReturnType<typeof id>
+  | ReturnType<typeof scrollPosition>
+  | ReturnType<typeof onScrollPhaseChange>
+  | NonNullable<ReturnType<typeof useScrollGeometryChange>>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1230,6 +1375,7 @@ export type BuiltInModifier =
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
   | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof lineHeight>
   | ReturnType<typeof lineLimit>
   | ReturnType<typeof headerProminence>
   | ReturnType<typeof listRowInsets>
@@ -1242,6 +1388,9 @@ export type BuiltInModifier =
   | ReturnType<typeof gridColumnAlignment>
   | ReturnType<typeof gridCellAnchor>
   | ReturnType<typeof submitLabel>
+  | ReturnType<typeof keyboardType>
+  | ReturnType<typeof autocorrectionDisabled>
+  | ReturnType<typeof onSubmit>
   | ReturnType<typeof textInputAutocapitalization>
   | ReturnType<typeof textContentType>
   | ReturnType<typeof datePickerStyle>
@@ -1250,8 +1399,10 @@ export type BuiltInModifier =
   | ReturnType<typeof listStyle>
   | ReturnType<typeof contentTransition>
   | ReturnType<typeof resizable>
+  | ReturnType<typeof symbolEffect>
   | ReturnType<typeof widgetAccentedRenderingMode>
-  | ReturnType<typeof widgetURL>;
+  | ReturnType<typeof widgetURL>
+  | ReturnType<typeof containerBackground>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1284,6 +1435,7 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 };
 
 export * from './animation/index';
+export * from './containerBackground';
 export * from './containerShape';
 export * from './contentShape';
 export * from './shapes/index';
@@ -1291,11 +1443,15 @@ export * from './background';
 export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
+export * from './tabViewModifiers';
 export * from './datePickerStyle';
 export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export * from './scrollPosition';
+export * from './symbolEffect';
+export * from './scrollObservation';
 export * from './widgets';
 export type {
   TimingAnimationParams,

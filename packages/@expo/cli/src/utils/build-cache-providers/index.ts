@@ -1,4 +1,9 @@
-import { ExpoConfig, BuildCacheProviderPlugin, BuildCacheProvider, RunOptions } from '@expo/config';
+import type {
+  ExpoConfig,
+  BuildCacheProviderPlugin,
+  BuildCacheProvider,
+  RunOptions,
+} from '@expo/config';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';

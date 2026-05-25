@@ -42,28 +42,28 @@ export type IconButtonProps = {
  * A standard icon button with no background.
  */
 export declare const IconButton: {
-    (props: IconButtonProps): import("react").JSX.Element;
+    (props: IconButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * A filled icon button with a solid background.
  */
 export declare const FilledIconButton: {
-    (props: IconButtonProps): import("react").JSX.Element;
+    (props: IconButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * A filled tonal icon button with a muted background.
  */
 export declare const FilledTonalIconButton: {
-    (props: IconButtonProps): import("react").JSX.Element;
+    (props: IconButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * An outlined icon button with a border and no fill.
  */
 export declare const OutlinedIconButton: {
-    (props: IconButtonProps): import("react").JSX.Element;
+    (props: IconButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 //# sourceMappingURL=index.d.ts.map

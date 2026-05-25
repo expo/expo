@@ -10,6 +10,7 @@ export {
 export {
   getContextKey,
   isTypedRoute,
+  matchDynamicName,
   matchGroupName,
   removeSupportedExtensions,
   stripGroupSegmentsFromPath,

@@ -67,6 +67,7 @@ public final class ImageView: ExpoView {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
         sdImageView.image = nil
+        placeholderImage = nil
       }
     }
   }
@@ -87,9 +88,9 @@ public final class ImageView: ExpoView {
   var isSFSymbolSource: Bool = false
 
   /**
-   The ideal image size that fills in the container size while maintaining the source aspect ratio.
+   `idealSize` before rounding, used only for `contentPosition` math so alignment matches true cover/contain geometry.
    */
-  var imageIdealSize: CGSize = .zero
+  var imageLayoutSize: CGSize = .zero
 
   // MARK: - Events
 
@@ -139,7 +140,7 @@ public final class ImageView: ExpoView {
     if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
       // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
       // After that we have to recalculate the mask layer in `applyContentPosition`.
-      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     }
   }
 
@@ -150,7 +151,11 @@ public final class ImageView: ExpoView {
       return
     }
     if isViewEmpty {
-      displayPlaceholderIfNecessary()
+      if placeholderImage != nil {
+        displayPlaceholderIfNecessary()
+      } else {
+        loadPlaceholderIfNecessary()
+      }
     }
     guard let source = bestSource else {
       displayPlaceholderIfNecessary()
@@ -266,15 +271,15 @@ public final class ImageView: ExpoView {
       ])
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
-      imageIdealSize = idealSize(
+      imageLayoutSize = idealSize(
         contentPixelSize: image.size * image.scale,
         containerSize: frame.size,
         scale: scale,
         contentFit: contentFit
-      ).rounded(.up)
-
+      )
+      let imageIdealSize = imageLayoutSize.rounded(.up)
       let image = processImage(image, idealSize: imageIdealSize, scale: scale)
-      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
       renderSourceImage(image)
     } else {
       displayPlaceholderIfNecessary()
@@ -310,14 +315,14 @@ public final class ImageView: ExpoView {
     ])
 
     let scale = window?.screen.scale ?? UIScreen.main.scale
-    imageIdealSize = idealSize(
+    imageLayoutSize = idealSize(
       contentPixelSize: image.size * image.scale,
       containerSize: frame.size,
       scale: scale,
       contentFit: contentFit
-    ).rounded(.up)
+    )
 
-    applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     renderSFSymbolImage(image)
   }
 
@@ -347,22 +352,19 @@ public final class ImageView: ExpoView {
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
-    let path: String? = {
-      // .path() on iOS 16 would remove the leading slash, but it doesn't on tvOS 16 🙃
-      // It also crashes with EXC_BREAKPOINT when parsing data:image uris
-      // manually drop the leading slash below iOS 16
-      if let path = source.uri?.path {
-        return String(path.dropFirst())
-      }
-      return nil
-    }()
-
-    if let path, !path.isEmpty, let local = UIImage(named: path) {
+    if let local = localAssetImage(from: source) {
       renderSourceImage(local)
       return true
     }
 
     return false
+  }
+
+  private func localAssetImage(from source: ImageSource) -> UIImage? {
+    guard let path = localAssetName(from: source.uri) else {
+      return nil
+    }
+    return UIImage(named: path)
   }
 
   // MARK: - Placeholder
@@ -412,6 +414,14 @@ public final class ImageView: ExpoView {
     // Exit early if placeholder is not set or there is already an image attached to the view.
     // The placeholder is only used until the first image is loaded.
     guard canDisplayPlaceholder, let placeholder = bestPlaceholder else {
+      return
+    }
+
+    // Asset catalog (xcassets) images aren't resolvable by SDWebImage, so try the
+    // local lookup first — mirroring the proper source path in `maybeRenderLocalAsset`.
+    if let localImage = localAssetImage(from: placeholder) {
+      placeholderImage = localImage
+      displayPlaceholderIfNecessary()
       return
     }
 
@@ -840,4 +850,26 @@ public final class ImageView: ExpoView {
     return interaction as? ImageAnalysisInteraction
   }
 #endif
+}
+
+func localAssetName(from url: URL?) -> String? {
+  guard let url else {
+    return nil
+  }
+
+  // `ExpoModulesCore` converts scheme-less URI strings from JS via
+  // `URL(fileURLWithPath:)`, so asset names like "my_image" arrive here with
+  // `scheme == "file"`. Accept those alongside truly scheme-less URLs; reject
+  // remote/SF Symbol/blurhash/etc. schemes.
+  if let scheme = url.scheme, scheme != "file" {
+    return nil
+  }
+
+  // Use `relativePath` so we recover the original input ("my_image") instead of
+  // the absolute path it resolves to against the file:// base
+  var path = url.relativePath
+  if path.hasPrefix("/") {
+    path.removeFirst()
+  }
+  return path.isEmpty ? nil : path
 }

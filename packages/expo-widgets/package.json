@@ -1,6 +1,6 @@
 {
   "name": "expo-widgets",
-  "version": "55.0.1",
+  "version": "56.0.14",
   "description": "Widgets.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -31,17 +31,27 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
   "dependencies": {
-    "@expo/plist": "workspace:^0.5.2",
-    "@expo/ui": "workspace:~55.0.1"
+    "@expo/plist": "workspace:^0.7.0",
+    "@expo/ui": "workspace:~56.0.13"
   },
   "devDependencies": {
+    "@expo/spawn-async": "^1.8.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
+    "react-native": "0.85.3",
     "resolve-workspace-root": "^2.0.0"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
-    "react": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/with-node.sh",
+      "./scripts/xcode-build-bundle.sh"
+    ]
   }
 }

@@ -5,13 +5,14 @@
       "name": "ExpoUI",
       "podName": "ExpoUI",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
-        "expo-modules-core/ExpoModulesCore"
+        "expo-modules-core/ExpoModulesCore",
+        "expo-modules-core/ExpoModulesWorklets"
       ],
       "targets": [
         {
@@ -43,6 +44,7 @@
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore",
+            "expo-modules-core/ExpoModulesWorklets",
             "ExpoUI_ios_objc"
           ],
           "linkedFrameworks": [

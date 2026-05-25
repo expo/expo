@@ -49,5 +49,5 @@ export const Link = Object.assign(
 
 export type LinkComponent = typeof Link;
 
-export { LinkProps, WebAnchorProps };
-export { Redirect, RedirectProps } from './Redirect';
+export type { LinkProps, WebAnchorProps };
+export { Redirect, type RedirectProps } from './Redirect';

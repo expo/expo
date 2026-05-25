@@ -1,8 +1,7 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "JavaReferencesCache.h"
-
-#include <vector>
 
 namespace expo {
 

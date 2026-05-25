@@ -1,0 +1,1 @@
+{"version":3,"file":"html.js","sourceRoot":"","sources":["../src/html.ts"],"names":[],"mappings":";;;AAAA,sCAAqD;AAA5C,4GAAA,oBAAoB,OAAA;AAC7B,0DAAmE;AAA1D,0HAAA,wBAAwB,OAAA","sourcesContent":["export { ScrollViewStyleReset } from './static/html';\nexport { useServerDocumentContext } from './server/ServerDocument';\n"]}

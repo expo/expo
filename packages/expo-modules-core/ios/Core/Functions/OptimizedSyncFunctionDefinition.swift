@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  Optimized synchronous function definition.
  This is used by the `@OptimizedFunction` macro with specific type signatures.
@@ -31,6 +33,11 @@ public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unche
     return argsCount
   }
 
+  public var requiredArgumentsCount: Int {
+    // Optimized functions don't support optional arguments, so all args are required.
+    return argsCount
+  }
+
   public var takesOwner: Bool = false
 
   public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
@@ -39,11 +46,11 @@ public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unche
 
   // MARK: - AnySyncFunctionDefinition
 
-  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any {
-    throw GenericException("OptimizedSyncFunctionDefinition cannot be called from native code")
+  public func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> ExpoModulesJSI.JavaScriptValue {
+    throw GenericException("OptimizedSyncFunctionDefinition cannot be called directly")
   }
 
-  public func call(_ appContext: AppContext, withThis this: JavaScriptValue?, arguments: [JavaScriptValue]) throws -> JavaScriptValue {
+  public func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
     throw GenericException("OptimizedSyncFunctionDefinition cannot be called directly")
   }
 
@@ -51,12 +58,24 @@ public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unche
 
   @JavaScriptActor
   public func build(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createSyncFunction(
-      name,
-      typeEncoding: typeEncoding,
-      argsCount: argsCount,
-      body: block
-    )
+    return try build(appContext: appContext, in: appContext.runtime)
+  }
+
+  public func build(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    var object = runtime.createObject()
+    runtime.withUnsafePointee { runtimePointer in
+      object.withUnsafeMutablePointee { objectPointer in
+        OptimizedFunctionUtils.createSyncFunction(
+          name: name,
+          intoObject: objectPointer,
+          runtimePointer: runtimePointer,
+          typeEncoding: typeEncoding,
+          argsCount: argsCount,
+          block: block
+        )
+      }
+    }
+    return object
   }
 
   // MARK: - Descriptor Factory

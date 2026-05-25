@@ -4,5 +4,5 @@ import * as React from 'react';
  */
 export declare function NavigationIndependentTree({ children }: {
     children: React.ReactNode;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=NavigationIndependentTree.d.ts.map

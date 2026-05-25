@@ -1,5 +1,5 @@
 import type { LinkToOptions, NavigationOptions } from './types';
-import { Href, Route, RouteInputParams } from '../types';
+import type { Href, RoutePath, RouteInputParams } from '../types';
 export declare function navigate(url: Href, options?: NavigationOptions): void;
 export declare function reload(): void;
 export declare function prefetch(href: Href, options?: NavigationOptions): void;
@@ -29,7 +29,7 @@ export declare function linkTo(originalHref: Href, options?: LinkToOptions): voi
  *}
  * ```
  */
-export type Router = {
+export type ImperativeRouter = {
     /**
      * Goes back in the navigation history.
      */
@@ -65,8 +65,11 @@ export type Router = {
      */
     dismissTo: (href: Href, options?: NavigationOptions) => void;
     /**
-     * Returns to the first screen in the closest stack. This is similar to
-     * [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
+     * Returns to the first screen of the closest stack — equivalent to a stack
+     * `popToTop` action.
+     *
+     * @see React Navigation's [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop)
+     * stack action for the underlying behavior.
      */
     dismissAll: () => void;
     /**
@@ -78,7 +81,7 @@ export type Router = {
     /**
      * Updates the current route's query params.
      */
-    setParams: <T extends Route>(params: Partial<RouteInputParams<T>>) => void;
+    setParams: <T extends RoutePath>(params: Partial<RouteInputParams<T>>) => void;
     /**
      * Reloads the currently mounted route in experimental server mode. This can be used to re-fetch data.
      * @hidden
@@ -92,5 +95,5 @@ export type Router = {
 /**
  * @hidden
  */
-export declare const router: Router;
+export declare const router: ImperativeRouter;
 //# sourceMappingURL=router.d.ts.map

@@ -1,6 +1,7 @@
 'use client';
 import { nanoid } from 'nanoid/non-secure';
-import React, { Children, ComponentProps, useMemo } from 'react';
+import type { ComponentProps } from 'react';
+import { Children, useMemo } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
@@ -13,31 +14,33 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
-import { SingularOptions, getSingularId } from '../useScreens';
+import type { SingularOptions } from '../useScreens';
+import { getSingularId } from '../useScreens';
 import {
   type StackScreenProps,
   StackHeader,
   StackScreen,
   StackSearchBar,
+  StackTitle,
   StackToolbar,
   appendScreenStackPropsToOptions,
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
 import {
-  CommonNavigationAction,
-  NavigationAction,
-  ParamListBase,
-  PartialRoute,
-  PartialState,
-  Route,
-  RouterConfigOptions,
+  type CommonNavigationAction,
+  type NavigationAction,
+  type ParamListBase,
+  type PartialRoute,
+  type PartialState,
+  type Route,
+  type RouterConfigOptions,
+  type StackActionType,
+  type StackNavigationState,
   StackRouter as RNStackRouter,
-  StackActionType,
-  StackNavigationState,
   type RouteProp,
 } from '../react-navigation/native';
-import {
+import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../react-navigation/native-stack';
@@ -214,7 +217,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
           } else if (action.type === 'NAVIGATE') {
-            const currentRoute = state.routes[state.index];
+            const currentRoute = state.routes[state.index]!;
 
             // If the route matches the current one, then navigate to it
             if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
@@ -293,7 +296,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                 routes = state.routes.filter((r) => r.key !== route.key);
               } else if (action.type === 'NAVIGATE' && state.routes.length > 0) {
                 // The navigation action should only replace the last route if it has the same name and path params.
-                const lastRoute = state.routes[state.routes.length - 1];
+                const lastRoute = state.routes[state.routes.length - 1]!;
                 if (
                   getSingularId(lastRoute.name, { params: lastRoute.params }) ===
                   getSingularId(route.name, { params })
@@ -353,7 +356,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             ...state,
             index: routes.length - 1,
             preloadedRoutes: state.preloadedRoutes.filter(
-              (route) => routes[routes.length - 1].key !== route.key
+              (route) => routes[routes.length - 1]!.key !== route.key
             ),
             routes,
           };
@@ -364,7 +367,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
           const zoomTransitionId = getZoomTransitionIdFromAction(action);
           if (zoomTransitionId) {
-            const lastRoute = result.routes[result.routes.length - 1];
+            const lastRoute = result.routes[result.routes.length - 1]!;
             const key = lastRoute.key;
             const modifiedLastRoute: typeof lastRoute = {
               ...lastRoute,
@@ -530,8 +533,9 @@ function filterSingular<
     return state;
   }
 
+  // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
   const currentIndex = state.index || state.routes.length - 1;
-  const current = state.routes[currentIndex];
+  const current = state.routes[currentIndex]!;
   const name = current.name;
 
   const id = getId?.({ params: current.params });
@@ -621,6 +625,7 @@ const Stack = Object.assign(
     Protected,
     Header: StackHeader,
     SearchBar: StackSearchBar,
+    Title: StackTitle,
     Toolbar: StackToolbar,
   }
 );

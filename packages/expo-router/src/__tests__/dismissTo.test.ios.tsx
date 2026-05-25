@@ -1,5 +1,4 @@
 import { screen, act } from '@testing-library/react-native';
-import React from 'react';
 
 import { router } from '../imperative-api';
 import Stack from '../layouts/StackClient';

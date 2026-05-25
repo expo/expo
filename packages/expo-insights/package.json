@@ -1,7 +1,7 @@
 {
   "name": "expo-insights",
   "title": "Expo Insights",
-  "version": "55.0.10",
+  "version": "56.0.13",
   "description": "Expo module that offers developers insight into the usage data of the app",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -31,12 +31,13 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-eas-client": "workspace:~55.0.2"
+    "expo-eas-client": "workspace:~56.0.0"
   },
   "devDependencies": {
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "*"
   }
 }

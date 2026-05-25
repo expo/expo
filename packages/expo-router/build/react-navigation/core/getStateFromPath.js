@@ -493,6 +493,9 @@ const createNestedStateObject = (path, routes, initialRoutes, flatConfig) => {
 };
 const parseQueryParams = (path, parseConfig) => {
     const query = path.split('?')[1];
+    if (!query) {
+        return undefined;
+    }
     const params = queryString.parse(query);
     if (parseConfig) {
         Object.keys(params).forEach((name) => {

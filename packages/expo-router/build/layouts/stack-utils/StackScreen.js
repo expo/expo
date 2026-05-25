@@ -4,8 +4,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackScreen = void 0;
 exports.validateStackPresentation = validateStackPresentation;
 exports.appendScreenStackPropsToOptions = appendScreenStackPropsToOptions;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
+const StackTitle_1 = require("./StackTitle");
 const screen_1 = require("./screen");
 const toolbar_1 = require("./toolbar");
 const children_1 = require("../../utils/children");
@@ -15,7 +17,7 @@ const Screen_1 = require("../../views/Screen");
  *
  * Can be used in the `_layout.tsx` files, or directly in page components.
  *
- * When configuring header inside page components, prefer using `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components.
+ * When configuring header inside page components, prefer using `Stack.Title`, `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components.
  *
  * @example
  * ```tsx app/_layout.tsx
@@ -32,23 +34,6 @@ const Screen_1 = require("../../views/Screen");
  *  );
  * }
  * ```
- *
- * @example
- * ```tsx app/home.tsx
- * import { Stack } from 'expo-router';
- *
- * export default function HomePage() {
- *   return (
- *     <>
- *       <Stack.Screen
- *         options={{ headerTransparent: true }}
- *       />
- *       <Stack.Screen.Title>Welcome Home</Stack.Screen.Title>
- *       // Page content
- *     </>
- *   );
- * }
- * ```
  */
 exports.StackScreen = Object.assign(function StackScreen({ children, options, ...rest }) {
     // This component will only render when used inside a page.
@@ -56,12 +41,12 @@ exports.StackScreen = Object.assign(function StackScreen({ children, options, ..
         console.warn('Stack.Screen: Function-form options are not supported inside page components. Pass an options object directly.');
     }
     const ownOptions = (0, react_1.useMemo)(() => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})), [options]);
-    return (<>
-        <Screen_1.Screen {...rest} options={ownOptions}/>
-        {children}
-      </>);
+    return ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(Screen_1.Screen, { ...rest, options: ownOptions }), children] }));
 }, {
-    Title: screen_1.StackScreenTitle,
+    /**
+     * @deprecated Use `Stack.Title` instead.
+     */
+    Title: StackTitle_1.StackTitle,
     BackButton: screen_1.StackScreenBackButton,
 });
 const VALID_PRESENTATIONS = [
@@ -96,8 +81,8 @@ function appendScreenStackPropsToOptions(options, props) {
         if ((0, children_1.isChildOfType)(child, StackHeaderComponent_1.StackHeaderComponent)) {
             return (0, StackHeaderComponent_1.appendStackHeaderPropsToOptions)(opts, child.props);
         }
-        if ((0, children_1.isChildOfType)(child, screen_1.StackScreenTitle)) {
-            return (0, screen_1.appendStackScreenTitlePropsToOptions)(opts, child.props);
+        if ((0, children_1.isChildOfType)(child, StackTitle_1.StackTitle)) {
+            return (0, StackTitle_1.appendStackTitlePropsToOptions)(opts, child.props);
         }
         if ((0, children_1.isChildOfType)(child, screen_1.StackScreenBackButton)) {
             return (0, screen_1.appendStackScreenBackButtonPropsToOptions)(opts, child.props);

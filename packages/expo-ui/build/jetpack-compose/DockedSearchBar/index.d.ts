@@ -19,9 +19,9 @@ type PlaceholderProps = {
 type LeadingIconProps = {
     children: React.ReactNode;
 };
-export declare function DockedSearchBarPlaceholder(props: PlaceholderProps): import("react").JSX.Element;
-export declare function DockedSearchBarLeadingIcon(props: LeadingIconProps): import("react").JSX.Element;
-declare function DockedSearchBar(props: DockedSearchBarProps): import("react").JSX.Element;
+export declare function DockedSearchBarPlaceholder(props: PlaceholderProps): import("react/jsx-runtime").JSX.Element;
+export declare function DockedSearchBarLeadingIcon(props: LeadingIconProps): import("react/jsx-runtime").JSX.Element;
+declare function DockedSearchBar(props: DockedSearchBarProps): import("react/jsx-runtime").JSX.Element;
 declare namespace DockedSearchBar {
     var Placeholder: typeof DockedSearchBarPlaceholder;
     var LeadingIcon: typeof DockedSearchBarLeadingIcon;

@@ -1,6 +1,6 @@
-import spawnAsync, { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
-import { PackageManager, PackageManagerOptions } from '../PackageManager';
-import { PendingSpawnPromise } from '../utils/spawn';
+import type { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import type { PackageManager, PackageManagerOptions } from '../PackageManager';
+import type { PendingSpawnPromise } from '../utils/spawn';
 export declare abstract class BasePackageManager implements PackageManager {
     readonly silent: boolean;
     readonly log?: (...args: any) => void;
@@ -23,8 +23,8 @@ export declare abstract class BasePackageManager implements PackageManager {
     abstract workspaceRoot(): PackageManager | null;
     /** Ensure the CWD is set to a non-empty string */
     protected ensureCwdDefined(method?: string): string;
-    runAsync(command: string[], options?: SpawnOptions): spawnAsync.SpawnPromise<spawnAsync.SpawnResult>;
-    runBinAsync(command: string[], options?: SpawnOptions): spawnAsync.SpawnPromise<spawnAsync.SpawnResult>;
+    runAsync(command: string[], options?: SpawnOptions): SpawnPromise<SpawnResult>;
+    runBinAsync(command: string[], options?: SpawnOptions): SpawnPromise<SpawnResult>;
     versionAsync(): Promise<string>;
     getConfigAsync(key: string): Promise<string>;
     removeLockfileAsync(): Promise<void>;

@@ -19,7 +19,7 @@ export function mergeOptions(
   const focusedKey = state.routes[state.index]?.key;
 
   for (const key in descriptors) {
-    const descriptor = descriptors[key];
+    const descriptor = descriptors[key]!;
     const routeOptions = registry[key];
 
     // No composition options or empty array → pass through

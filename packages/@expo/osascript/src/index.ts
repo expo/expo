@@ -1,6 +1,19 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import path from 'path';
-import util from 'util';
+
+function escapeString(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\r/g, '\\r')
+    .replace(/\n/g, '\\n')
+    .replace(/\t/g, '\\t');
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
 
 function osascriptArgs(script: string | string[]): string[] {
   if (!Array.isArray(script)) {
@@ -25,14 +38,14 @@ async function osascriptSpawnAsync(
 
 async function isAppRunningAsync(appName: string): Promise<boolean> {
   const { stdout } = await osascriptSpawnAsync(
-    `tell app "System Events" to count processes whose name is ${JSON.stringify(appName)}`
+    `tell app "System Events" to count processes whose name is "${escapeString(appName)}"`
   );
   return stdout.trim() !== '0';
 }
 
 async function safeIdOfAppAsync(appName: string): Promise<string | null> {
   try {
-    const { stdout } = await osascriptSpawnAsync(`id of app ${JSON.stringify(appName)}`);
+    const { stdout } = await osascriptSpawnAsync(`id of app "${escapeString(appName)}"`);
     return stdout.trim();
   } catch {
     return null;
@@ -42,17 +55,16 @@ async function safeIdOfAppAsync(appName: string): Promise<string | null> {
 async function openFinderToFolderAsync(dir: string, activate = true): Promise<void> {
   await osascriptSpawnAsync([
     'tell application "Finder"',
-    'open POSIX file ' + JSON.stringify(dir),
+    `open POSIX file "${escapeString(dir)}"`,
     (activate && 'activate') || '',
     'end tell',
   ]);
 }
 
 async function openInAppAsync(appName: string, pth: string): Promise<SpawnResult> {
-  const cmd =
-    'tell app ' + JSON.stringify(appName) + ' to open ' + JSON.stringify(path.resolve(pth));
-  // console.log("cmd=", cmd);
-  return await osascriptSpawnAsync(cmd);
+  return await osascriptSpawnAsync(
+    `tell app "${escapeString(appName)}" to open "${escapeString(path.resolve(pth))}"`
+  );
 }
 
 async function chooseAppAsync(listOfAppNames: string[]): Promise<string | null> {
@@ -142,6 +154,7 @@ async function openInEditorAsync(pth: string, preferredEditor?: string): Promise
 }
 
 async function openItermToSpecificFolderAsync(dir: string): Promise<SpawnResult> {
+  const shellCommand = escapeString(`cd ${shellQuote(dir)} && clear`);
   return await osascriptSpawnAsync([
     'tell application "iTerm"',
     'make new terminal',
@@ -149,29 +162,26 @@ async function openItermToSpecificFolderAsync(dir: string): Promise<SpawnResult>
     'activate current session',
     'launch session "Default Session"',
     'tell the last session',
-    'write text "cd ' + util.inspect(dir) + ' && clear"',
-    // 'write text "clear"',
+    `write text "${shellCommand}"`,
     'end tell',
     'end tell',
     'end tell',
   ]);
-  // exec("osascript -e 'tell application \"iTerm\"' -e 'make new terminal' -e 'tell the first terminal' -e 'activate current session' -e 'launch session \"Default Session\"' -e 'tell the last session' -e 'write text \"cd #{value}\"' -e 'write text \"clear\"' -e 'end tell' -e 'end tell' -e 'end tell' > /dev/null 2>&1")
 }
 
 async function openTerminalToSpecificFolderAsync(dir: string, inTab = false): Promise<SpawnResult> {
+  const shellCommand = escapeString(`cd ${shellQuote(dir)} && clear`);
   if (inTab) {
     return await osascriptSpawnAsync([
       'tell application "terminal"',
       'tell application "System Events" to tell process "terminal" to keystroke "t" using command down',
-      'do script with command "cd ' +
-        util.inspect(dir) +
-        ' && clear" in selected tab of the front window',
+      `do script with command "${shellCommand}" in selected tab of the front window`,
       'end tell',
     ]);
   } else {
     return await osascriptSpawnAsync([
       'tell application "terminal"',
-      'do script "cd ' + util.inspect(dir) + ' && clear"',
+      `do script "${shellCommand}"`,
       'end tell',
       'tell application "terminal" to activate',
     ]);
@@ -200,6 +210,7 @@ export {
   chooseAppAsync,
   chooseEditorAppAsync,
   chooseTerminalAppAsync,
+  escapeString,
   osascriptExecAsync as execAsync,
   isAppRunningAsync,
   openFinderToFolderAsync,

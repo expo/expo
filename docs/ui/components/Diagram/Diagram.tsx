@@ -26,7 +26,7 @@ export const Diagram = ({ source, darkSource, disableSrcSet, alt }: Props) => {
 
   if (!source.endsWith('.png')) {
     return (
-      <div className="border-default bg-default relative m-auto my-6 max-w-[750px] overflow-hidden rounded-md border">
+      <div className="relative m-auto my-6 max-w-187.5 overflow-hidden rounded-md border border-default bg-default">
         <DotGrid />
         <picture className="relative">
           {isDark && darkSource && <source srcSet={darkSource} />}
@@ -37,7 +37,7 @@ export const Diagram = ({ source, darkSource, disableSrcSet, alt }: Props) => {
   }
 
   return (
-    <div className="border-default bg-default relative m-auto my-6 max-w-[750px] overflow-hidden rounded-md border">
+    <div className="relative m-auto my-6 max-w-187.5 overflow-hidden rounded-md border border-default bg-default">
       <DotGrid />
       <picture className="relative">
         {!isDark && !disableSrcSet && (

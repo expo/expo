@@ -1,8 +1,9 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../log';
+import type { DependencyCheckRef } from '../checkDependenciesOnStart';
 import type { McpServer } from '../server/MCP';
 
 // Approximately how many rows apart from the commands table (usage guide on `expo start`)
@@ -20,6 +21,7 @@ export type StartOptions = {
   maxWorkers?: number;
   platforms?: ExpoConfig['platforms'];
   mcpServer?: McpServer;
+  dependencyCheckRef?: DependencyCheckRef;
 };
 
 export const printHelp = (): void => {
@@ -104,11 +106,6 @@ export function printUsage(
   } else {
     printPrefix({ short: false });
   }
-}
-
-interface LogCommandsOutput {
-  lines: number;
-  print(): void;
 }
 
 function logCommandsTable(

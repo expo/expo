@@ -1,6 +1,6 @@
 'use strict';
 
-import { EventSubscription, Platform } from 'expo-modules-core';
+import { EventSubscription } from 'expo-modules-core';
 import {
   createVideoPlayer,
   SourceLoadEventPayload,
@@ -31,31 +31,29 @@ const localVideoSource = {
 };
 
 const bigBuckBunnySource = {
-  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  uri: 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4',
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
-    artwork:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/1200px-Big_buck_bunny_poster_big.jpg',
+    artwork: 'https://expo-test-media.com/big_buck_bunny/artwork.jpg',
   },
 };
 
 const elephantsDreamSource = {
-  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  uri: 'https://expo-test-media.com/elephants_dream/ed_720p.mp4',
   metadata: {
     title: 'Elephants Dream',
     artist: 'Blender Foundation',
-    artwork: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/ElephantsDreamPoster.jpg',
+    artwork: 'https://expo-test-media.com/elephants_dream/artwork.jpg',
   },
 };
 
 export const hlsSource = {
-  uri: 'https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+  uri: 'https://expo-test-media.com/tos_hls/master.m3u8',
   metadata: {
     title: 'Sintel',
     artist: 'Blender Foundation',
-    artwork:
-      'https://bookshow.blurb.com/bookshow/cache/P14464689/md/cover_2.jpeg?access_key=a096a6a606efe615ac87edc04766c661',
+    artwork: 'https://expo-test-media.com/tos_hls/artwork.jpg',
   },
 };
 
@@ -78,23 +76,22 @@ const brokenSource = {
 const bigBuckBunnySourceData: SourceLoadEventPayload = {
   availableVideoTracks: [
     {
-      bitrate: 5372792,
+      bitrate: 1676863,
       id: '2',
       isSupported: true,
-      frameRate: 24,
-      peakBitrate: 5372792,
+      frameRate: 30,
+      peakBitrate: 1676863,
       mimeType: 'video/avc',
       size: { height: 720, width: 1280 },
-      averageBitrate: 1991287,
+      averageBitrate: 1676863,
     },
   ],
   videoSource: {
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    uri: 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4',
     metadata: {
       artist: 'The Open Movie Project',
       title: 'Big Buck Bunny',
-      artwork:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/1200px-Big_buck_bunny_poster_big.jpg',
+      artwork: 'https://expo-test-media.com/big_buck_bunny/artwork.jpg',
     },
     drm: null,
     headers: null,
@@ -103,7 +100,7 @@ const bigBuckBunnySourceData: SourceLoadEventPayload = {
   },
   availableAudioTracks: [],
   availableSubtitleTracks: [],
-  duration: 596.4583333333334,
+  duration: 634.533333,
 };
 
 const localVideoSourceData: SourceLoadEventPayload = {
@@ -134,110 +131,79 @@ const localVideoSourceData: SourceLoadEventPayload = {
 
 const hlsSourceData: SourceLoadEventPayload = {
   videoSource: {
-    uri: 'https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+    uri: 'https://expo-test-media.com/tos_hls/master.m3u8',
     drm: null,
     contentType: 'auto',
     metadata: {
       title: 'Sintel',
       artist: 'Blender Foundation',
-      artwork:
-        'https://bookshow.blurb.com/bookshow/cache/P14464689/md/cover_2.jpeg?access_key=a096a6a606efe615ac87edc04766c661',
+      artwork: 'https://expo-test-media.com/tos_hls/artwork.jpg',
     },
     headers: null,
     useCaching: false,
   },
-  duration: 888,
+  duration: 734.167,
   availableSubtitleTracks: [
-    { language: 'de', label: 'German' },
     { language: 'en', label: 'English' },
+    { language: 'de', label: 'German' },
     { language: 'es', label: 'Spanish' },
-    { label: 'French', language: 'fr' },
+    { language: 'fr', label: 'French' },
   ],
   availableVideoTracks: [
     {
-      peakBitrate: 258157,
-      size: { height: 180, width: 422 },
-      bitrate: 258157,
+      peakBitrate: 7628000,
+      size: { height: 800, width: 1920 },
+      bitrate: 7628000,
       averageBitrate: null,
       isSupported: true,
-      id: 'video/250kbit.m3u8',
+      id: 'video/original/playlist.m3u8',
       mimeType: 'video/avc',
       frameRate: null,
     },
     {
-      bitrate: 520929,
-      mimeType: 'video/avc',
-      peakBitrate: 520929,
-      size: { height: 272, width: 638 },
-      averageBitrate: null,
-      frameRate: null,
-      isSupported: true,
-      id: 'video/500kbit.m3u8',
-    },
-    {
-      peakBitrate: 831270,
-      frameRate: null,
-      id: 'video/800kbit.m3u8',
-      size: { height: 272, width: 638 },
+      peakBitrate: 2128000,
+      size: { height: 800, width: 1920 },
+      bitrate: 2128000,
       averageBitrate: null,
       isSupported: true,
-      bitrate: 831270,
+      id: 'video/1080p/playlist.m3u8',
       mimeType: 'video/avc',
-    },
-    {
-      mimeType: 'video/avc',
-      id: 'video/1100kbit.m3u8',
-      averageBitrate: null,
-      frameRate: null,
-      isSupported: true,
-      peakBitrate: 1144430,
-      bitrate: 1144430,
-      size: { height: 408, width: 958 },
-    },
-    {
-      frameRate: null,
-      peakBitrate: 1558322,
-      mimeType: 'video/avc',
-      size: { width: 1277, height: 554 },
-      averageBitrate: null,
-      isSupported: true,
-      id: 'video/1500kbit.m3u8',
-      bitrate: 1558322,
-    },
-    {
-      id: 'video/4000kbit.m3u8',
-      bitrate: 4149264,
-      frameRate: null,
-      averageBitrate: null,
-      peakBitrate: 4149264,
-      mimeType: 'video/avc',
-      size: { height: 818, width: 1921 },
-      isSupported: true,
-    },
-    {
-      averageBitrate: null,
-      mimeType: 'video/avc',
-      bitrate: 6214307,
-      size: { height: 818, width: 1921 },
-      id: 'video/6000kbit.m3u8',
-      peakBitrate: 6214307,
-      isSupported: true,
       frameRate: null,
     },
     {
+      peakBitrate: 1628000,
+      size: { height: 534, width: 1280 },
+      bitrate: 1628000,
       averageBitrate: null,
-      mimeType: 'video/avc',
-      id: 'video/10000kbit.m3u8',
       isSupported: true,
-      size: { height: 1744, width: 4096 },
-      peakBitrate: 10285391,
+      id: 'video/720p/playlist.m3u8',
+      mimeType: 'video/avc',
       frameRate: null,
-      bitrate: 10285391,
+    },
+    {
+      peakBitrate: 1068000,
+      size: { height: 356, width: 854 },
+      bitrate: 1068000,
+      averageBitrate: null,
+      isSupported: true,
+      id: 'video/480p/playlist.m3u8',
+      mimeType: 'video/avc',
+      frameRate: null,
+    },
+    {
+      peakBitrate: 518000,
+      size: { height: 178, width: 426 },
+      bitrate: 518000,
+      averageBitrate: null,
+      isSupported: true,
+      id: 'video/240p/playlist.m3u8',
+      mimeType: 'video/avc',
+      frameRate: null,
     },
   ],
   availableAudioTracks: [
-    { language: 'en', label: 'English' },
-    { language: 'dubbing', label: 'dubbing' },
+    { language: 'en', label: 'Original' },
+    { language: 'en', label: 'Music Only' },
   ],
 };
 
@@ -561,7 +527,7 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
         const payload = await promise;
         expect(payload.availableAudioTracks).toBeTruthy();
         // For this source ExoPlayer can decode more audio tracks than AVPlayer
-        expect(payload.availableAudioTracks.length).toEqual(Platform.OS === 'ios' ? 2 : 4);
+        expect(payload.availableAudioTracks.length).toEqual(2);
         availableAudioTracks = payload.availableAudioTracks;
       });
 
@@ -717,7 +683,7 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
       await replaceAndLoadPlayerSource(player, hlsSource);
       expect(player.availableAudioTracks).toBeDefined();
       // ExoPlayer can find more audioTracks than AVKit for our HLS source
-      expect(player.availableAudioTracks.length).toEqual(Platform.OS === 'ios' ? 2 : 4);
+      expect(player.availableAudioTracks.length).toEqual(2);
       player.availableAudioTracks.forEach((track) => {
         expect(track.language).toBeTruthy();
         expect(track.label).toBeTruthy();

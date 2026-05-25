@@ -1,5 +1,5 @@
 import { AbortCommandError } from '../../../utils/errors';
-import { DevServerManager } from '../DevServerManager';
+import type { DevServerManager } from '../DevServerManager';
 import { openPlatformsAsync } from '../openPlatforms';
 
 function createDevServerManager() {

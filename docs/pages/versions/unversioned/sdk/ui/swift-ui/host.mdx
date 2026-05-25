@@ -3,11 +3,13 @@ title: Host
 description: A SwiftUI Host component that enables SwiftUI components in React Native.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+> **info** For cross-platform usage, see the universal [`Host`](../universal/host) — it renders the appropriate native component per platform.
 
 A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which underlying uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
 
@@ -37,6 +39,26 @@ export default function MatchContentsExample() {
         }}>
         Click
       </Button>
+    </Host>
+  );
+}
+```
+
+> **Note:** Do not use `matchContents` on the same axis as a scroll container (`ScrollView`, `List`, `Form`, `LazyHStack`, `LazyVStack`). `matchContents` resolves to SwiftUI's `.fixedSize`, which sizes the scroll container to its content. It also leaves nothing past the viewport to scroll into, so scrolling silently stops working. Use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width on the scroll axis).
+
+```tsx ScrollViewMatchContents.tsx
+import { Host, HStack, ScrollView, Text } from '@expo/ui/swift-ui';
+
+export default function ScrollViewMatchContents() {
+  return (
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+      <ScrollView axes="horizontal">
+        <HStack spacing={12}>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <Text key={i}>Item {i}</Text>
+          ))}
+        </HStack>
+      </ScrollView>
     </Host>
   );
 }

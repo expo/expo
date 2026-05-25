@@ -6,7 +6,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Install app
 CONFIGURATION_LOWER=$(echo $CONFIGURATION | tr '[:upper:]' '[:lower:]')
-adb install -r $GITHUB_WORKSPACE/apps/brownfield-tester/android-integrated/apk/app-$CONFIGURATION_LOWER.apk
+adb install -r $GITHUB_WORKSPACE/apps/brownfield-tester/isolated/android/apk/app-$CONFIGURATION_LOWER.apk
 
 # Run the tests
 maestro test \

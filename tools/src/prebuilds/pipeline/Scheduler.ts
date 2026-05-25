@@ -16,7 +16,16 @@ export interface PackageResult {
   stopRun: boolean;
 }
 
-type ExecutePackageFn = (pkg: SPMPackageSource, signal: AbortSignal) => Promise<PackageResult>;
+type ExecutePackageFn = (
+  pkg: SPMPackageSource,
+  signal: AbortSignal,
+  /**
+   * Names of upstream DAG dependencies that failed or were themselves skipped.
+   * When non-empty, the executor should short-circuit without running build
+   * steps and synthesize a "skipped due to failed dependency" result.
+   */
+  failedDeps?: string[]
+) => Promise<PackageResult>;
 
 /**
  * Runs packages in parallel, respecting the dependency DAG and concurrency limit.
@@ -39,6 +48,9 @@ export async function runPackagesInParallel(
 
   const results: PackageResult[] = [];
   const completed = new Set<string>();
+  // Transitively poisoned — failed packages + packages skipped because of an
+  // upstream failure. Used to short-circuit dependents.
+  const failedOrDoomed = new Set<string>();
 
   // Build in-degree map (count of unfinished dependencies)
   const inDegree = new Map<string, number>();
@@ -81,10 +93,14 @@ export async function runPackagesInParallel(
     // Launch ready packages up to concurrency limit (unless aborted)
     while (readyQueue.length > 0 && running.size < concurrency && !abortController.signal.aborted) {
       const pkg = readyQueue.shift()!;
-      const promise = executePackage(pkg, abortController.signal).then((result) => ({
-        name: pkg.packageName,
-        result,
-      }));
+      const failedDeps = [...(dependsOn.get(pkg.packageName) ?? [])].filter((d) =>
+        failedOrDoomed.has(d)
+      );
+      const promise = executePackage(
+        pkg,
+        abortController.signal,
+        failedDeps.length > 0 ? failedDeps : undefined
+      ).then((result) => ({ name: pkg.packageName, result }));
       running.set(pkg.packageName, promise);
     }
 
@@ -97,6 +113,9 @@ export async function runPackagesInParallel(
     running.delete(name);
     results.push(result);
     completed.add(name);
+    if (result.errors.length > 0) {
+      failedOrDoomed.add(name);
+    }
 
     // If stop-run, abort and drain remaining
     if (result.stopRun) {

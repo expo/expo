@@ -1,13 +1,11 @@
-declare module 'module' {
-    namespace Module {
-        function _resolveFilename(request: string, parent: {
-            id: string;
-            filename: string;
-            paths: string[];
-        } | string | null, isMain?: boolean, options?: {
-            paths?: string[];
-        }): string;
-    }
+declare module 'node:module' {
+    function _resolveFilename(request: string, parent: {
+        id: string;
+        filename: string;
+        paths: string[];
+    } | string | null, isMain?: boolean, options?: {
+        paths?: string[];
+    }): string;
 }
 /** Returns a resolver function that given a request to a module returns that module's remapped path. */
 export declare const createModuleMapper: () => (request: string) => string | null;

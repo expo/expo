@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
+import expo.modules.ui.UIComposableScope
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
@@ -20,20 +20,31 @@ import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.shapeFromShapeRecord
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 open class ButtonPressedEvent() : Record, Serializable
 
+@OptimizedRecord
 class ButtonColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val contentColor: Color? = null
+
   @Field val disabledContainerColor: Color? = null
+
   @Field val disabledContentColor: Color? = null
 }
 
+@OptimizedRecord
 class ContentPaddingRecord : Record {
   @Field val start: Double? = null
+
   @Field val top: Double? = null
+
   @Field val end: Double? = null
+
   @Field val bottom: Double? = null
 }
 
@@ -45,6 +56,7 @@ fun ContentPaddingRecord.toPaddingValues(): PaddingValues =
     bottom = bottom?.dp ?: ButtonDefaults.ContentPadding.calculateBottomPadding()
   )
 
+@OptimizedComposeProps
 data class ButtonProps(
   val colors: ButtonColors = ButtonColors(),
   val enabled: Boolean = true,
@@ -71,7 +83,7 @@ fun FunctionalComposableScope.ButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.shape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -93,7 +105,7 @@ fun FunctionalComposableScope.FilledTonalButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.filledTonalShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -115,7 +127,7 @@ fun FunctionalComposableScope.OutlinedButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.outlinedShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -137,7 +149,7 @@ fun FunctionalComposableScope.ElevatedButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.elevatedShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -159,6 +171,6 @@ fun FunctionalComposableScope.TextButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.textShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }

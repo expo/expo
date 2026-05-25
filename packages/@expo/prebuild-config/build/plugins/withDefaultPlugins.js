@@ -85,13 +85,6 @@ function _expoNotifications() {
   };
   return data;
 }
-function _expoSplashScreen() {
-  const data = _interopRequireDefault(require("./unversioned/expo-splash-screen/expo-splash-screen"));
-  _expoSplashScreen = function () {
-    return data;
-  };
-  return data;
-}
 function _expoSystemUi() {
   const data = _interopRequireDefault(require("./unversioned/expo-system-ui/expo-system-ui"));
   _expoSystemUi = function () {
@@ -132,7 +125,9 @@ const withIosExpoPlugins = (config, {
   config.ios.bundleIdentifier = bundleIdentifier;
   return (0, _configPlugins().withPlugins)(config, [[_configPlugins().IOSConfig.BundleIdentifier.withBundleIdentifier, {
     bundleIdentifier
-  }], _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps,
+  }], _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile,
+  // Deployment Target
+  _configPlugins().IOSConfig.DeploymentTarget.withDeploymentTarget, _configPlugins().IOSConfig.DeploymentTarget.withDeploymentTargetPodfileProps,
   // Entitlements
   _configPlugins().IOSConfig.Entitlements.withAssociatedDomains,
   // XcodeProject
@@ -151,8 +146,6 @@ const withAndroidExpoPlugins = (config, props) => {
   if (!config.android) config.android = {};
   config.android.package = props.package;
   return (0, _configPlugins().withPlugins)(config, [
-  // gradle.properties
-  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps,
   // settings.gradle
   _configPlugins().AndroidConfig.Name.withNameSettingsGradle,
   // project build.gradle
@@ -177,12 +170,9 @@ const withAndroidExpoPlugins = (config, props) => {
 
 // Must keep in sync with `withVersionedExpoSDKPlugins`
 exports.withAndroidExpoPlugins = withAndroidExpoPlugins;
-const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui', 'expo-inline-modules'];
+const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-system-ui', 'expo-inline-modules'];
 const withVersionedExpoSDKPlugins = config => {
-  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, _expoUpdates().default, _expoDocumentPicker().default,
-  // System UI must come before splash screen as they overlap
-  // and splash screen will warn about conflicting rules.
-  _expoSystemUi().default, _expoSplashScreen().default, _withInlineModules().default]);
+  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, _expoUpdates().default, _expoDocumentPicker().default, _expoSystemUi().default, _withInlineModules().default]);
 };
 exports.withVersionedExpoSDKPlugins = withVersionedExpoSDKPlugins;
 function getAutoPlugins() {

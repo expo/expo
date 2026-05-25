@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/swift-ui/Menu/index.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAE,KAAK,SAAS,EAAE,MAAM,SAAS,CAAC;AAGzC,OAAO,EAAE,KAAK,SAAS,EAAE,MAAM,SAAS,CAAC;AAUzC;;GAEG;AACH,wBAAgB,IAAI,CAAC,KAAK,EAAE,SAAS,+BAgBpC"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/swift-ui/Menu/index.tsx"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,SAAS,CAAC;AAGzC,YAAY,EAAE,SAAS,EAAE,MAAM,SAAS,CAAC;AAUzC;;GAEG;AACH,wBAAgB,IAAI,CAAC,KAAK,EAAE,SAAS,2CAgBpC"}

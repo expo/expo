@@ -1,9 +1,11 @@
 import { requireNativeView } from 'expo';
 
-import { ListForEach, type ListForEachProps } from './ListForEach';
+import { ListForEach } from './ListForEach';
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+
+export { ListForEach, type ListForEachProps } from './ListForEach';
 
 const ListNativeView: React.ComponentType<NativeListProps> = requireNativeView<NativeListProps>(
   'ExpoUI',
@@ -57,5 +59,3 @@ export function List(props: ListProps) {
 }
 
 List.ForEach = ListForEach;
-
-export { ListForEach, ListForEachProps };

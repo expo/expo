@@ -10,6 +10,48 @@ class BackgroundEventTransformerSpec: ExpoSpec {
 
     describe("BackgroundEventTransformerSpec") {
 
+      context("given a remote notification payload with a primitive body") {
+        it("which has a string body, uses the string directly as dataString without crashing") {
+          // Given
+          let inputPayload: [AnyHashable: Any] = [
+            "aps": [
+              "content-available": 1
+            ],
+            "body": "plain string body",
+            "experienceId": "@brents/microfoam",
+            "projectId": "f19296df-44bd-482a-90bb-2af254c6ac42",
+            "scopeKey": "@brents/microfoam"
+          ]
+
+          // When
+          let result = BackgroundEventTransformer.transform(inputPayload)
+
+          // Then
+          let data = result["data"] as? [String: Any]
+          expect(data?["dataString"] as? String).to(equal("plain string body"))
+        }
+
+        it("which has a numeric body, sets dataString to nil without crashing") {
+          // Given
+          let inputPayload: [AnyHashable: Any] = [
+            "aps": [
+              "content-available": 1
+            ],
+            "body": 42,
+            "experienceId": "@brents/microfoam",
+            "projectId": "f19296df-44bd-482a-90bb-2af254c6ac42",
+            "scopeKey": "@brents/microfoam"
+          ]
+
+          // When
+          let result = BackgroundEventTransformer.transform(inputPayload)
+
+          // Then
+          let data = result["data"] as? [String: Any]
+          expect(data?["dataString"]).to(beNil())
+        }
+      }
+
       context("given a remote notification payload") {
         it("which is a headless background notification, transforms the payload into the expected format") {
           // Given

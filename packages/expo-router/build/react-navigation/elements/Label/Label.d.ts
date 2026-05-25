@@ -4,6 +4,6 @@ type Props = Omit<TextProps, 'style'> & {
     children?: string;
     style?: StyleProp<TextStyle>;
 };
-export declare function Label({ tintColor, style, ...rest }: Props): import("react").JSX.Element;
+export declare function Label({ tintColor, style, ...rest }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=Label.d.ts.map

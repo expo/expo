@@ -1,4 +1,4 @@
-import * as Calendar from 'expo-calendar';
+import * as Calendar from 'expo-calendar/legacy';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 

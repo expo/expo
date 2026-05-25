@@ -1,13 +1,13 @@
-import {
+import type {
   AudioMetadata,
   AudioPlayerOptions,
   AudioSource,
   AudioStatus,
   PitchCorrectionQuality,
 } from './Audio.types';
-import { AudioLockScreenOptions } from './AudioConstants';
+import type { AudioLockScreenOptions } from './AudioConstants';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE } from './AudioEventKeys';
-import { AudioPlayer, AudioEvents } from './AudioModule.types';
+import type { AudioPlayer, AudioEvents } from './AudioModule.types';
 import { isAudioActive } from './AudioModule.web';
 import {
   getAudioContext,
@@ -380,10 +380,14 @@ export class AudioPlayerWeb
     media.onerror = () => {
       this.loaded = false;
       this.isPlaying = false;
+      const errorMessage = media.error
+        ? `Playback error (code ${media.error.code})`
+        : 'Unknown playback error';
       this.emit(PLAYBACK_STATUS_UPDATE, {
         ...getStatusFromMedia(media, this.id),
         isLoaded: false,
         playing: false,
+        error: errorMessage,
       });
     };
 

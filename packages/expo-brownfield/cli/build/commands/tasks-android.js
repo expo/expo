@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const node_path_1 = __importDefault(require("node:path"));
 const utils_1 = require("../utils");
@@ -10,9 +11,9 @@ const tasksAndroid = async (command) => {
     await (0, utils_1.validatePrebuild)('android');
     const config = (0, utils_1.resolveTasksConfigAndroid)(command.opts());
     const { stdout } = await (0, utils_1.withSpinner)({
-        operation: () => (0, utils_1.runCommand)('./gradlew', [`${config.library}:tasks`, '--group', 'publishing'], {
+        operation: () => (0, spawn_async_1.default)('./gradlew', [`${config.library}:tasks`, '--group', 'publishing'], {
             cwd: node_path_1.default.join(process.cwd(), 'android'),
-            verbose: config.verbose,
+            stdio: config.verbose ? 'inherit' : 'pipe',
         }),
         loaderMessage: 'Reading publish tasks from the android project...',
         successMessage: 'Successfully read publish tasks from the android project\n',
@@ -34,3 +35,4 @@ const tasksAndroid = async (command) => {
     });
 };
 exports.default = tasksAndroid;
+//# sourceMappingURL=tasks-android.js.map

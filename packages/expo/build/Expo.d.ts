@@ -12,5 +12,7 @@ EventEmitter as EventEmitterType,
 NativeModule as NativeModuleType, 
 /** @deprecated Move to `SharedObject` with a type-only import instead */
 SharedObject as SharedObjectType, } from 'expo-modules-core/types';
+export { PermissionStatus, type PermissionExpiration, type PermissionResponse, type PermissionHookOptions, } from 'expo-modules-core';
+export { createPermissionHook } from 'expo-modules-core';
 export { useEvent, useEventListener } from './hooks/useEvent';
 //# sourceMappingURL=Expo.d.ts.map

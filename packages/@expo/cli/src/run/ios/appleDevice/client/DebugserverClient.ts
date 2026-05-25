@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import Debug from 'debug';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 import * as path from 'path';
 
 import { ServiceClient } from './ServiceClient';

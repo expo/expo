@@ -3,13 +3,22 @@ title: Label
 description: A SwiftUI Label component for displaying text with an icon.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Label matches the official SwiftUI [Label API](https://developer.apple.com/documentation/swiftui/label) and displays a title alongside an icon.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/label/ios-light.webp"
+  darkSrc="/static/images/expo-ui/label/ios-dark.webp"
+  alt="Three Label rows with SF Symbols inside a Form"
+/>
 
 ## Installation
 

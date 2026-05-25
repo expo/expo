@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View } from 'react-native';
 
-import { NativeLinearGradientProps } from './NativeLinearGradient.types';
+import type { NativeLinearGradientProps } from './NativeLinearGradient.types';
 
 // This is a shim view for platforms that aren't supported by Expo.
 // The component and prop types should match all of the other platform variations.

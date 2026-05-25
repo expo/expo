@@ -3,7 +3,7 @@
  * from Maven repositories or nightly builds.
  */
 
-import { exec } from 'child_process';
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -181,8 +181,7 @@ export const Artifacts = {
         await config.postExtract(tarballPath, outputPath);
       } else {
         // Default extraction: extract tarball directly to output path
-        const execAsync = promisify(exec);
-        await execAsync(`tar -xzf "${tarballPath}" -C "${outputPath}"`);
+        await spawnAsync('tar', ['-xzf', tarballPath, '-C', outputPath]);
       }
 
       // Delete the tarball after extraction (unless it's a user-provided local tarball)
@@ -268,20 +267,6 @@ export const Artifacts = {
     ),
     getValidationPath: (outputPath: string) =>
       path.join(outputPath, ...HERMES_XCFRAMEWORK_RELATIVE_PATH),
-
-    postExtract: async (tarballPath: string, outputPath: string) => {
-      const execAsync = promisify(exec);
-
-      // Extract tarball normally
-      await execAsync(`tar -xzf "${tarballPath}" -C "${outputPath}"`);
-
-      // Remove JSI headers from Hermes — they are always provided by the React
-      // VFS overlay. Keeping them under destroot/include/ causes "redefinition"
-      // errors because #pragma once cannot de-duplicate two different physical
-      // files that contain the same declarations.
-      const jsiHeadersPath = path.join(outputPath, 'destroot', 'include', 'jsi');
-      fs.removeSync(jsiHeadersPath);
-    },
   } as ArtifactConfig,
 
   /**
@@ -305,20 +290,18 @@ export const Artifacts = {
       path.join(outputPath, RN_DEPENDENCIES_XCFRAMEWORK_NAME),
 
     postExtract: async (tarballPath: string, outputPath: string) => {
-      const execAsync = promisify(exec);
-
       // ReactNativeDependencies has a nested structure that needs special handling
       const tmpPath = path.join(os.tmpdir(), 'react-native-dependencies');
       fs.mkdirSync(tmpPath, { recursive: true });
 
       // Extract to temp directory first
-      await execAsync(`tar -xzf "${tarballPath}" -C "${tmpPath}"`);
+      await spawnAsync('tar', ['-xzf', tarballPath, '-C', tmpPath]);
 
       // The xcframework is nested in the tarball
       const xcframeworkSource = path.join(tmpPath, ...RN_DEPENDENCIES_XCFRAMEWORK_RELATIVE_PATH);
 
       // Copy the xcframework to the output path
-      await execAsync(`cp -R "${xcframeworkSource}" "${outputPath}"`);
+      await spawnAsync('cp', ['-R', xcframeworkSource, outputPath]);
 
       // Clean up temp directory
       fs.rmSync(tmpPath, { recursive: true, force: true });

@@ -1,8 +1,8 @@
 import { screen, act, fireEvent } from '@testing-library/react-native';
-import React from 'react';
 import { Text } from 'react-native';
 
-import { RedirectConfig, router } from '../exports';
+import type { RedirectConfig } from '../exports';
+import { router } from '../exports';
 import { store } from '../global-state/router-store';
 import Stack from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';

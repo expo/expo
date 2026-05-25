@@ -5,14 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addRepository = void 0;
 const node_path_1 = __importDefault(require("node:path"));
+const validation_1 = require("./validation");
 const repositoryTemplates = {
     localMaven: () => ['    localDefault {', '        type.set("localMaven")', '    }'],
     localDirectory: (count, publication, projectRoot) => {
         const nameOrPlaceholder = publication.name ?? `localDirectory${count + 1}`;
+        const resolvedPath = standardizePath(publication.path, projectRoot);
         return [
             `    ${nameOrPlaceholder} {`,
             '        type.set("localDirectory")',
-            `        url.set("file://${standardizePath(publication.path, projectRoot)}")`,
+            `        url.set("file://${(0, validation_1.escapeGroovyDoubleQuotedString)(resolvedPath)}")`,
             '    }',
         ];
     },
@@ -64,7 +66,8 @@ const standardizePath = (url, projectRoot) => {
 };
 const setProperty = (property, value) => {
     if (typeof value === 'string') {
-        return `        ${property}.set("${value}")`;
+        return `        ${property}.set("${(0, validation_1.escapeGroovyDoubleQuotedString)(value)}")`;
     }
+    // `value.variable` is validated as an env var identifier upstream, so no escaping needed.
     return `        ${property}.set(providers.environmentVariable("${value.variable}").orElse(""))`;
 };

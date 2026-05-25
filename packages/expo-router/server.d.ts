@@ -1,4 +1,12 @@
-export type { ImmutableRequest, LoaderFunction, MiddlewareFunction } from 'expo-server';
+export type {
+  ImmutableRequest,
+  GenerateMetadataFunction,
+  LoaderFunction,
+  Metadata,
+  MiddlewareFunction,
+} from 'expo-server';
+
+export { createStaticLoader, createServerLoader } from 'expo-server';
 
 export type RequestHandler = (
   request: Request,

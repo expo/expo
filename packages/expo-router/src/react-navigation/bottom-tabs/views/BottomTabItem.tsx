@@ -1,21 +1,21 @@
 'use client';
 import React from 'react';
 import {
-  ColorValue,
+  type ColorValue,
   type GestureResponderEvent,
-  Platform,
   type StyleProp,
-  StyleSheet,
   type TextStyle,
-  View,
   type ViewStyle,
+  Platform,
+  StyleSheet,
+  View,
 } from 'react-native';
 
-import { getLabel, Label, PlatformPressable } from '../../elements';
-import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 import { TabBarIcon } from './TabBarIcon';
 import { Color } from '../../../utils/color';
+import { getLabel, Label, PlatformPressable } from '../../elements';
 import { type Route, useTheme } from '../../native';
+import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 
 type Props = {
   /**

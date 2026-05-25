@@ -5,5 +5,5 @@ import type { ReactNode } from 'react';
 export declare function AnimatedItemContainer({ visible, children, }: {
     visible: boolean;
     children: ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=AnimatedItemContainer.android.d.ts.map

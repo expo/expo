@@ -98,8 +98,8 @@ const createNodeLabel = (data: NodeData, isHighlighted: boolean) => {
           {data.extraTitle}
         </div>
       )}
-      {data.subtitle && <div className={`text-xs ${styles.subtitleText}`}>{data.subtitle}</div>}
-      <div className={`mt-1 rounded-md px-2 py-1 text-xs ${styles.badge}`}>{data.badge}</div>
+      {data.subtitle && <div className={`text-sm ${styles.subtitleText}`}>{data.subtitle}</div>}
+      <div className={`mt-1 rounded-md px-2 py-1 text-sm ${styles.badge}`}>{data.badge}</div>
     </div>
   );
 };
@@ -171,7 +171,7 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
 
   return (
     <div
-      className="border-default bg-default mb-4 h-[300px] w-full overflow-hidden rounded-lg border"
+      className="mb-4 h-75 w-full overflow-hidden rounded-lg border border-default bg-default"
       data-md="diagram"
       data-md-alt={diagramAlt}>
       <style dangerouslySetInnerHTML={{ __html: nodeHandleStyles }} />

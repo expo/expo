@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
 import { File, Directory, Paths } from 'expo-file-system';
 import * as FileSystem from 'expo-file-system/legacy';
-// import * as Progress from 'expo-progress';
 import type {
   DownloadProgressData,
   DownloadResumable,
@@ -192,7 +191,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
     try {
       const info = await FileSystem.getInfoAsync(this.download.fileUri);
       Alert.alert('File Info:', JSON.stringify(info), [{ text: 'OK', onPress: () => {} }]);
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
     }
   };
@@ -203,7 +202,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
     try {
       const result = await FileSystem.readAsStringAsync(asset.localUri!);
       Alert.alert('Result', result);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error', e.message);
     }
   };
@@ -214,7 +213,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
     try {
       const result = await FileSystem.getInfoAsync(asset.localUri!);
       Alert.alert('Result', JSON.stringify(result, null, 2));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error', e.message);
     }
   };
@@ -227,7 +226,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
       await FileSystem.copyAsync({ from: asset.localUri!, to: tmpFile });
       const result = await FileSystem.readAsStringAsync(tmpFile);
       Alert.alert('Result', result);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error', e.message);
     }
   };
@@ -318,7 +317,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
       await FileSystem.downloadAsync(asset, tmpFile);
       const result = await FileSystem.readAsStringAsync(tmpFile);
       Alert.alert('Result', result);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error', e.message);
     }
   };
@@ -355,8 +354,6 @@ export default class FileSystemScreen extends React.Component<object, State> {
             Download progress: {this.state.downloadProgress * 100}%
           </Text>
         ) : null}
-        {/* Add back progress bar once deprecation warnings from reanimated 2 are resolved */}
-        {/* <Progress.Bar style={styles.progress} isAnimated progress={this.state.downloadProgress} /> */}
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._cancel} title="Cancel Download" />

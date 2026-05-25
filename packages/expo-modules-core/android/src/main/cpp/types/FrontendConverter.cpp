@@ -1,5 +1,6 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "../ExpoHeader.pch"
 #include "FrontendConverter.h"
 #include "ExpectedType.h"
 #include "FrontendConverterProvider.h"
@@ -17,7 +18,6 @@
 
 #include "react/jni/ReadableNativeMap.h"
 #include "react/jni/ReadableNativeArray.h"
-#include <jsi/JSIDynamic.h>
 
 #include <utility>
 #include <algorithm>
@@ -775,7 +775,7 @@ jobject SynchronizableFrontendConverter::convert(
 bool SynchronizableFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
   try {
     // TODO(@lukmccall): find a better way to check this without throwing exception
-    worklets::extractSerializableOrThrow(rt, value);
+    (void)worklets::extractSerializableOrThrow(rt, value);
     return true;
   } catch (...) {
     return false;

@@ -2,7 +2,7 @@ import { Console } from 'node:console';
 import path from 'node:path';
 
 import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
-import { LogStream } from './stream';
+import { LogStream, writeEvent } from './stream';
 import { env } from '../utils/env';
 
 interface InitMetadata {
@@ -40,10 +40,18 @@ function getInitMetadata(): InitMetadata {
   };
 }
 
-/** Activates the event logger based on the input env var
- * @param env - The target to write the logs to; defaults to `$LOG_EVENTS`
+export function getWellKnownTemporaryLogFile(projectRoot: string, command: string): string {
+  return path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`);
+}
+
+/** Activates the event logger.
+ *
+ * Accepts either a log target string (file path, fd number, or `$LOG_EVENTS`),
+ * or a `projectRoot` + `command` pair to log to `.expo/dev/logs/<command>.log`.
+ * Subsequent calls are no-ops — the first activated destination wins.
  */
-export function installEventLogger(env = process.env.LOG_EVENTS) {
+export function installEventLogger(env: string | undefined = process.env.LOG_EVENTS) {
+  if (logStream) return;
   const eventLogDestination = parseLogTarget(env);
   if (eventLogDestination) {
     if (eventLogDestination === 1) {
@@ -64,6 +72,9 @@ export function installEventLogger(env = process.env.LOG_EVENTS) {
 
 /** Returns whether the event logger is active */
 export const isEventLoggerActive = () => !!logStream?.writable;
+
+/** Returns the file path of the active event log, if any */
+export const getLogFile = () => logStream?.file ?? undefined;
 
 /** Whether logs shown in the terminal should be reduced.
  * @remarks
@@ -106,10 +117,7 @@ export const events: EventLoggerBuilder = ((
 ) => {
   function log(event: string, data: any) {
     if (logStream) {
-      const _e = `${category}:${String(event)}`;
-      const _t = Date.now();
-      const payload = JSON.stringify({ _e, _t, ...data });
-      logStream._write(payload + '\n');
+      writeEvent(logStream, category, event, data);
     }
   }
   log.category = category;

@@ -26,6 +26,29 @@ module Expo
       end
     end
 
+    # Returns a human-readable string explaining why this pod cannot be linked for the given platform.
+    def platform_skip_reason(platform)
+      return "no platform specified" unless platform
+
+      matching_by_name = @spec.available_platforms.select do |available|
+        available.name == platform.name
+      end
+
+      if matching_by_name.empty?
+        supported = @spec.available_platforms.map(&:string_name).join(', ')
+        return "supports #{supported.empty? ? 'no platforms' : supported} but target is #{platform.string_name}"
+      end
+
+      # Pod's minimum deployment target exceeds the app's deployment target.
+      required = matching_by_name.map(&:deployment_target).compact.min
+      if required
+        app_target = platform.deployment_target || 'an unspecified version'
+        return "requires #{platform.string_name} #{required} but app targets #{app_target}"
+      end
+
+      return "incompatible with #{platform.string_name} #{platform.deployment_target}"
+    end
+
   end # class PackagePod
 
   class Package

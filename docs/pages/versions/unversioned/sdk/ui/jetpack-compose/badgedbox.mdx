@@ -3,13 +3,22 @@ title: BadgedBox
 description: A Jetpack Compose BadgedBox component for overlaying badges on content.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI BadgedBox matches the official Jetpack Compose [`BadgedBox`](https://developer.android.com/develop/ui/compose/components/badges) API. It overlays a badge on top of content such as an icon.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/badgedbox/android-light.webp"
+  darkSrc="/static/images/expo-ui/badgedbox/android-dark.webp"
+  alt="Mail icon with a count badge of 5 and a wifi icon with a small dot badge"
+/>
 
 ## Installation
 

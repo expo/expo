@@ -38,6 +38,7 @@ internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaC
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
   @Field var ignoreSafeArea: ExpoSwiftUI.IgnoreSafeArea?
+  @Field var modifiers: ModifierArray?
   var onLayoutContent = EventDispatcher()
 }
 
@@ -45,36 +46,40 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   @ObservedObject var props: HostViewProps
 
   var body: some View {
-    var useViewportSizeMeasurement: Bool = props.useViewportSizeMeasurement
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-      useViewportSizeMeasurement = props.useViewportSizeMeasurement
-    } else {
-      log.warn("useViewportSizeMeasurement is not supported on iOS/tvOS < 16.0")
-      useViewportSizeMeasurement = false
-    }
-
     let layoutDirection = props.layoutDirection.toLayoutDirection()
     let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
 
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
-      let HostLayout = useViewportSizeMeasurement
+      let HostLayout = props.useViewportSizeMeasurement
         ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection))
         : AnyLayout(ZStackLayout(alignment: alignment))
-      return HostLayout {
+      HostLayout {
         Children()
       }
+      .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .applyModifiers(
+        props.modifiers,
+        appContext: props.appContext,
+        globalEventDispatcher: props.globalEventDispatcher
+      )
+      .modifier(GeometryChangeModifier(props: props))
+    } else {
+      ZStack(alignment: alignment) {
+        Children()
+      }
+      .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
+      .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
+      .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .applyModifiers(
+        props.modifiers,
+        appContext: props.appContext,
+        globalEventDispatcher: props.globalEventDispatcher
+      )
       .modifier(GeometryChangeModifier(props: props))
     }
-
-    return ZStack(alignment: alignment) {
-      Children()
-    }
-    .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
-    .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
-    .modifier(GeometryChangeModifier(props: props))
   }
 
   private func safeAreaSize() -> CGSize {

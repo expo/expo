@@ -1,5 +1,6 @@
-import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
+import type { ModPlatform } from '@expo/config-plugins';
 
 import {
   getOrPromptForBundleIdentifierAsync,

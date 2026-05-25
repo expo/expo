@@ -1,5 +1,5 @@
-import { VideoThumbnailsOptions, VideoThumbnailsResult } from './VideoThumbnailsTypes.types';
-export { VideoThumbnailsOptions, VideoThumbnailsResult };
+import type { VideoThumbnailsOptions, VideoThumbnailsResult } from './VideoThumbnailsTypes.types';
+export type { VideoThumbnailsOptions, VideoThumbnailsResult } from './VideoThumbnailsTypes.types';
 /**
  * Create an image thumbnail from video provided via `sourceFilename`.
  *

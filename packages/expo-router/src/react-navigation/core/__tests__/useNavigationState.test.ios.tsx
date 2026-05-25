@@ -18,7 +18,7 @@ test('gets the current navigation state', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -48,23 +48,23 @@ test('gets the current navigation state', () => {
   render(element);
 
   expect(callback).toHaveBeenCalledTimes(1);
-  expect(callback.mock.calls[0][0].index).toBe(0);
+  expect(callback.mock.calls[0]![0].index).toBe(0);
 
   act(() => navigation.current.navigate('second'));
 
   expect(callback).toHaveBeenCalledTimes(2);
-  expect(callback.mock.calls[1][0].index).toBe(1);
+  expect(callback.mock.calls[1]![0].index).toBe(1);
 
   act(() => navigation.current.navigate('third'));
 
   expect(callback).toHaveBeenCalledTimes(3);
-  expect(callback.mock.calls[2][0].index).toBe(2);
+  expect(callback.mock.calls[2]![0].index).toBe(2);
 
   act(() => navigation.current.navigate('second', { answer: 42 }));
 
   expect(callback).toHaveBeenCalledTimes(4);
-  expect(callback.mock.calls[3][0].index).toBe(1);
-  expect(callback.mock.calls[3][0].routes[1].params).toEqual({ answer: 42 });
+  expect(callback.mock.calls[3]![0].index).toBe(1);
+  expect(callback.mock.calls[3]![0].routes[1].params).toEqual({ answer: 42 });
 });
 
 test('gets the current navigation state with selector', () => {
@@ -73,7 +73,7 @@ test('gets the current navigation state with selector', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -103,22 +103,22 @@ test('gets the current navigation state with selector', () => {
   render(element);
 
   expect(callback).toHaveBeenCalledTimes(1);
-  expect(callback.mock.calls[0][0]).toBe(0);
+  expect(callback.mock.calls[0]![0]).toBe(0);
 
   act(() => navigation.current.navigate('second'));
 
   expect(callback).toHaveBeenCalledTimes(2);
-  expect(callback.mock.calls[1][0]).toBe(1);
+  expect(callback.mock.calls[1]![0]).toBe(1);
 
   act(() => navigation.current.navigate('third'));
 
   expect(callback).toHaveBeenCalledTimes(3);
-  expect(callback.mock.calls[1][0]).toBe(1);
+  expect(callback.mock.calls[1]![0]).toBe(1);
 
   act(() => navigation.current.navigate('second'));
 
   expect(callback).toHaveBeenCalledTimes(4);
-  expect(callback.mock.calls[3][0]).toBe(1);
+  expect(callback.mock.calls[3]![0]).toBe(1);
 });
 
 test('gets the correct value if selector changes', () => {
@@ -127,7 +127,7 @@ test('gets the correct value if selector changes', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -164,12 +164,12 @@ test('gets the correct value if selector changes', () => {
   const root = render(<App selector={(state) => state.index} />);
 
   expect(callback).toHaveBeenCalledTimes(1);
-  expect(callback.mock.calls[0][0]).toBe(0);
+  expect(callback.mock.calls[0]![0]).toBe(0);
 
-  root.update(<App selector={(state) => state.routes[state.index].name} />);
+  root.update(<App selector={(state) => state.routes[state.index]!.name} />);
 
   expect(callback).toHaveBeenCalledTimes(2);
-  expect(callback.mock.calls[1][0]).toBe('first');
+  expect(callback.mock.calls[1]![0]).toBe('first');
 });
 
 test('gets the current navigation state at navigator level', () => {
@@ -178,7 +178,7 @@ test('gets the current navigation state at navigator level', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };

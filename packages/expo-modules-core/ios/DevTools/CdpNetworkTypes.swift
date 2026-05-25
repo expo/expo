@@ -110,7 +110,7 @@ struct CdpNetwork {
 
   struct RequestWillBeSentExtraInfoParams: EventParams {
     let requestId: RequestId
-    var associatedCookies = [String: String]()
+    var associatedCookies = [String]()
     let headers: Headers
     let connectTiming: ConnectTiming
 

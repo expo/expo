@@ -2,13 +2,13 @@ import SwiftUI
 import ExpoModulesCore
 
 final class SecureFieldProps: UIBaseViewProps {
-  @Field var defaultValue: String = ""
-  @Field var placeholder: String = ""
-  @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
+  @Field var text: ObservableState = ObservableState(value: "")
+  @Field var maxLength: Int?
   @Field var autoFocus: Bool = false
-  var onValueChanged = EventDispatcher()
-  var onFocusChanged = EventDispatcher()
-  var onSubmit = EventDispatcher()
+  @Field var placeholder: String = ""
+  @Field var onTextChangeSync: WorkletCallback?
+  var onTextChange = EventDispatcher()
+  var onFocusChange = EventDispatcher()
 }
 
 struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
@@ -21,7 +21,11 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setText(_ text: String) {
-    textManager.text = text
+    props.text.value = text
+  }
+
+  func clear() {
+    props.text.value = ""
   }
 
   func focus() {
@@ -41,32 +45,58 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     isFocused = false
   }
 
+  private var promptText: Text? {
+    guard let slot = props.children?.slot("placeholder") else { return nil }
+    return slot.props.children?
+      .compactMap { ($0.childView as? TextView)?.buildText() }
+      .first
+  }
+
   var body: some View {
-    SecureField(
-      props.placeholder,
-      text: $textManager.text
+    StatefulSecureField(
+      state: props.text,
+      props: props,
+      textManager: textManager,
+      isFocused: $isFocused,
+      promptText: promptText
     )
-      .fixedSize(horizontal: false, vertical: true)
+  }
+}
+
+private struct StatefulSecureField: View {
+  @ObservedObject var state: ObservableState
+  @ObservedObject var props: SecureFieldProps
+  @ObservedObject var textManager: TextFieldManager
+  @FocusState.Binding var isFocused: Bool
+  let promptText: Text?
+
+  var body: some View {
+    let textBinding = state.binding("")
+    SecureField(
+      promptText == nil ? props.placeholder : "",
+      text: textBinding,
+      prompt: promptText
+    )
       .focused($isFocused)
-      .onSubmit({
-        props.onSubmit(["value": textManager.text])
-      })
       .onAppear {
-        textManager.text = props.defaultValue
         if props.autoFocus {
           isFocused = true
         }
       }
-      .onChange(of: textManager.text) { newValue in
-        props.onValueChanged(["value": newValue])
+      .onChange(of: state.value as? String) { newValue in
+        if let max = props.maxLength, let str = newValue, str.count > max {
+          state.value = String(str.prefix(max))
+          return
+        }
+        props.onTextChange(["value": newValue])
+        props.onTextChangeSync?.invoke(arguments: [newValue])
       }
       .onChange(of: textManager.isFocused) { newValue in
         isFocused = newValue
       }
       .onChange(of: isFocused) { newValue in
         textManager.isFocused = newValue
-        props.onFocusChanged(["value": newValue])
+        props.onFocusChange(["value": newValue])
       }
-      .keyboardType(getKeyboardType(props.keyboardType))
   }
 }

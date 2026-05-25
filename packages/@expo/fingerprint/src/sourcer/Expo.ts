@@ -1,12 +1,19 @@
+import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
+import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import path from 'path';
 import semver from 'semver';
 
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync, relativizeJsonPaths, stringifyJsonSorted } from './Utils';
+import {
+  getFileBasedHashSourceAsync,
+  maybeGetRealPathAsync,
+  relativizeJsonPaths,
+  stringifyJsonSorted,
+} from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
 
@@ -31,14 +38,10 @@ export async function getExpoConfigSourcesAsync(
   // external files in config
   const isAndroid = options.platforms.includes('android');
   const isIos = options.platforms.includes('ios');
-  const splashScreenPluginProps = getConfigPluginProps<{
-    image?: string;
-    dark?: {
-      image?: string;
-    };
-    android?: NonNullable<ExpoConfig['android']>['splash'];
-    ios?: NonNullable<ExpoConfig['ios']>['splash'];
-  }>(expoConfig, 'expo-splash-screen');
+  const splashScreenPluginProps = getConfigPluginProps<SplashProps>(
+    expoConfig,
+    'expo-splash-screen'
+  );
   const fontPluginProps = getConfigPluginProps<{
     // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts
     fonts?: string[];
@@ -82,17 +85,6 @@ export async function getExpoConfigSourcesAsync(
     isIos ? splashScreenPluginProps?.ios?.tabletImage : undefined,
     isIos ? splashScreenPluginProps?.ios?.dark?.image : undefined,
     isIos ? splashScreenPluginProps?.ios?.dark?.tabletImage : undefined,
-
-    // legacy splash images
-    expoConfig.splash?.image,
-    isAndroid ? expoConfig.android?.splash?.image : undefined,
-    isAndroid ? expoConfig.android?.splash?.mdpi : undefined,
-    isAndroid ? expoConfig.android?.splash?.hdpi : undefined,
-    isAndroid ? expoConfig.android?.splash?.xhdpi : undefined,
-    isAndroid ? expoConfig.android?.splash?.xxhdpi : undefined,
-    isAndroid ? expoConfig.android?.splash?.xxxhdpi : undefined,
-    isIos ? expoConfig.ios?.splash?.image : undefined,
-    isIos ? expoConfig.ios?.splash?.tabletImage : undefined,
 
     // google service files
     isAndroid ? expoConfig.android?.googleServicesFile : undefined,
@@ -190,12 +182,9 @@ function normalizeExpoConfig(
 
   if (sourceSkips & SourceSkips.ExpoConfigAssets) {
     delete normalizedConfig.icon;
-    delete normalizedConfig.splash;
     delete normalizedConfig.android?.adaptiveIcon;
     delete normalizedConfig.android?.icon;
-    delete normalizedConfig.android?.splash;
     delete normalizedConfig.ios?.icon;
-    delete normalizedConfig.ios?.splash;
     delete normalizedConfig.web?.favicon;
     delete normalizedConfig.web?.splash;
   }
@@ -296,15 +285,16 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
   try {
     const reasons = ['expoAutolinkingAndroid'];
     const results: HashSource[] = [];
+    const realProjectRoot = await maybeGetRealPathAsync(projectRoot);
     const { stdout } = await spawnAsync(
       'node',
       [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', 'android', '--json'],
-      { cwd: projectRoot }
+      { cwd: projectRoot, env: getOriginalEnv() }
     );
     const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
     for (const module of config.modules) {
       for (const project of module.projects) {
-        const filePath = toPosixPath(path.relative(projectRoot, project.sourceDir));
+        const filePath = toPosixPath(path.relative(realProjectRoot, project.sourceDir));
         project.sourceDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
         results.push({ type: 'dir', filePath, reasons });
@@ -313,21 +303,23 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
           for (const aarProject of project.aarProjects) {
             // use relative path for aarProject fields
             aarProject.aarFilePath = toPosixPath(
-              path.relative(projectRoot, aarProject.aarFilePath)
+              path.relative(realProjectRoot, aarProject.aarFilePath)
             );
-            aarProject.projectDir = toPosixPath(path.relative(projectRoot, aarProject.projectDir));
+            aarProject.projectDir = toPosixPath(
+              path.relative(realProjectRoot, aarProject.projectDir)
+            );
           }
         }
 
         if (typeof project.shouldUsePublicationScriptPath === 'string') {
           project.shouldUsePublicationScriptPath = toPosixPath(
-            path.relative(projectRoot, project.shouldUsePublicationScriptPath)
+            path.relative(realProjectRoot, project.shouldUsePublicationScriptPath)
           );
         }
       }
       if (module.plugins) {
         for (const plugin of module.plugins) {
-          const filePath = toPosixPath(path.relative(projectRoot, plugin.sourceDir));
+          const filePath = toPosixPath(path.relative(realProjectRoot, plugin.sourceDir));
           plugin.sourceDir = filePath; // use relative path for the dir
           debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
           results.push({ type: 'dir', filePath, reasons });
@@ -337,8 +329,12 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
       if (module.aarProjects) {
         for (const aarProject of module.aarProjects) {
           // use relative path for aarProject fields
-          aarProject.aarFilePath = toPosixPath(path.relative(projectRoot, aarProject.aarFilePath));
-          aarProject.projectDir = toPosixPath(path.relative(projectRoot, aarProject.projectDir));
+          aarProject.aarFilePath = toPosixPath(
+            path.relative(realProjectRoot, aarProject.aarFilePath)
+          );
+          aarProject.projectDir = toPosixPath(
+            path.relative(realProjectRoot, aarProject.projectDir)
+          );
         }
       }
     }
@@ -383,15 +379,16 @@ export async function getExpoAutolinkingIosSourcesAsync(
   try {
     const reasons = ['expoAutolinkingIos'];
     const results: HashSource[] = [];
+    const realProjectRoot = await maybeGetRealPathAsync(projectRoot);
     const { stdout } = await spawnAsync(
       'node',
       [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', platform, '--json'],
-      { cwd: projectRoot }
+      { cwd: projectRoot, env: getOriginalEnv() }
     );
     const config = JSON.parse(stdout);
     for (const module of config.modules) {
       for (const pod of module.pods) {
-        const filePath = toPosixPath(path.relative(projectRoot, pod.podspecDir));
+        const filePath = toPosixPath(path.relative(realProjectRoot, pod.podspecDir));
         pod.podspecDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking ios dir - ${chalk.dim(filePath)}`);
         results.push({ type: 'dir', filePath, reasons });

@@ -150,10 +150,10 @@ internal class LinkPreviewNativeNavigation {
     if let result =
       enumeratedViews
       .first(where: { _, view in
-        guard let tabKey = RNScreensTabCompat.tabKey(from: view) else {
+        guard let screenKey = RNScreensTabCompat.screenKey(from: view) else {
           return false
         }
-        return tabKeys.contains(tabKey)
+        return tabKeys.contains(screenKey)
       }) {
       return (result.offset, result.element)
     }
@@ -179,8 +179,8 @@ internal class LinkPreviewNativeNavigation {
           return view
         }
       } else if let nextView = nextResponder as? UIView,
-        let tabKey = RNScreensTabCompat.tabKey(from: nextView),
-        tabKeys.contains(tabKey) {
+        let screenKey = RNScreensTabCompat.screenKey(from: nextView),
+        tabKeys.contains(screenKey) {
           return nextView
       }
       currentResponder = nextResponder

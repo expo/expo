@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 0.7.0 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- Prevent prototype pollution when parsing plist files ([#45854](https://github.com/expo/expo/pull/45854) by [@kitten](https://github.com/kitten))
+
+## 0.6.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.3 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
 ## 0.5.2 — 2026-01-26
 
 _This version does not introduce any user-facing changes._

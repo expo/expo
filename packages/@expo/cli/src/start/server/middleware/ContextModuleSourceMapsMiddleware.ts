@@ -1,4 +1,4 @@
-import { ServerRequest, ServerResponse } from './server.types';
+import type { ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')(
   'expo:start:server:middleware:metro-context-modules'

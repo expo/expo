@@ -11,7 +11,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
 import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
@@ -24,10 +23,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Date
+import expo.modules.kotlin.types.OptimizedRecord
 
-enum class UpdatesJSEvent(val eventName: String) : Enumerable {
-  StateChange("Expo.nativeUpdatesStateChangeEvent")
-}
+private const val UpdatesStateChangeEvent = "Expo.nativeUpdatesStateChangeEvent"
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
@@ -44,18 +42,18 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
 
-    Events<UpdatesJSEvent>()
+    Events(UpdatesStateChangeEvent)
 
     Constants {
       UpdatesLogger(context.filesDir).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
       UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnStartObserving(UpdatesJSEvent.StateChange) {
+    OnStartObserving(UpdatesStateChangeEvent) {
       UpdatesController.setUpdatesEventManagerObserver(WeakReference(this@UpdatesModule))
     }
 
-    OnStopObserving(UpdatesJSEvent.StateChange) {
+    OnStopObserving(UpdatesStateChangeEvent) {
       UpdatesController.removeUpdatesEventManagerObserver()
     }
 
@@ -223,9 +221,10 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   }
 
   override fun onStateMachineContextEvent(context: UpdatesStateContext) {
-    sendEvent(UpdatesJSEvent.StateChange, Bundle().apply { putBundle("context", context.bundle) })
+    sendEvent(UpdatesStateChangeEvent, Bundle().apply { putBundle("context", context.bundle) })
   }
 
+  @OptimizedRecord
   internal data class UpdatesConfigurationOverrideParam(
     @Field val updateUrl: Uri,
     @Field val requestHeaders: Map<String, String>

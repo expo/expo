@@ -1,5 +1,5 @@
-import { ConfigPlugin } from 'expo/config-plugins';
-import { PluginConfigType } from './pluginConfig';
+import type { ConfigPlugin } from 'expo/config-plugins';
+import type { PluginConfigType } from './pluginConfig';
 export declare const withAndroidBuildProperties: ConfigPlugin<PluginConfigType>;
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
@@ -26,3 +26,5 @@ export declare function updateAndroidSettingsGradle({ contents, buildFromSource,
     contents: string;
     buildFromSource?: boolean;
 }): string;
+export declare const withAndroidPrecompiledHeaders: ConfigPlugin<PluginConfigType>;
+export declare function updateBuildGradleForPCH(contents: string): string;

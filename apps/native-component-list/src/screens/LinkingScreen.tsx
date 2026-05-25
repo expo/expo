@@ -47,8 +47,8 @@ function TextInputButton({ text }: { text: string }) {
         console.log(message);
         alert(message);
       }
-    } catch ({ message }) {
-      console.error(message);
+    } catch (error: any) {
+      console.error(error.message);
     }
   };
 
@@ -117,7 +117,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 24,
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   textInputContainer: {
     flexDirection: 'row',

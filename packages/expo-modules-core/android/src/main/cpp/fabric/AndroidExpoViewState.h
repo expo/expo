@@ -1,8 +1,8 @@
+#pragma once
+
+#include "../ExpoHeader.pch"
 #include "ExpoViewState.h"
 
-#include "AndroidExpoViewProps.h"
-#include <fbjni/fbjni.h>
-#include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 

@@ -1,45 +1,64 @@
-import { Ref } from 'react';
-import { TextFieldKeyboardType } from '../TextField';
-import { type CommonViewModifierProps } from '../types';
+import type { Ref } from 'react';
+import { type ObservableState } from '../../State';
+import type { ViewEvent } from '../../types';
+import type { CommonViewModifierProps } from '../types';
 /**
- * Can be used for imperatively setting text on the SecureField component.
+ * Can be used for imperatively setting text and focus on the `SecureField` component.
  */
 export type SecureFieldRef = {
     setText: (newText: string) => Promise<void>;
+    /** Clear the current text. */
+    clear: () => Promise<void>;
     focus: () => Promise<void>;
     blur: () => Promise<void>;
 };
 export type SecureFieldProps = {
     ref?: Ref<SecureFieldRef>;
     /**
-     * Initial value that the SecureField displays when being mounted. As the SecureField is an uncontrolled component, change the key prop if you need to change the text value.
+     * An observable state that holds the current text.
+     * Create one with `useNativeState('')` or `useNativeState('initial value')`.
+     * If omitted, the field manages its own internal state.
      */
-    defaultValue?: string;
+    text?: ObservableState<string>;
+    /** Maximum number of characters allowed. Truncates natively as the user types. */
+    maxLength?: number;
+    /** If true, the secure field will be focused automatically when mounted. @default false */
+    autoFocus?: boolean;
     /**
      * A text that is displayed when the field is empty.
      */
     placeholder?: string;
     /**
-     * A callback triggered when user types in text into the SecureField.
+     * A callback triggered when the text value changes.
+     *
+     * If the callback is marked with the `'worklet'` directive, it runs synchronously
+     * on the UI thread; otherwise it is delivered asynchronously as a regular JS event.
      */
-    onChangeText?: (value: string) => void;
+    onTextChange?: (text: string) => void;
     /**
-     * A callback triggered when user submits the TextField by pressing the return key.
+     * A callback triggered when the field gains or loses focus.
      */
-    onSubmit?: (value: string) => void;
+    onFocusChange?: (focused: boolean) => void;
     /**
-     * A callback triggered when user focuses or blurs the SecureField.
+     * Slot children - supports `<SecureField.Placeholder>` with a `<Text>` child
      */
-    onChangeFocus?: (focused: boolean) => void;
-    keyboardType?: TextFieldKeyboardType;
-    /**
-     * If true, the text input will be focused automatically when the component is mounted.
-     * @default false
-     */
-    autoFocus?: boolean;
+    children?: React.ReactNode;
 } & CommonViewModifierProps;
+export type NativeSecureFieldProps = Omit<SecureFieldProps, 'text' | 'onTextChange' | 'onFocusChange'> & ViewEvent<'onTextChange', {
+    value: string;
+}> & ViewEvent<'onFocusChange', {
+    value: boolean;
+}> & {
+    text?: number | null;
+    onTextChangeSync?: number | null;
+};
 /**
- * Renders a `SecureField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
+ * Renders a SwiftUI `SecureField` for password input.
  */
-export declare function SecureField(props: SecureFieldProps): import("react").JSX.Element;
+export declare function SecureField(props: SecureFieldProps): import("react/jsx-runtime").JSX.Element;
+export declare namespace SecureField {
+    var Placeholder: ({ children }: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+}
 //# sourceMappingURL=index.d.ts.map

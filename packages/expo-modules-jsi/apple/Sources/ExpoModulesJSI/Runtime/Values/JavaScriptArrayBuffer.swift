@@ -28,6 +28,11 @@ public struct JavaScriptArrayBuffer: ~Copyable {
   }
 
   /**
+   Alias for `size` that matches JavaScript's `ArrayBuffer.byteLength` property.
+   */
+  public var byteLength: Int { size }
+
+  /**
    Returns a pointer to the underlying data of the array buffer.
    */
   public func data() -> UnsafeMutablePointer<UInt8> {

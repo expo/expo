@@ -1,6 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { Orientation, OrientationChangeEvent, OrientationChangeListener, OrientationLock, PlatformOrientationInfo, WebOrientationLock, WebOrientation, SizeClassIOS, ScreenOrientationInfo } from './ScreenOrientation.types';
-export { Orientation, OrientationLock, PlatformOrientationInfo, OrientationChangeListener, OrientationChangeEvent, WebOrientationLock, WebOrientation, SizeClassIOS, ScreenOrientationInfo, EventSubscription as Subscription, };
+import { Orientation, type OrientationChangeListener, OrientationLock, type PlatformOrientationInfo } from './ScreenOrientation.types';
+export { Orientation, OrientationLock, type PlatformOrientationInfo, type OrientationChangeListener, type OrientationChangeEvent, WebOrientationLock, WebOrientation, SizeClassIOS, type ScreenOrientationInfo, } from './ScreenOrientation.types';
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 /**
  * Lock the screen orientation to a particular `OrientationLock`.
  * @param orientationLock The orientation lock to apply. See the [`OrientationLock`](#orientationlock)

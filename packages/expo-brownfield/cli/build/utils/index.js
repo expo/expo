@@ -19,11 +19,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLIError = void 0;
 __exportStar(require("./android"), exports);
-__exportStar(require("./commands"), exports);
 __exportStar(require("./constants"), exports);
 __exportStar(require("./config"), exports);
 var error_1 = require("./error");
 Object.defineProperty(exports, "CLIError", { enumerable: true, get: function () { return __importDefault(error_1).default; } });
 __exportStar(require("./ios"), exports);
 __exportStar(require("./prebuild"), exports);
+__exportStar(require("./precompiled"), exports);
 __exportStar(require("./spinner"), exports);
+//# sourceMappingURL=index.js.map

@@ -1,24 +1,64 @@
 import {
-  createInjectedCssElements,
-  createInjectedScriptElements,
-  getHydrationFlagScript,
+  createInjectedCssAsString,
+  createInjectedScriptsAsString,
+  createLoaderDataScriptAsString,
+  escapeUnsafeCharacters,
+  getHydrationFlagScriptAsString,
   serializeHelmetToHtml,
 } from '../html';
 
-describe(createInjectedCssElements, () => {
+describe(escapeUnsafeCharacters, () => {
+  it('escapes unsafe HTML and JavaScript characters', () => {
+    const input = JSON.stringify({
+      '/': {
+        dangerous: '<script>alert("XSS")</script>',
+        nested: { value: '</script><script>alert("nested")</script>' },
+        multiple: '<<<multiple>>>',
+        mixed: 'Text with <tag> and </tag>',
+        quotes: 'He said "Hello"',
+        backslash: 'C:\\Users\\test',
+        newline: 'Line 1\nLine 2',
+        unicode: '你好世界 🌍',
+        ampersand: 'A & B',
+        separators: '\u2028\u2029',
+      },
+    });
+
+    const result = escapeUnsafeCharacters(input);
+
+    expect(result).not.toContain('<script>alert("XSS")</script>');
+    expect(result).not.toContain('</script><script>alert("nested")</script>');
+    expect(result).toContain('\\u003cscript');
+    expect(result).toContain('\\u003c/script\\u003e');
+    expect(result).toContain('\\u003c\\u003c\\u003cmultiple');
+    expect(result).toContain('\\u003ctag');
+    expect(result).toContain('\\u003c/tag\\u003e');
+    expect(result).toContain('He said \\"Hello\\"');
+    expect(result).toContain('C:\\\\Users\\\\test');
+    expect(result).toContain('\\n');
+    expect(result).toContain('你好世界');
+    expect(result).toContain('A \\u0026 B');
+    expect(result).toContain('\\u2028\\u2029');
+
+    const unescapedAngleBrackets = result.match(/[<>]/g);
+    expect(unescapedAngleBrackets).toBeNull();
+  });
+});
+
+describe(createInjectedCssAsString, () => {
   it('returns empty string for empty array', () => {
-    expect(createInjectedCssElements([])).toBe('');
+    expect(createInjectedCssAsString([])).toBe('');
   });
 
   it('returns preload + stylesheet for a single href', () => {
-    expect(createInjectedCssElements(['/styles/main.css'])).toBe(
+    expect(createInjectedCssAsString(['/styles/main.css'])).toBe(
       '<link rel="preload" href="/styles/main.css" as="style">\n' +
         '<link rel="stylesheet" href="/styles/main.css">'
     );
   });
 
   it('returns preload + stylesheet pairs for multiple hrefs', () => {
-    const result = createInjectedCssElements(['/a.css', '/b.css']);
+    const result = createInjectedCssAsString(['/a.css', '/b.css']);
     expect(result).toBe(
       '<link rel="preload" href="/a.css" as="style">\n' +
         '<link rel="stylesheet" href="/a.css">\n' +
@@ -28,27 +68,51 @@ describe(createInjectedCssElements, () => {
   });
 });
 
-describe(createInjectedScriptElements, () => {
+describe(createInjectedScriptsAsString, () => {
   it('returns empty string for empty array', () => {
-    expect(createInjectedScriptElements([])).toBe('');
+    expect(createInjectedScriptsAsString([])).toBe('');
   });
 
   it('returns a single defer script tag', () => {
-    expect(createInjectedScriptElements(['/bundle.js'])).toBe(
+    expect(createInjectedScriptsAsString(['/bundle.js'])).toBe(
       '<script src="/bundle.js" defer></script>'
     );
   });
 
   it('returns multiple defer script tags', () => {
-    const result = createInjectedScriptElements(['/a.js', '/b.js']);
+    const result = createInjectedScriptsAsString(['/a.js', '/b.js']);
     expect(result).toBe('<script src="/a.js" defer></script>\n<script src="/b.js" defer></script>');
   });
 });
 
-describe(getHydrationFlagScript, () => {
+describe(getHydrationFlagScriptAsString, () => {
   it('returns the exact hydration flag script tag', () => {
-    expect(getHydrationFlagScript()).toBe(
+    expect(getHydrationFlagScriptAsString()).toBe(
       '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
+    );
+  });
+});
+
+describe(createLoaderDataScriptAsString, () => {
+  it('returns the expected inline script markup', () => {
+    const data = { '/': { foo: 'bar' } };
+
+    expect(createLoaderDataScriptAsString(data)).toBe(
+      '<script id="expo-router-data">' +
+        'globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/\\":{\\"foo\\":\\"bar\\"}}");' +
+        '</script>'
+    );
+  });
+
+  it('uses an escaped payload for unsafe HTML input', () => {
+    const data = { '/route': '<script>alert("xss")</script>' };
+    const result = createLoaderDataScriptAsString(data);
+
+    expect(result).toContain('<script id="expo-router-data">');
+    expect(result).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
+    expect(result).toContain('JSON.parse(');
+    expect(result).toContain(
+      '\\\\u003cscript\\\\u003ealert(\\\\\\"xss\\\\\\")\\\\u003c/script\\\\u003e'
     );
   });
 });

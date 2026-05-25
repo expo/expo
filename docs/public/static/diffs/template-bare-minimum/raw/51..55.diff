@@ -169,21 +169,27 @@ index 00000000000..3ec2507bab7
 +    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" tools:replace="android:usesCleartextTraffic" />
 +</manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 52175508263..c1f2105809f 100644
+index 52175508263..14bdba124ab 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-@@ -5,8 +5,8 @@
+@@ -1,12 +1,13 @@
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++  xmlns:tools="http://schemas.android.com/tools">
+ 
+   <uses-permission android:name="android.permission.INTERNET"/>
+   <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
    <uses-permission android:name="android.permission.VIBRATE"/>
    <!-- These require runtime permissions on M -->
 -  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 -  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
++  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
++  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
    <!-- END OPTIONAL PERMISSIONS -->
  
    <queries>
-@@ -18,13 +18,12 @@
+@@ -18,13 +19,12 @@
      </intent>
    </queries>
  
@@ -666,18 +672,6 @@ index 80b1bc3267b..7fe91512213 100644
  include ':app'
 -includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(expoAutolinking.reactNativeGradlePlugin)
-diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
-index 05647d55c75..d16e1efbb3f 100644
---- a/templates/expo-template-bare-minimum/gitignore
-+++ b/templates/expo-template-bare-minimum/gitignore
-@@ -7,6 +7,7 @@ node_modules/
- .expo/
- dist/
- web-build/
-+expo-env.d.ts
- 
- # Native
- *.orig.*
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 index f945940c256..8a390c764af 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
@@ -989,37 +983,6 @@ index 00000000000..8361941afc2
 +//
 +// Use this file to import your target's public headers that you would like to expose to Swift.
 +//
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
-new file mode 100644
-index 00000000000..255637e0fdb
---- /dev/null
-+++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
-@@ -0,0 +1,21 @@
-+{
-+  "images" : [
-+    {
-+      "filename" : "SplashScreenLegacy.png",
-+      "idiom" : "universal",
-+      "scale" : "1x"
-+    },
-+    {
-+      "idiom" : "universal",
-+      "scale" : "2x"
-+    },
-+    {
-+      "idiom" : "universal",
-+      "scale" : "3x"
-+    }
-+  ],
-+  "info" : {
-+    "author" : "xcode",
-+    "version" : 1
-+  }
-+}
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png
-new file mode 100644
-index 00000000000..bbf8e9e6016
-Binary files /dev/null and b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png differ
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 index 53d78e89033..596dc7ce6b5 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
@@ -1271,7 +1234,7 @@ index 57c1dd38343..03484edf156 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 563853071f0..01e53f014e3 100644
+index 563853071f0..0c1036ba548 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -1280,7 +1243,7 @@ index 563853071f0..01e53f014e3 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "51.0.56",
 +  "license": "0BSD",
-+  "version": "55.0.8",
++  "version": "55.0.38",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1295,9 +1258,9 @@ index 563853071f0..01e53f014e3 100644
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~55.0.0-preview.9",
-+    "expo-status-bar": "~55.0.2",
++    "expo": "~55.0.26",
++    "expo-status-bar": "~55.0.6",
 +    "react": "19.2.0",
-+    "react-native": "0.83.1"
++    "react-native": "0.83.6"
    }
  }

@@ -1,5 +1,5 @@
 import { SharedRef } from 'expo';
-import { ImageResult, SaveOptions } from '../ImageManipulator.types';
+import type { ImageResult, SaveOptions } from '../ImageManipulator.types';
 export default class ImageManipulatorImageRef extends SharedRef<'image'> {
     readonly nativeRefType: string;
     readonly uri: string;

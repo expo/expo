@@ -1,7 +1,8 @@
 import { setAudioModeAsync, AudioMode } from 'expo-audio';
 import React from 'react';
-import { PixelRatio, Switch, Text, View } from 'react-native';
+import { PixelRatio, Switch, View } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import ListButton from '../../components/ListButton';
 
@@ -32,7 +33,7 @@ export default function AudioModeSelector() {
     try {
       await setAudioModeAsync(state.next);
       setState((state) => ({ ...state, current: state.next }));
-    } catch (error) {
+    } catch (error: any) {
       alert(error.message);
     }
   };
@@ -67,7 +68,7 @@ export default function AudioModeSelector() {
         borderBottomWidth: 1.0 / PixelRatio.get(),
         borderBottomColor: '#cccccc',
       }}>
-      <Text style={{ flex: 1, fontSize: 16 }}>{title}</Text>
+      <BodyText style={{ flex: 1, fontSize: 16 }}>{title}</BodyText>
       <Switch
         disabled={disabled}
         value={value !== undefined ? value : Boolean(state.next[valueName])}

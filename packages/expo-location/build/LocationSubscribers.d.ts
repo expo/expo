@@ -1,9 +1,9 @@
-import { LocationCallback, LocationErrorCallback, LocationHeadingCallback } from './Location.types';
+import type { LocationCallback, LocationErrorCallback, LocationHeadingCallback, MotionActivityCallback } from './Location.types';
 type EventObject = {
     watchId: number;
     [key: string]: any;
 };
-declare class Subscriber<CallbackType extends LocationCallback | LocationHeadingCallback | LocationErrorCallback> {
+declare class Subscriber<CallbackType extends LocationCallback | LocationHeadingCallback | LocationErrorCallback | MotionActivityCallback> {
     private eventName;
     private eventDataField;
     private callbacks;
@@ -24,11 +24,17 @@ declare class Subscriber<CallbackType extends LocationCallback | LocationHeading
      * Unregisters a callback with given id and revokes the subscription if possible.
      */
     unregisterCallback(id: number): void;
+    /**
+     * Removes a callback locally without calling native removeWatchAsync.
+     * Use when another subscriber will handle the native teardown for the same id.
+     */
+    forgetCallback(id: number): void;
     trigger(event: EventObject): void;
 }
 export declare const LocationSubscriber: Subscriber<LocationCallback>;
 export declare const HeadingSubscriber: Subscriber<LocationHeadingCallback>;
 export declare const LocationErrorSubscriber: Subscriber<LocationErrorCallback>;
+export declare const MotionActivitySubscriber: Subscriber<MotionActivityCallback>;
 /**
  * @private Necessary for some unit tests.
  */

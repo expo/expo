@@ -1,0 +1,104 @@
+---
+title: Configure EAS Observe
+sidebar_title: Configuration
+description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
+---
+
+Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers the `configure()` and `dispatchEvents()`, enabling metrics in development, using a custom endpoint, and separating data by environment.
+
+## `configure()`
+
+Use the `configure()` method to control how EAS Observe behaves at runtime:
+
+```tsx
+import ExpoObserve from 'expo-observe';
+
+ExpoObserve.configure({
+  environment: 'production',
+  dispatchingEnabled: true,
+});
+```
+
+| Option               | Type      | Default                | Description                                                                                        |
+| -------------------- | --------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events                                                     |
+| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server                                                     |
+| `dispatchInDebug`    | `boolean` | `false`                | Whether to dispatch metrics that were collected in a debug build. Has no effect on release builds. |
+| `sampleRate`         | `number`  | `undefined`            | Fraction of installations that dispatch metrics, in `[0, 1]`. See [Sampling](#sampling).           |
+
+## `dispatchEvents()`
+
+Events are automatically dispatched when the app moves to the background. On Android, a background worker dispatches events once network connectivity is available. On iOS, this happens when the app resigns active state or is about to terminate.
+
+To flush events manually (for example, during testing or to ensure events are sent before a specific point), call `dispatchEvents()`:
+
+```tsx
+import ExpoObserve from 'expo-observe';
+
+await ExpoObserve.dispatchEvents();
+```
+
+## Sampling
+
+By default, every installation dispatches its metrics. For high-volume apps, you can sample a fraction of installations by setting `sampleRate` to a value between `0` and `1`:
+
+```tsx
+import ExpoObserve from 'expo-observe';
+
+// Dispatch metrics from ~25% of installations.
+ExpoObserve.configure({
+  sampleRate: 0.25,
+});
+```
+
+The sampling decision is **deterministic per installation**. Each installation is either permanently in-sample or out-of-sample for a given rate, so the choice is stable across app launches and you get a consistent slice of installations rather than a random subset of sessions.
+
+A few details worth knowing:
+
+- Values outside the `[0, 1]` range are clamped to the nearest edge. `0` always drops; `1` always dispatches.
+- Out-of-sample devices drop pending metrics rather than accumulating them. Lowering the rate later does not retroactively send earlier sessions.
+- Sampling depends on [`dispatchingEnabled`](#configure). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
+
+## Enable metrics in development
+
+By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your EAS Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
+
+```tsx
+import ExpoObserve from 'expo-observe';
+
+ExpoObserve.configure({
+  dispatchInDebug: true,
+});
+```
+
+A build is treated as a debug build if either the native app is a debug build or the JS bundle is a development bundle (`__DEV__` is `true`). This detection is independent of the `environment` value (see [Environments](#environments)).
+
+`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](#configure) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
+
+> **warning** Enable this only when testing your EAS Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
+
+## Custom endpoint
+
+If you need to change the endpoint for the observability API, set the `endpointUrl` value in your **app config**:
+
+```json app.json
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "observe": {
+          "endpointUrl": "https://your-custom-endpoint.com"
+        }
+      }
+    }
+  }
+}
+```
+
+The endpoint URL is baked into the native layer of the app at build time, so changing it requires regenerating native code. After updating your app config, run `npx expo prebuild` and create a new build to apply the change.
+
+## Environments
+
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset). To override it, use [`configure({ environment })`](#configure).
+
+The environment is a metadata tag attached to each metric and is independent of how the bundle was built. To control whether debug-build metrics are dispatched, see [Enable metrics in development](#enable-metrics-in-development). To disable all dispatching globally, use `configure({ dispatchingEnabled: false })`.

@@ -31,6 +31,7 @@ struct SettingsTabView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24) {
+        SafeAreaTopPadding(manualInset: viewModel.topSafeAreaInset)
         titleSection
         showMenuAtLaunch
         gestures
@@ -119,7 +120,7 @@ struct SettingsTabView: View {
             .resizable()
             .frame(width: 24, height: 24)
             .opacity(0.6)
-          Toggle("Shake Device", isOn: $viewModel.shakeDevice)
+          Toggle("Shake device", isOn: $viewModel.shakeDevice)
         }
         .padding()
 
@@ -270,9 +271,4 @@ struct SettingsTabView: View {
     }
   }
   #endif
-}
-
-#Preview {
-  SettingsTabView()
-    .environmentObject(DevLauncherViewModel())
 }

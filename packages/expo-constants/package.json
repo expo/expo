@@ -1,6 +1,6 @@
 {
   "name": "expo-constants",
-  "version": "55.0.7",
+  "version": "56.0.15",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
@@ -42,17 +42,23 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config": "workspace:~55.0.8",
-    "@expo/env": "workspace:~2.1.1"
+    "@expo/env": "workspace:~2.3.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "expo": "workspace:*",
     "expo-manifests": "workspace:*",
-    "expo-updates": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "expo-updates": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react-native": "*"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/get-app-config-ios.sh",
+      "./scripts/with-node.sh"
+    ]
   }
 }

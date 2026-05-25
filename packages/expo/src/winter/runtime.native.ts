@@ -3,6 +3,7 @@
 
 import '../../types';
 
+import { installAbortSignalPatch } from './AbortSignal';
 import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 
@@ -16,6 +17,8 @@ install('TextEncoderStream', () => require('./TextDecoderStream').TextEncoderStr
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+// https://webidl.spec.whatwg.org/#idl-DOMException
+install('DOMException', () => require('./DOMException').DOMException);
 // https://streams.spec.whatwg.org/#rs
 // ReadableStream is injected by Metro as a global
 
@@ -25,7 +28,22 @@ install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').Import
 install('structuredClone', () => require('@ungap/structured-clone').default);
 
 installFormDataPatch(FormData);
+installAbortSignalPatch(AbortSignal);
 
 // Polyfill async iterator symbol for Hermes.
 // @ts-expect-error: readonly property only applies when the engine supports it
 Symbol.asyncIterator ??= Symbol.for('Symbol.asyncIterator');
+
+const useRnFetch =
+  process.env.EXPO_PUBLIC_USE_RN_FETCH === '1' || process.env.EXPO_PUBLIC_USE_RN_FETCH === 'true';
+
+if (!useRnFetch) {
+  // Reading `Headers` triggers RN's polyfill chain, which also installs
+  // `Request` and `Response`. Must run before we replace `fetch` below.
+  if (!globalThis.Headers) {
+    throw new Error(
+      "expo/fetch expected `globalThis.Headers` to be installed by React Native's fetch polyfill."
+    );
+  }
+  install('fetch', () => require('./fetch').fetch);
+}

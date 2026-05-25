@@ -54,7 +54,7 @@ In the **src/app/(tabs)/feed/\_layout.tsx** file, return a `Stack` component:
 ```tsx src/app/(tabs)/feed/_layout.tsx
 import { Stack } from 'expo-router';
 
-/* @info Setting <CODE>initialRouteName</CODE> ensures that direct links deep into the stack still push the index route onto the stack first. */
+/* @info Setting `initialRouteName` ensures that direct links deep into the stack still push the index route onto the stack first. */
 export const unstable_settings = {
   initialRouteName: 'index',
 };
@@ -101,7 +101,7 @@ When building a cross-platform app, you may want to use [native tabs](/router/ad
 
 The root layout renders an `AppTabs` component. Expo's module resolution automatically picks **app-tabs.native.tsx** on Android and iOS, and **app-tabs.tsx** on web, allowing each platform to use a tab implementation suited to its conventions.
 
-For a complete example of this pattern with code, see [Platform-specific tabs](/router/basics/layout/#platform-specific-tabs) in the Layout guide.
+For a complete example of this pattern with code, see [Platform-specific tabs](/router/basics/navigation-layouts/#platform-specific-tabs) in the Layout guide.
 
 ## One screen, two tabs: sharing routes
 

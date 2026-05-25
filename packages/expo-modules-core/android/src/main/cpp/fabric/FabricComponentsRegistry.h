@@ -2,29 +2,12 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-#include <CoreComponentsRegistry.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
-
+#include "../ExpoHeader.pch"
 #include "../types/ExpectedType.h"
-#include "../types/FrontendConverter.h"
-#include "AndroidExpoViewComponentDescriptor.h"
 
 namespace jni = facebook::jni;
-namespace react = facebook::react;
 
 namespace expo {
-
-typedef std::unordered_map<
-  AndroidExpoViewComponentDescriptor::Flavor,
-  std::unordered_map<std::string, std::shared_ptr<FrontendConverter>>
-> StatePropMapType;
-
-extern StatePropMapType statePropMap;
-
-AndroidExpoViewComponentDescriptor::Unique concreteExpoComponentDescriptorConstructor(
-  const react::ComponentDescriptorParameters &parameters
-);
 
 class FabricComponentsRegistry : public jni::HybridClass<FabricComponentsRegistry> {
 public:

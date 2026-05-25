@@ -1,4 +1,4 @@
-import { PluginConfigTypeAndroidQueriesIntent } from './pluginConfig';
+import type { PluginConfigTypeAndroidQueriesIntent } from './pluginConfig';
 export declare function renderQueryProviders(data?: string | string[]): {
     $: {
         'android:authorities': string;

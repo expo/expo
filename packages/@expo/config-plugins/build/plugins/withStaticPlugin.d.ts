@@ -1,4 +1,4 @@
-import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
+import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 /**
  * Resolves static module plugin and potentially falls back on a provided plugin if the module cannot be resolved
  *

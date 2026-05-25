@@ -5,9 +5,9 @@ import UIKit
 
 // MARK: - Mock views
 
-/// Mock tab screen: has @objc tabKey property, mimicking RNScreens tab screen views.
+/// Mock tab screen: has @objc screenKey property, mimicking RNScreens tab screen views.
 private class MockTabScreenView: UIView {
-  @objc var tabKey: String?
+  @objc var screenKey: String?
 }
 
 /// Mock tab host: has @objc controller property, mimicking RNScreens tab host views.
@@ -22,7 +22,7 @@ private class MockTabHostWithBadController: UIView {
 
 /// Mock view with a reactViewController() method that returns a UIViewController.
 private class MockTabScreenWithReactVC: UIView {
-  @objc var tabKey: String?
+  @objc var screenKey: String?
   private var _reactViewController: UIViewController?
 
   func configure(reactViewController: UIViewController) {
@@ -37,9 +37,11 @@ private class MockTabScreenWithReactVC: UIView {
 // MARK: - Unit tests
 
 @Suite("RNScreensTabCompat unit tests")
+@MainActor
 struct RNScreensTabCompatUnitTests {
 
   @Suite("isTabScreen")
+  @MainActor
   struct IsTabScreen {
     @Test
     func `detects mock tab screen`() {
@@ -60,30 +62,32 @@ struct RNScreensTabCompatUnitTests {
     }
   }
 
-  @Suite("tabKey")
-  struct TabKey {
+  @Suite("screenKey")
+  @MainActor
+  struct ScreenKey {
     @Test
     func `reads value`() {
       let tabScreen = MockTabScreenView()
-      tabScreen.tabKey = "home"
-      #expect(RNScreensTabCompat.tabKey(from: tabScreen) == "home")
+      tabScreen.screenKey = "home"
+      #expect(RNScreensTabCompat.screenKey(from: tabScreen) == "home")
     }
 
     @Test
-    func `returns nil for nil tab key`() {
+    func `returns nil for nil screen key`() {
       let tabScreen = MockTabScreenView()
-      tabScreen.tabKey = nil
-      #expect(RNScreensTabCompat.tabKey(from: tabScreen) == nil)
+      tabScreen.screenKey = nil
+      #expect(RNScreensTabCompat.screenKey(from: tabScreen) == nil)
     }
 
     @Test
     func `returns nil for plain UIView`() {
       let plainView = UIView()
-      #expect(RNScreensTabCompat.tabKey(from: plainView) == nil)
+      #expect(RNScreensTabCompat.screenKey(from: plainView) == nil)
     }
   }
 
   @Suite("tabBarController(fromTabHost:)")
+  @MainActor
   struct TabBarControllerFromTabHost {
     @Test
     func `returns tab bar controller`() {
@@ -121,6 +125,7 @@ struct RNScreensTabCompatUnitTests {
   }
 
   @Suite("tabBarController(fromTabScreen:)")
+  @MainActor
   struct TabBarControllerFromTabScreen {
     @Test
     func `returns tab bar controller via reactViewController`() {
@@ -129,7 +134,7 @@ struct RNScreensTabCompatUnitTests {
       tabBarController.viewControllers = [childVC]
 
       let mockView = MockTabScreenWithReactVC()
-      mockView.tabKey = "tab1"
+      mockView.screenKey = "tab1"
       mockView.configure(reactViewController: childVC)
       childVC.view.addSubview(mockView)
 
@@ -140,16 +145,16 @@ struct RNScreensTabCompatUnitTests {
     @Test
     func `returns nil when reactViewController returns nil`() {
       let mockView = MockTabScreenWithReactVC()
-      mockView.tabKey = "tab1"
+      mockView.screenKey = "tab1"
       // Don't configure — reactViewController() returns nil
       #expect(RNScreensTabCompat.tabBarController(fromTabScreen: mockView) == nil)
     }
 
     @Test
     func `returns nil when no reactViewController method`() {
-      // MockTabScreenView has tabKey but no reactViewController() method
+      // MockTabScreenView has screenKey but no reactViewController() method
       let mockView = MockTabScreenView()
-      mockView.tabKey = "tab1"
+      mockView.screenKey = "tab1"
       #expect(RNScreensTabCompat.tabBarController(fromTabScreen: mockView) == nil)
     }
 
@@ -166,7 +171,7 @@ struct RNScreensTabCompatUnitTests {
       navController.viewControllers = [childVC]
 
       let mockView = MockTabScreenWithReactVC()
-      mockView.tabKey = "tab1"
+      mockView.screenKey = "tab1"
       mockView.configure(reactViewController: childVC)
       childVC.view.addSubview(mockView)
 
@@ -178,10 +183,11 @@ struct RNScreensTabCompatUnitTests {
 // MARK: - Integration tests (RNScreens API contract)
 
 @Suite("RNScreens API contract")
+@MainActor
 struct RNScreensAPIContractTests {
 
   @Test
-  func `tab screen class responds to tabKey`() throws {
+  func `tab screen class responds to screenKey`() throws {
     let cls = NSClassFromString("RNSTabsScreenComponentView")
       ?? NSClassFromString("RNSBottomTabsScreenComponentView")
     guard let cls else {
@@ -189,7 +195,7 @@ struct RNScreensAPIContractTests {
       return
     }
     let view = try #require((cls as? UIView.Type)?.init(), "Failed to instantiate tab screen class")
-    #expect(view.responds(to: NSSelectorFromString("tabKey")))
+    #expect(view.responds(to: NSSelectorFromString("screenKey")))
   }
 
   @Test

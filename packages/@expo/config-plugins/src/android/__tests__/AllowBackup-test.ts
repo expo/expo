@@ -1,7 +1,7 @@
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
 import { getAllowBackup, getAllowBackupFromManifest, setAllowBackup } from '../AllowBackup';
-import { AndroidManifest } from '../Manifest';
+import type { AndroidManifest } from '../Manifest';
 
 async function getFixtureManifestAsync() {
   return (await XML.parseXMLAsync(

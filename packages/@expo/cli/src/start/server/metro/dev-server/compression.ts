@@ -1,4 +1,4 @@
-import { NextHandleFunction } from 'connect';
+import type { NextHandleFunction } from 'connect';
 
 const createCompressionMiddleware = require('compression');
 

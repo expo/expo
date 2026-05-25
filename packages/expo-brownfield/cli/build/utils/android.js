@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runTask = exports.processTasks = exports.processRepositories = exports.printAndroidConfig = exports.findBrownfieldLibrary = exports.buildPublishingTask = void 0;
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const commands_1 = require("./commands");
 const error_1 = __importDefault(require("./error"));
 const spinner_1 = require("./spinner");
 const buildPublishingTask = (variant, repository) => {
@@ -25,9 +25,23 @@ const findBrownfieldLibrary = () => {
             .readdirSync(androidPath, { withFileTypes: true })
             .filter((item) => item.isDirectory());
         const brownfieldLibrary = subdirectories.find((directory) => {
-            const directoryPath = node_path_1.default.join(androidPath, directory.name);
-            const files = node_fs_1.default.readdirSync(directoryPath, { recursive: true });
-            return files.some((file) => typeof file === 'string' && file.endsWith('ReactNativeHostManager.kt'));
+            const directoryPath = node_path_1.default.resolve(androidPath, directory.name);
+            const directories = [directoryPath];
+            let target;
+            while ((target = directories.shift()) != null) {
+                const entries = node_fs_1.default.readdirSync(target, { withFileTypes: true });
+                for (const entry of entries) {
+                    const childPath = node_path_1.default.join(target, entry.name);
+                    if (entry.isDirectory()) {
+                        directories.push(childPath);
+                    }
+                    else if (entry.isFile()) {
+                        if (entry.name === 'ReactNativeHostManager.kt')
+                            return true;
+                    }
+                }
+            }
+            return false;
         });
         if (brownfieldLibrary) {
             return brownfieldLibrary.name;
@@ -38,6 +52,7 @@ const findBrownfieldLibrary = () => {
         const errorMessage = error instanceof Error ? error.message : '';
         error_1.default.handle('android-library-unknown-error', errorMessage);
     }
+    return;
 };
 exports.findBrownfieldLibrary = findBrownfieldLibrary;
 const printAndroidConfig = (config) => {
@@ -78,9 +93,9 @@ const runTask = async (task, verbose, dryRun) => {
         return;
     }
     return (0, spinner_1.withSpinner)({
-        operation: () => (0, commands_1.runCommand)('./gradlew', [task], {
+        operation: () => (0, spawn_async_1.default)('./gradlew', [task], {
             cwd: node_path_1.default.join(process.cwd(), 'android'),
-            verbose,
+            stdio: verbose ? 'inherit' : 'pipe',
         }),
         loaderMessage: 'Running task: ' + task,
         successMessage: 'Running task: ' + task + ' succeeded',
@@ -89,3 +104,4 @@ const runTask = async (task, verbose, dryRun) => {
     });
 };
 exports.runTask = runTask;
+//# sourceMappingURL=android.js.map

@@ -1,5 +1,6 @@
 import { act } from '@testing-library/react-native';
-import { Dispatch, SetStateAction, useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useState } from 'react';
 import { Text } from 'react-native';
 import {
   type HeaderBarButtonItemWithAction,
@@ -70,7 +71,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     // [0] Initial layout render (no toolbar options yet)
     // [1] Screen component renders, toolbar sets left items via composition registry
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
-    const headerConfig = ScreenStackItem.mock.calls[1][0].headerConfig;
+    const headerConfig = ScreenStackItem.mock.calls[1]![0].headerConfig;
     expect(headerConfig?.headerLeftBarButtonItems).toHaveLength(1);
     expect(
       (headerConfig?.headerLeftBarButtonItems?.[0] as HeaderBarButtonItemWithAction).icon
@@ -87,7 +88,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     // Composition cleanup removes left items, right toolbar registers new items
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
 
-    const headerConfigAfter = ScreenStackItem.mock.calls[0][0].headerConfig;
+    const headerConfigAfter = ScreenStackItem.mock.calls[0]![0].headerConfig;
     expect(headerConfigAfter?.headerLeftBarButtonItems).toBeUndefined();
     expect(headerConfigAfter?.headerRightBarButtonItems).toHaveLength(1);
     expect(
@@ -125,7 +126,9 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     // [0] Initial layout render
     // [1] Screen component renders with left toolbar options
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
-    expect(ScreenStackItem.mock.calls[1][0].headerConfig?.headerLeftBarButtonItems).toHaveLength(1);
+    expect(ScreenStackItem.mock.calls[1]![0].headerConfig?.headerLeftBarButtonItems).toHaveLength(
+      1
+    );
 
     // Bottom toolbar uses RouterToolbarHost, not called yet
     expect(MockedRouterToolbarHost).not.toHaveBeenCalled();
@@ -139,12 +142,14 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     // RouterToolbarItem is called with correct icon (systemImageName for SF Symbol)
     expect(MockedRouterToolbarItem).toHaveBeenCalledTimes(1);
-    expect(MockedRouterToolbarItem.mock.calls[0][0].systemImageName).toBe('star');
+    expect(MockedRouterToolbarItem.mock.calls[0]![0].systemImageName).toBe('star');
 
     // Render sequence after placement change:
     // Composition cleanup removes headerLeftBarButtonItems
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-    expect(ScreenStackItem.mock.calls[0][0].headerConfig?.headerLeftBarButtonItems).toBeUndefined();
+    expect(
+      ScreenStackItem.mock.calls[0]![0].headerConfig?.headerLeftBarButtonItems
+    ).toBeUndefined();
   });
 
   it('bottom to right: stops using RouterToolbarHost and populates headerRightBarButtonItems', () => {
@@ -175,15 +180,15 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     // RouterToolbarItem is called with correct icon (systemImageName for SF Symbol)
     expect(MockedRouterToolbarItem).toHaveBeenCalledTimes(1);
-    expect(MockedRouterToolbarItem.mock.calls[0][0].systemImageName).toBe('star');
+    expect(MockedRouterToolbarItem.mock.calls[0]![0].systemImageName).toBe('star');
 
     // No header bar button items should be set (bottom doesn't use them)
     // All initial calls should have no right bar button items
     expect(
       ScreenStackItem.mock.calls.every(
         (call) =>
-          !call[0].headerConfig?.headerRightBarButtonItems ||
-          call[0].headerConfig.headerRightBarButtonItems.length === 0
+          !call[0]!.headerConfig?.headerRightBarButtonItems ||
+          call[0]!.headerConfig.headerRightBarButtonItems.length === 0
       )
     ).toBe(true);
 
@@ -194,7 +199,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     // Render sequence after placement change:
     // [0] Right toolbar sets headerRightBarButtonItems
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-    const headerConfigAfter = ScreenStackItem.mock.calls[0][0].headerConfig;
+    const headerConfigAfter = ScreenStackItem.mock.calls[0]![0].headerConfig;
     expect(headerConfigAfter?.headerRightBarButtonItems).toHaveLength(1);
     expect(
       (headerConfigAfter!.headerRightBarButtonItems![0] as HeaderBarButtonItemWithAction).icon
@@ -233,7 +238,9 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     // Initial: left placement
     // [0] Layout render, [1] Screen with left toolbar
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
-    expect(ScreenStackItem.mock.calls[1][0].headerConfig?.headerLeftBarButtonItems).toHaveLength(1);
+    expect(ScreenStackItem.mock.calls[1]![0].headerConfig?.headerLeftBarButtonItems).toHaveLength(
+      1
+    );
     expect(MockedRouterToolbarHost).not.toHaveBeenCalled();
 
     // Change to right
@@ -242,8 +249,10 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     // Composition cleanup clears left + right toolbar sets items
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-    expect(ScreenStackItem.mock.calls[0][0].headerConfig?.headerLeftBarButtonItems).toBeUndefined();
-    expect(ScreenStackItem.mock.calls[0][0].headerConfig?.headerRightBarButtonItems).toHaveLength(
+    expect(
+      ScreenStackItem.mock.calls[0]![0].headerConfig?.headerLeftBarButtonItems
+    ).toBeUndefined();
+    expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.headerRightBarButtonItems).toHaveLength(
       1
     );
     expect(MockedRouterToolbarHost).not.toHaveBeenCalled();
@@ -255,13 +264,13 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     // Composition cleanup removes right items
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
     expect(
-      ScreenStackItem.mock.calls[0][0].headerConfig?.headerRightBarButtonItems
+      ScreenStackItem.mock.calls[0]![0].headerConfig?.headerRightBarButtonItems
     ).toBeUndefined();
     expect(MockedRouterToolbarHost).toHaveBeenCalledTimes(1);
 
     // RouterToolbarItem is called with correct icon for bottom placement
     expect(MockedRouterToolbarItem).toHaveBeenCalledTimes(1);
-    expect(MockedRouterToolbarItem.mock.calls[0][0].systemImageName).toBe('star');
+    expect(MockedRouterToolbarItem.mock.calls[0]![0].systemImageName).toBe('star');
 
     // Change back to left
     jest.clearAllMocks();
@@ -269,7 +278,9 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     // [0] Left toolbar sets items (no cleanup needed from bottom)
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-    expect(ScreenStackItem.mock.calls[0][0].headerConfig?.headerLeftBarButtonItems).toHaveLength(1);
+    expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.headerLeftBarButtonItems).toHaveLength(
+      1
+    );
     expect(MockedRouterToolbarHost).not.toHaveBeenCalled();
   });
 });
@@ -313,7 +324,7 @@ describe('Stack.Toolbar with navigation', () => {
 
     // Last call should have the toolbar options for the detail screen
     const lastCallIndex = ScreenStackItem.mock.calls.length - 1;
-    const headerConfig = ScreenStackItem.mock.calls[lastCallIndex][0].headerConfig;
+    const headerConfig = ScreenStackItem.mock.calls[lastCallIndex]![0].headerConfig;
     expect(headerConfig?.headerRightBarButtonItems).toHaveLength(1);
     expect(
       (headerConfig!.headerRightBarButtonItems![0] as HeaderBarButtonItemWithAction).icon
@@ -357,7 +368,7 @@ describe('Stack.Toolbar with navigation', () => {
     // After navigation, last call should have left toolbar items
     const lastCallBeforePlacementChange = ScreenStackItem.mock.calls.length - 1;
     expect(
-      ScreenStackItem.mock.calls[lastCallBeforePlacementChange][0].headerConfig
+      ScreenStackItem.mock.calls[lastCallBeforePlacementChange]![0].headerConfig
         ?.headerLeftBarButtonItems
     ).toHaveLength(1);
 
@@ -369,11 +380,13 @@ describe('Stack.Toolbar with navigation', () => {
     // [0] For index
     // [1] For detail with updated placement
     expect(ScreenStackItem.mock.calls.length).toBe(2);
-    expect(ScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('index');
-    expect(ScreenStackItem.mock.calls[1][0].headerConfig?.title).toBe('detail');
+    expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('index');
+    expect(ScreenStackItem.mock.calls[1]![0].headerConfig?.title).toBe('detail');
 
-    expect(ScreenStackItem.mock.calls[1][0].headerConfig?.headerLeftBarButtonItems).toBeUndefined();
-    expect(ScreenStackItem.mock.calls[1][0].headerConfig?.headerRightBarButtonItems).toHaveLength(
+    expect(
+      ScreenStackItem.mock.calls[1]![0].headerConfig?.headerLeftBarButtonItems
+    ).toBeUndefined();
+    expect(ScreenStackItem.mock.calls[1]![0].headerConfig?.headerRightBarButtonItems).toHaveLength(
       1
     );
   });
@@ -414,7 +427,7 @@ it('updates multiple toolbars correctly when one changes placement', () => {
 
   expect(
     (
-      ScreenStackItem.mock.calls[1][0].headerConfig
+      ScreenStackItem.mock.calls[1]![0].headerConfig
         ?.headerLeftBarButtonItems?.[0] as HeaderBarButtonItemWithAction
     ).icon
   ).toEqual({
@@ -423,7 +436,7 @@ it('updates multiple toolbars correctly when one changes placement', () => {
   });
   expect(
     (
-      ScreenStackItem.mock.calls[1][0].headerConfig!
+      ScreenStackItem.mock.calls[1]![0].headerConfig!
         .headerRightBarButtonItems![0] as HeaderBarButtonItemWithAction
     ).icon
   ).toEqual({
@@ -440,18 +453,18 @@ it('updates multiple toolbars correctly when one changes placement', () => {
 
   // RouterToolbarItem is called with correct icon for the bottom toolbar
   expect(MockedRouterToolbarItem).toHaveBeenCalledTimes(1);
-  expect(MockedRouterToolbarItem.mock.calls[0][0].systemImageName).toBe('ellipsis.circle');
+  expect(MockedRouterToolbarItem.mock.calls[0]![0].systemImageName).toBe('ellipsis.circle');
 
   // Render sequence after changing right to bottom:
   // Composition cleanup removes right items (left toolbar stays)
   expect(ScreenStackItem.mock.calls.length).toBeGreaterThanOrEqual(1);
 
   // Right items cleared via composition cleanup, left items remain
-  expect(ScreenStackItem.mock.calls[0][0].headerConfig?.headerRightBarButtonItems).toBeUndefined();
-  expect(ScreenStackItem.mock.calls[0][0].headerConfig?.headerLeftBarButtonItems).toHaveLength(1);
+  expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.headerRightBarButtonItems).toBeUndefined();
+  expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.headerLeftBarButtonItems).toHaveLength(1);
   expect(
     (
-      ScreenStackItem.mock.calls[0][0].headerConfig
+      ScreenStackItem.mock.calls[0]![0].headerConfig
         ?.headerLeftBarButtonItems?.[0] as HeaderBarButtonItemWithAction
     ).icon
   ).toEqual({
@@ -497,11 +510,11 @@ it('batched placement changes: ends up in correct final state', () => {
   const lastCall = ScreenStackItem.mock.calls.length - 1;
   expect(lastCall).toBeGreaterThanOrEqual(0);
   expect(
-    ScreenStackItem.mock.calls[lastCall][0].headerConfig!.headerRightBarButtonItems
+    ScreenStackItem.mock.calls[lastCall]![0].headerConfig!.headerRightBarButtonItems
   ).toHaveLength(1);
   expect(
     (
-      ScreenStackItem.mock.calls[lastCall][0].headerConfig!
+      ScreenStackItem.mock.calls[lastCall]![0].headerConfig!
         .headerRightBarButtonItems![0] as HeaderBarButtonItemWithAction
     ).icon
   ).toEqual({ type: 'sfSymbol', name: 'star' });

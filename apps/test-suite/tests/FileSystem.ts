@@ -9,19 +9,28 @@ import { Platform } from 'react-native';
 export const name = 'FileSystem';
 const shouldSkipTestsRequiringPermissions = true;
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function test({ describe, expect, it, ...t }) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';
+  const watcherDirectory = new Directory(Paths.cache, 'watcher-tests');
   t.beforeEach(async () => {
     try {
       await FS.makeDirectoryAsync(testDirectory);
     } catch {}
+    watcherDirectory.create({ idempotent: true, intermediates: true });
   });
   t.afterEach(async () => {
     try {
       await FS.deleteAsync(testDirectory);
     } catch {}
+    if (watcherDirectory.exists) {
+      watcherDirectory.delete();
+    }
   });
   describe('FileSystem', () => {
     if (Constants.appOwnership === 'expo') {
@@ -213,6 +222,111 @@ export async function test({ describe, expect, it, ...t }) {
         expect(dir.list().map((i) => i.name)).toContain('expo-root.pem');
         expect(new File(Paths.bundle, 'expo-root.pem').size > 1000).toBe(true);
       }
+    });
+
+    describe('watching files and directories', () => {
+      let originalTimeout;
+
+      t.beforeAll(() => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 4;
+      });
+
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+      });
+
+      it('returns an idempotent subscription', () => {
+        const file = new File(watcherDirectory, 'subscription.txt');
+        file.create();
+
+        const subscription = file.watch(() => {});
+        subscription.remove();
+
+        expect(() => subscription.remove()).not.toThrow();
+      });
+
+      it('emits a modified event when a watched file is written', async () => {
+        const file = new File(watcherDirectory, 'modified.txt');
+        file.create();
+        file.write('before');
+
+        const events: { type: string }[] = [];
+        const subscription = file.watch((event) => events.push(event));
+
+        try {
+          file.write('after');
+          await delay(300);
+
+          expect(events.some((event) => event.type === 'modified')).toBe(true);
+        } finally {
+          subscription.remove();
+        }
+      });
+
+      it('emits a deleted event when a watched file is deleted', async () => {
+        const file = new File(watcherDirectory, 'deleted.txt');
+        file.create();
+
+        const events: { type: string }[] = [];
+        const subscription = file.watch((event) => events.push(event));
+
+        try {
+          file.delete();
+          await delay(300);
+
+          expect(events.some((event) => event.type === 'deleted')).toBe(true);
+        } finally {
+          subscription.remove();
+        }
+      });
+
+      it('filters events by requested types', async () => {
+        const file = new File(watcherDirectory, 'filter.txt');
+        file.create();
+        file.write('before');
+
+        const events: { type: string }[] = [];
+        const subscription = file.watch((event) => events.push(event), {
+          events: ['deleted'],
+        });
+
+        try {
+          file.write('after');
+          await delay(300);
+
+          expect(events.length).toBe(0);
+        } finally {
+          subscription.remove();
+        }
+      });
+
+      it('emits an event when a child file is created in a watched directory', async () => {
+        const directory = new Directory(watcherDirectory, 'children');
+        directory.create();
+
+        const events: { type: string; target: File | Directory }[] = [];
+        const subscription = directory.watch((event) => events.push(event));
+
+        try {
+          const childFile = new File(directory, 'child.txt');
+          childFile.create();
+          await delay(300);
+
+          expect(events.length).toBeGreaterThan(0);
+
+          if (Platform.OS === 'ios') {
+            expect(events[0]?.type).toBe('modified');
+            expect(events[0]?.target instanceof Directory).toBe(true);
+            expect(events[0]?.target.uri).toBe(directory.uri);
+          } else {
+            expect(events.some((event) => event.type === 'created')).toBe(true);
+            expect(events.some((event) => event.target instanceof File)).toBe(true);
+          }
+        } finally {
+          subscription.remove();
+        }
+      });
     });
 
     if (Platform.OS === 'android') {
@@ -1988,72 +2102,70 @@ export async function test({ describe, expect, it, ...t }) {
       expect(src.textSync()).toBe(alphabet.repeat(4 * 10));
     });
 
-    if (Platform.OS === 'android') {
-      describe('FileMode (Android)', () => {
-        it('opens in ReadOnly mode and reads data', () => {
-          const src = new File(testDirectory, 'mode-read.txt');
-          src.write('Hello');
-          const handle = src.open(FileMode.ReadOnly);
-          expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
-          handle.close();
-        });
-
-        it('throws when writing to a ReadOnly handle', () => {
-          const src = new File(testDirectory, 'mode-read-only.txt');
-          src.write('Hello');
-          const handle = src.open(FileMode.ReadOnly);
-          expect(() => handle.writeBytes(new Uint8Array([65]))).toThrow();
-          handle.close();
-        });
-
-        it('opens in WriteOnly mode and writes data', () => {
-          const src = new File(testDirectory, 'mode-write.txt');
-          src.create();
-          const handle = src.open(FileMode.WriteOnly);
-          handle.writeBytes(new Uint8Array([72, 105])); // Hi
-          handle.close();
-          expect(src.textSync()).toBe('Hi');
-        });
-
-        it('throws when reading from a WriteOnly handle', () => {
-          const src = new File(testDirectory, 'mode-write-only.txt');
-          src.create();
-          const handle = src.open(FileMode.WriteOnly);
-          expect(() => handle.readBytes(1)).toThrow();
-          handle.close();
-        });
-
-        it('opens in ReadWrite mode and supports both reading and writing', () => {
-          const src = new File(testDirectory, 'mode-rw.txt');
-          src.write('Hello');
-          const handle = src.open(FileMode.ReadWrite);
-          expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
-          handle.offset = 0;
-          handle.writeBytes(new Uint8Array([87, 111, 114, 108, 100])); // World
-          handle.close();
-          expect(src.textSync()).toBe('World');
-        });
-
-        it('opens in Append mode and appends data', () => {
-          const src = new File(testDirectory, 'mode-append.txt');
-          src.write('Hello');
-          const handle = src.open(FileMode.Append);
-          handle.writeBytes(new Uint8Array([32, 87, 111, 114, 108, 100])); // ' World'
-          handle.close();
-          expect(src.textSync()).toBe('Hello World');
-        });
-
-        it('opens in Truncate mode and wipes existing content', () => {
-          const src = new File(testDirectory, 'mode-truncate.txt');
-          src.write('Old content');
-          const handle = src.open(FileMode.Truncate);
-          expect(handle.size).toBe(0);
-          handle.writeBytes(new Uint8Array([78, 101, 119])); // New
-          handle.close();
-          expect(src.textSync()).toBe('New');
-        });
+    describe('It supports different FileMode options', () => {
+      it('opens in ReadOnly mode and reads data', () => {
+        const src = new File(testDirectory, 'mode-read.txt');
+        src.write('Hello');
+        const handle = src.open(FileMode.ReadOnly);
+        expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+        handle.close();
       });
-    }
+
+      it('throws when writing to a ReadOnly handle', () => {
+        const src = new File(testDirectory, 'mode-read-only.txt');
+        src.write('Hello');
+        const handle = src.open(FileMode.ReadOnly);
+        expect(() => handle.writeBytes(new Uint8Array([65]))).toThrow();
+        handle.close();
+      });
+
+      it('opens in WriteOnly mode and writes data', () => {
+        const src = new File(testDirectory, 'mode-write.txt');
+        src.create();
+        const handle = src.open(FileMode.WriteOnly);
+        handle.writeBytes(new Uint8Array([72, 105])); // Hi
+        handle.close();
+        expect(src.textSync()).toBe('Hi');
+      });
+
+      it('throws when reading from a WriteOnly handle', () => {
+        const src = new File(testDirectory, 'mode-write-only.txt');
+        src.create();
+        const handle = src.open(FileMode.WriteOnly);
+        expect(() => handle.readBytes(1)).toThrow();
+        handle.close();
+      });
+
+      it('opens in ReadWrite mode and supports both reading and writing', () => {
+        const src = new File(testDirectory, 'mode-rw.txt');
+        src.write('Hello');
+        const handle = src.open(FileMode.ReadWrite);
+        expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+        handle.offset = 0;
+        handle.writeBytes(new Uint8Array([87, 111, 114, 108, 100])); // World
+        handle.close();
+        expect(src.textSync()).toBe('World');
+      });
+
+      it('opens in Append mode and appends data', () => {
+        const src = new File(testDirectory, 'mode-append.txt');
+        src.write('Hello');
+        const handle = src.open(FileMode.Append);
+        handle.writeBytes(new Uint8Array([32, 87, 111, 114, 108, 100])); // ' World'
+        handle.close();
+        expect(src.textSync()).toBe('Hello World');
+      });
+
+      it('opens in Truncate mode and wipes existing content', () => {
+        const src = new File(testDirectory, 'mode-truncate.txt');
+        src.write('Old content');
+        const handle = src.open(FileMode.Truncate);
+        expect(handle.size).toBe(0);
+        handle.writeBytes(new Uint8Array([78, 101, 119])); // New
+        handle.close();
+        expect(src.textSync()).toBe('New');
+      });
+    });
 
     it('Provides a ReadableStream', async () => {
       const src = new File(testDirectory, 'abcs.txt');

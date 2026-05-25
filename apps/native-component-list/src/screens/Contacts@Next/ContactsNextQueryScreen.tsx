@@ -3,10 +3,12 @@ import {
   ContactField,
   ContactsSortOrder,
   PartialContactDetails,
-} from 'expo-contacts/next';
+  requestPermissionsAsync,
+} from 'expo-contacts';
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 
 export default function ContactsManager() {
@@ -20,7 +22,7 @@ export default function ContactsManager() {
 
   useEffect(() => {
     const requestPermissions = async () => {
-      await Contact.requestPermissionsAsync();
+      await requestPermissionsAsync();
     };
     requestPermissions();
   }, []);
@@ -99,7 +101,9 @@ export default function ContactsManager() {
             {item.fullName}
           </Text>
         )}
-        ListEmptyComponent={<Text style={{ padding: 20, textAlign: 'center' }}>No contacts</Text>}
+        ListEmptyComponent={
+          <BodyText style={{ padding: 20, textAlign: 'center' }}>No contacts</BodyText>
+        }
       />
     </View>
   );

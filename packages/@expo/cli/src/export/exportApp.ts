@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -18,15 +19,10 @@ import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes
 import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
-import { copyPublicFolderAsync } from './publicFolder';
-import { Options } from './resolveOptions';
-import {
-  ExportAssetMap,
-  BundleOutput,
-  getFilesFromSerialAssets,
-  persistMetroFilesAsync,
-  BundleAssetWithFileHashes,
-} from './saveAssets';
+import { copyPublicFolderAsync, getPublicFolderPath } from './publicFolder';
+import type { Options } from './resolveOptions';
+import type { ExportAssetMap, BundleOutput, BundleAssetWithFileHashes } from './saveAssets';
+import { getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap } from './writeContents';
 import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
@@ -34,7 +30,6 @@ import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
@@ -115,7 +110,7 @@ export async function exportAppAsync(
   }
 
   const mode = dev ? 'development' : 'production';
-  const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+  const publicPath = getPublicFolderPath(projectRoot);
   const outputPath = path.resolve(projectRoot, outputDir);
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
@@ -187,7 +182,7 @@ export async function exportAppAsync(
                 splitChunks:
                   !env.EXPO_NO_BUNDLE_SPLITTING &&
                   ((devServer.isReactServerComponentsEnabled && !bytecode) || platform === 'web'),
-                mainModuleName: getEntryWithServerRoot(projectRoot, {
+                mainModuleName: resolveRelativeEntryPoint(projectRoot, {
                   platform,
                   pkg: projectConfig.pkg,
                 }),

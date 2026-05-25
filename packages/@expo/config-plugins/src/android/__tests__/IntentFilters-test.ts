@@ -1,7 +1,8 @@
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
 import { getIntentFilters, setAndroidIntentFilters } from '../IntentFilters';
-import { AndroidManifest, getMainActivity } from '../Manifest';
+import type { AndroidManifest } from '../Manifest';
+import { getMainActivity } from '../Manifest';
 
 async function getFixtureManifestAsync() {
   return (await XML.parseXMLAsync(

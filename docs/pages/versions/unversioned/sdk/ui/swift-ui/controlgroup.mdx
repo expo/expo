@@ -3,13 +3,22 @@ title: ControlGroup
 description: A SwiftUI ControlGroup component for grouping interactive controls.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI ControlGroup matches the official SwiftUI [ControlGroup API](https://developer.apple.com/documentation/swiftui/controlgroup). When placed inside a [`Menu`](menu), the children are rendered as a compact horizontal row of buttons.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/controlgroup/ios-light.webp"
+  darkSrc="/static/images/expo-ui/controlgroup/ios-dark.webp"
+  alt="An open Menu showing a ControlGroup row of Add, Favorite, Share icon buttons above Rename and Delete entries"
+/>
 
 > **Note:** On tvOS, `ControlGroup` requires tvOS 17.0 or later.
 

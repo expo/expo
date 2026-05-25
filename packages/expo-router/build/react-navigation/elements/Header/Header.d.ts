@@ -1,4 +1,3 @@
-import * as React from 'react';
 import type { HeaderOptions, Layout } from '../types';
 type Props = HeaderOptions & {
     /**
@@ -27,6 +26,6 @@ type Props = HeaderOptions & {
      */
     title: string;
 };
-export declare function Header(props: Props): React.JSX.Element;
+export declare function Header(props: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=Header.d.ts.map

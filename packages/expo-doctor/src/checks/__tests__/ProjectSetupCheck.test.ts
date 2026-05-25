@@ -1,4 +1,5 @@
-import { glob, GlobOptions } from 'glob';
+import type { GlobOptions } from 'glob';
+import { glob } from 'glob';
 import { vol } from 'memfs';
 
 import { isFileIgnoredAsync } from '../../utils/files';

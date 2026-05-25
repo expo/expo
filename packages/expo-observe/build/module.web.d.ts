@@ -1,0 +1,15 @@
+import { NativeModule } from 'expo';
+import type { Config, ExpoObserveModuleType, ObserveAttributes } from './types';
+export * from './types';
+declare class ExpoObserveModule extends NativeModule implements ExpoObserveModuleType {
+    dispatchEvents(): Promise<void>;
+    configure(config: Config): void;
+    setGlobalAttributes(attributes?: ObserveAttributes | null): void;
+    setBundleDefaults(defaults: {
+        environment: string;
+        isJsDev: boolean;
+    }): void;
+}
+declare const _default: typeof ExpoObserveModule;
+export default _default;
+//# sourceMappingURL=module.web.d.ts.map

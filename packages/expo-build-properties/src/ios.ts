@@ -1,12 +1,8 @@
-import {
-  ConfigPlugin,
-  IOSConfig,
-  XcodeProject,
-  withInfoPlist,
-  withXcodeProject,
-} from 'expo/config-plugins';
+import type { ConfigPlugin, XcodeProject } from 'expo/config-plugins';
+import { IOSConfig, withInfoPlist, withXcodeProject } from 'expo/config-plugins';
 
-import { PluginConfigType, resolveConfigValue } from './pluginConfig';
+import type { PluginConfigType } from './pluginConfig';
+import { resolveConfigValue } from './pluginConfig';
 
 const { createBuildPodfilePropsConfigPlugin } = IOSConfig.BuildProperties;
 
@@ -51,12 +47,13 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
     },
     {
       propName: 'EXPO_USE_PRECOMPILED_MODULES',
-      propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? false).toString(),
+      propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? true).toString(),
     },
   ],
   'withIosBuildProperties'
 );
 
+/** @deprecated use built-in `ios.deploymentTarget` property instead. */
 export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, props) => {
   const deploymentTarget = props.ios?.deploymentTarget;
   if (!deploymentTarget) {

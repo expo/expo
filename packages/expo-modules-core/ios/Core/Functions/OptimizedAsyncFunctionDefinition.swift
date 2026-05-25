@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import Dispatch
+import ExpoModulesJSI
 
 /**
  Optimized asynchronous function definition.
@@ -34,6 +35,11 @@ public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unc
     return argsCount
   }
 
+  public var requiredArgumentsCount: Int {
+    // Optimized functions don't support optional arguments, so all args are required.
+    return argsCount
+  }
+
   public var takesOwner: Bool = false
 
   public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
@@ -44,12 +50,21 @@ public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unc
 
   @JavaScriptActor
   public func build(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createAsyncFunction(
-      name,
-      typeEncoding: typeEncoding,
-      argsCount: argsCount,
-      body: block
-    )
+    let runtime = try appContext.runtime
+    var object = runtime.createObject()
+    runtime.withUnsafePointee { runtimePointer in
+      object.withUnsafeMutablePointee { objectPointer in
+        OptimizedFunctionUtils.createAsyncFunction(
+          name: name,
+          intoObject: objectPointer,
+          runtimePointer: runtimePointer,
+          typeEncoding: typeEncoding,
+          argsCount: argsCount,
+          block: block
+        )
+      }
+    }
+    return object
   }
 
   // MARK: - AnyAsyncFunctionDefinition

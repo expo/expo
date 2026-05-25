@@ -36,7 +36,7 @@ Stop the development server and run the following command to install the library
 
 > **Note:** The `dom-to-image` library is used here for illustrative purposes. For production apps, you may want to explore other solutions or APIs that better suit your specific use case.
 
-After installing it, make sure to restart the development server and press <kbd>w</kbd> in the terminal.
+After installing it, make sure to restart the development server and press <kbd>W</kbd> in the terminal.
 
 </Step>
 
@@ -53,12 +53,12 @@ Using `Platform` module from React Native, we can implement platform-specific be
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, View, StyleSheet, /* @tutinfo */Platform/* @end */ } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { captureRef } from 'react-native-view-shot';
-/* @tutinfo Import <CODE>domtoimage</CODE> library. */import domtoimage from 'dom-to-image';/* @end */
+/* @tutinfo Import `domtoimage` library. */import domtoimage from 'dom-to-image';/* @end */
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
@@ -75,8 +75,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
-
+  const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();
   const imageRef = useRef<View>(null);
 
   useEffect(() => {

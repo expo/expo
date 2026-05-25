@@ -1,20 +1,19 @@
-import React, {
-  Children,
-  forwardRef,
+import type {
   ComponentProps,
   ComponentType,
   ForwardRefExoticComponent,
   PropsWithoutRef,
   ReactNode,
   RefAttributes,
-  useMemo,
 } from 'react';
+import { Children, forwardRef, useMemo } from 'react';
 
 import { useContextKey } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
-import { EventMapBase, NavigationState } from '../react-navigation/native';
-import { PickPartial } from '../types';
-import { useSortedScreens, ScreenProps } from '../useScreens';
+import type { EventMapBase, NavigationState } from '../react-navigation/native';
+import type { PickPartial } from '../types';
+import type { ScreenProps } from '../useScreens';
+import { useSortedScreens } from '../useScreens';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';

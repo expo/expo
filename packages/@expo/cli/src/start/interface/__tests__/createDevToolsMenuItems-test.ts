@@ -18,7 +18,7 @@ describe('createInteractiveMenuItems', () => {
       {
         packageName: 'test-plugin',
         packageRoot: 'path/to/test-plugin',
-        webpageRoot: '/test/plugin',
+        webpageRoot: 'path/to/test-plugin/web',
       },
       DEFAULT_PROJECT_ROOT
     );
@@ -103,7 +103,7 @@ describe('createInteractiveMenuItems', () => {
       {
         packageName: 'test-plugin',
         packageRoot: 'path/to/test-plugin',
-        webpageRoot: '/test/plugin',
+        webpageRoot: 'path/to/test-plugin/web',
         cliExtensions: {
           description: 'Test CLI Extension',
           entryPoint: 'index.js',

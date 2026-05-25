@@ -1,5 +1,4 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import React from 'react';
 import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';

@@ -16,15 +16,19 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
   // Used to determine whether the user has rotated the device to the target orientation. Useful for auto-exit for example:
   // Device portrait, fullscreenOrientation - landscape
   // We could auto-exit but we would do it right away causing ugly animations and confusion, instead we wait for the user to rotate to landscape.
-  // When they do, we know they acknowledged the orientaiton of the app and we can auto-exit once they rotate to a different orientation.
+  // When they do, we know they acknowledged the orientation of the app and we can auto-exit once they rotate to a different orientation.
   // In case of: device landscape, fullscreenOrientation - landscape
   // We can set this to `true` right away.
   private var hasRotatedToTargetOrientation = false
   var isInPictureInPicture = false
+  var keepFullscreenOnPiPStop: KeepFullscreenOnPiPStopBehavior = .never
+  private var pipWasAutoEntered = false
+  private var wasInFullscreenWhenPiPStarted = false
+  private var pendingPiPCompletionHandler: ((Bool) -> Void)?
 
   var isFullscreen: Bool = false {
     didSet {
-      guard oldValue == isFullscreen else {
+      guard oldValue != isFullscreen else {
         return
       }
       if !isFullscreen {
@@ -71,6 +75,9 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
   }
 
   deinit {
+    // Always resolve a pending PiP completion handler to avoid leaving AVKit in a broken state.
+    pendingPiPCompletionHandler?(false)
+    pendingPiPCompletionHandler = nil
     #if !os(tvOS)
     NotificationCenter.default.removeObserver(
       self,
@@ -163,9 +170,15 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
   ) {
     forwardDelegate?.playerViewController?(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
     coordinator.animate(alongsideTransition: nil) { [weak self] context in
-      if !context.isCancelled {
+      if context.isCancelled {
+        self?.pendingPiPCompletionHandler?(false)
+        self?.pendingPiPCompletionHandler = nil
+      } else {
         self?.isFullscreen = true
         self?.forceRotationUpdate()
+        // If this presentation was triggered by PiP restoration, notify AVKit that the UI is ready.
+        self?.pendingPiPCompletionHandler?(true)
+        self?.pendingPiPCompletionHandler = nil
       }
     }
   }
@@ -185,12 +198,31 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
 
   func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
     isInPictureInPicture = true
+    wasInFullscreenWhenPiPStarted = isFullscreen
+    pipWasAutoEntered = UIApplication.shared.applicationState != .active
     forwardDelegate?.playerViewControllerDidStartPictureInPicture?(playerViewController)
   }
 
   func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
     isInPictureInPicture = false
+    pipWasAutoEntered = false
+    wasInFullscreenWhenPiPStarted = false
     forwardDelegate?.playerViewControllerDidStopPictureInPicture?(playerViewController)
+  }
+
+  func playerViewController(
+    _ playerViewController: AVPlayerViewController,
+    restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void
+  ) {
+    if keepFullscreenOnPiPStop.shouldRestore(pipWasAutoEntered: pipWasAutoEntered) && wasInFullscreenWhenPiPStarted {
+      pendingPiPCompletionHandler = completionHandler
+      self.enterFullscreen(selectorUnsupportedFallback: { [weak self] in
+        self?.pendingPiPCompletionHandler?(false)
+        self?.pendingPiPCompletionHandler = nil
+      })
+    } else {
+      completionHandler(false)
+    }
   }
 
   #if os(tvOS)

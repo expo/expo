@@ -4,9 +4,13 @@ import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
+import { isInteractive } from '../interactive';
 import { selectAsync } from '../prompts';
 
 jest.mock('../../utils/prompts');
+jest.mock('../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 jest.mock('../../api/user/user');
 jest.mock('../../api/graphql/queries/AppQuery', () => ({
   AppQuery: {
@@ -46,6 +50,9 @@ jest.mock('../../api/getExpoGoIntermediateCertificate', () => ({
 
 beforeEach(() => {
   vol.reset();
+
+  jest.mocked(isInteractive).mockReturnValue(true);
+  jest.mocked(selectAsync).mockReset();
 
   jest.mocked(getUserAsync).mockImplementation(async () => ({
     __typename: 'User',
@@ -116,6 +123,16 @@ describe(getCodeSigningInfoAsync, () => {
           undefined
         );
         expect(result).toBeNull();
+      });
+
+      it('rejects easProjectId values that contain path segments', async () => {
+        await expect(
+          getCodeSigningInfoAsync(
+            { extra: { eas: { projectId: '../outside-project' } } } as any,
+            'keyid="expo-root", alg="rsa-v1_5-sha256"',
+            undefined
+          )
+        ).rejects.toThrow('Invalid EAS project ID for development code signing cache');
       });
 
       it('falls back to cached when there is a network error', async () => {

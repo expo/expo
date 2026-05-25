@@ -1066,5 +1066,5 @@ export type PathConfigMap<ParamList extends {}> = {
   >
     ? string | PathConfig<T>
     : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-      string | Omit<PathConfig<{}>, 'screens' | 'initialRouteName'>;
+        string | Omit<PathConfig<{}>, 'screens' | 'initialRouteName'>;
 };

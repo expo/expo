@@ -1,7 +1,7 @@
 import { getAssetByID } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
 
-import { AssetMetadata, selectAssetSource } from './AssetSources';
+import { type AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import { downloadAsync } from './ExpoAsset';
 import * as ImageAssets from './ImageAssets';
@@ -24,7 +24,7 @@ type DownloadPromiseCallbacks = {
   reject: (error: Error) => void;
 };
 
-export { AssetMetadata };
+export type { AssetMetadata } from './AssetSources';
 
 /**
  * Android resource URL prefix.

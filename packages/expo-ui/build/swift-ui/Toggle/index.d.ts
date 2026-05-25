@@ -1,4 +1,4 @@
-import { type SFSymbol } from 'sf-symbols-typescript';
+import type { SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
 export type ToggleProps = {
     /**
@@ -27,5 +27,5 @@ export type ToggleProps = {
 /**
  * A control that toggles between on and off states.
  */
-export declare function Toggle(props: ToggleProps): import("react").JSX.Element;
+export declare function Toggle(props: ToggleProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

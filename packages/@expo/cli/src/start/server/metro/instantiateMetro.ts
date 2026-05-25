@@ -4,24 +4,28 @@ import type { Reporter } from '@expo/metro/metro';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import type { TransformOptions } from '@expo/metro/metro/DeltaBundler/Worker';
-import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
+import type { Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
+import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
-import { createStableModuleIdFactory, getDefaultConfig } from '@expo/metro-config';
+import type { createStableModuleIdFactory } from '@expo/metro-config';
+import { loadUserConfig } from '@expo/metro-config';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import chalk from 'chalk';
-import http from 'http';
+import type http from 'http';
 import path from 'path';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
-import { MetroBundlerDevServer } from './MetroBundlerDevServer';
+import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { replaceMetroFileMap } from './createFileMap-fork';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
-import { runServer, type SecureServerOptions } from './runServer-fork';
+import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
@@ -80,8 +84,20 @@ function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
 }
 
-// Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
+/**
+ * Extends Metro's Terminal to intercept all console methods so they don't
+ * corrupt the progress bar status lines.
+ *
+ * console.log/info are routed through terminal.log() (stdout, managed).
+ * console.warn/error are routed through logStderr() which clears the
+ * status from stdout before writing to stderr, then restores it.
+ * Without this, unmanaged stderr writes shift the cursor and cause
+ * progress bars to get stuck as permanent output.
+ */
 class LogRespectingTerminal extends Terminal {
+  #stderrQueue: string[] = [];
+  #drainingStderr = false;
+
   constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
     super(stream, { ttyPrint: true });
 
@@ -96,8 +112,59 @@ class LogRespectingTerminal extends Terminal {
       this.flush();
     };
 
+    const sendStderr = (...msg: any[]) => {
+      if (!msg.length) {
+        this.logStderr('');
+      } else {
+        const [format, ...args] = msg;
+        this.logStderr(require('util').format(format, ...args));
+      }
+    };
+
     console.log = sendLog;
     console.info = sendLog;
+    console.warn = sendStderr;
+    console.error = sendStderr;
+
+    // NOTE(@kitten): We flush the stderr queue immediately when we're about to exit
+    process.on('exit', () => {
+      if (!this.#drainingStderr && this.#stderrQueue.length) {
+        this.#drainingStderr = true;
+        this.status('');
+        const lines = this.#stderrQueue.splice(0);
+        process.stderr.write(lines.join('\n') + '\n');
+      }
+    });
+  }
+
+  /** Write to stderr without corrupting Terminal's cursor tracking. */
+  logStderr(line: string): void {
+    if (!(process.stdout as any).isTTY) {
+      process.stderr.write(line + '\n');
+      return;
+    }
+    this.#stderrQueue.push(line);
+    this.#drainStderr();
+  }
+
+  async #drainStderr(): Promise<void> {
+    if (this.#drainingStderr) return;
+    this.#drainingStderr = true;
+
+    while (this.#stderrQueue.length > 0) {
+      // Clear status, flush to ensure it's removed from screen
+      const prev = this.status('');
+      await this.flush();
+
+      // Write to stderr while status is cleared
+      const lines = this.#stderrQueue.splice(0);
+      process.stderr.write(lines.join('\n') + '\n');
+
+      // Restore status
+      this.status(prev);
+    }
+
+    this.#drainingStderr = false;
   }
 }
 
@@ -149,20 +216,15 @@ export async function loadMetroConfigAsync(
 
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
-  const configPath = env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined;
-  const resolvedConfig = await resolveConfig(configPath, projectRoot);
-  const defaultConfig = getDefaultConfig(projectRoot);
+  let config = await loadUserConfig({
+    projectRoot,
+    serverRoot,
+    // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
+    overrideConfigPath: env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined,
+  });
 
-  let config: ConfigT = resolvedConfig.isEmpty
-    ? defaultConfig
-    : await mergeConfig(defaultConfig, resolvedConfig.config);
-
-  // Set the watchfolders to include the projectRoot, as Metro assumes this
-  // Force-override the reporter
   config = {
     ...config,
-
     // See: `overrideConfigWithArguments` https://github.com/facebook/metro/blob/5059e26/packages/metro-config/src/loadConfig.js#L274-L339
     // Compare to `LoadOptions` type (disregard `reporter` as we don't expose this)
     resetCache: !!options.resetCache,
@@ -171,10 +233,7 @@ export async function loadMetroConfigAsync(
       ...config.server,
       port: options.port ?? config.server.port,
     },
-
-    watchFolders: !config.watchFolders.includes(config.projectRoot)
-      ? [config.projectRoot, ...config.watchFolders]
-      : config.watchFolders,
+    // Force-override the reporter
     reporter: {
       update(event) {
         terminalReporter.update(event);
@@ -185,14 +244,10 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
-  // If we instead set it to the special value `null`, it gets enables but also bypasses the "native find" codepath,
-  // which is slower than just using the Node filesystem API
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
-  if (config.resolver.useWatchman === true) {
-    asWritable(config.resolver).useWatchman = null as any;
-  }
+  // On-Demand Filesystem is enabled by default
+  // TODO(@kitten): Add to config-types JSON schema
+  const onDemandFilesystem = exp.experiments?.onDemandFilesystem ?? true;
+  asWritable(config.resolver).unstable_onDemandFilesystem = onDemandFilesystem;
 
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 
@@ -292,6 +347,7 @@ export async function instantiateMetroAsync(
   metro: MetroServer;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
   server: http.Server;
+  address: ServerAddressInfo | null;
   middleware: any;
   messageSocket: MessageSocket;
 }> {
@@ -308,16 +364,16 @@ export async function instantiateMetroAsync(
     getMetroBundler,
   });
 
-  // Create the core middleware stack for Metro, including websocket listeners
-  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
-    metroConfig,
-    { getMetroBundler }
-  );
-
   // Get local URL to Metro bundler server (typically configured as 127.0.0.1:8081)
   const serverBaseUrl = metroBundler
     .getUrlCreator()
     .constructUrl({ scheme: 'http', hostType: 'localhost' });
+
+  // Create the core middleware stack for Metro, including websocket listeners
+  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
+    metroConfig,
+    { getMetroBundler, serverBaseUrl }
+  );
 
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
@@ -330,7 +386,7 @@ export async function instantiateMetroAsync(
     });
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
-    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+    middleware.use('/_expo/debugger', createJsInspectorMiddleware({ serverBaseUrl }));
 
     // TODO(cedric): `enhanceMiddleware` is deprecated, but is currently used to unify the middleware stacks
     // See: https://github.com/facebook/metro/commit/22e85fde85ec454792a1b70eba4253747a2587a9
@@ -374,19 +430,23 @@ export async function instantiateMetroAsync(
       }
     : undefined;
 
-  const { address, server, hmrServer, metro } = await runServer(
-    metroBundler,
-    metroConfig,
-    {
-      host: options.host,
-      websocketEndpoints,
-      watch: !isExporting && isWatchEnabled(),
-      secureServerOptions,
-    },
-    {
-      mockServer: isExporting,
-    }
-  );
+  const watch = !isExporting && isWatchEnabled();
+
+  const { address, server, hmrServer, metro } = await replaceMetroFileMap(() => {
+    return runServer(
+      metroBundler,
+      metroConfig,
+      {
+        host: options.host,
+        websocketEndpoints,
+        watch,
+        secureServerOptions,
+      },
+      {
+        mockServer: isExporting,
+      }
+    );
+  });
 
   event('instantiate', {
     atlas: env.EXPO_ATLAS,
@@ -423,6 +483,12 @@ export async function instantiateMetroAsync(
       fileBuffer
     );
   };
+
+  // Layered on top of the prune patch above. Both fresh worker results
+  // and cache hits flow through `Bundler.transformFile`, so wrapping
+  // here covers both.
+  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
+  patchMetroSourceMapStringForPackedMaps();
 
   setEventReporter(eventsSocket.reportMetroEvent);
 
@@ -535,6 +601,7 @@ export async function instantiateMetroAsync(
     server,
     middleware,
     messageSocket: messagesSocket,
+    address,
   };
 }
 

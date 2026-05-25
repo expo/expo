@@ -39,11 +39,9 @@ This is achieved through [platform-specific file extensions](/router/advanced/pl
 
 In Expo Router, the **src/app** directory is exclusively for defining your app's routes. Other parts of your app, like components, hooks, utilities, and so on, should be placed in other directories such as **src/components**, **src/hooks**, and **src/constants**. If you put a non-route inside the **src/app** directory, Expo Router will attempt to treat it like a route.
 
-### 7. It's still React Navigation under the hood
+### 7. Customizing stack and tab navigators
 
-While this may sound quite a bit different from React Navigation, Expo Router is actually built on top of React Navigation. You can think of Expo Router as an Expo CLI optimization that translates your file structure into React Navigation components that you previously defined in your own code.
-
-This also means that you can often refer to React Navigation documentation for how to style or configure navigation, as the default stack and tab navigators use the exact same options.
+Stack and tab navigators accept a wide range of configuration options for headers, animations, gestures, and more. See the [Stack](/router/advanced/stack/) and [Tabs](/router/advanced/tabs/) guides for the full list of options and examples.
 
 ## The rules of Expo Router applied
 

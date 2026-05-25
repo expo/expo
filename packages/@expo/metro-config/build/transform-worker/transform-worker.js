@@ -53,6 +53,7 @@ const dot_env_development_1 = require("./dot-env-development");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
+const transformShim_1 = require("./transformShim");
 const filePath_1 = require("../utils/filePath");
 const debug = require('debug')('expo:metro-config:transform-worker');
 function getStringArray(value) {
@@ -184,9 +185,8 @@ async function transformCss(config, projectRoot, filename, data, options) {
     // If the platform is not web, then return an empty module.
     if (options.platform !== 'web') {
         const code = (0, css_modules_1.matchCssModule)(filename) ? 'module.exports={ unstable_styles: {} };' : '';
-        return worker.transform(config, projectRoot, filename, 
         // TODO: Native CSS Modules
-        Buffer.from(code), options);
+        return (0, transformShim_1.transformShim)(config, filename, code);
     }
     let code = data.toString('utf8');
     // Apply postcss transforms
@@ -218,7 +218,7 @@ async function transformCss(config, projectRoot, filename, data, options) {
                 sourceMap: false,
             },
         });
-        const jsModuleResults = await worker.transform(config, projectRoot, filename, Buffer.from(results.output), options);
+        const jsModuleResults = (0, transformShim_1.transformShim)(config, filename, results.output);
         const cssCode = results.css.toString();
         const output = [
             {
@@ -281,9 +281,7 @@ async function transformCss(config, projectRoot, filename, data, options) {
     const reactServer = isReactServerEnvironment(options);
     // Create a mock JS module that exports an empty object,
     // this ensures Metro dependency graph is correct.
-    const jsModuleResults = await worker.transform(config, projectRoot, filename, options.dev
-        ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: cssCode, filename, reactServer }))
-        : Buffer.from(''), options);
+    const jsModuleResults = (0, transformShim_1.transformShim)(config, filename, options.dev ? (0, css_1.wrapDevelopmentCSS)({ src: cssCode, filename, reactServer }) : '');
     // In production, we export the CSS as a string and use a special type to prevent
     // it from being included in the JS bundle. We'll extract the CSS like an asset later
     // and append it to the HTML bundle.

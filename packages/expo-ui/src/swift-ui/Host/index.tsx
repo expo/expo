@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { I18nManager, StyleProp, ViewStyle } from 'react-native';
+import { I18nManager, type StyleProp, type ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -45,6 +45,7 @@ export type HostProps = {
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
 } & CommonViewModifierProps;
 
 const HostNativeView: React.ComponentType<

@@ -1,6 +1,6 @@
 {
   "name": "create-expo-module",
-  "version": "2.1.4",
+  "version": "56.0.2",
   "description": "The script to create the Expo module",
   "keywords": [
     "expo",
@@ -44,7 +44,7 @@
   "devDependencies": {
     "@expo/json-file": "workspace:*",
     "@expo/rudder-sdk-node": "^1.1.1",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@octokit/types": "^15.0.0",
     "@types/cross-spawn": "^6.0.6",
     "@types/ejs": "^3.1.5",
@@ -63,7 +63,7 @@
     "getenv": "^2.0.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
-    "tar": "^7.5.12",
+    "multitars": "^1.0.0",
     "validate-npm-package-name": "^6.0.2"
   }
 }

@@ -3,13 +3,22 @@ title: Section
 description: A SwiftUI Section component for grouping content within lists and forms.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Section matches the official SwiftUI [Section API](https://developer.apple.com/documentation/swiftui/section) and is used to group related content within [`List`](list), [`Form`](form) or [`Picker`](picker) components.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/section/ios-light.webp"
+  darkSrc="/static/images/expo-ui/section/ios-dark.webp"
+  alt="Two Sections within a Form, each with a header and grouped Toggles"
+/>
 
 ## Installation
 

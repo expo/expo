@@ -82,6 +82,7 @@ const NO_CACHE_HEADERS = process.env.EXPO_OS === 'web'
             Pragma: 'no-cache',
             Expires: '0',
         };
+// `expo-platform` is required server-side on action to force a cross-origin preflight check
 const ACTION_HEADERS = {
     ...NO_CACHE_HEADERS,
     accept: RSC_CONTENT_TYPE,
@@ -156,9 +157,7 @@ const mergeElements = (a, b) => {
  */
 const callServerRSC = async (actionId, args, fetchCache = defaultFetchCache) => {
     const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)((0, utils_1.encodeActionId)(actionId)));
-    const response = args === undefined
-        ? (0, fetch_1.fetch)(url, { headers: ACTION_HEADERS })
-        : encodeReply(args).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', body, headers: ACTION_HEADERS }));
+    const response = encodeReply(args ?? []).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', body, headers: ACTION_HEADERS }));
     const data = createFromFetch(checkStatus(response), {
         callServer: (actionId, args) => (0, exports.callServerRSC)(actionId, args, fetchCache),
     });

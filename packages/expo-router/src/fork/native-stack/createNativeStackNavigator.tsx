@@ -108,7 +108,7 @@ function NativeStackNavigator({
     let needsNewMap = false;
     const result: typeof computedDescriptors = {};
     for (const key of Object.keys(computedDescriptors)) {
-      const descriptor = computedDescriptors[key];
+      const descriptor = computedDescriptors[key]!;
       const options = descriptor.options as NativeStackNavigationOptionsWithInternal;
       const internalGestureEnabled = options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
       const needsGestureFix = internalGestureEnabled !== undefined;

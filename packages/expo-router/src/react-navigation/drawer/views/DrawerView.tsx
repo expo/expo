@@ -61,7 +61,7 @@ function DrawerViewBase({
 }: Props) {
   const { direction } = useLocale();
 
-  const focusedRouteKey = state.routes[state.index].key;
+  const focusedRouteKey = state.routes[state.index]!.key;
   const {
     drawerHideStatusBarOnOpen,
     drawerPosition = direction === 'rtl' ? 'right' : 'left',
@@ -75,7 +75,7 @@ function DrawerViewBase({
     swipeEnabled = Platform.OS !== 'web' && Platform.OS !== 'windows' && Platform.OS !== 'macos',
     swipeMinDistance,
     overlayAccessibilityLabel,
-  } = descriptors[focusedRouteKey].options;
+  } = descriptors[focusedRouteKey]!.options;
 
   const [loaded, setLoaded] = React.useState([focusedRouteKey]);
 
@@ -205,7 +205,7 @@ function DrawerViewBase({
     return (
       <MaybeScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.content}>
         {state.routes.map((route, index) => {
-          const descriptor = descriptors[route.key];
+          const descriptor = descriptors[route.key]!;
           const { lazy = true } = descriptor.options;
           const isFocused = state.index === index;
           const isPreloaded = state.preloadedRouteKeys.includes(route.key);

@@ -176,7 +176,7 @@ private fun MenuGesturesSection(state: SettingsState, onAction: (SettingsAction)
           },
           content = {
             NewText(
-              text = "3 fingers long press"
+              text = "Three-finger long-press"
             )
           },
           rightComponent = {

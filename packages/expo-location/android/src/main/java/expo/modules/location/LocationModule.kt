@@ -2,8 +2,11 @@ package expo.modules.location
 
 import android.Manifest
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.hardware.GeomagneticField
 import android.hardware.Sensor
@@ -23,6 +26,9 @@ import androidx.core.os.bundleOf
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.ActivityRecognition
+import com.google.android.gms.location.ActivityRecognitionResult
+import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
@@ -48,6 +54,11 @@ import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationProviderStatus
 import expo.modules.location.records.LocationResponse
 import expo.modules.location.records.LocationTaskOptions
+import expo.modules.location.records.MotionActivitiesRecord
+import expo.modules.location.records.MotionActivityConfidence
+import expo.modules.location.records.MotionActivityObjectRecord
+import expo.modules.location.records.MotionActivityStateRecord
+import expo.modules.location.records.MotionActivityType
 import expo.modules.location.records.PermissionDetailsLocationAndroid
 import expo.modules.location.records.PermissionRequestResponse
 import expo.modules.location.records.ReverseGeocodeLocation
@@ -78,6 +89,37 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private var mLastUpdate: Long = 0
   private var mGeocoderPaused = false
 
+  // Motion activity
+  private val mMotionActivityWatchIds = mutableSetOf<Int>()
+  private var mMotionActivityPendingIntent: PendingIntent? = null
+  private var mMotionActivityReceiverRegistered = false
+  private val mMotionActivityReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+      val result = ActivityRecognitionResult.extractResult(intent) ?: return
+
+      // When multiple Android types map to the same unified type
+      // (e.g. WALKING + ON_FOOT -> walking), take the highest confidence.
+      val confidenceByType = result.probableActivities
+        .groupBy { it.toMotionActivityType() }
+        .mapValues { (_, activities) -> activities.maxOf { it.confidence } }
+
+      val activity = MotionActivityObjectRecord(
+        activities = MotionActivitiesRecord(
+          automotive = confidenceByType.stateFor(MotionActivityType.AUTOMOTIVE),
+          cycling = confidenceByType.stateFor(MotionActivityType.CYCLING),
+          running = confidenceByType.stateFor(MotionActivityType.RUNNING),
+          walking = confidenceByType.stateFor(MotionActivityType.WALKING),
+          stationary = confidenceByType.stateFor(MotionActivityType.STATIONARY),
+          unknown = confidenceByType.stateFor(MotionActivityType.UNKNOWN)
+        ),
+        timestamp = System.currentTimeMillis().toDouble()
+      )
+      for (id in mMotionActivityWatchIds) {
+        sendEvent(MOTION_ACTIVITY_EVENT_NAME, mapOf("watchId" to id, "activity" to activity))
+      }
+    }
+  }
+
   private val mTaskManager: TaskManagerInterface by lazy {
     return@lazy appContext.legacyModule<TaskManagerInterface>()
       ?: throw TaskManagerNotFoundException()
@@ -94,7 +136,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         ?: throw SensorManagerUnavailable()
     }
 
-    Events(HEADING_EVENT_NAME, LOCATION_EVENT_NAME)
+    Events(HEADING_EVENT_NAME, LOCATION_EVENT_NAME, MOTION_ACTIVITY_EVENT_NAME)
 
     // Deprecated
     AsyncFunction("requestPermissionsAsync") Coroutine { ->
@@ -131,7 +173,11 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     AsyncFunction("requestForegroundPermissionsAsync") Coroutine { ->
       val permissionsManager = appContext.permissions ?: throw NoPermissionsModuleException()
 
-      LocationHelpers.askForPermissionsWithPermissionsManager(permissionsManager, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+      LocationHelpers.askForPermissionsWithPermissionsManager(
+        permissionsManager,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+      )
       // We aren't using the values returned above, because we need to check if the user has provided fine location permissions
       return@Coroutine getForegroundPermissionsAsync()
     }
@@ -146,6 +192,14 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
     AsyncFunction("getBackgroundPermissionsAsync") Coroutine { ->
       return@Coroutine getBackgroundPermissionsAsync()
+    }
+
+    AsyncFunction("getMotionActivityPermissionsAsync") Coroutine { ->
+      return@Coroutine getMotionActivityPermissionsAsync()
+    }
+
+    AsyncFunction("requestMotionActivityPermissionsAsync") Coroutine { ->
+      return@Coroutine requestMotionActivityPermissionsAsync()
     }
 
     AsyncFunction("getLastKnownPositionAsync") Coroutine { options: LocationLastKnownOptions ->
@@ -194,7 +248,23 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     }
 
+    AsyncFunction("watchMotionActivityImplAsync") Coroutine { watchId: Int ->
+      if (isMissingActivityRecognitionPermission()) {
+        throw MotionActivityUnauthorizedException()
+      }
+      startMotionActivityWatch(watchId)
+    }
+
     AsyncFunction("removeWatchAsync") { watchId: Int ->
+      // Motion activity does not require location permissions - check it first.
+      if (mMotionActivityWatchIds.contains(watchId)) {
+        mMotionActivityWatchIds.remove(watchId)
+        if (mMotionActivityWatchIds.isEmpty()) {
+          stopMotionActivityWatch()
+        }
+        return@AsyncFunction
+      }
+
       if (isMissingForegroundPermissions()) {
         throw LocationUnauthorizedException()
       }
@@ -740,6 +810,165 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     }
   }
 
+  // region motion activity
+
+  private suspend fun startMotionActivityWatch(watchId: Int) {
+    val alreadyRunning = mMotionActivityWatchIds.isNotEmpty()
+    mMotionActivityWatchIds.add(watchId)
+    if (alreadyRunning) {
+      return
+    }
+    registerMotionActivityReceiver()
+    val pendingIntent = getOrCreateMotionActivityPendingIntent()
+    suspendCoroutine { continuation ->
+      ActivityRecognition.getClient(mContext)
+        .requestActivityUpdates(MOTION_ACTIVITY_INTERVAL_MS, pendingIntent)
+        .addOnSuccessListener { continuation.resume(Unit) }
+        .addOnFailureListener { e ->
+          mMotionActivityWatchIds.remove(watchId)
+          if (mMotionActivityWatchIds.isEmpty()) {
+            stopMotionActivityWatch()
+          }
+          continuation.resumeWithException(MotionActivityUnavailableException(e))
+        }
+    }
+  }
+
+  private fun stopMotionActivityWatch() {
+    val pendingIntent = mMotionActivityPendingIntent ?: return
+    ActivityRecognition.getClient(mContext)
+      .removeActivityUpdates(pendingIntent)
+      .addOnFailureListener { e ->
+        Log.e(TAG, "Failed to remove activity updates: ${e.message}")
+      }
+    unregisterMotionActivityReceiver()
+    mMotionActivityPendingIntent = null
+    mMotionActivityWatchIds.clear()
+  }
+
+  private fun pauseMotionActivityWatch() {
+    if (mMotionActivityWatchIds.isEmpty()) {
+      return
+    }
+    val pendingIntent = mMotionActivityPendingIntent ?: return
+    ActivityRecognition.getClient(mContext)
+      .removeActivityUpdates(pendingIntent)
+      .addOnFailureListener { e ->
+        Log.w(TAG, "Failed to pause activity updates: ${e.message}")
+      }
+    unregisterMotionActivityReceiver()
+  }
+
+  private fun resumeMotionActivityWatch() {
+    if (mMotionActivityWatchIds.isEmpty()) {
+      return
+    }
+    registerMotionActivityReceiver()
+    val pendingIntent = getOrCreateMotionActivityPendingIntent()
+    ActivityRecognition.getClient(mContext)
+      .requestActivityUpdates(MOTION_ACTIVITY_INTERVAL_MS, pendingIntent)
+      .addOnFailureListener { e ->
+        Log.w(TAG, "Failed to resume activity updates: ${e.message}")
+      }
+  }
+
+  private fun registerMotionActivityReceiver() {
+    if (mMotionActivityReceiverRegistered) {
+      return
+    }
+    val filter = IntentFilter(MOTION_ACTIVITY_INTENT_ACTION)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      mContext.registerReceiver(mMotionActivityReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+    } else {
+      mContext.registerReceiver(mMotionActivityReceiver, filter)
+    }
+    mMotionActivityReceiverRegistered = true
+  }
+
+  private fun unregisterMotionActivityReceiver() {
+    if (!mMotionActivityReceiverRegistered) {
+      return
+    }
+    try {
+      mContext.unregisterReceiver(mMotionActivityReceiver)
+    } catch (e: IllegalArgumentException) {
+      Log.w(TAG, "Motion activity receiver was already unregistered: ${e.message}")
+    }
+    mMotionActivityReceiverRegistered = false
+  }
+
+  private fun getOrCreateMotionActivityPendingIntent(): PendingIntent {
+    return mMotionActivityPendingIntent ?: PendingIntent.getBroadcast(
+      mContext,
+      MOTION_ACTIVITY_REQUEST_CODE,
+      Intent(MOTION_ACTIVITY_INTENT_ACTION).apply { setPackage(mContext.packageName) },
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+    ).also { mMotionActivityPendingIntent = it }
+  }
+
+  private suspend fun getMotionActivityPermissionsAsync(): PermissionRequestResponse {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return PermissionRequestResponse(
+        canAskAgain = true,
+        expires = "never",
+        granted = true,
+        status = "granted",
+        android = null
+      )
+    }
+    appContext.permissions?.let {
+      return LocationHelpers.getPermissionsWithPermissionsManager(it, Manifest.permission.ACTIVITY_RECOGNITION)
+    } ?: throw NoPermissionsModuleException()
+  }
+
+  private suspend fun requestMotionActivityPermissionsAsync(): PermissionRequestResponse {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return PermissionRequestResponse(
+        canAskAgain = true,
+        expires = "never",
+        granted = true,
+        status = "granted",
+        android = null
+      )
+    }
+    appContext.permissions?.let {
+      val bundle = LocationHelpers.askForPermissionsWithPermissionsManager(it, Manifest.permission.ACTIVITY_RECOGNITION)
+      return PermissionRequestResponse(bundle)
+    } ?: throw NoPermissionsModuleException()
+  }
+
+  private fun isMissingActivityRecognitionPermission(): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      return appContext.permissions?.let {
+        !it.hasGrantedPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
+      } ?: true
+    }
+    return false
+  }
+
+  private fun DetectedActivity.toMotionActivityType(): MotionActivityType = when (type) {
+    DetectedActivity.IN_VEHICLE -> MotionActivityType.AUTOMOTIVE
+    DetectedActivity.ON_BICYCLE -> MotionActivityType.CYCLING
+    DetectedActivity.RUNNING -> MotionActivityType.RUNNING
+    DetectedActivity.WALKING, DetectedActivity.ON_FOOT -> MotionActivityType.WALKING
+    DetectedActivity.STILL -> MotionActivityType.STATIONARY
+    else -> MotionActivityType.UNKNOWN
+  }
+
+  private fun Map<MotionActivityType, Int>.stateFor(type: MotionActivityType): MotionActivityStateRecord {
+    val raw = getOrDefault(type, 0)
+    return MotionActivityStateRecord(
+      detected = raw >= 50,
+      confidence = when {
+        raw >= 75 -> MotionActivityConfidence.HIGH
+        raw >= 50 -> MotionActivityConfidence.MEDIUM
+        else -> MotionActivityConfidence.LOW
+      }
+    )
+  }
+
+  // endregion
+
   //region private methods
   /**
    * Checks whether all required permissions have been granted by the user.
@@ -805,6 +1034,10 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     internal val TAG = LocationModule::class.java.simpleName
     private const val LOCATION_EVENT_NAME = "Expo.locationChanged"
     private const val HEADING_EVENT_NAME = "Expo.headingChanged"
+    private const val MOTION_ACTIVITY_EVENT_NAME = "Expo.motionActivityChanged"
+    private const val MOTION_ACTIVITY_INTENT_ACTION = "expo.modules.location.MOTION_ACTIVITY_UPDATE"
+    private const val MOTION_ACTIVITY_REQUEST_CODE = 43
+    private const val MOTION_ACTIVITY_INTERVAL_MS = 0L
     private const val CHECK_SETTINGS_REQUEST_CODE = 42
 
     const val ACCURACY_LOWEST = 1
@@ -824,16 +1057,19 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   override fun onHostResume() {
     startWatching()
     startHeadingUpdate()
+    resumeMotionActivityWatch()
   }
 
   override fun onHostPause() {
     stopWatching()
     stopHeadingWatch()
+    pauseMotionActivityWatch()
   }
 
   override fun onHostDestroy() {
     stopWatching()
     stopHeadingWatch()
+    stopMotionActivityWatch()
   }
 
   override fun onSensorChanged(event: SensorEvent?) {

@@ -1,4 +1,4 @@
-import { NativeModule } from 'expo-modules-core/types';
+import type { NativeModule } from 'expo-modules-core/types';
 
 /**
  * Options for requesting age range information from the user.
@@ -65,4 +65,5 @@ export type AgeRangeResponse = {
 
 export interface ExpoAgeRangeModule extends NativeModule {
   requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
+  isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
 }

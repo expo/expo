@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo';
-import { AESDecryptOptions, AESEncryptOptions, AESKeySize, AESSealedDataConfig, BinaryInput, GCMTagByteLength } from './aes.types';
+import type { AESDecryptOptions, AESEncryptOptions, AESKeySize, AESSealedDataConfig, BinaryInput, GCMTagByteLength } from './aes.types';
 /**
  * Represents an AES encryption key that can be used for encryption and decryption operations.
  * This class provides methods to generate, import, and export encryption keys.

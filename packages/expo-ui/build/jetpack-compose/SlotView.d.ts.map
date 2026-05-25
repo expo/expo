@@ -1,0 +1,1 @@
+{"version":3,"file":"SlotView.d.ts","sourceRoot":"","sources":["../../src/jetpack-compose/SlotView.tsx"],"names":[],"mappings":"AAEA,KAAK,mBAAmB,GAAG;IACzB,QAAQ,EAAE,MAAM,CAAC;IACjB,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;CAC3B,CAAC;AAOF,wBAAgB,IAAI,CAAC,EAAE,QAAQ,EAAE,QAAQ,EAAE,EAAE,mBAAmB,2CAE/D"}

@@ -1,4 +1,4 @@
-import { CreateURLOptions, ParsedURL } from './Linking.types';
+import type { CreateURLOptions, ParsedURL } from './Linking.types';
 
 export function createURL(path: string, { queryParams = {} }: CreateURLOptions = {}): string {
   if (typeof window === 'undefined') return '';

@@ -71,10 +71,16 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return pointee.isFunction(runtime.pointee)
   }
 
-// TODO: `isHostObject` is ambiguous for Swift as it's a template – we need specialization in C++
-//  public func isHostObject() -> Bool {
-//    return pointee.isHostObject(runtime.pointee)
-//  }
+  /**
+   Returns `true` if the object is backed by a `jsi::HostObject`, including host objects
+   created via `JavaScriptRuntime.createHostObject` and ones produced by other native code.
+   */
+  public func isHostObject() -> Bool {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return expo.isHostObject(runtime.pointee, pointee)
+  }
 
   public func isArrayBuffer() -> Bool {
     guard let runtime else {
@@ -361,6 +367,26 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /**
+   Provides scoped access to a raw pointer to the underlying `facebook.jsi.Object`.
+   The pointer is valid only for the duration of the closure and must not be stored or escaped.
+   */
+  public func withUnsafePointee<R>(_ body: (UnsafeRawPointer) throws -> R) rethrows -> R {
+    return try withUnsafeBytes(of: pointee) { bytes in
+      return try body(bytes.baseAddress!)
+    }
+  }
+
+  /**
+   Provides scoped mutable access to a raw pointer to the underlying `facebook.jsi.Object`.
+   The pointer is valid only for the duration of the closure and must not be stored or escaped.
+   */
+  public mutating func withUnsafeMutablePointee<R>(_ body: (UnsafeMutableRawPointer) throws -> R) rethrows -> R {
+    return try withUnsafeMutableBytes(of: &pointee) { bytes in
+      return try body(bytes.baseAddress!)
+    }
+  }
+
+  /**
    Creates a weak reference to the object. If the only references to an object are these, the object is eligible for GC.
    */
   public func createWeak() -> JavaScriptWeakObject {
@@ -561,11 +587,11 @@ extension JavaScriptObject: JavaScriptRepresentable {
 }
 
 extension JavaScriptObject: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> JavaScriptObject {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptObject {
     FatalError.unimplemented()
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return asJSIValue()
   }
 }

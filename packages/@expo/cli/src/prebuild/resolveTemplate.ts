@@ -1,20 +1,19 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import semver from 'semver';
 
-import { type ResolvedTemplateOption } from './resolveOptions';
-import { fetchAsync } from '../api/rest/client';
+import type { ResolvedTemplateOption } from './resolveOptions';
 import * as Log from '../log';
 import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
 import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError } from '../utils/errors';
+import { fetch } from '../utils/fetch';
 import {
   downloadAndExtractNpmModuleAsync,
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
 } from '../utils/npm';
-import { isUrlOk } from '../utils/url';
 
 const debug = require('debug')('expo:prebuild:resolveTemplate') as typeof console.log;
 
@@ -83,8 +82,9 @@ async function getRepoInfo(url: any, examplePath?: string): Promise<RepoInfo | u
 
   // Support repos whose entire purpose is to be an example, e.g.
   // https://github.com/:username/:my-cool-example-repo-name.
+  // Use the plain unauthenticated `fetch` so Expo credentials aren't forwarded to GitHub.
   if (t === undefined) {
-    const infoResponse = await fetchAsync(`https://api.github.com/repos/${username}/${name}`);
+    const infoResponse = await fetch(`https://api.github.com/repos/${username}/${name}`);
     if (infoResponse.status !== 200) {
       return;
     }
@@ -103,11 +103,16 @@ async function getRepoInfo(url: any, examplePath?: string): Promise<RepoInfo | u
   return undefined;
 }
 
-function hasRepo({ username, name, branch, filePath }: RepoInfo) {
+async function hasRepo({ username, name, branch, filePath }: RepoInfo): Promise<boolean> {
   const contentsUrl = `https://api.github.com/repos/${username}/${name}/contents`;
   const packagePath = `${filePath ? `/${filePath}` : ''}/package.json`;
 
-  return isUrlOk(contentsUrl + packagePath + `?ref=${branch}`);
+  try {
+    const response = await fetch(contentsUrl + packagePath + `?ref=${branch}`);
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 async function downloadAndExtractRepoAsync(

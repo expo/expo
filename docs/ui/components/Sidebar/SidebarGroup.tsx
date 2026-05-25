@@ -4,6 +4,7 @@ import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
 import { PlaySquareDuotoneIcon } from '@expo/styleguide-icons/duotone/PlaySquareDuotoneIcon';
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
@@ -40,7 +41,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const router = useRouter();
 
   const title = route.sidebarTitle ?? route.name;
-  const Icon = getIconElement(title);
+  const Icon = route.hideIcon ? undefined : getIconElement(title);
 
   if (route.children?.[0]?.section === 'EAS tutorial') {
     const allChaptersCompleted = chapters.every(chapter => chapter.completed);
@@ -72,7 +73,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="text-tertiary ml-2 text-xs">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="ml-2 text-sm text-tertiary">{`${completedChaptersCount} of ${totalChapters}`}</p>
             </div>
           </div>
         )}
@@ -90,12 +91,12 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                 {child.sidebarTitle ?? child.name}
                 {child.hasVideoLink &&
                   (!isSelected ? (
-                    <PlaySquareIcon className="icon-xs text-icon-secondary ml-1 inline" />
+                    <PlaySquareIcon className="ml-1 inline icon-xs text-icon-secondary" />
                   ) : (
-                    <PlaySquareDuotoneIcon className="icon-xs text-palette-blue11 ml-1 inline" />
+                    <PlaySquareDuotoneIcon className="ml-1 inline icon-xs text-palette-blue11" />
                   ))}
               </span>
-              {completed && <CheckIcon className="icon-sm ml-auto" />}
+              {completed && <CheckIcon className="ml-auto icon-sm" />}
             </SidebarLink>
           );
         })}
@@ -144,7 +145,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
-              <p className="text-tertiary ml-2 text-xs">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
+              <p className="ml-2 text-sm text-tertiary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
             </div>
           </div>
         )}
@@ -162,12 +163,12 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                 {child.sidebarTitle ?? child.name}
                 {child.hasVideoLink &&
                   (!isSelected ? (
-                    <PlaySquareIcon className="icon-xs text-icon-secondary ml-1 inline" />
+                    <PlaySquareIcon className="ml-1 inline icon-xs text-icon-secondary" />
                   ) : (
-                    <PlaySquareDuotoneIcon className="icon-xs text-palette-blue11 ml-1 inline" />
+                    <PlaySquareDuotoneIcon className="ml-1 inline icon-xs text-palette-blue11" />
                   ))}
               </span>
-              {completed && <CheckIcon className="icon-sm ml-auto" />}
+              {completed && <CheckIcon className="ml-auto icon-sm" />}
             </SidebarLink>
           );
         })}
@@ -254,6 +255,8 @@ function getIconElement(iconName?: string) {
       return Dataflow03Icon;
     case 'EAS Hosting':
       return Cloud01Icon;
+    case 'EAS Observe':
+      return ActivityIcon;
     case 'Expo Modules API':
       return CpuChip01Icon;
     case 'Expo Router':

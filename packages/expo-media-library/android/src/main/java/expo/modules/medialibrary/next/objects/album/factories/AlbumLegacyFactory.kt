@@ -15,6 +15,7 @@ import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
+import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
@@ -23,6 +24,7 @@ import java.lang.ref.WeakReference
 class AlbumLegacyFactory(
   private val assetFactory: AssetFactory,
   private val assetDeleter: AssetDeleter,
+  private val assetMover: AssetMover,
   context: Context
 ) : AlbumFactory {
   private val contextRef = WeakReference(context)
@@ -33,20 +35,20 @@ class AlbumLegacyFactory(
       .contentResolver ?: throw AlbumCouldNotBeCreated("Failed to create album: ContentResolver is unavailable.")
 
   override fun create(id: String): Album {
-    return Album(id, assetDeleter, assetFactory, contextRef.getOrThrow())
+    return Album(id, assetDeleter, assetFactory, assetMover, contextRef.getOrThrow())
   }
 
-  override suspend fun createFromAssets(albumName: String, assets: List<Asset>, deleteOriginalAssets: Boolean): Album {
+  override suspend fun createFromAssets(albumName: String, assets: List<Asset>, deleteOriginalAssets: Boolean?): Album {
     try {
       val firstAsset = assets.firstOrNull()
         ?: throw AlbumCouldNotBeCreated("No assets provided")
       val mimeTypeOfFirstAsset = firstAsset.getMimeType()
       val relativePath = RelativePath.create(mimeTypeOfFirstAsset, albumName)
       createAlbumDirectoryIfNotExists(relativePath)
-      processAssetsLocation(assets, relativePath, true)
+      processAssetsLocation(assets, relativePath, deleteOriginalAssets)
       val albumId = contentResolver.queryAssetBucketId(assets[0].contentUri)
         ?: throw AlbumNotFoundException("Could not find album with filePath: ${relativePath.toFilePath()}")
-      return Album(albumId.toString(), assetDeleter, assetFactory, contextRef.getOrThrow())
+      return Album(albumId.toString(), assetDeleter, assetFactory, assetMover, contextRef.getOrThrow())
     } catch (e: SecurityException) {
       throw AlbumCouldNotBeCreated("Missing WRITE_EXTERNAL_STORAGE permission: ${e.message}", e)
     } catch (e: IOException) {
@@ -64,14 +66,14 @@ class AlbumLegacyFactory(
     }
     val albumId = contentResolver.queryAssetBucketId(assets[0].contentUri)
       ?: throw AlbumCouldNotBeCreated("Could not find album with relativePath: $relativePath")
-    return Album(albumId.toString(), assetDeleter, assetFactory, contextRef.getOrThrow())
+    return Album(albumId.toString(), assetDeleter, assetFactory, assetMover, contextRef.getOrThrow())
   }
 
-  private suspend fun processAssetsLocation(assets: List<Asset>, relativePath: RelativePath, deleteOriginalAssets: Boolean) {
-    if (deleteOriginalAssets) {
-      assets.map { it.move(relativePath) }
+  private suspend fun processAssetsLocation(assets: List<Asset>, relativePath: RelativePath, deleteOriginalAssets: Boolean?) {
+    if (deleteOriginalAssets == true) {
+      assetMover.moveAssets(assets, relativePath)
     } else {
-      assets.map { it.copy(relativePath) }
+      assets.forEach { it.copy(relativePath) }
     }
   }
 

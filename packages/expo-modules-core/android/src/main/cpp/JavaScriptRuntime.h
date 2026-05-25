@@ -2,10 +2,9 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JNIDeallocator.h"
 
-#include <jsi/jsi.h>
-#include <fbjni/fbjni.h>
 #include <ReactCommon/CallInvoker.h>
 
 namespace jsi = facebook::jsi;

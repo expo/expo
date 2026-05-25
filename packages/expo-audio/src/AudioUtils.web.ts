@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 
-import { AudioSource, AudioStatus } from './Audio.types';
+import type { AudioSource, AudioStatus } from './Audio.types';
 
 export const nextId = (() => {
   let id = 0;
@@ -73,6 +73,9 @@ export function getStatusFromMedia(media: HTMLMediaElement, id: string): AudioSt
     shouldCorrectPitch: true,
     mute: media.muted,
     loop: media.loop,
+    isLive: media.duration === Infinity,
+    currentOffsetFromLive: null,
+    error: null,
   };
 
   return status;
