@@ -284,8 +284,10 @@ Right now, the bottom tab navigator looks the same on all platforms but doesn't 
 Modify the **(tabs)/\_layout.tsx** file to add tab bar icons:
 
 1. Import `Ionicons` icons set from [`@expo/vector-icons`](/guides/icons/#expovector-icons) — a library that includes popular icon sets.
+If `Ionicons` is not importing, install it with `npx expo install @expo/vector-icons`.
 2. Add the `tabBarIcon` to both the `index` and `about` routes. This function takes `focused` and `color` as params and renders the icon component. From the icon set, we can provide custom icon names.
 3. Add `screenOptions.tabBarActiveTintColor` to the `Tabs` component and set its value to `#ffd33d`. This will change the color of the tab bar icon and label when active.
+4. Add `screenOptions.tabBarInactiveTintColor` to the `Tabs` component and set its value to `#5e5e5`. This will change the color of the tab bar icon and label when inactive, to contrast better with the tab background color.
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/_layout.tsx
@@ -297,9 +299,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 export default function TabLayout() {
   return (
     <Tabs
-      /* @tutinfo There are many `screenOptions` we can use to customize the tab bar. We're changing the active tab color here to custom value which we will also use later in our app. */
+      /* @tutinfo There are many `screenOptions` we can use to customize the tab bar. We're changing the active and inactive tab color here to custom value which we will also use later in our app. */
       screenOptions={{
         tabBarActiveTintColor: '#ffd33d',
+        tabBarInactiveTintColor: "#5e5e5e",
       }}
       /* @end */
     >
@@ -336,6 +339,7 @@ Let's also change the background color of the tab bar and header using `screenOp
 <Tabs
   screenOptions={{
     tabBarActiveTintColor: '#ffd33d',
+    tabBarInactiveTintColor: "#5e5e5e",
     headerStyle: {
       backgroundColor: '#25292e',
     },
