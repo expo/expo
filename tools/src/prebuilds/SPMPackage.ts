@@ -878,7 +878,7 @@ async function resolveSourceTarget(
  * @param artifactPaths - Paths to downloaded artifacts from centralized cache
  * @param packageSwiftDir - Directory where Package.swift will be located
  */
-function buildSwiftSettings(
+export function buildSwiftSettings(
   externalDeps: string[],
   artifactPaths: ArtifactPaths | null,
   packageSwiftDir: string,
