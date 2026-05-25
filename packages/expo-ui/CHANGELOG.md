@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [universal] Revamp web universal components (`Button`, `Checkbox`, `Picker`, `Slider`,`Switch`,`TextInput`,) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258) by [@zoontek](https://github.com/zoontek))
+
 ## 56.0.14 — 2026-05-26
 
 ### 🐛 Bug fixes
