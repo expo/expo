@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     height: 0,
   },
   text: {
+    color: colors.foreground,
     userSelect: 'none',
   },
   track: {

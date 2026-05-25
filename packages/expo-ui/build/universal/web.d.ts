@@ -10,7 +10,7 @@ type WebComponentProps<T extends ElementType> = Merge<ComponentProps<T>, {
     style?: StyleProp<ImageStyle | TextStyle | ViewStyle>;
     testID?: string;
 }>;
-export declare const createWebComponent: <T extends ElementType>(type: T) => (props: WebComponentProps<T>) => import("react").ReactElement<Simplify<Omit<ComponentProps<T>, "style" | "testID" | "dataSet" | "focusable"> & {
+export declare const createWebComponent: <T extends ElementType>(type: T) => (props: WebComponentProps<T>) => import("react").ReactElement<Simplify<Omit<ComponentProps<T>, "style" | "dataSet" | "focusable" | "testID"> & {
     dataSet?: Record<string, string | undefined>;
     focusable?: boolean;
     style?: StyleProp<ImageStyle | TextStyle | ViewStyle>;
@@ -19,6 +19,7 @@ export declare const createWebComponent: <T extends ElementType>(type: T) => (pr
 export declare const css: (strings: TemplateStringsArray, ...values: unknown[]) => string;
 export declare const colors: {
     background: string;
+    foreground: string;
     red: string;
     primary: {
         foreground: string;

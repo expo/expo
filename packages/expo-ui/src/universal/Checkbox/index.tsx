@@ -54,8 +54,9 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   text: {
-    userSelect: 'none',
+    color: colors.foreground,
     lineHeight: 20,
+    userSelect: 'none',
   },
 });
 

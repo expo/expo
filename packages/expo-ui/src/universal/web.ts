@@ -32,7 +32,8 @@ export const css = (strings: TemplateStringsArray, ...values: unknown[]): string
     .trim();
 
 const lightVariables = css`
-  --eui-default-bg: #ffffff;
+  --eui-background: #ffffff;
+  --eui-foreground: #000000;
 
   --eui-gray-50: #f9fafb;
   --eui-gray-100: #f0f1f2;
@@ -50,7 +51,8 @@ const lightVariables = css`
 `;
 
 const darkVariables = css`
-  --eui-default-bg: #0b0f14;
+  --eui-background: #0b0f14;
+  --eui-foreground: #ffffff;
 
   --eui-gray-50: #111418;
   --eui-gray-100: #1d2128;
@@ -69,6 +71,8 @@ const darkVariables = css`
 
 export const colors = {
   background: 'var(--eui-background)',
+  foreground: 'var(--eui-foreground)',
+
   red: '#cf222e',
 
   primary: {
