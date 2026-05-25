@@ -178,8 +178,21 @@ runs:
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('pnpm-lock.yaml', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle') }}
-        restore-keys: ${{ runner.os }}-ccache-
+        # The key is divided into two parts:
+        #
+        # PART 1 - used in key and restore-keys
+        # If these files change, we MUST completely invalidate the cache.
+        # Otherwise, ccache's `system_headers` and `pch_defines` sloppiness options would cause incorrect cache hits,
+        # by silently reusing outdated NDK files or precompiled headers.
+        # - pnpm-lock.yaml: Tracks NDK version and external dependencies.
+        # - pch.h: Tracks modifications to the precompiled header.
+        #
+        # PART 2 - used only in the exact key
+        # ccache tracks these files without any sloppiness issues.
+        # - C/C++ source files
+        # - Gradle files: see https://github.com/expo/expo/pull/44884
+        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml', 'apps/bare-expo/android/app/src/main/jni/pch.h')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle') }}
+        restore-keys: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml', 'apps/bare-expo/android/app/src/main/jni/pch.h')}}
 
     - name: 🔍️ Get cache key of Git LFS files
       if: inputs.git-lfs == 'true'
