@@ -40,6 +40,15 @@ export declare function getInitialURL(): Promise<string | null>;
  */
 export declare function getLinkingURL(): string | null;
 /**
+ * Clears the cached initial URL used to launch the app, subsequent
+ * calls to [`getLinkingURL()`] return `null` until a new deep link is received.
+ *
+ * On web this is a no-op.
+ * @platform android
+ * @platform ios
+ */
+export declare function clearInitialURL(): void;
+/**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
  * for more information.
  * @param url A URL for the operating system to open. For example: `tel:5555555`, `exp://`.

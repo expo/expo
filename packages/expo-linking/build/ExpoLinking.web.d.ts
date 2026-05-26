@@ -4,6 +4,7 @@ declare const _default: {
         remove(): void;
     };
     getLinkingURL(): string;
+    clearInitialURL(): void;
 };
 export default _default;
 //# sourceMappingURL=ExpoLinking.web.d.ts.map
