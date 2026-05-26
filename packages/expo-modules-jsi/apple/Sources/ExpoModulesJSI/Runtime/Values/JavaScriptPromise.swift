@@ -13,7 +13,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private typealias PromiseContinuation = CheckedContinuation<JavaScriptValue.Ref, any Error>
 
   private weak let runtime: JavaScriptRuntime?
-  private let object: JavaScriptObject
+  private var object: JavaScriptObject
   private let deferredPromise = DeferredPromise()
 
   // Create refs for resolve and reject functions.
@@ -38,6 +38,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   @JavaScriptActor
   public init(_ runtime: JavaScriptRuntime) throws {
     self.runtime = runtime
+    // Initialize the non-copyable field before any throwing work. Swift requires a
+    // consistently initialized value on every throwing initializer path.
+    self.object = runtime.createObject()
 
     // Create function that is the promise setup. It is called immediately on `callAsConstructor`.
     let setup = runtime.createFunction { [weak resolveFunction, weak rejectFunction] this, arguments in
