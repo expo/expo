@@ -19,7 +19,7 @@ NS_SWIFT_NAME(ExpoReactRootViewFactory)
  */
 - (instancetype)initWithReactDelegate:(nullable EXReactDelegate *)reactDelegate
                         configuration:(RCTRootViewFactoryConfiguration *)configuration
-           turboModuleManagerDelegate:(nullable id)turboModuleManagerDelegate;
+           turboModuleManagerDelegate:(nullable id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate;
 
 /**
  Calls super `viewWithModuleName:initialProperties:launchOptions:` from `RCTRootViewFactory`.

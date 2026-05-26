@@ -10,8 +10,9 @@
 #import "Expo-Swift.h"
 #else
 // Under SwiftPM, ExpoObjC is a separate Clang target from the Expo Swift target,
-// so the generated `Expo-Swift.h` isn't on this target's include path. Forward-
-// declare just the symbols we use here.
+// so the generated `Expo-Swift.h` isn't on this target's include path, and a
+// Swift-side `@import Expo` would be circular (Expo depends on ExpoObjC).
+// Forward-declare just the symbols we use here.
 @protocol EXAppDelegateSubscriberProtocol;
 @interface AppDelegatesLoaderDelegate : NSObject
 + (void)registerAppDelegateSubscribers:(id<EXAppDelegateSubscriberProtocol>)subscriber;
