@@ -87,6 +87,16 @@ type CalculateFingerprintHashProps = {
 
 A reference implementation using GitHub Releases to cache builds can be found in the [Build Cache Provider Example](https://github.com/expo/examples/tree/master/with-github-remote-build-cache-provider).
 
+## Limitations
+
+The build cache provider is consulted only by local `npx expo run:[android|ios]` commands. Builds triggered with `eas build` are not affected — they always produce fresh artifacts and never invoke the cache provider plugin.
+
+Some local builds are also skipped:
+
+- **iOS physical device builds.** A device build is only valid on devices that match its provisioning profile, so reusing one across machines or devices is unsafe. `npx expo run:ios` therefore skips both the cache lookup and the post-build upload when the target is a physical device. Only iOS simulator builds participate in caching.
+
+If you're using `appVersionSource: "remote"` in **eas.json**, note that the `buildNumber` (iOS) and `versionCode` (Android) live on EAS servers rather than in your project source, so they are not part of the fingerprint inputs. This is fine for normal dev iteration — local `npx expo run:*` invocations don't auto-increment those values — but be aware that a cached artifact retains whatever build number was embedded when it was originally built.
+
 ## Creating a custom build provider
 
 Start by creating a **provider** directory for writing the provider plugin in TypeScript and add a **provider.plugin.js** file in the project root, which will be the plugin's entry point.
