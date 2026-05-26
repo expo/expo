@@ -11,13 +11,13 @@ Events are persisted on-device, batched, and dispatched on the next flush as Ope
 
 ## Log an event
 
-Call `AppMetrics.logEvent` from anywhere in your app:
+Call `Observe.logEvent` from anywhere in your app:
 
 ```tsx
-import { AppMetrics } from 'expo-observe';
+import { Observe } from 'expo-observe';
 
 function handleSignupComplete() {
-  AppMetrics.logEvent('signup.completed');
+  Observe.logEvent('signup.completed');
 }
 ```
 
@@ -28,7 +28,7 @@ The first argument is the event name. Use a stable, dot-separated identifier. Th
 Pass an `attributes` map to record context with the event:
 
 ```tsx
-AppMetrics.logEvent('cart.checkout', {
+Observe.logEvent('cart.checkout', {
   attributes: {
     itemCount: 3,
     totalUsd: 42.5,
@@ -45,7 +45,7 @@ Supported attribute value types: `string`, `number`, `boolean`, arrays, and nest
 Events default to `"info"` severity. Override with the `severity` option for warnings or errors you want to surface separately in the dashboard:
 
 ```tsx
-AppMetrics.logEvent('payment.failed', {
+Observe.logEvent('payment.failed', {
   severity: 'error',
   attributes: { reason: 'card_declined' },
 });
@@ -58,7 +58,7 @@ Supported severities, from lowest to highest: `"trace"`, `"debug"`, `"info"`, `"
 Use `body` for a free-form message that complements the structured attributes:
 
 ```tsx
-AppMetrics.logEvent('subscription.expired', {
+Observe.logEvent('subscription.expired', {
   body: 'Subscription expired while user was offline; downgrading to free tier.',
   severity: 'warn',
   attributes: { previousPlan: 'pro' },
