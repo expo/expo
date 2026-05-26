@@ -483,11 +483,14 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
 }
 
 #if os(iOS)
-private func allowedOrientations(for userInterfaceIdiom: UIUserInterfaceIdiom) -> UIInterfaceOrientationMask {
+func allowedOrientations(
+  for userInterfaceIdiom: UIUserInterfaceIdiom,
+  infoDictionary: [String: Any]? = Bundle.main.infoDictionary
+) -> UIInterfaceOrientationMask {
   // For now only iPad-specific orientations are supported
-  let deviceString = userInterfaceIdiom == .pad ? "~pad" : ""
+  let deviceString = userInterfaceIdiom == .pad ? "~ipad" : ""
   var mask: UIInterfaceOrientationMask = []
-  guard let orientations = Bundle.main.infoDictionary?["UISupportedInterfaceOrientations\(deviceString)"] as? [String] else {
+  guard let orientations = infoDictionary?["UISupportedInterfaceOrientations\(deviceString)"] as? [String] else {
     return mask
   }
 
