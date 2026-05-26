@@ -1999,10 +1999,10 @@ export async function test({ describe, expect, it, ...t }) {
       const src = new File(testDirectory, 'file.txt');
       src.write('Hello world');
       const handle = src.open();
-      expect(handle.readBytes(4)).toEqual(new Uint8Array([72, 101, 108, 108])); // Hell
-      expect(handle.readBytes(4)).toEqual(new Uint8Array([111, 32, 119, 111])); // o wo
+      expect(handle.readBytesSync(4)).toEqual(new Uint8Array([72, 101, 108, 108])); // Hell
+      expect(handle.readBytesSync(4)).toEqual(new Uint8Array([111, 32, 119, 111])); // o wo
       handle.offset = 2;
-      expect(handle.readBytes(2)).toEqual(new Uint8Array([108, 108])); // ll
+      expect(handle.readBytesSync(2)).toEqual(new Uint8Array([108, 108])); // ll
       expect(handle.offset).toBe(4);
       handle.close();
     });
@@ -2011,10 +2011,10 @@ export async function test({ describe, expect, it, ...t }) {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
       let handle = src.open();
-      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      expect(handle.readBytesSync(1)).toEqual(new Uint8Array([97])); // a
       handle.close();
       handle = src.open();
-      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      expect(handle.readBytesSync(1)).toEqual(new Uint8Array([97])); // a
       handle.close();
     });
 
@@ -2022,9 +2022,9 @@ export async function test({ describe, expect, it, ...t }) {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
       const handle = src.open();
-      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      expect(handle.readBytesSync(1)).toEqual(new Uint8Array([97])); // a
       handle.close();
-      expect(() => handle.readBytes(1)).toThrow();
+      expect(() => handle.readBytesSync(1)).toThrow();
     });
 
     it('Can open multiple handles to the same file', () => {
@@ -2032,8 +2032,8 @@ export async function test({ describe, expect, it, ...t }) {
       src.write('abcde');
       const handle = src.open();
       const handle2 = src.open();
-      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
-      expect(handle2.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      expect(handle.readBytesSync(1)).toEqual(new Uint8Array([97])); // a
+      expect(handle2.readBytesSync(1)).toEqual(new Uint8Array([97])); // a
     });
 
     it('Returns null offset on closed handle', () => {
@@ -2056,11 +2056,11 @@ export async function test({ describe, expect, it, ...t }) {
       const src = new File(testDirectory, 'file.txt');
       src.create();
       const handle = src.open();
-      expect(handle.readBytes(2)).toEqual(new Uint8Array([])); // a
+      expect(handle.readBytesSync(2)).toEqual(new Uint8Array([])); // a
       handle.close();
       src.write('abcde');
       const handle2 = src.open();
-      expect(handle2.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      expect(handle2.readBytesSync(1)).toEqual(new Uint8Array([97])); // a
       handle2.close();
     });
 
@@ -2070,13 +2070,21 @@ export async function test({ describe, expect, it, ...t }) {
       src.write(alphabet.repeat(1000) + 'ending');
       const handle = src.open();
       for (let i = 0; i < 250; i++) {
-        const chunk = handle.readBytes(26 * 4);
+        const chunk = handle.readBytesSync(26 * 4);
         expect(chunk.length).toBe(26 * 4);
         expect(String.fromCharCode(...chunk)).toBe(alphabet.repeat(4));
       }
-      const chunk = handle.readBytes(100);
+      const chunk = handle.readBytesSync(100);
       expect(chunk.length).toBe(6);
       expect(String.fromCharCode(...chunk)).toBe('ending');
+      handle.close();
+    });
+
+    it('Reads from a file handle asynchronously', async () => {
+      const src = new File(testDirectory, 'file_async.txt');
+      src.write('abcde');
+      const handle = src.open();
+      expect(await handle.readBytes(2)).toEqual(new Uint8Array([97, 98])); // ab
       handle.close();
     });
 
@@ -2086,7 +2094,7 @@ export async function test({ describe, expect, it, ...t }) {
       src.create();
       const handle = src.open();
       for (let i = 0; i < 10; i++) {
-        handle.writeBytes(
+        handle.writeBytesSync(
           new Uint8Array(
             alphabet
               .repeat(4)
@@ -2095,19 +2103,28 @@ export async function test({ describe, expect, it, ...t }) {
           )
         );
       }
-      expect(handle.readBytes(26 * 4).length).toBe(0);
+      expect(handle.readBytesSync(26 * 4).length).toBe(0);
       handle.offset = 0;
-      expect(handle.readBytes(26 * 4).length).toBe(26 * 4);
+      expect(handle.readBytesSync(26 * 4).length).toBe(26 * 4);
       handle.close();
       expect(src.textSync()).toBe(alphabet.repeat(4 * 10));
     });
+
+    it('Writes to a file handle asynchronously', async () => {
+      const src = new File(testDirectory, 'file_async.txt');
+      src.create();
+      const handle = src.open();
+      await handle.writeBytes(new Uint8Array([72, 105])); // Hi
+      handle.close();
+      expect(src.textSync()).toBe('Hi');
+});
 
     describe('It supports different FileMode options', () => {
       it('opens in ReadOnly mode and reads data', () => {
         const src = new File(testDirectory, 'mode-read.txt');
         src.write('Hello');
         const handle = src.open(FileMode.ReadOnly);
-        expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+        expect(handle.readBytesSync(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
         handle.close();
       });
 
@@ -2115,7 +2132,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'mode-read-only.txt');
         src.write('Hello');
         const handle = src.open(FileMode.ReadOnly);
-        expect(() => handle.writeBytes(new Uint8Array([65]))).toThrow();
+        expect(() => handle.writeBytesSync(new Uint8Array([65]))).toThrow();
         handle.close();
       });
 
@@ -2123,7 +2140,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'mode-write.txt');
         src.create();
         const handle = src.open(FileMode.WriteOnly);
-        handle.writeBytes(new Uint8Array([72, 105])); // Hi
+        handle.writeBytesSync(new Uint8Array([72, 105])); // Hi
         handle.close();
         expect(src.textSync()).toBe('Hi');
       });
@@ -2132,7 +2149,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'mode-write-only.txt');
         src.create();
         const handle = src.open(FileMode.WriteOnly);
-        expect(() => handle.readBytes(1)).toThrow();
+        expect(() => handle.readBytesSync(1)).toThrow();
         handle.close();
       });
 
@@ -2140,9 +2157,9 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'mode-rw.txt');
         src.write('Hello');
         const handle = src.open(FileMode.ReadWrite);
-        expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+        expect(handle.readBytesSync(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
         handle.offset = 0;
-        handle.writeBytes(new Uint8Array([87, 111, 114, 108, 100])); // World
+        handle.writeBytesSync(new Uint8Array([87, 111, 114, 108, 100])); // World
         handle.close();
         expect(src.textSync()).toBe('World');
       });
@@ -2151,7 +2168,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'mode-append.txt');
         src.write('Hello');
         const handle = src.open(FileMode.Append);
-        handle.writeBytes(new Uint8Array([32, 87, 111, 114, 108, 100])); // ' World'
+        handle.writeBytesSync(new Uint8Array([32, 87, 111, 114, 108, 100])); // ' World'
         handle.close();
         expect(src.textSync()).toBe('Hello World');
       });
@@ -2161,7 +2178,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Old content');
         const handle = src.open(FileMode.Truncate);
         expect(handle.size).toBe(0);
-        handle.writeBytes(new Uint8Array([78, 101, 119])); // New
+        handle.writeBytesSync(new Uint8Array([78, 101, 119])); // New
         handle.close();
         expect(src.textSync()).toBe('New');
       });
