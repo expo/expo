@@ -160,6 +160,28 @@ describe('enumeratePrecompiledModules', () => {
     expect(names.filter((n) => n === 'SDWebImage')).toHaveLength(1);
     expect(names.sort()).toEqual(['AnotherImageMod', 'ExpoImage', 'SDWebImage']);
   });
+
+  it('follows symlinked xcframeworks that autolinking stages into the pod dir', () => {
+    // `ensure_shared_spm_deps` in precompiled_modules.rb symlinks (not copies) shared SPM deps
+    // like SDWebImage into `Pods/<owner>/<dep>.xcframework`. fs.Dirent.isDirectory() returns
+    // false for symlinks, so enumeration must follow them — otherwise the brownfield Swift
+    // Package ships without them and the host crashes with `Library not loaded: @rpath/...`.
+    const podDir = path.join(tmpDir, 'Pods', 'ExpoImage');
+    fs.mkdirSync(podDir, { recursive: true });
+    fs.mkdirSync(path.join(podDir, 'ExpoImage.xcframework'));
+    fs.mkdirSync(path.join(podDir, 'artifacts'), { recursive: true });
+    fs.writeFileSync(path.join(podDir, 'artifacts', 'ExpoImage-release.tar.gz'), '');
+
+    const externalCache = path.join(tmpDir, '.spm-deps', 'SDWebImage', 'release');
+    fs.mkdirSync(path.join(externalCache, 'SDWebImage.xcframework'), { recursive: true });
+    fs.symlinkSync(
+      path.join(externalCache, 'SDWebImage.xcframework'),
+      path.join(podDir, 'SDWebImage.xcframework')
+    );
+
+    const modules = enumeratePrecompiledModules(tmpDir);
+    expect(modules.map((m) => m.name).sort()).toEqual(['ExpoImage', 'SDWebImage']);
+  });
 });
 
 describe('enumerateSpmDepsXcframeworks', () => {
