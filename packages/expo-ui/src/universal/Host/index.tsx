@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 
+import { generatePrimaryColorScale, globalCss } from '../webUtils';
 import type { UniversalHostProps } from './types';
 
 const styles = StyleSheet.create({
@@ -31,6 +33,7 @@ const styles = StyleSheet.create({
  */
 export function Host({
   children,
+  colorScheme = 'unspecified',
   ignoreSafeArea,
   layoutDirection,
   matchContents = false,
@@ -38,44 +41,56 @@ export function Host({
   onLayoutContent,
   style,
   useViewportSizeMeasurement = false,
-  colorScheme: _colorScheme,
   ...rest
 }: UniversalHostProps) {
+  // TODO(@zoontek): add support for the colorScheme and seedColor prop
+  const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
+  const primaryColorScale = useMemo(() => generatePrimaryColorScale('#007aff'), []);
+
+  const dir =
+    layoutDirection === 'leftToRight'
+      ? 'ltr'
+      : layoutDirection === 'rightToLeft'
+        ? 'rtl'
+        : undefined;
+
   const shouldMatchContents =
     typeof matchContents === 'object'
       ? matchContents.horizontal || matchContents.vertical
       : matchContents;
 
   return (
-    <View
-      dir={
-        layoutDirection === 'leftToRight'
-          ? 'ltr'
-          : layoutDirection === 'rightToLeft'
-            ? 'rtl'
-            : undefined
-      }
-      onLayout={(event: LayoutChangeEvent) => {
-        onLayout?.(event);
+    <>
+      <style href="eui-host" precedence="eui">
+        {globalCss}
+      </style>
 
-        onLayoutContent?.({
-          nativeEvent: {
-            width: event.nativeEvent.layout.width,
-            height: event.nativeEvent.layout.height,
-          },
-        });
-      }}
-      style={[
-        ignoreSafeArea !== 'all' &&
-          (ignoreSafeArea === 'keyboard' ? styles.safeAreaWithoutKeyboard : styles.safeArea),
-        shouldMatchContents
-          ? styles.matchContents
-          : useViewportSizeMeasurement && styles.matchViewport,
-        style,
-      ]}
-      {...rest}>
-      {children}
-    </View>
+      <View
+        dataSet={dataSet}
+        dir={dir}
+        onLayout={(event: LayoutChangeEvent) => {
+          onLayout?.(event);
+
+          onLayoutContent?.({
+            nativeEvent: {
+              width: event.nativeEvent.layout.width,
+              height: event.nativeEvent.layout.height,
+            },
+          });
+        }}
+        style={[
+          primaryColorScale,
+          ignoreSafeArea !== 'all' &&
+            (ignoreSafeArea === 'keyboard' ? styles.safeAreaWithoutKeyboard : styles.safeArea),
+          shouldMatchContents
+            ? styles.matchContents
+            : useViewportSizeMeasurement && styles.matchViewport,
+          style,
+        ]}
+        {...rest}>
+        {children}
+      </View>
+    </>
   );
 }
 
