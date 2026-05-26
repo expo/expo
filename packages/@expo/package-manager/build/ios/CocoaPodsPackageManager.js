@@ -50,6 +50,14 @@ class CocoaPodsPackageManager {
     static isUsingPods(projectRoot) {
         return (0, fs_1.existsSync)(path_1.default.join(projectRoot, 'Podfile'));
     }
+    static isUsingBundledCocoaPods(projectRoot) {
+        const gemfilePath = path_1.default.join(projectRoot, 'Gemfile');
+        if (!(0, fs_1.existsSync)(gemfilePath)) {
+            return false;
+        }
+        const gemfile = (0, fs_1.readFileSync)(gemfilePath, 'utf8');
+        return /^\s*gem\s+['"]cocoapods['"]/m.test(gemfile);
+    }
     static async gemInstallCLIAsync(nonInteractive = false, spawnOptions = { stdio: 'inherit' }) {
         const options = ['install', 'cocoapods', '--no-document'];
         try {
@@ -125,7 +133,8 @@ class CocoaPodsPackageManager {
     }
     static async isCLIInstalledAsync(spawnOptions = { stdio: 'inherit' }) {
         try {
-            await (0, spawn_async_1.default)('pod', ['--version'], spawnOptions);
+            const [command, args] = CocoaPodsPackageManager.getPodCommand(['--version'], spawnOptions);
+            await (0, spawn_async_1.default)(command, args, spawnOptions);
             return true;
         }
         catch {
@@ -253,7 +262,8 @@ class CocoaPodsPackageManager {
         throw new Error('Unimplemented');
     }
     async versionAsync() {
-        const { stdout } = await (0, spawn_async_1.default)('pod', ['--version'], this.options);
+        const [command, args] = CocoaPodsPackageManager.getPodCommand(['--version'], this.options);
+        const { stdout } = await (0, spawn_async_1.default)(command, args, this.options);
         return stdout.trim();
     }
     async configAsync(key) {
@@ -267,14 +277,15 @@ class CocoaPodsPackageManager {
     }
     // Exposed for testing
     async _runAsync(args) {
-        if (!this.silent) {
-            console.log(`> pod ${args.join(' ')}`);
-        }
-        const promise = (0, spawn_async_1.default)('pod', [
+        const [command, commandArgs] = CocoaPodsPackageManager.getPodCommand([
             ...args,
             // Enables colors while collecting output.
             '--ansi',
-        ], {
+        ], this.options);
+        if (!this.silent) {
+            console.log(`> ${command} ${commandArgs.join(' ')}`);
+        }
+        const promise = (0, spawn_async_1.default)(command, commandArgs, {
             // Add the cwd and other options to the spawn options.
             ...this.options,
             // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
@@ -291,6 +302,13 @@ class CocoaPodsPackageManager {
             }
         }
         return await promise;
+    }
+    static getPodCommand(args, spawnOptions) {
+        const cwd = typeof spawnOptions.cwd === 'string' ? spawnOptions.cwd : null;
+        if (cwd && CocoaPodsPackageManager.isUsingBundledCocoaPods(cwd)) {
+            return ['bundle', ['exec', 'pod', ...args]];
+        }
+        return ['pod', args];
     }
 }
 exports.CocoaPodsPackageManager = CocoaPodsPackageManager;

@@ -258,6 +258,48 @@ it(`can detect if the CLI is installed`, async () => {
   expect(await manager.isCLIInstalledAsync()).toBe(true);
 });
 
+it(`can detect if the bundled CocoaPods CLI is installed`, async () => {
+  const projectRoot = getRoot('cocoapods-detect-bundled-cli');
+  await fs.promises.mkdir(projectRoot, { recursive: true });
+  fs.writeFileSync(path.join(projectRoot, 'Gemfile'), `gem 'cocoapods'\n`);
+
+  const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+
+  jest
+    .mocked(spawnAsync)
+    .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.16.2' })));
+
+  expect(await manager.isCLIInstalledAsync()).toBe(true);
+  expect(spawnAsync).toHaveBeenCalledWith(
+    'bundle',
+    ['exec', 'pod', '--version'],
+    expect.objectContaining({ cwd: projectRoot })
+  );
+});
+
+it(`runs pod commands through bundler when Gemfile declares CocoaPods`, async () => {
+  const projectRoot = getRoot('cocoapods-bundled-run');
+  await fs.promises.mkdir(projectRoot, { recursive: true });
+  fs.writeFileSync(
+    path.join(projectRoot, 'Gemfile'),
+    `source 'https://rubygems.org'\ngem "cocoapods"\n`
+  );
+
+  const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+
+  jest
+    .mocked(spawnAsync)
+    .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '' })));
+
+  await manager._runAsync(['install']);
+
+  expect(spawnAsync).toHaveBeenCalledWith(
+    'bundle',
+    ['exec', 'pod', 'install', '--ansi'],
+    expect.objectContaining({ cwd: projectRoot })
+  );
+});
+
 it(`can get the directory of a pods project`, async () => {
   const projectRoot = getRoot('cocoapods-detect-pods');
   const iosRoot = path.join(projectRoot, 'ios');

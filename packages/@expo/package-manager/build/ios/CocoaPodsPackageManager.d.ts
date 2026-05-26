@@ -14,6 +14,7 @@ export declare class CocoaPodsPackageManager {
     private silent;
     static getPodProjectRoot(projectRoot: string): string | null;
     static isUsingPods(projectRoot: string): boolean;
+    static isUsingBundledCocoaPods(projectRoot: string): boolean;
     static gemInstallCLIAsync(nonInteractive?: boolean, spawnOptions?: SpawnOptions): Promise<void>;
     static brewLinkCLIAsync(spawnOptions?: SpawnOptions): Promise<void>;
     static brewInstallCLIAsync(spawnOptions?: SpawnOptions): Promise<void>;
@@ -54,6 +55,7 @@ export declare class CocoaPodsPackageManager {
     removeLockfileAsync(): Promise<void>;
     uninstallAsync(): Promise<void>;
     _runAsync(args: string[]): Promise<SpawnResult>;
+    private static getPodCommand;
 }
 export declare function getPodUpdateMessage(output: string): {
     updatePackage: string | null;
