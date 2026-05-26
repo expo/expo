@@ -3512,7 +3512,7 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       babel-preset-expo:
-        specifier: workspace:~56.0.12
+        specifier: workspace:~56.0.13
         version: link:../babel-preset-expo
       expo-asset:
         specifier: workspace:~56.0.15
