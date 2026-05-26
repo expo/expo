@@ -58,7 +58,7 @@ async function resolveSwiftPackageInfoAsync(revision) {
  * left empty. Modules without a `Package.swift` are skipped so SwiftPM
  * adoption can roll out one package at a time.
  */
-async function resolveSwiftPackageModuleAsync(packageName, revision, extraOutput) {
+async function resolveSwiftPackageModuleAsync(packageName, revision) {
     // The `expo` package is the autolinking umbrella — its `Package.swift`
     // invokes this resolver. Dumping its manifest would re-enter the resolver
     // recursively (and fails under the SwiftPM manifest sandbox), so skip it.
@@ -72,10 +72,8 @@ async function resolveSwiftPackageModuleAsync(packageName, revision, extraOutput
     const coreFeatures = revision.config?.coreFeatures() ?? [];
     return {
         packageName,
-        pods: [],
         swiftPackage,
         swiftModuleNames: swiftPackage.productNames,
-        flags: extraOutput.flags,
         modules: revision.config
             ?.appleModules()
             .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ??

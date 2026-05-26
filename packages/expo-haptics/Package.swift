@@ -4,7 +4,6 @@ import Foundation
 
 struct PackageJSON: Decodable {
   let name: String
-  let version: String
 }
 
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
@@ -25,13 +24,13 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(name: "ExpoModulesCore", path: "../expo-modules-core"),
+    .package(path: "../expo-modules-core"),
   ],
   targets: [
     .target(
       name: "ExpoHaptics",
       dependencies: [
-        .product(name: "ExpoModulesCore", package: "ExpoModulesCore"),
+        .product(name: "ExpoModulesCore", package: "expo-modules-core"),
       ],
       path: "ios",
     )

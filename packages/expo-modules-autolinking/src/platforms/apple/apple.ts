@@ -58,7 +58,7 @@ export async function resolveModuleAsync(
   extraOutput: { flags?: Record<string, any>; swiftpm?: boolean }
 ): Promise<ModuleDescriptorIos | null> {
   if (extraOutput.swiftpm) {
-    return resolveSwiftPackageModuleAsync(packageName, revision, extraOutput);
+    return resolveSwiftPackageModuleAsync(packageName, revision);
   }
 
   const podspecFiles = await findPodspecFiles(revision);

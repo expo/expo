@@ -41,7 +41,7 @@ function getSwiftModuleNames(pods, swiftModuleNames) {
 /** Resolves module search result with additional details required for iOS platform. */
 async function resolveModuleAsync(packageName, revision, extraOutput) {
     if (extraOutput.swiftpm) {
-        return (0, swiftpm_1.resolveSwiftPackageModuleAsync)(packageName, revision, extraOutput);
+        return (0, swiftpm_1.resolveSwiftPackageModuleAsync)(packageName, revision);
     }
     const podspecFiles = await findPodspecFiles(revision);
     if (!podspecFiles.length) {

@@ -1,11 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 
-import type {
-  ModuleDescriptorIos,
-  ModuleSwiftPackageInfo,
-  PackageRevision,
-} from '../../types';
+import type { ModuleDescriptorIos, ModuleSwiftPackageInfo, PackageRevision } from '../../types';
 import { fileExistsAsync } from '../../utils';
 
 /**
@@ -82,8 +78,7 @@ async function resolveSwiftPackageInfoAsync(
  */
 export async function resolveSwiftPackageModuleAsync(
   packageName: string,
-  revision: PackageRevision,
-  extraOutput: { flags?: Record<string, any> }
+  revision: PackageRevision
 ): Promise<ModuleDescriptorIos | null> {
   // The `expo` package is the autolinking umbrella — its `Package.swift`
   // invokes this resolver. Dumping its manifest would re-enter the resolver
@@ -101,10 +96,8 @@ export async function resolveSwiftPackageModuleAsync(
 
   return {
     packageName,
-    pods: [],
     swiftPackage,
     swiftModuleNames: swiftPackage.productNames,
-    flags: extraOutput.flags,
     modules:
       revision.config
         ?.appleModules()

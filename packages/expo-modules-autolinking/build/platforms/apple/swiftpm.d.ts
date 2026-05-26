@@ -5,6 +5,4 @@ import type { ModuleDescriptorIos, PackageRevision } from '../../types';
  * left empty. Modules without a `Package.swift` are skipped so SwiftPM
  * adoption can roll out one package at a time.
  */
-export declare function resolveSwiftPackageModuleAsync(packageName: string, revision: PackageRevision, extraOutput: {
-    flags?: Record<string, any>;
-}): Promise<ModuleDescriptorIos | null>;
+export declare function resolveSwiftPackageModuleAsync(packageName: string, revision: PackageRevision): Promise<ModuleDescriptorIos | null>;

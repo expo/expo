@@ -64,14 +64,14 @@ export interface ModuleSwiftPackageInfo {
 }
 export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
     modules: ModuleIosConfig[];
-    pods: ModuleIosPodspecInfo[];
+    pods?: ModuleIosPodspecInfo[];
     /**
      * Identity, on-disk path, and `.library` product names of the module's
      * SwiftPM package, read from its `Package.swift`. Populated only when the
      * resolver runs in `--swiftpm` mode.
      */
     swiftPackage?: ModuleSwiftPackageInfo;
-    flags: Record<string, any> | undefined;
+    flags?: Record<string, any> | undefined;
     swiftModuleNames: string[];
     appDelegateSubscribers: string[];
     reactDelegateHandlers: string[];
