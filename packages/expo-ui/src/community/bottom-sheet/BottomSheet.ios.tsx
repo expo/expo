@@ -202,33 +202,30 @@ export function BottomSheet(props: BottomSheetProps) {
 
   useImperativeHandle(ref, () => methods, [methods]);
 
-  const modifiers = useMemo(
-     () => {
-       const bg = extractBackgroundColor(backgroundStyle);
-       return [
-         ...(fitToContents
-           ? []
-           : [
-               presentationDetents(detents, {
-                 selection: selectedDetent,
-                 onSelectionChange: handleDetentChange,
-               }),
-             ]),
-         presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
-         interactiveDismissDisabled(!enablePanDownToClose),
-         ...(bg ? [presentationBackground(bg)] : []),
-       ];
-     },
-     [
-       fitToContents,
-       detents,
-       selectedDetent,
-       handleDetentChange,
-       handleComponent,
-       enablePanDownToClose,
-       backgroundStyle,
-     ]
-   );
+  const modifiers = useMemo(() => {
+    const bg = extractBackgroundColor(backgroundStyle);
+    return [
+      ...(fitToContents
+        ? []
+        : [
+            presentationDetents(detents, {
+              selection: selectedDetent,
+              onSelectionChange: handleDetentChange,
+            }),
+          ]),
+      presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
+      interactiveDismissDisabled(!enablePanDownToClose),
+      ...(bg ? [presentationBackground(bg)] : []),
+    ];
+  }, [
+    fitToContents,
+    detents,
+    selectedDetent,
+    handleDetentChange,
+    handleComponent,
+    enablePanDownToClose,
+    backgroundStyle,
+  ]);
 
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
