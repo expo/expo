@@ -79,7 +79,9 @@ extension UInt8: JSIRepresentableNumber {}
 extension UInt16: JSIRepresentableNumber {}
 extension UInt32: JSIRepresentableNumber {}
 extension UInt64: JSIRepresentableNumber {}
+#if arch(arm64) || (!os(macOS) && !targetEnvironment(macCatalyst))
 extension Float16: JSIRepresentableNumber {}
+#endif
 extension Float32: JSIRepresentableNumber {}
 extension Float64: JSIRepresentableNumber {}
 extension CGFloat: JSIRepresentableNumber {}

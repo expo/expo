@@ -115,6 +115,7 @@ platform_destination() {
     appletvos)        echo "tvOS" ;;
     appletvsimulator) echo "tvOS Simulator" ;;
     macosx)           echo "macOS" ;;
+    maccatalyst)      echo "macOS,variant=Mac Catalyst" ;;
     *)
       log "error: Unsupported platform: $1"
       exit 1
@@ -131,6 +132,8 @@ platform_slice_id() {
     iphonesimulator)  echo "ios-arm64_x86_64-simulator" ;;
     appletvos)        echo "tvos-arm64" ;;
     appletvsimulator) echo "tvos-arm64_x86_64-simulator" ;;
+    macosx)           echo "macos-arm64_x86_64" ;;
+    maccatalyst)      echo "ios-arm64_x86_64-maccatalyst" ;;
     *)
       log "error: No slice mapping for platform: $1"
       exit 1
@@ -148,6 +151,11 @@ build_slice() {
   slice_id=$(platform_slice_id "$platform")
   local build_dir_name="${CONFIGURATION}-${platform}"
 
+  local sdk="$platform"
+  if [[ "$platform" == "maccatalyst" ]]; then
+    sdk="macosx" # maccatalyst build uses macosx sdk.
+  fi
+
   log "Building framework slice for ${platform}..."
 
   rm -rf "$BUILD_PRODUCTS_PATH"
@@ -161,7 +169,7 @@ build_slice() {
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
-    -sdk "$platform" \
+    -sdk "$sdk" \
     -destination "generic/platform=${destination}" \
     -derivedDataPath "$DERIVED_DATA_PATH" \
     -configuration "$CONFIGURATION" \
@@ -194,13 +202,26 @@ build_slice() {
   rm -rf "$staging_dir"
   mkdir -p "$staging_dir"
 
-  cp -r "$framework_src" "$staging_dir/"
+  # Use cp -a (Archive) to strictly preserve symlinks in deep bundles.
+  # Without this, "bundle format is ambiguous" error will occur.
+  cp -a "$framework_src" "$staging_dir/"
   if [[ -d "${product_path}/${PACKAGE_NAME}.framework.dSYM" ]]; then
-    cp -r "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
+    cp -a "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
+  fi
+
+  local framework_root="${staging_dir}/${PACKAGE_NAME}.framework"
+  local content_dir="$framework_root"
+  local is_deep_bundle=false
+
+  # Dynamic deep bundle for macOS/Catalyst.
+  # If Xcode generated a deep bundle, route files to Versions/A.
+  if [[ -d "${framework_root}/Versions/A" ]]; then
+    content_dir="${framework_root}/Versions/A"
+    is_deep_bundle=true
   fi
 
   # Copy Swift module interfaces and generated headers into the staged framework.
-  local modules_dir="${staging_dir}/${PACKAGE_NAME}.framework/Modules"
+  local modules_dir="${content_dir}/Modules"
   mkdir -p "$modules_dir"
   cp -r "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
   rm -rf "${modules_dir}/${PACKAGE_NAME}.swiftmodule/Project"
@@ -222,10 +243,16 @@ build_slice() {
   find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface' \
     -exec sed -i '' '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' {} +
 
-  local headers_dir="${staging_dir}/${PACKAGE_NAME}.framework/Headers"
+  local headers_dir="${content_dir}/Headers"
   mkdir -p "$headers_dir"
   cp "${generated_maps}/${PACKAGE_NAME}-Swift.h" "$headers_dir/"
   cp "${generated_maps}/${PACKAGE_NAME}.modulemap" "$headers_dir/module.modulemap"
+
+  # Restore root symlinks required by CocoaPods for deep bundles.
+  if [[ "$is_deep_bundle" == true ]]; then
+    (cd "$framework_root" && ln -sfn Versions/Current/Modules Modules || true)
+    (cd "$framework_root" && ln -sfn Versions/Current/Headers Headers || true)
+  fi
 
   echo "$current_hash" > "${staging_dir}/.build-hash"
 
@@ -300,7 +327,12 @@ fi
 
 # Determine which platforms to build.
 if [[ -n "${PLATFORM_NAME:-}" ]]; then
-  PLATFORMS=("$PLATFORM_NAME")
+  # Xcode identifies Catalyst with PLATFORM_NAME=macosx but EFFECTIVE_PLATFORM_NAME=-maccatalyst.
+  if [[ "${PLATFORM_NAME}" == "macosx" && "${EFFECTIVE_PLATFORM_NAME:-}" == *maccatalyst* ]]; then
+    PLATFORMS=("maccatalyst")
+  else
+    PLATFORMS=("$PLATFORM_NAME")
+  fi
 else
   PLATFORMS=("iphoneos" "iphonesimulator")
 fi
