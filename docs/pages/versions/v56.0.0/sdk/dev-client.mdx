@@ -81,42 +81,6 @@ You can configure development client launcher using its built-in [config plugin]
       ].join('\n'),
     },
     {
-      name: 'android.launchMode',
-      description: [
-        'Determines whether to launch the most recently opened project or navigate to the launcher screen on Android. Overrides the top-level `launchMode` setting for Android only.',
-        '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
-        '* `launcher` - Opens the launcher screen.',
-      ].join('\n'),
-      default: '"most-recent"',
-      platform: 'android',
-    },
-    {
-      name: 'ios.launchMode',
-      description: [
-        'Determines whether to launch the most recently opened project or navigate to the launcher screen on iOS. Overrides the top-level `launchMode` setting for iOS only.',
-        '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
-        '* `launcher` - Opens the launcher screen.',
-      ].join('\n'),
-      default: '"most-recent"',
-      platform: 'ios',
-    },
-    {
-      name: 'android.defaultLaunchURL',
-      description: [
-        'Instead of navigating to launcher screen launch directly into this URL.',
-        'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
-      ].join('\n'),
-      platform: 'android',
-    },
-    {
-      name: 'ios.defaultLaunchURL',
-      description: [
-        'Instead of navigating to launcher screen launch directly into this URL.',
-        'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
-      ].join('\n'),
-      platform: 'ios',
-    },
-    {
       name: 'toolsButton',
       description: 'Whether to show the floating tools button.',
       default: 'true',
