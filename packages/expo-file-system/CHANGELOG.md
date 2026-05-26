@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- `FileHandle.readBytes()` and `FileHandle.writeBytes()` are now asynchronous and return a Promise. Use `FileHandle.readBytesSync()` and `FileHandle.writeBytesSync()` for synchronous behavior. ([#46280](https://github.com/expo/expo/pull/46280) by [@wh201906](https://github.com/wh201906))
+
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
