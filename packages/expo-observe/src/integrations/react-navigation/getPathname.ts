@@ -1,16 +1,13 @@
-import {
-  getPathFromState,
-  type LinkingOptions,
-  type NavigationState,
-  type ParamListBase,
-} from '@react-navigation/native';
+import type { LinkingOptions, NavigationState, ParamListBase } from '@react-navigation/native';
 
+import { optionalReactNavigation } from './reactNavigation';
 import type { GetPathname } from './types';
 
 export function createGetPathname<ParamList extends ParamListBase>(
   linking: LinkingOptions<ParamList> | undefined
 ): GetPathname {
-  if (!linking?.config) {
+  const getPathFromState = optionalReactNavigation?.getPathFromState;
+  if (!getPathFromState || !linking?.config) {
     return (_state) => undefined;
   }
   return (state) => {
