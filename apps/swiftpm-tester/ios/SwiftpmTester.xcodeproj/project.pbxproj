@@ -271,6 +271,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../packages/precompile/.cache/react/0.85.3/debug/React.xcframework/ios-arm64_x86_64-simulator",
+					"$(SRCROOT)/../../../packages/precompile/.cache/react-native-dependencies/0.85.3/debug/ReactNativeDependencies.xcframework/ios-arm64_x86_64-simulator",
+					"$(SRCROOT)/../../../packages/precompile/.cache/hermes/0.16.0/debug/destroot/Library/Frameworks/universal/hermesvm.xcframework/ios-arm64_x86_64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = SwiftpmTester/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
@@ -296,6 +302,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../packages/precompile/.cache/react/0.85.3/debug/React.xcframework/ios-arm64_x86_64-simulator",
+					"$(SRCROOT)/../../../packages/precompile/.cache/react-native-dependencies/0.85.3/debug/ReactNativeDependencies.xcframework/ios-arm64_x86_64-simulator",
+					"$(SRCROOT)/../../../packages/precompile/.cache/hermes/0.16.0/debug/destroot/Library/Frameworks/universal/hermesvm.xcframework/ios-arm64_x86_64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = SwiftpmTester/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
