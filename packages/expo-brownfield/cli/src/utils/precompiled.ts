@@ -60,9 +60,25 @@ export const enumeratePrecompiledModules = (iosDir: string): ModuleXCFramework[]
       continue;
     }
 
+    // `entry.isDirectory()` returns false for symlinks even when the target is a directory
     const xcframeworks = fs
       .readdirSync(podDir, { withFileTypes: true })
-      .filter((f) => f.isDirectory() && f.name.endsWith('.xcframework'))
+      .filter((f) => {
+        if (!f.name.endsWith('.xcframework')) {
+          return false;
+        }
+        if (f.isDirectory()) {
+          return true;
+        }
+        if (!f.isSymbolicLink()) {
+          return false;
+        }
+        try {
+          return fs.statSync(path.join(podDir, f.name)).isDirectory();
+        } catch {
+          return false;
+        }
+      })
       .map((f) => f.name.replace(/\.xcframework$/, ''));
 
     // Identify the "main" product for this pod — the xcframework whose name matches a tarball.
