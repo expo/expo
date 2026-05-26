@@ -196,9 +196,6 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
             });
 
             this.addListener('didComplete', () => {
-              // Native can emit `didComplete` after `cancelStreaming()` has
-              // already closed the controller (for example when the consumer
-              // cancels the stream while the native request is mid-flight).
               if (isControllerClosed) {
                 return;
               }
