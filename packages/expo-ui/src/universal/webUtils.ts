@@ -192,7 +192,6 @@ const PRIMARY_STOPS = [
   { step: 600, L: 0.5, cMul: 1.0 },
   { step: 700, L: 0.42, cMul: 0.95 },
   { step: 800, L: 0.34, cMul: 0.85 },
-  { step: 800, L: 0.34, cMul: 0.85 },
   { step: 900, L: 0.25, cMul: 0.7 },
 ] as const;
 

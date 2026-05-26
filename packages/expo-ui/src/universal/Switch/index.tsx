@@ -81,6 +81,7 @@ export function Switch({ value, onValueChange, label, disabled = false, testID }
         onFocus={onFocus}
         onBlur={onBlur}
         checked={value}
+        disabled={disabled}
         testID={testID}
         style={styles.input}
         onChange={({ target: { checked } }) => onValueChange(checked)}

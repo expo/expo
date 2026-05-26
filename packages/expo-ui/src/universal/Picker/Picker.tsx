@@ -58,7 +58,7 @@ export function Picker<T extends PickerItemValue>({
   onValueChange,
   enabled = true,
   children,
-  testID = 'foo',
+  testID,
 }: PickerProps<T>) {
   const items = extractPickerItems<T>(children);
   const { focusVisible, onFocus, onBlur } = useFocusVisible();
