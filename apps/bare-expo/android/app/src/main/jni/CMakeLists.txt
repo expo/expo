@@ -21,6 +21,10 @@ function(add_pch_if_eligible target)
     return()
   endif ()
 
+  target_compile_options(${target} PRIVATE
+    "$<$<COMPILE_LANGUAGE:CXX>:-fno-pch-timestamp>"
+  )
+
   target_precompile_headers(${target} PRIVATE
     "$<$<COMPILE_LANGUAGE:CXX>:${PCH_HEADER}>"
   )
