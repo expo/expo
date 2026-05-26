@@ -56,7 +56,7 @@ This is typically only needed when you're modifying module source code yourself.
 
 ### iOS
 
-On EAS Build, third-party libraries like `react-native-reanimated` and `react-native-worklets` are automatically downloaded as precompiled XCFrameworks. Local `pod install` does not fetch them by default — those packages build from source locally and pick up any `staticFeatureFlags` overrides automatically — so flag and version mismatches surface primarily on EAS Build. Enabling third-party precompiled downloads for local builds is not recommended; keep this path scoped to EAS.
+On EAS Build, third-party libraries like `react-native-reanimated` and `react-native-worklets` are automatically downloaded as precompiled XCFrameworks. Local `pod install` does not fetch them by default. Those packages build from source locally and pick up any `staticFeatureFlags` overrides automatically, so flag and version mismatches surface primarily on EAS Build. Avoid enabling third-party precompiled downloads for local builds and keep this path scoped to EAS.
 
 #### `react-native-reanimated` and `react-native-worklets`
 
