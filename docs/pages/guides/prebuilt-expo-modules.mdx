@@ -77,7 +77,7 @@ These two packages are tightly coupled. `react-native-reanimated` links `react-n
 }
 ```
 
-**Custom feature flags require a source build.** Feature-flag values are baked into the precompiled binary at build time, so any `worklets.staticFeatureFlags` or `reanimated.staticFeatureFlags` overrides in **package.json** are ignored. To apply them, disable precompile with `EXPO_USE_PRECOMPILED_MODULES=0`.
+**Custom feature flags require a source build.** Feature-flag values are baked into the precompiled binary at build time, so any `worklets.staticFeatureFlags` or `reanimated.staticFeatureFlags` overrides in **package.json** are ignored. To apply them, disable precompiled modules with `EXPO_USE_PRECOMPILED_MODULES=0`.
 
 **When to look here.** Runtime errors like `Unable to recognize flag: <NAME>` on EAS Build (but not locally) mean the precompiled artifact's flag list doesn't match your pinned package version — use `buildFromSource` above and file an issue.
 
