@@ -1,5 +1,5 @@
 import {
-  TextField as ComposeTextField,
+  OutlinedTextField as ComposeTextField,
   Text,
   type TextFieldImeAction,
   type TextFieldKeyboardType,
@@ -7,6 +7,7 @@ import {
   useNativeState,
 } from '@expo/ui/jetpack-compose';
 import {
+  fillMaxWidth,
   onSizeChanged,
   semantics,
   testID as testIDModifier,
@@ -97,6 +98,23 @@ export function TextInput({
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
   const returnKeyType = returnKeyTypeProp ?? enterKeyHintToReturnKeyType(enterKeyHint);
 
+  // TextField accepts colors prop instead of modifiers
+  const {
+    backgroundColor: styleBackgroundColor,
+    borderWidth: styleBorderWidth,
+    borderColor: styleBorderColor,
+    ...modifierStyle
+  } = style ?? {};
+  const containerColor = styleBackgroundColor as string | undefined;
+  const indicatorColor =
+    styleBorderWidth === 0
+      ? 'transparent'
+      : styleBorderColor != null
+        ? (styleBorderColor as string)
+        : undefined;
+  const resolvedIndicatorColor = (underlineColorAndroid ?? indicatorColor) as string | undefined;
+  const resolvedTextAlign = textAlign && textAlign !== 'auto' ? textAlign : undefined;
+
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = (value ?? fallback) as typeof fallback;
@@ -157,7 +175,7 @@ export function TextInput({
       ref={innerRef}
       modifiers={[
         ...(userModifiers ?? []),
-        ...transformToModifiers(style, {}),
+        ...transformToModifiers(modifierStyle, {}),
         ...(testID ? [testIDModifier(testID)] : []),
         ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
         ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
@@ -169,17 +187,31 @@ export function TextInput({
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       colors={
-        caretHidden || cursorColor || underlineColorAndroid || placeholderTextColor
+        caretHidden ||
+        cursorColor ||
+        resolvedIndicatorColor ||
+        containerColor ||
+        placeholderTextColor
           ? {
               ...(caretHidden
                 ? { cursorColor: 'transparent' }
                 : cursorColor
                   ? { cursorColor }
                   : null),
-              ...(underlineColorAndroid
+              ...(resolvedIndicatorColor
                 ? {
-                    unfocusedIndicatorColor: underlineColorAndroid,
-                    focusedIndicatorColor: underlineColorAndroid,
+                    unfocusedIndicatorColor: resolvedIndicatorColor,
+                    focusedIndicatorColor: resolvedIndicatorColor,
+                    disabledIndicatorColor: resolvedIndicatorColor,
+                    errorIndicatorColor: resolvedIndicatorColor,
+                  }
+                : null),
+              ...(containerColor
+                ? {
+                    focusedContainerColor: containerColor,
+                    unfocusedContainerColor: containerColor,
+                    disabledContainerColor: containerColor,
+                    errorContainerColor: containerColor,
                   }
                 : null),
               ...(placeholderTextColor
@@ -193,10 +225,10 @@ export function TextInput({
           : undefined
       }
       textStyle={
-        textStyle || (textAlign && textAlign !== 'auto')
+        textStyle || resolvedTextAlign
           ? {
               ...textStyle,
-              ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
+              ...(resolvedTextAlign ? { textAlign: resolvedTextAlign } : null),
             }
           : undefined
       }
@@ -218,7 +250,11 @@ export function TextInput({
       onSelectionChange={onSelectionChange}>
       {placeholder ? (
         <ComposeTextField.Placeholder>
-          <Text>{placeholder}</Text>
+          <Text
+            style={resolvedTextAlign ? { textAlign: resolvedTextAlign } : undefined}
+            modifiers={resolvedTextAlign ? [fillMaxWidth()] : undefined}>
+            {placeholder}
+          </Text>
         </ComposeTextField.Placeholder>
       ) : null}
     </ComposeTextField>
