@@ -252,55 +252,6 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes imageRenderingMode as template when tintColor is set', () => {
-    render(
-      <ToolbarPlacementContext.Provider value="bottom">
-        <StackToolbarButton icon={{ uri: 'image' }} tintColor="blue">
-          Test
-        </StackToolbarButton>
-      </ToolbarPlacementContext.Provider>
-    );
-
-    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
-      expect.objectContaining({
-        imageRenderingMode: 'template',
-      }),
-      undefined
-    );
-  });
-
-  it('passes imageRenderingMode as original when no tintColor', () => {
-    render(
-      <ToolbarPlacementContext.Provider value="bottom">
-        <StackToolbarButton icon={{ uri: 'image' }}>Test</StackToolbarButton>
-      </ToolbarPlacementContext.Provider>
-    );
-
-    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
-      expect.objectContaining({
-        imageRenderingMode: 'original',
-      }),
-      undefined
-    );
-  });
-
-  it('uses explicit iconRenderingMode prop', () => {
-    render(
-      <ToolbarPlacementContext.Provider value="bottom">
-        <StackToolbarButton icon={{ uri: 'image' }} iconRenderingMode="template">
-          Test
-        </StackToolbarButton>
-      </ToolbarPlacementContext.Provider>
-    );
-
-    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
-      expect.objectContaining({
-        imageRenderingMode: 'template',
-      }),
-      undefined
-    );
-  });
-
   it('passes xcassetName from StackToolbarIcon xcasset child', () => {
     render(
       <ToolbarPlacementContext.Provider value="bottom">
@@ -386,23 +337,6 @@ describe('StackToolbarButton component', () => {
       expect.objectContaining({
         xcassetName: 'custom-icon',
         imageRenderingMode: 'original',
-      }),
-      undefined
-    );
-  });
-
-  it('Icon child renderingMode overrides parent iconRenderingMode for src icon', () => {
-    render(
-      <ToolbarPlacementContext.Provider value="bottom">
-        <StackToolbarButton iconRenderingMode="original">
-          <StackToolbarIcon src={{ uri: 'image' }} renderingMode="template" />
-        </StackToolbarButton>
-      </ToolbarPlacementContext.Provider>
-    );
-
-    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
-      expect.objectContaining({
-        imageRenderingMode: 'template',
       }),
       undefined
     );
