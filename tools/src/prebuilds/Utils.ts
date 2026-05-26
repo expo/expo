@@ -334,14 +334,6 @@ export const verifyAllPackagesAsync = async (
     return packages;
   }
 
-  // Pre-populate the package cache so `getPackageByName` can resolve
-  // scoped names (e.g. `@expo/ui`) that don't have a matching directory
-  // under `packages/` and aren't reachable via `require.resolve` from the
-  // packages dir under pnpm's flat-store layout. Without this, the fallback
-  // path in `getPackageByName` returns null, and `expandWithUnbuiltDependencies`
-  // silently skips transitive expo deps.
-  await getListOfPackagesAsync();
-
   // Look up each package by name
   return Promise.all(
     packageNames.map(async (name) => {
