@@ -233,8 +233,8 @@ importers:
         specifier: ^1.21.8
         version: 1.21.11(patch_hash=0a01a06c301b2ef0c02744515b2380fa632b826ada5886db9eea481db01ce6a2)(react-native-reanimated@4.3.1(patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8f5c3f4b237a0559138)(react-native-worklets@0.8.3(patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89c5962ecc6f2802f1)(@babel/core@7.29.0)(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-pager-view:
-        specifier: 6.9.1
-        version: 6.9.1(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        specifier: 8.0.2
+        version: 8.0.2(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-reanimated:
         specifier: 4.3.1
         version: 4.3.1(patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8f5c3f4b237a0559138)(react-native-worklets@0.8.3(patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89c5962ecc6f2802f1)(@babel/core@7.29.0)(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -669,8 +669,8 @@ importers:
         specifier: 1.27.2
         version: 1.27.2(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-pager-view:
-        specifier: 8.0.1
-        version: 8.0.1(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        specifier: 8.0.2
+        version: 8.0.2(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-reanimated:
         specifier: 4.3.1
         version: 4.3.1(patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8f5c3f4b237a0559138)(react-native-worklets@0.8.3(patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89c5962ecc6f2802f1)(@babel/core@7.29.0)(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -1128,8 +1128,8 @@ importers:
         specifier: 1.27.2
         version: 1.27.2(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-pager-view:
-        specifier: 8.0.0
-        version: 8.0.0(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        specifier: 8.0.2
+        version: 8.0.2(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-paper:
         specifier: ^5.12.5
         version: 5.15.0(react-native-safe-area-context@5.7.0(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -7548,7 +7548,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {'0': node >=0.10.0}
+    engines: {node: '>=0.10.0'}
 
   '@expo/code-signing-certificates@0.0.6':
     resolution: {integrity: sha512-iNe0puxwBNEcuua9gmTGzq+SuMDa0iATai1FlFTMHJ/vUmKvN/V//drXoLJkVb5i5H3iE/n/qIJxyoBnXouD0w==}
@@ -14229,24 +14229,6 @@ packages:
     peerDependenciesMeta:
       react-native-web:
         optional: true
-
-  react-native-pager-view@6.9.1:
-    resolution: {integrity: sha512-uUT0MMMbNtoSbxe9pRvdJJKEi9snjuJ3fXlZhG8F2vVMOBJVt/AFtqMPUHu9yMflmqOr08PewKzj9EPl/Yj+Gw==}
-    peerDependencies:
-      react: 19.2.3
-      react-native: 0.86.0-rc.2
-
-  react-native-pager-view@8.0.0:
-    resolution: {integrity: sha512-oAwlWT1lhTkIs9HhODnjNNl/owxzn9DP1MbP+az6OTUdgbmzA16Up83sBH8NRKwrH8rNm7iuWnX1qMqiiWOLhg==}
-    peerDependencies:
-      react: 19.2.3
-      react-native: 0.86.0-rc.2
-
-  react-native-pager-view@8.0.1:
-    resolution: {integrity: sha512-pGOne2o0y0HOQLrlTLcGgOE48uJlqSZHRRwdW8nL6JJozMkPGJYi/G9e0EsJoWFpXYONjiDgr8IwxC4F6/r7Lg==}
-    peerDependencies:
-      react: 19.2.3
-      react-native: 0.86.0-rc.2
 
   react-native-pager-view@8.0.2:
     resolution: {integrity: sha512-Y8All2BbjidI4ZIF9kBOIIoldkqrY/2FXapHZMdjwD+ByXhiOWTFenPs5rq9KRN5uAH/gOXtQCqHLxQDNBQRiQ==}
@@ -25225,21 +25207,6 @@ snapshots:
       react-native: 0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     optionalDependencies:
       react-native-web: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-
-  react-native-pager-view@6.9.1(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-      react-native: 0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
-
-  react-native-pager-view@8.0.0(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-      react-native: 0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
-
-  react-native-pager-view@8.0.1(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-      react-native: 0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
 
   react-native-pager-view@8.0.2(react-native@0.86.0-rc.2(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3):
     dependencies:

@@ -2323,7 +2323,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-pager-view (6.9.1):
+  - react-native-pager-view (8.0.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2344,6 +2344,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
+    - SwiftUIIntrospect (~> 1.0)
     - Yoga
   - react-native-safe-area-context (5.7.0):
     - hermes-engine
@@ -3290,6 +3291,7 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
+  - SwiftUIIntrospect (1.3.0)
   - TestExpoUi (1.0.0):
     - ExpoModulesCore
     - ExpoUI
@@ -3477,7 +3479,7 @@ DEPENDENCIES:
   - "React-mutationobservernativemodule (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.2_@babe_15430a234b5f1224b01b5b0cfcd0d009/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver`)"
   - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.11_patch_hash=0a01a06c301b2ef0c02744515b2380fa632_efa4616801bf6e91571dfd4faa5a32d3/node_modules/react-native-keyboard-controller`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_1fde534caf42d9334de0b3d49ccd9bc7/node_modules/@react-native-community/netinfo`)"
-  - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@6.9.1_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_14432c7732db1b714e78f47c9f489141/node_modules/react-native-pager-view`)"
+  - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_6b4b0fdd3eb0bf5714ad508f011817e1/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react_6cf9b087dcc8c4e0435d8137de00cfae/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.86.0-rc.2_@babel_413547125b3ab0390f55e29d9f9caef9/node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.4.18_react-native-reanimated@4.3.1_patch_hash=1e34e4238541_ebf101251c5227b8ebfcfaf0e464ed4b/node_modules/@shopify/react-native-skia`)"
@@ -3548,6 +3550,7 @@ SPEC REPOS:
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
     - SDWebImageWebPCoder
+    - SwiftUIIntrospect
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -3891,7 +3894,7 @@ EXTERNAL SOURCES:
   react-native-netinfo:
     :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_1fde534caf42d9334de0b3d49ccd9bc7/node_modules/@react-native-community/netinfo"
   react-native-pager-view:
-    :path: "../../../node_modules/.pnpm/react-native-pager-view@6.9.1_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_14432c7732db1b714e78f47c9f489141/node_modules/react-native-pager-view"
+    :path: "../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_6b4b0fdd3eb0bf5714ad508f011817e1/node_modules/react-native-pager-view"
   react-native-safe-area-context:
     :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react_6cf9b087dcc8c4e0435d8137de00cfae/node_modules/react-native-safe-area-context"
   react-native-segmented-control:
@@ -4141,7 +4144,7 @@ SPEC CHECKSUMS:
   React-mutationobservernativemodule: f8d819437fb342b8ffe815acbb8eadd099eb22c6
   react-native-keyboard-controller: 633740b52e552dc4154395219823715ffd5f0309
   react-native-netinfo: 4319d381f35bc11b53dafebd5cd99c04c66a9fb4
-  react-native-pager-view: a3cb9627d41fa2f31ad2b312af6e3f10f831f26d
+  react-native-pager-view: c9f0c94cc64041ac70f28f79527ea2ac664cf25c
   react-native-safe-area-context: 6b4966397ada0f7dd481e4486a2ef936834861a1
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
   react-native-skia: 93613a9428b7f33530e5e085e95a89f023548320
@@ -4196,6 +4199,7 @@ SPEC CHECKSUMS:
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
+  SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
   TestExpoUi: e376582270047f880c7e44afc7f912c97b14da54
   UMAppLoader: b7d22886a244871c20b5a8f2fcea13c18534e677
   WorkletsTester: 15a12097d67f73fd107ab7dc8236cab805e472b0
