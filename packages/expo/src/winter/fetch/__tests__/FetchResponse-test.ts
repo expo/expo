@@ -2,14 +2,6 @@
 
 /** @jest-environment node */
 
-// jest's `node` environment (jest-environment-node < 30) doesn't expose
-// `ReadableStream` as a global even though modern Node does. Pull it from
-// `node:stream/web` so the tests below can instantiate the body stream.
-import { ReadableStream as NodeReadableStream } from 'node:stream/web';
-if (typeof globalThis.ReadableStream === 'undefined') {
-  (globalThis as any).ReadableStream = NodeReadableStream;
-}
-
 import { FetchResponse } from '../FetchResponse';
 
 globalThis.ReadableStream = require('node:stream/web').ReadableStream;
