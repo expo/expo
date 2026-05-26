@@ -7,6 +7,8 @@
 ### 🎉 New features
 
 - [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
+- [swift-ui] Added `<DisclosureGroup.Label>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
+- [universal] Added `<Collapsible.labelStyle>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
