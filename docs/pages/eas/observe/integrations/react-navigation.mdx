@@ -61,11 +61,7 @@ Observe.configure({
 });
 
 export default function App() {
-  return (
-    <ObserveNavigationContainer>
-      {/* your navigators */}
-    </ObserveNavigationContainer>
-  );
+  return <ObserveNavigationContainer>{/* your navigators */}</ObserveNavigationContainer>;
 }
 ```
 
@@ -108,11 +104,11 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type      | Description                                                                    |
-| ------------- | --------- | ------------------------------------------------------------------------------ |
+| Param         | Type      | Description                                                                                             |
+| ------------- | --------- | ------------------------------------------------------------------------------------------------------- |
 | `routeName`   | `string`  | Resolved screen path (for example `/sessions/abc`), or `route.name` if no `linking` config resolves it. |
-| `routeParams` | `object`  | Focused route params (for example, `{ sessionId: 'abc' }`).                    |
-| `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
+| `routeParams` | `object`  | Focused route params (for example, `{ sessionId: 'abc' }`).                                             |
+| `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation.                          |
 
 ### Per-screen warm render (`warm_ttr`)
 
@@ -120,10 +116,10 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type     | Description                                                  |
-| ------------- | -------- | ------------------------------------------------------------ |
-| `routeName`   | `string` | Resolved screen path, or `route.name`.                       |
-| `routeParams` | `object` | Focused route params (for example, `{ sessionId: 'abc' }`).  |
+| Param         | Type     | Description                                                 |
+| ------------- | -------- | ----------------------------------------------------------- |
+| `routeName`   | `string` | Resolved screen path, or `route.name`.                      |
+| `routeParams` | `object` | Focused route params (for example, `{ sessionId: 'abc' }`). |
 
 ### Per-screen time to interactive (`tti`)
 
@@ -131,11 +127,11 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type     | Description                                                          |
-| ------------- | -------- | -------------------------------------------------------------------- |
-| `routeName`   | `string` | Resolved screen path, or `route.name`.                               |
-| `routeParams` | `object` | Focused route params.                                                |
-| `...`         | `any`    | Any custom params passed via `markInteractive({ ... })`.             |
+| Param         | Type     | Description                                              |
+| ------------- | -------- | -------------------------------------------------------- |
+| `routeName`   | `string` | Resolved screen path, or `route.name`.                   |
+| `routeParams` | `object` | Focused route params.                                    |
+| `...`         | `any`    | Any custom params passed via `markInteractive({ ... })`. |
 
 ## Notes and troubleshooting
 
