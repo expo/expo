@@ -20,6 +20,10 @@ const mockData = {
     package: 'expo.modules.mymodule',
     moduleName: 'MyModuleModule',
     viewName: 'MyModuleView',
+    swiftUIViewName: 'MyModuleSwiftUIView',
+    swiftUIModifierName: 'MyModuleSwiftUIModifier',
+    composeViewName: 'MyModuleComposeView',
+    composeModifierName: 'MyModuleComposeModifier',
     sharedObjectName: 'MyModuleModuleSharedObject',
     platforms: ['apple', 'android'],
     features: ['Function'],
@@ -224,5 +228,63 @@ describe('copyFileSnippets', () => {
     } finally {
       await fs.promises.rm(tmpDir, { recursive: true, force: true });
     }
+  });
+
+  it('copies SwiftUIView swift and tsx files to expected paths', async () => {
+    const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'snippets-test-'));
+    try {
+      await copyFileSnippets(SNIPPETS_DIR, ['SwiftUIView'], mockData, tmpDir);
+      const swift = path.join(tmpDir, 'ios', `${mockData.project.swiftUIViewName}.swift`);
+      const tsx = path.join(tmpDir, 'src', `${mockData.project.swiftUIViewName}.tsx`);
+      await expect(fs.promises.access(swift)).resolves.toBeUndefined();
+      await expect(fs.promises.access(tsx)).resolves.toBeUndefined();
+    } finally {
+      await fs.promises.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it('copies ComposeView kt file to package-derived path and tsx to src', async () => {
+    const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'snippets-test-'));
+    try {
+      await copyFileSnippets(SNIPPETS_DIR, ['ComposeView'], mockData, tmpDir);
+      const kt = path.join(
+        tmpDir,
+        'android',
+        'src',
+        'main',
+        'java',
+        ...mockData.project.package.split('.'),
+        `${mockData.project.composeViewName}.kt`
+      );
+      const tsx = path.join(tmpDir, 'src', `${mockData.project.composeViewName}.tsx`);
+      await expect(fs.promises.access(kt)).resolves.toBeUndefined();
+      await expect(fs.promises.access(tsx)).resolves.toBeUndefined();
+    } finally {
+      await fs.promises.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('SwiftUIView and ComposeView module snippets', () => {
+  it('emits ExpoUIView(<Name>.self) for SwiftUIView in swift', async () => {
+    const result = await buildModuleSnippets(SNIPPETS_DIR, ['SwiftUIView'], mockData, 'swift');
+    expect(result).toContain(`ExpoUIView(${mockData.project.swiftUIViewName}.self)`);
+  });
+
+  it('emits ExpoUIView<Props>("Name") for ComposeView in kt', async () => {
+    const result = await buildModuleSnippets(SNIPPETS_DIR, ['ComposeView'], mockData, 'kt');
+    expect(result).toContain(`ExpoUIView<${mockData.project.composeViewName}Props>`);
+    expect(result).toContain(`"${mockData.project.composeViewName}"`);
+  });
+
+  it('emits ViewModifierRegistry.register for SwiftUIModifier', async () => {
+    const result = await buildModuleSnippets(SNIPPETS_DIR, ['SwiftUIModifier'], mockData, 'swift');
+    expect(result).toContain('ViewModifierRegistry.register');
+  });
+
+  it('emits ModifierRegistry.register for ComposeModifier', async () => {
+    const result = await buildModuleSnippets(SNIPPETS_DIR, ['ComposeModifier'], mockData, 'kt');
+    expect(result).toContain('ModifierRegistry.register');
+    expect(result).not.toContain('ViewModifierRegistry');
   });
 });

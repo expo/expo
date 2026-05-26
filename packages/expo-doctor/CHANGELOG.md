@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.19.8 — 2026-05-23
+
+### 💡 Others
+
 - Switch Metro config loading to `expo/metro-config`'s `loadUserConfig` ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
 
 ## 1.19.7 — 2026-05-20

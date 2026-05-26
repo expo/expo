@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 0.19.3 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- Fixed unstable fingerprint on Windows. ([#46196](https://github.com/expo/expo/pull/46196) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint from `expo-modules-jsi`. ([#46187](https://github.com/expo/expo/pull/46187), [#46201](https://github.com/expo/expo/pull/46201) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated E2E test to use SDK 56 templates. ([#46194](https://github.com/expo/expo/pull/46194) by [@kudo](https://github.com/kudo))
+
+## 0.19.2 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
 ## 0.19.1 — 2026-05-21
 
 ### 🐛 Bug fixes

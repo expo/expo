@@ -1,17 +1,18 @@
 import { requireNativeModule } from 'expo';
+import AppMetrics from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
-import type { Config, ExpoObserveModuleType } from './types';
+import type { ObserveConfig, ObserveModule } from './types';
 
-const native = requireNativeModule<ExpoObserveModuleType>('ExpoObserve');
+const native = requireNativeModule<ObserveModule>('ExpoObserve');
 
-const ExpoObserve: ExpoObserveModuleType = new Proxy(native, {
+const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
     if (prop === 'configure') {
-      return (config: Config) => {
+      return (config: ObserveConfig) => {
         const routerEnabled = !!config.integrations?.['expo-router'];
         const reactNavigationEnabled = !!config.integrations?.['react-navigation'];
 
@@ -45,8 +46,11 @@ const ExpoObserve: ExpoObserveModuleType = new Proxy(native, {
         return target.configure(config);
       };
     }
+    if (typeof prop === 'string' && !(prop in target)) {
+      return Reflect.get(AppMetrics, prop);
+    }
     return Reflect.get(target, prop, receiver);
   },
 });
 
-export default ExpoObserve;
+export default Observe;

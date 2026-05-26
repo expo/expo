@@ -85,6 +85,18 @@ export const presentationBackgroundInteraction = (
 };
 
 /**
+ * Sets the background of a sheet presentation. Paints the entire sheet chrome
+ * including the drag-indicator zone and home-indicator safe-area inset, which
+ * a regular `background()` modifier cannot reach.
+ * @param color - The background color (hex string). For example, `#FF0000`.
+ * @platform ios 16.4+
+ * @see Official [SwiftUI
+documentation](https://developer.apple.com/documentation/swiftui/view/presentationbackground(_:)).
+ */
+export const presentationBackground = (color: string) =>
+  createModifier('presentationBackground', { color });
+
+/**
  * Disables interactive dismissal of a sheet.
  * @param isDisabled - Whether interactive dismiss is disabled (default: true).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/interactivedismissdisabled(_:)).

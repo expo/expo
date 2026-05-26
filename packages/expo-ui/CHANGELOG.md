@@ -7,12 +7,27 @@
 ### 🎉 New features
 
 - [jetpack-compose] Added `NavigationBar` and `NavigationBarItem` components.
+- [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
+
+### 🐛 Bug fixes
+
+
+### 💡 Others
+
+- [universal] Revamp web universal components (`Button`, `Checkbox`, `Picker`, `Slider`,`Switch`,`TextInput`,) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.14 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- [android] Fix `shape` prop on `TextField` / `OutlinedTextField`. ([#46206](https://github.com/expo/expo/pull/46206) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix dotted line beneath Slider track when no label slots are provided ([#46218](https://github.com/expo/expo/pull/46218) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 56.0.13 — 2026-05-23
 
 ### 🐛 Bug fixes
 
 - Scope the `@expo/ui` worklet SharedObject serializer to SharedObjects created by `@expo/ui`. ([#46139](https://github.com/expo/expo/pull/46139) by [@roitium](https://github.com/roitium))
-
-### 💡 Others
 
 ## 56.0.12 — 2026-05-21
 

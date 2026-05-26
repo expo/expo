@@ -252,7 +252,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return;
   }
 
-  [self useDefaultLaunchUrlFallback];
+  if (useDefaultLaunchUrlFallback) {
+    [self launchDefaultUrlFallbackOrNavigateToLauncher];
+  } else {
+    [self navigateToLauncher];
+  }
 }
 
 - (void)launchDefaultUrlFallbackOrNavigateToLauncher {

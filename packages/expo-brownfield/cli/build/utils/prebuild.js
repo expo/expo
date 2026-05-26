@@ -12,7 +12,7 @@ const node_path_1 = __importDefault(require("node:path"));
 const prompts_1 = __importDefault(require("prompts"));
 const error_1 = __importDefault(require("./error"));
 const spinner_1 = require("./spinner");
-const validatePrebuild = async (platform) => {
+const validatePrebuild = async (platform, options = {}) => {
     (0, exports.validatePackageInstalled)();
     if (!checkPrebuild(platform)) {
         console.info(`${chalk_1.default.yellow(`⚠ Prebuild for platform: ${platform} is missing`)}`);
@@ -35,8 +35,49 @@ const validatePrebuild = async (platform) => {
             error_1.default.handle('prebuild-cancelled');
         }
     }
+    if (platform === 'ios' && !options.dryRun) {
+        await validateIosPodsInstalled();
+    }
 };
 exports.validatePrebuild = validatePrebuild;
+const validateIosPodsInstalled = async () => {
+    if (checkIosWorkspace()) {
+        return;
+    }
+    console.info(`${chalk_1.default.yellow('⚠ iOS workspace not found. CocoaPods has not been installed in the `ios/` directory yet.')}`);
+    const response = await (0, prompts_1.default)({
+        type: 'confirm',
+        name: 'shouldRunPodInstall',
+        message: 'Do you want to run `pod install` now?',
+        initial: true,
+    });
+    if (!response.shouldRunPodInstall) {
+        error_1.default.handle('ios-pod-install-cancelled');
+        return;
+    }
+    await (0, spinner_1.withSpinner)({
+        operation: () => (0, spawn_async_1.default)('pod', ['install'], { cwd: node_path_1.default.join(process.cwd(), 'ios') }),
+        loaderMessage: 'Running `pod install` in the `ios` directory...',
+        successMessage: 'Pod install completed\n',
+        errorMessage: 'Pod install failed',
+        verbose: false,
+    });
+    if (!checkIosWorkspace()) {
+        error_1.default.handle('ios-workspace-not-found');
+    }
+};
+const checkIosWorkspace = () => {
+    const iosPath = node_path_1.default.join(process.cwd(), 'ios');
+    if (!node_fs_1.default.existsSync(iosPath)) {
+        return false;
+    }
+    try {
+        return node_fs_1.default.readdirSync(iosPath).some((name) => name.endsWith('.xcworkspace'));
+    }
+    catch {
+        return false;
+    }
+};
 const validatePackageInstalled = () => {
     const PACKAGE_NAME = 'expo-brownfield';
     const packageJson = (0, config_1.getPackageJson)(process.cwd());

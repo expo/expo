@@ -37,7 +37,7 @@ jobs:
           pnpm expotools generate-bare-diffs --check
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
-        if: failure() && github.event.ref == 'refs/heads/main'
+        if: failure() && github.event.ref == 'refs/heads/main' && github.repository == 'expo/expo'
         with:
           webhook: ${{ secrets.slack_webhook_docs }}
           author_name: Check for Changes in Bare Diffs

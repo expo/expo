@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 56.0.5 — 2026-05-26
+
+### 💡 Others
+
+- [fetch] Refine **CompressionInterceptor.kt** code. ([#46052](https://github.com/expo/expo/pull/46052) by [@kudo](https://github.com/kudo))
+
+## 56.0.4 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.3 — 2026-05-21
 
 _This version does not introduce any user-facing changes._

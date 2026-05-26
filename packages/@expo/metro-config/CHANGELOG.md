@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
-- Add `loadUserConfig`, abstracting Expo's loading of Metro configs ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.13 — 2026-05-26
 
 ### 🐛 Bug fixes
+
+- Improve `BinaryFileStore`'s concurrency handling ([#46171](https://github.com/expo/expo/pull/46171) by [@kitten](https://github.com/kitten))
+
+## 56.0.12 — 2026-05-23
+
+### 🎉 New features
+
+- Add `loadUserConfig`, abstracting Expo's loading of Metro configs ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

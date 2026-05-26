@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`. ([#46147](https://github.com/expo/expo/pull/46147) by [@alanjhughes](https://github.com/alanjhughes))
+### 💡 Others
+
+## 56.0.11 — 2026-05-26
 
 ### 💡 Others
+
+- [web] Added a warning when setting volume in browsers on iOS, where Apple does not allow programmatic volume control. ([#44474](https://github.com/expo/expo/pull/44474) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.10 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`. ([#46147](https://github.com/expo/expo/pull/46147) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.9 — 2026-05-21
 

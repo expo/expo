@@ -1,5 +1,6 @@
 import AppMetrics from 'expo-app-metrics';
 
+import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
 import { type RouterIntegrationStorage } from './storage';
@@ -51,6 +52,15 @@ export function initListeners(
     // happens to run after the awaited `getMainSession()` round-trip.
     const now = performance.now();
     const timestamp = new Date().toISOString();
+
+    // Snapshot BEFORE seeding dispatchTime below so the deferred-TTI check
+    // sees the pre-focus state of this screen. A pending interactive means
+    // `markInteractive` ran before this focus landed.
+    const existingFocusedScreenTimes = storage.screenTimes[e.screenId];
+    const hasPendingInteractive =
+      existingFocusedScreenTimes?.lastInteractiveCall != null &&
+      existingFocusedScreenTimes?.dispatchTime == null;
+
     const isInitial = !storage.renderedScreensIds.has(e.screenId);
     storage.renderedScreensIds.add(e.screenId);
     const name = isInitial ? 'cold_ttr' : 'warm_ttr';
@@ -72,6 +82,7 @@ export function initListeners(
         ...storage.screenTimes[e.screenId],
         dispatchTime: appLaunchTime,
         isAppLaunch: true,
+        ...(hasPendingInteractive ? { lastInteractiveCall: now } : {}),
       };
       AppMetrics.addCustomMetricToSession({
         sessionId: mainSessionId,
@@ -82,6 +93,20 @@ export function initListeners(
         value: appLaunchTtrSeconds,
         params: { isAppLaunch: true, routeParams: e.params, url: e.pathname },
       });
+      if (hasPendingInteractive) {
+        // `markInteractive` ran before this focus, so emit TTI = TTR — the
+        // screen wasn't interactive any earlier than it was focused.
+        storage.interactiveScreensIds.add(e.screenId);
+        await emitTTI({
+          sessionId: mainSessionId,
+          timestamp,
+          routeName: routePattern,
+          value: appLaunchTtrSeconds,
+          isAppLaunch: true,
+          routeParams: e.params,
+          url: e.pathname,
+        });
+      }
       return;
     }
 
@@ -90,10 +115,12 @@ export function initListeners(
     const last = storage.pendingActions[storage.pendingActions.length - 1];
     if (last) {
       const dispatchTime = last.dispatchTime;
+      const ttrSeconds = (now - dispatchTime) / 1000;
       storage.screenTimes[e.screenId] = {
         ...storage.screenTimes[e.screenId],
         dispatchTime,
         isAppLaunch: false,
+        ...(hasPendingInteractive ? { lastInteractiveCall: now } : {}),
       };
 
       AppMetrics.addCustomMetricToSession({
@@ -102,9 +129,21 @@ export function initListeners(
         category: 'navigation',
         name,
         routeName: routePattern,
-        value: (now - dispatchTime) / 1000,
+        value: ttrSeconds,
         params: { isAppLaunch: false, routeParams: e.params, url: e.pathname },
       });
+      if (hasPendingInteractive) {
+        storage.interactiveScreensIds.add(e.screenId);
+        await emitTTI({
+          sessionId: mainSessionId,
+          timestamp,
+          routeName: routePattern,
+          value: ttrSeconds,
+          isAppLaunch: false,
+          routeParams: e.params,
+          url: e.pathname,
+        });
+      }
     }
     storage.pendingActions.length = 0;
   });

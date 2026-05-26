@@ -8,9 +8,20 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix xcode build phase ordering. ([#46125](https://github.com/expo/expo/pull/46125) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 56.0.16 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `defaultLaunchURL` being ignored on cold start when no recently-opened app was cached. ([#46185](https://github.com/expo/expo/pull/46185) by [@kaihirota](https://github.com/kaihirota))
+- [iOS] Order the build phase by array position to avoid a dependency cycle when the main target embeds an app extension. ([#46224](https://github.com/expo/expo/pull/46224) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.15 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix xcode build phase ordering. ([#46125](https://github.com/expo/expo/pull/46125) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.14 — 2026-05-21
 
@@ -22,7 +33,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Apply dev launcher gesture and auto-launch settings immediately instead of requiring an app restart. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@gabrieldonadel](https://github.com/gabrieldonadel)) ([#46000](https://github.com/expo/expo/pull/46000) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Apply dev launcher gesture and auto-launch settings immediately instead of requiring an app restart. ([#46000](https://github.com/expo/expo/pull/46000) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.12 — 2026-05-19
 

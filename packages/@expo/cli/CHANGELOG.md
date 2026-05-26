@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+- Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.1.12 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.1.11 — 2026-05-23
+
 ### 🐛 Bug fixes
 
 - Fix launching apps on physical iOS devices causing system-dependent crashes ([#46128](https://github.com/expo/expo/pull/46128) by [@kitten](https://github.com/kitten))

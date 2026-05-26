@@ -113,7 +113,6 @@ export const nonLinkableTypes = [
   'PermissionHookBehavior',
   'PermissionHookOptions',
   'PermissionResponse',
-  'PermissionStatus',
   'PlaceholderProps',
   'PressablePropsWithoutFunctionChildren',
   'PrimitiveBaseProps',

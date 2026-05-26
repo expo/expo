@@ -249,6 +249,9 @@ function useNotificationObserver() {
         /* @info Push the URL. You may want to verify the format before navigating. */
         router.push(url);
         /* @end */
+        /* @info Clear the stored response so a layout re-mount does not redirect to the same URL again. */
+        Notifications.clearLastNotificationResponse();
+        /* @end */
       }
     }
 
@@ -327,6 +330,9 @@ export default function App() {
 
             // Let React Navigation handle the URL
             listener(url);
+
+            // Clear the stored response so the next getInitialURL call does not redirect to the same URL again
+            Notifications.clearLastNotificationResponse();
           });
 
           return () => {

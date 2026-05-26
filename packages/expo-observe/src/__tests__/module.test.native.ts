@@ -7,8 +7,20 @@ const mockNative = {
   dispatchEvents: jest.fn(() => Promise.resolve()),
 };
 
+const mockAppMetrics = {
+  logEvent: jest.fn(),
+  markFirstRender: jest.fn(),
+  markInteractive: jest.fn(),
+  setGlobalAttributes: jest.fn(),
+};
+
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
+}));
+
+jest.mock('expo-app-metrics', () => ({
+  __esModule: true,
+  default: mockAppMetrics,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -39,6 +51,7 @@ beforeEach(() => {
   jest.resetModules();
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.doMock('expo', () => ({ requireNativeModule: jest.fn(() => mockNative) }));
+  jest.doMock('expo-app-metrics', () => ({ __esModule: true, default: mockAppMetrics }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
     optionalRouter: undefined,
@@ -74,8 +87,8 @@ describe('module Proxy', () => {
   it.each([true, false, undefined])(
     "forwards a integrations object to native when 'expo-router' is %s",
     (router) => {
-      const ExpoObserve = loadModule();
-      ExpoObserve.configure({
+      const Observe = loadModule();
+      Observe.configure({
         environment: 'test',
         integrations: { 'expo-router': router },
       });
@@ -88,9 +101,9 @@ describe('module Proxy', () => {
   );
 
   it("calls initRouterIntegration when router is installed and integrations['expo-router'] is true", () => {
-    const ExpoObserve = loadModule();
+    const Observe = loadModule();
     const { initRouterIntegration } = loadInit();
-    ExpoObserve.configure({
+    Observe.configure({
       environment: 'test',
       integrations: { 'expo-router': true },
     });
@@ -99,9 +112,9 @@ describe('module Proxy', () => {
   });
 
   it('skips initRouterIntegration by default', () => {
-    const ExpoObserve = loadModule();
+    const Observe = loadModule();
     const { initRouterIntegration } = loadInit();
-    ExpoObserve.configure({ environment: 'test' });
+    Observe.configure({ environment: 'test' });
     expect(initRouterIntegration).not.toHaveBeenCalled();
     expect(mockNative.configure).toHaveBeenCalledWith({
       environment: 'test',
@@ -118,9 +131,9 @@ describe('module Proxy', () => {
       isReactNavigationInstalled: false,
       optionalReactNavigation: undefined,
     }));
-    const ExpoObserve = loadModule();
+    const Observe = loadModule();
     const { initRouterIntegration } = loadInit();
-    ExpoObserve.configure({ integrations: { 'expo-router': true } });
+    Observe.configure({ integrations: { 'expo-router': true } });
     expect(initRouterIntegration).not.toHaveBeenCalled();
     expect(mockNative.configure).toHaveBeenCalledWith({
       integrations: { 'expo-router': true },
@@ -132,8 +145,8 @@ describe('module Proxy', () => {
       isRouterInstalled: false,
       optionalRouter: undefined,
     }));
-    const ExpoObserve = loadModule();
-    ExpoObserve.configure({ integrations: { 'expo-router': true } });
+    const Observe = loadModule();
+    Observe.configure({ integrations: { 'expo-router': true } });
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledWith(
       "[expo-observe] `integrations: { 'expo-router': true }` was set, but `expo-router` is not installed. The integration will not initialize."
@@ -145,8 +158,8 @@ describe('module Proxy', () => {
       isReactNavigationInstalled: false,
       optionalReactNavigation: undefined,
     }));
-    const ExpoObserve = loadModule();
-    ExpoObserve.configure({ integrations: { 'react-navigation': true } });
+    const Observe = loadModule();
+    Observe.configure({ integrations: { 'react-navigation': true } });
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledWith(
       "[expo-observe] `integrations: { 'react-navigation': true }` was set, but `@react-navigation/native` is not installed. The integration will not initialize."
@@ -154,8 +167,8 @@ describe('module Proxy', () => {
   });
 
   it('warns when both integrations resolve to init (router takes precedence)', () => {
-    const ExpoObserve = loadModule();
-    ExpoObserve.configure({
+    const Observe = loadModule();
+    Observe.configure({
       integrations: { 'expo-router': true, 'react-navigation': true },
     });
     expect(warnSpy).toHaveBeenCalledTimes(1);
@@ -170,8 +183,8 @@ describe('module Proxy', () => {
       isReactNavigationInstalled: false,
       optionalReactNavigation: undefined,
     }));
-    const ExpoObserve = loadModule();
-    ExpoObserve.configure({
+    const Observe = loadModule();
+    Observe.configure({
       integrations: { 'expo-router': true, 'react-navigation': true },
     });
     // Only the missing-peer warning fires; the 'both enabled' warning is gated
@@ -187,8 +200,8 @@ describe('module Proxy', () => {
       isRouterInstalled: false,
       optionalRouter: undefined,
     }));
-    const ExpoObserve = loadModule();
-    ExpoObserve.configure({
+    const Observe = loadModule();
+    Observe.configure({
       integrations: { 'expo-router': true, 'react-navigation': true },
     });
     // Missing-peer fires for expo-router; 'both enabled' is gated on
@@ -201,9 +214,9 @@ describe('module Proxy', () => {
   });
 
   it("calls initReactNavigationIntegration when integrations['react-navigation'] is true and react-navigation is installed", () => {
-    const ExpoObserve = loadModule();
+    const Observe = loadModule();
     const { initReactNavigationIntegration } = loadReactNavigationInit();
-    ExpoObserve.configure({
+    Observe.configure({
       environment: 'test',
       integrations: { 'react-navigation': true },
     });
@@ -212,10 +225,10 @@ describe('module Proxy', () => {
   });
 
   it("initializes react-navigation even when expo-router is installed, as long as 'react-navigation' is the only flag set", () => {
-    const ExpoObserve = loadModule();
+    const Observe = loadModule();
     const { initRouterIntegration } = loadInit();
     const { initReactNavigationIntegration } = loadReactNavigationInit();
-    ExpoObserve.configure({
+    Observe.configure({
       environment: 'test',
       integrations: { 'react-navigation': true },
     });
@@ -225,10 +238,10 @@ describe('module Proxy', () => {
   });
 
   it('does NOT call initReactNavigationIntegration when both flags are true', () => {
-    const ExpoObserve = loadModule();
+    const Observe = loadModule();
     const { initRouterIntegration } = loadInit();
     const { initReactNavigationIntegration } = loadReactNavigationInit();
-    ExpoObserve.configure({
+    Observe.configure({
       environment: 'test',
       integrations: { 'expo-router': true, 'react-navigation': true },
     });
@@ -241,9 +254,9 @@ describe('module Proxy', () => {
       isReactNavigationInstalled: false,
       optionalReactNavigation: undefined,
     }));
-    const ExpoObserve = loadModule();
+    const Observe = loadModule();
     const { initReactNavigationIntegration } = loadReactNavigationInit();
-    ExpoObserve.configure({
+    Observe.configure({
       environment: 'test',
       integrations: { 'react-navigation': true },
     });
@@ -251,19 +264,19 @@ describe('module Proxy', () => {
   });
 
   it('skips both integrations by default', () => {
-    const ExpoObserve = loadModule();
+    const Observe = loadModule();
     const { initRouterIntegration } = loadInit();
     const { initReactNavigationIntegration } = loadReactNavigationInit();
-    ExpoObserve.configure({ environment: 'test' });
+    Observe.configure({ environment: 'test' });
     expect(initRouterIntegration).not.toHaveBeenCalled();
     expect(initReactNavigationIntegration).not.toHaveBeenCalled();
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('passes through dispatchEvents and setBundleDefaults to native', () => {
-    const ExpoObserve = loadModule();
-    ExpoObserve.dispatchEvents();
-    ExpoObserve.setBundleDefaults({ environment: 'production', isJsDev: false });
+    const Observe = loadModule();
+    Observe.dispatchEvents();
+    Observe.setBundleDefaults({ environment: 'production', isJsDev: false });
     expect(mockNative.dispatchEvents).toHaveBeenCalledTimes(1);
     expect(mockNative.setBundleDefaults).toHaveBeenCalledWith({
       environment: 'production',
@@ -273,10 +286,39 @@ describe('module Proxy', () => {
   });
 
   it('returns the native function via Reflect.get for unknown props', () => {
-    const ExpoObserve = loadModule();
-    expect((ExpoObserve as { dispatchEvents: unknown }).dispatchEvents).toBe(
-      mockNative.dispatchEvents
-    );
+    const Observe = loadModule();
+    expect((Observe as { dispatchEvents: unknown }).dispatchEvents).toBe(mockNative.dispatchEvents);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('forwards logEvent to AppMetrics', () => {
+    const Observe = loadModule();
+    Observe.logEvent('app_boot', { severity: 'info', body: 'boot' });
+    expect(mockAppMetrics.logEvent).toHaveBeenCalledWith('app_boot', {
+      severity: 'info',
+      body: 'boot',
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('forwards markFirstRender to AppMetrics', () => {
+    const Observe = loadModule();
+    Observe.markFirstRender();
+    expect(mockAppMetrics.markFirstRender).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('forwards markInteractive to AppMetrics', () => {
+    const Observe = loadModule();
+    Observe.markInteractive({ routeName: '/home' });
+    expect(mockAppMetrics.markInteractive).toHaveBeenCalledWith({ routeName: '/home' });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('forwards setGlobalAttributes to AppMetrics', () => {
+    const Observe = loadModule();
+    Observe.setGlobalAttributes({ tier: 'pro' });
+    expect(mockAppMetrics.setGlobalAttributes).toHaveBeenCalledWith({ tier: 'pro' });
     expect(warnSpy).not.toHaveBeenCalled();
   });
 });

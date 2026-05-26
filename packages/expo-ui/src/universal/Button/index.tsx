@@ -1,40 +1,60 @@
-import { Pressable, StyleSheet, Text, type TextStyle, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
-import type { ButtonProps, ButtonVariant } from './types';
-import { useUniversalLifecycle } from '../hooks';
+import type { ButtonProps } from './types';
+import { useFocusVisible, useUniversalLifecycle } from '../hooks';
+import { colors, durations, easings, shadows } from '../webUtils';
 
-const styles = StyleSheet.create({
-  button: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+const buttonStyles = StyleSheet.create({
+  base: {
+    alignItems: 'center',
+    backgroundColor: colors.primary[500],
     borderRadius: 8,
-    userSelect: 'none',
+    boxShadow: shadows.button,
+    display: 'inline-flex',
+    height: 40,
+    justifyContent: 'center',
+    outlineStyle: 'solid',
+    outlineWidth: 0,
+    paddingHorizontal: 16,
+    transitionDuration: durations.fast,
+    transitionProperty: 'background-color, color, box-shadow, transform',
+    transitionTimingFunction: easings.standard,
+    whiteSpace: 'nowrap',
   },
+  outlined: {
+    backgroundColor: 'transparent',
+    boxShadow: `inset 0 0 0 1px ${colors.gray[300]}`,
+  },
+  text: {
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+  },
+  focused: { boxShadow: shadows.focus },
   disabled: { opacity: 0.5 },
   hidden: { display: 'none' },
-  label: { textAlign: 'center' },
+  hovered: { backgroundColor: colors.primary[600] },
+  hoveredOutlined: { backgroundColor: colors.gray[50] },
+  hoveredText: { backgroundColor: colors.primary[50] },
+  pressed: {
+    backgroundColor: colors.primary[700],
+    transform: 'translateY(0.5px)',
+  },
+  pressedOutlined: { backgroundColor: colors.gray[100] },
+  pressedText: { backgroundColor: colors.primary[100] },
 });
 
-const variantStyles = StyleSheet.create({
-  filled: { backgroundColor: '#007AFF' },
-  outlined: {
-    borderColor: '#007AFF',
-    borderWidth: 1,
+const textStyles = StyleSheet.create({
+  base: {
+    color: colors.primary.foreground,
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 14,
+    textAlign: 'center',
+    userSelect: 'none',
   },
-  text: {},
-} satisfies Record<ButtonVariant, ViewStyle>);
-
-const variantHoverStyles = StyleSheet.create({
-  filled: { backgroundColor: '#0066DB' },
-  outlined: { backgroundColor: 'rgba(0, 122, 255, 0.08)' },
-  text: { backgroundColor: 'rgba(0, 122, 255, 0.08)' },
-} satisfies Record<ButtonVariant, ViewStyle>);
-
-const variantLabelStyles = StyleSheet.create({
-  filled: { color: '#FFFFFF' },
-  outlined: { color: '#007AFF' },
-  text: { color: '#007AFF' },
-} satisfies Record<ButtonVariant, TextStyle>);
+  outlined: { color: colors.gray[900] },
+  text: { color: colors.primary[600] },
+});
 
 /**
  * A pressable button that supports multiple visual variants.
@@ -53,21 +73,49 @@ export function Button({
 }: ButtonProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
+  const { focusVisible, onFocus, onBlur } = useFocusVisible();
+
   return (
     <Pressable
       role="button"
+      onFocus={onFocus}
+      onBlur={onBlur}
       onPress={onPress}
       disabled={disabled}
       testID={testID}
-      style={({ hovered }) => [
-        styles.button,
-        variantStyles[variant],
+      style={({ hovered, pressed }) => [
+        buttonStyles.base,
+        variant === 'outlined' && buttonStyles.outlined,
+        variant === 'text' && buttonStyles.text,
+
+        hovered && [
+          buttonStyles.hovered,
+          variant === 'outlined' && buttonStyles.hoveredOutlined,
+          variant === 'text' && buttonStyles.hoveredText,
+        ],
+
+        pressed && [
+          buttonStyles.pressed,
+          variant === 'outlined' && buttonStyles.pressedOutlined,
+          variant === 'text' && buttonStyles.pressedText,
+        ],
+
         style,
-        hovered && !disabled && variantHoverStyles[variant],
-        hidden && styles.hidden,
-        disabled && styles.disabled,
+
+        focusVisible && buttonStyles.focused,
+        hidden && buttonStyles.hidden,
+        disabled && buttonStyles.disabled,
       ]}>
-      {children ?? <Text style={[styles.label, variantLabelStyles[variant]]}>{label}</Text>}
+      {children ?? (
+        <Text
+          style={[
+            textStyles.base,
+            variant === 'outlined' && textStyles.outlined,
+            variant === 'text' && textStyles.text,
+          ]}>
+          {label}
+        </Text>
+      )}
     </Pressable>
   );
 }

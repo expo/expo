@@ -1,8 +1,4 @@
-import {
-  NavigationContainer,
-  type NavigationContainerRef,
-  useNavigationContainerRef,
-} from '@react-navigation/native';
+import type { NavigationContainerRef } from '@react-navigation/native';
 import {
   forwardRef,
   useCallback,
@@ -19,11 +15,15 @@ import { ObserveReactNavigationIntegrationContext } from './context';
 import { createGetPathname } from './getPathname';
 import { createStateChangeHandler } from './handleStateChange';
 import { isInitialized } from './init';
+import { optionalReactNavigation } from './reactNavigation';
 import { createReactNavigationIntegrationStorage } from './storage';
 import type { NavigationStateLike } from './types';
 import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
-type NavigationContainerProps = ComponentProps<typeof NavigationContainer>;
+const NavigationContainer = optionalReactNavigation?.NavigationContainer;
+const useNavigationContainerRef = optionalReactNavigation?.useNavigationContainerRef;
+
+type NavigationContainerProps = ComponentProps<NonNullable<typeof NavigationContainer>>;
 
 export type ObserveNavigationContainerProps = NavigationContainerProps;
 
@@ -31,6 +31,13 @@ function ObserveNavigationContainerImpl(
   props: ObserveNavigationContainerProps,
   forwardedRef: Ref<NavigationContainerRef<ReactNavigation.RootParamList>>
 ) {
+  if (!NavigationContainer || !useNavigationContainerRef) {
+    throw new Error(
+      '[expo-observe] ObserveNavigationContainer requires @react-navigation/native, ' +
+        "but the package couldn't be resolved. Install @react-navigation/native, or " +
+        "remove the React Navigation integration if it's not needed."
+    );
+  }
   const { children, onStateChange, onReady, linking, ...rest } = props;
   const navigationRef = useNavigationContainerRef();
   const initialized = isInitialized();
@@ -54,7 +61,7 @@ function ObserveNavigationContainerImpl(
 
   useAssertValueDoesNotChange(
     initialized,
-    `[expo-observe] React Navigation integration was toggled after ObserveNavigationContainer mounted. Call \`ExpoObserve.configure({ integrations: { 'react-navigation': true } })\` before rendering ObserveNavigationContainer.`
+    `[expo-observe] React Navigation integration was toggled after ObserveNavigationContainer mounted. Call \`Observe.configure({ integrations: { 'react-navigation': true } })\` before rendering ObserveNavigationContainer.`
   );
 
   useEffect(() => {
