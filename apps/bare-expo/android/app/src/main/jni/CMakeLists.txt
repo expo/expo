@@ -22,7 +22,7 @@ function(add_pch_if_eligible target)
   endif ()
 
   target_compile_options(${target} PRIVATE
-    "$<$<COMPILE_LANGUAGE:CXX>:-fno-pch-timestamp>"
+    "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
   )
 
   target_precompile_headers(${target} PRIVATE
