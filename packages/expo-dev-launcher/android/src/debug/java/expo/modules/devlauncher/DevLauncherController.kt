@@ -423,8 +423,8 @@ class DevLauncherController private constructor(
           intent.extras?.let {
             putExtras(it)
           }
-          intent.categories?.let {
-            categories.addAll(it)
+          intent.categories?.let { categories ->
+            categories.forEach { addCategory(it) }
           }
         } ?: run {
         // If no pending intent is available, use the extras from the intent that was used to launch the app.
