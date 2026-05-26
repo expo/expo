@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.19.3 — 2026-05-26
+
+### 🐛 Bug fixes
+
 - Fixed unstable fingerprint on Windows. ([#46196](https://github.com/expo/expo/pull/46196) by [@kudo](https://github.com/kudo))
 - Fixed unstable fingerprint from `expo-modules-jsi`. ([#46187](https://github.com/expo/expo/pull/46187), [#46201](https://github.com/expo/expo/pull/46201) by [@kudo](https://github.com/kudo))
 

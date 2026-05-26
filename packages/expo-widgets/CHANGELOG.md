@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.15 — 2026-05-26
+
+### 🎉 New features
+
 - [Android] Create base android package. ([#46090](https://github.com/expo/expo/pull/46090) by [@jakex7](https://github.com/jakex7))
 - [plugin] Create config plugin for android. ([#46091](https://github.com/expo/expo/pull/46091) by [@jakex7](https://github.com/jakex7))
 
@@ -13,8 +21,6 @@
 
 - Allow string widget family values in the typed config plugin. ([#46133](https://github.com/expo/expo/issues/46133) by [@eliotgevers](https://github.com/eliotgevers))
 - [plugin] Inherit `ios.deploymentTarget` from app config for generated widget extension targets. ([#46193](https://github.com/expo/expo/pull/46193) by [@eliotgevers](https://github.com/eliotgevers))
-
-### 💡 Others
 
 ## 56.0.14 — 2026-05-23
 

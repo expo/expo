@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.14 — 2026-05-26
+
+### 🐛 Bug fixes
+
 - [android] Fix `shape` prop on `TextField` / `OutlinedTextField`. ([#46206](https://github.com/expo/expo/pull/46206) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix dotted line beneath Slider track when no label slots are provided ([#46218](https://github.com/expo/expo/pull/46218) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 56.0.13 — 2026-05-23
 

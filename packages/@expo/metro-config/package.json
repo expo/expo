@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "56.0.12",
+  "version": "56.0.13",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/index.js",
   "types": "build/index.d.ts",

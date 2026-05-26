@@ -33,7 +33,7 @@
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo-crypto": "workspace:^56.0.3"
+    "expo-crypto": "workspace:^56.0.4"
   },
   "dependencies": {}
 }
