@@ -191,8 +191,8 @@ runs:
         # ccache tracks these files without any sloppiness issues.
         # - C/C++ source files
         # - Gradle files: see https://github.com/expo/expo/pull/44884
-        key: ${{ runner.os }}-ccache-v4-${{hashFiles('pnpm-lock.yaml', 'apps/bare-expo/android/app/src/main/jni/pch.h')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle') }}
-        restore-keys: ${{ runner.os }}-ccache-v4-${{hashFiles('pnpm-lock.yaml', 'apps/bare-expo/android/app/src/main/jni/pch.h')}}
+        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml', )}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h') }}
+        restore-keys: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}
 
     - name: 🔍️ Get cache key of Git LFS files
       if: inputs.git-lfs == 'true'
