@@ -2117,7 +2117,7 @@ export async function test({ describe, expect, it, ...t }) {
       await handle.writeBytes(new Uint8Array([72, 105])); // Hi
       handle.close();
       expect(src.textSync()).toBe('Hi');
-});
+    });
 
     describe('It supports different FileMode options', () => {
       it('opens in ReadOnly mode and reads data', () => {
