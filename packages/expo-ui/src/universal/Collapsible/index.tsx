@@ -23,7 +23,13 @@ const Summary = (
  * A primitive that toggles visibility of its content via a labelled tappable
  * header. Controlled via `isOpen` + `onOpenChange`.
  */
-export function Collapsible({ isOpen, onOpenChange, label = '', children }: CollapsibleProps) {
+export function Collapsible({
+  isOpen,
+  onOpenChange,
+  label = '',
+  labelStyle,
+  children,
+}: CollapsibleProps) {
   const isDark = useColorScheme() === 'dark';
 
   return (
@@ -37,7 +43,7 @@ export function Collapsible({ isOpen, onOpenChange, label = '', children }: Coll
       }}
       style={[styles.container, isDark && styles.darkText]}>
       <Summary style={styles.summary}>
-        <Text style={isDark && styles.darkText}>{label}</Text>
+        <Text style={[isDark && styles.darkText, labelStyle]}>{label}</Text>
       </Summary>
       <View style={styles.content}>{children}</View>
     </Details>
