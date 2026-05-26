@@ -596,6 +596,7 @@ export const eas = [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
+    makePage('eas/observe/events.mdx'),
     makePage('eas/observe/configuration.mdx'),
     makePage('eas/observe/integrations/expo-router.mdx'),
     makeGroup('Reference', [
