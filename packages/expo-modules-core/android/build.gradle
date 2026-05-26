@@ -290,7 +290,7 @@ def generateStubPCHTask = tasks.register("generateStubPCH") {
         if (!pchFile.exists() || pchFile.length() == 0) {
           def stubHeader = new File(entry.directory, "stub_pch.hxx")
           stubHeader.text = ""
-		  
+
           def stubHeaderPath = stubHeader.absolutePath.replace('\\', '/')
 
           def cmd = entry.command
