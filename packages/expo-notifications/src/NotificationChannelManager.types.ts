@@ -64,6 +64,9 @@ export enum AndroidAudioUsage {
 }
 
 // @docsMissing
+/**
+ * @platform android
+ */
 export interface AudioAttributes {
   usage: AndroidAudioUsage;
   contentType: AndroidAudioContentType;
@@ -76,6 +79,9 @@ export interface AudioAttributes {
 // We're making inner flags required to set intentionally.
 // Not providing `true` for a flag makes it false, it doesn't make sense
 // to let it be left undefined.
+/**
+ * @platform android
+ */
 export type AudioAttributesInput = Partial<AudioAttributes>;
 
 /**

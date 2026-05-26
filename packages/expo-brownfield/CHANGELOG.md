@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.15 — 2026-05-26
+
+### 🎉 New features
+
 - [iOS] Make `ReactNativeHostManager` accessible directly to Objective-C. ([#46227](https://github.com/expo/expo/pull/46227) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
 - [iOS] `build:ios` now detects a missing iOS workspace and prompts to run `pod install` instead of failing with a vague "Could not find brownfield iOS workspace". ([#46247](https://github.com/expo/expo/pull/46247) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
 
 ## 56.0.14 — 2026-05-23
 

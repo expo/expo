@@ -1,14 +1,14 @@
 ---
-title: Prebuilt Expo Modules
-description: Learn how prebuilt Expo Modules reduce native build times on Android and iOS.
+title: Precompiled Expo Modules
+description: Learn how precompiled Expo Modules reduce native build times on Android and iOS.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-Native build times can slow down your development workflow. Expo provides prebuilt versions of its most complex modules so your project links pre-compiled binaries instead of recompiling them from source on every build. On Android, those binaries ship as `.aar` files linked through Gradle; on iOS, they ship as `XCFrameworks` linked through CocoaPods. Both are bundled into the regular Expo npm packages, and packages that aren't yet precompiled fall back to building from source automatically — precompiled and source-built modules coexist in the same project.
+Native build times can slow down your development workflow. Expo provides precompiled versions of its most complex modules so your project links precompiled binaries instead of recompiling them from source on every build. On Android, those binaries ship as `.aar` files linked through Gradle; on iOS, they ship as `XCFrameworks` linked through CocoaPods. Both are bundled into the regular Expo npm packages, and packages that aren't yet precompiled fall back to building from source automatically — precompiled and source-built modules coexist in the same project.
 
-**Most projects don't need to do anything** — prebuilt Expo Modules are enabled automatically in new and existing projects with a supported SDK version.
+**Most projects don't need to do anything** — precompiled Expo Modules are enabled automatically in new and existing projects with a supported SDK version.
 
 - **Android**: Enabled by default since SDK 53.
 - **iOS**: enabled by default in SDK 56+. In SDK 55, enabled by default only on EAS Build — set `EXPO_USE_PRECOMPILED_MODULES=1` in your shell to opt in for local builds.
@@ -29,7 +29,7 @@ The CLI will prompt you to select which environment(s) (`development`, `preview`
 
 <Collapsible summary="Disabling specific modules via Expo Autolinking">
 
-Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"` to opt out of every prebuilt module, or list specific package names. The same setting is available for both `android` and `ios`:
+Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"` to opt out of every precompiled module, or list specific package names. The same setting is available for both `android` and `ios`:
 
 {/* prettier-ignore */}
 ```json package.json
@@ -49,5 +49,36 @@ Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"
 ```
 
 This is typically only needed when you're modifying module source code yourself.
+
+</Collapsible>
+
+<Collapsible summary="Troubleshooting EAS Build">
+
+### iOS
+
+On EAS Build, third-party libraries like `react-native-reanimated` and `react-native-worklets` are automatically downloaded as precompiled XCFrameworks. Local `pod install` does not fetch them by default. Those packages build from source locally and pick up any `staticFeatureFlags` overrides automatically, so flag and version mismatches surface primarily on EAS Build. Avoid enabling third-party precompiled downloads for local builds and keep this path scoped to EAS.
+
+#### `react-native-reanimated` and `react-native-worklets`
+
+These two packages are tightly coupled. `react-native-reanimated` links `react-native-worklets` at the native level.
+
+**Opt out of both together.** If you need a source build for either package (for example to apply a patch or modify native code), list both in `buildFromSource`. Source-building only one produces a mixed precompiled/source linkage that fails to resolve the matching framework at runtime:
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "expo": {
+    "autolinking": {
+      "ios": {
+        "buildFromSource": ["react-native-reanimated", "react-native-worklets"]
+      }
+    }
+  }
+}
+```
+
+**Custom feature flags require a source build.** Feature-flag values are baked into the precompiled binary at build time, so any `worklets.staticFeatureFlags` or `reanimated.staticFeatureFlags` overrides in **package.json** are ignored. To apply them, disable precompiled modules with `EXPO_USE_PRECOMPILED_MODULES=0`.
+
+**When to look here.** Runtime errors like `Unable to recognize flag: <NAME>` on EAS Build (but not locally) mean the precompiled artifact's flag list doesn't match your pinned package version. Use `buildFromSource` above and [file an issue on GitHub](https://github.com/expo/expo/issues).
 
 </Collapsible>

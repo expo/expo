@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- [Android] Create Compose props without View. ([#46256](https://github.com/expo/expo/pull/46256) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.13 — 2026-05-26
+
+### 🎉 New features
+
+- [Android] Create Compose props without View. ([#46256](https://github.com/expo/expo/pull/46256) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
