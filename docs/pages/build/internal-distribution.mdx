@@ -30,7 +30,29 @@ See the tutorial on Internal distribution with EAS Build below for more informat
 
 ### Automation on CI (optional)
 
-It's possible to run internal distribution builds non-interactively in CI using the `--non-interactive` flag. However, if you are using ad hoc provisioning on iOS you will not be able to add new devices to your provisioning profile when using this flag. After registering a device through `eas device:create`, you need to run `eas build` interactively and authenticate with Apple in order for EAS to add the device to your provisioning profile. [Learn more about triggering builds from CI](/build/building-on-ci).
+You can run internal distribution builds non-interactively in CI with the [`--non-interactive`](/eas/cli/#eas-build) flag. [Learn more about triggering builds from CI](/build/building-on-ci).
+
+For iOS ad hoc builds, `eas build --non-interactive` reuses a valid provisioning profile without updating its device list. The build can succeed, but the app may not install on registered devices added after the profile was last updated.
+
+Pass `--refresh-ad-hoc-provisioning-profile` with `--non-interactive` to update the Expo-managed ad hoc provisioning profile on the Apple Developer Portal before the build.
+
+> **info** `--refresh-ad-hoc-provisioning-profile` requires EAS CLI 19.1.0 or later.
+
+EAS authenticates with an App Store Connect API key. It reads devices registered on EAS for your Apple team. It registers any missing UDIDs on the portal. Then it refreshes the profile device list.
+
+When you use this flag, EAS selects all matching devices for the build target's Apple platform: iPhone and iPad for iOS, Mac for macOS.
+
+<Terminal
+  cmd={[
+    '$ eas build --platform ios --profile preview --non-interactive --refresh-ad-hoc-provisioning-profile',
+  ]}
+/>
+
+For [EAS Workflows](/eas/workflows/get-started), set `refresh_ad_hoc_provisioning_profile: true` in the build job's `params` with the same profile requirements. See the [build job parameters](/eas/workflows/pre-packaged-jobs#build).
+
+The profile must set [`"distribution": "internal"`](/eas/json/#distribution) and use [credentials managed by EAS](/app-signing/app-credentials/). You need at least one device from [`eas device:create`](/eas/cli/#eas-devicecreate) and an App Store Connect API key in CI through [environment variables](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) (`EXPO_ASC_API_KEY_PATH`, `EXPO_ASC_KEY_ID`, and `EXPO_ASC_ISSUER_ID`) or a key stored in EAS for submissions on the project.
+
+Otherwise, after registering a device with [`eas device:create`](/eas/cli/#eas-devicecreate), run [`eas build`](/eas/cli/#eas-build) interactively and sign in with your Apple account so EAS can update the ad hoc provisioning profile.
 
 ### Managing devices
 
