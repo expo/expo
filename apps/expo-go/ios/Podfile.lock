@@ -2668,7 +2668,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-pager-view (8.0.1):
+  - react-native-pager-view (8.0.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -4242,7 +4242,7 @@ DEPENDENCIES:
   - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.8_patch_hash=0a01a06c301b2ef0c02744515b2380fa632b_5d540240147b1e6a809a2e5dfc7f63ae/node_modules/react-native-keyboard-controller`)"
   - "react-native-maps/Maps (from `../../../node_modules/.pnpm/react-native-maps@1.27.2_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_5667e236c2c50f6a54d303a871dda30a/node_modules/react-native-maps`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_cc13d8903dabe0c21fe8763c1ffd52a0/node_modules/@react-native-community/netinfo`)"
-  - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.1_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_b05071ae89ad750c1f450711bb192a72/node_modules/react-native-pager-view`)"
+  - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_6b4b0fdd3eb0bf5714ad508f011817e1/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react_6cf9b087dcc8c4e0435d8137de00cfae/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.86.0-rc.2_@babel_413547125b3ab0390f55e29d9f9caef9/node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=ba884424a75156115606f768b005e5af9a39e9836f1_17eda521ffc25cf5b86744e3438118bc/node_modules/@shopify/react-native-skia`)"
@@ -4579,7 +4579,7 @@ EXTERNAL SOURCES:
   react-native-netinfo:
     :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_cc13d8903dabe0c21fe8763c1ffd52a0/node_modules/@react-native-community/netinfo"
   react-native-pager-view:
-    :path: "../../../node_modules/.pnpm/react-native-pager-view@8.0.1_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_b05071ae89ad750c1f450711bb192a72/node_modules/react-native-pager-view"
+    :path: "../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_6b4b0fdd3eb0bf5714ad508f011817e1/node_modules/react-native-pager-view"
   react-native-safe-area-context:
     :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react_6cf9b087dcc8c4e0435d8137de00cfae/node_modules/react-native-safe-area-context"
   react-native-segmented-control:
@@ -4827,7 +4827,7 @@ SPEC CHECKSUMS:
   react-native-keyboard-controller: d543b2ca3fd062e794b4087a3fe0340159545503
   react-native-maps: b5af575a371e57847c6d8490e726c08036f7c80f
   react-native-netinfo: a0be8c77f8420a60ddf07eb87be1a36f02a1bd65
-  react-native-pager-view: 899d0774fc9602b6a46eb2ac08febc09f470534d
+  react-native-pager-view: 2694b7efa49588b1cc3aecb5f513871135f499cc
   react-native-safe-area-context: befb5404eb8a16fdc07fa2bebab3568ecabcbb8a
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
   react-native-skia: fc73e9bdc46ebb420a98c9c2be29fee80f565e79
