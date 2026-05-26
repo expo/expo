@@ -640,4 +640,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
   '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
     '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
+
+  // After archiving Configure JS engines guide
+  '/guides/configuring-js-engines/': '/archive/configuring-js-engines/',
 };

@@ -27,7 +27,7 @@ const learnDirectories = ['tutorial', 'additional-resources'];
 const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
 const referenceDirectories = ['versions', 'technical-specs', 'more'];
-/** Private preview section which isn't linked in the documentation */
+/** Private preview section which isn't linked in the dcionocumentation */
 const previewDirectories = ['feature-preview', 'preview'];
 /** Manual list of directories to categorize as "EAS" */
 const easDirectories = [
@@ -393,7 +393,6 @@ export const general = [
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
-        makePage('guides/configuring-js-engines.mdx'),
         makePage('guides/using-bun.mdx'),
         makePage('guides/editing-richtext.mdx'),
         makePage('guides/store-assets.mdx'),
@@ -704,6 +703,7 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/e2e-tests.mdx'),
+    makePage('archive/configuring-js-engines.mdx'),
   ]),
 ];
 
