@@ -51,21 +51,6 @@ Wrap your root layout with `AppMetricsRoot` (SDK 55) or `ObserveRoot` (SDK 56 an
 
 <Tabs>
 
-<Tab label="SDK 55">
-
-```tsx app/_layout.tsx
-import { Stack } from 'expo-router';
-import { AppMetricsRoot } from 'expo-observe';
-
-function RootLayout() {
-  return <Stack />;
-}
-
-export default AppMetricsRoot.wrap(RootLayout);
-```
-
-</Tab>
-
 <Tab label="SDK 56 and later">
 
 ```tsx app/_layout.tsx
@@ -77,6 +62,21 @@ function RootLayout() {
 }
 
 export default ObserveRoot.wrap(RootLayout);
+```
+
+</Tab>
+
+<Tab label="SDK 55">
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import { AppMetricsRoot } from 'expo-observe';
+
+function RootLayout() {
+  return <Stack />;
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
 ```
 
 </Tab>
@@ -97,54 +97,6 @@ Call `markInteractive()` when your app is fully ready for user interaction. This
 - Animating the splash screen
 
 <Tabs>
-
-<Tab label="SDK 55">
-
-```tsx app/_layout.tsx
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { AppMetrics, AppMetricsRoot } from 'expo-observe';
-import { useEffect, useState } from 'react';
-
-// Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync();
-
-function RootLayout() {
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await authenticateUser();
-        await fetchInitialData();
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setIsReady(true);
-      }
-    }
-
-    prepare();
-  }, []);
-
-  useEffect(() => {
-    if (isReady) {
-      SplashScreen.hide();
-      AppMetrics.markInteractive();
-    }
-  }, [isReady]);
-
-  if (!isReady) {
-    return null;
-  }
-
-  return <Stack />;
-}
-
-export default AppMetricsRoot.wrap(RootLayout);
-```
-
-</Tab>
 
 <Tab label="SDK 56">
 
@@ -191,6 +143,54 @@ function RootLayout() {
 }
 
 export default ObserveRoot.wrap(RootLayout);
+```
+
+</Tab>
+
+<Tab label="SDK 55">
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { AppMetrics, AppMetricsRoot } from 'expo-observe';
+import { useEffect, useState } from 'react';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
+function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await authenticateUser();
+        await fetchInitialData();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if (isReady) {
+      SplashScreen.hide();
+      AppMetrics.markInteractive();
+    }
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+
+  return <Stack />;
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
 ```
 
 </Tab>
