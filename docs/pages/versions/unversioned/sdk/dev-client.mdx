@@ -42,7 +42,10 @@ You can configure development client launcher using its built-in [config plugin]
           "defaultLaunchURL": "http://localhost:8081",
           "android": {
             "defaultLaunchURL": "http://10.0.0.2:8081"
-          }
+          },
+          "toolsButton": "true",
+          "skipOnboarding": "false",
+          "showMenuAtLaunch": "true"
         }
       ]
     ]
@@ -112,6 +115,22 @@ You can configure development client launcher using its built-in [config plugin]
         'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
       ].join('\n'),
       platform: 'ios',
+    },
+    {
+      name: 'toolsButton',
+      description: 'Whether to show the floating tools button.',
+      default: 'true',
+    },
+    {
+      name: 'skipOnboarding',
+      description:
+        'Skip the onboarding screen that shows in the dev menu on the first launch of the app.',
+      default: 'false',
+    },
+    {
+      name: 'showMenuAtLaunch',
+      description: 'Show the developer menu immediately after launching the app.',
+      default: 'true',
     },
   ]}
 />
