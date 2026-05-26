@@ -147,6 +147,10 @@ export async function deleteItemAsync(
  * > Keys are invalidated by the system when biometrics change, such as adding a new fingerprint or changing the face profile used for face recognition.
  * > After a key has been invalidated, it becomes impossible to read its value.
  * > This only applies to values stored with `requireAuthentication` set to `true`.
+ *
+ * > **Note:** When `requireAuthentication` is `true`, the biometric prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
+ * > In these cases the promise rejects with an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
+ * > Wrap the call in `try/catch` and treat a rejection as an auth-flow outcome to retry or back out of, not as data corruption.
  */
 export async function getItemAsync(
   key: string,
@@ -165,6 +169,10 @@ export async function getItemAsync(
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
  * @return A promise that rejects if value cannot be stored on the device.
+ *
+ * > **Note:** When `requireAuthentication` is `true`, the biometric prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
+ * > In these cases the promise rejects with an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
+ * > Wrap the call in `try/catch` and treat a rejection as an auth-flow outcome to retry or back out of, not as data corruption.
  */
 export async function setItemAsync(
   key: string,
@@ -189,6 +197,9 @@ export async function setItemAsync(
  * @param value The value to store.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
+ * > **Note:** When `requireAuthentication` is `true`, the biometric prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
+ * > In these cases the function throws an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
+ * > Wrap the call in `try/catch` and treat the error as an auth-flow outcome to retry or back out of, not as data corruption.
  */
 export function setItem(key: string, value: string, options: SecureStoreOptions = {}): void {
   ensureValidKey(key);
@@ -210,6 +221,10 @@ export function setItem(key: string, value: string, options: SecureStoreOptions 
  *
  * @return Previously stored value. It resolves with `null` if there is no entry
  * for the given key or if the key has been invalidated.
+ *
+ * > **Note:** When `requireAuthentication` is `true`, the biometric prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
+ * > In these cases the function throws an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
+ * > Wrap the call in `try/catch` and treat the error as an auth-flow outcome to retry or back out of, not as data corruption.
  */
 export function getItem(key: string, options: SecureStoreOptions = {}): string | null {
   ensureValidKey(key);
