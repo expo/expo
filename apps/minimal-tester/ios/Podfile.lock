@@ -3,12 +3,12 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (56.0.1):
     - ExpoModulesCore
-  - EXConstants (56.0.15):
+  - EXConstants (56.0.16):
     - ExpoModulesCore
   - EXJSONUtils (56.0.0)
   - EXManifests (56.0.4):
     - ExpoModulesCore
-  - Expo (56.0.4):
+  - Expo (56.0.5):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -40,17 +40,17 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-client (56.0.15):
+  - expo-dev-client (56.0.16):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (56.0.15):
+  - expo-dev-launcher (56.0.16):
     - boost
     - DoubleConversion
     - EXManifests
-    - expo-dev-launcher/Main (= 56.0.15)
+    - expo-dev-launcher/Main (= 56.0.16)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -83,7 +83,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-launcher/Main (56.0.15):
+  - expo-dev-launcher/Main (56.0.16):
     - boost
     - DoubleConversion
     - EXManifests
@@ -120,7 +120,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-launcher/Unsafe (56.0.15):
+  - expo-dev-launcher/Unsafe (56.0.16):
     - boost
     - DoubleConversion
     - EXManifests
@@ -156,10 +156,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-menu (56.0.14):
+  - expo-dev-menu (56.0.15):
     - boost
     - DoubleConversion
-    - expo-dev-menu/Main (= 56.0.14)
+    - expo-dev-menu/Main (= 56.0.15)
     - fast_float
     - fmt
     - glog
@@ -186,7 +186,7 @@ PODS:
     - SocketRocket
     - Yoga
   - expo-dev-menu-interface (56.0.1)
-  - expo-dev-menu/Main (56.0.14):
+  - expo-dev-menu/Main (56.0.15):
     - boost
     - DoubleConversion
     - EXManifests
@@ -221,11 +221,11 @@ PODS:
     - Yoga
   - ExpoAppleAuthentication (56.0.4):
     - ExpoModulesCore
-  - ExpoAsset (56.0.14):
+  - ExpoAsset (56.0.15):
     - ExpoModulesCore
   - ExpoBlur (56.0.3):
     - ExpoModulesCore
-  - ExpoBrownfield (56.0.14):
+  - ExpoBrownfield (56.0.15):
     - ExpoModulesCore
   - ExpoCamera (56.0.7):
     - ExpoModulesCore
@@ -252,7 +252,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLogBox (56.0.12):
     - React-Core
-  - ExpoModulesCore (56.0.12):
+  - ExpoModulesCore (56.0.13):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -285,7 +285,7 @@ PODS:
   - ExpoModulesJSI (56.0.7):
     - React-Core
     - ReactCommon
-  - ExpoModulesWorklets (56.0.12):
+  - ExpoModulesWorklets (56.0.13):
     - ExpoModulesCore
     - ExpoModulesJSI
   - ExpoSplashScreen (56.0.10):
@@ -293,7 +293,7 @@ PODS:
   - ExpoVideo (56.1.2):
     - ExpoModulesCore
   - EXStructuredHeaders (56.0.0)
-  - EXUpdates (56.0.16):
+  - EXUpdates (56.0.17):
     - boost
     - DoubleConversion
     - EASClient
@@ -3220,18 +3220,18 @@ SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 2321f8d99fa86c710a6f68e017f3b54366baed9f
-  EXConstants: 7ad8cebfd251d7275fa2e3878ad0ad64552937e1
+  EXConstants: 1c400bb9969f4c9e5ab324553138b74ae47b9efe
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
-  Expo: 82657b052846ec255769ef4c3cdd5e3582a3fb1c
-  expo-dev-client: 024bb5ba1a54c6d3ec632bb4ff63f18d69790b61
-  expo-dev-launcher: e46e4639147fbde67bb0288205a0dcddbcf75713
-  expo-dev-menu: 86dd26e22ec61487fd82a0daac900eca63b10eaa
+  Expo: fc791c843959ffb6ed092796298bc04fc18cc3bc
+  expo-dev-client: 47bd82ac19bbfce73d04f9140f4a607b8468dde7
+  expo-dev-launcher: 6338aa524540b82fb224f7f5dba2dca76b89e867
+  expo-dev-menu: de6be5f0e57e2aade94c4051bc6625901a7412ee
   expo-dev-menu-interface: 65402d4affb8b418aa6cec29b3abb0e313c8f443
   ExpoAppleAuthentication: 3dd8ddd3016396a8171f06af8cc5e3e008e8eaf4
-  ExpoAsset: 98f83c25d558707659dd6b117adcc03104dd287b
+  ExpoAsset: c2e7b5ba1fe75be683282d6264e38fd7cd8defbb
   ExpoBlur: caddd80171e5f8f3581ff3d865e99c6465047240
-  ExpoBrownfield: dbe229407aca2ebec235f626a031a2e078d49f17
+  ExpoBrownfield: c9213f348af9d80b746838ac6485beecbdb6c5e8
   ExpoCamera: fc1d2688e9824984e28cf606062da40d2d80b13e
   ExpoCameraBarcodeScanning: a6a8781886a0cf5ebe78184dcc895c0c88e1b8b5
   ExpoDomWebView: 27205be8754f9992913b8a9a08e65019f2207075
@@ -3241,13 +3241,13 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
   ExpoLinearGradient: 16c2b9c6105444883d34958d573725de1293b8d0
   ExpoLogBox: 7aa03244fe5eeced5129e4ec7ad5bd9a3994378e
-  ExpoModulesCore: fb94f6d141d737182a3cf09fbc36466cb9c1ad65
+  ExpoModulesCore: 8dc28415ac88e5e75b75424729ce97ddb3d9f760
   ExpoModulesJSI: 31051e6e3d88a96cc48747eabad1d4a6a29c554e
-  ExpoModulesWorklets: 5349d7281651a11e0a5d14f32db8bb47e32c2ff4
+  ExpoModulesWorklets: c755176116ae553ede2268ca6837c31eb4081f8a
   ExpoSplashScreen: 3fe3a57d56d7242a9109d9714a6f9fa1e256538b
   ExpoVideo: 8ebbbf65778c5f986d65fc17bb60b79e9d7624e6
   EXStructuredHeaders: 9e89bcdd636ae2ecb59995cfba3230f5d7547c08
-  EXUpdates: 1230c46b2b71368743f2d451b07b76c33ce27c08
+  EXUpdates: f729bd14cd6088ca8e65013515ff15dfa2328082
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 171b40fd8225725a4949b6d34948f92fb856f17f
