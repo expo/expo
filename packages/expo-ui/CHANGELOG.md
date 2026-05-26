@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
