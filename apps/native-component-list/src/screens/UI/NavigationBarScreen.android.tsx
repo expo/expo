@@ -10,7 +10,6 @@ import {
 } from '@expo/ui/jetpack-compose';
 import { align, fillMaxSize, fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
-import {fillMaxHeight} from "../../../../../packages/expo-ui/src/jetpack-compose/modifiers";
 
 const mailIcon = require('../../../assets/icons/ui/mail.xml');
 const personIcon = require('../../../assets/icons/ui/person.xml');
