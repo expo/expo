@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { useWindowDimensions, View } from 'react-native';
+import { useWindowDimensions, View, StyleSheet } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 import { BottomSheetContext, BottomSheetInternalContext } from './context';
 import type { BottomSheetMethods, BottomSheetProps } from './types';
@@ -11,6 +12,7 @@ import { RNHostView } from '../../swift-ui/RNHostView';
 import {
   type PresentationDetent,
   interactiveDismissDisabled,
+  presentationBackground,
   presentationDetents,
   presentationDragIndicator,
 } from '../../swift-ui/modifiers/presentationModifiers';
@@ -18,6 +20,13 @@ import {
 export { useBottomSheet } from './context';
 
 // #region Helpers
+
+function extractBackgroundColor(style: StyleProp<ViewStyle>): string | undefined {
+  if (!style) return undefined;
+  const flat = StyleSheet.flatten(style) as ViewStyle | undefined;
+  const color = flat?.backgroundColor;
+  return typeof color === 'string' ? color : undefined;
+}
 
 function snapPointToDetent(point: string | number): PresentationDetent {
   const parsed = parseSnapPoint(point);
@@ -80,6 +89,7 @@ export function BottomSheet(props: BottomSheetProps) {
     enablePanDownToClose = false,
     enableDynamicSizing = true,
     handleComponent,
+    backgroundStyle,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -193,27 +203,32 @@ export function BottomSheet(props: BottomSheetProps) {
   useImperativeHandle(ref, () => methods, [methods]);
 
   const modifiers = useMemo(
-    () => [
-      ...(fitToContents
-        ? []
-        : [
-            presentationDetents(detents, {
-              selection: selectedDetent,
-              onSelectionChange: handleDetentChange,
-            }),
-          ]),
-      presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
-      interactiveDismissDisabled(!enablePanDownToClose),
-    ],
-    [
-      fitToContents,
-      detents,
-      selectedDetent,
-      handleDetentChange,
-      handleComponent,
-      enablePanDownToClose,
-    ]
-  );
+     () => {
+       const bg = extractBackgroundColor(backgroundStyle);
+       return [
+         ...(fitToContents
+           ? []
+           : [
+               presentationDetents(detents, {
+                 selection: selectedDetent,
+                 onSelectionChange: handleDetentChange,
+               }),
+             ]),
+         presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
+         interactiveDismissDisabled(!enablePanDownToClose),
+         ...(bg ? [presentationBackground(bg)] : []),
+       ];
+     },
+     [
+       fitToContents,
+       detents,
+       selectedDetent,
+       handleDetentChange,
+       handleComponent,
+       enablePanDownToClose,
+       backgroundStyle,
+     ]
+   );
 
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
