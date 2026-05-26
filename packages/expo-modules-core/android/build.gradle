@@ -291,11 +291,13 @@ def generateStubPCHTask = tasks.register("generateStubPCH") {
           def stubHeader = new File(entry.directory, "stub_pch.hxx")
           stubHeader.text = ""
 
+          def stubHeaderPath = stubHeader.absolutePath.replace('\\', '/')
+
           def cmd = entry.command
             // Replace the forced-include path: `-Xclang -include -Xclang <path>/cmake_pch.hxx`
-            .replaceAll(/-Xclang -include -Xclang [^\s]+cmake_pch\.hxx(?=\s)/, "-Xclang -include -Xclang ${stubHeader.absolutePath}")
+            .replaceAll(/-Xclang -include -Xclang [^\s]+cmake_pch\.hxx(?=\s)/, java.util.regex.Matcher.quoteReplacement("-Xclang -include -Xclang ${stubHeaderPath}"))
             // Replace the source file operand: `<path>/cmake_pch.hxx.cxx`
-            .replaceAll(/[^\s]+cmake_pch\.hxx\.cxx/, stubHeader.absolutePath)
+            .replaceAll(/[^\s]+cmake_pch\.hxx\.cxx/, java.util.regex.Matcher.quoteReplacement(stubHeaderPath))
 
           def process = new ProcessBuilder(cmd.split(" ").toList())
             .directory(new File(entry.directory))
