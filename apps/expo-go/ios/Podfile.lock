@@ -4239,7 +4239,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks`)
   - React-mutationobservernativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/mutationobserver`)
-  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.8_react-native-reanimated@4.3.1_patch_hash=1e34e4_3df2c9fee37385418ef09130859153fb/node_modules/react-native-keyboard-controller`)"
+  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.8_patch_hash=0a01a06c301b2ef0c02744515b2380fa632b_5d540240147b1e6a809a2e5dfc7f63ae/node_modules/react-native-keyboard-controller`)"
   - "react-native-maps/Maps (from `../../../node_modules/.pnpm/react-native-maps@1.27.2_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_5667e236c2c50f6a54d303a871dda30a/node_modules/react-native-maps`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_cc13d8903dabe0c21fe8763c1ffd52a0/node_modules/@react-native-community/netinfo`)"
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.1_react-native@0.86.0-rc.2_@babel+core@7.29.0_@react-native_b05071ae89ad750c1f450711bb192a72/node_modules/react-native-pager-view`)"
@@ -4573,7 +4573,7 @@ EXTERNAL SOURCES:
   React-mutationobservernativemodule:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/mutationobserver"
   react-native-keyboard-controller:
-    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.8_react-native-reanimated@4.3.1_patch_hash=1e34e4_3df2c9fee37385418ef09130859153fb/node_modules/react-native-keyboard-controller"
+    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.8_patch_hash=0a01a06c301b2ef0c02744515b2380fa632b_5d540240147b1e6a809a2e5dfc7f63ae/node_modules/react-native-keyboard-controller"
   react-native-maps:
     :path: "../../../node_modules/.pnpm/react-native-maps@1.27.2_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_5667e236c2c50f6a54d303a871dda30a/node_modules/react-native-maps"
   react-native-netinfo:
