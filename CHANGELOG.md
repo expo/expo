@@ -13,8 +13,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
-- [templates] Ignore generated `android/gradle/gradle-daemon-jvm.properties` in `expo-template-bare-minimum`. ([#46233](https://github.com/expo/expo/pull/46233) by [@tomekzaw](https://github.com/tomekzaw))
-
 ## 55.0.0 — 2026-02-25
 
 ### 🛠 Breaking changes
