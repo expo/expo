@@ -60,7 +60,7 @@ On EAS Build, third-party libraries like `react-native-reanimated` and `react-na
 
 #### `react-native-reanimated` and `react-native-worklets`
 
-These two packages are tightly coupled — `react-native-reanimated` links `react-native-worklets` at the native level.
+These two packages are tightly coupled. `react-native-reanimated` links `react-native-worklets` at the native level.
 
 **Opt out of both together.** If you need a source build for either package (for example to apply a patch or modify native code), list both in `buildFromSource`. Source-building only one produces a mixed precompiled/source linkage that fails to resolve the matching framework at runtime:
 
