@@ -291,6 +291,49 @@ describe(updatePkgDependencies, () => {
   });
 });
 
+describe(`${updatePkgDependencies.name} installed-version warning`, () => {
+  beforeEach(() => {
+    (isModuleSymlinked as any).mockImplementation(() => false);
+  });
+
+  function runWithInstalledVersion(installedVersion: string | null, recommendedRange: string) {
+    (resolveInstalledVersion as any).mockImplementation(() => installedVersion);
+    updatePkgDependencies('fake path', {
+      pkg: {
+        // Non-semver spec — the kind that misfired against the old `semver.intersects` check.
+        dependencies: { 'react-native': 'catalog:mobile' },
+        devDependencies: {},
+      },
+      templatePkg: {
+        dependencies: { 'react-native': recommendedRange },
+        devDependencies: {},
+      },
+    });
+  }
+
+  it(`does not warn when the installed version satisfies the recommended range, even for a non-semver spec`, () => {
+    runWithInstalledVersion('0.83.4', '0.83.4');
+    expect(Log.warn).not.toHaveBeenCalled();
+  });
+
+  it(`does not warn when the package is not installed yet (resolveInstalledVersion returns null)`, () => {
+    runWithInstalledVersion(null, '0.83.4');
+    expect(Log.warn).not.toHaveBeenCalled();
+  });
+
+  it(`warns with the resolved installed version, not the package.json spec`, () => {
+    runWithInstalledVersion('0.82.0', '0.83.4');
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`${chalk.bold('react-native@0.82.0')}`)
+    );
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`recommended ${chalk.bold('react-native@0.83.4')}`)
+    );
+    // The raw catalog spec must never reach the warning message.
+    expect(Log.warn).not.toHaveBeenCalledWith(expect.stringContaining('catalog:mobile'));
+  });
+});
+
 describe(updatePkgScripts, () => {
   it(`modifies the default Expo project values`, () => {
     const pkg = {
