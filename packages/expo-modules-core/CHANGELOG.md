@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [android] Fix nested `Host` double-composing children. ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix iPad-specific supported orientation lookup to read `UISupportedInterfaceOrientations~ipad`.
 
 ### 💡 Others
 
