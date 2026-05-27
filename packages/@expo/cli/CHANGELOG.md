@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Compare the installed version of `react-native` / `expo` against the recommended version during prebuild, instead of the raw `package.json` spec. Fixes misleading warnings for pnpm catalogs, yarn/pnpm workspaces, npm aliases, and other non-semver specifiers. ([#44880](https://github.com/expo/expo/pull/44880) by [@hknakn](https://github.com/hknakn))
+
 ### 💡 Others
 
 ## 56.1.12 — 2026-05-26
@@ -217,7 +219,6 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Compare the installed version of `react-native` / `expo` against the recommended version during prebuild, instead of the raw `package.json` spec. Fixes misleading warnings for pnpm catalogs, yarn/pnpm workspaces, npm aliases, and other non-semver specifiers. ([#44880](https://github.com/expo/expo/pull/44880) by [@hknakn](https://github.com/hknakn))
 - Prevent opening Expo Go on Apple Watch. ([#44147](https://github.com/expo/expo/pull/44147) by [@EvanBacon](https://github.com/EvanBacon))
 - Support files >= 2 GiB in AFC device upload ([#43755](https://github.com/expo/expo/pull/43755) by [@yocontra](https://github.com/yocontra))
 - Revert the `-quiet` change to ensure build env vars are always printed. ([#43906](https://github.com/expo/expo/pull/43906) by [@EvanBacon](https://github.com/EvanBacon))
