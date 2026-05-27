@@ -116,7 +116,7 @@ Emitted at most once per screen instance within a session.
 
 ### Per-screen warm render (`warm_ttr`)
 
-**What it measures:** Same as `cold_ttr`, but for screens that were already rendered before focus, typically because they were preloaded or the user navigated back to them. Tab-navigator siblings count as warm only once they have been mounted; with React Navigation v7's default `lazy: true`, unfocused tabs stay unmounted and their first focus is recorded as `cold_ttr`.
+**What it measures:** Same as `cold_ttr`, but for screens that were already rendered before focus, typically because they were preloaded or the user navigated back to them. Tab-navigator siblings count as warm only once they have been mounted. With React Navigation v7's default `lazy: true`, unfocused tabs stay unmounted and their first focus is recorded as `cold_ttr`.
 
 **Event params:**
 
