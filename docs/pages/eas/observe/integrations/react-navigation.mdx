@@ -14,7 +14,7 @@ If your app uses [Expo Router](/router/introduction/), use the [Expo Router inte
 ## Prerequisites
 
 <Prerequisites>
-  <Requirement title="Expo SDK 56 or later">
+  <Requirement title="Expo SDK 56 and later">
     The React Navigation integration is available on SDK 56 and later. On earlier SDKs,
     `expo-observe` still tracks app-wide metrics, but per-screen navigation events are not emitted.
   </Requirement>
@@ -22,7 +22,7 @@ If your app uses [Expo Router](/router/introduction/), use the [Expo Router inte
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
-  <Requirement title="@react-navigation/native 7 installed in the app">
+  <Requirement title="@react-navigation/native 7 or later installed in the app">
     The integration depends on `@react-navigation/native` (v7.0.0 or later) at runtime. If the
     package is not installed, the integration becomes a silent no-op.
   </Requirement>
@@ -50,7 +50,7 @@ Observe.configure({
 
 ## Use `ObserveNavigationContainer`
 
-Replace your top-level `<NavigationContainer>` with `<ObserveNavigationContainer>`. It wraps the stock container, accepts the same props, and forwards the same ref, while subscribing to navigation state changes so it can record per-screen render timings.
+Replace your top-level `<NavigationContainer>` with `<ObserveNavigationContainer>`. It wraps the stock container, accepts the same props, and forwards the same ref. It also subscribes to navigation state changes so it can record per-screen render timings.
 
 ```tsx App.tsx
 import { Observe } from 'expo-observe';
@@ -61,7 +61,11 @@ Observe.configure({
 });
 
 export default function App() {
-  return <ObserveNavigationContainer>{/* your navigators */}</ObserveNavigationContainer>;
+  return (
+    <ObserveNavigationContainer>
+      {/* your navigators */}
+    </ObserveNavigationContainer>
+  );
 }
 ```
 
@@ -135,7 +139,7 @@ Emitted at most once per screen instance within a session.
 
 ## Notes and troubleshooting
 
-- The integration only activates if `@react-navigation/native` is installed at runtime. If it is not installed, `useObserve()` continues to work but no per-screen navigation metrics are emitted, and rendering `<ObserveNavigationContainer>` throws.
+- The integration only activates if `@react-navigation/native` is installed at runtime. If it is not installed, `useObserve()` continues to work, but no per-screen navigation metrics are emitted. Rendering `<ObserveNavigationContainer>` without `@react-navigation/native` throws.
 - The integration must be enabled before mount via `Observe.configure({ integrations: { 'react-navigation': true } })`. Toggling it after the app has mounted, or after `<ObserveNavigationContainer>` has mounted, throws.
 - `markInteractive()` only records once the screen is focused. Calls made on an unfocused screen update internal state but do not emit a `tti` event until the screen is focused.
 - Call `useObserve()` inside the screen component, not in a higher-level wrapper. If the screen's identity changes between renders, the hook logs a warning. If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
