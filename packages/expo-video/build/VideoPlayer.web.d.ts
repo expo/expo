@@ -1,4 +1,4 @@
-import type { BufferOptions, PlayerError, VideoPlayerStatus, VideoSource, VideoPlayer, SubtitleTrack, AudioMixingMode, VideoTrack, AudioTrack, ScrubbingModeOptions, SeekTolerance } from './VideoPlayer.types';
+import type { BufferOptions, PlayerError, VideoPlayerStatus, VideoSource, VideoPlayer, SubtitleTrack, AudioMixingMode, VideoTrack, AudioTrack, ScrubbingModeOptions, SeekTolerance, VideoThumbnailOptions } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import type { VideoThumbnail } from './VideoThumbnail';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
@@ -67,7 +67,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     replaceAsync(source: VideoSource): Promise<void>;
     seekBy(seconds: number): void;
     replay(): void;
-    generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
+    generateThumbnailsAsync(times: number | number[], options?: VideoThumbnailOptions): Promise<VideoThumbnail[]>;
     _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
     /**
      * If there are multiple mounted videos, all of them will emit an event, as they are synchronised.

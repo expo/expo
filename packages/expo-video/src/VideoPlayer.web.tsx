@@ -12,10 +12,12 @@ import type {
   AudioTrack,
   ScrubbingModeOptions,
   SeekTolerance,
+  VideoThumbnailOptions,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import type { VideoThumbnail } from './VideoThumbnail';
-import resolveAssetSource from './resolveAssetSource';
+import resolveAssetSource from './resolveAssetSource.web';
+import { generateVideoThumbnailsAsync } from './web/VideoThumbnailGenerator.web';
 
 export function useVideoPlayer(
   source: VideoSource,
@@ -339,8 +341,19 @@ export default class VideoPlayerWeb
     this.playing = true;
   }
 
-  generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]> {
-    throw new Error('Generating video thumbnails is not supported on Web yet');
+  generateThumbnailsAsync(
+    times: number | number[],
+    options: VideoThumbnailOptions = {}
+  ): Promise<VideoThumbnail[]> {
+    const uri = getSourceUri(this.src);
+
+    if (uri == null) {
+      return Promise.resolve([]);
+    }
+
+    const headers = getSourceHeaders(this.src);
+
+    return generateVideoThumbnailsAsync({ uri, headers }, times, options);
   }
 
   _synchronizeWithFirstVideo(video: HTMLVideoElement): void {
@@ -463,4 +476,17 @@ export default class VideoPlayerWeb
       this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
     };
   }
+}
+
+function getSourceHeaders(source: VideoSource): Record<string, string> | undefined {
+  if (
+    source == null ||
+    typeof source !== 'object' ||
+    Array.isArray(source) ||
+    !('headers' in source)
+  ) {
+    return undefined;
+  }
+
+  return source.headers;
 }
