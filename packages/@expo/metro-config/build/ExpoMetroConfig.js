@@ -30,6 +30,24 @@ const getPkgVersion_1 = require("./utils/getPkgVersion");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
 let hasWarnedAboutReactNative = false;
+function getReactNativeHostPackage(platform) {
+    // NOTE(@kitten): Duplicated as `getSupportPackageForPlatform` in expo-modules-autolinking
+    switch (platform) {
+        case 'tvos':
+            return 'react-native-tvos';
+        case 'macos':
+            return 'react-native-macos';
+        default:
+            return 'react-native';
+    }
+}
+function getReactNativeHostPath(projectRoot, platform) {
+    const hostPackage = getReactNativeHostPackage(platform);
+    // TODO(@kitten): Switch to `@expo/require-utils` / assess manual require.resolve
+    return path_1.default.dirname(resolve_from_1.default.silent(projectRoot, `${hostPackage}/package.json`) ??
+        resolve_from_1.default.silent(projectRoot, 'react-native/package.json') ??
+        'react-native/package.json');
+}
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
@@ -202,11 +220,13 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             unstable_conditionsByPlatform: {
                 ios: ['react-native'],
                 android: ['react-native'],
+                tvos: ['react-native'],
+                macos: ['react-native'],
                 // This is removed for server platforms.
                 web: ['browser'],
             },
             resolverMainFields: ['react-native', 'browser', 'main'],
-            platforms: ['ios', 'android'],
+            platforms: ['ios', 'android', 'tvos', 'macos'],
             assetExts: metroDefaultValues.resolver.assetExts
                 .concat(
             // Add default support for `expo-image` file types.
@@ -248,8 +268,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 : createNumericModuleIdFactory,
             getModulesRunBeforeMainModule: () => {
                 const preModules = [
-                    // MUST be first
-                    require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),
+                    // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
+                    // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
+                    require.resolve(path_1.default.join(getReactNativeHostPath(projectRoot), 'Libraries/Core/InitializeCore')),
                 ];
                 const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/src/winter/index.ts');
                 if (stdRuntime) {
@@ -274,8 +295,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 if (!platform) {
                     return [];
                 }
-                // Native behavior.
-                return require(path_1.default.join(reactNativePath, 'rn-get-polyfills'))();
+                return require(path_1.default.join(getReactNativeHostPath(projectRoot, platform), 'rn-get-polyfills'))();
             },
         },
         server: {
