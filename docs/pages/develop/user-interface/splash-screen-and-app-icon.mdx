@@ -136,7 +136,14 @@ If your app does not use [Expo Prebuild](/more/glossary-of-terms/#prebuild) to g
 
 For SDK 52 and earlier, in iOS development builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ directory before rebuilding, this can be done with Expo CLI by running:
 
-<Terminal cmd={['$ npx expo run:ios --no-build-cache']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios --no-build-cache'],
+    yarn: ['$ yarn expo run:ios --no-build-cache'],
+    pnpm: ['$ pnpm expo run:ios --no-build-cache'],
+    bun: ['$ bun expo run:ios --no-build-cache'],
+  }}
+/>
 
 See [Apple's guide on testing launch screens](https://developer.apple.com/documentation/technotes/tn3118-debugging-your-apps-launch-screen) for more information.
 

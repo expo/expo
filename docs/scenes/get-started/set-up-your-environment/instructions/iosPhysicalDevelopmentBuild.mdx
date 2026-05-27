@@ -19,7 +19,14 @@ To install a development build on your iOS device, you will need an active subsc
 
 To build your app, you will need to install EAS CLI. You can do this by running the following command in your terminal:
 
-<Terminal cmd={['$ npm install -g eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 </Step>
 
