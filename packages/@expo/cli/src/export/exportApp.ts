@@ -91,7 +91,7 @@ export async function exportAppAsync(
 
   const baseUrl = getBaseUrlFromExpoConfig(exp);
 
-  if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
+  if (!bytecode && platforms.some((platform) => platform !== 'web')) {
     Log.warn(
       `Bytecode makes the app startup faster, disabling bytecode is highly discouraged and should only be used for debugging purposes.`
     );
