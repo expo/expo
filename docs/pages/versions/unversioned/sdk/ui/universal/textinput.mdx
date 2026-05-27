@@ -52,15 +52,15 @@ Pass [`value`](#value) to drive the field from a `useNativeState` observable. Th
 
 ```tsx ControlledTextInputExample.tsx
 import { Host, TextInput, useNativeState } from '@expo/ui';
-import { useEffectEvent } from 'react';
+import { useCallback } from 'react';
 
 export default function ControlledTextInputExample() {
   const text = useNativeState('');
 
-  const handleChangeText = useEffectEvent((value: string) => {
+  const handleChangeText = useCallback((value: string) => {
     'worklet';
     text.value = value === 'Hello' ? 'World' : value;
-  });
+  }, [text]);
 
   return (
     <Host matchContents={{ vertical: true }}>
@@ -78,7 +78,7 @@ Add the `'worklet'` directive to [`onChangeText`](#onchangetext) for synchronous
 
 ```tsx PhoneMaskExample.tsx
 import { Host, TextInput, useNativeState } from '@expo/ui';
-import { useEffectEvent } from 'react';
+import { useCallback } from 'react';
 
 function formatPhone(input: string) {
   'worklet';
@@ -92,7 +92,7 @@ export default function PhoneMaskExample() {
   const phone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
 
-  const handleChangeText = useEffectEvent((value: string) => {
+  const handleChangeText = useCallback((value: string) => {
     'worklet';
     const formatted = formatPhone(value);
     if (formatted !== value) {
@@ -100,7 +100,7 @@ export default function PhoneMaskExample() {
       // Snaps to end for demo. Real masks need smarter cursor handling.
       selection.value = { start: formatted.length, end: formatted.length };
     }
-  });
+  }, [phone, selection]);
 
   return (
     <Host matchContents={{ vertical: true }}>

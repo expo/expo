@@ -263,13 +263,13 @@ When `onValueChange` is marked with the `'worklet'` directive, it runs synchrono
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
-import { useEffectEvent } from 'react';
+import { useCallback } from 'react';
 
 export default function WorkletPhoneMaskExample() {
   const phone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
 
-  const handleValueChange = useEffectEvent((v: string) => {
+  const handleValueChange = useCallback((v: string) => {
     'worklet';
     const digits = v.replace(/\D/g, '').slice(0, 10);
     let formatted = digits;
@@ -283,7 +283,7 @@ export default function WorkletPhoneMaskExample() {
       // Snaps to end for demo. Real masks need smarter cursor handling.
       selection.value = { start: formatted.length, end: formatted.length };
     }
-  });
+  }, [phone, selection]);
 
   return (
     <Host matchContents>

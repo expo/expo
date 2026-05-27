@@ -187,13 +187,13 @@ When `onTextChange` is marked with the `'worklet'` directive, it runs synchronou
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { keyboardType } from '@expo/ui/swift-ui/modifiers';
-import { useEffectEvent } from 'react';
+import { useCallback } from 'react';
 
 export default function WorkletPhoneMaskExample() {
   const phone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
 
-  const handleTextChange = useEffectEvent((v: string) => {
+  const handleTextChange = useCallback((v: string) => {
     'worklet';
     const digits = v.replace(/\D/g, '').slice(0, 10);
     let formatted = digits;
@@ -207,7 +207,7 @@ export default function WorkletPhoneMaskExample() {
       // Snaps to end for demo. Real masks need smarter cursor handling.
       selection.value = { start: formatted.length, end: formatted.length };
     }
-  });
+  }, [phone, selection]);
 
   return (
     <Host matchContents>

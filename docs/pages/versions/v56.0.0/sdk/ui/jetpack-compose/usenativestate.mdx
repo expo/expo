@@ -24,13 +24,13 @@ The example below masks a phone number as the user types. The formatting and the
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, Text as ComposeText, useNativeState } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
-import { useEffectEvent } from 'react';
+import { useCallback } from 'react';
 
 export default function WorkletPhoneMaskExample() {
   const maskedPhone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
 
-  const handleValueChange = useEffectEvent((v: string) => {
+  const handleValueChange = useCallback((v: string) => {
     'worklet';
     const digits = v.replace(/\D/g, '').slice(0, 10);
     let formatted: string;
@@ -48,7 +48,7 @@ export default function WorkletPhoneMaskExample() {
       // Snaps to end for demo. Real masks need smarter cursor handling.
       selection.value = { start: formatted.length, end: formatted.length };
     }
-  });
+  }, [maskedPhone, selection]);
 
   return (
     <Host matchContents>
