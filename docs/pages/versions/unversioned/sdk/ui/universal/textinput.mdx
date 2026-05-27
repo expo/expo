@@ -37,7 +37,7 @@ export default function UncontrolledTextInputExample() {
           ref={inputRef}
           defaultValue="hello"
           placeholder="Type here"
-          onChangeText={value => console.log(value)}
+          onChangeText={(value) => console.log(value)}
         />
         <Button label="Clear" onPress={() => inputRef.current?.clear()} />
       </Column>
@@ -57,10 +57,13 @@ import { useCallback } from 'react';
 export default function ControlledTextInputExample() {
   const text = useNativeState('');
 
-  const handleChangeText = useCallback((value: string) => {
-    'worklet';
-    text.value = value === 'Hello' ? 'World' : value;
-  }, [text]);
+  const handleChangeText = useCallback(
+    (value: string) => {
+      'worklet';
+      text.value = value === 'Hello' ? 'World' : value;
+    },
+    [text]
+  );
 
   return (
     <Host matchContents={{ vertical: true }}>
@@ -92,15 +95,18 @@ export default function PhoneMaskExample() {
   const phone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
 
-  const handleChangeText = useCallback((value: string) => {
-    'worklet';
-    const formatted = formatPhone(value);
-    if (formatted !== value) {
-      phone.value = formatted;
-      // Snaps to end for demo. Real masks need smarter cursor handling.
-      selection.value = { start: formatted.length, end: formatted.length };
-    }
-  }, [phone, selection]);
+  const handleChangeText = useCallback(
+    (value: string) => {
+      'worklet';
+      const formatted = formatPhone(value);
+      if (formatted !== value) {
+        phone.value = formatted;
+        // Snaps to end for demo. Real masks need smarter cursor handling.
+        selection.value = { start: formatted.length, end: formatted.length };
+      }
+    },
+    [phone, selection]
+  );
 
   return (
     <Host matchContents={{ vertical: true }}>
