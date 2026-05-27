@@ -71,6 +71,38 @@ describe('package', () => {
     await expect(getNamespaceAsync(projectRoot)).resolves.toBe(null);
   });
 
+  it(`ignores commented-out namespace declarations`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        'android/app/build.gradle': rnFixture['android/app/build.gradle'].replace(
+          'namespace "com.helloworld"',
+          "// namespace 'com.commented.out'\n    namespace 'com.helloworld'"
+        ),
+      },
+      projectRoot
+    );
+
+    await expect(getNamespaceAsync(projectRoot)).resolves.toBe('com.helloworld');
+  });
+
+  it(`supports the Kotlin DSL form (namespace = "...")`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        'android/app/build.gradle': rnFixture['android/app/build.gradle'].replace(
+          'namespace "com.helloworld"',
+          'namespace = "com.helloworld"'
+        ),
+      },
+      projectRoot
+    );
+
+    await expect(getNamespaceAsync(projectRoot)).resolves.toBe('com.helloworld');
+  });
+
   it(`sets the applicationId in build.gradle if package is given`, () => {
     expect(
       setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)

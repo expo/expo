@@ -259,6 +259,10 @@ export async function getApplicationIdAsync(projectRoot: string): Promise<string
  * as the prefix when expanding dot-shorthand class names in `AndroidManifest`.
  * Returns `null` when no `namespace` is set (legacy projects relying on the
  * deprecated `package=` attribute in the manifest).
+ *
+ * The regex is anchored to the start of a line (multiline) so commented-out
+ * declarations and substring matches are ignored. Supports both Groovy
+ * (`namespace 'com.foo'`) and Kotlin DSL (`namespace = "com.foo"`) forms.
  */
 export async function getNamespaceAsync(projectRoot: string): Promise<string | null> {
   const buildGradlePath = getAppBuildGradleFilePath(projectRoot);
@@ -266,7 +270,7 @@ export async function getNamespaceAsync(projectRoot: string): Promise<string | n
     return null;
   }
   const buildGradle = await fs.promises.readFile(buildGradlePath, 'utf8');
-  const matchResult = buildGradle.match(/namespace ['"](.*)['"]/);
+  const matchResult = buildGradle.match(/^\s*namespace(?:\s+|\s*=\s*)['"]([^'"]+)['"]/m);
   return matchResult?.[1] ?? null;
 }
 
