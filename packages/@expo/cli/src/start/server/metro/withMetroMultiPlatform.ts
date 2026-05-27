@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { ExpoConfig, Platform } from '@expo/config';
+import { getPlatformsFromConfig } from '@expo/config';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
 import type {
@@ -52,6 +53,38 @@ const debug = require('debug')('expo:start:server:metro:multi-platform') as type
 
 function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
+}
+
+const _reactNativeHostPackages = new Map<string, string | null>();
+const _reactNativeHostPathPatterns = new Map<string, RegExp | null>();
+
+function getReactNativeHostPackage(platform: string | null): string | null {
+  if (!platform) {
+    return null;
+  }
+  let supportPackage = _reactNativeHostPackages.get(platform);
+  if (supportPackage === undefined) {
+    const { getSupportPackageForPlatform } =
+      require('expo/internal/unstable-autolinking-exports') as typeof import('expo-modules-autolinking/exports');
+    supportPackage = getSupportPackageForPlatform(platform);
+    _reactNativeHostPackages.set(platform, supportPackage);
+  }
+  return supportPackage;
+}
+
+function getReactNativeHostPathPattern(platform: string | null): RegExp | null {
+  if (!platform) {
+    return null;
+  }
+  let pattern = _reactNativeHostPathPatterns.get(platform);
+  if (pattern === undefined) {
+    const supportPackage = getReactNativeHostPackage(platform);
+    pattern = supportPackage
+      ? new RegExp(`[\\\\/]node_modules[\\\\/]${supportPackage}[\\\\/]`)
+      : null;
+    _reactNativeHostPathPatterns.set(platform, pattern);
+  }
+  return pattern;
 }
 
 function withWebPolyfills(
@@ -382,9 +415,9 @@ export function withExtendedResolver(
       if (!context.dev) return null;
 
       if (
-        // Match react-native renderers.
+        // Match react-native renderers (in the platform's react-native host package).
         (platform !== 'web' &&
-          context.originModulePath.match(/[\\/]node_modules[\\/]react-native[\\/]/) &&
+          getReactNativeHostPathPattern(platform)?.test(context.originModulePath) &&
           moduleName.match(/([\\/]ReactFabric|ReactNativeRenderer)-prod/)) ||
         // Match react production imports.
         (moduleName.match(/\.production(\.min)?\.js$/) &&
@@ -733,10 +766,14 @@ export function withExtendedResolver(
         const isServer =
           context.customResolverOptions?.environment === 'node' ||
           context.customResolverOptions?.environment === 'react-server';
+        const hostPackage = getReactNativeHostPackage(platform) ?? 'react-native';
 
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          const emptyModule = doReplace('react-native/Libraries/Core/InitializeCore.js', undefined);
+          const emptyModule = doReplace(
+            `${hostPackage}/Libraries/Core/InitializeCore.js`,
+            undefined
+          );
           if (emptyModule) {
             debug('Shimming out InitializeCore for React Native in native SSR bundle');
             return emptyModule;
@@ -744,7 +781,7 @@ export function withExtendedResolver(
         }
 
         const hmrModule = doReplaceStrict(
-          'react-native/Libraries/Utilities/HMRClient.js',
+          `${hostPackage}/Libraries/Utilities/HMRClient.js`,
           'expo/src/async-require/hmr.ts'
         );
         if (hmrModule) return hmrModule;
@@ -752,13 +789,13 @@ export function withExtendedResolver(
         if (useExpoUnstableLogBox) {
           // TODO(@kitten): This can never resolve with isolated dependencies
           const logBoxModule = doReplace(
-            'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
+            `${hostPackage}/Libraries/LogBox/LogBoxInspectorContainer.js`,
             '@expo/log-box/swap-rn-logbox.js'
           );
           if (logBoxModule) return logBoxModule;
 
           const logBoxParserModule = doReplace(
-            'react-native/Libraries/LogBox/Data/parseLogBoxLog.js',
+            `${hostPackage}/Libraries/LogBox/Data/parseLogBoxLog.js`,
             '@expo/log-box/swap-rn-logbox-parser.js'
           );
           if (logBoxParserModule) return logBoxParserModule;
@@ -954,9 +991,10 @@ export async function withMetroMultiPlatformAsync(
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
+  const configPlatforms = getPlatformsFromConfig(projectRoot, exp);
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(
-      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+      ([platform, bundler]) => bundler === 'metro' && configPlatforms.includes(platform as Platform)
     )
     .map(([platform]) => platform);
 
