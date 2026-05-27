@@ -53,35 +53,72 @@ rootProject.subprojects.forEach {
   evaluationDependsOn(it.path)
 }
 
-// Foundational libraries the host app already provides — bundling them in the
-// fused AAR causes duplicate-class errors at dex merge. Stay external in the POM.
-// Extend via `-Pbrownfield.fused.exclude-transitive=foo,bar`.
-val transitiveIncludeDenylistNonAndroidX = setOf(
-  "org.jetbrains.kotlin",
-  "org.jetbrains.kotlinx",
-  "com.facebook.fbjni",
-  "com.facebook.fresco",
-  "com.facebook.hermes",
+// `androidx.*` allowlist — these must be fused because their transitive chains
+// span non-AndroidX groups (e.g. `androidx.camera:camera-mlkit-vision` depends
+// on `com.google.mlkit:vision-interfaces`; the latter gets pulled into the AAR
+// as a side-effect of fusing an Expo module, and AGP fused-library's "parent
+// dependency not included" validation then demands its AndroidX parent be
+// fused too — which requires the whole `androidx.camera` chain to be fused).
+// Auto-detection can't see these because they're regular Maven parent links,
+// not KMP `available-at` redirects.
+//
+// Extend via `-Pbrownfield.fused.androidx-fuse=androidx.foo,androidx.bar` if
+// another autolinked module pulls a new AndroidX chain with the same pattern.
+val androidxFuseAllowlistDefaults = setOf("androidx.camera", "androidx.media3")
+val androidxFuseAllowlistExtra: Set<String> =
+  (project.findProperty("brownfield.fused.androidx-fuse") as? String)
+    ?.split(',')
+    ?.map { it.trim() }
+    ?.filter { it.isNotEmpty() }
+    ?.toSet()
+    ?: emptySet()
+val androidxFuseAllowlist = androidxFuseAllowlistDefaults + androidxFuseAllowlistExtra
+
+// Android brownfield host platform baseline — NOT a list of application
+// libraries. These are the foundational pieces that, by definition of being a
+// React Native Android brownfield host, the integrating app already provides
+// on its classpath:
+//
+//   • RN runtime — `react-android`, `hermes-android`, `fbjni`, `soloader`,
+//     `yoga`. The host links variant-specific `.so` files against these;
+//     fusing them either duplicate-classes with the host's copies or pins
+//     the wrong variant's native libs. AGP fused-library's "parent
+//     dependency not included" validation also enforces this transitively
+//     (e.g. `fbjni`'s parent is `hermes-android`).
+//
+//   • Kotlin stdlib — `org.jetbrains.kotlin`, `org.jetbrains.kotlinx`. Every
+//     modern Android app pulls these via its own build.
+//
+//   • Host-provided commons — `com.google.android.material`, `com.google.guava`,
+//     `com.facebook.fresco`, `com.squareup.okhttp3`, `com.squareup.okio`.
+//     Beyond duplication risk, AGP fused-library's class rewriter can't
+//     resolve `android:*` framework-attr references in styleables (Material's
+//     `AppBarLayout_android_background` etc.), so fusing Material Design fails
+//     `rewriteClasses` outright.
+//
+// This list encodes structural facts about the brownfield host — not
+// application-specific library choices. If you're adding a NEW group here,
+// it should be because every brownfield host inherently has it (e.g. AGP
+// raised the minimum platform baseline), not because a specific app uses it.
+val hostPlatformBaseline = setOf(
   "com.facebook.react",
+  "com.facebook.hermes",
+  "com.facebook.fbjni",
   "com.facebook.soloader",
   "com.facebook.yoga",
+  "com.facebook.fresco",
+  "org.jetbrains.kotlin",
+  "org.jetbrains.kotlinx",
   "com.google.android.material",
   "com.google.guava",
   "com.squareup.okhttp3",
   "com.squareup.okio",
 )
-// AndroidX subgroups we DO want fused (ExoPlayer for expo-video, CameraX for
-// expo-camera). All other `androidx.*` stays external — Fused Library rejects
-// partial transitive chains, easy to trip with cross-depending AndroidX modules.
-val androidxFuseAllowlist = setOf(
-  "androidx.camera",
-  "androidx.media3",
-)
-// Groups the user explicitly wants to keep OUT of the fused AAR — extra groups
-// beyond the auto-detected KMP libs (see below). Configure via gradle.properties
-// or `-P` when auto-detection misses something:
-//   brownfield.fused.exclude-transitive=some.kmp.group,another.group
-val userExcludedGroups: Set<String> =
+
+// Extra groups the user wants kept OUT of the fused AAR — auto-detection below
+// handles the common KMP-umbrella case, this is only for edge cases:
+//   brownfield.fused.exclude-transitive=some.group,another.group
+val excludedGroupsExtra: Set<String> =
   (project.findProperty("brownfield.fused.exclude-transitive") as? String)
     ?.split(',')
     ?.map { it.trim() }
@@ -89,21 +126,18 @@ val userExcludedGroups: Set<String> =
     ?.toSet()
     ?: emptySet()
 
-// Auto-detected KMP groups that can't safely be fused. Populated by walking the
-// aggregator's resolution result (below) and inspecting each component's variants
-// for the Kotlin Multiplatform `platform.type` attribute. KMP-published libs trip
-// AGP fused-library's "parent dependency not included" validation when the
-// `-android` child gets fused because the umbrella parent has no AAR.
+// Populated below by walking the aggregator's resolution and detecting KMP-style
+// pom-only umbrellas that trip AGP fused-library's "parent dependency not
+// included" validation.
 val autoExcludedGroups = mutableSetOf<String>()
+val effectiveExcludedGroups: Set<String> get() =
+  hostPlatformBaseline + excludedGroupsExtra + autoExcludedGroups
 
-// Combined view used by configureEach excludes + denylist below. Populated by
-// the resolution walk before configureEach gets registered for other configs.
-fun effectiveExcludedGroups(): Set<String> = userExcludedGroups + autoExcludedGroups
-
-// True → coord stays external in the POM. AndroidX uses an allowlist, everything
-// else uses the denylist (foundational libs + KMP/user-excluded groups).
+// True → coord stays external in the POM. AndroidX uses an allowlist; the
+// RN runtime baseline + user-excluded + auto-detected KMP umbrellas form the
+// denylist.
 fun isGroupDenied(group: String): Boolean {
-  val denylist = transitiveIncludeDenylistNonAndroidX + effectiveExcludedGroups()
+  val denylist = effectiveExcludedGroups
   if (denylist.any { group == it || group.startsWith("$it.") }) return true
   if (group == "androidx" || group.startsWith("androidx.")) {
     return androidxFuseAllowlist.none { group == it || group.startsWith("$it.") }
@@ -196,54 +230,58 @@ dependencies {
   }
 }
 
-// Recorded by the aggregator walk: coords whose group is in `userExcludedGroups`
+// Recorded by the aggregator walk: coords whose group is in `effectiveExcludedGroups`
 // — the consumer-side resolution needs to declare these as transitive deps even
 // though we don't fuse them into the AAR. Used by the metadata + POM post-
 // processors below.
 val externalDepsForConsumer = mutableListOf<Triple<String, String, String>>()
 
-// First pass: walk the aggregator's resolutionResult to AUTO-DETECT KMP libs
-// whose umbrella module declares `available-at` redirecting to a different child
-// coord (e.g. `com.composables:core` → `core-android-debug`, or
-// `io.github.lukmccall:radix-ui-colors` → `radix-ui-colors-android`). The
-// umbrella has no content, only the redirect — AGP fused-library's "parent
-// dependency not included" validation fires when the child gets fused but the
-// umbrella isn't (and the umbrella can't be fused, it has no AAR).
+// AUTO-DETECT groups that must stay external. Walks the aggregator's resolution
+// graph once and records two cases:
 //
-// Gradle exposes the redirect via `ResolvedVariantResult.externalVariant`: when
-// present, this variant is a stand-in for the variant in another module. The
-// umbrella component is the one carrying that link, so its group is what we
-// auto-exclude. Other KMP-published libs that publish full content per artifact
-// (Compose, Kotlin stdlib, etc.) don't have `available-at` and are unaffected.
+//   1. Pom-only KMP umbrellas — components where EVERY variant is a redirect
+//      (`available-at`) to another module. The umbrella has no content of its
+//      own, only a pointer; fusing the `-android` child while the umbrella
+//      stays external trips AGP's "parent dependency not included" validation.
+//      Catches `com.composables:core`, `io.github.lukmccall:radix-ui-colors`,
+//      etc. without naming them. Facade umbrellas (Compose, AndroidX) have a
+//      mix of redirect and content variants — they don't match and stay
+//      fusable.
+//
+//   2. Non-allowlisted `androidx.*` groups — `androidx.core` and friends bring
+//      in styleables that reference `android:*` framework attrs (e.g.
+//      `ColorStateListItem` → `android:alpha`). AGP fused-library's class
+//      rewriter can't resolve framework attrs in the merged R, so fusing them
+//      makes `rewriteClasses` fail. Excluding at the configuration level here
+//      stops them from being pulled in via project-dep transitive walks.
 expoAggregator.incoming.resolutionResult.allComponents.forEach { component ->
   val id = component.id
   if (id !is org.gradle.api.artifacts.component.ModuleComponentIdentifier) return@forEach
-  if (transitiveIncludeDenylistNonAndroidX.any { id.group == it || id.group.startsWith("$it.") }) return@forEach
-  val hasAvailableAtRedirect = component.variants.any { variant ->
-    variant.externalVariant.isPresent
+  val group = id.group
+  if (group == "androidx" || group.startsWith("androidx.")) {
+    val inAllowlist = androidxFuseAllowlist.any { group == it || group.startsWith("$it.") }
+    if (!inAllowlist) autoExcludedGroups.add(group)
+    return@forEach
   }
-  if (hasAvailableAtRedirect) autoExcludedGroups.add(id.group)
+  val variants = component.variants
+  if (variants.isEmpty()) return@forEach
+  val isPureUmbrella = variants.all { variant -> variant.externalVariant.isPresent }
+  if (isPureUmbrella) autoExcludedGroups.add(group)
 }
 if (autoExcludedGroups.isNotEmpty()) {
   logger.lifecycle(
-    "brownfield.fused[${fusedVariant}]: auto-detected ${autoExcludedGroups.size} KMP " +
-      "umbrella groups to keep external: " + autoExcludedGroups.sorted().joinToString(", ")
+    "brownfield.fused[${fusedVariant}]: auto-detected ${autoExcludedGroups.size} groups to " +
+      "keep external (KMP umbrellas + non-allowlisted androidx.*): " +
+      autoExcludedGroups.sorted().joinToString(", ")
   )
 }
 
 // Excludes that must reach EVERY configuration the fused-library plugin walks,
 // including the runtime classpaths of `include(project(...))` targets. Scoping
 // to just `fusedRuntime` isn't enough — fused-library reads from included
-// projects' own configs which a scoped exclude can't touch.
-//
-// The aggregator is intentionally exempt so the transitive-AAR walk below can
-// still record the resolved versions of excluded groups; we inject those into
-// the published POM/.module as transitive deps for consumers to resolve.
-//
-// MUST be registered BEFORE any other config the fused-library plugin will walk
-// resolves — otherwise `exclude` throws "Cannot mutate after resolved." We
-// resolve the aggregator first (above, for KMP detection) but that's safe
-// because the aggregator is exempt from this configureEach.
+// projects' own configs which a scoped exclude can't touch. The aggregator is
+// intentionally exempt so the transitive-AAR walk below can still record the
+// resolved versions of excluded groups for POM/.module injection.
 configurations.matching { it.name != "brownfieldFusedExpoAggregator" }.configureEach {
   // AGP Fused Library rejects any `androidx.databinding:*` dep, including
   // `viewbinding` pulled transitively by `react { autolinkLibrariesWithApp() }`.
@@ -254,7 +292,7 @@ configurations.matching { it.name != "brownfieldFusedExpoAggregator" }.configure
   exclude(group = "androidx.databinding", module = "databinding-ktx")
 
   fusedSkipProjects.forEach { skipName -> exclude(module = skipName) }
-  effectiveExcludedGroups().forEach { g -> exclude(group = g) }
+  effectiveExcludedGroups.forEach { g -> exclude(group = g) }
 }
 
 // Walk the aggregator's resolved artifacts to collect external AAR coords for
@@ -263,7 +301,7 @@ configurations.matching { it.name != "brownfieldFusedExpoAggregator" }.configure
 // you can read the lenient surface, masking the real failure.
 val transitiveAarIncludes: Set<String> = run {
   val collected = mutableSetOf<String>()
-  val excludedGroups = effectiveExcludedGroups()
+  val excludedGroups = effectiveExcludedGroups
   val artifactView = expoAggregator.incoming.artifactView {
     isLenient = true
     attributes {
@@ -399,7 +437,7 @@ afterEvaluate {
         val before = deps.size
         deps.removeAll { dep ->
           val g = dep["group"] as? String ?: return@removeAll false
-          g in userExcludedGroups
+          g in effectiveExcludedGroups
         }
         strippedCount += before - deps.size
         deps.forEach { dep ->
