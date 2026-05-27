@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Hash react-native core autolinking dependencies by their `package.json` instead of their whole directory. ([#46356](https://github.com/expo/expo/pull/46356) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 ## 0.19.3 — 2026-05-26

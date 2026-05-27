@@ -216,14 +216,14 @@ describe('getCoreAutolinkingSources', () => {
       const sources = await testFn('/root/apps/demo', await normalizeOptionsAsync('/app'));
       expect(sources).toContainEqual(
         expect.objectContaining({
-          type: 'dir',
-          filePath: '../../node_modules/react-native-reanimated',
+          type: 'file',
+          filePath: '../../node_modules/react-native-reanimated/package.json',
         })
       );
       expect(sources).toContainEqual(
         expect.objectContaining({
-          type: 'dir',
-          filePath: '../../node_modules/react-native-navigation-bar-color',
+          type: 'file',
+          filePath: '../../node_modules/react-native-navigation-bar-color/package.json',
         })
       );
       expect(sources).toMatchSnapshot();
@@ -269,15 +269,15 @@ describe('getCoreAutolinkingSources', () => {
 
       expect(sources).toContainEqual(
         expect.objectContaining({
-          type: 'dir',
-          filePath: '../../node_modules/react-native-reanimated',
+          type: 'file',
+          filePath: '../../node_modules/react-native-reanimated/package.json',
         })
       );
 
       expect(sources).not.toContainEqual(
         expect.objectContaining({
-          type: 'dir',
-          filePath: '../../node_modules/react-native-navigation-bar-color',
+          type: 'file',
+          filePath: '../../node_modules/react-native-navigation-bar-color/package.json',
         })
       );
     });

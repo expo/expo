@@ -158,17 +158,20 @@ async function getCoreAutolinkingSourcesFromExpoIos(projectRoot, options, useRNC
 }
 async function parseCoreAutolinkingSourcesAsync({ config, reasons, contentsId, platform, }) {
     const logTag = platform
-        ? `react-native core autolinking dir for ${platform}`
-        : 'react-native core autolinking dir';
+        ? `react-native core autolinking package.json for ${platform}`
+        : 'react-native core autolinking package.json';
     const results = [];
     const root = await (0, Utils_1.maybeGetRealPathAsync)(config.root);
     const autolinkingConfig = {};
     for (const [depName, depData] of Object.entries(config.dependencies)) {
         try {
             stripRncoreAutolinkingAbsolutePaths(depData, root);
-            const filePath = (0, Path_1.toPosixPath)(depData.root);
+            // Hash package.json, not the whole dir. Some deps rewrite their own dir on
+            // install or build (postinstall recopies, in-package generated code), which
+            // drifts a dir hash across environments.
+            const filePath = `${(0, Path_1.toPosixPath)(depData.root)}/package.json`;
             debug(`Adding ${logTag} - ${chalk_1.default.dim(filePath)}`);
-            results.push({ type: 'dir', filePath, reasons });
+            results.push({ type: 'file', filePath, reasons });
             autolinkingConfig[depName] = depData;
         }
         catch (e) {
