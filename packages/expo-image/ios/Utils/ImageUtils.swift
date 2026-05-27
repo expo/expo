@@ -161,9 +161,13 @@ func createCacheKeyFilter(_ cacheKey: String?) -> SDWebImageCacheKeyFilter? {
 func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCachePolicy = .disk, useAppleWebpCodec: Bool = true) -> SDWebImageContext {
   var context = SDWebImageContext()
 
-  // Modify URL request to add headers.
-  if let headers = source.headers {
-    context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
+  // Modify the outgoing request to add the source headers and apply the app-wide request modifier.
+  context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier { request in
+    var request = request
+    source.headers?.forEach { key, value in
+      request.setValue(value, forHTTPHeaderField: key)
+    }
+    return ExpoNetworkConfiguration.modifiedRequest(request)
   }
 
   // Allow for custom cache key. If not specified in the source, its uri is used as the key.

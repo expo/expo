@@ -258,6 +258,7 @@ class FileSystemDownloadTask: SharedObject {
         request.setValue(value, forHTTPHeaderField: key)
       }
     }
+    request = ExpoNetworkConfiguration.modifiedRequest(request)
 
     let task = session.downloadTask(with: request)
     downloadTask = task

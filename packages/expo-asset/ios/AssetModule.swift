@@ -75,7 +75,9 @@ public class AssetModule: Module {
       return
     }
 
-    let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, _, _ in
+    let request = ExpoNetworkConfiguration.modifiedRequest(URLRequest(url: url))
+    let session = URLSession(configuration: ExpoNetworkConfiguration.configuration(default: .default))
+    let downloadTask = session.downloadTask(with: request) { urlOrNil, _, _ in
       guard let fileURL = urlOrNil else {
         promise.reject(UnableToDownloadAssetException(url))
         return
@@ -90,5 +92,7 @@ public class AssetModule: Module {
       }
     }
     downloadTask.resume()
+    // The session is created per download, so let it release once the task finishes.
+    session.finishTasksAndInvalidate()
   }
 }

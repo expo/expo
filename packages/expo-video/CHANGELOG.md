@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Apply the app-wide `ExpoNetworkConfiguration` session configuration and request modifier to cached media requests. ([#46347](https://github.com/expo/expo/pull/46347) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.1.2 — 2026-05-21
 
 ### 🐛 Bug fixes

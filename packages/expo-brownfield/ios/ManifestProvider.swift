@@ -1,3 +1,5 @@
+import ExpoModulesCore
+
 public class ManifestProvider {
   /**
   * Fetches the manifest for brownfield setup
@@ -19,7 +21,7 @@ public class ManifestProvider {
 
       print("📡 Fetching manifest for dev-menu from: \(manifestURL.absoluteString)")
 
-      let task = URLSession.shared.dataTask(with: request) { data, response, error in
+      let task = URLSession.shared.dataTask(with: ExpoNetworkConfiguration.modifiedRequest(request)) { data, response, error in
         if let error = error {
           print("❌ Error fetching manifest: \(error.localizedDescription)")
           completion(nil, nil)

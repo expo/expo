@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Apply the app-wide `ExpoNetworkConfiguration` request modifier to image downloads. ([#46347](https://github.com/expo/expo/pull/46347) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.9 — 2026-05-23
 
 ### 🐛 Bug fixes

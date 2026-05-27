@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Apply the app-wide `ExpoNetworkConfiguration` session configuration and request modifier to downloads and uploads. ([#46347](https://github.com/expo/expo/pull/46347) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.7 — 2026-05-20
 
 ### 🛠 Breaking changes

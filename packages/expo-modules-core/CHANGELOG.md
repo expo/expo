@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `ExpoNetworkConfiguration` with process-wide hooks to override the `URLSessionConfiguration` and modify outgoing `URLRequest`s made by Expo modules. ([#46347](https://github.com/expo/expo/pull/46347) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - [android] Fix nested `Host` double-composing children. ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway))
