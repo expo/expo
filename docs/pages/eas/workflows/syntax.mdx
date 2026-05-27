@@ -428,7 +428,7 @@ jobs:
 
 ### `jobs.<job_id>.env`
 
-Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `require-approval`, `doc`, `get-build` and `slack` jobs).
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `require-approval`, `doc`, `get-build`, and `slack` jobs).
 
 ```yaml
 jobs:
@@ -1356,6 +1356,20 @@ This job outputs the following properties:
 {
   "comment_url": string | undefined  // URL of the posted GitHub comment
 }
+```
+
+#### `apple-device-registration-request`
+
+Pauses the workflow until an iOS device enrolls for an Apple Team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
+
+```yaml
+jobs:
+  register_device:
+    # @info #
+    type: apple-device-registration-request
+    params:
+      apple_team_identifier: string # optional
+    # @end #
 ```
 
 #### `require-approval`

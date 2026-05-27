@@ -56,6 +56,8 @@ Otherwise, after registering a device with [`eas device:create`](/eas/cli/#eas-d
 
 ### Managing devices
 
+With [EAS Workflows](/eas/workflows/get-started), you can pause a workflow until a tester enrolls an iOS device and a team member approves it using the [`apple-device-registration-request`](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) job. Pair it with a `build` job that sets `refresh_ad_hoc_provisioning_profile: true` to include the new device in an internal distribution build.
+
 You can see any devices registered via `eas device:create` by running:
 
 <Terminal
