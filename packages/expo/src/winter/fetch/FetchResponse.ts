@@ -196,13 +196,19 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
             });
 
             this.addListener('didComplete', () => {
-              controller.close();
+              if (isControllerClosed) {
+                return;
+              }
               isControllerClosed = true;
+              controller.close();
             });
 
             this.addListener('didFailWithError', (error: string) => {
-              controller.error(new Error(error));
+              if (isControllerClosed) {
+                return;
+              }
               isControllerClosed = true;
+              controller.error(new Error(error));
             });
           },
 
