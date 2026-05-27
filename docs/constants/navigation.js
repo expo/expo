@@ -27,7 +27,7 @@ const learnDirectories = ['tutorial', 'additional-resources'];
 const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
 const referenceDirectories = ['versions', 'technical-specs', 'more'];
-/** Private preview section which isn't linked in the dcionocumentation */
+/** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['feature-preview', 'preview'];
 /** Manual list of directories to categorize as "EAS" */
 const easDirectories = [
