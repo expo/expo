@@ -267,6 +267,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'NavigationBar component',
+    route: 'ui/navigation-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationBarScreen'));
+    },
+  },
+  {
     name: 'BottomSheet component',
     route: 'ui/bottomsheet',
     options: {},
