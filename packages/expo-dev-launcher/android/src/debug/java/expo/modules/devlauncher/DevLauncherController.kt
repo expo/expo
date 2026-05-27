@@ -413,29 +413,37 @@ class DevLauncherController private constructor(
     Intent(context, DevLauncherActivity::class.java)
       .apply { addFlags(NEW_ACTIVITY_FLAGS) }
 
-  private fun createAppIntent() =
-    createBasicAppIntent().apply {
-      pendingIntentRegistry
-        .consumePendingIntent()
-        ?.let { intent ->
-          action = intent.action
-          data = intent.data
-          intent.extras?.let {
-            putExtras(it)
-          }
-          intent.categories?.let {
-            categories.addAll(it)
-          }
-        } ?: run {
-        // If no pending intent is available, use the extras from the intent that was used to launch the app.
-        pendingIntentExtras?.let {
-          putExtras(it)
-        }
+  private fun createAppIntent(): Intent {
+    val newIntent = createBasicAppIntent()
+    val pendingIntent = pendingIntentRegistry
+      .consumePendingIntent()
+
+    if (pendingIntent != null) {
+      newIntent.action = pendingIntent.action
+      newIntent.data = pendingIntent.data
+
+      val pendingExtras = pendingIntent.extras
+      if (pendingExtras != null) {
+        newIntent.putExtras(pendingExtras)
       }
 
-      // Clear the pending intent extras after using them.
+      val pendingCategories = pendingIntent.categories
+      if (pendingCategories != null) {
+        pendingCategories.forEach { pendingCategory ->
+          newIntent.addCategory(pendingCategory)
+        }
+      }
+    } else {
+      // If no pending intent is available, use the extras from the intent that was used to launch the app.
+      val extras = pendingIntentExtras
+      if (extras != null) {
+        newIntent.putExtras(extras)
+      }
       pendingIntentExtras = null
     }
+
+    return newIntent
+  }
 
   private fun createBasicAppIntent() =
     if (sLauncherClass == null) {

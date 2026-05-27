@@ -22,6 +22,7 @@ export async function getInitialURL() {
 export function getLinkingURL() {
     return '';
 }
+export function clearInitialURL() { }
 export async function openURL(url) {
     return true;
 }

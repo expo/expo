@@ -46,7 +46,7 @@ export function TabButton({
           className={mergeClasses(
             'absolute inset-0 rounded-md border',
             theme === 'default' && 'border-secondary bg-screen dark:bg-hover dark:drop-shadow-none',
-            theme === 'secondary' && 'border-button-secondary bg-default shadow-xs dark:bg-subtle'
+            theme === 'secondary' && 'border-default bg-default shadow-sm dark:bg-subtle'
           )}
         />
       )}

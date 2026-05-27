@@ -14,8 +14,6 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-> **info** Expo MCP Server requires an [EAS paid plan](https://expo.dev/pricing).
-
 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a standard protocol that allows AI models to integrate with external data sources, providing enhanced context for more precise responses. It enables AI-assisted tools like agents to understand your development environment more deeply, allowing them to provide better assistance with your codebase.
 
 Expo MCP Server is a remote MCP server hosted by Expo that integrates with popular AI-assisted tools such as Claude Code, Cursor, VS Code, and others, enabling them to interact directly with your Expo projects.
@@ -62,8 +60,8 @@ Your AI-assisted tools can autonomously write the code, capture screenshots to v
 The complete table of [MCP capabilities](#available-mcp-capabilities) documents the tools and prompts Expo MCP Server provides to AI-assisted tools.
 
 <Prerequisites>
-  <Requirement title="Expo account with an EAS paid plan">
-    An [EAS paid plan](https://expo.dev/pricing) is required to use Expo MCP Server.
+  <Requirement title="Expo account">
+    An Expo account is required to use Expo MCP Server.
   </Requirement>
   <Requirement title="An Expo project on the latest SDK">
     Create a project with `npx create-expo-app@latest --template default@sdk-56`, or ensure your
@@ -187,7 +185,7 @@ Expo MCP Server provides two types of capabilities depending on your setup:
 
 ### Server capabilities
 
-Server capabilities are available with just the remote MCP server connection, without needing to set up a local development server. The **search_documentation** tool is an example of a server capability.
+Server capabilities are available with just the remote MCP server connection, without needing to set up a local development server.
 
 ### Local capabilities
 

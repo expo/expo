@@ -32,12 +32,12 @@ EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/)
 
 > **warning** The integration must be enabled before mount and cannot be toggled at runtime. Calling `configure()` after the app has mounted, or toggling the flag mid-session, throws an error.
 
-Call `ExpoObserve.configure()` with the `expo-router` integration flag at module scope, before any screen mounts:
+Call `Observe.configure()` with the `expo-router` integration flag at module scope, before any screen mounts:
 
 ```tsx src/app/_layout.tsx
-import ExpoObserve from 'expo-observe';
+import { Observe } from 'expo-observe';
 
-ExpoObserve.configure({
+Observe.configure({
   integrations: { 'expo-router': true },
 });
 ```
@@ -65,7 +65,7 @@ export default function Home() {
 }
 ```
 
-> **info** If the integration is disabled or `expo-router` is not installed, `useObserve()` falls back to the global `AppMetrics.markInteractive`. You can leave the hook in place regardless of integration state.
+> **info** If the integration is disabled or `expo-router` is not installed, `useObserve()` falls back to the global `Observe.markInteractive`. You can leave the hook in place regardless of integration state.
 
 </Step>
 
@@ -116,6 +116,6 @@ Emitted at most once per screen instance within a session.
 - `routeName` is a pattern (`/(tabs)/sessions/[sessionId]`), not a resolved URL (`/sessions/abc`). This keeps metrics stable across distinct param values so the dashboard buckets them together. Resolved values are still available on the event via `url` and `routeParams`.
 - Calls to `router.prefetch()` do not count as a user navigation and never seed a `cold_ttr` or `warm_ttr` measurement. The next user-driven navigation to that route emits `warm_ttr` because the screen has already rendered.
 - The integration only activates if `expo-router` is installed at runtime. If it is not installed, `useObserve()` and `ObserveRoot` continue to work but no per-route navigation metrics are emitted.
-- The integration must be enabled before mount via `ExpoObserve.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
+- The integration must be enabled before mount via `Observe.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
 - If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
 - For general issues with EAS Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).

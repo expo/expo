@@ -116,9 +116,9 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   if (deepLink) {
     // Passes pending deep link to initialURL if any
     launchOptions[UIApplicationLaunchOptionsURLKey] = deepLink;
-  } else if (launchOptions[UIApplicationLaunchOptionsURLKey] && [EXDevLauncherURLHelper isDevLauncherURL:launchOptions[UIApplicationLaunchOptionsURLKey]]) {
-    // Strips initialURL if it is from myapp://expo-development-client/?url=...
-    // That would make dev-launcher acts like a normal app.
+  } else {
+    // The pending deep link has already been consumed by an earlier React host. Strip the URL
+    // from the cached launchOptions so a subsequent React host
     launchOptions[UIApplicationLaunchOptionsURLKey] = nil;
   }
 
@@ -293,6 +293,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   // Reset app react host
   [self.delegate destroyReactInstance];
+
+  // Tell expo-linking to clear its cached initial URL so the next React host doesn't pick up
+  // the deep link that originally launched the previous app.
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"ExpoLinkingClearInitialURL" object:self];
 
   if (_devLauncherViewController != nil) {
     [_devLauncherViewController resetHostingController];
