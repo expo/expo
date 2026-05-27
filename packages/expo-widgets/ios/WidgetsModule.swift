@@ -72,8 +72,8 @@ public final class WidgetsModule: Module {
         LiveActivityFactory(name: name, layout: layout)
       }
 
-      Function("start") { (liveActivity: LiveActivityFactory, props: String, url: URL?) in
-        try liveActivity.start(props: props, url: url)
+      Function("start") { (liveActivity: LiveActivityFactory, props: String, url: URL?, staleDate: Date?) in
+        try liveActivity.start(props: props, url: url, staleDate: staleDate)
       }
 
       Function("getInstances") { (liveActivity: LiveActivityFactory) in
@@ -82,8 +82,8 @@ public final class WidgetsModule: Module {
     }
 
     Class("LiveActivity", LiveActivity.self) {
-      AsyncFunction("update") { (instance: LiveActivity, props: String) in
-        try await instance.update(props: props)
+      AsyncFunction("update") { (instance: LiveActivity, props: String, staleDate: Date?) in
+        try await instance.update(props: props, staleDate: staleDate)
       }
 
       AsyncFunction("end") { (instance: LiveActivity, dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) in

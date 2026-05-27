@@ -50,9 +50,10 @@ export class LiveActivity {
     /**
      * Updates the Live Activity's content. The UI reflects the new properties immediately.
      * @param props The updated content properties.
+     * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
      */
-    update(props) {
-        return this.nativeLiveActivity.update(JSON.stringify(props));
+    update(props, staleDate) {
+        return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime() ?? undefined);
     }
     /**
      * Ends the Live Activity.
@@ -100,10 +101,11 @@ export class LiveActivityFactory {
      * Starts a new Live Activity with the given properties.
      * @param props The initial content properties for the Live Activity.
      * @param url An optional URL to associate with the Live Activity, used for deep linking.
+     * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
      * @returns The new Live Activity instance.
      */
-    start(props, url) {
-        return new LiveActivity(this.nativeLiveActivityFactory.start(JSON.stringify(props), url));
+    start(props, url, staleDate) {
+        return new LiveActivity(this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime() ?? undefined));
     }
     /**
      * Returns all currently active instances of this Live Activity type.

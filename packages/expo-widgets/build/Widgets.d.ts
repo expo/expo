@@ -36,8 +36,9 @@ export declare class LiveActivity<T extends object = object> {
     /**
      * Updates the Live Activity's content. The UI reflects the new properties immediately.
      * @param props The updated content properties.
+     * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
      */
-    update(props: T): Promise<void>;
+    update(props: T, staleDate?: Date | null): Promise<void>;
     /**
      * Ends the Live Activity.
      * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
@@ -70,9 +71,10 @@ export declare class LiveActivityFactory<T extends object = object> {
      * Starts a new Live Activity with the given properties.
      * @param props The initial content properties for the Live Activity.
      * @param url An optional URL to associate with the Live Activity, used for deep linking.
+     * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
      * @returns The new Live Activity instance.
      */
-    start(props: T, url?: string): LiveActivity<T>;
+    start(props: T, url?: string, staleDate?: Date | null): LiveActivity<T>;
     /**
      * Returns all currently active instances of this Live Activity type.
      */
