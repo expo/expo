@@ -51,7 +51,14 @@ Enable server rendering in your project's [app config](/versions/latest/config/a
 
 Start the development server:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
@@ -59,7 +66,14 @@ Start the development server:
 
 To export your app for production, run the export command:
 
-<Terminal cmd={['$ npx expo export --platform web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 This creates a **dist** directory with your server-rendered application. Unlike static rendering, no HTML files are pre-generated. Instead, the output includes a similar directory structure as shown below:
 
@@ -79,7 +93,14 @@ In output above includes the following directories inside **dist** directory:
 
 You can test the production build locally by running the following command and opening the linked URL in your browser:
 
-<Terminal cmd={['$ npx expo serve']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo serve'],
+    yarn: ['$ yarn expo serve'],
+    pnpm: ['$ pnpm expo serve'],
+    bun: ['$ bun expo serve'],
+  }}
+/>
 
 The above command starts a local server that renders pages on each request, simulating a production environment.
 
@@ -219,7 +240,12 @@ Server-side rendering requires a runtime server to render pages on each request.
 EAS Hosting supports server rendering out of the box. Export your app and deploy with:
 
 <Terminal
-  cmd={['$ npx expo export --platform web', '', '$ npx eas-cli@latest hosting:deploy dist']}
+  cmd={{
+    npm: ['$ npx expo export --platform web', '', '$ npx eas-cli@latest hosting:deploy dist'],
+    yarn: ['$ yarn expo export --platform web', '', '$ yarn dlx eas-cli@latest hosting:deploy dist'],
+    pnpm: ['$ pnpm expo export --platform web', '', '$ pnpm dlx eas-cli@latest hosting:deploy dist'],
+    bun: ['$ bun expo export --platform web', '', '$ bunx eas-cli@latest hosting:deploy dist'],
+  }}
 />
 
 </Collapsible>
