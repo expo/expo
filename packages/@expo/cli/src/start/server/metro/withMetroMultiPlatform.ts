@@ -6,6 +6,7 @@
  */
 import type { ExpoConfig, Platform } from '@expo/config';
 import { getPlatformsFromConfig } from '@expo/config';
+import { getPlatformExtensions } from '@expo/config/paths';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
 import type {
@@ -48,6 +49,26 @@ export type StrictResolverFactory = (
 ) => StrictResolver;
 
 const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
+
+function resolveWithPlatformExtensions(
+  context: ResolutionContext,
+  moduleName: string,
+  platform: string | null
+): Resolution {
+  const sourceExts = platform != null ? getPlatformExtensions(platform, context.sourceExts) : null;
+  if (platform == null || !sourceExts) {
+    return resolver(context, moduleName, platform);
+  }
+  const platformContext = asWritable(context);
+  platformContext.preferNativePlatform = false;
+  platformContext.sourceExts = sourceExts;
+  // Platform-less resolution drops the platform's package-exports conditions, so fold them in.
+  platformContext.unstable_conditionNames = [
+    ...context.unstable_conditionNames,
+    ...(context.unstable_conditionsByPlatform[platform] ?? []),
+  ];
+  return resolver(platformContext, moduleName, null);
+}
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
@@ -273,7 +294,7 @@ export function withExtendedResolver(
     platform
   ): StrictResolver => {
     return function doResolve(moduleName: string): Resolution {
-      return resolver(context, moduleName, platform);
+      return resolveWithPlatformExtensions(context, moduleName, platform);
     };
   };
 
