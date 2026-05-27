@@ -59,7 +59,14 @@ The integration command:
 
 After the integration command finishes, start the Convex dev server:
 
-<Terminal cmd={['$ npx convex dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx convex dev'],
+    yarn: ['$ yarn dlx convex dev'],
+    pnpm: ['$ pnpm dlx convex dev'],
+    bun: ['$ bunx convex dev'],
+  }}
+/>
 
 This creates the local **convex** directory if your project does not have one yet, generates the typed API files, and syncs your Convex functions with your deployment while it runs.
 

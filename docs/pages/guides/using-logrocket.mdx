@@ -13,7 +13,14 @@ import { Terminal } from '~/ui/components/Snippet';
 
 You can install the LogRocket SDK with the following command:
 
-<Terminal cmd={['$ npx expo install @logrocket/react-native expo-build-properties']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @logrocket/react-native expo-build-properties'],
+    yarn: ['$ yarn expo install @logrocket/react-native expo-build-properties'],
+    pnpm: ['$ pnpm expo install @logrocket/react-native expo-build-properties'],
+    bun: ['$ bun expo install @logrocket/react-native expo-build-properties'],
+  }}
+/>
 
 Then, in your [app config](/workflow/configuration/), include the LogRocket config plugin:
 

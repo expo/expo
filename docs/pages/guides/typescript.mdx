@@ -19,7 +19,14 @@ This guide provides a quick way to get started for a new project and also steps 
 
 To create a new project, use the default template which includes base TypeScript configuration, example code, and basic navigation structure:
 
-<Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-56']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
+    bun: ['$ bun create expo --template default@sdk-56'],
+  }}
+/>
 
 After you create a new project using the command above, make sure to follow instructions from:
 
@@ -52,13 +59,27 @@ To install required `devDependencies` such as `typescript` and `@types/react` in
 
 <Tab label="macOS/Linux">
 
-<Terminal cmd={['$ npx expo install typescript @types/react --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install typescript @types/react --dev'],
+    yarn: ['$ yarn expo install typescript @types/react --dev'],
+    pnpm: ['$ pnpm expo install typescript @types/react --dev'],
+    bun: ['$ bun expo install typescript @types/react --dev'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Windows">
 
-<Terminal cmd={['$ npx expo install typescript @types/react "--" --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install typescript @types/react "--" --dev'],
+    yarn: ['$ yarn expo install typescript @types/react "--" --dev'],
+    pnpm: ['$ pnpm expo install typescript @types/react "--" --dev'],
+    bun: ['$ bun expo install typescript @types/react "--" --dev'],
+  }}
+/>
 
 </Tab>
 
@@ -70,7 +91,14 @@ To install required `devDependencies` such as `typescript` and `@types/react` in
 
 To type check your project's files run `tsc` command within the root of your project directory:
 
-<Terminal cmd={['# For npm', '$ npm run tsc', '', '# For yarn', '$ yarn tsc']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run tsc'],
+    yarn: ['$ yarn run tsc'],
+    pnpm: ['$ pnpm run tsc'],
+    bun: ['$ bun run tsc'],
+  }}
+/>
 
 </Collapsible>
 
@@ -82,7 +110,14 @@ To type check your project's files run `tsc` command within the root of your pro
 
 A project's **tsconfig.json** should extend `expo/tsconfig.base` by default. You can automatically generate a **tsconfig.json** file by running the command:
 
-<Terminal cmd={['$ npx expo customize tsconfig.json']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo customize tsconfig.json'],
+    yarn: ['$ yarn expo customize tsconfig.json'],
+    pnpm: ['$ pnpm expo customize tsconfig.json'],
+    bun: ['$ bun expo customize tsconfig.json'],
+  }}
+/>
 
 The default configuration in **tsconfig.json** is user-friendly and encourages adoption. If you prefer **strict type checking** and reduce the chances of runtime errors, enable `strict` under [`compilerOptions`](https://www.typescriptlang.org/docs/handbook/compiler-options.html):
 
@@ -193,13 +228,27 @@ Install [`tsx`](https://tsx.is/) as a dev dependency and utilize its [`tsx/cjs` 
 
 <Tab label="macOS/Linux">
 
-<Terminal cmd={['$ npx expo install tsx --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install tsx --dev'],
+    yarn: ['$ yarn expo install tsx --dev'],
+    pnpm: ['$ pnpm expo install tsx --dev'],
+    bun: ['$ bun expo install tsx --dev'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Windows">
 
-<Terminal cmd={['$ npx expo install tsx "--" --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install tsx "--" --dev'],
+    yarn: ['$ yarn expo install tsx "--" --dev'],
+    pnpm: ['$ pnpm expo install tsx "--" --dev'],
+    bun: ['$ bun expo install tsx "--" --dev'],
+  }}
+/>
 
 </Tab>
 
