@@ -254,6 +254,23 @@ export async function getApplicationIdAsync(projectRoot: string): Promise<string
 }
 
 /**
+ * Reads the `namespace` declared in the app module's `build.gradle`. AGP 7.3+
+ * uses this as the Kotlin/Java package for the generated `R`/`BuildConfig` and
+ * as the prefix when expanding dot-shorthand class names in `AndroidManifest`.
+ * Returns `null` when no `namespace` is set (legacy projects relying on the
+ * deprecated `package=` attribute in the manifest).
+ */
+export async function getNamespaceAsync(projectRoot: string): Promise<string | null> {
+  const buildGradlePath = getAppBuildGradleFilePath(projectRoot);
+  if (!fs.existsSync(buildGradlePath)) {
+    return null;
+  }
+  const buildGradle = await fs.promises.readFile(buildGradlePath, 'utf8');
+  const matchResult = buildGradle.match(/namespace ['"](.*)['"]/);
+  return matchResult?.[1] ?? null;
+}
+
+/**
  * Replace the package name with the new package name, in the given source.
  * This has to be limited to avoid accidentally replacing imports when the old package name overlaps.
  */

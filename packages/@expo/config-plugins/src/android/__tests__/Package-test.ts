@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import {
   getApplicationIdAsync,
+  getNamespaceAsync,
   getPackage,
   kotlinSanitized,
   renameJniOnDiskForType,
@@ -45,6 +46,29 @@ describe('package', () => {
     vol.fromJSON(rnFixture, projectRoot);
 
     expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
+  });
+
+  it(`returns the namespace defined in build.gradle`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(rnFixture, projectRoot);
+
+    await expect(getNamespaceAsync(projectRoot)).resolves.toBe('com.helloworld');
+  });
+
+  it(`returns null when build.gradle has no namespace declaration`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        'android/app/build.gradle': rnFixture['android/app/build.gradle'].replace(
+          /namespace ['"][^'"]*['"]\s*\n?/g,
+          ''
+        ),
+      },
+      projectRoot
+    );
+
+    await expect(getNamespaceAsync(projectRoot)).resolves.toBe(null);
   });
 
   it(`sets the applicationId in build.gradle if package is given`, () => {
