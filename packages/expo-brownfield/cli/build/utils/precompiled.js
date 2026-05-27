@@ -515,16 +515,23 @@ exports.enumerateBundledSpmDepsXcframeworks = enumerateBundledSpmDepsXcframework
  * xcframework can land on disk without a matching `.binaryTarget` (or vice-versa). Calling this
  * helper from both sites guarantees they agree, and gates both behind the completeness check
  * so we never produce a half-baked package on missing deps.
+ *
+ * `hostProvidedFrameworks` is the set of xcframework names the consuming host iOS app already
+ * provides (typically via its own CocoaPods). Matching entries are filtered out of both the
+ * enumeration result AND the completeness-check input — so we neither ship them nor fail the
+ * build when an `spm.config.json` declares them.
  */
-const enumerateAllPrebuildModules = (cwd, buildConfiguration) => {
+const enumerateAllPrebuildModules = (cwd, buildConfiguration, hostProvidedFrameworks = []) => {
+    const hostProvided = new Set(hostProvidedFrameworks);
     const podModules = (0, exports.enumeratePrecompiledModules)(node_path_1.default.join(cwd, 'ios'));
     const podToNpm = (0, exports.buildPodToNpmPackageMap)(cwd);
     const seenNames = new Set(podModules.map((m) => m.name));
     const bundledModules = (0, exports.enumerateBundledSpmDepsXcframeworks)(podModules, podToNpm, buildConfiguration, seenNames);
     bundledModules.forEach((m) => seenNames.add(m.name));
     const spmDepModules = (0, exports.enumerateSpmDepsXcframeworks)(cwd, buildConfiguration, seenNames);
-    const modules = [...podModules, ...bundledModules, ...spmDepModules];
-    const declaredDeps = (0, exports.collectDeclaredSpmDeps)(podModules, podToNpm);
+    const modules = [...podModules, ...bundledModules, ...spmDepModules].filter((m) => !hostProvided.has(m.name));
+    // Drop host-provided names from the completeness check
+    const declaredDeps = (0, exports.collectDeclaredSpmDeps)(podModules, podToNpm).filter(({ name }) => !hostProvided.has(name));
     const coveredNames = new Set(modules.map((m) => m.name));
     const missing = declaredDeps.filter(({ name }) => !coveredNames.has(name));
     if (missing.length > 0) {

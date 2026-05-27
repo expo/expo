@@ -4,10 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveTasksConfigAndroid = exports.resolveBuildConfigIos = exports.resolveBuildConfigAndroid = void 0;
+const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const android_1 = require("./android");
 const ios_1 = require("./ios");
 const precompiled_1 = require("./precompiled");
+const HOST_PROVIDED_FRAMEWORKS_KEY = 'ios.brownfieldHostProvidedFrameworks';
 const resolveBuildConfigAndroid = (options) => {
     const variant = resolveVariant(options);
     return {
@@ -52,6 +54,7 @@ const resolveBuildConfigIos = (options) => {
         buildConfiguration,
         derivedDataPath,
         device,
+        hostProvidedFrameworks: resolveHostProvidedFrameworks(options),
         simulator,
         scheme: resolveScheme(options),
         usePrebuilds,
@@ -59,6 +62,66 @@ const resolveBuildConfigIos = (options) => {
     };
 };
 exports.resolveBuildConfigIos = resolveBuildConfigIos;
+/**
+ * Source order for `hostProvidedFrameworks`:
+ *  1. `--host-provided <names...>` CLI flag (or comma-separated single string).
+ *  2. `ios.brownfieldHostProvidedFrameworks` in `ios/Podfile.properties.json`, written by the
+ *     expo-brownfield plugin during prebuild from the user's `ios.hostProvidedFrameworks`.
+ *
+ * The CLI flag wins entirely when provided — it does not merge with the prebuild output. This
+ * keeps the contract simple: a one-off build (CI smoke test, repro) can override the
+ * project-level declaration without re-running prebuild.
+ */
+const resolveHostProvidedFrameworks = (options) => {
+    const fromFlag = parseHostProvidedFlag(options.hostProvided);
+    if (fromFlag.length > 0) {
+        return fromFlag;
+    }
+    return readHostProvidedFromPodfileProperties(process.cwd());
+};
+const parseHostProvidedFlag = (value) => {
+    if (value == null) {
+        return [];
+    }
+    const raw = Array.isArray(value) ? value : [value];
+    const names = raw
+        .flatMap((entry) => (typeof entry === 'string' ? entry.split(',') : []))
+        .map((entry) => entry.trim())
+        .filter((entry) => entry.length > 0);
+    return Array.from(new Set(names));
+};
+const readHostProvidedFromPodfileProperties = (cwd) => {
+    const propertiesPath = node_path_1.default.join(cwd, 'ios', 'Podfile.properties.json');
+    if (!node_fs_1.default.existsSync(propertiesPath)) {
+        return [];
+    }
+    let properties;
+    try {
+        properties = JSON.parse(node_fs_1.default.readFileSync(propertiesPath, 'utf8'));
+    }
+    catch {
+        // Malformed properties file — prebuild would normally repair it. Treat as "no host-provided"
+        // and let other parts of the CLI surface the actual problem.
+        return [];
+    }
+    const rawValue = properties[HOST_PROVIDED_FRAMEWORKS_KEY];
+    if (typeof rawValue !== 'string' || rawValue.length === 0) {
+        return [];
+    }
+    let parsed;
+    try {
+        parsed = JSON.parse(rawValue);
+    }
+    catch {
+        return [];
+    }
+    if (!Array.isArray(parsed)) {
+        return [];
+    }
+    return Array.from(new Set(parsed
+        .filter((entry) => typeof entry === 'string' && entry.trim().length > 0)
+        .map((entry) => entry.trim())));
+};
 const resolveTasksConfigAndroid = (options) => {
     return {
         ...resolveCommonConfig(options),

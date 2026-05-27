@@ -43,6 +43,7 @@ export const enumerateSourceBuiltDeps = async (
     return [];
   }
 
+  const hostProvided = new Set(config.hostProvidedFrameworks);
   const names = new Set<string>();
   for (const line of stdout.split('\n')) {
     const match = line.trim().match(/^@rpath\/([^/]+)\.framework\//);
@@ -50,7 +51,9 @@ export const enumerateSourceBuiltDeps = async (
       names.add(match[1]);
     }
   }
-  return Array.from(names).filter((name) => name !== config.scheme && !alreadyCovered.has(name));
+  return Array.from(names).filter(
+    (name) => name !== config.scheme && !alreadyCovered.has(name) && !hostProvided.has(name)
+  );
 };
 
 /**
@@ -225,7 +228,13 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
     // Single source of truth: enumerates all three layers (pod → bundled-npm → shared
     // `.spm-deps/`) and runs the strict completeness check. Failing here surfaces missing
     // deps at packaging time (rather than as `Library not loaded: @rpath/...` at runtime).
-    const modules = enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration);
+    // Host-provided frameworks are filtered out here so they're neither copied to the artifact
+    // dir nor counted as a missing SPM-dep (see `enumerateAllPrebuildModules`).
+    const modules = enumerateAllPrebuildModules(
+      process.cwd(),
+      config.buildConfiguration,
+      config.hostProvidedFrameworks
+    );
 
     // Reconcile flavor once per pod — replace-xcframework.js extracts the whole tarball
     // (main + sibling SPM-dep xcframeworks) in one shot, so re-running per-xcframework would
@@ -275,7 +284,11 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
 const collectCoveredFrameworkNames = (config: IosConfig): Set<string> => {
   const covered = new Set<string>([config.scheme, ...resolvedFixedXCFrameworks()]);
   if (config.usePrebuilds) {
-    for (const module of enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration)) {
+    for (const module of enumerateAllPrebuildModules(
+      process.cwd(),
+      config.buildConfiguration,
+      config.hostProvidedFrameworks
+    )) {
       covered.add(module.name);
     }
   }
@@ -427,7 +440,11 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
   // xcframework that lands on disk is also declared as a `.binaryTarget` here (and vice-versa).
   // The check fails fast — Package.swift never gets written if a declared SPM dep is missing.
   const precompiledModules = config.usePrebuilds
-    ? enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration).map(({ name }) => ({
+    ? enumerateAllPrebuildModules(
+        process.cwd(),
+        config.buildConfiguration,
+        config.hostProvidedFrameworks
+      ).map(({ name }) => ({
         name,
         targets: [name],
       }))
@@ -539,8 +556,139 @@ export const printIosConfig = (config: IosConfig) => {
     console.log(` - Package name: ${chalk.blue(config.output.packageName)}`);
   }
   console.log(` - Bundle precompiled modules: ${chalk.blue(config.usePrebuilds)}`);
+  if (config.hostProvidedFrameworks.length > 0) {
+    console.log(
+      ` - Host-provided frameworks: ${chalk.blue(config.hostProvidedFrameworks.join(', '))}`
+    );
+  }
 
   console.log();
+};
+
+/**
+ * Diagnostics for `hostProvidedFrameworks`. Run before the build kicks off so any misconfiguration
+ * surfaces with a clear message instead of a confusing "Multiple commands produce" / runtime crash:
+ *
+ *  - **Source-build guardrail:** when `usePrebuilds` is false there is no separate xcframework to
+ *    strip — the host pod gets statically linked into the brownfield framework itself. We fail
+ *    fast and point the user at the docs.
+ *  - **Unused-entry warning:** a name listed in `hostProvidedFrameworks` that doesn't match any
+ *    actual xcframework under `ios/Pods/` indicates a typo or stale config — warn so the user
+ *    catches it before debugging a still-duplicated build.
+ *  - **Version log:** for each excluded framework we surface the `CFBundleShortVersionString`
+ *    found in its bundled `Info.plist`. The consumer's host app must ship a version that's ABI-
+ *    compatible with what we just stripped; logging the expected version here gives them a
+ *    concrete target to verify against.
+ */
+export const validateHostProvided = (config: IosConfig): void => {
+  if (config.hostProvidedFrameworks.length === 0) {
+    return;
+  }
+
+  if (!config.usePrebuilds) {
+    CLIError.handle('ios-host-provided-without-prebuilds');
+    return;
+  }
+
+  const podsDir = path.join(process.cwd(), 'ios', 'Pods');
+  const observed = new Map<string, string | null>();
+  if (fs.existsSync(podsDir)) {
+    for (const pod of fs.readdirSync(podsDir, { withFileTypes: true })) {
+      if (!pod.isDirectory()) {
+        continue;
+      }
+      const podDir = path.join(podsDir, pod.name);
+      let entries: fs.Dirent[];
+      try {
+        entries = fs.readdirSync(podDir, { withFileTypes: true });
+      } catch {
+        continue;
+      }
+      for (const entry of entries) {
+        if (!entry.isDirectory() || !entry.name.endsWith('.xcframework')) {
+          continue;
+        }
+        const name = entry.name.replace(/\.xcframework$/, '');
+        if (!config.hostProvidedFrameworks.includes(name) || observed.has(name)) {
+          continue;
+        }
+        observed.set(name, readXcframeworkShortVersion(path.join(podDir, entry.name)));
+      }
+    }
+  }
+
+  for (const name of config.hostProvidedFrameworks) {
+    const version = observed.get(name);
+    if (version === undefined) {
+      console.warn(
+        chalk.yellow(
+          `expo-brownfield: '${name}' is listed in ios.hostProvidedFrameworks but no matching xcframework was found under ios/Pods/. Remove it from the config, or run \`pod install\` if the source module isn't installed yet.`
+        )
+      );
+      continue;
+    }
+    const versionLabel = version ?? 'unknown version';
+    console.log(
+      chalk.dim(
+        `expo-brownfield: excluding ${name} (${versionLabel}) — the host iOS app must provide ${name} at a compatible version at link time.`
+      )
+    );
+  }
+};
+
+/**
+ * Reads the first `Info.plist` we can find inside an xcframework (any platform slice) and returns
+ * the `CFBundleShortVersionString` value. Returns null on any I/O / parse failure — the version
+ * is purely informational, so a missing read shouldn't fail the build.
+ *
+ * We intentionally avoid pulling in a plist parser dep — the strings file is XML and tiny, so a
+ * permissive regex extraction is enough for the diagnostic.
+ */
+const readXcframeworkShortVersion = (xcframeworkPath: string): string | null => {
+  let slices: fs.Dirent[];
+  try {
+    slices = fs.readdirSync(xcframeworkPath, { withFileTypes: true });
+  } catch {
+    return null;
+  }
+  for (const slice of slices) {
+    if (!slice.isDirectory()) {
+      continue;
+    }
+    const sliceDir = path.join(xcframeworkPath, slice.name);
+    let frameworks: fs.Dirent[];
+    try {
+      frameworks = fs.readdirSync(sliceDir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const fw of frameworks) {
+      if (!fw.isDirectory() || !fw.name.endsWith('.framework')) {
+        continue;
+      }
+      const infoPlistCandidates = [
+        path.join(sliceDir, fw.name, 'Info.plist'),
+        path.join(sliceDir, fw.name, 'Resources', 'Info.plist'),
+      ];
+      for (const plist of infoPlistCandidates) {
+        if (!fs.existsSync(plist)) {
+          continue;
+        }
+        try {
+          const xml = fs.readFileSync(plist, 'utf8');
+          const match = xml.match(
+            /<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/
+          );
+          if (match?.[1]) {
+            return match[1].trim();
+          }
+        } catch {
+          // Ignore — this is best-effort.
+        }
+      }
+    }
+  }
+  return null;
 };
 
 export const shipFrameworks = async (config: IosConfig) => {

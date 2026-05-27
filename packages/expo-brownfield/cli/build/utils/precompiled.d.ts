@@ -119,5 +119,10 @@ export declare const enumerateBundledSpmDepsXcframeworks: (modules: ModuleXCFram
  * xcframework can land on disk without a matching `.binaryTarget` (or vice-versa). Calling this
  * helper from both sites guarantees they agree, and gates both behind the completeness check
  * so we never produce a half-baked package on missing deps.
+ *
+ * `hostProvidedFrameworks` is the set of xcframework names the consuming host iOS app already
+ * provides (typically via its own CocoaPods). Matching entries are filtered out of both the
+ * enumeration result AND the completeness-check input — so we neither ship them nor fail the
+ * build when an `spm.config.json` declares them.
  */
-export declare const enumerateAllPrebuildModules: (cwd: string, buildConfiguration: BuildConfiguration) => ModuleXCFramework[];
+export declare const enumerateAllPrebuildModules: (cwd: string, buildConfiguration: BuildConfiguration, hostProvidedFrameworks?: readonly string[]) => ModuleXCFramework[];

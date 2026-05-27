@@ -26,5 +26,21 @@ export declare const libraryProduct: (name: string, targets: string[]) => string
 export declare const binaryTarget: (name: string) => string;
 export declare const makeArtifactsDirectory: (config: IosConfig) => void;
 export declare const printIosConfig: (config: IosConfig) => void;
+/**
+ * Diagnostics for `hostProvidedFrameworks`. Run before the build kicks off so any misconfiguration
+ * surfaces with a clear message instead of a confusing "Multiple commands produce" / runtime crash:
+ *
+ *  - **Source-build guardrail:** when `usePrebuilds` is false there is no separate xcframework to
+ *    strip — the host pod gets statically linked into the brownfield framework itself. We fail
+ *    fast and point the user at the docs.
+ *  - **Unused-entry warning:** a name listed in `hostProvidedFrameworks` that doesn't match any
+ *    actual xcframework under `ios/Pods/` indicates a typo or stale config — warn so the user
+ *    catches it before debugging a still-duplicated build.
+ *  - **Version log:** for each excluded framework we surface the `CFBundleShortVersionString`
+ *    found in its bundled `Info.plist`. The consumer's host app must ship a version that's ABI-
+ *    compatible with what we just stripped; logging the expected version here gives them a
+ *    concrete target to verify against.
+ */
+export declare const validateHostProvided: (config: IosConfig) => void;
 export declare const shipFrameworks: (config: IosConfig) => Promise<void>;
 export declare const shipSwiftPackage: (config: IosConfig) => Promise<void>;

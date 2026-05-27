@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shipSwiftPackage = exports.shipFrameworks = exports.printIosConfig = exports.makeArtifactsDirectory = exports.binaryTarget = exports.libraryProduct = exports.getSupportedPlatforms = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXCframework = exports.createSwiftPackage = exports.copyXCFrameworks = exports.buildFramework = exports.cleanUpArtifacts = exports.enumerateSourceBuiltDeps = void 0;
+exports.shipSwiftPackage = exports.shipFrameworks = exports.validateHostProvided = exports.printIosConfig = exports.makeArtifactsDirectory = exports.binaryTarget = exports.libraryProduct = exports.getSupportedPlatforms = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXCframework = exports.createSwiftPackage = exports.copyXCFrameworks = exports.buildFramework = exports.cleanUpArtifacts = exports.enumerateSourceBuiltDeps = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
@@ -38,6 +38,7 @@ const enumerateSourceBuiltDeps = async (config, alreadyCovered) => {
         // at runtime rather than blocking the whole build.
         return [];
     }
+    const hostProvided = new Set(config.hostProvidedFrameworks);
     const names = new Set();
     for (const line of stdout.split('\n')) {
         const match = line.trim().match(/^@rpath\/([^/]+)\.framework\//);
@@ -45,7 +46,7 @@ const enumerateSourceBuiltDeps = async (config, alreadyCovered) => {
             names.add(match[1]);
         }
     }
-    return Array.from(names).filter((name) => name !== config.scheme && !alreadyCovered.has(name));
+    return Array.from(names).filter((name) => name !== config.scheme && !alreadyCovered.has(name) && !hostProvided.has(name));
 };
 exports.enumerateSourceBuiltDeps = enumerateSourceBuiltDeps;
 /**
@@ -198,7 +199,9 @@ const copyXCFrameworks = async (config, dest) => {
         // Single source of truth: enumerates all three layers (pod → bundled-npm → shared
         // `.spm-deps/`) and runs the strict completeness check. Failing here surfaces missing
         // deps at packaging time (rather than as `Library not loaded: @rpath/...` at runtime).
-        const modules = (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration);
+        // Host-provided frameworks are filtered out here so they're neither copied to the artifact
+        // dir nor counted as a missing SPM-dep (see `enumerateAllPrebuildModules`).
+        const modules = (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration, config.hostProvidedFrameworks);
         // Reconcile flavor once per pod — replace-xcframework.js extracts the whole tarball
         // (main + sibling SPM-dep xcframeworks) in one shot, so re-running per-xcframework would
         // unpack the same tarball repeatedly. SPM-dep entries (mainProduct === name, no artifacts/)
@@ -245,7 +248,7 @@ exports.copyXCFrameworks = copyXCFrameworks;
 const collectCoveredFrameworkNames = (config) => {
     const covered = new Set([config.scheme, ...(0, precompiled_1.resolvedFixedXCFrameworks)()]);
     if (config.usePrebuilds) {
-        for (const module of (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration)) {
+        for (const module of (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration, config.hostProvidedFrameworks)) {
             covered.add(module.name);
         }
     }
@@ -378,7 +381,7 @@ const generatePackageMetadataFile = async (config, packagePath) => {
     // xcframework that lands on disk is also declared as a `.binaryTarget` here (and vice-versa).
     // The check fails fast — Package.swift never gets written if a declared SPM dep is missing.
     const precompiledModules = config.usePrebuilds
-        ? (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration).map(({ name }) => ({
+        ? (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration, config.hostProvidedFrameworks).map(({ name }) => ({
             name,
             targets: [name],
         }))
@@ -477,9 +480,128 @@ const printIosConfig = (config) => {
         console.log(` - Package name: ${chalk_1.default.blue(config.output.packageName)}`);
     }
     console.log(` - Bundle precompiled modules: ${chalk_1.default.blue(config.usePrebuilds)}`);
+    if (config.hostProvidedFrameworks.length > 0) {
+        console.log(` - Host-provided frameworks: ${chalk_1.default.blue(config.hostProvidedFrameworks.join(', '))}`);
+    }
     console.log();
 };
 exports.printIosConfig = printIosConfig;
+/**
+ * Diagnostics for `hostProvidedFrameworks`. Run before the build kicks off so any misconfiguration
+ * surfaces with a clear message instead of a confusing "Multiple commands produce" / runtime crash:
+ *
+ *  - **Source-build guardrail:** when `usePrebuilds` is false there is no separate xcframework to
+ *    strip — the host pod gets statically linked into the brownfield framework itself. We fail
+ *    fast and point the user at the docs.
+ *  - **Unused-entry warning:** a name listed in `hostProvidedFrameworks` that doesn't match any
+ *    actual xcframework under `ios/Pods/` indicates a typo or stale config — warn so the user
+ *    catches it before debugging a still-duplicated build.
+ *  - **Version log:** for each excluded framework we surface the `CFBundleShortVersionString`
+ *    found in its bundled `Info.plist`. The consumer's host app must ship a version that's ABI-
+ *    compatible with what we just stripped; logging the expected version here gives them a
+ *    concrete target to verify against.
+ */
+const validateHostProvided = (config) => {
+    if (config.hostProvidedFrameworks.length === 0) {
+        return;
+    }
+    if (!config.usePrebuilds) {
+        error_1.default.handle('ios-host-provided-without-prebuilds');
+        return;
+    }
+    const podsDir = node_path_1.default.join(process.cwd(), 'ios', 'Pods');
+    const observed = new Map();
+    if (node_fs_1.default.existsSync(podsDir)) {
+        for (const pod of node_fs_1.default.readdirSync(podsDir, { withFileTypes: true })) {
+            if (!pod.isDirectory()) {
+                continue;
+            }
+            const podDir = node_path_1.default.join(podsDir, pod.name);
+            let entries;
+            try {
+                entries = node_fs_1.default.readdirSync(podDir, { withFileTypes: true });
+            }
+            catch {
+                continue;
+            }
+            for (const entry of entries) {
+                if (!entry.isDirectory() || !entry.name.endsWith('.xcframework')) {
+                    continue;
+                }
+                const name = entry.name.replace(/\.xcframework$/, '');
+                if (!config.hostProvidedFrameworks.includes(name) || observed.has(name)) {
+                    continue;
+                }
+                observed.set(name, readXcframeworkShortVersion(node_path_1.default.join(podDir, entry.name)));
+            }
+        }
+    }
+    for (const name of config.hostProvidedFrameworks) {
+        const version = observed.get(name);
+        if (version === undefined) {
+            console.warn(chalk_1.default.yellow(`expo-brownfield: '${name}' is listed in ios.hostProvidedFrameworks but no matching xcframework was found under ios/Pods/. Remove it from the config, or run \`pod install\` if the source module isn't installed yet.`));
+            continue;
+        }
+        const versionLabel = version ?? 'unknown version';
+        console.log(chalk_1.default.dim(`expo-brownfield: excluding ${name} (${versionLabel}) — the host iOS app must provide ${name} at a compatible version at link time.`));
+    }
+};
+exports.validateHostProvided = validateHostProvided;
+/**
+ * Reads the first `Info.plist` we can find inside an xcframework (any platform slice) and returns
+ * the `CFBundleShortVersionString` value. Returns null on any I/O / parse failure — the version
+ * is purely informational, so a missing read shouldn't fail the build.
+ *
+ * We intentionally avoid pulling in a plist parser dep — the strings file is XML and tiny, so a
+ * permissive regex extraction is enough for the diagnostic.
+ */
+const readXcframeworkShortVersion = (xcframeworkPath) => {
+    let slices;
+    try {
+        slices = node_fs_1.default.readdirSync(xcframeworkPath, { withFileTypes: true });
+    }
+    catch {
+        return null;
+    }
+    for (const slice of slices) {
+        if (!slice.isDirectory()) {
+            continue;
+        }
+        const sliceDir = node_path_1.default.join(xcframeworkPath, slice.name);
+        let frameworks;
+        try {
+            frameworks = node_fs_1.default.readdirSync(sliceDir, { withFileTypes: true });
+        }
+        catch {
+            continue;
+        }
+        for (const fw of frameworks) {
+            if (!fw.isDirectory() || !fw.name.endsWith('.framework')) {
+                continue;
+            }
+            const infoPlistCandidates = [
+                node_path_1.default.join(sliceDir, fw.name, 'Info.plist'),
+                node_path_1.default.join(sliceDir, fw.name, 'Resources', 'Info.plist'),
+            ];
+            for (const plist of infoPlistCandidates) {
+                if (!node_fs_1.default.existsSync(plist)) {
+                    continue;
+                }
+                try {
+                    const xml = node_fs_1.default.readFileSync(plist, 'utf8');
+                    const match = xml.match(/<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/);
+                    if (match?.[1]) {
+                        return match[1].trim();
+                    }
+                }
+                catch {
+                    // Ignore — this is best-effort.
+                }
+            }
+        }
+    }
+    return null;
+};
 const shipFrameworks = async (config) => {
     // Create artifacts directory
     await (0, exports.cleanUpArtifacts)(config);
