@@ -23,7 +23,14 @@ This tutorial explains how to create a new config plugin from scratch and read c
 
 Start by initializing a new Expo module project with `create-expo-module`. This sets up scaffolding for Android, iOS, and TypeScript and includes an example project to test the module within an app. Run the following command to get started:
 
-<Terminal cmd={['$ npx create-expo-module expo-native-configuration']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-native-configuration'],
+    yarn: ['$ yarn create expo-module expo-native-configuration'],
+    pnpm: ['$ pnpm create expo-module expo-native-configuration'],
+    bun: ['$ bun create expo-module expo-native-configuration'],
+  }}
+/>
 
 This guide uses the name `expo-native-configuration`/`ExpoNativeConfiguration` for the module project. However, you can choose any name you prefer.
 
@@ -138,11 +145,25 @@ export default function App() {
 In the root of your project, run the TypeScript compiler to watch for changes and rebuild the module's JavaScript:
 
 <Terminal
+  cmd={{
+    npm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ npm run build',
+    ],
+    yarn: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ yarn run build',
+    ],
+    pnpm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ pnpm run build',
+    ],
+    bun: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ bun run build',
+    ],
+  }}
   cmdCopy="npm run build"
-  cmd={[
-    '# Run this in the root of the project to start the TypeScript compiler',
-    '$ npm run build',
-  ]}
 />
 
 In another terminal window, compile and run the example app:

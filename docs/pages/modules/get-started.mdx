@@ -29,7 +29,14 @@ Both of these flows are covered in the next sections.
 
 Navigate to your project directory (the one that contains the **package.json** file) and run the following command. This is the recommended way to create a local Expo module.
 
-<Terminal cmd={['$ npx create-expo-module@latest --local']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module@latest --local'],
+    yarn: ['$ yarn create expo-module --local'],
+    pnpm: ['$ pnpm create expo-module --local'],
+    bun: ['$ bun create expo-module --local'],
+  }}
+/>
 
 You can provide a meaningful module name in the CLI prompt. For the rest of the prompts, you can also accept the default suggestions.
 
@@ -48,7 +55,14 @@ Once you've run the command, you will see a new directory created in your projec
 
 Then, if your project doesn't have native projects generated (**android** and **ios** directories), run the following command, otherwise skip this command:
 
-<Terminal cmd={['$ npx expo prebuild --clean']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean'],
+    yarn: ['$ yarn expo prebuild --clean'],
+    pnpm: ['$ pnpm expo prebuild --clean'],
+    bun: ['$ bun expo prebuild --clean'],
+  }}
+/>
 
 > **Note**: If you have a pre-existing **ios** directory in your project's root which was created using `npx expo prebuild`, you must reinstall the pods:
 >
@@ -80,7 +94,14 @@ export default function HomeScreen() {
 
 Start the development server in your terminal so that when you edit the native module and build the app in the next step, the changes will be reflected in the app:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 Congratulations! You have created a local Expo module. You can now start working on it.
 
@@ -127,7 +148,14 @@ You have to repeat the build step anytime you make a change to the native code t
 To create a new Expo module from scratch, run the `create-expo-module` script as shown below.
 The script will ask you a few questions and then generate the native Expo module along with the example app for Android and iOS that uses your new module.
 
-<Terminal cmd={[`$ npx create-expo-module@latest my-module`]} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module@latest my-module'],
+    yarn: ['$ yarn create expo-module my-module'],
+    pnpm: ['$ pnpm create expo-module my-module'],
+    bun: ['$ bun create expo-module my-module'],
+  }}
+/>
 
 </Step>
 

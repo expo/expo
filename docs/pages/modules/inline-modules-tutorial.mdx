@@ -47,7 +47,15 @@ Note that not all directories are allowed. For more information, see the [inline
 
 Run the prebuild command to generate **android** and **ios** native projects with the inline modules setup.
 
-<Terminal cmdCopy="npx expo prebuild" cmd={['$ npx expo prebuild']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild'],
+    yarn: ['$ yarn expo prebuild'],
+    pnpm: ['$ pnpm expo prebuild'],
+    bun: ['$ bun expo prebuild'],
+  }}
+  cmdCopy="npx expo prebuild"
+/>
 
 </Step>
 
@@ -108,13 +116,36 @@ export default function InlineModulesDemoComponent() {
 Now, you can run the example app:
 
 <Terminal
-  cmd={[
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 After running the above command(s), you will see the app with text constant coming from the native android/iOS module.

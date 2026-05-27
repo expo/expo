@@ -28,7 +28,14 @@ In this tutorial, you build a module that stores the user's preferred app theme:
 
 First, create a new module. For this tutorial, the module is named `expo-settings` or `ExpoSettings`. You can choose a different name, but adjust the instructions to match your choice.
 
-<Terminal cmd={['$ npx create-expo-module expo-settings']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-settings'],
+    yarn: ['$ yarn create expo-module expo-settings'],
+    pnpm: ['$ pnpm create expo-module expo-settings'],
+    bun: ['$ bun create expo-module expo-settings'],
+  }}
+/>
 
 > **info** Since you aren't going to actually ship this library, you can hit <kbd>Return</kbd> for all the prompts to accept the default values.
 
@@ -131,11 +138,25 @@ export default function App() {
 Start the TypeScript compiler to watch for changes.
 
 <Terminal
+  cmd={{
+    npm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ npm run build',
+    ],
+    yarn: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ yarn run build',
+    ],
+    pnpm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ pnpm run build',
+    ],
+    bun: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ bun run build',
+    ],
+  }}
   cmdCopy="npm run build"
-  cmd={[
-    '# Run this in the root of the project to start the TypeScript compiler',
-    '$ npm run build',
-  ]}
 />
 
 In a separate terminal window, run the example app.
