@@ -16,9 +16,9 @@ Options:
                                    them
   -p, --package [package]          package artifacts as a Swift Package (with an
                                    optionally specified name)
-  --host-provided <frameworks...>  framework names (comma-separated or repeated)
-                                   the host iOS app already provides — they will
-                                   be stripped from the artifact (e.g.
+  --host-provided <frameworks...>  framework names the host iOS app already
+                                   provides, these will be stripped from the
+                                   artifact (e.g.
                                    SDWebImage,SDWebImageWebPCoder)
   -h, --help                       display help for command"
 `;
@@ -39,9 +39,9 @@ Options:
                                    them
   -p, --package [package]          package artifacts as a Swift Package (with an
                                    optionally specified name)
-  --host-provided <frameworks...>  framework names (comma-separated or repeated)
-                                   the host iOS app already provides — they will
-                                   be stripped from the artifact (e.g.
+  --host-provided <frameworks...>  framework names the host iOS app already
+                                   provides, these will be stripped from the
+                                   artifact (e.g.
                                    SDWebImage,SDWebImageWebPCoder)
   -h, --help                       display help for command"
 `;
@@ -62,9 +62,9 @@ Options:
                                    them
   -p, --package [package]          package artifacts as a Swift Package (with an
                                    optionally specified name)
-  --host-provided <frameworks...>  framework names (comma-separated or repeated)
-                                   the host iOS app already provides — they will
-                                   be stripped from the artifact (e.g.
+  --host-provided <frameworks...>  framework names the host iOS app already
+                                   provides, these will be stripped from the
+                                   artifact (e.g.
                                    SDWebImage,SDWebImageWebPCoder)
   -h, --help                       display help for command"
 `;

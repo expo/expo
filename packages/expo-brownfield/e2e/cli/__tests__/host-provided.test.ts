@@ -17,6 +17,10 @@ import type { IosConfig } from '../../../cli/src/utils/types';
 describe('validateHostProvided', () => {
   let tmpDir: string;
   let originalCwd: string;
+  let logSpy: jest.SpyInstance | undefined;
+  let warnSpy: jest.SpyInstance | undefined;
+  let errorSpy: jest.SpyInstance | undefined;
+  let exitSpy: jest.SpyInstance | undefined;
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'brownfield-host-provided-'));
@@ -25,6 +29,11 @@ describe('validateHostProvided', () => {
   });
 
   afterEach(() => {
+    logSpy?.mockRestore();
+    warnSpy?.mockRestore();
+    errorSpy?.mockRestore();
+    exitSpy?.mockRestore();
+    logSpy = warnSpy = errorSpy = exitSpy = undefined;
     process.chdir(originalCwd);
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
@@ -79,16 +88,12 @@ describe('validateHostProvided', () => {
     seedXcframework('ExpoImage', 'SDWebImage', '5.21.6');
     seedXcframework('ExpoImage', 'SDWebImageWebPCoder', '0.14.7');
 
-    const log = jest.spyOn(console, 'log').mockImplementation(() => undefined);
-    try {
-      validateHostProvided(
-        baseConfig({ hostProvidedFrameworks: ['SDWebImage', 'SDWebImageWebPCoder'] })
-      );
-    } finally {
-      log.mockRestore();
-    }
+    logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    validateHostProvided(
+      baseConfig({ hostProvidedFrameworks: ['SDWebImage', 'SDWebImageWebPCoder'] })
+    );
 
-    const messages = log.mock.calls.map(([msg]) => String(msg));
+    const messages = logSpy.mock.calls.map(([msg]: [unknown]) => String(msg));
     expect(messages.some((m) => m.includes('SDWebImage') && m.includes('5.21.6'))).toBe(true);
     expect(messages.some((m) => m.includes('SDWebImageWebPCoder') && m.includes('0.14.7'))).toBe(
       true
@@ -98,35 +103,25 @@ describe('validateHostProvided', () => {
   it('warns when a host-provided name does not match any installed xcframework', () => {
     seedXcframework('ExpoImage', 'SDWebImage', '5.21.6');
 
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-    try {
-      validateHostProvided(
-        baseConfig({ hostProvidedFrameworks: ['SDWebImage', 'NotInstalledKit'] })
-      );
-    } finally {
-      warn.mockRestore();
-    }
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    validateHostProvided(baseConfig({ hostProvidedFrameworks: ['SDWebImage', 'NotInstalledKit'] }));
 
-    const warnings = warn.mock.calls.map(([msg]) => String(msg));
+    const warnings = warnSpy.mock.calls.map(([msg]: [unknown]) => String(msg));
     expect(warnings.some((m) => m.includes('NotInstalledKit'))).toBe(true);
     // SDWebImage was actually installed — it shouldn't get the unused-name warning.
     expect(warnings.some((m) => m.includes("'SDWebImage'"))).toBe(false);
   });
 
   it('exits with a clear error when hostProvidedFrameworks is set but usePrebuilds is false', () => {
-    const exit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
-    const errLog = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-    try {
-      validateHostProvided(
-        baseConfig({ usePrebuilds: false, hostProvidedFrameworks: ['SDWebImage'] })
-      );
-    } finally {
-      exit.mockRestore();
-      errLog.mockRestore();
-    }
+    exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    errorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 
-    expect(exit).toHaveBeenCalledWith(1);
-    const messages = errLog.mock.calls.map(([msg]) => String(msg));
+    validateHostProvided(
+      baseConfig({ usePrebuilds: false, hostProvidedFrameworks: ['SDWebImage'] })
+    );
+
+    expect(exitSpy).toHaveBeenCalledWith(1);
+    const messages = errorSpy.mock.calls.map(([msg]: [unknown]) => String(msg));
     expect(messages.some((m) => m.includes('precompiled modules are not enabled'))).toBe(true);
   });
 
@@ -145,14 +140,9 @@ describe('validateHostProvided', () => {
         ]),
       })
     );
-    // The CLI also tries to find a workspace + scheme; provide minimal stubs.
-    fs.mkdirSync(path.join(iosDir, 'TestBrownfield', 'ReactNativeHostManager.swift'), {
-      recursive: true,
-    });
-    fs.writeFileSync(
-      path.join(iosDir, 'TestBrownfield', 'ReactNativeHostManager.swift', 'placeholder.swift'),
-      ''
-    );
+    // The CLI tries to find a workspace + scheme; provide minimal stubs.
+    fs.mkdirSync(path.join(iosDir, 'TestBrownfield'), { recursive: true });
+    fs.writeFileSync(path.join(iosDir, 'TestBrownfield', 'ReactNativeHostManager.swift'), '');
     fs.mkdirSync(path.join(iosDir, 'test.xcworkspace'), { recursive: true });
 
     const config = resolveBuildConfigIos({
@@ -175,10 +165,7 @@ describe('validateHostProvided', () => {
       })
     );
     fs.mkdirSync(path.join(iosDir, 'TestBrownfield'), { recursive: true });
-    fs.writeFileSync(
-      path.join(iosDir, 'TestBrownfield', 'ReactNativeHostManager.swift'),
-      ''
-    );
+    fs.writeFileSync(path.join(iosDir, 'TestBrownfield', 'ReactNativeHostManager.swift'), '');
     fs.mkdirSync(path.join(iosDir, 'test.xcworkspace'), { recursive: true });
 
     const config = resolveBuildConfigIos({
@@ -205,14 +192,10 @@ describe('validateHostProvided', () => {
     );
     fs.mkdirSync(sliceDir, { recursive: true });
 
-    const log = jest.spyOn(console, 'log').mockImplementation(() => undefined);
-    try {
-      validateHostProvided(baseConfig({ hostProvidedFrameworks: ['SDWebImage'] }));
-    } finally {
-      log.mockRestore();
-    }
+    logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    validateHostProvided(baseConfig({ hostProvidedFrameworks: ['SDWebImage'] }));
 
-    const messages = log.mock.calls.map(([msg]) => String(msg));
+    const messages = logSpy.mock.calls.map(([msg]: [unknown]) => String(msg));
     expect(messages.some((m) => m.includes('SDWebImage') && m.includes('unknown version'))).toBe(
       true
     );
