@@ -51,8 +51,12 @@ public final class WidgetsModule: Module {
         return nil
       }
       let directoryUrl = containerUrl.appendingPathComponent("ExpoWidgets", isDirectory: true)
-      try? FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
-      return directoryUrl.absoluteString
+      do {
+        try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+        return directoryUrl.absoluteString
+      } catch {
+        return nil
+      }
     }
 
     Function("reloadAllWidgets") {
