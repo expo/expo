@@ -157,7 +157,11 @@ export class LiveActivityFactory<T extends object = object> {
    */
   start(props: T, url?: string, staleDate?: Date | null) {
     return new LiveActivity<T>(
-      this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime() ?? undefined)
+      this.nativeLiveActivityFactory.start(
+        JSON.stringify(props),
+        url,
+        staleDate?.getTime() ?? undefined
+      )
     );
   }
 
