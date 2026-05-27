@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Expose `staleDate` on `LiveActivity.start()` and `LiveActivity.update()` to surface Apple's `ActivityContent.staleDate` for freshness-budget UX (lock-screen dim + native-timer freeze when displayed data is stale). ([#PRNUM](https://github.com/expo/expo/pull/PRNUM) by [@kyleasaff](https://github.com/kyleasaff))
+- [iOS] Expose `staleDate` on `LiveActivity.start()` and `LiveActivity.update()` to surface Apple's `ActivityContent.staleDate` for freshness-budget UX (lock-screen dim + native-timer freeze when displayed data is stale). ([#46343](https://github.com/expo/expo/pull/46343) by [@kyleasaff](https://github.com/kyleasaff))
 
 ### 🐛 Bug fixes
 
