@@ -32,7 +32,15 @@ This guide outlines how to submit your app to the Apple App Store from your comp
   <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
     
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+    <Terminal
+      cmdCopy="npm install -g eas-cli && eas login"
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
   </Requirement>
   <Requirement title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):

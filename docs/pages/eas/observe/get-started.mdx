@@ -39,7 +39,14 @@ EAS Observe tracks your app's startup performance in production. This guide walk
 
 Make sure you are using the latest version of `expo`, then install `expo-observe`:
 
-<Terminal cmd={['$ npx expo install --fix', '', '$ npx expo install expo-observe']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install --fix', '', '$ npx expo install expo-observe'],
+    yarn: ['$ yarn expo install --fix', '', '$ yarn expo install expo-observe'],
+    pnpm: ['$ pnpm expo install --fix', '', '$ pnpm expo install expo-observe'],
+    bun: ['$ bun expo install --fix', '', '$ bun expo install expo-observe'],
+  }}
+/>
 
 </Step>
 

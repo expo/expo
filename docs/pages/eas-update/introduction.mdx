@@ -27,7 +27,12 @@ EAS Update makes fixing small bugs and pushing quick fixes a snap in between app
 Install the `expo-updates` library and configure EAS Update:
 
 <Terminal
-  cmd={['$ npx expo install expo-updates', '', '$ eas update:configure']}
+  cmd={{
+    npm: ['$ npx expo install expo-updates', '', '$ eas update:configure'],
+    yarn: ['$ yarn expo install expo-updates', '', '$ eas update:configure'],
+    pnpm: ['$ pnpm expo install expo-updates', '', '$ eas update:configure'],
+    bun: ['$ bun expo install expo-updates', '', '$ eas update:configure'],
+  }}
   cmdCopy="npx expo install expo-updates && eas update:configure"
 />
 
