@@ -425,12 +425,7 @@ export declare const grayscale: (amount: number) => ModifierConfig;
 export declare const buttonStyle: (style: "automatic" | "bordered" | "borderedProminent" | "borderless" | "glass" | "glassProminent" | "plain") => ModifierConfig;
 /**
  * Sets the border shape used by buttons within this view.
- *
- * Prefer this over `clipShape` to reshape a styled button (for example a
- * `buttonStyle('glass')` button): it shapes the button style's own background,
- * so the native press magnification and Liquid Glass morph are preserved.
- * `clipShape` masks the rendered output instead and flattens those effects.
- * @param shape - The button border shape. `'circle'` is available on iOS 26+ and tvOS 26+ only.
+ * @param shape - The button border shape.
  * @param cornerRadius - Corner radius, only used with `'roundedRectangle'`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonbordershape(_:)).
  */
