@@ -5,19 +5,23 @@
 
 @implementation EXSharedObjectUtils
 
-+ (void)setNativeState:(void *)runtimePointer
-          valuePointer:(void *)valuePointer
-              objectId:(long)objectId
-              releaser:(ObjectReleaser)releaser
++ (void *)makeSharedObjectNativeStatePtr:(long)objectId
+                                releaser:(ObjectReleaser)releaser
+                                 context:(void *)context
+                      contextDeallocator:(void (*)(void *))contextDeallocator
 {
-  auto &runtime = *reinterpret_cast<jsi::Runtime *>(runtimePointer);
-  auto &value = *reinterpret_cast<jsi::Value *>(valuePointer);
-  auto object = value.getObject(runtime);
-  auto nativeState = std::make_shared<expo::SharedObject::NativeState>(
-    objectId,
-    [releaser](long id) { releaser(id); }
+  // Heap-allocate the `shared_ptr<jsi::NativeState>` itself (not its pointee) so the
+  // raw pointer crosses the no-interop boundary into Swift, where `JavaScriptNativeState`
+  // adopts it: copies the shared_ptr into Swift-managed storage, then `delete`s this
+  // allocation. The shared control block created by `make_shared` is unaffected.
+  return new std::shared_ptr<jsi::NativeState>(
+    std::make_shared<expo::SharedObject::NativeState>(
+      objectId,
+      [releaser](long id) { releaser(id); },
+      context,
+      contextDeallocator
+    )
   );
-  object.setNativeState(runtime, nativeState);
 }
 
 @end

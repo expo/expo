@@ -379,7 +379,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    guard let cxxNativeState = expo.getNativeState(runtime.pointee, pointee) else {
+    guard let cxxNativeState = expo.getExpoNativeState(runtime.pointee, pointee) else {
       return nil
     }
     return T.from(cxx: cxxNativeState)
@@ -388,16 +388,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// Sets the internal native state property of this object, overwriting any old value.
   /// Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
   /// - TODO: throw a type error if this object is a proxy or host object.
-  public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) throws(JavaScriptNativeState
-    .NativeStateReleasedError)
-  {
+  public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    guard let nativeStatePointee = nativeState.pointee else {
-      throw JavaScriptNativeState.NativeStateReleasedError()
-    }
-    expo.setNativeState(runtime.pointee, pointee, nativeStatePointee)
+    expo.setNativeState(runtime.pointee, self.pointee, nativeState.acquireShared())
   }
 
   /// Unsets the native state of this object.
