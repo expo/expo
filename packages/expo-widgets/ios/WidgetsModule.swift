@@ -45,6 +45,16 @@ public final class WidgetsModule: Module {
       pushToStartTokenObserverTask = nil
     }
 
+    Constant("widgetsDirectory") { () -> String? in
+      guard let appGroupIdentifier = WidgetsStorage.appGroupIdentifier,
+            let containerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
+        return nil
+      }
+      let directoryUrl = containerUrl.appendingPathComponent("ExpoWidgets", isDirectory: true)
+      try? FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+      return directoryUrl.absoluteString
+    }
+
     Function("reloadAllWidgets") {
       WidgetCenter.shared.reloadAllTimelines()
     }
