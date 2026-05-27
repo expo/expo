@@ -1,4 +1,4 @@
-import { type ExpoConfig, getConfig } from '@expo/config';
+import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { Reporter } from '@expo/metro/metro';
 import type Bundler from '@expo/metro/metro/Bundler';
@@ -194,9 +194,15 @@ export async function loadMetroConfigAsync(
   const serverRoot = getMetroServerRoot(projectRoot);
   const isWorkspace = serverRoot !== projectRoot;
 
-  // Autolinking Module Resolution will be enabled by default when we're in a monorepo
+  // Out-of-tree platforms (tvos/macos) rely on the autolinking module resolver to remap the
+  // react-native package to their support package, and require autolinking module resolution
+  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some(
+    (platform) => platform === 'tvos' || platform === 'macos'
+  );
+
+  // Autolinking Module Resolution is enabled by default in a monorepo or for out-of-tree platforms.
   const autolinkingModuleResolutionEnabled =
-    exp.experiments?.autolinkingModuleResolution ?? isWorkspace;
+    exp.experiments?.autolinkingModuleResolution ?? (isWorkspace || targetsOutOfTreePlatform);
 
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
