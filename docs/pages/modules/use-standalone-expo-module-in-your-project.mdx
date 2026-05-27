@@ -69,7 +69,12 @@ Run one of your apps to ensure everything works. Then, start the TypeScript comp
 
 <Terminal
   cmdCopy="cd packages/expo-settings && npm run build"
-  cmd={['$ cd packages/expo-settings', '$ npm run build']}
+  cmd={{
+    npm: ['$ cd packages/expo-settings', '$ npm run build'],
+    yarn: ['$ cd packages/expo-settings', '$ yarn run build'],
+    pnpm: ['$ cd packages/expo-settings', '$ pnpm run build'],
+    bun: ['$ cd packages/expo-settings', '$ bun run build'],
+  }}
 />
 
 Open another terminal window, select an app from the **apps** directory, and run the `prebuild` command with the `--clean` option. Repeat these steps for each app in your monorepo to use the new module.
@@ -187,13 +192,36 @@ Open another terminal window, compile and run the example app:
 
 <Terminal
   cmdCopy="cd example && npx expo run:ios"
-  cmd={[
-    '$ cd example',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 </Step>

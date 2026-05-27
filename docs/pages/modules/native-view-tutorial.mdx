@@ -134,14 +134,40 @@ To ensure everything is working, start the TypeScript compiler to watch for chan
 />
 
 <Terminal
-  cmd={[
-    '# Navigate to the example directory',
-    '$ cd example',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Navigate to the example directory',
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Navigate to the example directory',
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Navigate to the example directory',
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Navigate to the example directory',
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 You should now see a blank purple screen. While it's not very exciting, it's a good start. Next, turn it into a WebView.

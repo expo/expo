@@ -67,7 +67,14 @@ Then, if your project doesn't have native projects generated (**android** and **
 > **Note**: If you have a pre-existing **ios** directory in your project's root which was created using `npx expo prebuild`, you must reinstall the pods:
 >
 > <br />
-> <Terminal cmd={['$ npx pod-install']} />
+> <Terminal
+  cmd={{
+    npm: ['$ npx pod-install'],
+    yarn: ['$ yarn dlx pod-install'],
+    pnpm: ['$ pnpm dlx pod-install'],
+    bun: ['$ bunx pod-install'],
+  }}
+/>
 
 </Step>
 
@@ -165,11 +172,26 @@ The script will ask you a few questions and then generate the native Expo module
 
 Navigate to the module directory and then open the Android and/or iOS example project by running the following commands:
 
-<Terminal cmd={[`$ cd my-module`, `$ npm run open:android`, `$ npm run open:ios`]} />
+<Terminal
+  cmd={{
+    npm: [`$ cd my-module`, `$ npm run open:android`, `$ npm run open:ios`],
+    yarn: [`$ cd my-module`, `$ yarn run open:android`, `$ yarn run open:ios`],
+    pnpm: [`$ cd my-module`, `$ pnpm run open:android`, `$ pnpm run open:ios`],
+    bun: [`$ cd my-module`, `$ bun run open:android`, `$ bun run open:ios`],
+  }}
+/>
 
 Go to **example** directory and start the development server in your terminal so that when you edit the native module and build the app in the next step, the changes will be reflected in the app:
 
-<Terminal cmd={['$ cd example', '$ npx expo start']} cmdCopy="cd example && npx expo start" />
+<Terminal
+  cmdCopy="cd example && npx expo start"
+  cmd={{
+    npm: ['$ cd example', '$ npx expo start'],
+    yarn: ['$ cd example', '$ yarn expo start'],
+    pnpm: ['$ cd example', '$ pnpm expo start'],
+    bun: ['$ cd example', '$ bun expo start'],
+  }}
+/>
 
 > **Note:** If you're using Windows, you can open the example project by opening the **android** directory in Android Studio, but you cannot open the iOS project files.
 
