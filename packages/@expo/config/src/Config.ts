@@ -77,10 +77,29 @@ function getSupportedPlatforms(projectRoot: string): Platform[] {
   if (resolveFrom(projectRoot, 'react-native/package.json')) {
     platforms.push('ios', 'android');
   }
+  if (resolveFrom(projectRoot, 'react-native-tvos/package.json')) {
+    platforms.push('tvos');
+  }
+  if (resolveFrom(projectRoot, 'react-native-macos/package.json')) {
+    platforms.push('macos');
+  }
   if (resolveFrom(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
   }
   return platforms;
+}
+
+/**
+ * Resolves the platforms a project targets, as configured or detected.
+ *
+ * @param projectRoot
+ * @param exp
+ */
+export function getPlatformsFromConfig(
+  projectRoot: string,
+  exp: Pick<ExpoConfig, 'platforms'>
+): Platform[] {
+  return (exp.platforms as Platform[] | undefined) ?? getSupportedPlatforms(projectRoot);
 }
 
 /**
@@ -473,10 +492,10 @@ function ensureConfigHasDefaultValues({
     if (!skipSDKVersionRequirement) throw error;
   }
 
-  let platforms = exp.platforms;
-  if (!platforms) {
-    platforms = getSupportedPlatforms(projectRoot);
-  }
+  // TODO(@kitten): Remove once platforms are updated in XDL schema
+  const platforms = getPlatformsFromConfig(projectRoot, exp) as NonNullable<
+    ExpoConfig['platforms']
+  >;
 
   return {
     exp: { ...expWithDefaults, sdkVersion, platforms },
