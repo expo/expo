@@ -34,17 +34,19 @@ jobs:
       platform: android | ios # required
       profile: string # optional - default: production
       message: string # optional
+      refresh_ad_hoc_provisioning_profile: boolean # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                                                                   |
-| --------- | ------ | ------------------------------------------------------------------------------------------------------------- |
-| platform  | string | **Required.** The platform to build for. Can be either `android` or `ios`.                                    |
-| profile   | string | Optional. The build profile to use. Defaults to `production`.                                                 |
-| message   | string | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`. |
+| Parameter                           | Type    | Description                                                                                                                                                                                                                                                                                                   |
+| ----------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| platform                            | string  | **Required.** The platform to build for. Can be either `android` or `ios`.                                                                                                                                                                                                                                    |
+| profile                             | string  | Optional. The build profile to use. Defaults to `production`.                                                                                                                                                                                                                                                 |
+| message                             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                                                                                                                                                                                                 |
+| refresh_ad_hoc_provisioning_profile | boolean | Optional. Refreshes the managed ad hoc provisioning profile before an iOS internal build starts. Corresponds to the [`--refresh-ad-hoc-provisioning-profile`](/eas/cli/#eas-build) flag when running `eas build`. See [internal distribution on CI](/build/internal-distribution/#automation-on-ci-optional). |
 
 #### Environment variables
 
@@ -175,6 +177,29 @@ jobs:
     params:
       platform: android
       profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Internal iOS build with refreshed ad hoc profile">
+
+This workflow builds your iOS app for internal distribution and refreshes the ad hoc provisioning profile when you push to the main branch.
+
+```yaml .eas/workflows/build-ios-internal.yml
+name: Build iOS internal
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_ios:
+    name: Build iOS Internal
+    type: build
+    params:
+      platform: ios
+      profile: preview
+      refresh_ad_hoc_provisioning_profile: true
 ```
 
 </Collapsible>
