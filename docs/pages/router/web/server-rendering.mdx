@@ -242,8 +242,16 @@ EAS Hosting supports server rendering out of the box. Export your app and deploy
 <Terminal
   cmd={{
     npm: ['$ npx expo export --platform web', '', '$ npx eas-cli@latest hosting:deploy dist'],
-    yarn: ['$ yarn expo export --platform web', '', '$ yarn dlx eas-cli@latest hosting:deploy dist'],
-    pnpm: ['$ pnpm expo export --platform web', '', '$ pnpm dlx eas-cli@latest hosting:deploy dist'],
+    yarn: [
+      '$ yarn expo export --platform web',
+      '',
+      '$ yarn dlx eas-cli@latest hosting:deploy dist',
+    ],
+    pnpm: [
+      '$ pnpm expo export --platform web',
+      '',
+      '$ pnpm dlx eas-cli@latest hosting:deploy dist',
+    ],
     bun: ['$ bun expo export --platform web', '', '$ bunx eas-cli@latest hosting:deploy dist'],
   }}
 />
