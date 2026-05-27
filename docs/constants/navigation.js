@@ -393,7 +393,6 @@ export const general = [
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
-        makePage('guides/configuring-js-engines.mdx'),
         makePage('guides/using-bun.mdx'),
         makePage('guides/editing-richtext.mdx'),
         makePage('guides/store-assets.mdx'),
@@ -707,6 +706,7 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/e2e-tests.mdx'),
+    makePage('archive/configuring-js-engines.mdx'),
   ]),
 ];
 
