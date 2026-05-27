@@ -73,11 +73,9 @@ export const enumeratePrecompiledModules = (iosDir: string): ModuleXCFramework[]
         if (!f.isSymbolicLink()) {
           return false;
         }
-        try {
-          return fs.statSync(path.join(podDir, f.name)).isDirectory();
-        } catch {
-          return false;
-        }
+        return (
+          fs.statSync(path.join(podDir, f.name), { throwIfNoEntry: false })?.isDirectory() ?? false
+        );
       })
       .map((f) => f.name.replace(/\.xcframework$/, ''));
 

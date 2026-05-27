@@ -70,12 +70,7 @@ const enumeratePrecompiledModules = (iosDir) => {
             if (!f.isSymbolicLink()) {
                 return false;
             }
-            try {
-                return node_fs_1.default.statSync(node_path_1.default.join(podDir, f.name)).isDirectory();
-            }
-            catch {
-                return false;
-            }
+            return (node_fs_1.default.statSync(node_path_1.default.join(podDir, f.name), { throwIfNoEntry: false })?.isDirectory() ?? false);
         })
             .map((f) => f.name.replace(/\.xcframework$/, ''));
         // Identify the "main" product for this pod — the xcframework whose name matches a tarball.
