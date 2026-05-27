@@ -42,7 +42,15 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
 
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+    <Terminal
+      cmdCopy="npm install --global eas-cli && eas login"
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
 
   </Requirement>
   <Requirement title="Build a production app">
@@ -78,7 +86,15 @@ The command will lead you step by step through the process of submitting the app
   <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
 
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+    <Terminal
+      cmdCopy="npm install --global eas-cli && eas login"
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
 
   </Requirement>
   <Requirement title="Include a package name in app.json">
