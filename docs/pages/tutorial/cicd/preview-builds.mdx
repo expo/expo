@@ -60,7 +60,7 @@ Since `expo-updates` is a native library, this build embeds both its native code
 
 ## The `build` job type for preview builds
 
-Teams use preview builds for stakeholder testing. Members install the build on their devices or emulators/simulators through internal distribution, so they do not need to run a development server or check out a branch and download the code to test changes.
+Teams use preview builds for stakeholder testing. Members install the build through internal distribution onto their device/emulator/simulator. They do not have to run a development server or check out the branch to test changes.
 
 <PreviewPipeline />
 
@@ -187,7 +187,7 @@ jobs:
   # @end
 ```
 
-The `after` field ensures the notification fires once the builds finish, regardless of the outcome. The `message` uses `${{ after.build_android.status }}` and `${{ after.build_ios.status }}` to include the outcome (success, failure, or skipped) for each platform, so the team sees what happened without leaving Slack.
+The `after` field ensures the notification fires once the builds finish, regardless of the outcome. The `message` uses `${{ after.build_android.status }}` and `${{ after.build_ios.status }}` to include each platform's outcome (success, failure, or skipped). The team sees what happened without leaving Slack.
 
 </Step>
 
@@ -252,7 +252,7 @@ jobs:
       type: github-comment
 ```
 
-> **important** Before testing the above workflow, we need to ensure that **pr-preview.yml** file is committed and pushed to the `main` branch of our GitHub repository. **EAS Workflows reads workflow files from the default branch.**
+> **important** Before testing the above workflow, commit **pr-preview.yml** and push it to the `main` branch of our GitHub repository. **EAS Workflows reads workflow files from the default branch.**
 
 </Step>
 

@@ -24,7 +24,7 @@ EAS Workflows supports tag-based triggers through [`on.push`](/eas/workflows/syn
 
 A tag-based release workflow fits teams that:
 
-- Want the version number in Git to match the version shipped to app users
+- Want the version number in Git to match the version they ship to app users
 - Release from `main` directly rather than maintaining long-lived release branches
 - Want a clear audit trail of every release commit by version
 
@@ -107,7 +107,7 @@ For tags to trigger the workflow, we need to pick a pattern that matches our tea
 - `['v*']` matches any tag that starts with `v`
 - `['v*.*.*']` matches strict three-part semantic versions (recommended)
 
-No other job changes are needed. The `fingerprint`, `get-build`, `build`, and `update` jobs work identically because they operate on the commit.
+We don't need to change any other jobs. The `fingerprint`, `get-build`, `build`, and `update` jobs work identically because they operate on the commit.
 
 </Step>
 

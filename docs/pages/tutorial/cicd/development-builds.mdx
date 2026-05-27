@@ -38,7 +38,7 @@ EAS CLI prompts to generate credentials the first time we trigger a build for a 
 
 The `build` job type is one of the [pre-packaged jobs](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) from EAS Workflows. Instead of defining each step of the build process, we use the `build` job type to run an EAS Build for Android and iOS. We only need to specify the parameters the build jobs require.
 
-For this chapter, we use the `development` build profile from our **eas.json**. This profile is used during Expo app development.
+For this chapter, we use the `development` build profile from our **eas.json**. We use this profile during Expo app development.
 
 <Step label="1">
 
@@ -89,7 +89,7 @@ Let's run the workflow manually using the command:
 
 ### Verify on the EAS dashboard
 
-On the EAS dashboard, notice that it says "Triggered manually" under the **Workflow graph** tab. Anytime the **Trigger** is set to **Manual**, it means the workflow was created using the `eas workflow:run` command.
+On the EAS dashboard, notice that it says "Triggered manually" under the **Workflow graph** tab. Any time the **Trigger** is set to **Manual**, the workflow was triggered using the `eas workflow:run` command.
 
 <ContentSpotlight
   alt="EAS Workflows dashboard showing a manually-triggered run that creates development builds for Android and iOS in parallel."
@@ -97,7 +97,7 @@ On the EAS dashboard, notice that it says "Triggered manually" under the **Workf
   className="max-w-160"
 />
 
-Although the logs for each build are shown within the workflows interface, clicking the build ID (for example, `ef90d1f` is the Android build ID shown above) opens the EAS Build page.
+The logs for each build appear inside the workflow interface. Clicking the build ID (for example, `ef90d1f` is the Android build ID above) opens the EAS Build page.
 
 <ContentSpotlight
   alt="EAS Build details page for an Android development build, showing the build status, fingerprint hash, commit SHA, and expanded log output."
@@ -107,7 +107,7 @@ Although the logs for each build are shown within the workflows interface, click
 
 > **important** Jobs without dependencies run in parallel by default in EAS Workflows. In the above workflow, since both `build_android` and `build_ios` jobs don't have any dependencies, they start at the same time.
 
-Wait for both builds to complete before moving to the next step. After the builds are completed, we can use the **Install** or **Open with [Orbit](/build/orbit/)** buttons, or download from **Artifacts** to install on our device/emulator/simulator.
+Wait for both builds to complete before moving to the next step. Once they complete, we can use the **Install** or **Open with [Orbit](/build/orbit/)** buttons, or download from **Artifacts** to install on our device/emulator/simulator.
 
 </Step>
 
@@ -363,7 +363,7 @@ The custom `run_tests` job does the following:
 - `uses: eas/install_node_modules` installs dependencies using the package manager detected in the project (bun, npm, pnpm, or Yarn). This is needed before running any commands that depend on packages from **node_modules**, like Jest.
 - `run: npx jest --ci` executes the test suite. The `run` key runs any shell command, similar to the `echo` command. The `--ci` flag tells Jest to run in CI mode, which skips watching for file changes and exits after running all tests.
 
-Now, the `fingerprint` job has `needs: [run_tests]`, so it only runs after the tests pass. If tests fail, the rest of the workflow gets skipped.
+Now, the `fingerprint` job has `needs: [run_tests]`, so it only runs after the tests pass. If tests fail, EAS skips the rest of the workflow.
 
 </Step>
 

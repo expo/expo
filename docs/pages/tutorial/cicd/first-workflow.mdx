@@ -96,7 +96,7 @@ Open the URL from the previous step in a browser window. On the workflow page, w
   className="max-w-160"
 />
 
-The EAS dashboard is where we view and debug any workflow job. The **Workflow graph** shows how our job was triggered and the job's unique ID.
+The EAS dashboard is where we view and debug any workflow job. The **Workflow graph** shows what triggered our job and the job's unique ID.
 
 Switch to the **Workflow file** tab. This is the workflow file we wrote in Step 2, preserved with the run.
 
@@ -137,7 +137,7 @@ jobs:
       - run: echo "Hello, Workflows"
 ```
 
-The `branches` field can include any branch name that exists in a GitHub repository. We can specify multiple branches such as `['main', 'develop', 'staging']` to trigger the workflow when the code is pushed to any of those branches.
+The `branches` field can include any branch name that exists in a GitHub repository. We can specify multiple branches such as `['main', 'develop', 'staging']` to trigger the workflow when we push to any of those branches.
 
 </Step>
 
@@ -230,7 +230,7 @@ Run the following command from a terminal window to see the chained jobs in acti
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/hello.yml']} />
 
-Open the EAS dashboard link shared by the EAS CLI. Under **Logs**, notice that the `greet` job runs first and once it completes, the `show_info` job runs and renders the Markdown content with the output from the previous job.
+Open the EAS dashboard link from the EAS CLI. Under **Logs**, notice that the `greet` job runs first. Once it completes, the `show_info` job runs and renders the Markdown content using the output from the previous job.
 
 <ContentSpotlight
   alt="EAS Workflows dashboard showing two chained jobs running sequentially after the first job completes."

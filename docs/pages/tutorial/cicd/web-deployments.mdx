@@ -19,7 +19,7 @@ Our workflows from previous chapters cover Android and iOS. EAS Workflows can al
 
 ## EAS Hosting and the deploy job
 
-**EAS Hosting** is a service for hosting and deploying web builds of an Expo app. Each deployment gets its own unique URL and a project has a single production URL that serves whatever was last deployed to production.
+**EAS Hosting** is a service for hosting and deploying web builds of an Expo app. Each deployment gets its own unique URL, and a project has a single production URL that serves whatever we last deployed to production.
 
 The [`deploy`](/eas/workflows/pre-packaged-jobs/#deploy) pre-packaged job in EAS Workflows runs the web export, uploads the output of the export step to EAS Hosting, and returns the deployment URL as the job output. The `deploy` job has two parameters:
 
@@ -30,7 +30,7 @@ The [`deploy`](/eas/workflows/pre-packaged-jobs/#deploy) pre-packaged job in EAS
 
 ## Configure web.output for static export
 
-Before we add web deployment jobs to our workflows, we need to ensure that our Expo project is configured to export a [static web build](/router/web/static-rendering/). In **app.json**, set the [`web.output`](/versions/latest/config/app/#web) field to `static`:
+Before we add web deployment jobs to our workflows, we need to configure our Expo project to export a [static web build](/router/web/static-rendering/). In **app.json**, set the [`web.output`](/versions/latest/config/app/#web) field to `static`:
 
 ```json app.json
 {
@@ -76,7 +76,7 @@ With no `prod` parameter, this deploys as a non-production version. Each push ge
 
 ### Push the workflow change to the repository
 
-Commit the change to **preview.yml** and push it to the `main` branch of the GitHub repository so that EAS Workflows can pick up the change from the default branch.
+Commit the change to **preview.yml** and push it to the `main` branch of the GitHub repository. EAS Workflows reads workflow files from the default branch, so this is what makes the change effective.
 
 <Terminal
   cmd={[
@@ -119,7 +119,7 @@ Under **Deploy web (preview)**, click the **View Deployment** link to open the d
 
 ## Add a web production deployment
 
-The production workflow from [Chapter 6, Step 1](/tutorial/cicd/tag-based-releases/#change-the-trigger) runs when a new Git tag is pushed and builds or updates the native app. Let's add a `deploy_web` job to that workflow so that when we release a new version of the app, the web version is also updated on the production URL.
+The production workflow from [Chapter 6, Step 1](/tutorial/cicd/tag-based-releases/#change-the-trigger) runs when we push a new Git tag, and it builds or updates the native app. Let's add a `deploy_web` job to that workflow so that releasing a new version of the app also updates the web version on the production URL.
 
 <Step label="1">
 

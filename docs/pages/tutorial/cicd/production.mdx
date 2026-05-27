@@ -23,7 +23,7 @@ Rebuilding the app for every production change is wasteful when most changes are
 
 <Requirement title="EAS Build configured for production">
 
-[EAS CLI](/eas/cli/) prompts to generate credentials the first time we trigger a build for a profile. Trigger the production build manually for both Android and iOS so the credentials exist before the workflow runs using the command below:
+[EAS CLI](/eas/cli/) prompts to generate credentials the first time we trigger a build for a profile. Trigger the production build manually for both Android and iOS so the credentials exist before the workflow runs:
 
 <Terminal cmd={['$ eas build --profile production --platform all']} />
 
@@ -35,7 +35,7 @@ Rebuilding the app for every production change is wasteful when most changes are
 
 Previously, with development builds, we have seen that using the `on.push.branches` trigger runs our workflow on every push to the specified `main` branch. For production deployments, triggering a workflow on every push to the `main` branch means every change merged is a new release. Teams usually want a deliberate release process, so they use a release branch or tag instead.
 
-In a release branch strategy, a branch is usually specified with a pattern such as `release/*`, where `*` is the name of the feature or version. This is also what separates Continuous Integration (CI) from Continuous Delivery (CD). CI runs on every push to the `main` branch, while CD runs on a release branch when the team is ready to deploy to production.
+In a release branch strategy, we usually specify the branch with a pattern such as `release/*`, where `*` is the feature or version name. This is what separates Continuous Integration (CI) from Continuous Delivery (CD). CI runs on every push to the `main` branch, while CD runs on a release branch when the team is ready to deploy to production.
 
 The table below shows how each workflow's trigger defines its purpose:
 
@@ -51,7 +51,7 @@ The above files coexist inside a project's GitHub repository without any conflic
 
 ## The `build` job type for production builds
 
-Let's start by creating a production workflow that uses the [pre-packaged jobs](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) `build` job type from EAS Workflows that runs for Android and iOS platforms.
+Let's start by creating a production workflow. It uses the [pre-packaged](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) `build` job type from EAS Workflows and runs for both Android and iOS.
 
 <Step label="1">
 
@@ -147,7 +147,7 @@ jobs:
 
 In the above workflow, the `fingerprint` job runs first and generates a hash based on the changes in the codebase. The `get-build` jobs then check if there are existing builds for Android and iOS with the same fingerprint hash. If there are no existing builds, the `build` jobs run to create new builds for production.
 
-The [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment) field on the `fingerprint` job tells EAS which environment variables to load when computing the fingerprint. Our production environment may have different values for things like `API_URL` or feature flags, and those values can affect the native layer when they are baked into the build. Using `environment: production` makes sure the fingerprint reflects what ships.
+The [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment) field on the `fingerprint` job tells EAS which environment variables to load when computing the fingerprint. Our production environment may have different values for variables such as `API_URL` or feature flags, and those values can affect the native layer when EAS bakes them into the build. Setting `environment: production` ensures the fingerprint reflects what ships.
 
 The [`if`](/eas/workflows/syntax/#jobsjob_idif) field used on the `build_android` and `build_ios` jobs is a boolean expression. When it evaluates to `false`, the build jobs are skipped. The `!` operator means the build job runs only when `get-build` did not find a matching build.
 
@@ -205,7 +205,7 @@ Our workflow only builds production-ready app binaries or publishes OTA updates.
 
 ### Create a release branch and push changes
 
-> **info** **Note:** Ensure that the workflow file is already part of your GitHub repository and available on the `main` branch at this point.
+> **info** **Note:** Ensure that the workflow file is already part of our GitHub repository and available on the `main` branch at this point.
 
 To test our workflow, let's create a release branch and push it to our GitHub repository from a terminal window:
 
