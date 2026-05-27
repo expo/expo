@@ -81,17 +81,20 @@ export function useObserveForRouter(): MarkInteractive | null {
         return;
       }
 
+      // TTI is recorded once per screen ID for the lifetime of the storage —
+      // re-focusing the same screen (A → B → A) must not produce a second metric
+      const wasAlreadyInteractive = storage.interactiveScreensIds.has(screenId);
+      storage.interactiveScreensIds.add(screenId);
+
+      // All async work happens after storage is updated, so a concurrent
+      // pageFocused observes our writes before its own awaited writes.
       AppMetrics.markInteractive({
         ...(attributes ?? {}),
         routeName: routePattern,
         params: { ...(attributes?.params ?? {}), url: pathname },
       });
 
-      // TTI is recorded once per screen ID for the lifetime of the storage —
-      // re-focusing the same screen (A → B → A) must not produce a second metric
-      if (storage.interactiveScreensIds.has(screenId)) return;
-      storage.interactiveScreensIds.add(screenId);
-
+      if (wasAlreadyInteractive) return;
       if (!currentScreenData?.dispatchTime) {
         // `pageFocused` hasn't recorded the dispatch yet. The focus listener
         // will see `lastInteractiveCall` set with no `dispatchTime` and emit

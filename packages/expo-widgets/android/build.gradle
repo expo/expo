@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 buildscript {
   repositories {
     google()
@@ -15,6 +17,19 @@ apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 group = 'expo.modules.widgets'
 version = '56.0.15'
 
+def expoWidgetsPackageDirFile = project.projectDir.parentFile
+def expoWidgetsPackageDir = expoWidgetsPackageDirFile.absolutePath
+def expoWidgetsProjectRoot = rootDir.absoluteFile.parentFile.absolutePath
+def expoWidgetsGeneratedResDir = objects.directoryProperty()
+expoWidgetsGeneratedResDir.set(layout.buildDirectory.dir("generated/expo-widgets/res"))
+def expoWidgetsBundleOutput = expoWidgetsGeneratedResDir
+  .file("raw/expo_widgets_bundle.bundle")
+  .get()
+  .asFile
+
+def config = project.hasProperty("react") ? project.react : []
+def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+
 expoModule {
   canBePublished false
 }
@@ -29,6 +44,39 @@ android {
   buildFeatures {
     prefab true
     compose true
+  }
+}
+
+def generateExpoWidgetsBundle = tasks.register("generateExpoWidgetsBundle", Exec) {
+  description = "expo-widgets: Generate the Android widget JS bundle resource."
+
+  inputs.dir project.fileTree(file("$expoWidgetsPackageDir/bundle")) {
+    exclude "build/**"
+  }
+  inputs.file file("$expoWidgetsPackageDir/metro.config.js")
+  inputs.file file("$expoWidgetsPackageDir/scripts/build-bundle.mjs")
+  outputs.dir(expoWidgetsGeneratedResDir)
+
+  def command = [
+    *nodeExecutableAndArgs,
+    "$expoWidgetsPackageDir/scripts/build-bundle.mjs",
+    expoWidgetsProjectRoot,
+    "android",
+    expoWidgetsBundleOutput.absolutePath
+  ]
+
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    commandLine("cmd", "/c", *command)
+  } else {
+    commandLine(*command)
+  }
+}
+
+androidComponents {
+  onVariants(selector().all()) { variant ->
+    variant.sources.res.addGeneratedSourceDirectory(generateExpoWidgetsBundle) {
+      expoWidgetsGeneratedResDir
+    }
   }
 }
 

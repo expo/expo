@@ -41,6 +41,7 @@ export {
 export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';
+export * from './NavigationBar';
 export * from './Carousel';
 export {
   HorizontalPager,

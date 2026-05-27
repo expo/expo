@@ -7,10 +7,18 @@
 ### 🎉 New features
 
 - [iOS] Add `buttonBorderShape` SwiftUI modifier, which reshapes a styled button (for example a `glass` button) while preserving its native press effect. ([#46348](https://github.com/expo/expo/pull/46348) by [@nishan](https://github.com/intergalacticspacehighway))
+- [jetpack-compose] Added `NavigationBar` and `NavigationBarItem` components.
+- [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
+- [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
+- [swift-ui] Added `<DisclosureGroup.Label>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
+- [universal] Added `<Collapsible.labelStyle>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
+
 ### 💡 Others
+
+- [universal] Revamp web universal components (`Button`, `Checkbox`, `Picker`, `Slider`,`Switch`,`TextInput`,) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.14 — 2026-05-26
 

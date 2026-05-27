@@ -96,6 +96,8 @@ Using the information you've gathered, pass it into the build command through en
 - `EXPO_APPLE_TEAM_ID`: Your Apple Team ID. For example, `77KQ969CHE`.
 - `EXPO_APPLE_TEAM_TYPE`: Your Apple Team Type. Valid types are `IN_HOUSE`, `COMPANY_OR_ORGANIZATION`, or `INDIVIDUAL`.
 
+If you run [internal distribution](/build/internal-distribution/) builds on CI with ad hoc provisioning, refresh the ad hoc provisioning profile so registered devices added after the last build are included. For `eas build`, pass [`--refresh-ad-hoc-provisioning-profile`](/eas/cli/#eas-build) with `--non-interactive`. For [EAS Workflows](/eas/workflows/get-started), set `refresh_ad_hoc_provisioning_profile: true` in the build job's `params` ([build job parameters](/eas/workflows/pre-packaged-jobs#build)). See [Automation on CI](/build/internal-distribution/#automation-on-ci-optional) for requirements and an example command.
+
 ### Trigger new builds
 
 Now that we're authenticated with Expo CLI, we can create the build step.

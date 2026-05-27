@@ -1,0 +1,26 @@
+diff --git a/android/src/main/java/com/reactnativekeyboardcontroller/views/EdgeToEdgeReactViewGroup.kt b/android/src/main/java/com/reactnativekeyboardcontroller/views/EdgeToEdgeReactViewGroup.kt
+index 504afb7a4bb49df9f3b8b917cff0d1e420223862..a8b8a7ab8d16d283b1ced5a0f8312a65b3c72070 100644
+--- a/android/src/main/java/com/reactnativekeyboardcontroller/views/EdgeToEdgeReactViewGroup.kt
++++ b/android/src/main/java/com/reactnativekeyboardcontroller/views/EdgeToEdgeReactViewGroup.kt
+@@ -94,7 +94,7 @@ class EdgeToEdgeReactViewGroup(
+     this.deactivate()
+   }
+ 
+-  override fun onConfigurationChanged(newConfig: Configuration?) {
++  override fun onConfigurationChanged(newConfig: Configuration) {
+     this.reApplyWindowInsets()
+   }
+   // endregion
+diff --git a/android/src/main/java/com/reactnativekeyboardcontroller/views/background/KeyboardBackgroundViewGroup.kt b/android/src/main/java/com/reactnativekeyboardcontroller/views/background/KeyboardBackgroundViewGroup.kt
+index f19514fc04c82b7910a1255dbfddc7b0c2c6f39e..8de0cf7a534d17950cc8ddc2c2cf060d1af10965 100644
+--- a/android/src/main/java/com/reactnativekeyboardcontroller/views/background/KeyboardBackgroundViewGroup.kt
++++ b/android/src/main/java/com/reactnativekeyboardcontroller/views/background/KeyboardBackgroundViewGroup.kt
+@@ -17,7 +17,7 @@ class KeyboardBackgroundViewGroup(
+   }
+ 
+   // theme changed
+-  override fun onConfigurationChanged(newConfig: Configuration?) {
++  override fun onConfigurationChanged(newConfig: Configuration) {
+     super.onConfigurationChanged(newConfig)
+     super.setBackgroundColor(reactContext.getInputMethodColor())
+   }
