@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import ExpoAgeRange from './ExpoAgeRange';
 /**
  * Prompts the user to share their age range with the app. Responses may be cached by the OS for future requests.
@@ -49,5 +50,41 @@ export async function requestAgeRangeAsync(options) {
  */
 export async function isEligibleForAgeFeaturesAsync() {
     return ExpoAgeRange.isEligibleForAgeFeaturesAsync();
+}
+/**
+ * Displays a system-provided interface for people to acknowledge a significant app update.
+ *
+ * Only on iOS 26.4+, this presents an update acknowledgement dialog and resolves once the user confirms it, or rejects with an error.
+ * On unsupported platforms this resolves immediately without showing any UI.
+ *
+ * Call [`getRequiredRegulatoryFeaturesAsync`](#agerangegetrequiredregulatoryfeaturesasync) first to
+ * determine whether the user actually needs to acknowledge a significant change — only invoke
+ * this function when the returned features include `'significantAppChangeRequiresAdultNotification'`.
+ * Doing so avoids prompting users who are not subject to the regulation.
+ *
+ * @param updateDescription A description of the significant update to show to the user.
+ *
+ * @platform ios 26.4+
+ */
+export async function showSignificantUpdateAcknowledgmentAsync(updateDescription) {
+    if (Platform.OS === 'ios') {
+        return ExpoAgeRange.showSignificantUpdateAcknowledgmentAsync(updateDescription);
+    }
+}
+/**
+ * Returns the set of regulatory features that the OS reports as required for the current user.
+ *
+ * Use this to discover which age-assurance obligations apply.
+ *
+ * Resolves with `null` on iOS earlier than 26.4 and on Android and web — treat
+ * `null` as "unknown" rather than "no features required".
+ *
+ * @platform ios 26.4+
+ */
+export async function getRequiredRegulatoryFeaturesAsync() {
+    if (Platform.OS === 'ios') {
+        return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
+    }
+    return null;
 }
 //# sourceMappingURL=AgeRange.js.map

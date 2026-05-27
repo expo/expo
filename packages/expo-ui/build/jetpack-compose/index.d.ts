@@ -29,6 +29,7 @@ export { TextField, OutlinedTextField, type TextFieldProps, type TextFieldRef, t
 export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';
+export * from './NavigationBar';
 export * from './Carousel';
 export { HorizontalPager, type HorizontalPagerHandle, type HorizontalPagerProps, } from './HorizontalPager';
 export * from './SearchBar';

@@ -2,6 +2,7 @@ import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
 import { use, useCallback, useEffect, useRef } from 'react';
 
 import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';
+import { emitTTI } from './emitTTI';
 import { isInitialized } from './init';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
@@ -58,27 +59,48 @@ export function useObserveForRouter(): MarkInteractive | null {
         );
         return;
       }
-      if (navigation?.isFocused()) {
-        AppMetrics.markInteractive({
-          ...(attributes ?? {}),
-          routeName: routePattern,
-          params: { ...(attributes?.params ?? {}), url: pathname },
-        });
-      }
-
       if (!storage) {
         throw new Error(
           '[expo-observe] markInteractive was called without an active ObserveProvider. Wrap your app in ObserveRoot from expo-observe.'
         );
       }
 
+      // Snapshot BEFORE the write below so the deferred-TTI check sees the
+      // pre-write state (lastInteractiveCall undefined until this call).
+      const currentScreenData = storage.screenTimes[screenId];
+
+      // Record lastInteractiveCall regardless of focus so the `pageFocused`
+      // listener can emit `tti = ttr` on our behalf when this call lands
+      // before `dispatchTime` has been seeded (cold-launch race).
+      storage.screenTimes[screenId] = {
+        ...storage.screenTimes[screenId],
+        lastInteractiveCall: now,
+      };
+
+      if (!navigation?.isFocused()) {
+        return;
+      }
+
       // TTI is recorded once per screen ID for the lifetime of the storage —
       // re-focusing the same screen (A → B → A) must not produce a second metric
-      if (storage.interactiveScreensIds.has(screenId)) return;
+      const wasAlreadyInteractive = storage.interactiveScreensIds.has(screenId);
       storage.interactiveScreensIds.add(screenId);
 
-      const currentScreenData = storage.screenTimes[screenId];
-      if (!currentScreenData?.dispatchTime) return;
+      // All async work happens after storage is updated, so a concurrent
+      // pageFocused observes our writes before its own awaited writes.
+      AppMetrics.markInteractive({
+        ...(attributes ?? {}),
+        routeName: routePattern,
+        params: { ...(attributes?.params ?? {}), url: pathname },
+      });
+
+      if (wasAlreadyInteractive) return;
+      if (!currentScreenData?.dispatchTime) {
+        // `pageFocused` hasn't recorded the dispatch yet. The focus listener
+        // will see `lastInteractiveCall` set with no `dispatchTime` and emit
+        // TTI = TTR on our behalf.
+        return;
+      }
 
       // Stored in seconds to match the OTel `unit = "s"` convention
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
@@ -86,14 +108,14 @@ export function useObserveForRouter(): MarkInteractive | null {
       // TODO(@ubax): we should count the time against the action which caused the first navigation
       // and add a param stating if during that time there was any navigation
       if (mainSessionId) {
-        await AppMetrics.addCustomMetricToSession({
+        await emitTTI({
           sessionId: mainSessionId,
           timestamp,
-          category: 'navigation',
           routeName: routePattern,
-          name: 'tti',
           value: interactiveTimeSeconds,
-          params: { isAppLaunch: !!currentScreenData.isAppLaunch, routeParams, url: pathname },
+          isAppLaunch: !!currentScreenData.isAppLaunch,
+          routeParams,
+          url: pathname,
         });
       }
     },

@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `defaultLaunchURL` being ignored on cold start when no recently-opened app was cached. ([#46185](https://github.com/expo/expo/pull/46185) by [@kaihirota](https://github.com/kaihirota))
+- [iOS] Cleared the deep-link URL from cached `launchOptions` after it is consumed ([#46265](https://github.com/expo/expo/pull/46265) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed a crash when cold-launching a development build from a deep link that carries intent categories (e.g. an App Link opened from a browser). ([#46314](https://github.com/expo/expo/pull/46314) by [@lilianchiassai-fc](https://github.com/lilianchiassai-fc) & [#46328](https://github.com/expo/expo/pull/46328) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+## 56.0.16 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `defaultLaunchURL` being ignored on cold start when no recently-opened app was cached. ([#46185](https://github.com/expo/expo/pull/46185) by [@kaihirota](https://github.com/kaihirota))
+- [iOS] Order the build phase by array position to avoid a dependency cycle when the main target embeds an app extension. ([#46224](https://github.com/expo/expo/pull/46224) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.15 — 2026-05-23
 

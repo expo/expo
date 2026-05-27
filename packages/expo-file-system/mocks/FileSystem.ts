@@ -246,7 +246,7 @@ export class FileSystemFile {
     });
   }
 
-  write(
+  writeSync(
     content: string | Uint8Array,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): void {
@@ -278,6 +278,13 @@ export class FileSystemFile {
     } else {
       store.set(key, { kind: 'file', bytes, type, exists: true, createdAt, modifiedAt: now });
     }
+  }
+
+  async write(
+    content: string | Uint8Array,
+    options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
+  ): Promise<void> {
+    this.writeSync(content, options);
   }
 
   private readBytesOrThrow(): Uint8Array {

@@ -224,9 +224,9 @@ export declare function removeImageFromSplashScreen(xml: IBSplashScreenDocument,
 export declare function applyImageToSplashScreenXML(xml: IBSplashScreenDocument, { imageName, contentMode, backgroundColor, enableFullScreenImage, imageWidth, }: {
     imageName: string;
     contentMode: ImageContentMode;
-    backgroundColor?: string;
+    backgroundColor: string;
     enableFullScreenImage: boolean;
-    imageWidth?: number;
+    imageWidth: number;
 }): IBSplashScreenDocument;
 /**
  * IB does not allow two items to have the same ID.

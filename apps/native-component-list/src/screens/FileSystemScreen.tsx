@@ -109,10 +109,10 @@ function FileSourcesSection({ setCurrentFile }: { setCurrentFile: (f: File) => v
 
       <ListButton
         title="Create local file"
-        onPress={() => {
+        onPress={async () => {
           const file = new File(Paths.cache, 'test_sandbox', 'test.txt');
           file.create({ intermediates: true, overwrite: true });
-          file.write('Hello from FileSystem sandbox! Timestamp: ' + Date.now());
+          await file.write('Hello from FileSystem sandbox! Timestamp: ' + Date.now());
           setCurrentFile(file);
           Alert.alert('Created', file.uri);
         }}
@@ -279,7 +279,7 @@ function ReadWriteSection({ withCurrentFile }: { withCurrentFile: WithCurrentFil
       <SimpleActionDemo
         title="write() text"
         action={withCurrentFile(async (file) => {
-          file.write('Written at ' + new Date().toISOString());
+          await file.write('Written at ' + new Date().toISOString());
           return 'OK - size is now: ' + file.size;
         })}
       />
@@ -287,7 +287,7 @@ function ReadWriteSection({ withCurrentFile }: { withCurrentFile: WithCurrentFil
         title="write() base64"
         action={withCurrentFile(async (file) => {
           // Base64 of "Hello Base64!"
-          file.write('SGVsbG8gQmFzZTY0IQ==', { encoding: 'base64' });
+          await file.write('SGVsbG8gQmFzZTY0IQ==', { encoding: 'base64' });
           return 'OK - text() = ' + truncate(await file.text());
         })}
       />
@@ -295,7 +295,7 @@ function ReadWriteSection({ withCurrentFile }: { withCurrentFile: WithCurrentFil
         title="write() Uint8Array"
         action={withCurrentFile(async (file) => {
           const bytes = new Uint8Array([72, 101, 108, 108, 111]); // "Hello"
-          file.write(bytes);
+          await file.write(bytes);
           return 'OK - text() = ' + file.textSync();
         })}
       />
@@ -687,7 +687,7 @@ function DirectoryOperationsSection({
             title="Create file 'test_created.txt' in picked dir"
             action={async () => {
               const file = safDirectory.createFile('test_created.txt', 'text/plain');
-              file.write('Created at ' + new Date().toISOString());
+              await file.write('Created at ' + new Date().toISOString());
               setCurrentFile(file);
               return { uri: file.uri, name: file.name };
             }}
@@ -788,7 +788,7 @@ function FileLifecycleSection({
           const name = `test_${Date.now()}.txt`;
           const file = new File(Paths.cache, 'test_sandbox', name);
           file.create({ intermediates: true });
-          file.write('Created for lifecycle test');
+          await file.write('Created for lifecycle test');
           setCurrentFile(file);
           return { uri: file.uri, exists: file.exists, size: file.size };
         }}
