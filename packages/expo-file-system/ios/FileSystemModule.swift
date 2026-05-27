@@ -34,6 +34,26 @@ public final class FileSystemModule: Module {
     return attributes[.systemFreeSize] as? Int64
   }
 
+  private func writeToFile(
+    _ file: FileSystemFile,
+    content: Either<String, TypedArray>,
+    options: WriteOptions?
+  ) throws {
+    let append = options?.append ?? false
+    if let content: String = content.get() {
+      if options?.encoding == WriteEncoding.base64 {
+        guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
+          throw UnableToWriteBase64DataException(file.url.absoluteString)
+        }
+        try file.write(data, append: append)
+      } else {
+        try file.write(content, append: append)
+      }
+    } else if let content: TypedArray = content.get() {
+      try file.write(content, append: append)
+    }
+  }
+
   public func definition() -> ModuleDefinition {
     Name("FileSystem")
 
@@ -174,21 +194,12 @@ public final class FileSystemModule: Module {
         return try file.info(options: options ?? InfoOptions())
       }
 
-      Function("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
-        let append = options?.append ?? false
-        if let content: String = content.get() {
-          if options?.encoding == WriteEncoding.base64 {
-            guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
-              throw UnableToWriteBase64DataException(file.url.absoluteString)
-            }
-            try file.write(data, append: append)
-          } else {
-            try file.write(content, append: append)
-          }
-        }
-        if let content: TypedArray = content.get() {
-          try file.write(content, append: append)
-        }
+      AsyncFunction("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+        try writeToFile(file, content: content, options: options)
+      }
+
+      Function("writeSync") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+        try writeToFile(file, content: content, options: options)
       }
 
       Property("size") { file in
