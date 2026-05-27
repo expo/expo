@@ -11,7 +11,7 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Sharing in-progress mobile changes with teammates and PR reviewers often requires them to check out a branch and run a development server locally.
+Sharing in-progress mobile changes with teammates and pull request (PR) reviewers often requires them to check out a branch and run a development server locally.
 
 ## Learning outcomes
 
@@ -247,9 +247,9 @@ jobs:
     environment: preview
     params:
       channel: preview
-    comment:
-      needs: [publish_preview]
-      type: github-comment
+  comment:
+    needs: [publish_preview]
+    type: github-comment
 ```
 
 > **important** Before testing the above workflow, commit **pr-preview.yml** and push it to the `main` branch of our GitHub repository. **EAS Workflows reads workflow files from the default branch.**
@@ -296,8 +296,8 @@ Using the link or QR code in the comment, we can now open the update on our devi
 <ProgressTracker
   currentChapterIndex={2}
   name="CICD_TUTORIAL"
-  summary="We created a preview build workflow with fingerprinting, added Slack notifications to alert the team on build completion, and set up PR previews using EAS Update so reviewers can test changes without checking out a branch."
-  nextChapterDescription="In the next chapter, learn how to run end-to-end tests with Maestro in an EAS Workflow."
+  summary="We created a preview build workflow with fingerprinting, added Slack notifications for build status, and set up PR previews using EAS Update so reviewers can test changes without checking out a branch."
+  nextChapterDescription="In the next chapter, learn how to run end-to-end tests with Maestro in an EAS Workflows job."
   nextChapterTitle="E2E tests with Maestro"
   nextChapterLink="/tutorial/cicd/e2e-tests/"
 />
