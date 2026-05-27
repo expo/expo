@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Pick up `rootProject.ext.ndkVersion` so the module's `android.ndkVersion` matches the host project's NDK; otherwise AGP falls back to its own preferred version and reports `[CXX1104] NDK ... disagrees with android.ndkVersion`. ([#45759](https://github.com/expo/expo/pull/45759) by [@xxih](https://github.com/xxih))
+
 ### 💡 Others
 
 ## 56.0.17 — 2026-05-26

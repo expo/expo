@@ -86,6 +86,10 @@ android {
     prefab true
   }
 
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
+
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
