@@ -207,6 +207,20 @@ final class ExpoAppDelegateSubscriberManagerTests {
   }
 
   @Test
+  func allowedOrientationsFallsBackToUniversalInfoPlistKeyForIPad() {
+    let infoDictionary: [String: Any] = [
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ]
+    ]
+
+    let result = allowedOrientations(for: .pad, infoDictionary: infoDictionary)
+
+    #expect(result == [.landscapeLeft, .landscapeRight])
+  }
+
+  @Test
   func willContinueUserActivityWithType() {
     let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, willContinueUserActivityWithType: "test")
     #expect(result == true)
