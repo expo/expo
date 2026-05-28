@@ -7,13 +7,13 @@ description: Track how long EAS Update OTA bundles take to download on real user
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-EAS Observe automatically tracks how long each OTA update takes to download on real user devices. No additional instrumentation is required: if your app uses [EAS Update](/eas-update/introduction/) and includes [`expo-observe`](/eas/observe/get-started/), download metrics are collected for every update fetch.
+EAS Observe automatically tracks how long each OTA update takes to download on real user devices. You don't need to add any instrumentation: if your app uses [EAS Update](/eas-update/introduction/) and includes [`expo-observe`](/eas/observe/get-started/), EAS Observe collects download metrics for every update fetch.
 
 Update download times appear in the **EAS Update** tab of the EAS Observe dashboard and are queryable from the EAS CLI.
 
 ## View update downloads
 
-In the dashboard: open your project and navigate to [**Observe > EAS Update**](https://expo.dev/accounts/[account]/projects/[project]/observe?tab=eas-update). The tab is split into two sections: an aggregate chart and a per-update table.
+In the dashboard: open your project and navigate to [**Observe > EAS Update**](https://expo.dev/accounts/[account]/projects/[project]/observe?tab=eas-update). The tab has two sections: an aggregate chart and a per-update table.
 
 <ContentSpotlight
   alt="The EAS Update tab in the EAS Observe dashboard showing update download time and recent updates."
@@ -25,7 +25,7 @@ In the dashboard: open your project and navigate to [**Observe > EAS Update**](h
 
 A single chart showing aggregate download time across all updates fetched in the selected time range. Statistical breakdowns mirror the App startup tab: **Median**, **Avg**, **Min**, **Max**, **P90**, and **P99**. Use these to spot regressions in update size or CDN latency.
 
-Update markers on the chart indicate when each update was first downloaded. Click a marker to see the update ID, version, and metrics at that point.
+Update markers on the chart indicate when each update first downloaded. Click a marker to see the update ID, version, and metrics at that point.
 
 ### Recent updates
 
