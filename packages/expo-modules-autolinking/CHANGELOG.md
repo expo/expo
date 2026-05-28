@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 56.0.14 — 2026-05-28
+
+### 🐛 Bug fixes
+
+- Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
 
 ## 56.0.13 — 2026-05-26
 
