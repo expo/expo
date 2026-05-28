@@ -32,6 +32,10 @@ class DevMenuViewModel: ObservableObject {
     loadFloatingActionButtonState()
   }
 
+  func refresh() {
+    loadData()
+  }
+
   private func loadAppInfo() {
     let appInfoDict = devMenuManager.getAppInfo()
 
