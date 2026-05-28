@@ -1,0 +1,141 @@
+---
+title: Resolving duplicate-framework conflicts on iOS
+sidebar_title: Host-provided frameworks
+description: Tell expo-brownfield which iOS frameworks the host app already ships so they aren't bundled twice and the build doesn't fail with "Multiple commands produce ….framework".
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+When you integrate an Expo brownfield artifact into an existing iOS app that already ships a popular native library via CocoaPods, both sides may try to provide the same framework. Xcode then fails the build with:
+
+```
+Multiple commands produce '…/Frameworks/SDWebImage.framework'
+```
+
+This happens most often with [`expo-image`](/versions/latest/sdk/image), which depends on `SDWebImage` and its coders. If the host iOS app's `Podfile` already installs `SDWebImage` (for example, when adding Expo to an app like Signal iOS, Wire, or Telegram), the brownfield artifact and the host app each contribute a copy of `SDWebImage.framework` and the link step refuses to choose between them.
+
+The `ios.hostProvidedFrameworks` option on `expo-brownfield` lets you mark frameworks as **already provided by the host app**. The brownfield build strips them from the artifact, leaves the `@rpath/<Name>.framework/<Name>` references in place, and the host's existing pod resolves them at link time.
+
+## When to use it
+
+Use `hostProvidedFrameworks` when **all** of the following are true:
+
+- You are building with the [isolated approach](/brownfield/isolated-approach/) (`npx expo-brownfield build:ios`).
+- You have [`expo-build-properties`](/versions/latest/sdk/build-properties/) `ios.usePrecompiledModules: true` enabled — host-provided exclusion only applies to precompiled modules. Source-built dependencies are statically linked into the brownfield framework itself; there is no separate `.xcframework` to strip in that case.
+- The host app's existing `Podfile` already installs the conflicting framework at a version that is ABI-compatible with the one the Expo module was compiled against.
+
+If those conditions don't hold, see [Source-built modules](#source-built-modules) below.
+
+## Configure `hostProvidedFrameworks`
+
+Add the framework names (the bare names that appear in `Pods/<Pod>/<Name>.xcframework/`, without the `.xcframework` suffix) to the `expo-brownfield` plugin entry in **app.json**:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      ["expo-build-properties", { "ios": { "usePrecompiledModules": true } }],
+      [
+        "expo-brownfield",
+        {
+          "ios": {
+            "hostProvidedFrameworks": [
+              "SDWebImage",
+              "SDWebImageWebPCoder",
+              "SDWebImageAVIFCoder",
+              "SDWebImageSVGCoder",
+              "libavif",
+              "libdav1d"
+            ]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+The brownfield build will:
+
+- Skip these xcframeworks when copying artifacts into the output directory.
+- Omit them from the generated `Package.swift` so they aren't declared as `.binaryTarget` entries.
+- Suppress the missing-SPM-dep completeness check for the listed names — the host app's link step is responsible for resolving them.
+- Log the version found in each excluded framework's `Info.plist` so you can verify the host ships a compatible version.
+
+When the build runs you will see lines like:
+
+```
+expo-brownfield: excluding SDWebImage (5.21.6) — the host iOS app must provide SDWebImage at a compatible version at link time.
+```
+
+During prebuild, the plugin serializes this list into **ios/Podfile.properties.json** under the `ios.brownfieldHostProvidedFrameworks` key. The brownfield CLI reads it from there at `build:ios` time. If you change `hostProvidedFrameworks` in **app.json**, run `npx expo prebuild --platform ios` (or `npx expo prebuild --clean`) so the change propagates to the properties file.
+
+## One-off override from the CLI
+
+If you only need to strip frameworks for a single build (a CI smoke test or a repro), pass `--host-provided` instead of editing **app.json**. The CLI flag wins entirely when provided and does not require a fresh prebuild:
+
+<Terminal cmd={['$ npx expo-brownfield build:ios --release --package MyAppPackage \\', '    --host-provided SDWebImage,SDWebImageWebPCoder,libavif']} />
+
+You can repeat the flag (`--host-provided SDWebImage --host-provided libavif`) or pass a single comma-separated string — both forms are accepted.
+
+## Identifying what the host already ships
+
+If you're not sure which frameworks the host iOS app already provides, the most reliable signal is the host project's resolved `Podfile.lock`:
+
+<Terminal cmd={['$ grep -E "^(  - |- )" ios/Podfile.lock | head -40']} />
+
+For each pod the host installs, the framework name in your **app.json** is usually the pod name. If you're unsure of the casing or how a pod splits into multiple xcframeworks (`SDWebImage` ships separate `SDWebImageWebPCoder`, `SDWebImageAVIFCoder`, and `SDWebImageSVGCoder` coders), inspect the Expo project after `pod install`:
+
+<Terminal cmd={['$ find ios/Pods -maxdepth 2 -name "*.xcframework" -type d']} />
+
+The basenames you list in `hostProvidedFrameworks` must match exactly.
+
+## Verifying the runtime contract
+
+After the build, confirm the host app actually links the right copy of the framework. Build the host app, then inspect the final binary:
+
+<Terminal cmd={['$ otool -L MyHostApp.app/MyHostApp | grep -i sdwebimage']} />
+
+You should see exactly one `@rpath/SDWebImage.framework/SDWebImage` reference resolving to the host's bundled framework. If you instead get a runtime crash like:
+
+```
+dyld: Library not loaded: @rpath/SDWebImage.framework/SDWebImage
+```
+
+it means the host app's link step didn't pull in the framework. Confirm `pod 'SDWebImage'` is declared in the host's `Podfile` and that the SDWebImage version installed there is ABI-compatible with the one the Expo module was compiled against.
+
+## Source-built modules
+
+When `ios.usePrecompiledModules` is **not** enabled, `expo-image` (and its transitive deps) are built from source and statically linked into the main brownfield framework. In that mode there is no separate `SDWebImage.xcframework` to strip — the symbols are inside `<YourScheme>.xcframework`.
+
+The CLI fails fast in this configuration with:
+
+```
+ios.hostProvidedFrameworks is set but precompiled modules are not enabled. […]
+```
+
+To resolve, enable `ios.usePrecompiledModules` in `expo-build-properties` and re-run `pod install`:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      ["expo-build-properties", { "ios": { "usePrecompiledModules": true } }],
+      ["expo-brownfield", { "ios": { "hostProvidedFrameworks": ["SDWebImage"] } }]
+    ]
+  }
+}
+```
+
+## Limitations and caveats
+
+- **Version compatibility is your responsibility.** The brownfield build logs the version of the framework it stripped so you have a target to verify against, but it does not introspect the host app's installed version. A major-version mismatch between what `expo-image` was compiled against and what the host ships can cause runtime crashes.
+- **Static-linked host pods.** If the host app uses `use_frameworks! :linkage => :static`, the framework binary is folded into the host app target rather than living as a separate `.framework` on disk. `hostProvidedFrameworks` still keeps the build from duplicating outputs, but verify symbols resolve via `nm` on the final binary if you hit `Symbol not found` at runtime.
+- **Listed but uninstalled.** If you list a name that doesn't match any installed xcframework under `ios/Pods/`, the build logs a warning and continues. Either remove the entry from your config or run `pod install` in the Expo project to install the source module.
+- **Web target.** This option only applies to iOS. Android and web brownfield artifacts have their own dependency-resolution paths.
+
+## Related
+
+- [Isolated approach](/brownfield/isolated-approach/) — Build React Native as an XCFramework or Swift Package.
+- [`expo-build-properties` reference](/versions/latest/sdk/build-properties/) — Enable `usePrecompiledModules` and tune the iOS build.
+- [`expo-image` reference](/versions/latest/sdk/image/) — The most common source of SDWebImage conflicts in brownfield apps.

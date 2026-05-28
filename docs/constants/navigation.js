@@ -225,6 +225,7 @@ export const general = [
       makePage('brownfield/overview.mdx'),
       makePage('brownfield/isolated-approach.mdx'),
       makePage('brownfield/integrated-approach.mdx'),
+      makePage('brownfield/host-provided-frameworks.mdx'),
       makePage('brownfield/lifecycle-listeners.mdx'),
     ]),
     makeGroup(
