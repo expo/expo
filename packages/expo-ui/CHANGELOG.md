@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix race between JS imperative `expand()` and Compose handler registration on `ModalBottomSheet`. Adds `initialFullyExpanded` prop to drive initial snap state natively. ([#46367](https://github.com/expo/expo/pull/46367) by [@duyanhv](https://github.com/duyanhv))
 
 ### 💡 Others
 
