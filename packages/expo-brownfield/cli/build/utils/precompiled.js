@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = void 0;
+exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = exports.isDirentDirectory = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -20,6 +20,20 @@ const RESERVED_POD_DIRS = new Set([
     'React-Core-prebuilt',
     'ReactNativeDependencies',
 ]);
+/**
+ * Returns true when an `entry` refers to a directory either directly OR via a symlink whose
+ * target is a directory.
+ */
+const isDirentDirectory = (entry, parentDir) => {
+    if (entry.isDirectory()) {
+        return true;
+    }
+    if (!entry.isSymbolicLink()) {
+        return false;
+    }
+    return (node_fs_1.default.statSync(node_path_1.default.join(parentDir, entry.name), { throwIfNoEntry: false })?.isDirectory() ?? false);
+};
+exports.isDirentDirectory = isDirentDirectory;
 /**
  * Scans `ios/Pods/` for prebuilt xcframeworks installed by autolinking when
  * `EXPO_USE_PRECOMPILED_MODULES=1` is set. A pod is "precompiled" when its directory contains
@@ -57,21 +71,9 @@ const enumeratePrecompiledModules = (iosDir) => {
         if (tarballs.length === 0) {
             continue;
         }
-        // `entry.isDirectory()` returns false for symlinks even when the target is a directory
         const xcframeworks = node_fs_1.default
             .readdirSync(podDir, { withFileTypes: true })
-            .filter((f) => {
-            if (!f.name.endsWith('.xcframework')) {
-                return false;
-            }
-            if (f.isDirectory()) {
-                return true;
-            }
-            if (!f.isSymbolicLink()) {
-                return false;
-            }
-            return (node_fs_1.default.statSync(node_path_1.default.join(podDir, f.name), { throwIfNoEntry: false })?.isDirectory() ?? false);
-        })
+            .filter((f) => f.name.endsWith('.xcframework') && (0, exports.isDirentDirectory)(f, podDir))
             .map((f) => f.name.replace(/\.xcframework$/, ''));
         // Identify the "main" product for this pod — the xcframework whose name matches a tarball.
         // Used as the `-m` argument when reconciling debug/release flavors via replace-xcframework.js.
@@ -191,7 +193,10 @@ const enumerateSpmDepsXcframeworks = (cwd, buildConfiguration, existingNames) =>
     const flavor = buildConfiguration.toLowerCase();
     const results = [];
     for (const entry of node_fs_1.default.readdirSync(spmDepsRoot, { withFileTypes: true })) {
-        if (!entry.isDirectory() || entry.name.startsWith('_') || entry.name.startsWith('.')) {
+        if (entry.name.startsWith('_') || entry.name.startsWith('.')) {
+            continue;
+        }
+        if (!(0, exports.isDirentDirectory)(entry, spmDepsRoot)) {
             continue;
         }
         if (existingNames.has(entry.name)) {

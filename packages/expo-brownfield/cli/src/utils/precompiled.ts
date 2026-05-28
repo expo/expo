@@ -20,6 +20,22 @@ const RESERVED_POD_DIRS = new Set([
 ]);
 
 /**
+ * Returns true when an `entry` refers to a directory either directly OR via a symlink whose
+ * target is a directory.
+ */
+export const isDirentDirectory = (entry: fs.Dirent, parentDir: string): boolean => {
+  if (entry.isDirectory()) {
+    return true;
+  }
+  if (!entry.isSymbolicLink()) {
+    return false;
+  }
+  return (
+    fs.statSync(path.join(parentDir, entry.name), { throwIfNoEntry: false })?.isDirectory() ?? false
+  );
+};
+
+/**
  * Scans `ios/Pods/` for prebuilt xcframeworks installed by autolinking when
  * `EXPO_USE_PRECOMPILED_MODULES=1` is set. A pod is "precompiled" when its directory contains
  * a `<Product>.xcframework/` dir and an `artifacts/<Product>-{debug,release}.tar.gz` tarball —
@@ -60,23 +76,9 @@ export const enumeratePrecompiledModules = (iosDir: string): ModuleXCFramework[]
       continue;
     }
 
-    // `entry.isDirectory()` returns false for symlinks even when the target is a directory
     const xcframeworks = fs
       .readdirSync(podDir, { withFileTypes: true })
-      .filter((f) => {
-        if (!f.name.endsWith('.xcframework')) {
-          return false;
-        }
-        if (f.isDirectory()) {
-          return true;
-        }
-        if (!f.isSymbolicLink()) {
-          return false;
-        }
-        return (
-          fs.statSync(path.join(podDir, f.name), { throwIfNoEntry: false })?.isDirectory() ?? false
-        );
-      })
+      .filter((f) => f.name.endsWith('.xcframework') && isDirentDirectory(f, podDir))
       .map((f) => f.name.replace(/\.xcframework$/, ''));
 
     // Identify the "main" product for this pod — the xcframework whose name matches a tarball.
@@ -219,7 +221,10 @@ export const enumerateSpmDepsXcframeworks = (
   const results: ModuleXCFramework[] = [];
 
   for (const entry of fs.readdirSync(spmDepsRoot, { withFileTypes: true })) {
-    if (!entry.isDirectory() || entry.name.startsWith('_') || entry.name.startsWith('.')) {
+    if (entry.name.startsWith('_') || entry.name.startsWith('.')) {
+      continue;
+    }
+    if (!isDirentDirectory(entry, spmDepsRoot)) {
       continue;
     }
     if (existingNames.has(entry.name)) {

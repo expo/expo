@@ -8,6 +8,7 @@ import CLIError from './error';
 import {
   ensureCorrectFlavor,
   enumerateAllPrebuildModules,
+  isDirentDirectory,
   resolvedFixedXCFrameworks,
 } from './precompiled';
 import { withSpinner } from './spinner';
@@ -605,7 +606,7 @@ export const validateHostProvided = (config: IosConfig): void => {
         continue;
       }
       for (const entry of entries) {
-        if (!entry.isDirectory() || !entry.name.endsWith('.xcframework')) {
+        if (!entry.name.endsWith('.xcframework') || !isDirentDirectory(entry, podDir)) {
           continue;
         }
         const name = entry.name.replace(/\.xcframework$/, '');

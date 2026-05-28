@@ -1,4 +1,10 @@
+import fs from 'node:fs';
 import type { BuildConfiguration, ModuleXCFramework } from './types';
+/**
+ * Returns true when an `entry` refers to a directory either directly OR via a symlink whose
+ * target is a directory.
+ */
+export declare const isDirentDirectory: (entry: fs.Dirent, parentDir: string) => boolean;
 /**
  * Scans `ios/Pods/` for prebuilt xcframeworks installed by autolinking when
  * `EXPO_USE_PRECOMPILED_MODULES=1` is set. A pod is "precompiled" when its directory contains

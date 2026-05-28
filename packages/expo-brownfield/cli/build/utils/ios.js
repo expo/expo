@@ -525,7 +525,7 @@ const validateHostProvided = (config) => {
                 continue;
             }
             for (const entry of entries) {
-                if (!entry.isDirectory() || !entry.name.endsWith('.xcframework')) {
+                if (!entry.name.endsWith('.xcframework') || !(0, precompiled_1.isDirentDirectory)(entry, podDir)) {
                     continue;
                 }
                 const name = entry.name.replace(/\.xcframework$/, '');
