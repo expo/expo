@@ -19,6 +19,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] `build:ios` now detects a missing iOS workspace and prompts to run `pod install` instead of failing with a vague "Could not find brownfield iOS workspace". ([#46247](https://github.com/expo/expo/pull/46247) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix following prebuilt symlinks when using SPM ([#46311](https://github.com/expo/expo/pull/46311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.14 — 2026-05-23
 
