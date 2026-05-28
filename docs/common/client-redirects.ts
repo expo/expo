@@ -546,12 +546,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
 
   // After merging registerRootComponent info in `expo` API reference
-  '/versions/v53.0.0/sdk/register-root-component/':
-    '/versions/v53.0.0/sdk/expo/#registerrootcomponentcomponent',
   '/versions/latest/sdk/register-root-component/':
     '/versions/latest/sdk/expo/#registerrootcomponentcomponent',
-  '/versions/v53.0.0/sdk/url/': '/versions/v53.0.0/sdk/expo/#url-api',
-  '/versions/v53.0.0/sdk/encoding/': '/versions/v53.0.0/sdk/expo/#encoding-api',
 
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
@@ -644,4 +640,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
   '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
     '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
+
+  // After archiving Configure JS engines guide
+  '/guides/configuring-js-engines/': '/archive/configuring-js-engines/',
 };

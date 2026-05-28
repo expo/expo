@@ -33,16 +33,17 @@ export declare class Chunk {
     requiredChunks: Set<Chunk>;
     constructor(name: string, entries: Module<MixedOutput>[], graph: ReadOnlyGraph<MixedOutput>, options: ExpoSerializerOptions, isAsync?: boolean, isVendor?: boolean, isEntry?: boolean);
     private getPlatform;
-    private getFilename;
-    private getStableChunkSource;
-    private getFilenameForConfig;
+    getFilename(src: string): string;
+    getStableChunkSource(serializerConfig: Partial<SerializerConfigT>): string;
     private serializeToCodeWithTemplates;
     hasAbsolutePath(absolutePath: string): boolean;
+    private _asyncTargets?;
+    getAsyncChunkTargets(chunkByPath: Map<string, Chunk>): Set<Chunk>;
     private getComputedPathsForAsyncDependencies;
     private getAdjustedSourceMapUrl;
     private serializeToCode;
     private boolishTransformOption;
-    serializeToAssetsAsync(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[], { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions): Promise<SerialAsset[]>;
+    serializeToAssetsAsync(serializerConfig: Partial<SerializerConfigT>, chunksByPath: Map<string, Chunk>, filenamesByChunk: Map<Chunk, string>, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions): Promise<SerialAsset[]>;
     private supportsBytecode;
     isHermesEnabled(): boolean;
 }

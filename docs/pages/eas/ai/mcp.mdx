@@ -14,8 +14,6 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-> **info** Expo MCP Server requires an [EAS paid plan](https://expo.dev/pricing).
-
 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a standard protocol that allows AI models to integrate with external data sources, providing enhanced context for more precise responses. It enables AI-assisted tools like agents to understand your development environment more deeply, allowing them to provide better assistance with your codebase.
 
 Expo MCP Server is a remote MCP server hosted by Expo that integrates with popular AI-assisted tools such as Claude Code, Cursor, VS Code, and others, enabling them to interact directly with your Expo projects.
@@ -62,11 +60,11 @@ Your AI-assisted tools can autonomously write the code, capture screenshots to v
 The complete table of [MCP capabilities](#available-mcp-capabilities) documents the tools and prompts Expo MCP Server provides to AI-assisted tools.
 
 <Prerequisites>
-  <Requirement title="Expo account with an EAS paid plan">
-    An [EAS paid plan](https://expo.dev/pricing) is required to use Expo MCP Server.
+  <Requirement title="Expo account">
+    An Expo account is required to use Expo MCP Server.
   </Requirement>
   <Requirement title="An Expo project on the latest SDK">
-    Create a project with `npx create-expo-app@latest --template default@sdk-55`, or ensure your
+    Create a project with `npx create-expo-app@latest --template default@sdk-56`, or ensure your
     existing project has the latest `expo` package installed.
   </Requirement>
   <Requirement title="An AI-assisted tool with remote MCP support">
@@ -88,7 +86,7 @@ Expo MCP Server supports integration with various AI-assisted tools. Use the gen
 
 <Collapsible summary="Claude Code setup">
 
-<Terminal cmd={['$ claude mcp add --transport http expo-mcp https://mcp.expo.dev/mcp']} />
+<Terminal cmd={['$ claude mcp add --transport http expo https://mcp.expo.dev/mcp']} />
 
 After installation, run `/mcp` in your Claude Code session to authenticate.
 
@@ -98,7 +96,7 @@ After installation, run `/mcp` in your Claude Code session to authenticate.
 
 Click the following link to install the MCP server for Cursor:
 
-<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=expo-mcp&config=eyJ1cmwiOiJodHRwczovL21jcC5leHBvLmRldi9tY3AifQ%3D%3D">
+<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=expo&config=eyJ1cmwiOiJodHRwczovL21jcC5leHBvLmRldi9tY3AifQ%3D%3D">
   <img
     src="https://cursor.com/deeplink/mcp-install-light.svg"
     alt="Install MCP Server"
@@ -120,13 +118,13 @@ Click the following link to install the MCP server for Cursor:
 3. Select **HTTP**
 4. Enter the server details:
    - **URL**: `https://mcp.expo.dev/mcp`
-   - **Name**: expo-mcp
+   - **Name**: expo
 
 </Collapsible>
 
 <Collapsible summary="Codex setup">
 
-<Terminal cmd={['$ codex mcp add expo-mcp --url https://mcp.expo.dev/mcp']} />
+<Terminal cmd={['$ codex mcp add expo --url https://mcp.expo.dev/mcp']} />
 
 The above command adds the MCP server to your Codex configuration file and prompts you to authenticate with your Expo account.
 
@@ -187,7 +185,7 @@ Expo MCP Server provides two types of capabilities depending on your setup:
 
 ### Server capabilities
 
-Server capabilities are available with just the remote MCP server connection, without needing to set up a local development server. The **search_documentation** tool is an example of a server capability.
+Server capabilities are available with just the remote MCP server connection, without needing to set up a local development server.
 
 ### Local capabilities
 

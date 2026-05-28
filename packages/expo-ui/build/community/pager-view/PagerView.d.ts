@@ -4,5 +4,5 @@ import type { PagerViewProps } from './types';
  * paged view backed by Jetpack Compose's `HorizontalPager` on Android and
  * SwiftUI on iOS. Each child is treated as a separate page.
  */
-export declare function PagerView(_props: PagerViewProps): never;
+export declare function PagerView(props: PagerViewProps): never;
 //# sourceMappingURL=PagerView.d.ts.map

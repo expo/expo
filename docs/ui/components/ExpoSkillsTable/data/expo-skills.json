@@ -2,10 +2,15 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-05-08T17:16:55.564Z"
+    "fetchedAt": "2026-05-25T01:22:55.986Z"
   },
-  "totalSkills": 13,
+  "totalSkills": 15,
   "skills": [
+    {
+      "name": "add-app-clip",
+      "description": "Add an iOS App Clip target to an Expo app. Use when the user mentions App Clip, AASA, apple-app-site-association, appclips, smart app banner, or wants to ship a lightweight iOS Clip invoked from a URL alongside their parent app.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/add-app-clip/SKILL.md"
+    },
     {
       "name": "building-native-ui",
       "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
@@ -20,6 +25,11 @@
       "name": "expo-api-routes",
       "description": "Guidelines for creating API routes in Expo Router with EAS Hosting.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-api-routes/SKILL.md"
+    },
+    {
+      "name": "expo-brownfield",
+      "description": "Integrate Expo and React Native into an existing native iOS or Android app. Use when the user mentions brownfield, embedding React Native in a native app, AAR/XCFramework, or adding Expo to an existing Kotlin/Swift project. Covers both the isolated approach and the integrated approach.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-brownfield/SKILL.md"
     },
     {
       "name": "expo-cicd-workflows",

@@ -79,7 +79,11 @@ it('can pass options via elements', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-    ios: { icon: { type: 'sfSymbol', name: 'homepod.2.fill' }, selectedIcon: undefined },
+    ios: {
+      icon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+      // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+    },
   } as TabsScreenProps);
 });
 
@@ -254,7 +258,11 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-      ios: { icon: { type: 'sfSymbol', name: 'homepod.2.fill' }, selectedIcon: undefined },
+      ios: {
+        icon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+      },
     } as TabsScreenProps);
   });
 
@@ -297,7 +305,11 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-      ios: { icon: { type: 'sfSymbol', name: '0.circle.ar' }, selectedIcon: undefined },
+      ios: {
+        icon: { type: 'sfSymbol', name: '0.circle.ar' },
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: { type: 'sfSymbol', name: '0.circle.ar' },
+      },
     } as TabsScreenProps);
   });
 
@@ -944,7 +956,11 @@ describe('Dynamic options', () => {
           type: 'sfSymbol',
           name: 'homepod.2.fill',
         },
-        selectedIcon: undefined,
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: {
+          type: 'sfSymbol',
+          name: 'homepod.2.fill',
+        },
       },
     } as TabsScreenProps);
   });

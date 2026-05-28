@@ -8,7 +8,32 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.13 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- Improve `BinaryFileStore`'s concurrency handling ([#46171](https://github.com/expo/expo/pull/46171) by [@kitten](https://github.com/kitten))
+
+## 56.0.12 — 2026-05-23
+
+### 🎉 New features
+
+- Add `loadUserConfig`, abstracting Expo's loading of Metro configs ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Switch Metro config resolution to `@expo/require-utils`, aligning with `@expo/config` and `@expo/config-plugins` ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
+- Drop support for loading Metro configs outside the server root, from yaml files, and from `package.json:metro` outside the project root ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
+- [Internal] Remove `@expo/metro-config/exports` ([#46164](https://github.com/expo/expo/pull/46164) by [@kitten](https://github.com/kitten))
+
+## 56.0.11 — 2026-05-20
+
+### 🐛 Bug fixes
+
 - Add missing HTML attribute escaping for inserted asset URLs ([#45848](https://github.com/expo/expo/pull/45848) by [@kitten](https://github.com/kitten))
+- Derive chunk renaming from intrinsic hash of topological transitive async chunks ([#46003](https://github.com/expo/expo/pull/46003) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

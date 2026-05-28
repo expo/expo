@@ -1,0 +1,27 @@
+import { requireNativeView } from 'expo';
+import { type CommonViewModifierProps } from '@expo/ui/swift-ui';
+import { createViewModifierEventListener } from '@expo/ui/swift-ui/modifiers';
+import * as React from 'react';
+
+export interface <%- project.swiftUIViewName %>Props extends CommonViewModifierProps {
+  title: string;
+  children?: React.ReactNode;
+}
+
+const Native<%- project.swiftUIViewName %> = requireNativeView<<%- project.swiftUIViewName %>Props>(
+  '<%- project.name %>',
+  '<%- project.swiftUIViewName %>'
+);
+
+export default function <%- project.swiftUIViewName %>({
+  modifiers,
+  ...rest
+}: <%- project.swiftUIViewName %>Props) {
+  return (
+    <Native<%- project.swiftUIViewName %>
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...rest}
+    />
+  );
+}

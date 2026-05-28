@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import { usesExpoUI } from './features';
 import { installDependencies, type PackageManagerName } from './packageManager';
 import type { SubstitutionData } from './types';
 import { env } from './utils/env';
@@ -79,12 +80,26 @@ export async function createExampleApp(
 
   await newStep('Installing dependencies in the example app', async (step) => {
     await installDependencies(packageManager, appTargetPath);
+    if (usesExpoUI(data.project.features)) {
+      await installExpoUI(appTargetPath);
+    }
     if (os.platform() === 'darwin') {
       await podInstall(appTargetPath);
       step.succeed('Installed dependencies in the example app');
     } else {
       step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
     }
+  });
+}
+
+/**
+ * Installs `@expo/ui` in the example app using `expo install` so the version is
+ * resolved against the example app's bundled native module versions.
+ */
+async function installExpoUI(exampleAppPath: string): Promise<void> {
+  await spawnAsync('npx', ['expo', 'install', '@expo/ui'], {
+    cwd: exampleAppPath,
+    stdio: ['ignore', 'ignore', 'pipe'],
   });
 }
 

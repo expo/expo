@@ -6,14 +6,44 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Prevent fatal `The stream is not in a state that permits close` in `expo/fetch` when native delivers `didComplete`/`didFailWithError` after the consumer has already canceled the body stream. ([#44909](https://github.com/expo/expo/pull/44909) by [@safaiyeh](https://github.com/safaiyeh))
+
+### 💡 Others
+
+## 56.0.5 — 2026-05-26
+
+### 💡 Others
+
+- [fetch] Refine **CompressionInterceptor.kt** code. ([#46052](https://github.com/expo/expo/pull/46052) by [@kudo](https://github.com/kudo))
+
+## 56.0.4 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-20
+
+### 🎉 New features
+
 - [fetch][Android] Added `brotli`, `gzip`, and `zstd` decompression support. ([#45458](https://github.com/expo/expo/pull/45458) by [@kudo](https://github.com/kudo))
 - Added `AbortSignal.timeout`, `AbortSignal.any`, and `DOMException` to the native runtime. ([#45441](https://github.com/expo/expo/pull/45441) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Fix `expo/fetch` not threading through `Request#body` for `whatwg-fetch` request inputs ([#46027](https://github.com/expo/expo/pull/46027) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 56.0.0-preview.13 — 2026-05-19
 

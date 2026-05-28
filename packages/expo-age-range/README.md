@@ -35,23 +35,9 @@ Add `com.apple.developer.declared-age-range` entitlement according to [app.json 
 }
 ```
 
-# Checking age-assurance eligibility (iOS 26.2+)
+# Docs
 
-Apple exposes `AgeRangeService.isEligibleForAgeFeatures` so apps can determine whether the current Apple Account is in scope of an age-assurance regulation (e.g. Utah, Louisiana). Use it to short-circuit your age gate in jurisdictions where the rules do not apply, without implementing custom geo-tracking.
-
-```ts
-import { isEligibleForAgeFeaturesAsync, requestAgeRangeAsync } from 'expo-age-range';
-
-const eligible = await isEligibleForAgeFeaturesAsync();
-
-// `null` means "unknown / not supported" (iOS < 26.2, Android, or web). Treat
-// it the same as your default policy — do not assume it implies `false`.
-if (eligible === false) {
-  return;
-}
-
-const range = await requestAgeRangeAsync({ threshold1: 18 });
-```
+Learn more in the [reference docs](https://docs.expo.dev/versions/latest/sdk/age-range/).
 
 # Contributing
 

@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
-- Add special case for file specifiers, like relative and absolute paths, to `resolveFrom` ([#45983](https://github.com/expo/expo/pull/45983) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.1.3 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.1.2 — 2026-05-20
+
+### 🎉 New features
+
+- Add special case for file specifiers, like relative and absolute paths, to `resolveFrom` ([#45983](https://github.com/expo/expo/pull/45983) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

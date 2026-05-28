@@ -110,7 +110,7 @@ function Screen(props: InternalTabScreenProps) {
     standardAppearance?.stacked?.normal?.tabBarItemIconColor
   );
   const iosSelectedIcon = convertOptionsIconToScreensPropsIcon(
-    shared.selectedIcon,
+    shared.selectedIcon ?? shared.icon,
     standardAppearance?.stacked?.selected?.tabBarItemIconColor
   );
 

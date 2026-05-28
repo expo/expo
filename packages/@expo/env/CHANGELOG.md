@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.3.0 — 2026-05-20
+
+### 🎉 New features
+
 - Add `getOriginalEnv` and `getOriginalEnvValue` ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes

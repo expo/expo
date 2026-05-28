@@ -30,6 +30,7 @@ export declare function getPodspecFilePath(modulePath: string): string | null;
 export declare function getSourceFilesGlobFromPodspecFile(podspecPath: string): string | null;
 export declare function getModuleFilePathsFromPodspec(modulePath: string): string[] | null;
 export declare function uniqueStrings(strings: string[]): string[];
+export declare function maybePrepareOutputDirectory(dirName?: string): Promise<void>;
 export declare function parseCommandArguments(options: TypeInformationCommandCommonAllArguments, isOutputFile?: boolean): ParsedArguments | null;
 export declare function getFileTypeInformationFromArgs({ realInputPaths, typeInference, }: {
     realInputPaths: string[];

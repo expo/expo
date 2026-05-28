@@ -30,7 +30,9 @@ const config = getDefaultConfig(__dirname);
 module.exports = config;
 ```
 
-See [**metro.config.js** documentation](https://metrobundler.dev/docs/configuration/) for more information.
+See [**metro.config.js** documentation](/versions/latest/config/metro) for more information.
+
+> **info** Expo locks down some Metro configuration options to prevent projects from breaking. Not every option upstream Metro accepts can be customized or is supported. Expo also doesn't support loading Metro configs from YAML files (deprecated upstream) or any Metro configs located outside your repository.
 
 ## Assets
 

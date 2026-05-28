@@ -10,6 +10,7 @@ const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleTo
 const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const assert_1 = __importDefault(require("assert"));
 const path_1 = __importDefault(require("path"));
+const computeChunkFilenames_1 = require("./computeChunkFilenames");
 const debugId_1 = require("./debugId");
 const exportPath_1 = require("./exportPath");
 const getCssDeps_1 = require("./getCssDeps");
@@ -68,7 +69,9 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
             createRuntimeChunk(entryChunk, chunks, graph, options);
         }
     }
-    const jsAssets = await serializeChunksAsync(chunks, config.serializer ?? {}, serializeChunkOptions);
+    // TODO(@kitten): unclear why `isExporting` is hardcoded below
+    const recomputeChunkNames = !!options.serializerOptions?.exporting;
+    const jsAssets = await serializeChunksAsync(chunks, config.serializer ?? {}, serializeChunkOptions, recomputeChunkNames);
     // TODO: Can this be anything besides true?
     const isExporting = true;
     const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
@@ -144,9 +147,6 @@ class Chunk {
                 debugId: undefined,
             }).code;
     }
-    getFilenameForConfig(serializerConfig) {
-        return this.getFilename(this.getStableChunkSource(serializerConfig));
-    }
     serializeToCodeWithTemplates(serializerConfig, options = {}) {
         const entryFile = this.name;
         // TODO: Disable all debugId steps when a dev server is enabled. This is an export-only feature.
@@ -167,9 +167,37 @@ class Chunk {
         return { code: (0, bundleToString_1.default)(jsSplitBundle).code, paths: jsSplitBundle.paths };
     }
     hasAbsolutePath(absolutePath) {
-        return [...this.deps].some((module) => module.path === absolutePath);
+        for (const dep of this.deps) {
+            if (dep.path === absolutePath) {
+                return true;
+            }
+        }
+        return false;
     }
-    getComputedPathsForAsyncDependencies(serializerConfig, chunks) {
+    _asyncTargets;
+    getAsyncChunkTargets(chunkByPath) {
+        if (this._asyncTargets) {
+            return this._asyncTargets;
+        }
+        const targets = new Set();
+        this._asyncTargets = targets;
+        if (this.options.includeAsyncPaths) {
+            return targets;
+        }
+        for (const module of this.deps) {
+            for (const dep of module.dependencies.values()) {
+                if ((0, isResolvedDependency_1.isResolvedDependency)(dep) && dep.data.data.asyncType) {
+                    const target = chunkByPath.get(dep.absolutePath);
+                    // NOTE(kitten): Chunk merges can leave async imports pointing at non-async
+                    // (entry/vendor) chunks; those are loaded eagerly so we skip them here.
+                    if (target?.isAsync)
+                        targets.add(target);
+                }
+            }
+        }
+        return targets;
+    }
+    getComputedPathsForAsyncDependencies(chunksByPath, filenamesByChunk) {
         const baseUrl = getBaseUrlOption(this.graph, this.options);
         // Only calculate production paths when all chunks are being exported.
         if (this.options.includeAsyncPaths) {
@@ -179,14 +207,11 @@ class Chunk {
         this.deps.forEach((module) => {
             module.dependencies.forEach((dependency) => {
                 if ((0, isResolvedDependency_1.isResolvedDependency)(dependency) && dependency.data.data.asyncType) {
-                    const chunkContainingModule = chunks.find((chunk) => chunk.hasAbsolutePath(dependency.absolutePath));
+                    const chunkContainingModule = chunksByPath.get(dependency.absolutePath);
                     (0, assert_1.default)(chunkContainingModule, 'Chunk containing module not found: ' + dependency.absolutePath);
-                    // NOTE(kitten): We shouldn't have any async imports on non-async chunks
-                    // However, due to how chunks merge, some async imports may now be pointing
-                    // at entrypoint (or vendor) chunks. We omit the path so that the async import
-                    // helper doesn't reload and reevaluate the entrypoint.
                     if (chunkContainingModule.isAsync) {
-                        const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+                        const moduleIdName = filenamesByChunk.get(chunkContainingModule);
+                        (0, assert_1.default)(moduleIdName, 'Precomputed filename missing for async chunk: ' + chunkContainingModule.name);
                         computedAsyncModulePaths[dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
                     }
                 }
@@ -194,7 +219,7 @@ class Chunk {
         });
         return computedAsyncModulePaths;
     }
-    getAdjustedSourceMapUrl(serializerConfig) {
+    getAdjustedSourceMapUrl(filename) {
         // Metro really only accounts for development, so we'll use the defaults here.
         if (this.options.dev) {
             return this.options.sourceMapUrl ?? null;
@@ -208,7 +233,6 @@ class Chunk {
         const platform = this.getPlatform();
         const isAbsolute = platform !== 'web';
         const baseUrl = getBaseUrlOption(this.graph, this.options);
-        const filename = this.getFilenameForConfig(serializerConfig);
         const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
         const pathname = (isAbsoluteBaseUrl ? '' : baseUrl.replace(/\/+$/, '')) +
             '/' +
@@ -235,11 +259,11 @@ class Chunk {
             return null;
         }
     }
-    serializeToCode(serializerConfig, { debugId, chunks, preModules }) {
+    serializeToCode(serializerConfig, { debugId, chunksByPath, filenamesByChunk, filename, preModules, }) {
         return this.serializeToCodeWithTemplates(serializerConfig, {
             skipWrapping: false,
-            sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
-            computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
+            sourceMapUrl: this.getAdjustedSourceMapUrl(filename) ?? undefined,
+            computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(chunksByPath, filenamesByChunk),
             debugId,
             preModules,
         });
@@ -248,9 +272,9 @@ class Chunk {
         const value = this.graph.transformOptions?.customTransformOptions?.[name];
         return value === true || value === 'true' || value === '1';
     }
-    async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
-        // Create hash without wrapping to prevent it changing when the wrapping changes.
-        const outputFile = this.getFilenameForConfig(serializerConfig);
+    async serializeToAssetsAsync(serializerConfig, chunksByPath, filenamesByChunk, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
+        const outputFile = filenamesByChunk.get(this);
+        (0, assert_1.default)(outputFile, 'Precomputed filename missing for chunk: ' + this.name);
         // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
         const debugId = (0, debugId_1.stringToUUID)(path_1.default.basename(outputFile, path_1.default.extname(outputFile)));
         let finalPreModules = [...this.preModules];
@@ -264,7 +288,9 @@ class Chunk {
             }
         }
         const jsCode = this.serializeToCode(serializerConfig, {
-            chunks,
+            chunksByPath,
+            filenamesByChunk,
+            filename: outputFile,
             debugId,
             preModules: new Set(finalPreModules),
         });
@@ -275,7 +301,11 @@ class Chunk {
             type: 'js',
             metadata: {
                 isAsync: this.isAsync,
-                requires: [...this.requiredChunks.values()].map((chunk) => chunk.getFilenameForConfig(serializerConfig)),
+                requires: [...this.requiredChunks.values()].map((chunk) => {
+                    const filename = filenamesByChunk.get(chunk);
+                    (0, assert_1.default)(filename, 'Precomputed filename missing for required chunk: ' + chunk.name);
+                    return filename;
+                }),
                 // Provide a list of module paths that can be used for matching chunks to routes.
                 // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
                 modulePaths: [...this.deps].map((module) => module.path),
@@ -550,12 +580,33 @@ function createRuntimeChunk(entryChunk, chunks, graph, options) {
     }
     chunks.add(runtimeChunk);
 }
-async function serializeChunksAsync(chunks, serializerConfig, options) {
+function makeChunkByPathLookupMap(chunks) {
+    const chunkByPath = new Map();
+    for (const chunk of chunks) {
+        for (const module of chunk.deps) {
+            if (!chunkByPath.has(module.path)) {
+                chunkByPath.set(module.path, chunk);
+            }
+        }
+    }
+    return chunkByPath;
+}
+async function serializeChunksAsync(chunks, serializerConfig, options, recomputeChunkNames) {
     const jsAssets = [];
-    const chunksArray = [...chunks.values()];
-    await Promise.all(chunksArray.map(async (chunk) => {
-        jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options)));
-    }));
+    const chunksByPath = makeChunkByPathLookupMap(chunks);
+    const filenamesByChunk = (0, computeChunkFilenames_1.precomputeChunkFilenames)({
+        chunks,
+        chunksByPath,
+        serializerConfig,
+        recomputeChunkNames,
+    });
+    const serializeTasks = [];
+    for (const chunk of chunks) {
+        serializeTasks.push((async () => {
+            jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, chunksByPath, filenamesByChunk, options)));
+        })());
+    }
+    await Promise.all(serializeTasks);
     return jsAssets;
 }
 //# sourceMappingURL=serializeChunks.js.map

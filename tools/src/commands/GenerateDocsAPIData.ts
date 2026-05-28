@@ -27,6 +27,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/community/datetime-picker': ['community/datetime-picker/index.tsx', 'expo-ui'],
   'expo-ui/community/masked-view': ['community/masked-view/index.tsx', 'expo-ui'],
   'expo-ui/community/menu': ['community/menu/index.tsx', 'expo-ui'],
+  'expo-ui/community/pager-view': ['community/pager-view/index.tsx', 'expo-ui'],
   'expo-ui/community/picker': ['community/picker/index.tsx', 'expo-ui'],
   'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
   'expo-ui/community/slider': ['community/slider/index.tsx', 'expo-ui'],
@@ -130,6 +131,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/navigationbar': ['jetpack-compose/NavigationBar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/segmentedbutton': [
     'jetpack-compose/SegmentedButton/index.tsx',
     'expo-ui',
@@ -369,6 +371,33 @@ const executeCommand = async (
         .map((entry) => entry.children)
         .flat()
         .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
+    const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
+    if (fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+      const pluginApp = await Application.bootstrapWithPlugins(
+        {
+          ...typedocOptions,
+          entryPoints: [pluginEntryPath],
+          tsconfig: pluginTsConfigPath,
+        } as unknown as TypeDocOptions,
+        [new TSConfigReader(), new TypeDocReader()]
+      );
+      const pluginProject = await pluginApp.convert();
+      if (pluginProject) {
+        const tempPluginJson = path.join(os.tmpdir(), `${jsonFileName}-plugin-${Date.now()}.json`);
+        await pluginApp.generateJson(pluginProject, tempPluginJson);
+        const pluginOutput = await fs.readJson(tempPluginJson);
+        await fs.remove(tempPluginJson);
+        const pluginChildren = (pluginOutput.children ?? [])
+          .filter((entry: any) => entry.name !== 'default')
+          .map((entry: any) => ({
+            ...entry,
+            _source: 'plugin',
+          }));
+        output.children = [...(output.children ?? []), ...pluginChildren];
+      }
     }
 
     const { readme, symbolIdMap, ...trimmedOutput } = output;

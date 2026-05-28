@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 56.0.9 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-20
+
+### 💡 Others
+
 - [Internal] Switch app config resolution to `@expo/require-utils` ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
 
 ## 56.0.7 — 2026-05-19

@@ -108,6 +108,7 @@ module Expo
 
             # Install the pod.
             @podfile.pod(pod.pod_name, pod_options)
+            @podfile.expo_autolinked_pod_names << pod.pod_name
 
             # TODO: Can remove this once we move all the interfaces into the core.
             next if pod.pod_name.end_with?('Interface')

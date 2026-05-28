@@ -9,6 +9,7 @@ import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import type { DrawableIcon, MaterialIcon, SFSymbolIcon, SrcIcon } from '../common/elements';
+import { SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES } from '../types';
 
 // Mock Color API with known test values
 jest.mock('../../color', (): typeof import('../../color') => ({
@@ -111,7 +112,11 @@ it('can pass options via elements', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-    android: { icon: { type: 'drawableResource', name: 'test' }, selectedIcon: undefined },
+    android: {
+      icon: { type: 'drawableResource', name: 'test' },
+      // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+      selectedIcon: { type: 'drawableResource', name: 'test' },
+    },
   } as TabsScreenProps);
 });
 
@@ -234,7 +239,11 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-      android: { icon: { type: 'drawableResource', name: 'homepod' }, selectedIcon: undefined },
+      android: {
+        icon: { type: 'drawableResource', name: 'homepod' },
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: { type: 'drawableResource', name: 'homepod' },
+      },
     } as TabsScreenProps);
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
@@ -1070,7 +1079,11 @@ describe('Dynamic options', () => {
           type: 'drawableResource',
           name: 'test',
         },
-        selectedIcon: undefined,
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: {
+          type: 'drawableResource',
+          name: 'test',
+        },
       },
     } as TabsScreenProps);
   });
@@ -1400,6 +1413,161 @@ describe('Material Design 3 dynamic color defaults', () => {
           tabBarBackgroundColor: 'mock-surfaceContainer',
         },
       },
+    } as Partial<TabsScreenProps>);
+  });
+
+  it('uses per-trigger indicatorColor when provided, overriding navigator indicatorColor', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs indicatorColor="cyan">
+          <NativeTabs.Trigger name="index" indicatorColor="magenta" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      android: { standardAppearance: { tabBarItemActiveIndicatorColor: 'magenta' } },
+    } as Partial<TabsScreenProps>);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+      android: { standardAppearance: { tabBarItemActiveIndicatorColor: 'cyan' } },
+    } as Partial<TabsScreenProps>);
+  });
+
+  it('uses per-trigger rippleColor when provided, overriding navigator rippleColor', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs rippleColor="blue">
+          <NativeTabs.Trigger name="index" rippleColor="green" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      android: { standardAppearance: { tabBarItemRippleColor: 'green' } },
+    } as Partial<TabsScreenProps>);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+      android: { standardAppearance: { tabBarItemRippleColor: 'blue' } },
+    } as Partial<TabsScreenProps>);
+  });
+
+  it('uses per-trigger disableIndicator when provided, overriding navigator disableIndicator', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs disableIndicator>
+          <NativeTabs.Trigger name="index" disableIndicator={false} />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      android: { standardAppearance: { tabBarItemActiveIndicatorEnabled: true } },
+    } as Partial<TabsScreenProps>);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+      android: { standardAppearance: { tabBarItemActiveIndicatorEnabled: false } },
+    } as Partial<TabsScreenProps>);
+  });
+
+  it.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(
+    'supports %s label visibility mode at the navigator level',
+    (labelVisibilityMode) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs labelVisibilityMode={labelVisibilityMode}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(
+        TabsScreen.mock.calls[0][0].android?.standardAppearance?.tabBarItemLabelVisibilityMode
+      ).toBe(labelVisibilityMode);
+    }
+  );
+
+  describe('labelVisibilityMode validation', () => {
+    let warn: jest.SpyInstance;
+    beforeEach(() => {
+      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    it.each([
+      'test',
+      'wrongValue',
+      ...SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((x) => x.toUpperCase()),
+    ])('warns when unsupported %s label visibility mode is used', (labelVisibilityMode) => {
+      renderRouter({
+        _layout: () => (
+          // @ts-expect-error
+          <NativeTabs labelVisibilityMode={labelVisibilityMode}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+      expect(warn).toHaveBeenCalledWith(
+        `Unsupported labelVisibilityMode: ${labelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`
+      );
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(
+        TabsScreen.mock.calls[0][0].android?.standardAppearance?.tabBarItemLabelVisibilityMode
+      ).toBeUndefined();
+    });
+
+    it('warns when unsupported per-trigger labelVisibilityMode is used', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            {/* @ts-expect-error */}
+            <NativeTabs.Trigger name="index" labelVisibilityMode="bogus" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+      expect(warn).toHaveBeenCalledWith(
+        `Unsupported labelVisibilityMode: bogus. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`
+      );
+      expect(
+        TabsScreen.mock.calls[0][0].android?.standardAppearance?.tabBarItemLabelVisibilityMode
+      ).toBeUndefined();
+    });
+  });
+
+  it('uses per-trigger labelVisibilityMode when provided, overriding navigator labelVisibilityMode', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs labelVisibilityMode="labeled">
+          <NativeTabs.Trigger name="index" labelVisibilityMode="unlabeled" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      android: { standardAppearance: { tabBarItemLabelVisibilityMode: 'unlabeled' } },
+    } as Partial<TabsScreenProps>);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+      android: { standardAppearance: { tabBarItemLabelVisibilityMode: 'labeled' } },
     } as Partial<TabsScreenProps>);
   });
 });

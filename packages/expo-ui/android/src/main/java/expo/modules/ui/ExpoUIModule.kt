@@ -69,11 +69,19 @@ class ExpoUIModule : Module() {
         callback.worklet = worklet
         callback
       }
+
+      Property("__expo_ui_shared_object__") { _: WorkletCallback ->
+        true
+      }
     }
 
     Class(ObservableState::class) {
       Constructor { initial: Map<String, Any?> ->
         ObservableState(initial["value"])
+      }
+
+      Property("__expo_ui_shared_object__") { _: ObservableState ->
+        true
       }
 
       Function("getValue") { state: ObservableState ->
@@ -599,6 +607,20 @@ class ExpoUIModule : Module() {
     ExpoUIView<BadgedBoxProps>("BadgedBoxView") {
       Content { props ->
         BadgedBoxContent(props)
+      }
+    }
+
+    ExpoUIView<NavigationBarProps>("NavigationBarView") {
+      Content { props ->
+        NavigationBarContent(props)
+      }
+    }
+
+    ExpoUIView<NavigationBarItemProps>("NavigationBarItemView") {
+      val onButtonPressed by Event<Unit>()
+
+      Content { props ->
+        NavigationBarItemContent(props) { onButtonPressed(Unit) }
       }
     }
 

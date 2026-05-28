@@ -39,18 +39,22 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
       let validatedBody = validateEventBody(options?.body)
       let sanitized = sanitizeLogEventAttributes(options?.attributes)
+      // Globals merge happens in `LogRow.from` so every persistence path picks them up.
+      let record = LogRecord(
+        name: validatedName,
+        body: validatedBody,
+        attributes: sanitized.attributes,
+        droppedAttributesCount: sanitized.droppedCount,
+        severity: options?.severity ?? .info
+      )
 
       AppMetricsActor.isolated {
-        AppMetrics.mainSession.receiveLog(
-          LogRecord(
-            name: validatedName,
-            body: validatedBody,
-            attributes: sanitized.attributes,
-            droppedAttributesCount: sanitized.droppedCount,
-            severity: options?.severity ?? .info
-          )
-        )
+        AppMetrics.mainSession.receiveLog(record)
       }
+    }
+
+    Function("setGlobalAttributes") { (attributes: [String: Any]?) in
+      GlobalAttributes.set(attributes)
     }
 
     AsyncFunction("getAppStartupTimesAsync") {

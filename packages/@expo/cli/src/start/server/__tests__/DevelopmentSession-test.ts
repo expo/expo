@@ -78,7 +78,7 @@ describe(`startAsync`, () => {
     const runtime = 'native';
 
     // Server is down
-    nock(getExpoApiBaseUrl())
+    const startScope = nock(getExpoApiBaseUrl())
       .post('/v2/development-sessions/notify-alive?deviceId=123&deviceId=456')
       .reply(500, '');
 
@@ -89,6 +89,11 @@ describe(`startAsync`, () => {
         runtime,
       })
     ).resolves.toBeUndefined();
+
+    // startAsync is fire-and-forget; wait for the interceptor to reply so the
+    // in-flight request settles before afterEach() calls nock.cleanAll().
+    await new Promise<void>((resolve) => startScope.once('replied', () => resolve()));
+    expect(startScope.isDone()).toBe(true);
   });
 
   it('is skipped on CI', async () => {

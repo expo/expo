@@ -1,7 +1,7 @@
 ---
-title: Troubleshooting Expo Observe
+title: Troubleshooting EAS Observe
 sidebar_title: Troubleshooting
-description: Solutions for common Expo Observe issues.
+description: Solutions for common EAS Observe issues.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -23,20 +23,6 @@ Verify that your root layout is wrapped with the root HOC:
 
 <Tabs>
 
-<Tab label="SDK 55">
-
-```jsx
-import { AppMetricsRoot } from 'expo-observe';
-
-function RootLayout() {
-  return (/* your layout */);
-}
-
-export default AppMetricsRoot.wrap(RootLayout);
-```
-
-</Tab>
-
 <Tab label="SDK 56 and later">
 
 ```jsx
@@ -51,6 +37,20 @@ export default ObserveRoot.wrap(RootLayout);
 
 </Tab>
 
+<Tab label="SDK 55">
+
+```jsx
+import { AppMetricsRoot } from 'expo-observe';
+
+function RootLayout() {
+  return (/* your layout */);
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
+```
+
+</Tab>
+
 </Tabs>
 
 ### Time to interactive not showing
@@ -59,16 +59,16 @@ This metric requires manual instrumentation. Verify that:
 
 <Tabs>
 
-<Tab label="SDK 55">
+<Tab label="SDK 56">
 
-1. You are calling `AppMetrics.markInteractive()` after your splash screen is hidden.
+1. You are calling `markInteractive()` (from `useObserve()`) after your splash screen is hidden.
 2. The call is actually being executed (add a `console.log` to verify).
 
 </Tab>
 
-<Tab label="SDK 56">
+<Tab label="SDK 55">
 
-1. You are calling `markInteractive()` (from `useObserve()`) after your splash screen is hidden.
+1. You are calling `AppMetrics.markInteractive()` after your splash screen is hidden.
 2. The call is actually being executed (add a `console.log` to verify).
 
 </Tab>
@@ -127,20 +127,6 @@ After:
 
 <Tabs>
 
-<Tab label="SDK 55">
-
-```jsx
-import { AppMetricsRoot } from 'expo-observe';
-
-function RootLayout() {
-  return (/* your layout */);
-}
-
-export default AppMetricsRoot.wrap(RootLayout);
-```
-
-</Tab>
-
 <Tab label="SDK 56 and later">
 
 ```jsx
@@ -151,6 +137,20 @@ function RootLayout() {
 }
 
 export default ObserveRoot.wrap(RootLayout);
+```
+
+</Tab>
+
+<Tab label="SDK 55">
+
+```jsx
+import { AppMetricsRoot } from 'expo-observe';
+
+function RootLayout() {
+  return (/* your layout */);
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
 ```
 
 </Tab>

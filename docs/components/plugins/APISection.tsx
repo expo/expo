@@ -237,7 +237,7 @@ const renderAPI = (
     const hasCategorizedMethods = Object.keys(categorizedMethods).length > 0;
     const hasHeadersMapping = Object.keys(headersMapping).length;
 
-    const types = filterDataByKind(
+    const allTypes = filterDataByKind(
       data,
       [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy],
       entry =>
@@ -251,6 +251,8 @@ const renderAPI = (
           entry.children
         )
     );
+    const types = allTypes.filter(entry => entry._source !== 'plugin');
+    const configPluginTypes = allTypes.filter(entry => entry._source === 'plugin');
 
     const props = filterDataByKind(
       data,
@@ -431,6 +433,11 @@ const renderAPI = (
         <APISectionNamespaces data={namespaces} sdkVersion={sdkVersion} />
         <APISectionInterfaces data={interfaces} sdkVersion={sdkVersion} />
         <APISectionTypes data={types} sdkVersion={sdkVersion} />
+        <APISectionTypes
+          data={configPluginTypes}
+          sdkVersion={sdkVersion}
+          header="Config plugin types"
+        />
         <APISectionEnums data={enums} />
       </>
     );

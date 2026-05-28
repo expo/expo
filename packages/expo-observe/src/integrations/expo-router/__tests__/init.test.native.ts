@@ -127,6 +127,33 @@ describe('initListeners', () => {
     });
   });
 
+  it('seeds dispatchTime and isAppLaunch=true for the initial screen so a later markInteractive can compute navigation TTI', async () => {
+    focus(events, 'a');
+    await flushAsync();
+
+    // The initial focus is treated as if the app launch dispatched the
+    // navigation — without this, useObserveForRouter has no dispatchTime to
+    // diff against and the navigation `tti` metric is silently skipped.
+    expect(storage.screenTimes['a']).toEqual({
+      dispatchTime: expect.any(Number),
+      isAppLaunch: true,
+    });
+  });
+
+  it('seeds isAppLaunch=false on subsequent navigated focuses so markInteractive can label the tti metric', async () => {
+    focus(events, 'a');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(storage.screenTimes['b']).toEqual({
+      dispatchTime: expect.any(Number),
+      isAppLaunch: false,
+    });
+  });
+
   it('records cold_ttr with isAppLaunch=false on subsequent focuses of a new screen', async () => {
     dispatch(events, 'NAVIGATE');
     focus(events, 'a');
@@ -295,6 +322,66 @@ describe('initListeners', () => {
     expect(storage.pendingActions).toHaveLength(0);
     expect(storage.renderedScreensIds.size).toBe(0);
     cleanup = () => {};
+  });
+
+  it('emits tti alongside the TTR when a pending interactive was waiting (post-cold-launch)', async () => {
+    // Cold-launch first screen so the next focus runs through the warm branch.
+    focus(events, 'a');
+    await flushAsync();
+    mockAddCustomMetric.mockClear();
+
+    // markInteractive ran before pageFocused — wrote lastInteractiveCall with
+    // no dispatchTime.
+    storage.screenTimes['b'] = { lastInteractiveCall: performance.now() };
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
+    const ttrCall = mockAddCustomMetric.mock.calls[0][0];
+    const ttiCall = mockAddCustomMetric.mock.calls[1][0];
+    expect(ttrCall.name).toBe('cold_ttr');
+    expect(ttrCall.params.isAppLaunch).toBe(false);
+    expect(ttiCall.name).toBe('tti');
+    expect(ttiCall.value).toBe(ttrCall.value);
+    expect(ttiCall.routeName).toBe('/b');
+    expect(ttiCall.params).toEqual({ isAppLaunch: false, routeParams: {}, url: '/b' });
+    expect(storage.interactiveScreensIds.has('b')).toBe(true);
+  });
+
+  it('emits tti = cold_ttr when a pending interactive was waiting during cold launch', async () => {
+    storage.screenTimes['a'] = { lastInteractiveCall: performance.now() };
+
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
+    const ttrCall = mockAddCustomMetric.mock.calls.find((c) => c[0].name === 'cold_ttr')?.[0];
+    const ttiCall = mockAddCustomMetric.mock.calls.find((c) => c[0].name === 'tti')?.[0];
+    expect(ttrCall.params.isAppLaunch).toBe(true);
+    expect(ttiCall.value).toBe(ttrCall.value);
+    expect(ttiCall.routeName).toBe('/a');
+    expect(ttiCall.params).toEqual({ isAppLaunch: true, routeParams: {}, url: '/a' });
+    expect(storage.interactiveScreensIds.has('a')).toBe(true);
+  });
+
+  it('marks lastInteractiveCall after a deferred emit so a follow-up markInteractive is deduped', async () => {
+    storage.hasRecordedInitialTtr = true;
+    storage.screenTimes['b'] = { lastInteractiveCall: 1000 };
+
+    const nowSpy = jest.spyOn(performance, 'now');
+    nowSpy.mockReturnValue(2000);
+    dispatch(events, 'NAVIGATE');
+    nowSpy.mockReturnValue(2100);
+    focus(events, 'b');
+    await flushAsync();
+
+    // After pageFocused: dispatchTime < lastInteractiveCall (now), so a
+    // follow-up markInteractive after focus is treated as duplicate.
+    const entry = storage.screenTimes['b'];
+    expect(entry?.dispatchTime).toBe(2000);
+    expect(entry?.lastInteractiveCall).toBe(2100);
   });
 
   it('uses getMainSession from AppMetrics for the metric session id', async () => {

@@ -12,6 +12,7 @@ import path from 'path';
 import { configureCodeSigningAsync } from '../configureCodeSigningAsync';
 
 jest.mock('fs');
+jest.mock('node:fs', () => require('memfs').fs);
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 

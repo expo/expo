@@ -8,9 +8,27 @@
 
 ### 🐛 Bug fixes
 
-- Use `android.icon` for legacy Android launcher icons when `android.adaptiveIcon` is also configured. ([#17969](https://github.com/expo/expo/issues/17969) by [@mvincentong](https://github.com/mvincentong))
-
 ### 💡 Others
+
+## 56.0.13 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix Jest 30 compatibility in prebuild test helpers by removing internal `expect/build/matchers` import. ([#44188](https://github.com/expo/expo/pull/44188) by [@mvincentong](https://github.com/mvincentong))
+
+## 56.0.11 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- Use `android.icon` for legacy Android launcher icons when `android.adaptiveIcon` is also configured. ([#17969](https://github.com/expo/expo/issues/17969) by [@mvincentong](https://github.com/mvincentong))
 
 ## 56.0.9 — 2026-05-19
 

@@ -8,6 +8,31 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.15 — 2026-05-26
+
+### 🎉 New features
+
+- [iOS] Make `ReactNativeHostManager` accessible directly to Objective-C. ([#46227](https://github.com/expo/expo/pull/46227) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [iOS] `build:ios` now detects a missing iOS workspace and prompts to run `pod install` instead of failing with a vague "Could not find brownfield iOS workspace". ([#46247](https://github.com/expo/expo/pull/46247) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix following prebuilt symlinks when using SPM ([#46311](https://github.com/expo/expo/pull/46311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 56.0.14 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-20
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed brownfield mangling builds writing products outside the Pods build directory. (by [@ry-allan](https://github.com/ry-allan))
 
 ### 💡 Others
