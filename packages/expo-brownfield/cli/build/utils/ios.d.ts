@@ -34,8 +34,9 @@ export declare const printIosConfig: (config: IosConfig) => void;
  *    strip — the host pod gets statically linked into the brownfield framework itself. We fail
  *    fast and point the user at the docs.
  *  - **Unused-entry warning:** a name listed in `hostProvidedFrameworks` that doesn't match any
- *    actual xcframework under `ios/Pods/` indicates a typo or stale config — warn so the user
- *    catches it before debugging a still-duplicated build.
+ *    actual xcframework discovered across the three resolution layers (pod scan, npm-bundled
+ *    `prebuilds/output/`, shared `.spm-deps/`) indicates a typo or stale config — warn so the
+ *    user catches it before debugging a still-duplicated build.
  *  - **Version log:** for each excluded framework we surface the `CFBundleShortVersionString`
  *    found in its bundled `Info.plist`. The consumer's host app must ship a version that's ABI-
  *    compatible with what we just stripped; logging the expected version here gives them a

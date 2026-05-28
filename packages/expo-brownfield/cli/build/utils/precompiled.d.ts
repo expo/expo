@@ -132,3 +132,12 @@ export declare const enumerateBundledSpmDepsXcframeworks: (modules: ModuleXCFram
  * build when an `spm.config.json` declares them.
  */
 export declare const enumerateAllPrebuildModules: (cwd: string, buildConfiguration: BuildConfiguration, hostProvidedFrameworks?: readonly string[]) => ModuleXCFramework[];
+/**
+ * Walks all three resolution layers (pod scan → npm-bundled → shared `.spm-deps/` cache) without
+ * applying host-provided filtering or running the missing-SPM-dep completeness check.
+ */
+export declare const enumeratePrebuildModulesRaw: (cwd: string, buildConfiguration: BuildConfiguration) => {
+    modules: ModuleXCFramework[];
+    podModules: ModuleXCFramework[];
+    podToNpm: Map<string, NpmPackageInfo>;
+};

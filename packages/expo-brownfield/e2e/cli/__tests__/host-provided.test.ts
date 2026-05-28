@@ -55,38 +55,56 @@ describe('validateHostProvided', () => {
   });
 
   /**
-   * Writes a minimal xcframework directory tree containing one slice with a framework whose
-   * Info.plist declares `CFBundleShortVersionString`. Enough to exercise the version-extraction
-   * codepath without needing a real lipo-built binary.
+   * Writes a minimal xcframework directory tree (one slice + framework + Info.plist). Enough to
+   * exercise the version-extraction codepath without needing a real lipo-built binary. Pass
+   * `version: null` to skip the Info.plist write (exercises the unknown-version fallback).
    */
-  const seedXcframework = (podName: string, frameworkName: string, version: string) => {
-    const sliceDir = path.join(
-      tmpDir,
-      'ios',
-      'Pods',
-      podName,
-      `${frameworkName}.xcframework`,
-      'ios-arm64',
-      `${frameworkName}.framework`
-    );
+  const writeXcframeworkAt = (baseDir: string, frameworkName: string, version: string | null) => {
+    const sliceDir = path.join(baseDir, `${frameworkName}.xcframework`, 'ios-arm64', `${frameworkName}.framework`);
     fs.mkdirSync(sliceDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(sliceDir, 'Info.plist'),
-      `<?xml version="1.0" encoding="UTF-8"?>
+    if (version !== null) {
+      fs.writeFileSync(
+        path.join(sliceDir, 'Info.plist'),
+        `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>CFBundleShortVersionString</key><string>${version}</string>
 </dict></plist>`
-    );
+      );
+    }
+  };
+
+  /**
+   * Sets up an `ios/Pods/<podName>/` precompiled-pod fixture: a main-product xcframework matching
+   * an `artifacts/<podName>-release.tar.gz` tarball, plus any number of sibling SPM-dep
+   * xcframeworks (e.g. SDWebImage bundled alongside ExpoImage). The validator uses the same
+   * enumeration the build path runs, which requires both the tarball and a matching xcframework
+   * for the pod to be picked up.
+   */
+  const seedPrecompiledPod = (
+    podName: string,
+    siblings: { name: string; version: string | null }[] = []
+  ) => {
+    const podDir = path.join(tmpDir, 'ios', 'Pods', podName);
+    fs.mkdirSync(podDir, { recursive: true });
+    writeXcframeworkAt(podDir, podName, null);
+    const artifactsDir = path.join(podDir, 'artifacts');
+    fs.mkdirSync(artifactsDir, { recursive: true });
+    fs.writeFileSync(path.join(artifactsDir, `${podName}-release.tar.gz`), '');
+    for (const sibling of siblings) {
+      writeXcframeworkAt(podDir, sibling.name, sibling.version);
+    }
   };
 
   it('is a no-op when hostProvidedFrameworks is empty', () => {
     expect(() => validateHostProvided(baseConfig())).not.toThrow();
   });
 
-  it('logs the resolved version of each excluded framework when found in ios/Pods', () => {
-    seedXcframework('ExpoImage', 'SDWebImage', '5.21.6');
-    seedXcframework('ExpoImage', 'SDWebImageWebPCoder', '0.14.7');
+  it('logs the resolved version of each excluded framework found in the pod scan (layer 1)', () => {
+    seedPrecompiledPod('ExpoImage', [
+      { name: 'SDWebImage', version: '5.21.6' },
+      { name: 'SDWebImageWebPCoder', version: '0.14.7' },
+    ]);
 
     logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
     validateHostProvided(
@@ -100,8 +118,8 @@ describe('validateHostProvided', () => {
     );
   });
 
-  it('warns when a host-provided name does not match any installed xcframework', () => {
-    seedXcframework('ExpoImage', 'SDWebImage', '5.21.6');
+  it('warns when a host-provided name does not resolve in any of the three layers', () => {
+    seedPrecompiledPod('ExpoImage', [{ name: 'SDWebImage', version: '5.21.6' }]);
 
     warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
     validateHostProvided(baseConfig({ hostProvidedFrameworks: ['SDWebImage', 'NotInstalledKit'] }));
@@ -180,17 +198,7 @@ describe('validateHostProvided', () => {
   });
 
   it('logs an unknown-version label when the xcframework Info.plist is unreadable', () => {
-    // Seed a xcframework dir but no Info.plist inside the slice.
-    const sliceDir = path.join(
-      tmpDir,
-      'ios',
-      'Pods',
-      'ExpoImage',
-      'SDWebImage.xcframework',
-      'ios-arm64',
-      'SDWebImage.framework'
-    );
-    fs.mkdirSync(sliceDir, { recursive: true });
+    seedPrecompiledPod('ExpoImage', [{ name: 'SDWebImage', version: null }]);
 
     logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
     validateHostProvided(baseConfig({ hostProvidedFrameworks: ['SDWebImage'] }));
@@ -199,5 +207,43 @@ describe('validateHostProvided', () => {
     expect(messages.some((m) => m.includes('SDWebImage') && m.includes('unknown version'))).toBe(
       true
     );
+  });
+
+  it('resolves host-provided frameworks from node_modules/<pkg>/prebuilds/output/ (layer 2)', () => {
+    // When `ensure_shared_spm_deps` hasn't symlinked the npm-bundled SPM deps into ios/Pods/, a
+    // host-provided framework only exists under `node_modules/<pkg>/prebuilds/output/<flavor>/
+    // xcframeworks/`. The validator must still find it via the npm-bundled enumeration layer
+    // instead of spuriously warning "no matching xcframework was found".
+    seedPrecompiledPod('ExpoImage');
+    const expoImagePkgDir = path.join(tmpDir, 'node_modules', 'expo-image');
+    fs.mkdirSync(expoImagePkgDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(expoImagePkgDir, 'package.json'),
+      JSON.stringify({ name: 'expo-image' })
+    );
+    fs.writeFileSync(
+      path.join(expoImagePkgDir, 'spm.config.json'),
+      JSON.stringify({
+        products: [
+          {
+            name: 'ExpoImage',
+            podName: 'ExpoImage',
+            spmPackages: [{ productName: 'SDWebImage' }],
+          },
+        ],
+      })
+    );
+    const bundleDir = path.join(expoImagePkgDir, 'prebuilds', 'output', 'release', 'xcframeworks');
+    fs.mkdirSync(bundleDir, { recursive: true });
+    writeXcframeworkAt(bundleDir, 'SDWebImage', '5.21.6');
+
+    logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    validateHostProvided(baseConfig({ hostProvidedFrameworks: ['SDWebImage'] }));
+
+    const messages = logSpy.mock.calls.map(([msg]: [unknown]) => String(msg));
+    const warnings = warnSpy.mock.calls.map(([msg]: [unknown]) => String(msg));
+    expect(messages.some((m) => m.includes('SDWebImage') && m.includes('5.21.6'))).toBe(true);
+    expect(warnings).toEqual([]);
   });
 });

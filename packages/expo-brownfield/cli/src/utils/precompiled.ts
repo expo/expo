@@ -604,23 +604,13 @@ export const enumerateAllPrebuildModules = (
   hostProvidedFrameworks: readonly string[] = []
 ): ModuleXCFramework[] => {
   const hostProvided = new Set(hostProvidedFrameworks);
-  const podModules = enumeratePrecompiledModules(path.join(cwd, 'ios'));
-  const podToNpm = buildPodToNpmPackageMap(cwd);
-  const seenNames = new Set(podModules.map((m) => m.name));
-
-  const bundledModules = enumerateBundledSpmDepsXcframeworks(
+  const {
+    modules: allModules,
     podModules,
     podToNpm,
-    buildConfiguration,
-    seenNames
-  );
-  bundledModules.forEach((m) => seenNames.add(m.name));
+  } = enumeratePrebuildModulesRaw(cwd, buildConfiguration);
 
-  const spmDepModules = enumerateSpmDepsXcframeworks(cwd, buildConfiguration, seenNames);
-
-  const modules = [...podModules, ...bundledModules, ...spmDepModules].filter(
-    (m) => !hostProvided.has(m.name)
-  );
+  const modules = allModules.filter((m) => !hostProvided.has(m.name));
 
   // Drop host-provided names from the completeness check
   const declaredDeps = collectDeclaredSpmDeps(podModules, podToNpm).filter(
@@ -636,4 +626,37 @@ export const enumerateAllPrebuildModules = (
   }
 
   return modules;
+};
+
+/**
+ * Walks all three resolution layers (pod scan → npm-bundled → shared `.spm-deps/` cache) without
+ * applying host-provided filtering or running the missing-SPM-dep completeness check.
+ */
+export const enumeratePrebuildModulesRaw = (
+  cwd: string,
+  buildConfiguration: BuildConfiguration
+): {
+  modules: ModuleXCFramework[];
+  podModules: ModuleXCFramework[];
+  podToNpm: Map<string, NpmPackageInfo>;
+} => {
+  const podModules = enumeratePrecompiledModules(path.join(cwd, 'ios'));
+  const podToNpm = buildPodToNpmPackageMap(cwd);
+  const seenNames = new Set(podModules.map((m) => m.name));
+
+  const bundledModules = enumerateBundledSpmDepsXcframeworks(
+    podModules,
+    podToNpm,
+    buildConfiguration,
+    seenNames
+  );
+  bundledModules.forEach((m) => seenNames.add(m.name));
+
+  const spmDepModules = enumerateSpmDepsXcframeworks(cwd, buildConfiguration, seenNames);
+
+  return {
+    modules: [...podModules, ...bundledModules, ...spmDepModules],
+    podModules,
+    podToNpm,
+  };
 };

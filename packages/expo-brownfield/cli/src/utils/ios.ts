@@ -8,7 +8,7 @@ import CLIError from './error';
 import {
   ensureCorrectFlavor,
   enumerateAllPrebuildModules,
-  isDirentDirectory,
+  enumeratePrebuildModulesRaw,
   resolvedFixedXCFrameworks,
 } from './precompiled';
 import { withSpinner } from './spinner';
@@ -574,8 +574,9 @@ export const printIosConfig = (config: IosConfig) => {
  *    strip — the host pod gets statically linked into the brownfield framework itself. We fail
  *    fast and point the user at the docs.
  *  - **Unused-entry warning:** a name listed in `hostProvidedFrameworks` that doesn't match any
- *    actual xcframework under `ios/Pods/` indicates a typo or stale config — warn so the user
- *    catches it before debugging a still-duplicated build.
+ *    actual xcframework discovered across the three resolution layers (pod scan, npm-bundled
+ *    `prebuilds/output/`, shared `.spm-deps/`) indicates a typo or stale config — warn so the
+ *    user catches it before debugging a still-duplicated build.
  *  - **Version log:** for each excluded framework we surface the `CFBundleShortVersionString`
  *    found in its bundled `Info.plist`. The consumer's host app must ship a version that's ABI-
  *    compatible with what we just stripped; logging the expected version here gives them a
@@ -591,43 +592,30 @@ export const validateHostProvided = (config: IosConfig): void => {
     return;
   }
 
-  const podsDir = path.join(process.cwd(), 'ios', 'Pods');
-  const observed = new Map<string, string | null>();
-  if (fs.existsSync(podsDir)) {
-    for (const pod of fs.readdirSync(podsDir, { withFileTypes: true })) {
-      if (!pod.isDirectory()) {
-        continue;
-      }
-      const podDir = path.join(podsDir, pod.name);
-      let entries: fs.Dirent[];
-      try {
-        entries = fs.readdirSync(podDir, { withFileTypes: true });
-      } catch {
-        continue;
-      }
-      for (const entry of entries) {
-        if (!entry.name.endsWith('.xcframework') || !isDirentDirectory(entry, podDir)) {
-          continue;
-        }
-        const name = entry.name.replace(/\.xcframework$/, '');
-        if (!config.hostProvidedFrameworks.includes(name) || observed.has(name)) {
-          continue;
-        }
-        observed.set(name, readXcframeworkShortVersion(path.join(podDir, entry.name)));
-      }
+  // Use the same three-layer enumeration the build path uses, so a host-provided framework
+  // resolved out of `node_modules/<pkg>/prebuilds/output/` or `packages/precompile/.build/.spm-deps/`
+  // (rather than `ios/Pods/`) is still detected and doesn't spuriously trigger the unused-entry
+  // warning. `enumeratePrebuildModulesRaw` skips the host-provided filter and missing-dep check
+  // that `enumerateAllPrebuildModules` would otherwise apply.
+  const { modules } = enumeratePrebuildModulesRaw(process.cwd(), config.buildConfiguration);
+  const pathsByName = new Map<string, string>();
+  for (const module of modules) {
+    if (!pathsByName.has(module.name)) {
+      pathsByName.set(module.name, module.xcframeworkPath);
     }
   }
 
   for (const name of config.hostProvidedFrameworks) {
-    const version = observed.get(name);
-    if (version === undefined) {
+    const xcframeworkPath = pathsByName.get(name);
+    if (xcframeworkPath === undefined) {
       console.warn(
         chalk.yellow(
-          `expo-brownfield: '${name}' is listed in ios.hostProvidedFrameworks but no matching xcframework was found under ios/Pods/. Remove it from the config, or run \`pod install\` if the source module isn't installed yet.`
+          `expo-brownfield: '${name}' is listed in ios.hostProvidedFrameworks but no matching xcframework was found in ios/Pods/, node_modules/<pkg>/prebuilds/output/, or the shared .spm-deps/ cache. Remove it from the config, or re-run \`pod install\` if the source module isn't installed yet.`
         )
       );
       continue;
     }
+    const version = readXcframeworkShortVersion(xcframeworkPath);
     const versionLabel = version ?? 'unknown version';
     console.log(
       chalk.dim(

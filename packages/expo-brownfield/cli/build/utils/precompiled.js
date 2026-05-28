@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = exports.isDirentDirectory = void 0;
+exports.enumeratePrebuildModulesRaw = exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = exports.isDirentDirectory = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -528,13 +528,8 @@ exports.enumerateBundledSpmDepsXcframeworks = enumerateBundledSpmDepsXcframework
  */
 const enumerateAllPrebuildModules = (cwd, buildConfiguration, hostProvidedFrameworks = []) => {
     const hostProvided = new Set(hostProvidedFrameworks);
-    const podModules = (0, exports.enumeratePrecompiledModules)(node_path_1.default.join(cwd, 'ios'));
-    const podToNpm = (0, exports.buildPodToNpmPackageMap)(cwd);
-    const seenNames = new Set(podModules.map((m) => m.name));
-    const bundledModules = (0, exports.enumerateBundledSpmDepsXcframeworks)(podModules, podToNpm, buildConfiguration, seenNames);
-    bundledModules.forEach((m) => seenNames.add(m.name));
-    const spmDepModules = (0, exports.enumerateSpmDepsXcframeworks)(cwd, buildConfiguration, seenNames);
-    const modules = [...podModules, ...bundledModules, ...spmDepModules].filter((m) => !hostProvided.has(m.name));
+    const { modules: allModules, podModules, podToNpm, } = (0, exports.enumeratePrebuildModulesRaw)(cwd, buildConfiguration);
+    const modules = allModules.filter((m) => !hostProvided.has(m.name));
     // Drop host-provided names from the completeness check
     const declaredDeps = (0, exports.collectDeclaredSpmDeps)(podModules, podToNpm).filter(({ name }) => !hostProvided.has(name));
     const coveredNames = new Set(modules.map((m) => m.name));
@@ -548,4 +543,22 @@ const enumerateAllPrebuildModules = (cwd, buildConfiguration, hostProvidedFramew
     return modules;
 };
 exports.enumerateAllPrebuildModules = enumerateAllPrebuildModules;
+/**
+ * Walks all three resolution layers (pod scan → npm-bundled → shared `.spm-deps/` cache) without
+ * applying host-provided filtering or running the missing-SPM-dep completeness check.
+ */
+const enumeratePrebuildModulesRaw = (cwd, buildConfiguration) => {
+    const podModules = (0, exports.enumeratePrecompiledModules)(node_path_1.default.join(cwd, 'ios'));
+    const podToNpm = (0, exports.buildPodToNpmPackageMap)(cwd);
+    const seenNames = new Set(podModules.map((m) => m.name));
+    const bundledModules = (0, exports.enumerateBundledSpmDepsXcframeworks)(podModules, podToNpm, buildConfiguration, seenNames);
+    bundledModules.forEach((m) => seenNames.add(m.name));
+    const spmDepModules = (0, exports.enumerateSpmDepsXcframeworks)(cwd, buildConfiguration, seenNames);
+    return {
+        modules: [...podModules, ...bundledModules, ...spmDepModules],
+        podModules,
+        podToNpm,
+    };
+};
+exports.enumeratePrebuildModulesRaw = enumeratePrebuildModulesRaw;
 //# sourceMappingURL=precompiled.js.map
