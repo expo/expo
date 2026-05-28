@@ -94,6 +94,20 @@ struct JavaScriptPromiseTests {
   }
 
   @Test
+  func `wrapped promise setup throws when then is unavailable`() throws {
+    let runtime = JavaScriptRuntime()
+    let promiseValue = try runtime.eval("""
+    const promise = Promise.resolve(42);
+    promise.then = undefined;
+    promise;
+    """)
+
+    #expect(throws: Error.self) {
+      _ = try promiseValue.getPromise()
+    }
+  }
+
+  @Test
   func `wrap pending promise that resolves later`() async throws {
     let runtime = JavaScriptRuntime()
     let pendingPromise = try runtime.eval("new Promise((resolve) => { setImmediate(() => resolve(100)) })").getPromise()

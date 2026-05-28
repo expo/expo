@@ -335,12 +335,12 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
    Returns the value as a promise, or asserts if it is not a promise.
    */
   @JavaScriptActor
-  public func getPromise() -> JavaScriptPromise {
+  public func getPromise() throws -> JavaScriptPromise {
     guard let runtime else {
       FatalError.runtimeLost()
     }
     assert(self.is("Promise"), "Value is not a promise")
-    return JavaScriptPromise(runtime, getObject())
+    return try JavaScriptPromise(runtime, getObject())
   }
 
   // MARK: - Throwing conversions ("as functions")
@@ -418,11 +418,11 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
   }
 
   @JavaScriptActor
-  public func asPromise() throws(TypeError) -> JavaScriptPromise {
+  public func asPromise() throws -> JavaScriptPromise {
     guard self.is("Promise") else {
       throw TypeError(type: JavaScriptPromise.self)
     }
-    return getPromise()
+    return try getPromise()
   }
 
   /**

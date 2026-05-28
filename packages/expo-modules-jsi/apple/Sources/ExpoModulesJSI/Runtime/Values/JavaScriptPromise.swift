@@ -26,10 +26,10 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
    It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
    */
   @JavaScriptActor
-  public init(_ runtime: JavaScriptRuntime, _ object: consuming JavaScriptObject) {
+  public init(_ runtime: JavaScriptRuntime, _ object: consuming JavaScriptObject) throws {
     self.runtime = runtime
     self.object = object
-    try! setUpCallbacks()
+    try setUpCallbacks()
   }
 
   /**
@@ -59,8 +59,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   }
 
   @JavaScriptActor
-  internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
-    self.init(runtime, JavaScriptObject(runtime, object))
+  internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) throws {
+    try self.init(runtime, JavaScriptObject(runtime, object))
   }
 
   public var isDeferred: Bool {
