@@ -111,6 +111,52 @@ export default function SkipPartiallyExpandedExample() {
 }
 ```
 
+### Initial fully expanded state
+
+When `initialFullyExpanded` is `true`, the sheet opens directly in the fully expanded state on first composition while leaving the partial state reachable. Unlike `skipPartiallyExpanded`, the user can still drag down to partial and `partialExpand()` keeps working.
+
+```tsx InitialFullyExpandedExample.tsx
+import { useRef, useState } from 'react';
+import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function InitialFullyExpandedExample() {
+  const [visible, setVisible] = useState(false);
+  const sheetRef = useRef<ModalBottomSheetRef>(null);
+
+  const hideSheet = async () => {
+    await sheetRef.current?.hide();
+    setVisible(false);
+  };
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Sheet</Text>
+      </Button>
+      {visible && (
+        <ModalBottomSheet
+          ref={sheetRef}
+          onDismissRequest={() => setVisible(false)}
+          initialFullyExpanded>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
+            <Text>This sheet opened fully expanded.</Text>
+            <Text>You can still drag it down to the partial state.</Text>
+            <Button onClick={() => sheetRef.current?.partialExpand()}>
+              <Text>Collapse to partial</Text>
+            </Button>
+            <Button onClick={hideSheet}>
+              <Text>Close</Text>
+            </Button>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
 ### Custom colors
 
 Use `containerColor`, `contentColor`, and `scrimColor` to customize the sheet's appearance.
