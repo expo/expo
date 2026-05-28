@@ -4,17 +4,23 @@
 
 ### 🛠 Breaking changes
 
-- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 19.0.23 — 2026-05-28
+
+### 🛠 Breaking changes
+
+- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
 - [Android] Added missing permission check to `delete()` in the next-gen File System API. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
 - [Android] Fixed path traversal vulnerability in `createFile`, `createDirectory`, and `rename` that allowed escaping the parent directory. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
 - [Android] Fixed `Paths.cache` and `Paths.document` pointing to wrong directory in Expo Go. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
-
-### 💡 Others
 
 ## 19.0.22 — 2026-04-27
 

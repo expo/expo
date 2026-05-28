@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.25 — 2026-05-28
+
+### 🐛 Bug fixes
+
 - Restrict `/message` client commands ([#45858](https://github.com/expo/expo/pull/45858) by [@kitten](https://github.com/kitten)
 - Enforce `routerRoot` to be within `projectRoot` to prevent unexpected errors ([#45892](https://github.com/expo/expo/pull/45892) by [@kitten](https://github.com/kitten))
 - Add validation to check `EXPO_PUBLIC_FOLDER` is in project root ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))

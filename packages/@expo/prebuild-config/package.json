@@ -44,7 +44,7 @@
     "@expo/config-plugins": "~54.0.4",
     "@expo/config-types": "^54.0.10",
     "@expo/image-utils": "^0.8.8",
-    "@expo/json-file": "^10.0.8",
+    "@expo/json-file": "^10.0.16",
     "@react-native/normalize-colors": "0.81.5",
     "debug": "^4.3.1",
     "resolve-from": "^5.0.0",

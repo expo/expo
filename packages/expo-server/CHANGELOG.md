@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 1.0.7 — 2026-05-28
+
+### 🐛 Bug fixes
+
+- Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
 
 ## 1.0.6 — 2026-04-27
 
