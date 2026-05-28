@@ -78,13 +78,10 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
 
 /**
  * Source order for `hostProvidedFrameworks`:
- *  1. `--host-provided <names...>` CLI flag (or comma-separated single string).
- *  2. `ios.brownfieldHostProvidedFrameworks` in `ios/Podfile.properties.json`, written by the
- *     expo-brownfield plugin during prebuild from the user's `ios.hostProvidedFrameworks`.
+ *  1. `--host-provided <names...>` from the CLI flag
+ *  2. `ios.brownfieldHostProvidedFrameworks` in `ios/Podfile.properties.json`
  *
- * The CLI flag wins entirely when provided — it does not merge with the prebuild output. This
- * keeps the contract simple: a one-off build (CI smoke test, repro) can override the
- * project-level declaration without re-running prebuild.
+ * Inputs are intentionally not merged. This is design for CI smoke tests, and quick repros
  */
 const resolveHostProvidedFrameworks = (options: OptionValues): string[] => {
   const fromFlag = parseHostProvidedFlag(options.hostProvided);

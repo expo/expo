@@ -230,7 +230,7 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
     // `.spm-deps/`) and runs the strict completeness check. Failing here surfaces missing
     // deps at packaging time (rather than as `Library not loaded: @rpath/...` at runtime).
     // Host-provided frameworks are filtered out here so they're neither copied to the artifact
-    // dir nor counted as a missing SPM-dep (see `enumerateAllPrebuildModules`).
+    // dir nor counted as a missing SPM-dep.
     const modules = enumerateAllPrebuildModules(
       process.cwd(),
       config.buildConfiguration,
@@ -566,22 +566,6 @@ export const printIosConfig = (config: IosConfig) => {
   console.log();
 };
 
-/**
- * Diagnostics for `hostProvidedFrameworks`. Run before the build kicks off so any misconfiguration
- * surfaces with a clear message instead of a confusing "Multiple commands produce" / runtime crash:
- *
- *  - **Source-build guardrail:** when `usePrebuilds` is false there is no separate xcframework to
- *    strip — the host pod gets statically linked into the brownfield framework itself. We fail
- *    fast and point the user at the docs.
- *  - **Unused-entry warning:** a name listed in `hostProvidedFrameworks` that doesn't match any
- *    actual xcframework discovered across the three resolution layers (pod scan, npm-bundled
- *    `prebuilds/output/`, shared `.spm-deps/`) indicates a typo or stale config — warn so the
- *    user catches it before debugging a still-duplicated build.
- *  - **Version log:** for each excluded framework we surface the `CFBundleShortVersionString`
- *    found in its bundled `Info.plist`. The consumer's host app must ship a version that's ABI-
- *    compatible with what we just stripped; logging the expected version here gives them a
- *    concrete target to verify against.
- */
 export const validateHostProvided = (config: IosConfig): void => {
   if (config.hostProvidedFrameworks.length === 0) {
     return;
@@ -626,12 +610,8 @@ export const validateHostProvided = (config: IosConfig): void => {
 };
 
 /**
- * Reads the first `Info.plist` we can find inside an xcframework (any platform slice) and returns
- * the `CFBundleShortVersionString` value. Returns null on any I/O / parse failure — the version
- * is purely informational, so a missing read shouldn't fail the build.
- *
- * We intentionally avoid pulling in a plist parser dep — the strings file is XML and tiny, so a
- * permissive regex extraction is enough for the diagnostic.
+ * Reads the first `Info.plist` we can find inside an xcframework and returns
+ * the `CFBundleShortVersionString` value.
  */
 const readXcframeworkShortVersion = (xcframeworkPath: string): string | null => {
   let slices: fs.Dirent[];
