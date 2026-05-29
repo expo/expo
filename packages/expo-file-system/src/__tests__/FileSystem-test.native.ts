@@ -283,7 +283,7 @@ describe('expo-file-system behavioral mock', () => {
     expect(file.creationTime).toBe(creationTime);
     expect(file.modificationTime).toBeGreaterThan(creationTime!);
     expect(file.lastModified).toBe(file.modificationTime);
-    expect(file.info()).toMatchObject({
+    expect(file.infoSync()).toMatchObject({
       size: 5,
       creationTime,
       modificationTime: file.modificationTime,
@@ -293,6 +293,25 @@ describe('expo-file-system behavioral mock', () => {
     const resetFile = new File(Paths.cache, 'metadata.txt');
     resetFile.create();
     expect(resetFile.creationTime).toBe(creationTime);
+  });
+
+  it('File.info resolves metadata asynchronously', async () => {
+    const file = new File(Paths.cache, 'metadata-async.txt');
+    file.writeSync('hello');
+
+    await expect(file.info()).resolves.toMatchObject({
+      exists: true,
+      size: 5,
+      modificationTime: file.modificationTime,
+      creationTime: file.creationTime,
+    });
+  });
+
+  it('File.getMd5Async resolves the same hash as the md5 property', async () => {
+    const file = new File(Paths.cache, 'md5-async.txt');
+    file.writeSync('hello');
+
+    await expect(file.getMd5Async()).resolves.toBe(file.md5);
   });
 
   it('File.move updates this.uri and removes the source', async () => {
