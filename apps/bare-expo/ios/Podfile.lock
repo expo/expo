@@ -64,15 +64,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (56.0.17):
+  - expo-dev-client (56.0.18):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (56.0.17):
+  - expo-dev-launcher (56.0.18):
     - EXManifests
-    - expo-dev-launcher/Main (= 56.0.17)
+    - expo-dev-launcher/Main (= 56.0.18)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -101,7 +101,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (56.0.17):
+  - expo-dev-launcher/Main (56.0.18):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -132,7 +132,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (56.0.17):
+  - expo-dev-launcher/Tests (56.0.18):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -167,7 +167,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (56.0.17):
+  - expo-dev-launcher/Unsafe (56.0.18):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -197,8 +197,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu (56.0.15):
-    - expo-dev-menu/Main (= 56.0.15)
+  - expo-dev-menu (56.0.16):
+    - expo-dev-menu/Main (= 56.0.16)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -221,7 +221,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu-interface (56.0.1)
-  - expo-dev-menu/Main (56.0.15):
+  - expo-dev-menu/Main (56.0.16):
     - EXManifests
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -247,7 +247,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/Tests (56.0.15):
+  - expo-dev-menu/Tests (56.0.16):
     - ExpoModulesTestCore
     - hermes-engine
     - Nimble
@@ -273,7 +273,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/UITests (56.0.15):
+  - expo-dev-menu/UITests (56.0.16):
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -3968,9 +3968,9 @@ SPEC CHECKSUMS:
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
   Expo: 7ff6f263ca3ca6ae2a2861310d008485e546133e
-  expo-dev-client: 064a3b79d881eabebe73cf7416e9a68b22e5a035
-  expo-dev-launcher: 10381daa986271ac8a5b4b33074c2a9ff9c41777
-  expo-dev-menu: cb0bba714055cac50d21428440a28d3a5189c5f6
+  expo-dev-client: 754a615fe4d63fdffb9bd41ea45092daa7fdfc33
+  expo-dev-launcher: e3f91a500b71c6fd5c2764364d2920ea4116ed21
+  expo-dev-menu: 1c851977caf77bb9ba81298ea03270d2b1f96bc8
   expo-dev-menu-interface: 65402d4affb8b418aa6cec29b3abb0e313c8f443
   ExpoAgeRange: 0f0a7efa4953b7559a726a817e0fa81bed4f35a7
   ExpoAppIntegrity: 43cc62f24c533b960de07b5038568acedc3a567a
