@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix `EXC_BAD_ACCESS` crash in `EXNotificationSerializer` caused by thread-unsafe static `NSDictionary` initialization during cold launch from notification tap. ([#46385](https://github.com/expo/expo/pull/46385) by [@SJvaca30](https://github.com/SJvaca30))
+
 ### 💡 Others
 
 ## 0.29.14 — 2025-03-11
