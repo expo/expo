@@ -146,10 +146,14 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   suspend fun base64(): String {
     validateType()
     validatePermission(FilePermissionService.Permission.READ)
-    return withContext(Dispatchers.IO) {
-      file.inputStream().use {
-        Base64.encodeToString(it.readBytes(), Base64.NO_WRAP)
-      }
+
+    val bytes = withContext(Dispatchers.IO) {
+      // I/O Intensive
+      file.inputStream().use { it.readBytes() }
+    }
+    return withContext(Dispatchers.Default) {
+      // CPU Intensive
+      Base64.encodeToString(bytes, Base64.NO_WRAP)
     }
   }
 
