@@ -29,7 +29,7 @@ object WebsiteField : ExtractableField.Data<ExistingWebsite> {
       Website.TYPE_OTHER -> WebsiteLabel.Other
       Website.TYPE_PROFILE -> WebsiteLabel.Profile
       else -> {
-        val customLabel = getString(getColumnIndexOrThrow(Website.LABEL))
+        val customLabel = getString(getColumnIndexOrThrow(Website.LABEL)) ?: ""
         WebsiteLabel.Custom(customLabel)
       }
     }

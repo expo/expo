@@ -33,7 +33,7 @@ object EventField : ExtractableField.Data<ExistingEvent> {
       Event.TYPE_BIRTHDAY -> EventLabel.Birthday
       Event.TYPE_OTHER -> EventLabel.Other
       else -> {
-        val customLabel = getString(getColumnIndexOrThrow(Event.LABEL))
+        val customLabel = getString(getColumnIndexOrThrow(Event.LABEL)) ?: ""
         EventLabel.Custom(customLabel)
       }
     }

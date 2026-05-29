@@ -36,7 +36,7 @@ object RelationField : ExtractableField.Data<ExistingRelation> {
       Relation.TYPE_SISTER -> RelationLabel.Sister
       Relation.TYPE_SPOUSE -> RelationLabel.Spouse
       else -> {
-        val customLabel = getString(getColumnIndexOrThrow(Relation.LABEL))
+        val customLabel = getString(getColumnIndexOrThrow(Relation.LABEL)) ?: ""
         RelationLabel.Custom(customLabel)
       }
     }

@@ -47,7 +47,7 @@ object PhoneField : ExtractableField.Data<ExistingPhone> {
       Phone.TYPE_ASSISTANT -> PhoneLabel.Assistant
       Phone.TYPE_MMS -> PhoneLabel.Mms
       else -> {
-        val customLabel = getString(getColumnIndexOrThrow(Phone.LABEL))
+        val customLabel = getString(getColumnIndexOrThrow(Phone.LABEL)) ?: ""
         PhoneLabel.Custom(customLabel)
       }
     }

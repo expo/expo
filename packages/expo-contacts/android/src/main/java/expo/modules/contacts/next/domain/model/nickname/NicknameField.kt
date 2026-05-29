@@ -32,7 +32,7 @@ object NicknameField : ExtractableField.Data<ExistingNickname> {
       Nickname.TYPE_SHORT_NAME -> NicknameLabel.ShortName
       Nickname.TYPE_INITIALS -> NicknameLabel.Initials
       else -> {
-        val customLabel = getString(getColumnIndexOrThrow(Nickname.LABEL))
+        val customLabel = getString(getColumnIndexOrThrow(Nickname.LABEL)) ?: ""
         NicknameLabel.Custom(customLabel)
       }
     }
