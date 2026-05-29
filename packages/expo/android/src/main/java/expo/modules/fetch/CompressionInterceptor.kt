@@ -30,27 +30,23 @@ import org.brotli.dec.BrotliInputStream
 /**
  * Transparent compressed response support for Zstandard, Brotli and Gzip.
  *
- * Adds `Accept-Encoding: zstd, br, gzip` to outgoing requests when the caller has not set the
- * header, and decompresses (and strips `Content-Encoding`/`Content-Length` from) responses
- * encoded with any of the three.
- *
- * Modeled after `okhttp3.brotli.BrotliInterceptor`; this replaces the transparent gzip
- * compression in okhttp's `BridgeInterceptor`. Callers who set their own `Accept-Encoding`
- * opt out of automatic decompression.
+ * If the caller didn't set `Accept-Encoding`, we add `zstd, br, gzip`. Responses with a recognized
+ * `Content-Encoding` are always decoded (and the `Content-Encoding`/`Content-Length` headers
+ * stripped), matching browser fetch and iOS `URLSession` behavior.
  */
 object CompressionInterceptor : Interceptor {
-  override fun intercept(chain: Interceptor.Chain): Response =
-    if (chain.request().header("Accept-Encoding") == null) {
-      val request = chain.request().newBuilder()
-        .header("Accept-Encoding", "zstd, br, gzip")
-        .build()
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val request = chain.request()
 
-      val response = chain.proceed(request)
-
-      uncompress(response)
-    } else {
-      chain.proceed(chain.request())
-    }
+    return uncompress(
+      chain.proceed(
+        when (request.header("Accept-Encoding")) {
+          null -> request.newBuilder().header("Accept-Encoding", "zstd, br, gzip").build()
+          else -> request
+        }
+      )
+    )
+  }
 
   internal fun uncompress(response: Response): Response {
     if (!response.promisesBody()) {

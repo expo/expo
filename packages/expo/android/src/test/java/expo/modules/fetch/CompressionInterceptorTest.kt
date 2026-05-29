@@ -32,10 +32,39 @@ class CompressionInterceptorTest {
   }
 
   @Test
-  fun `should pass through unchanged when caller sets Accept-Encoding`() {
+  fun `should leave caller-set Accept-Encoding header untouched`() {
     val capturedRequest = interceptAndCapture(initialAcceptEncoding = "gzip")
 
     assertThat(capturedRequest.header("Accept-Encoding")).isEqualTo("gzip")
+  }
+
+  @Test
+  fun `should still decompress response when caller set Accept-Encoding`() {
+    val payload = "hello world"
+
+    val request = Request.Builder()
+      .url("https://example.test/")
+      .header("Accept-Encoding", "gzip")
+      .build()
+
+    val chain = mockk<Interceptor.Chain>()
+
+    every { chain.request() } returns request
+    every { chain.proceed(any()) } answers {
+      Response.Builder()
+        .request(request)
+        .protocol(Protocol.HTTP_1_1)
+        .code(200)
+        .message("OK")
+        .header("Content-Encoding", "gzip")
+        .body(payload.toByteArray().gzipCompressed().toResponseBody("application/octet-stream".toMediaType()))
+        .build()
+    }
+
+    val response = CompressionInterceptor.intercept(chain)
+
+    assertThat(response.body!!.string()).isEqualTo(payload)
+    assertThat(response.header("Content-Encoding")).isNull()
   }
 
   // endregion
