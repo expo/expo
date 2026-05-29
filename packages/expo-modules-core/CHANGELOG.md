@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
+
 ## 56.0.13 — 2026-05-26
 
 ### 🎉 New features
