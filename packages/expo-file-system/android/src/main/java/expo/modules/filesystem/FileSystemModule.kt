@@ -13,7 +13,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URI
 
@@ -191,8 +193,20 @@ class FileSystemModule : Module() {
         file.bytes()
       }
 
-      Function("info") { file: FileSystemFile, options: InfoOptions? ->
+      AsyncFunction("info") Coroutine { file: FileSystemFile, options: InfoOptions? ->
         file.info(options)
+      }
+
+      Function("infoSync") { file: FileSystemFile, options: InfoOptions? ->
+        runBlocking {
+          file.info(options)
+        }
+      }
+
+      AsyncFunction("getMd5Async") Coroutine { file: FileSystemFile ->
+        withContext(Dispatchers.IO) {
+          file.md5
+        }
       }
 
       Property("exists") { file: FileSystemFile ->
