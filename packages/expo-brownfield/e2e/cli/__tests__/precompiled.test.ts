@@ -5,6 +5,7 @@ import path from 'node:path';
 import {
   buildPodToNpmPackageMap,
   collectDeclaredSpmDeps,
+  enumerateAllPrebuildModules,
   enumerateBundledSpmDepsXcframeworks,
   enumeratePrecompiledModules,
   enumerateSpmDepsXcframeworks,
@@ -433,6 +434,104 @@ describe('enumerateBundledSpmDepsXcframeworks', () => {
       new Set(['ExpoImage'])
     );
     expect(found.map((m) => m.name)).toEqual(['SDWebImage']);
+  });
+});
+
+describe('enumerateAllPrebuildModules', () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'brownfield-enumerate-all-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  const seedExpoImagePod = (root: string) => {
+    const podDir = path.join(root, 'ios', 'Pods', 'ExpoImage');
+    fs.mkdirSync(podDir, { recursive: true });
+    for (const xcf of ['ExpoImage', 'SDWebImage', 'SDWebImageWebPCoder', 'libavif']) {
+      fs.mkdirSync(path.join(podDir, `${xcf}.xcframework`));
+    }
+    const artifactsDir = path.join(podDir, 'artifacts');
+    fs.mkdirSync(artifactsDir);
+    fs.writeFileSync(path.join(artifactsDir, 'ExpoImage-release.tar.gz'), '');
+  };
+
+  const seedExpoImageNpm = (root: string) => {
+    const pkgDir = path.join(root, 'node_modules', 'expo-image');
+    fs.mkdirSync(pkgDir, { recursive: true });
+    fs.writeFileSync(path.join(pkgDir, 'package.json'), JSON.stringify({ name: 'expo-image' }));
+    fs.writeFileSync(
+      path.join(pkgDir, 'spm.config.json'),
+      JSON.stringify({
+        products: [
+          {
+            name: 'ExpoImage',
+            podName: 'ExpoImage',
+            spmPackages: [
+              { productName: 'SDWebImage' },
+              { productName: 'SDWebImageWebPCoder' },
+              { productName: 'libavif' },
+            ],
+          },
+        ],
+      })
+    );
+  };
+
+  it('strips host-provided frameworks from the returned module set', () => {
+    seedExpoImagePod(tmpDir);
+    seedExpoImageNpm(tmpDir);
+
+    const modules = enumerateAllPrebuildModules(tmpDir, 'Release', [
+      'SDWebImage',
+      'SDWebImageWebPCoder',
+    ]);
+
+    const names = modules.map((m) => m.name).sort();
+    // ExpoImage and libavif remain; SDWebImage variants are gone.
+    expect(names).toEqual(['ExpoImage', 'libavif']);
+  });
+
+  it('suppresses the missing-SPM-dep completeness check for host-provided names', () => {
+    // Seed expo-image's spm.config.json declaring SDWebImage as required, but DON'T seed any
+    // SDWebImage xcframework on disk. Without the host-provided exemption this would call
+    // CLIError.handle (which exits the process). With host-provided exemption the build proceeds.
+    const podDir = path.join(tmpDir, 'ios', 'Pods', 'ExpoImage');
+    fs.mkdirSync(podDir, { recursive: true });
+    fs.mkdirSync(path.join(podDir, 'ExpoImage.xcframework'));
+    fs.mkdirSync(path.join(podDir, 'artifacts'));
+    fs.writeFileSync(
+      path.join(podDir, 'artifacts', 'ExpoImage-release.tar.gz'),
+      ''
+    );
+    seedExpoImageNpm(tmpDir);
+
+    // Without host-provided, the missing SDWebImage would trigger CLIError.handle (which calls
+    // process.exit). Spy on it to confirm host-provided suppresses the error.
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    try {
+      const modules = enumerateAllPrebuildModules(tmpDir, 'Release', [
+        'SDWebImage',
+        'SDWebImageWebPCoder',
+        'libavif',
+      ]);
+      expect(exitSpy).not.toHaveBeenCalled();
+      expect(modules.map((m) => m.name)).toEqual(['ExpoImage']);
+    } finally {
+      exitSpy.mockRestore();
+    }
+  });
+
+  it('returns the unfiltered module set when hostProvidedFrameworks is omitted', () => {
+    seedExpoImagePod(tmpDir);
+    seedExpoImageNpm(tmpDir);
+
+    const modules = enumerateAllPrebuildModules(tmpDir, 'Release');
+    const names = modules.map((m) => m.name).sort();
+    expect(names).toEqual(['ExpoImage', 'SDWebImage', 'SDWebImageWebPCoder', 'libavif']);
   });
 });
 
