@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "56.0.6",
+  "version": "56.0.7",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -75,7 +75,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "workspace:^56.1.12",
+    "@expo/cli": "workspace:^56.1.13",
     "@expo/config": "workspace:~56.0.9",
     "@expo/config-plugins": "workspace:~56.0.8",
     "@expo/devtools": "workspace:~56.0.2",
@@ -93,7 +93,7 @@
     "expo-font": "workspace:~56.0.5",
     "expo-keep-awake": "workspace:~56.0.3",
     "expo-modules-autolinking": "workspace:~56.0.14",
-    "expo-modules-core": "workspace:~56.0.13",
+    "expo-modules-core": "workspace:~56.0.14",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
     "whatwg-url-minimum": "^0.1.2"

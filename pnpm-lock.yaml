@@ -1855,13 +1855,13 @@ importers:
         specifier: workspace:^2.6.0
         version: link:../osascript
       '@expo/package-manager':
-        specifier: workspace:^1.12.0
+        specifier: workspace:^1.12.1
         version: link:../package-manager
       '@expo/plist':
         specifier: workspace:^0.7.0
         version: link:../plist
       '@expo/prebuild-config':
-        specifier: workspace:^56.0.13
+        specifier: workspace:^56.0.14
         version: link:../prebuild-config
       '@expo/require-utils':
         specifier: workspace:^56.1.3
@@ -3138,7 +3138,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-widgets:
-        specifier: workspace:^56.0.15
+        specifier: workspace:^56.0.16
         version: link:../expo-widgets
     devDependencies:
       '@babel/core':
@@ -3479,7 +3479,7 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:^56.1.12
+        specifier: workspace:^56.1.13
         version: link:../@expo/cli
       '@expo/config':
         specifier: workspace:~56.0.9
@@ -3533,7 +3533,7 @@ importers:
         specifier: workspace:~56.0.14
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~56.0.13
+        specifier: workspace:~56.0.14
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -3732,7 +3732,7 @@ importers:
         specifier: workspace:~56.0.4
         version: link:../expo-crypto
       expo-linking:
-        specifier: workspace:~56.0.12
+        specifier: workspace:~56.0.13
         version: link:../expo-linking
       expo-web-browser:
         specifier: workspace:~56.0.5
@@ -4137,7 +4137,7 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:~56.0.16
+        specifier: workspace:~56.0.17
         version: link:../expo-dev-launcher
       expo-dev-menu:
         specifier: workspace:~56.0.15
@@ -5063,7 +5063,7 @@ importers:
   packages/expo-observe:
     dependencies:
       expo-app-metrics:
-        specifier: workspace:~56.0.14
+        specifier: workspace:~56.0.15
         version: link:../expo-app-metrics
       expo-eas-client:
         specifier: workspace:~56.0.0
@@ -5132,7 +5132,7 @@ importers:
         specifier: workspace:^56.0.0
         version: link:../@expo/schema-utils
       '@expo/ui':
-        specifier: workspace:^56.0.14
+        specifier: workspace:^56.0.15
         version: link:../expo-ui
       '@radix-ui/react-slot':
         specifier: ^1.2.0
@@ -5168,7 +5168,7 @@ importers:
         specifier: workspace:^56.0.4
         version: link:../expo-glass-effect
       expo-linking:
-        specifier: workspace:^56.0.12
+        specifier: workspace:^56.0.13
         version: link:../expo-linking
       expo-server:
         specifier: workspace:^56.0.4
@@ -5936,7 +5936,7 @@ importers:
         specifier: workspace:^0.7.0
         version: link:../@expo/plist
       '@expo/ui':
-        specifier: workspace:~56.0.14
+        specifier: workspace:~56.0.15
         version: link:../expo-ui
       react:
         specifier: 19.2.3

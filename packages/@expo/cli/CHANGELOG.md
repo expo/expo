@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.1.13 — 2026-05-29
+
+### 🎉 New features
+
+- Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
 
 ## 56.1.12 — 2026-05-26
 

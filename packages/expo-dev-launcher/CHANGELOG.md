@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Cleared the deep-link URL from cached `launchOptions` after it is consumed ([#46265](https://github.com/expo/expo/pull/46265) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 56.0.17 — 2026-05-29
+
+### 🐛 Bug fixes
+
+- [iOS] Cleared the deep-link URL from cached `launchOptions` after it is consumed ([#46265](https://github.com/expo/expo/pull/46265) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.16 — 2026-05-26
 
