@@ -12,6 +12,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     project.evaluationDependsOn(":expo")
     setupDependencySubstitution(project)
+    setupFusedModeStripping(project)
 
     project.afterEvaluate { project ->
       setupSourceSets(project)
@@ -20,6 +21,67 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       setupCopyingNativeLibsForType(project, "Debug")
       setupHostAppArtifactForwardingForRelease(project)
       wireDevLauncherTasks(project)
+    }
+  }
+
+  /**
+   * In `--fused` release builds, strips dev-only entries from the autolinking-generated
+   * `ExpoModulesPackageList.kt` so the host app doesn't hit `NoClassDefFoundError`
+   * for modules excluded from the fat AAR. Extra prefixes via
+   * `-Pbrownfield.fused.strip-packages=foo.,bar.`. Inert otherwise.
+   */
+  private fun setupFusedModeStripping(brownfieldProject: Project) {
+    if (brownfieldProject.findProperty("brownfield.fused") != "true") return
+
+    val expoProject = brownfieldProject.rootProject.findProject(":expo") ?: return
+
+    // Strip prefixes that mirror the `devOnlySkipProjects` set in the release
+    // fused sibling. Kept in sync manually — if you add a module to the release
+    // skip list in `templates/android/fused/build.gradle.kts`, add its package
+    // prefix here too.
+    val fusedVariant =
+      (brownfieldProject.findProperty("brownfield.fused.variant") as? String)?.lowercase()
+    // EXPERIMENT: skip variant-based stripping entirely to test whether the
+    // "all modules physically present" tolerance also holds for the brownfield
+    // fused AAR. `-Pbrownfield.fused.strip-packages=...` still works for ad-hoc
+    // overrides.
+    val variantStripPrefixes: Set<String> = emptySet()
+    val extraStrip =
+      (brownfieldProject.findProperty("brownfield.fused.strip-packages") as? String)
+        ?.split(',')
+        ?.map { it.trim() }
+        ?.filter { it.isNotEmpty() }
+        ?.toSet()
+        ?: emptySet()
+    val stripPrefixes = variantStripPrefixes + extraStrip
+
+    if (stripPrefixes.isEmpty()) return
+
+    // `:expo` is already evaluated (forced by `evaluationDependsOn(":expo")` at the
+    // top of `apply`), so we read the task directly — no afterEvaluate needed.
+    val task = expoProject.tasks.findByName("generatePackagesList") ?: return
+    task.doLast {
+      val outputFile =
+        expoProject.layout.buildDirectory
+          .file("generated/expo/src/main/java/expo/modules/ExpoModulesPackageList.kt")
+          .get()
+          .asFile
+      if (!outputFile.exists()) {
+        expoProject.logger.warn(
+          "brownfield.fused: ExpoModulesPackageList.kt not found at ${outputFile.path}; nothing to strip"
+        )
+        return@doLast
+      }
+      val original = outputFile.readText()
+      val stripped =
+        original
+          .lineSequence()
+          .filter { line -> stripPrefixes.none { prefix -> line.contains(prefix) } }
+          .joinToString("\n")
+      outputFile.writeText(stripped)
+      expoProject.logger.lifecycle(
+        "brownfield.fused[${fusedVariant ?: "?"}]: stripped ExpoModulesPackageList entries matching ${stripPrefixes.joinToString(", ")}"
+      )
     }
   }
 

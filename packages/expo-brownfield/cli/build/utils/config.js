@@ -9,12 +9,15 @@ const android_1 = require("./android");
 const ios_1 = require("./ios");
 const precompiled_1 = require("./precompiled");
 const resolveBuildConfigAndroid = (options) => {
+    const fused = !!options.fused;
     const variant = resolveVariant(options);
+    const library = resolveLibrary(options);
     return {
         ...resolveCommonConfig(options),
-        library: resolveLibrary(options),
-        tasks: resolveTaskArray(options, variant),
+        library,
+        tasks: resolveTaskArray(options, variant, { fused, library }),
         variant,
+        fused,
     };
 };
 exports.resolveBuildConfigAndroid = resolveBuildConfigAndroid;
@@ -76,9 +79,13 @@ const resolveCommonConfig = (options) => {
 const resolveLibrary = (options) => {
     return options.library || (0, android_1.findBrownfieldLibrary)();
 };
-const resolveTaskArray = (options, variant) => {
+const resolveTaskArray = (options, variant, fusedOpts) => {
     const tasks = options.task ?? [];
-    const repoTasks = (options.repository ?? []).map((repo) => (0, android_1.buildPublishingTask)(variant, repo));
+    const repositories = options.repository ?? [];
+    // In `--fused` mode, `--all` expands to separate Debug + Release task
+    // invocations against the matching sibling subprojects.
+    const variantsForRepoTasks = fusedOpts.fused && variant === 'All' ? ['Debug', 'Release'] : [variant];
+    const repoTasks = repositories.flatMap((repo) => variantsForRepoTasks.map((v) => (0, android_1.buildPublishingTask)(v, repo, fusedOpts)));
     return Array.from(new Set([...tasks, ...repoTasks]));
 };
 const resolveVariant = (options) => {

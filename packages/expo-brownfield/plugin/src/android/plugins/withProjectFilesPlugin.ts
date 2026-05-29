@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { applyPatchToFile, checkPlugin, mkdir } from '../../common';
 import type { PluginConfig } from '../types';
-import { createFileFromTemplate } from '../utils';
+import { createFileFromTemplate, createFileFromTemplateAs } from '../utils';
 
 const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withAndroidManifest(config, (config) => {
@@ -15,9 +15,20 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     const brownfieldMainPath = path.join(brownfieldPath, 'src/main/');
     const brownfieldSourcesPath = path.join(brownfieldMainPath, pluginConfig.packagePath);
 
+    const fusedReleasePath = path.join(
+      pluginConfig.projectRoot,
+      `android/${pluginConfig.libraryName}-fused-release`
+    );
+    const fusedDebugPath = path.join(
+      pluginConfig.projectRoot,
+      `android/${pluginConfig.libraryName}-fused-debug`
+    );
+
     // Create directory for the brownfield library sources
     // (and all intermediate directories)
     mkdir(brownfieldSourcesPath, true);
+    mkdir(fusedReleasePath, true);
+    mkdir(fusedDebugPath, true);
 
     // Add files from templates to the brownfield library:
     // - AndroidManifest.xml
@@ -48,6 +59,27 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     });
     createFileFromTemplate('proguard-rules.pro', brownfieldPath);
     createFileFromTemplate('consumer-rules.pro', brownfieldPath);
+
+    // Emit the fused siblings' build.gradle.kts files. Same template at
+    // packages/expo-brownfield/plugin/templates/android/fused/build.gradle.kts —
+    // `fusedVariant` is the only difference: substituted as "release" or "debug",
+    // the script then branches on `isReleaseVariant` for the few places the two
+    // siblings differ (dev-only skip, namespace suffix, publication name).
+    const fusedTemplate = path.join('fused', 'build.gradle.kts');
+    const fusedBaseVars = {
+      packageId: pluginConfig.package,
+      groupId: pluginConfig.group,
+      version: pluginConfig.version,
+      libraryName: pluginConfig.libraryName,
+    };
+    createFileFromTemplateAs(fusedTemplate, fusedReleasePath, 'build.gradle.kts', {
+      ...fusedBaseVars,
+      fusedVariant: 'release',
+    });
+    createFileFromTemplateAs(fusedTemplate, fusedDebugPath, 'build.gradle.kts', {
+      ...fusedBaseVars,
+      fusedVariant: 'debug',
+    });
 
     // Adjust ReactNativeHostManager and BrownfieldActivity to initialize dev menu
     if (checkPlugin(config, 'expo-dev-menu')) {
