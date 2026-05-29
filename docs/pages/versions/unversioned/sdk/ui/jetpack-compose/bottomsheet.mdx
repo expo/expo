@@ -113,7 +113,7 @@ export default function SkipPartiallyExpandedExample() {
 
 ### Initial fully expanded state
 
-When `initialFullyExpanded` is `true`, the sheet opens directly in the fully expanded state on first composition while leaving the partial state reachable. Unlike `skipPartiallyExpanded`, the user can still drag down to partial and `partialExpand()` keeps working.
+When `initialFullyExpanded` is `true`, the sheet opens directly in the fully expanded state on first composition while leaving the partial state reachable. Unlike `skipPartiallyExpanded`, the user can still drag down to the partial state. The `partialExpand()` method also continues to work.
 
 ```tsx InitialFullyExpandedExample.tsx
 import { useRef, useState } from 'react';
