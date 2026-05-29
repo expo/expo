@@ -219,6 +219,20 @@ The current implementation has the following limitations:
 - iOS support for local capabilities is limited to simulators only (physical devices not yet supported)
 - iOS support for local capabilities is only available on macOS hosts.
 
+## Data privacy
+
+Expo does not use data sent to Expo MCP Server to train AI models. Expo MCP Server does not run an AI model itself. It provides MCP tools and prompts to the AI-assisted tool you connect, such as Claude Code, Cursor, or VS Code.
+
+For server capabilities, Expo MCP Server may access Expo account and project data needed to complete the requested tool call, such as build, workflow, documentation, or TestFlight-related data. The result is returned to your AI-assisted tool over the MCP connection.
+
+For local capabilities, data from your development machine is proxied through Expo MCP Server and returned to your AI-assisted tool. For example, when an AI-assisted tool asks to take a simulator screenshot, the data flow is:
+
+1. The local Expo development server captures the screenshot from your simulator.
+2. The screenshot is sent to Expo MCP Server.
+3. Expo MCP Server returns the screenshot to your local MCP client or AI-assisted tool.
+
+Expo MCP Server returns data to the MCP client you connect, such as Claude Code, Cursor, VS Code, or Codex. From there, the client and its model provider may apply their own retention, zero data retention (ZDR), and training policies. Review those policies before enabling MCP access for projects that handle sensitive data, including HIPAA, SOC 2, or other regulated workloads.
+
 ## Additional resources
 
 <BoxLink
