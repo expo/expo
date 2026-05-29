@@ -9,7 +9,8 @@ const node_path_1 = __importDefault(require("node:path"));
 const android_1 = require("./android");
 const ios_1 = require("./ios");
 const precompiled_1 = require("./precompiled");
-const HOST_PROVIDED_FRAMEWORKS_KEY = 'ios.brownfieldHostProvidedFrameworks';
+// Imported from the compiled output so the cli/src rootDir is not extended.
+const build_1 = require("../../../shared/build");
 const resolveBuildConfigAndroid = (options) => {
     const variant = resolveVariant(options);
     return {
@@ -67,7 +68,7 @@ exports.resolveBuildConfigIos = resolveBuildConfigIos;
  *  1. `--host-provided <names...>` from the CLI flag
  *  2. `ios.brownfieldHostProvidedFrameworks` in `ios/Podfile.properties.json`
  *
- * Inputs are intentionally not merged. This is design for CI smoke tests, and quick repros
+ * Inputs are intentionally not merged. This is designed for CI smoke tests and quick repros.
  */
 const resolveHostProvidedFrameworks = (options) => {
     const fromFlag = parseHostProvidedFlag(options.hostProvided);
@@ -101,7 +102,7 @@ const readHostProvidedFromPodfileProperties = (cwd) => {
         // and let other parts of the CLI surface the actual problem.
         return [];
     }
-    const rawValue = properties[HOST_PROVIDED_FRAMEWORKS_KEY];
+    const rawValue = properties[build_1.HOST_PROVIDED_FRAMEWORKS_KEY];
     if (typeof rawValue !== 'string' || rawValue.length === 0) {
         return [];
     }

@@ -13,8 +13,7 @@ import type {
   IosConfig,
   TasksConfigAndroid,
 } from './types';
-
-const HOST_PROVIDED_FRAMEWORKS_KEY = 'ios.brownfieldHostProvidedFrameworks';
+import { HOST_PROVIDED_FRAMEWORKS_KEY } from '../../../shared/build';
 
 export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
   const variant = resolveVariant(options);

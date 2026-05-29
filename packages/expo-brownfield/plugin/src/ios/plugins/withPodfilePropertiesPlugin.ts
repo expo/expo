@@ -1,8 +1,7 @@
 import { type ConfigPlugin, withPodfileProperties } from 'expo/config-plugins';
 
+import { HOST_PROVIDED_FRAMEWORKS_KEY } from '../../../../shared/build';
 import type { PluginConfig } from '../types';
-
-export const HOST_PROVIDED_FRAMEWORKS_KEY = 'ios.brownfieldHostProvidedFrameworks';
 
 const withPodfilePropertiesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withPodfileProperties(config, (config) => {
