@@ -579,6 +579,19 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `async function propagates promise construction failure`() throws {
+    let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
+      return JavaScriptValue(self.runtime, 42)
+    }
+    runtime.global().setProperty("asyncFn", value: fn.asValue())
+    try runtime.eval("globalThis.Promise = undefined")
+
+    #expect(throws: Error.self) {
+      _ = try runtime.eval("globalThis.asyncFn()")
+    }
+  }
+
+  @Test
   func `async function resolves with value`() async throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
       return JavaScriptValue(self.runtime, 42)
