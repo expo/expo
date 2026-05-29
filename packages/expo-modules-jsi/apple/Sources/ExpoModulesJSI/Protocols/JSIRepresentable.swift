@@ -75,7 +75,10 @@ extension UInt8: JSIRepresentableNumber {}
 extension UInt16: JSIRepresentableNumber {}
 extension UInt32: JSIRepresentableNumber {}
 extension UInt64: JSIRepresentableNumber {}
+#if !os(macOS)
+// Float16 is marked unavailable on macOS in the Swift standard library.
 extension Float16: JSIRepresentableNumber {}
+#endif
 extension Float32: JSIRepresentableNumber {}
 extension Float64: JSIRepresentableNumber {}
 extension CGFloat: JSIRepresentableNumber {}
@@ -127,6 +130,8 @@ extension Array: JSIRepresentable where Element: JSIRepresentable {
   }
 }
 
+// TODO: remove when bumping to react-native-macos 0.86
+#if !os(macOS)
 extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresentable {
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> [Key: Value] {
     let object = value.getObject(runtime)
@@ -154,3 +159,4 @@ extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresenta
     return facebook.jsi.Value(runtime, object)
   }
 }
+#endif

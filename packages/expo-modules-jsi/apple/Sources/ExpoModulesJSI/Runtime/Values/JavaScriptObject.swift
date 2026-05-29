@@ -1,4 +1,4 @@
-// Copyright 2025-present 650 Industries. All rights reserved.
+``// Copyright 2025-present 650 Industries. All rights reserved.
 
 internal import ExpoModulesJSI_Cxx
 internal import jsi
@@ -243,12 +243,15 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Deletes a property with the given name. After calling this function,
   /// `hasProperty` will return `false`, and `getProperty` will return `undefined` value.
+  #if !os(macOS)
+  // TODO: remove when bumping to react-native-macos 0.86
   public func deleteProperty(_ name: String) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
     pointee.deleteProperty(runtime.pointee, name)
   }
+  #endif
 
   public func defineProperty(_ name: String, descriptor: consuming JavaScriptObject) {
     guard let runtime else {
