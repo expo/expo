@@ -1,0 +1,149 @@
+package expo.modules.ui.textfield
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.SolidColor
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.views.AsyncFunctionHandle
+import expo.modules.kotlin.views.AsyncFunctionHandle2
+import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
+import expo.modules.ui.GenericEventPayload1
+import expo.modules.ui.ModifierList
+import expo.modules.ui.composeOrNull
+import expo.modules.ui.findChildSlotView
+import expo.modules.ui.renderSlot
+import expo.modules.ui.state.ObservableState
+import expo.modules.ui.state.WorkletCallback
+
+// region Inner text field plumbing
+
+/**
+ * Carries the framework-provided `innerTextField` lambda from `BasicTextField`'s
+ * `decorationBox` down to the [InnerTextFieldView] marker, wherever the JS
+ * decoration places it. `null` when read outside a decoration (the marker then
+ * renders nothing rather than crashing).
+ */
+val LocalInnerTextField = compositionLocalOf<(@Composable () -> Unit)?> { null }
+
+class InnerTextFieldProps : ComposeProps
+
+/**
+ * Slot view for `BasicTextField.InnerTextField`.
+ */
+@SuppressLint("ViewConstructor")
+class InnerTextFieldView(context: Context, appContext: AppContext) :
+  ExpoComposeView<InnerTextFieldProps>(context, appContext) {
+  override val props = InnerTextFieldProps()
+
+  @Composable
+  override fun ComposableScope.Content() {
+    LocalInnerTextField.current?.invoke()
+  }
+}
+
+// endregion Inner text field plumbing
+
+// region Props
+
+@OptimizedComposeProps
+data class BasicTextFieldProps(
+  val value: ObservableState = ObservableState(""),
+  val selection: ObservableState = ObservableState(mapOf("start" to 0, "end" to 0)),
+  val maxLength: Int? = null,
+  val autoFocus: Boolean = false,
+  val enabled: Boolean = true,
+  val readOnly: Boolean = false,
+  val singleLine: Boolean = false,
+  val maxLines: Int? = null,
+  val minLines: Int? = null,
+  val textStyle: TextFieldTextStyleRecord? = null,
+  val visualTransformation: String? = null,
+  val keyboardOptions: TextFieldKeyboardOptionsRecord? = null,
+  val cursorColor: Color? = null,
+  val onValueChangeSync: WorkletCallback? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
+// endregion Props
+
+// region View
+
+@Composable
+fun FunctionalComposableScope.BasicTextFieldContent(
+  props: BasicTextFieldProps,
+  setText: AsyncFunctionHandle<String>,
+  setSelection: AsyncFunctionHandle2<Int, Int>,
+  clear: AsyncFunctionHandle<Unit>,
+  focus: AsyncFunctionHandle<Unit>,
+  blur: AsyncFunctionHandle<Unit>,
+  onValueChanged: (TextFieldValuePayload) -> Unit,
+  onFocusChange: (GenericEventPayload1<Boolean>) -> Unit,
+  onKeyboardActionTriggered: (KeyboardActionEvent) -> Unit,
+  onSelectionChanged: (TextFieldSelectionPayload) -> Unit
+) {
+  val core = rememberTextFieldCore(
+    value = props.value,
+    selection = props.selection,
+    maxLength = props.maxLength,
+    autoFocus = props.autoFocus,
+    keyboardOptionsRecord = props.keyboardOptions,
+    modifiers = props.modifiers,
+    onValueChangeSync = props.onValueChangeSync,
+    setText = setText,
+    setSelection = setSelection,
+    clear = clear,
+    focus = focus,
+    blur = blur,
+    onValueChanged = onValueChanged,
+    onFocusChange = onFocusChange,
+    onKeyboardActionTriggered = onKeyboardActionTriggered,
+    onSelectionChanged = onSelectionChanged
+  )
+
+  val singleLine = props.singleLine
+  val maxLines = props.maxLines ?: if (singleLine) 1 else Int.MAX_VALUE
+  val minLines = props.minLines ?: 1
+
+  val textStyle = props.textStyle.toTextStyle(appContext.reactContext)
+  val visualTransformation = props.visualTransformation.toVisualTransformation()
+  val cursorBrush = SolidColor(props.cursorColor.composeOrNull ?: androidx.compose.ui.graphics.Color.Black)
+
+  val decoration: (@Composable () -> Unit)? =
+    findChildSlotView(view, "decorationBox")?.let { slot -> { slot.renderSlot() } }
+
+  BasicTextField(
+    value = core.value,
+    onValueChange = core.onValueChange,
+    modifier = core.modifier,
+    enabled = props.enabled,
+    readOnly = props.readOnly,
+    textStyle = textStyle,
+    keyboardOptions = core.keyboardOptions,
+    keyboardActions = core.keyboardActions,
+    singleLine = singleLine,
+    maxLines = maxLines,
+    minLines = minLines,
+    visualTransformation = visualTransformation,
+    cursorBrush = cursorBrush,
+    decorationBox = { innerTextField ->
+      if (decoration != null) {
+        CompositionLocalProvider(LocalInnerTextField provides innerTextField) {
+          decoration()
+        }
+      } else {
+        innerTextField()
+      }
+    }
+  )
+}
+
+// endregion View

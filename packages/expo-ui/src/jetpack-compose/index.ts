@@ -37,7 +37,10 @@ export {
   type TextFieldKeyboardType,
   type TextFieldKeyboardActions,
   type TextFieldColors,
+  type TextFieldTextStyle,
+  type CommonTextFieldProps,
 } from './TextField';
+export { BasicTextField, type BasicTextFieldProps, type BasicTextFieldRef } from './BasicTextField';
 export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';

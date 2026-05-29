@@ -93,8 +93,26 @@ export type TextFieldColors = {
     disabledSuffixColor?: ColorValue;
     errorSuffixColor?: ColorValue;
 };
-/** Shared props between `TextField` and `OutlinedTextField`. */
-type BaseTextFieldProps = {
+/**
+ * Text styling for a text field's content. Maps to Compose's `TextStyle`.
+ * Shared by `TextField`, `OutlinedTextField`, and `BasicTextField`.
+ */
+export type TextFieldTextStyle = {
+    textAlign?: 'left' | 'right' | 'center' | 'justify';
+    color?: ColorValue;
+    fontSize?: number;
+    fontFamily?: string;
+    fontWeight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | 'normal' | 'bold';
+    lineHeight?: number;
+    letterSpacing?: number;
+};
+/**
+ * Props shared by every Compose text field variant — `TextField`,
+ * `OutlinedTextField`, and `BasicTextField`. The Material variants add their
+ * own decoration props (`isError`, `shape`, `colors`, slot children);
+ * `BasicTextField` adds `cursorColor`.
+ */
+export type CommonTextFieldProps = {
     ref?: Ref<TextFieldRef>;
     /**
      * An observable state that holds the current text value. Create one with
@@ -109,8 +127,6 @@ type BaseTextFieldProps = {
     /** @default false */
     readOnly?: boolean;
     /** @default false */
-    isError?: boolean;
-    /** @default false */
     singleLine?: boolean;
     maxLines?: number;
     minLines?: number;
@@ -119,16 +135,6 @@ type BaseTextFieldProps = {
      * `'none'` (default) leaves the buffer as-is.
      */
     visualTransformation?: 'password' | 'none';
-    /**
-     * Selection-related colors. Maps to Compose's `TextSelectionColors` via
-     * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
-     * `backgroundColor` is the highlighted-text background (typically the same
-     * tint at lower alpha so the underlying text stays readable).
-     */
-    textSelectionColors?: {
-        handleColor?: ColorValue;
-        backgroundColor?: ColorValue;
-    };
     /**
      * Observable state holding the current selection range. Create with
      * `useNativeState({ start: 0, end: 0 })`. The field writes user-driven
@@ -150,15 +156,7 @@ type BaseTextFieldProps = {
     /**
      * Text styling for the field's content. Maps to Compose's `TextStyle`.
      */
-    textStyle?: {
-        textAlign?: 'left' | 'right' | 'center' | 'justify';
-        color?: ColorValue;
-        fontSize?: number;
-        fontFamily?: string;
-        fontWeight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | 'normal' | 'bold';
-        lineHeight?: number;
-        letterSpacing?: number;
-    };
+    textStyle?: TextFieldTextStyle;
     keyboardOptions?: TextFieldKeyboardOptions;
     keyboardActions?: TextFieldKeyboardActions;
     /**
@@ -170,15 +168,30 @@ type BaseTextFieldProps = {
     onValueChange?: (value: string) => void;
     /** A callback triggered when the field gains or loses focus. */
     onFocusChanged?: (focused: boolean) => void;
+    modifiers?: ModifierConfig[];
+    /** Slot children that configure the field's decoration. */
+    children?: React.ReactNode;
+};
+/** Shared props between `TextField` and `OutlinedTextField`. */
+type BaseTextFieldProps = CommonTextFieldProps & {
+    /** @default false */
+    isError?: boolean;
+    /**
+     * Selection-related colors. Maps to Compose's `TextSelectionColors` via
+     * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
+     * `backgroundColor` is the highlighted-text background (typically the same
+     * tint at lower alpha so the underlying text stays readable).
+     */
+    textSelectionColors?: {
+        handleColor?: ColorValue;
+        backgroundColor?: ColorValue;
+    };
     /**
      * Shape used for the field's container outline/fill. Use the helpers from
      * `Shape` (for example, `<Shape.Pill />` or `<Shape.RoundedCorner cornerRadii={...} />`).
      * Defaults to the Material `OutlinedTextFieldDefaults.shape`/`TextFieldDefaults.shape`.
      */
     shape?: ShapeJSXElement;
-    modifiers?: ModifierConfig[];
-    /** Slot children (e.g. `TextField.Label`, `TextField.Placeholder`). */
-    children?: React.ReactNode;
 };
 export type TextFieldProps = BaseTextFieldProps & {
     colors?: TextFieldColors;
