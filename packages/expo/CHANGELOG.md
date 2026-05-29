@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Prevent fatal `The stream is not in a state that permits close` in `expo/fetch` when native delivers `didComplete`/`didFailWithError` after the consumer has already canceled the body stream. ([#44909](https://github.com/expo/expo/pull/44909) by [@safaiyeh](https://github.com/safaiyeh))
+- Split repeated headers in `expo/fetch` (such as multiple `Set-Cookie`) into individual entries to match Android's behavior, instead of comma-joining them.
 
 ### 💡 Others
 
