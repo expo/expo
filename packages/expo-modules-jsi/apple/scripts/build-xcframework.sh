@@ -157,6 +157,16 @@ build_slice() {
   # which causes SDK/platform mismatches. PODS_ROOT and RN_ROOT are forwarded
   # explicitly because Package.swift reads them to resolve header search paths.
   # Run from PACKAGE_DIR so xcodebuild finds the SPM package, not the Pods project.
+  #
+  # SYMROOT/OBJROOT are pinned explicitly because Xcode 16+ (seen on 26.x) emits
+  # "Supported platforms for the buildables in the current scheme is empty" for
+  # an auto-generated SwiftPM scheme and then ignores -derivedDataPath when
+  # placing build products — writing them to a default $TMPDIR-derived location
+  # instead. The build still succeeds, but the framework lands outside
+  # DERIVED_DATA_PATH and the "did not produce" check below fails. Pinning
+  # SYMROOT/OBJROOT to the paths this script reads from forces products and the
+  # generated module maps back into DERIVED_DATA_PATH. On Xcode versions that
+  # honor -derivedDataPath these point at the same locations, so it's a no-op.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     xcodebuild \
     build \
@@ -170,6 +180,8 @@ build_slice() {
     -skipPackagePluginValidation \
     -skipMacroValidation \
     -parallelizeTargets \
+    SYMROOT="${BUILD_PRODUCTS_PATH}" \
+    OBJROOT="${DERIVED_DATA_PATH}/Build/Intermediates.noindex" \
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     SKIP_INSTALL=NO \
     DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
