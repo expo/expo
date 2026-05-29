@@ -174,6 +174,25 @@ describe('FetchResponse', () => {
       expect(bytes.byteLength).toBe(11);
     });
 
+    it('does not flip bodyUsed on siblings when a second clone is read', async () => {
+      const response = makeResponse();
+      const second = response.clone();
+      const third = response.clone();
+
+      await third.json().catch(() => {});
+
+      expect(response.bodyUsed).toBe(false);
+      expect(second.bodyUsed).toBe(false);
+      expect(third.bodyUsed).toBe(true);
+    });
+
+    it('lets the original be read after being cloned twice', async () => {
+      const response = makeResponse();
+      response.clone();
+      response.clone();
+      expect((await response.arrayBuffer()).byteLength).toBe(11);
+    });
+
     it('throws a TypeError if the body has already been read', async () => {
       const response = makeResponse();
       await response.arrayBuffer();
