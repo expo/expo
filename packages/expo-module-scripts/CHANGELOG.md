@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `publishConfig.executableFiles` ([#46074](https://github.com/expo/expo/pull/46074) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 56.0.3 — 2026-05-29
+
+### 🐛 Bug fixes
+
+- Add missing `publishConfig.executableFiles` ([#46074](https://github.com/expo/expo/pull/46074) by [@kitten](https://github.com/kitten))
 
 ## 56.0.2 — 2026-05-06
 
