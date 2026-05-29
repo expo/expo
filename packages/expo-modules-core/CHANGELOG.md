@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 - Native view config attributes now carry a `process` function that unwraps shared objects to their registry id, so callers can pass shared objects directly as view props instead of unwrapping them manually. ([#46212](https://github.com/expo/expo/pull/46212) by [@tsapeta](https://github.com/tsapeta))
