@@ -33,6 +33,7 @@ CONFIGURATION="Release"
 DERIVED_DATA_PATH="${PACKAGE_DIR}/.DerivedData"
 SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
 SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
+GENERATED_DIR="${PACKAGE_DIR}/.generated"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
@@ -351,7 +352,7 @@ fi
 # parent `set -eo pipefail` doesn't catch that, the modulemap never gets
 # written, and xcodebuild later fails with `no such module 'jsi'`.
 PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
-GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
+GENERATED_MODULE_MAP="${GENERATED_DIR}/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then
@@ -394,6 +395,17 @@ if [[ ${#platforms_to_build[@]} -eq 0 ]]; then
 fi
 
 PLATFORMS=("${platforms_to_build[@]}")
+
+# Wipe stale intermediates before compiling: DerivedData's module cache, the
+# SwiftPM workspace/.build tree, and the generated modulemap can reference
+# headers or module layouts that no longer match (e.g. after switching branches). 
+# Only runs when a slice needs rebuilding, so the up-to-date fast path is unaffected.
+# Products/ is preserved. build_slice replaces only the slice it rebuilds.
+log "Clearing stale build state (DerivedData, SwiftPM, generated) before rebuild"
+rm -rf "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH" "$GENERATED_DIR"
+
+# Recreate the modulemap we just deleted.
+PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
 
 SECONDS=0
 
