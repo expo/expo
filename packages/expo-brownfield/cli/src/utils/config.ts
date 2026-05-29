@@ -81,7 +81,7 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
  *  1. `--host-provided <names...>` from the CLI flag
  *  2. `ios.brownfieldHostProvidedFrameworks` in `ios/Podfile.properties.json`
  *
- * Inputs are intentionally not merged. This is design for CI smoke tests, and quick repros
+ * Inputs are intentionally not merged. This is designed for CI smoke tests and quick repros.
  */
 const resolveHostProvidedFrameworks = (options: OptionValues): string[] => {
   const fromFlag = parseHostProvidedFlag(options.hostProvided);
