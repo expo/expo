@@ -2,7 +2,7 @@
   "name": "expo-template-default",
   "license": "0BSD",
   "main": "expo-router/entry",
-  "version": "56.0.21",
+  "version": "56.0.22",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@expo/ui": "~56.0.15",
-    "expo": "~56.0.7",
+    "expo": "~56.0.8",
     "expo-constants": "~56.0.16",
     "expo-device": "~56.0.4",
     "expo-font": "~56.0.5",

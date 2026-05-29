@@ -3512,7 +3512,7 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       babel-preset-expo:
-        specifier: workspace:~56.0.13
+        specifier: workspace:~56.0.14
         version: link:../babel-preset-expo
       expo-asset:
         specifier: workspace:~56.0.15
@@ -3760,7 +3760,7 @@ importers:
   packages/expo-background-fetch:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~56.0.15
+        specifier: workspace:~56.0.16
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3776,7 +3776,7 @@ importers:
   packages/expo-background-task:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~56.0.15
+        specifier: workspace:~56.0.16
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3882,7 +3882,7 @@ importers:
         specifier: ^5.2.0
         version: 5.2.2
       expo-build-properties:
-        specifier: workspace:~56.0.15
+        specifier: workspace:~56.0.16
         version: link:../expo-build-properties
       expo-manifests:
         specifier: workspace:~56.0.4
@@ -5063,7 +5063,7 @@ importers:
   packages/expo-observe:
     dependencies:
       expo-app-metrics:
-        specifier: workspace:~56.0.15
+        specifier: workspace:~56.0.16
         version: link:../expo-app-metrics
       expo-eas-client:
         specifier: workspace:~56.0.0

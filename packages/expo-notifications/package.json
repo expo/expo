@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "56.0.14",
+  "version": "56.0.15",
   "description": "Provides an API to fetch push notification tokens and to present, schedule, receive, and respond to notifications.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
