@@ -65,6 +65,9 @@ describe('expo-file-system new API', () => {
     expect(typeof file.writeSync).toBe('function');
     expect(typeof file.json).toBe('function');
     expect(typeof file.formData).toBe('function');
+    expect(typeof file.info).toBe('function');
+    expect(typeof file.infoSync).toBe('function');
+    expect(typeof file.getMd5Async).toBe('function');
   });
 
   it('File.json parses file text', async () => {
