@@ -7,6 +7,8 @@ import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 import java.security.MessageDigest
 
@@ -73,49 +75,55 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
-  fun write(content: String, append: Boolean = false) {
+  suspend fun write(content: String, append: Boolean = false) {
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
-    if (!exists) {
-      create()
-    }
-    file.outputStream(append).use { outputStream ->
-      outputStream.write(content.toByteArray())
-    }
-  }
-
-  fun write(content: TypedArray, append: Boolean = false) {
-    validateType()
-    validatePermission(FilePermissionService.Permission.WRITE)
-    if (!exists) {
-      create()
-    }
-    if (uri.isContentUri) {
-      file.outputStream(append).use { outputStream ->
-        val array = ByteArray(content.length)
-        content.toDirectBuffer().get(array)
-        outputStream.write(array)
+    withContext(Dispatchers.IO) {
+      if (!exists) {
+        create()
       }
-    } else {
-      FileOutputStream(javaFile, append).use {
-        it.channel.write(content.toDirectBuffer())
+      file.outputStream(append).use { outputStream ->
+        outputStream.write(content.toByteArray())
       }
     }
   }
 
-  fun write(content: ByteArray, append: Boolean = false) {
+  suspend fun write(content: TypedArray, append: Boolean = false) {
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
-    if (!exists) {
-      create()
-    }
-    if (uri.isContentUri) {
-      file.outputStream(append).use { outputStream ->
-        outputStream.write(content)
+    withContext(Dispatchers.IO) {
+      if (!exists) {
+        create()
       }
-    } else {
-      FileOutputStream(javaFile, append).use {
-        it.write(content)
+      if (uri.isContentUri) {
+        file.outputStream(append).use { outputStream ->
+          val array = ByteArray(content.length)
+          content.toDirectBuffer().get(array)
+          outputStream.write(array)
+        }
+      } else {
+        FileOutputStream(javaFile, append).use {
+          it.channel.write(content.toDirectBuffer())
+        }
+      }
+    }
+  }
+
+  suspend fun write(content: ByteArray, append: Boolean = false) {
+    validateType()
+    validatePermission(FilePermissionService.Permission.WRITE)
+    withContext(Dispatchers.IO) {
+      if (!exists) {
+        create()
+      }
+      if (uri.isContentUri) {
+        file.outputStream(append).use { outputStream ->
+          outputStream.write(content)
+        }
+      } else {
+        FileOutputStream(javaFile, append).use {
+          it.write(content)
+        }
       }
     }
   }
@@ -125,27 +133,33 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     return if (uriString.endsWith("/")) uriString.dropLast(1) else uriString
   }
 
-  fun text(): String {
+  suspend fun text(): String {
     validateType()
     validatePermission(FilePermissionService.Permission.READ)
-    return file.inputStream().use { inputStream ->
-      inputStream.bufferedReader().use { it.readText() }
+    return withContext(Dispatchers.IO) {
+      file.inputStream().use { inputStream ->
+        inputStream.bufferedReader().use { it.readText() }
+      }
     }
   }
 
-  fun base64(): String {
+  suspend fun base64(): String {
     validateType()
     validatePermission(FilePermissionService.Permission.READ)
-    file.inputStream().use {
-      return Base64.encodeToString(it.readBytes(), Base64.NO_WRAP)
+    return withContext(Dispatchers.IO) {
+      file.inputStream().use {
+        Base64.encodeToString(it.readBytes(), Base64.NO_WRAP)
+      }
     }
   }
 
-  fun bytes(): ByteArray {
+  suspend fun bytes(): ByteArray {
     validateType()
     validatePermission(FilePermissionService.Permission.READ)
-    file.inputStream().use {
-      return it.readBytes()
+    return withContext(Dispatchers.IO) {
+      file.inputStream().use {
+        it.readBytes()
+      }
     }
   }
 

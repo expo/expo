@@ -29,7 +29,7 @@ class FileSystemModule : Module() {
 
   private val downloadStore = DownloadTaskStore()
 
-  private fun writeToFile(
+  private suspend fun writeToFile(
     file: FileSystemFile,
     content: Either<String, TypedArray>,
     options: WriteOptions?
@@ -164,31 +164,39 @@ class FileSystemModule : Module() {
       }
 
       Function("writeSync") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
-        writeToFile(file, content, options)
+        runBlocking {
+          writeToFile(file, content, options)
+        }
       }
 
-      AsyncFunction("text") { file: FileSystemFile ->
+      AsyncFunction("text") Coroutine { file: FileSystemFile ->
         file.text()
       }
 
       Function("textSync") { file: FileSystemFile ->
-        file.text()
+        runBlocking {
+          file.text()
+        }
       }
 
-      AsyncFunction("base64") { file: FileSystemFile ->
+      AsyncFunction("base64") Coroutine { file: FileSystemFile ->
         file.base64()
       }
 
       Function("base64Sync") { file: FileSystemFile ->
-        file.base64()
+        runBlocking {
+          file.base64()
+        }
       }
 
-      AsyncFunction("bytes") { file: FileSystemFile ->
+      AsyncFunction("bytes") Coroutine { file: FileSystemFile ->
         file.bytes()
       }
 
       Function("bytesSync") { file: FileSystemFile ->
-        file.bytes()
+        runBlocking {
+          file.bytes()
+        }
       }
 
       Function("info") { file: FileSystemFile, options: InfoOptions? ->
