@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-// Imported from the compiled output so the plugin/src rootDir is not extended.
 const build_1 = require("../../../../shared/build");
 const withPodfilePropertiesPlugin = (config, pluginConfig) => {
     return (0, config_plugins_1.withPodfileProperties)(config, (config) => {

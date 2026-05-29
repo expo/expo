@@ -9,7 +9,6 @@ const node_path_1 = __importDefault(require("node:path"));
 const android_1 = require("./android");
 const ios_1 = require("./ios");
 const precompiled_1 = require("./precompiled");
-// Imported from the compiled output so the cli/src rootDir is not extended.
 const build_1 = require("../../../shared/build");
 const resolveBuildConfigAndroid = (options) => {
     const variant = resolveVariant(options);
