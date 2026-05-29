@@ -105,12 +105,8 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     picker.fixCannotMoveEditingBox()
 
     if sourceType == .camera {
-#if targetEnvironment(simulator)
-      return pickingContext.promise.reject(CameraUnavailableOnSimulatorException())
-#else
       picker.sourceType = .camera
       picker.cameraDevice = options.cameraType == .front ? .front : .rear
-#endif
     }
 
     if sourceType == .photoLibrary {

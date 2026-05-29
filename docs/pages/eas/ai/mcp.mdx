@@ -86,7 +86,7 @@ Expo MCP Server supports integration with various AI-assisted tools. Use the gen
 
 <Collapsible summary="Claude Code setup">
 
-<Terminal cmd={['$ claude mcp add --transport http expo-mcp https://mcp.expo.dev/mcp']} />
+<Terminal cmd={['$ claude mcp add --transport http expo https://mcp.expo.dev/mcp']} />
 
 After installation, run `/mcp` in your Claude Code session to authenticate.
 
@@ -96,7 +96,7 @@ After installation, run `/mcp` in your Claude Code session to authenticate.
 
 Click the following link to install the MCP server for Cursor:
 
-<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=expo-mcp&config=eyJ1cmwiOiJodHRwczovL21jcC5leHBvLmRldi9tY3AifQ%3D%3D">
+<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=expo&config=eyJ1cmwiOiJodHRwczovL21jcC5leHBvLmRldi9tY3AifQ%3D%3D">
   <img
     src="https://cursor.com/deeplink/mcp-install-light.svg"
     alt="Install MCP Server"
@@ -118,13 +118,13 @@ Click the following link to install the MCP server for Cursor:
 3. Select **HTTP**
 4. Enter the server details:
    - **URL**: `https://mcp.expo.dev/mcp`
-   - **Name**: expo-mcp
+   - **Name**: expo
 
 </Collapsible>
 
 <Collapsible summary="Codex setup">
 
-<Terminal cmd={['$ codex mcp add expo-mcp --url https://mcp.expo.dev/mcp']} />
+<Terminal cmd={['$ codex mcp add expo --url https://mcp.expo.dev/mcp']} />
 
 The above command adds the MCP server to your Codex configuration file and prompts you to authenticate with your Expo account.
 
@@ -218,6 +218,20 @@ The current implementation has the following limitations:
 - Only supports a **single development server** connection at a time
 - iOS support for local capabilities is limited to simulators only (physical devices not yet supported)
 - iOS support for local capabilities is only available on macOS hosts.
+
+## Data privacy
+
+Expo does not use data sent to Expo MCP Server to train AI models. Expo MCP Server does not run an AI model itself. It provides MCP tools and prompts to the AI-assisted tool you connect, such as Claude Code, Cursor, or VS Code.
+
+For server capabilities, Expo MCP Server may access Expo account and project data needed to complete the requested tool call, such as build, workflow, documentation, or TestFlight-related data. The result is returned to your AI-assisted tool over the MCP connection.
+
+For local capabilities, data from your development machine is proxied through Expo MCP Server and returned to your AI-assisted tool. For example, when an AI-assisted tool asks to take a simulator screenshot, the data flow is:
+
+1. The local Expo development server captures the screenshot from your simulator.
+2. The screenshot is sent to Expo MCP Server.
+3. Expo MCP Server returns the screenshot to your local MCP client or AI-assisted tool.
+
+Expo MCP Server returns data to the MCP client you connect, such as Claude Code, Cursor, VS Code, or Codex. From there, the client and its model provider may apply their own retention, zero data retention (ZDR), and training policies. Review those policies before enabling MCP access for projects that handle sensitive data, including HIPAA, SOC 2, or other regulated workloads.
 
 ## Additional resources
 
