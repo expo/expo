@@ -17,7 +17,7 @@ import okio.GzipSink
 import okio.buffer
 import org.junit.Test
 
-class CompressionInterceptorTest {
+class TransparentCompressionInterceptorTest {
   // brotli of "hello world" produced offline with `printf 'hello world' | brotli`.
   // Avoids pulling in a brotli encoder just for this test; the decoder side is what we exercise.
   private val brotliHelloWorld = hexToBytes("0f058068656c6c6f20776f726c6403")
@@ -61,7 +61,7 @@ class CompressionInterceptorTest {
         .build()
     }
 
-    val response = CompressionInterceptor.intercept(chain)
+    val response = TransparentCompressionInterceptor.intercept(chain)
 
     assertThat(response.body!!.string()).isEqualTo(payload)
     assertThat(response.header("Content-Encoding")).isNull()
@@ -76,7 +76,7 @@ class CompressionInterceptorTest {
     val payload = "hello world"
     val response = encodedResponse(payload.toByteArray().gzipCompressed(), "gzip")
 
-    val uncompressed = CompressionInterceptor.uncompress(response)
+    val uncompressed = TransparentCompressionInterceptor.uncompress(response)
 
     assertThat(uncompressed.body!!.string()).isEqualTo(payload)
     assertThat(uncompressed.header("Content-Encoding")).isNull()
@@ -87,7 +87,7 @@ class CompressionInterceptorTest {
   fun `should decompress br response and strip Content-Encoding and Content-Length headers`() {
     val response = encodedResponse(brotliHelloWorld, "br")
 
-    val uncompressed = CompressionInterceptor.uncompress(response)
+    val uncompressed = TransparentCompressionInterceptor.uncompress(response)
 
     assertThat(uncompressed.body!!.string()).isEqualTo("hello world")
     assertThat(uncompressed.header("Content-Encoding")).isNull()
@@ -99,7 +99,7 @@ class CompressionInterceptorTest {
     val payload = "hello world"
     val response = encodedResponse(payload.toByteArray().gzipCompressed(), "GZIP")
 
-    val uncompressed = CompressionInterceptor.uncompress(response)
+    val uncompressed = TransparentCompressionInterceptor.uncompress(response)
 
     assertThat(uncompressed.body!!.string()).isEqualTo(payload)
   }
@@ -114,7 +114,7 @@ class CompressionInterceptorTest {
       .body("plain".toResponseBody("text/plain".toMediaType()))
       .build()
 
-    val result = CompressionInterceptor.uncompress(response)
+    val result = TransparentCompressionInterceptor.uncompress(response)
 
     assertThat(result).isSameInstanceAs(response)
   }
@@ -123,7 +123,7 @@ class CompressionInterceptorTest {
   fun `should leave response unchanged when Content-Encoding is unknown`() {
     val response = encodedResponse("noop".toByteArray(), "lz4")
 
-    val result = CompressionInterceptor.uncompress(response)
+    val result = TransparentCompressionInterceptor.uncompress(response)
 
     assertThat(result).isSameInstanceAs(response)
   }
@@ -137,7 +137,7 @@ class CompressionInterceptorTest {
       .header("Content-Encoding", "gzip")
       .build()
 
-    val result = CompressionInterceptor.uncompress(response)
+    val result = TransparentCompressionInterceptor.uncompress(response)
 
     assertThat(result).isSameInstanceAs(response)
   }
@@ -167,7 +167,7 @@ class CompressionInterceptorTest {
         .build()
     }
 
-    CompressionInterceptor.intercept(chain)
+    TransparentCompressionInterceptor.intercept(chain)
     return captured.captured
   }
 

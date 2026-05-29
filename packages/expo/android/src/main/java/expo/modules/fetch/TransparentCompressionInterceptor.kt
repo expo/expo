@@ -30,11 +30,18 @@ import org.brotli.dec.BrotliInputStream
 /**
  * Transparent compressed response support for Zstandard, Brotli and Gzip.
  *
- * If the caller didn't set `Accept-Encoding`, we add `zstd, br, gzip`. Responses with a recognized
- * `Content-Encoding` are always decoded (and the `Content-Encoding`/`Content-Length` headers
- * stripped), matching browser fetch and iOS `URLSession` behavior.
+ * Adds `Accept-Encoding: zstd, br, gzip` to outgoing requests when the caller has not set the
+ * header, and decompresses (and strips `Content-Encoding`/`Content-Length` from) responses
+ * encoded with any of the three.
+ *
+ * Unlike OkHttp, which disables transparent decompression when `Accept-Encoding` is explicitly set by the caller,
+ * this interceptor continues to decompress responses to match the behavior of the Fetch API, iOS `URLSession`,
+ * and [React Native fetch](https://github.com/facebook/react-native/blob/622941d9dca684ecfc8f5086eb42c8178c3062d1/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/network/NetworkingModule.kt#L656-L691).
+ *
+ * The `Content-Encoding` and `Content-Length` headers are removed after
+ * decompression.
  */
-object CompressionInterceptor : Interceptor {
+object TransparentCompressionInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
 
