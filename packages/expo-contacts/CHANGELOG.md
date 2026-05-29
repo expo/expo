@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Android `Contact.getAllDetails` crashing with a `NullPointerException` when a contact row has an unknown `TYPE` value and no custom `LABEL`. ([#46411](https://github.com/expo/expo/pull/46411) by [@mlecoq](https://github.com/mlecoq))
+
 ### 💡 Others
 
 ## 56.0.7 — 2026-05-21
