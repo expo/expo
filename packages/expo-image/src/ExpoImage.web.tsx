@@ -87,6 +87,13 @@ export default function ExpoImage({
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
+  // The `static` policy relies on `sizes="auto"`, which only takes effect on
+  // lazily-loaded images, so it defaults to `loading="lazy"`. Authors can opt
+  // out by passing `loading="eager"` explicitly. Other policies are unaffected
+  // and keep the browser default (eager).
+  const resolvedLoading =
+    loading ?? ((responsivePolicy ?? 'static') === 'static' ? 'lazy' : undefined);
+
   const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
@@ -121,7 +128,7 @@ export default function ExpoImage({
               accessibilityLabel={accessibilityLabel ?? alt}
               cachePolicy={cachePolicy}
               priority={priority}
-              loading={loading}
+              loading={resolvedLoading}
               tintColor={tintColor}
               draggable={draggable}
             />
@@ -154,7 +161,7 @@ export default function ExpoImage({
           className={className}
           cachePolicy={cachePolicy}
           priority={priority}
-          loading={loading}
+          loading={resolvedLoading}
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
           hashPlaceholderStyle={imageHashStyle}

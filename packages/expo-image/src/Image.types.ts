@@ -64,6 +64,12 @@ export type ImageSource = {
    * Has no effect if `source` prop is not an array or has only 1 element.
    * Has no effect if `responsivePolicy` is not set to `static`.
    * Ignored if `blurhash` or `thumbhash` is provided (image hashes are never selected if passed in an array).
+   *
+   * @deprecated With the `static` responsive policy, source selection now relies on the
+   * `sizes="auto"` attribute, which lets the browser pick the best source from the rendered
+   * layout size. `webMaxViewportWidth` is now only used to build the `sizes` fallback for
+   * browsers that don't yet support `sizes="auto"`, and will be removed once support is
+   * widespread. New code can omit it.
    * @platform web
    */
   webMaxViewportWidth?: number;
@@ -227,7 +233,12 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * - `'lazy'` - Defers loading until the image is near the viewport.
    * - `'eager'` - Loads the image immediately.
    *
-   * @default 'eager'
+   * Defaults to `'lazy'` when `responsivePolicy` is `'static'` (the default policy), because the
+   * `sizes="auto"` source selection used by `static` only takes effect on lazily-loaded images.
+   * Pass `'eager'` to opt out (note that `sizes="auto"` is then ignored and the `sizes` fallback
+   * is used instead). Defaults to the browser's behavior (eager) for the other responsive policies.
+   *
+   * @default 'lazy' (when `responsivePolicy` is `'static'`), otherwise `'eager'`
    * @platform web
    */
   loading?: 'lazy' | 'eager';
@@ -251,10 +262,11 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   /**
    * Controls the selection of the image source based on the container or viewport size on the web.
    *
-   * If set to `'static'`, the browser selects the correct source based on user's viewport width. Works with static rendering.
-   * Make sure to set the `'webMaxViewportWidth'` property on each source for best results.
-   * For example, if an image occupies 1/3 of the screen width, set the `'webMaxViewportWidth'` to 3x the image width.
-   * The source with the largest `'webMaxViewportWidth'` is used even for larger viewports.
+   * If set to `'static'`, the source is selected by the browser from a generated `srcset`/`sizes` pair. Works with static rendering.
+   * The generated `sizes` leads with the `auto` keyword, so supporting browsers select the source from the image's rendered layout size.
+   * This requires the image to be lazily loaded, which is why `static` defaults `loading` to `'lazy'` (pass `loading="eager"` to opt out,
+   * in which case `sizes="auto"` is ignored). For browsers that don't yet support `sizes="auto"`, `sizes` falls back to any per-source
+   * breakpoints (only emitted for sources that set the deprecated `webMaxViewportWidth`) and finally to `100vw`.
    *
    * If set to `'initial'`, the component will select the correct source during mount based on container size. Does not work with static rendering.
    *
