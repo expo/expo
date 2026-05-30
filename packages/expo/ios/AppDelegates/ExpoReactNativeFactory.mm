@@ -28,6 +28,14 @@
 
 #pragma mark - RCTHostDelegate
 
+#if TARGET_OS_OSX
+// TODO: remove when bumping react-native-macos to 0.85
+- (void)hostDidStart:(nonnull RCTHost *)host
+{
+  host.runtimeDelegate = self;
+}
+#endif
+
 // [JS thread]
 - (void)host:(nonnull RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
