@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- replace SharedRef with SharedRefType ([#46151](https://github.com/expo/expo/pull/46151) by [@Ubax](https://github.com/Ubax))
-
 ### 💡 Others
+
+## 56.2.7 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- replace SharedRef with SharedRefType ([#46151](https://github.com/expo/expo/pull/46151) by [@Ubax](https://github.com/Ubax))
 
 ## 56.2.6 — 2026-05-23
 

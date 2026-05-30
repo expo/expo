@@ -46,7 +46,7 @@ export const getStatusAsync = async () => {
  * import * as TaskManager from 'expo-task-manager';
  *
  * // Register the task outside of the component
- * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, () => {
+ * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
  *   try {
  *     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
  *   } catch (error) {

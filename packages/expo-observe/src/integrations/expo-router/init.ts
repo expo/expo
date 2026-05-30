@@ -1,5 +1,6 @@
 import AppMetrics from 'expo-app-metrics';
 
+import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
 import { type RouterIntegrationStorage } from './storage';
@@ -51,62 +52,78 @@ export function initListeners(
     // happens to run after the awaited `getMainSession()` round-trip.
     const now = performance.now();
     const timestamp = new Date().toISOString();
+
+    // Snapshot BEFORE seeding dispatchTime below so the deferred-TTI check
+    // sees the pre-focus state of this screen. A pending interactive means
+    // `markInteractive` ran before this focus landed.
+    const existingFocusedScreenTimes = storage.screenTimes[e.screenId];
+    const hasPendingInteractive =
+      existingFocusedScreenTimes?.lastInteractiveCall != null &&
+      existingFocusedScreenTimes?.dispatchTime == null;
+
     const isInitial = !storage.renderedScreensIds.has(e.screenId);
     storage.renderedScreensIds.add(e.screenId);
     const name = isInitial ? 'cold_ttr' : 'warm_ttr';
-    const mainSessionId = (await AppMetrics.getMainSession())?.id;
-    if (!mainSessionId) {
-      return;
-    }
-
     const routePattern = buildRoutePattern(e.segments);
 
+    // Resolve which clock anchors the TTR span. Initial focus diffs against
+    // app launch; subsequent focuses diff against the last dispatched action.
+    let dispatchTime: number;
+    let isAppLaunch: boolean;
     if (!storage.hasRecordedInitialTtr) {
-      // Stored in seconds to match the OTel `unit = "s"` convention
-      const appLaunchTtrSeconds = (now - appLaunchTime) / 1000;
       storage.hasRecordedInitialTtr = true;
-      // Seed dispatchTime so a later markInteractive on the initial screen can
-      // diff against app launch — symmetric with the navigated-focus branch
-      // below, which seeds dispatchTime from the last pending action.
-      storage.screenTimes[e.screenId] = {
-        ...storage.screenTimes[e.screenId],
-        dispatchTime: appLaunchTime,
-        isAppLaunch: true,
-      };
-      AppMetrics.addCustomMetricToSession({
-        sessionId: mainSessionId,
-        timestamp,
-        category: 'navigation',
-        name,
-        routeName: routePattern,
-        value: appLaunchTtrSeconds,
-        params: { isAppLaunch: true, routeParams: e.params, url: e.pathname },
-      });
-      return;
+      dispatchTime = appLaunchTime;
+      isAppLaunch = true;
+    } else {
+      const last = storage.pendingActions[storage.pendingActions.length - 1];
+      if (!last) return;
+      dispatchTime = last.dispatchTime;
+      isAppLaunch = false;
+      storage.pendingActions.length = 0;
     }
 
-    if (storage.pendingActions.length === 0) return;
+    // Stored in seconds to match the OTel `unit = "s"` convention
+    const ttrSeconds = (now - dispatchTime) / 1000;
 
-    const last = storage.pendingActions[storage.pendingActions.length - 1];
-    if (last) {
-      const dispatchTime = last.dispatchTime;
-      storage.screenTimes[e.screenId] = {
-        ...storage.screenTimes[e.screenId],
-        dispatchTime,
-        isAppLaunch: false,
-      };
+    // Write all storage updates BEFORE awaiting anything so a concurrent
+    // markInteractive sees the seeded dispatchTime and emits its own TTI
+    // instead of racing the deferred-TTI branch below.
+    storage.screenTimes[e.screenId] = {
+      ...storage.screenTimes[e.screenId],
+      dispatchTime,
+      isAppLaunch,
+      ...(hasPendingInteractive ? { lastInteractiveCall: now } : {}),
+    };
+    if (hasPendingInteractive) {
+      // `markInteractive` ran before this focus, so emit TTI = TTR — the
+      // screen wasn't interactive any earlier than it was focused.
+      storage.interactiveScreensIds.add(e.screenId);
+    }
 
-      AppMetrics.addCustomMetricToSession({
+    // All async work happens after storage is updated.
+    const mainSessionId = (await AppMetrics.getMainSession())?.id;
+    if (!mainSessionId) return;
+
+    AppMetrics.addCustomMetricToSession({
+      sessionId: mainSessionId,
+      timestamp,
+      category: 'navigation',
+      name,
+      routeName: routePattern,
+      value: ttrSeconds,
+      params: { isAppLaunch, routeParams: e.params, url: e.pathname },
+    });
+    if (hasPendingInteractive) {
+      await emitTTI({
         sessionId: mainSessionId,
         timestamp,
-        category: 'navigation',
-        name,
         routeName: routePattern,
-        value: (now - dispatchTime) / 1000,
-        params: { isAppLaunch: false, routeParams: e.params, url: e.pathname },
+        value: ttrSeconds,
+        isAppLaunch,
+        routeParams: e.params,
+        url: e.pathname,
       });
     }
-    storage.pendingActions.length = 0;
   });
   cleanup.add(unsubscribeFocus);
 

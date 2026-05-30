@@ -610,6 +610,20 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<NavigationBarProps>("NavigationBarView") {
+      Content { props ->
+        NavigationBarContent(props)
+      }
+    }
+
+    ExpoUIView<NavigationBarItemProps>("NavigationBarItemView") {
+      val onButtonPressed by Event<Unit>()
+
+      Content { props ->
+        NavigationBarItemContent(props) { onButtonPressed(Unit) }
+      }
+    }
+
     ExpoUIView<SpacerProps>("SpacerView") {
       Content { props ->
         SpacerContent(props)

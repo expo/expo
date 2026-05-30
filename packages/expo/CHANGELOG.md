@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- Decompress `gzip` / `br` / `zstd` `expo/fetch` responses on Android even when the caller sets their own `Accept-Encoding` header. ([#46398](https://github.com/expo/expo/pull/46398) by [@zoontek](https://github.com/zoontek))
+- Fix `bodyUsed` leaking across siblings when fetch Response is cloned twice ([#46397](https://github.com/expo/expo/pull/46397) by [@zoontek](https://github.com/zoontek))
+- Prevent fatal `The stream is not in a state that permits close` in `expo/fetch` when native delivers `didComplete`/`didFailWithError` after the consumer has already canceled the body stream. ([#44909](https://github.com/expo/expo/pull/44909) by [@safaiyeh](https://github.com/safaiyeh))
+
+### 💡 Others
+
+## 56.0.5 — 2026-05-26
+
 ### 💡 Others
 
 - [fetch] Refine **CompressionInterceptor.kt** code. ([#46052](https://github.com/expo/expo/pull/46052) by [@kudo](https://github.com/kudo))

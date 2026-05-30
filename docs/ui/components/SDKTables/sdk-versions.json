@@ -7,7 +7,7 @@
       "targetSdkVersion": "36",
       "buildToolsVersion": "36.0.0",
       "ios": "16.4+",
-      "xcode": "26.2+",
+      "xcode": "26.4+",
       "react-native": "0.85",
       "react-native-web": "0.21.0",
       "react-native-tvos": "0.85-stable",

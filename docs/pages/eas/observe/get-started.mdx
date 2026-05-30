@@ -15,10 +15,6 @@ EAS Observe tracks your app's startup performance in production. This guide walk
 ## Prerequisites
 
 <Prerequisites>
-  <Requirement title="Access to the EAS Observe preview">
-    EAS Observe is in Private Preview and access is granted on request. [Request access
-    here](https://expo.dev/changelog/introducing-expo-observe).
-  </Requirement>
   <Requirement title="An Expo user account">
     EAS Observe is available to anyone with an Expo account. You can sign up at
     [expo.dev/signup](https://expo.dev/signup).
@@ -51,21 +47,6 @@ Wrap your root layout with `AppMetricsRoot` (SDK 55) or `ObserveRoot` (SDK 56 an
 
 <Tabs>
 
-<Tab label="SDK 55">
-
-```tsx app/_layout.tsx
-import { Stack } from 'expo-router';
-import { AppMetricsRoot } from 'expo-observe';
-
-function RootLayout() {
-  return <Stack />;
-}
-
-export default AppMetricsRoot.wrap(RootLayout);
-```
-
-</Tab>
-
 <Tab label="SDK 56 and later">
 
 ```tsx app/_layout.tsx
@@ -77,6 +58,21 @@ function RootLayout() {
 }
 
 export default ObserveRoot.wrap(RootLayout);
+```
+
+</Tab>
+
+<Tab label="SDK 55">
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import { AppMetricsRoot } from 'expo-observe';
+
+function RootLayout() {
+  return <Stack />;
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
 ```
 
 </Tab>
@@ -97,54 +93,6 @@ Call `markInteractive()` when your app is fully ready for user interaction. This
 - Animating the splash screen
 
 <Tabs>
-
-<Tab label="SDK 55">
-
-```tsx app/_layout.tsx
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { AppMetrics, AppMetricsRoot } from 'expo-observe';
-import { useEffect, useState } from 'react';
-
-// Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync();
-
-function RootLayout() {
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await authenticateUser();
-        await fetchInitialData();
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setIsReady(true);
-      }
-    }
-
-    prepare();
-  }, []);
-
-  useEffect(() => {
-    if (isReady) {
-      SplashScreen.hide();
-      AppMetrics.markInteractive();
-    }
-  }, [isReady]);
-
-  if (!isReady) {
-    return null;
-  }
-
-  return <Stack />;
-}
-
-export default AppMetricsRoot.wrap(RootLayout);
-```
-
-</Tab>
 
 <Tab label="SDK 56">
 
@@ -195,6 +143,54 @@ export default ObserveRoot.wrap(RootLayout);
 
 </Tab>
 
+<Tab label="SDK 55">
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { AppMetrics, AppMetricsRoot } from 'expo-observe';
+import { useEffect, useState } from 'react';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
+function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await authenticateUser();
+        await fetchInitialData();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if (isReady) {
+      SplashScreen.hide();
+      AppMetrics.markInteractive();
+    }
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+
+  return <Stack />;
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
+```
+
+</Tab>
+
 </Tabs>
 
 > **info** `markInteractive()` can safely be called multiple times per session, but only the first call records the measurement. If your app has multiple entry screens (for example, an onboarding flow, login flow, or deep link targets), call `markInteractive` on **every one of these screens**. If you only place it on one screen, [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive) will not be recorded when the app opens via a deep link to a different screen.
@@ -224,8 +220,9 @@ For details on filtering, release comparison, and session investigation, see the
 You can also query metrics from the terminal using the EAS CLI:
 
 - `eas observe:versions`: Lists app versions along with their build IDs, update group IDs, and release dates. Useful for finding the version identifiers needed to filter the other commands.
-- `eas observe:metrics`: Shows aggregated performance metrics (such as median, p75, and p95 values) grouped by app version. Use this to compare overall startup performance across releases.
-- `eas observe:events`: Shows individual performance events ordered by metric value, including session and device metadata. Use this to investigate specific slow sessions or outliers.
+- `eas observe:metrics-summary`: Shows aggregated performance metric statistics (such as median, p75, and p95 values) grouped by app version. Use this to compare overall startup performance across releases.
+- `eas observe:metrics`: Shows individual performance metric events ordered by value, including session and device metadata. Use this to investigate specific slow sessions or outliers.
+- `eas observe:events`: Shows individual events emitted by your app via `Observe.logEvent`. See [User-defined events](/eas/observe/events/) for details.
 
 Run any of these commands with `--help` to see the available flags and arguments.
 

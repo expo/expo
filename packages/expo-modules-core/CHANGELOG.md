@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
-- [Android] Create Compose props without View. ([#46256](https://github.com/expo/expo/pull/46256) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
+
+- [android] Fix nested `Host` double-composing children. ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong))
+
+### 💡 Others
+
+- Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.13 — 2026-05-26
+
+### 🎉 New features
+
+- [Android] Create Compose props without View. ([#46256](https://github.com/expo/expo/pull/46256) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

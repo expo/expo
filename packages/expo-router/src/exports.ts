@@ -88,3 +88,26 @@ export type {
   ExperimentalStackNavigationProp,
   ExperimentalStackScreenProps,
 } from './layouts/experimental-stack';
+
+// Copied from packages/expo-router/src/react-navigation/native-stack/index.tsx
+// Keep in sync
+export type {
+  NativeStackHeaderBackProps,
+  NativeStackHeaderItem,
+  NativeStackHeaderItemButton,
+  NativeStackHeaderItemCustom,
+  NativeStackHeaderItemMenu,
+  NativeStackHeaderItemMenuAction,
+  NativeStackHeaderItemMenuSubmenu,
+  NativeStackHeaderItemProps,
+  NativeStackHeaderItemSpacing,
+  NativeStackHeaderLeftProps,
+  NativeStackHeaderProps,
+  NativeStackHeaderRightProps,
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+  NativeStackNavigationProp,
+  NativeStackNavigatorProps,
+  NativeStackOptionsArgs,
+  NativeStackScreenProps,
+} from './react-navigation/native-stack';

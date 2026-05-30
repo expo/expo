@@ -20,17 +20,25 @@ interface ResponseMetadata {
 
 const stateKey = Symbol('FetchResponse.state');
 
+interface ConsumptionWrapper {
+  stream: ReadableStream<Uint8Array<ArrayBuffer>>;
+  // Stops the wrapper from marking its body as consumed. Called by clone()
+  // when reads start coming through tee internals instead of from the user.
+  detach: () => void;
+}
+
 function wrapWithConsumption(
   source: ReadableStream<Uint8Array<ArrayBuffer>>,
   body: Body
-): ReadableStream<Uint8Array<ArrayBuffer>> {
+): ConsumptionWrapper {
   const reader = source.getReader();
   let markedConsumed = false;
+  let markedDetached = false;
 
-  return new ReadableStream(
+  const stream = new ReadableStream(
     {
       async pull(controller) {
-        if (!markedConsumed) {
+        if (!markedConsumed && !markedDetached) {
           markedConsumed = true;
           body.consumed = true;
         }
@@ -50,7 +58,7 @@ function wrapWithConsumption(
         }
       },
       cancel(reason) {
-        if (!markedConsumed) {
+        if (!markedConsumed && !markedDetached) {
           markedConsumed = true;
           body.consumed = true;
         }
@@ -67,6 +75,13 @@ function wrapWithConsumption(
       highWaterMark: 0,
     }
   );
+
+  return {
+    stream,
+    detach: () => {
+      markedDetached = true;
+    },
+  };
 }
 
 // JS-side body state. Held behind the stateKey symbol slot.
@@ -75,6 +90,10 @@ class Body {
   stream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
   cloned: boolean;
   consumed = false;
+
+  // Detach fn for the wrapper currently held in `stream`. Null until the
+  // first clone wraps the native stream.
+  detach: (() => void) | null = null;
 
   constructor({ cloned }: { cloned: boolean }) {
     this.cloned = cloned;
@@ -196,13 +215,19 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
             });
 
             this.addListener('didComplete', () => {
-              controller.close();
+              if (isControllerClosed) {
+                return;
+              }
               isControllerClosed = true;
+              controller.close();
             });
 
             this.addListener('didFailWithError', (error: string) => {
-              controller.error(new Error(error));
+              if (isControllerClosed) {
+                return;
+              }
               isControllerClosed = true;
+              controller.error(new Error(error));
             });
           },
 
@@ -358,9 +383,19 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     // Tee so both responses can be read independently. Each branch is wrapped
     // so the first read flips the right consumed flag (otherwise bodyUsed lies).
     if (this.body != null) {
+      // Detach the existing wrapper so reads via the new tee don't flip
+      // this body's consumed flag through it.
+      state.body.detach?.();
+
       const [stream1, stream2] = this.body.tee();
-      state.body.stream = wrapWithConsumption(stream1, state.body);
-      cloneState.body.stream = wrapWithConsumption(stream2, cloneState.body);
+      const own = wrapWithConsumption(stream1, state.body);
+      const sibling = wrapWithConsumption(stream2, cloneState.body);
+
+      state.body.stream = own.stream;
+      state.body.detach = own.detach;
+
+      cloneState.body.stream = sibling.stream;
+      cloneState.body.detach = sibling.detach;
     }
 
     state.body.cloned = true;

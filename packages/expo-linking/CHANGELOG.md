@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Added `Linking.clearInitialURL()` to reset the cached deep-link URL. ([#46265](https://github.com/expo/expo/pull/46265) by @gabrieldonadel)
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.12 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.11 — 2026-05-21
 

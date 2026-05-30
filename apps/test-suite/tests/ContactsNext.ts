@@ -120,7 +120,7 @@ export async function test(t) {
       const url = 'https://picsum.photos/200';
       const response = await fetch(url);
       const src = new File(Paths.cache, 'file.pdf');
-      src.write(await response.bytes());
+      await src.write(await response.bytes());
       const contactDetails = {
         givenName: 'Image',
         familyName: 'User',
@@ -960,7 +960,7 @@ export async function test(t) {
       const url = 'https://picsum.photos/200';
       const response = await fetch(url);
       const src = new File(Paths.cache, 'file.pdf');
-      src.write(await response.bytes());
+      await src.write(await response.bytes());
       await contact.setImage(src.uri);
       const retrievedImage = await contact.getImage();
       const retrievedThumbnail = await contact.getThumbnail();
