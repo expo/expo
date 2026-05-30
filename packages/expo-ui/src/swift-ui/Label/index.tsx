@@ -24,6 +24,12 @@ export type LabelProps = {
   icon?: React.ReactNode;
 
   /**
+   * Custom title view. Accepts any React node (e.g. a VStack with title and subtitle).
+   * When provided, this takes precedence over `title`.
+   */
+  children?: React.ReactNode;
+
+  /**
    * The color of the label icon.
    * @deprecated Use `foregroundStyle` modifier instead.
    */
@@ -40,12 +46,13 @@ const LabelNativeView: React.ComponentType<LabelProps & { children?: React.React
  * @returns {JSX.Element} The rendered native Label component.
  */
 export function Label(props: LabelProps) {
-  const { modifiers, icon, ...restProps } = props;
+  const { modifiers, icon, children, ...restProps } = props;
   return (
     <LabelNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
+      {children && <Slot name="title">{children}</Slot>}
       {icon && <Slot name="icon">{icon}</Slot>}
     </LabelNativeView>
   );
