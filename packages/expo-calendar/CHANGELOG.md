@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+- Add `@platform ios` JSDoc annotations to iOS-exclusive APIs: `ExpoCalendarReminder` class, `listReminders()`, `createReminder()`, `requestRemindersPermissions`, `getRemindersPermissions`, `useRemindersPermissions`, and `AddEventWithFormOptions.url`.
+
+## 56.0.9 — 2026-05-29
+
+### 💡 Others
+
+- Add `@platform ios` JSDoc annotations to iOS-exclusive APIs: `ExpoCalendarReminder` class, `listReminders()`, `createReminder()`, `requestRemindersPermissions`, `getRemindersPermissions`, `useRemindersPermissions`, and `AddEventWithFormOptions.url`.
+
 ## 56.0.8 — 2026-05-21
 
 ### 🐛 Bug fixes
