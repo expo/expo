@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [iOS] Added `luminanceToAlpha` modifier. ([#43417](https://github.com/expo/expo/pull/43417) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
@@ -16,12 +18,16 @@
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [iOS] Added `ConfirmationDialog` component. ([#43366](https://github.com/expo/expo/pull/43366) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `monospacedDigit` modifier. ([#43328](https://github.com/expo/expo/pull/43328) by [@axeelz](https://github.com/axeelz))
 
 ## 55.0.0-preview.7 — 2026-02-20
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [iOS] Added per-axis `scaleEffect` support (`{ x, y }`) to view modifiers. ([#43228](https://github.com/expo/expo/pull/43228) by [@ramonclaudio](https://github.com/ramonclaudio))
 
@@ -32,6 +38,8 @@
 ## 55.0.0-preview.6 — 2026-02-16
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [iOS] - Support `Section` `footer` prop with `title` prop. ([#42966](https://github.com/expo/expo/pull/42966) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `contentTransition` modifier. ([#42980](https://github.com/expo/expo/pull/42980) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -73,6 +81,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [iOS] Add Markdown support to the Text component. ([#42448](https://github.com/expo/expo/pull/42448) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
 
 ## 55.0.0-beta.1 — 2026-01-22
@@ -103,6 +113,8 @@ _This version does not introduce any user-facing changes._
 - [iOS] Remove `editModeEnabled` prop from `List`. Use `environment` modifier instead. Add `ForEach` component with `onDelete` and `onMove` support. Add `selection` prop to `List`. Add `environment`, `moveDisabled` and `deleteDisabled` modifiers ([#42011](https://github.com/expo/expo/pull/42011) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [iOS] - Add range and custom label support in `DatePicker` ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `matchContents` support to `Host`. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
@@ -137,6 +149,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [iOS] Add numeric x-axis support to Chart component ([#41236](https://github.com/expo/expo/pull/41236) by [@dileepapeiris](https://github.com/dileepapeiris))
 - [iOS] Add `listRowSeparator` modifier. ([#41372](https://github.com/expo/expo/pull/41372) by [@kfirfitousi](https://github.com/kfirfitousi))
 - [android] Add new modifiers. ([#41234](https://github.com/expo/expo/pull/41234) by [@aleqsio](https://github.com/aleqsio))
@@ -164,6 +178,8 @@ _This version does not introduce any user-facing changes._
 - [Android] Move all `jetpack-compose-primitives` components to `jetpack-compose` namespace. ([#40272](https://github.com/expo/expo/pull/40272) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [iOS] Add `refreshable` modifier. ([#40201](https://github.com/expo/expo/pull/40201) by [@christianwooldridge](https://github.com/christianwooldridge))
 - [iOS] Add RTL support in swiftui. ([#40335](https://github.com/expo/expo/pull/40335) by [@kfirfitousi](https://github.com/kfirfitousi))
@@ -209,6 +225,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [iOS] Adds `controlSize` prop to Button([#40030](https://github.com/expo/expo/pull/40030) by [@betomoedano](https://github.com/betomoedano))
 - [iOS] Add Divider component. ([#40283](https://github.com/expo/expo/pull/40283) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
@@ -225,6 +243,8 @@ _This version does not introduce any user-facing changes._
 ## 0.2.0-beta.5 - 2025-10-01
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [iOS] Add `variableValue` prop to Image component for SF Symbols with variable color support ([#39852](https://github.com/expo/expo/pull/39852) by [@morellodev](https://github.com/morellodev))
 - [iOS] Adds `Rectangle`, `RoundedRectangle`, `UnevenRoundedRectangle`, `Circle`, `Ellipse`, `Capsule` shape components and `fill` modifier ([#39793](https://github.com/expo/expo/pull/39793) by [@nishan](https://github.com/intergalacticspacehighway)) ([#39793](https://github.com/expo/expo/pull/39793) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
@@ -254,6 +274,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [iOS] Add `LabeledContent` view ([#39463](https://github.com/expo/expo/pull/39617) by [@betomoedano](https://github.com/betomoedano))
 - [iOS] Add `fixedSize` modifier. ([#39734](https://github.com/expo/expo/pull/39734) by [@nishan](https://github.com/intergalacticspacehighway))
 
@@ -278,6 +300,8 @@ _This version does not introduce any user-facing changes._
 ## 0.2.0-beta.0 — 2025-09-10
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [iOS] Add `foregroundStyle` modifier, deprecated `foregroundColor` ([#39183](https://github.com/expo/expo/pull/39183) by [@hirbod](https://github.com/hirbod))
 - [iOS] Add `matchedGeometryEffect` modifier and `ZStack` ([#39463](https://github.com/expo/expo/pull/39463) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -309,6 +333,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [iOS] Add `animation` modifier. ([#38954](https://github.com/expo/expo/pull/38954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add `GlassEffectContainer`, `glassEffectId` and `Namespaces` support. ([#39070](https://github.com/expo/expo/pull/39070) by [@nishan](https://github.com/intergalacticspacehighway))
 
@@ -336,6 +362,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [Android] Add compose modifier support. ([#38630](https://github.com/expo/expo/pull/38630) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Add `glassEffect` modifier. ([#38876](https://github.com/expo/expo/pull/38876) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Add Chip component for Android. ([#39094](https://github.com/expo/expo/pull/39094) by [@hryhoriiK97](https://github.com/hryhoriiK97))
@@ -343,6 +371,8 @@ _This version does not introduce any user-facing changes._
 ## 0.2.0-alpha.0 — 2025-08-13
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [Android] Add ref functions for setting text in swiftui textinputs. ([#38276](https://github.com/expo/expo/pull/38276) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Add ref functions for setting text in swiftui textinputs. ([#38276](https://github.com/expo/expo/pull/38276) by [@aleqsio](https://github.com/aleqsio))
@@ -380,11 +410,15 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - Allowed custom children in SwiftUI Button. ([#37136](https://github.com/expo/expo/pull/37136) by [@kudo](https://github.com/kudo))
 
 ## 0.1.1-alpha.8 - 2025-06-04
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [android] Add shape component. ([#36964](https://github.com/expo/expo/pull/36964) by [@aleqsio](https://github.com/aleqsio))
 
@@ -411,6 +445,8 @@ _This version does not introduce any user-facing changes._
 ## 0.1.1-alpha.4 — 2025-04-23
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - Added `matchContents` to SwiftUI.Host. ([#36312](https://github.com/expo/expo/pull/36312) by [@kudo](https://github.com/kudo))
 
@@ -444,6 +480,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+
 - [iOS] Add bottom sheet. ([#35455](https://github.com/expo/expo/pull/35455) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Add support for `pallete` and `inline` pickers. ([#35435](https://github.com/expo/expo/pull/35435) by [@aleqsio](https://github.com/aleqsio))
 - Add TextInput for Android. ([#35228](https://github.com/expo/expo/pull/35228) by [@aleqsio](https://github.com/aleqsio))
@@ -473,6 +511,8 @@ _This version does not introduce any user-facing changes._
 ## 0.0.2 — 2025-02-11
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - Add `systemImage` prop to Android `Button` component. ([#34862](https://github.com/expo/expo/pull/34862) by [@andrew-levy](https://github.com/andrew-levy))
 - Add `UnwrappedChildren` for nested SwiftUI views. ([#34954](https://github.com/expo/expo/pull/34954) by [@andrew-levy](https://github.com/andrew-levy))
@@ -504,5 +544,7 @@ _This version does not introduce any user-facing changes._
 ## 0.0.0 — 2025-01-21
 
 ### 🎉 New features
+
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
 
 - [iOS] Add Picker component ([#34198](https://github.com/expo/expo/pull/34198) by [@aleqsio](https://github.com/aleqsio))
