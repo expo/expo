@@ -63,10 +63,22 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
  */
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     async update(details) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendarReminder', 'update');
+        }
         const nullableDetailsFields = getNullableDetailsFields(details);
         await super.update(stringifyDateValues(details), nullableDetailsFields);
     }
+    async delete() {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendarReminder', 'delete');
+        }
+        await super.delete();
+    }
     static async get(reminderId) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendarReminder', 'get');
+        }
         const reminder = await InternalExpoCalendar.getReminderById(reminderId);
         Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
         return reminder;
@@ -85,6 +97,9 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         return newEvent;
     }
     async createReminder(details) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendar', 'createReminder');
+        }
         const newReminder = await super.createReminder(stringifyDateValues(details));
         Object.setPrototypeOf(newReminder, ExpoCalendarReminder.prototype);
         return newReminder;
@@ -103,6 +118,9 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         });
     }
     async listReminders(startDate = null, endDate = null, status = null) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendar', 'listReminders');
+        }
         const reminders = await super.listReminders(startDate ? stringifyIfDate(startDate) : null, endDate ? stringifyIfDate(endDate) : null, status);
         return reminders.map((reminder) => {
             Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
@@ -217,13 +235,25 @@ export const getCalendarPermissions = InternalExpoCalendar.getCalendarPermission
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
  */
-export const requestRemindersPermissions = InternalExpoCalendar.requestRemindersPermissions;
+export async function requestRemindersPermissions() {
+    if (Platform.OS !== 'ios') {
+        throw new UnavailabilityError('Calendar', 'requestRemindersPermissions');
+    }
+    return InternalExpoCalendar.requestRemindersPermissions();
+}
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
  */
-export const getRemindersPermissions = InternalExpoCalendar.getRemindersPermissions;
+export async function getRemindersPermissions() {
+    if (Platform.OS !== 'ios') {
+        throw new UnavailabilityError('Calendar', 'getRemindersPermissions');
+    }
+    return InternalExpoCalendar.getRemindersPermissions();
+}
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
@@ -255,10 +285,16 @@ export const useCalendarPermissions = createPermissionHook({
  * ```ts
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
+ * @platform ios
  */
-export const useRemindersPermissions = createPermissionHook({
-    getMethod: getRemindersPermissions,
-    requestMethod: requestRemindersPermissions,
-});
+export function useRemindersPermissions() {
+    if (Platform.OS !== 'ios') {
+        throw new UnavailabilityError('Calendar', 'useRemindersPermissions');
+    }
+    return createPermissionHook({
+        getMethod: getRemindersPermissions,
+        requestMethod: requestRemindersPermissions,
+    })();
+}
 export * from './legacyWarnings';
 //# sourceMappingURL=Calendar.js.map
