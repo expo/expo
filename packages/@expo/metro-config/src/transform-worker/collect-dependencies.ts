@@ -316,10 +316,12 @@ function collectDependencies<TAst extends t.File>(
           return;
         }
 
-        if (name != null && state.dependencyCalls.has(name) && !path.scope.getBinding(name)) {
-          processRequireCall(path, state);
-
-          visited.add(path.node);
+        if (name != null && state.dependencyCalls.has(name)) {
+          const binding = path.scope.getBinding(name);
+          if (!binding || isRequireFactoryBinding(binding)) {
+            processRequireCall(path, state);
+            visited.add(path.node);
+          }
         }
       },
 
@@ -679,6 +681,16 @@ function warnDynamicRequire({ node }: NodePath<t.CallExpression>, message = '') 
   console.warn(
     `Dynamic import at line ${line || '<unknown>'}: ${generate(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim()
   );
+}
+
+
+function isRequireFactoryBinding(binding: { path: NodePath<any> }): boolean {
+  const bindingPath = binding.path;
+  if (!bindingPath.isVariableDeclarator()) {
+    return false;
+  }
+  const init = bindingPath.get('init');
+  return init.isCallExpression();
 }
 
 function processRequireCall(path: NodePath<t.CallExpression>, state: State): void {

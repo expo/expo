@@ -1405,6 +1405,57 @@ it('ignores require functions defined defined by lower scopes', () => {
   );
 });
 
+it('collects dependencies from createRequire-bound require calls', () => {
+  const ast = astFromCode(`
+    import { createRequire } from 'node:module';
+    const require = createRequire(import.meta.url);
+    const version = require('../package.json').version;
+    const otherDep = require('some-module');
+  `);
+  const { dependencies, dependencyMapName } = collectDependencies(ast, {
+    ...opts,
+    dynamicRequires: 'warn',
+  });
+  expect(dependencies).toEqual([
+    { name: 'node:module', data: objectContaining({ asyncType: null }) },
+    { name: '../package.json', data: objectContaining({ asyncType: null }) },
+    { name: 'some-module', data: objectContaining({ asyncType: null }) },
+  ]);
+  expect(codeFromAst(ast)).toEqual(
+    comparableCode(`
+      import { createRequire } from 'node:module';
+      const require = createRequire(import.meta.url);
+      const version = require(${dependencyMapName}[1], "../package.json").version;
+      const otherDep = require(${dependencyMapName}[2], "some-module");
+    `)
+  );
+});
+
+it('collects dependencies from module.createRequire factory pattern', () => {
+  const ast = astFromCode(`
+    import module from 'node:module';
+    const require = module.createRequire(import.meta.url);
+    const data = require('./data.json');
+  `);
+  const { dependencies } = collectDependencies(ast, {
+    ...opts,
+    dynamicRequires: 'warn',
+  });
+  expect(dependencies).toEqual([
+    { name: 'node:module', data: objectContaining({ asyncType: null }) },
+    { name: './data.json', data: objectContaining({ asyncType: null }) },
+  ]);
+});
+
+it('still ignores require shadowed by function expression or parameter', () => {
+  const ast = astFromCode(`
+    const require = function(name) { return {}; };
+    require('should-be-ignored');
+  `);
+  const { dependencies } = collectDependencies(ast, opts);
+  expect(dependencies).toEqual([]);
+});
+
 it('collects imports', () => {
   const ast = astFromCode(`
     import b from 'b/lib/a';
