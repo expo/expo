@@ -14,6 +14,10 @@ export type AddEventWithFormOptions = PresentationOptions & {
      * @platform ios
      */
     url?: string;
+    /**
+     * Array of alarm objects that trigger a reminder.
+     * @platform ios
+     */
     alarms?: Alarm[];
     recurrenceRule?: RecurrenceRule;
 };
