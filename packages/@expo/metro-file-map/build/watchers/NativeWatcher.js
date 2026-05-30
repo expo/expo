@@ -47,7 +47,6 @@ const common_1 = require("./common");
 const debug = require('debug')('Metro:NativeWatcher');
 const TOUCH_EVENT = 'touch';
 const DELETE_EVENT = 'delete';
-const RECRAWL_EVENT = 'recrawl';
 /**
  * NativeWatcher uses Node's native fs.watch API with recursive: true.
  *
@@ -114,24 +113,11 @@ class NativeWatcher extends AbstractWatcher_1.AbstractWatcher {
         try {
             const stat = await fs_1.promises.lstat(absolutePath);
             const type = (0, common_1.typeFromStat)(stat);
-            // Ignore files of an unrecognized type
-            if (!type) {
+            // Directory events are noisy and are ignored downstream by FileMap.
+            if (!type || type === 'd') {
                 return;
             }
             if (!(0, common_1.includedByGlob)(type, this.globs, this.dot, relativePath)) {
-                return;
-            }
-            // For directory "rename" events, notify that we need a recrawl since we
-            // wont' receive events for unmodified files underneath a moved (or
-            // cloned) directory. Renames are fired by the OS on moves, clones, and
-            // creations. We ignore "change" events because they indiciate a change
-            // to directory metadata, rather than its path or existence.
-            if (type === 'd' && event === 'rename') {
-                debug('Directory rename detected on %s, requesting recrawl', relativePath);
-                this.emitFileEvent({
-                    event: RECRAWL_EVENT,
-                    relativePath,
-                });
                 return;
             }
             this.emitFileEvent({

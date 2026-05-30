@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ignore noisy directory events from the native file watcher to avoid unnecessary recrawls during development.
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-15
