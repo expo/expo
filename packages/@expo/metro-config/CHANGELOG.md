@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Collect dependencies from `createRequire`-bound require calls in server bundles ([#46129](https://github.com/expo/expo/issues/46129) by [@jeferson-sb](https://github.com/jeferson-sb))
 - Respect `enableBabelRCLookup` in `loadBabelConfig` to skip Babel config file discovery ([#44841](https://github.com/expo/expo/pull/44841) by [@zoontek](https://github.com/zoontek))
 - Fix mangled async chunk filenames for catch-all routes ([#43547](https://github.com/expo/expo/pull/43547) by [@hassankhan](https://github.com/hassankhan))
 - Fixed DOM Components rendering issues on Android 9 devices. ([#43156](https://github.com/expo/expo/pull/43156) by [@kudo](https://github.com/kudo))
