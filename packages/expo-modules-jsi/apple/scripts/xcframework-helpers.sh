@@ -34,6 +34,7 @@ EXPO_MODULES_JSI_KNOWN_SLICES=(
   "ios-arm64_x86_64-maccatalyst|ios|maccatalyst|arm64 x86_64"
   "tvos-arm64|tvos||arm64"
   "tvos-arm64_x86_64-simulator|tvos|simulator|arm64 x86_64"
+  "macos-arm64_x86_64|macos||arm64 x86_64"
 )
 
 # Slice IDs the xcframework must always declare, even when only a subset has
@@ -46,6 +47,7 @@ EXPO_MODULES_JSI_REQUIRED_SLICE_IDS=(
   "ios-arm64_x86_64-maccatalyst"
   "tvos-arm64"
   "tvos-arm64_x86_64-simulator"
+  "macos-arm64_x86_64"
 )
 
 # xcframework_slice_descriptor SLICE_ID

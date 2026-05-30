@@ -141,6 +141,16 @@ platform_slice_id() {
   esac
 }
 
+# Resolves the xcodebuild directory name for the given platform.
+# Standard macOS builds (excluding Mac Catalyst) output directly
+# to the CONFIGURATION directory without suffix.
+platform_build_dir() {
+  case "$1" in
+    macosx)           echo "${CONFIGURATION}" ;;
+    *)                echo "${CONFIGURATION}-$1" ;;
+  esac
+}
+
 # Builds a single framework slice for the given platform and replaces the
 # matching slice inside XCFRAMEWORK_PATH. Other slices on disk are untouched.
 build_slice() {
@@ -149,11 +159,16 @@ build_slice() {
   destination=$(platform_destination "$platform")
   local slice_id
   slice_id=$(platform_slice_id "$platform")
-  local build_dir_name="${CONFIGURATION}-${platform}"
+  local build_dir_name
+  build_dir_name=$(platform_build_dir "$platform")
 
-  local sdk="$platform"
+  # Every platform uses its name as the sdk, except for Mac Catalyst,
+  # which is not a separate platform but rather a variant of macOS.
+  local sdk
   if [[ "$platform" == "maccatalyst" ]]; then
-    sdk="macosx" # maccatalyst build uses macosx sdk.
+    sdk="macosx"
+  else
+    sdk="$platform"
   fi
 
   log "Building framework slice for ${platform}..."
@@ -188,7 +203,13 @@ build_slice() {
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
   local framework_src="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"
   local swiftmodule_src="${product_path}/${PACKAGE_NAME}.swiftmodule"
-  local generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps-${platform}"
+  # Same directory format as build_dir_name, no suffix for macOS.
+  local generated_maps
+  if [[ "$platform" == "macosx" ]]; then
+    generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps"
+  else
+    generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps-${platform}"
+  fi
 
   if [[ ! -d "$framework_src" ]]; then
     log "error: xcodebuild did not produce ${framework_src}"
@@ -209,21 +230,19 @@ build_slice() {
     cp -a "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
   fi
 
+  # Output deep bundles for macOS/Catalyst, flat bundles for others.
   local framework_root="${staging_dir}/${PACKAGE_NAME}.framework"
-  local content_dir="$framework_root"
-  local is_deep_bundle=false
-
-  # Dynamic deep bundle for macOS/Catalyst.
-  # If Xcode generated a deep bundle, route files to Versions/A.
-  if [[ -d "${framework_root}/Versions/A" ]]; then
+  local content_dir
+  if [[ "$platform" == "macosx" || "$platform" == "maccatalyst" ]]; then
     content_dir="${framework_root}/Versions/A"
-    is_deep_bundle=true
+  else
+    content_dir="${framework_root}"
   fi
 
   # Copy Swift module interfaces and generated headers into the staged framework.
   local modules_dir="${content_dir}/Modules"
   mkdir -p "$modules_dir"
-  cp -r "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
+  cp -a "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
   rm -rf "${modules_dir}/${PACKAGE_NAME}.swiftmodule/Project"
 
   # Remove private/package interfaces which reference package-internal and C++ types
@@ -248,10 +267,10 @@ build_slice() {
   cp "${generated_maps}/${PACKAGE_NAME}-Swift.h" "$headers_dir/"
   cp "${generated_maps}/${PACKAGE_NAME}.modulemap" "$headers_dir/module.modulemap"
 
-  # Restore root symlinks required by CocoaPods for deep bundles.
-  if [[ "$is_deep_bundle" == true ]]; then
-    (cd "$framework_root" && ln -sfn Versions/Current/Modules Modules || true)
-    (cd "$framework_root" && ln -sfn Versions/Current/Headers Headers || true)
+  # Restore root symlinks required for deep bundles.
+  if [[ "$platform" == "macosx" || "$platform" == "maccatalyst" ]]; then
+    ln -sfn "Versions/Current/Headers" "${framework_root}/Headers"
+    ln -sfn "Versions/Current/Modules" "${framework_root}/Modules"
   fi
 
   echo "$current_hash" > "${staging_dir}/.build-hash"

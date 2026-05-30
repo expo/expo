@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `ExpoModulesJSI.xcframework` build failures for Mac Catalyst, including missing Catalyst slices, deep bundles issues, and `Float16` compilation errors. ([#46289](https://github.com/expo/expo/pull/46289) by [@theeket](https://github.com/theeket))
+- [iOS] Fixed `ExpoModulesJSI.xcframework` build failures for Mac Catalyst and macOS, including missing slices, deep bundles issues, and `Float16` compilation errors. ([#46289](https://github.com/expo/expo/pull/46289) by [@theeket](https://github.com/theeket))
 
 ### 💡 Others
 
