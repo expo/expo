@@ -22,7 +22,7 @@ declare class ExpoCalendarNextModule extends NativeModule {
   ): Promise<ExpoCalendar>;
 
   getDefaultCalendar(): ExpoCalendar;
-  getDefaultCalendarSync(): unknown;
+  getDefaultCalendarSync(): ExpoCalendar | null;
   getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]>;
 
   listEvents(
