@@ -231,8 +231,15 @@ build_slice() {
   #   e.g. "@usableFromInline\ninternal protocol _ConstraintThatIsNotPartOfTheAPIOfThisLibrary {}"
   # NOTE: If these patterns change in a future Swift version, the build will fail with
   # "expected declaration" or "expected type" errors in the .swiftinterface file.
-  find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface' \
-    -exec sed -i '' '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' {} +
+  # Run plain `sed` to a temp file and move it back instead of `sed -i ''`:
+  # BSD sed treats the argument after `-i` as the backup suffix, while GNU sed
+  # (e.g. in a Nix shell) treats `''` as the script and the real script as a
+  # filename, failing with "can't read …: No such file or directory".
+  while IFS= read -r swiftinterface; do
+    local stripped_swiftinterface="${swiftinterface}.stripped"
+    sed '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
+    mv "$stripped_swiftinterface" "$swiftinterface"
+  done < <(find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface')
 
   local headers_dir="${staging_dir}/${PACKAGE_NAME}.framework/Headers"
   mkdir -p "$headers_dir"

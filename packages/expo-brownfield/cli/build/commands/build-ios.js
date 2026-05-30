@@ -6,6 +6,7 @@ const buildIos = async (command) => {
     await (0, utils_1.validatePrebuild)('ios', { dryRun: !!opts.dryRun });
     const config = (0, utils_1.resolveBuildConfigIos)(opts);
     (0, utils_1.printIosConfig)(config);
+    (0, utils_1.validateHostProvided)(config);
     await (0, utils_1.buildFramework)(config);
     if (config.output !== 'frameworks') {
         // Ship frameworks as swift package

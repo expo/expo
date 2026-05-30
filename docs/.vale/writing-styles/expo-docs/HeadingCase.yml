@@ -22,6 +22,7 @@ exceptions:
   - '.*web.*'
   - '.*AASA.*'
   - '.*AES.*'
+  - '.*\bAI\b.*'
   - '.*API.*'
   - '.*APIs.*'
   - '.*^Android(.*)'

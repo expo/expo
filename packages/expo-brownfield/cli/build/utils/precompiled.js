@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = void 0;
+exports.enumeratePrebuildModulesRaw = exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = exports.isDirentDirectory = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -20,6 +20,20 @@ const RESERVED_POD_DIRS = new Set([
     'React-Core-prebuilt',
     'ReactNativeDependencies',
 ]);
+/**
+ * Returns true when an `entry` refers to a directory either directly OR via a symlink whose
+ * target is a directory.
+ */
+const isDirentDirectory = (entry, parentDir) => {
+    if (entry.isDirectory()) {
+        return true;
+    }
+    if (!entry.isSymbolicLink()) {
+        return false;
+    }
+    return (node_fs_1.default.statSync(node_path_1.default.join(parentDir, entry.name), { throwIfNoEntry: false })?.isDirectory() ?? false);
+};
+exports.isDirentDirectory = isDirentDirectory;
 /**
  * Scans `ios/Pods/` for prebuilt xcframeworks installed by autolinking when
  * `EXPO_USE_PRECOMPILED_MODULES=1` is set. A pod is "precompiled" when its directory contains
@@ -57,21 +71,9 @@ const enumeratePrecompiledModules = (iosDir) => {
         if (tarballs.length === 0) {
             continue;
         }
-        // `entry.isDirectory()` returns false for symlinks even when the target is a directory
         const xcframeworks = node_fs_1.default
             .readdirSync(podDir, { withFileTypes: true })
-            .filter((f) => {
-            if (!f.name.endsWith('.xcframework')) {
-                return false;
-            }
-            if (f.isDirectory()) {
-                return true;
-            }
-            if (!f.isSymbolicLink()) {
-                return false;
-            }
-            return (node_fs_1.default.statSync(node_path_1.default.join(podDir, f.name), { throwIfNoEntry: false })?.isDirectory() ?? false);
-        })
+            .filter((f) => f.name.endsWith('.xcframework') && (0, exports.isDirentDirectory)(f, podDir))
             .map((f) => f.name.replace(/\.xcframework$/, ''));
         // Identify the "main" product for this pod — the xcframework whose name matches a tarball.
         // Used as the `-m` argument when reconciling debug/release flavors via replace-xcframework.js.
@@ -191,7 +193,10 @@ const enumerateSpmDepsXcframeworks = (cwd, buildConfiguration, existingNames) =>
     const flavor = buildConfiguration.toLowerCase();
     const results = [];
     for (const entry of node_fs_1.default.readdirSync(spmDepsRoot, { withFileTypes: true })) {
-        if (!entry.isDirectory() || entry.name.startsWith('_') || entry.name.startsWith('.')) {
+        if (entry.name.startsWith('_') || entry.name.startsWith('.')) {
+            continue;
+        }
+        if (!(0, exports.isDirentDirectory)(entry, spmDepsRoot)) {
             continue;
         }
         if (existingNames.has(entry.name)) {
@@ -515,16 +520,18 @@ exports.enumerateBundledSpmDepsXcframeworks = enumerateBundledSpmDepsXcframework
  * xcframework can land on disk without a matching `.binaryTarget` (or vice-versa). Calling this
  * helper from both sites guarantees they agree, and gates both behind the completeness check
  * so we never produce a half-baked package on missing deps.
+ *
+ * `hostProvidedFrameworks` is the set of xcframework names the consuming host iOS app already
+ * provides (typically via its own CocoaPods). Matching entries are filtered out of both the
+ * enumeration result AND the completeness-check input — so we neither ship them nor fail the
+ * build when an `spm.config.json` declares them.
  */
-const enumerateAllPrebuildModules = (cwd, buildConfiguration) => {
-    const podModules = (0, exports.enumeratePrecompiledModules)(node_path_1.default.join(cwd, 'ios'));
-    const podToNpm = (0, exports.buildPodToNpmPackageMap)(cwd);
-    const seenNames = new Set(podModules.map((m) => m.name));
-    const bundledModules = (0, exports.enumerateBundledSpmDepsXcframeworks)(podModules, podToNpm, buildConfiguration, seenNames);
-    bundledModules.forEach((m) => seenNames.add(m.name));
-    const spmDepModules = (0, exports.enumerateSpmDepsXcframeworks)(cwd, buildConfiguration, seenNames);
-    const modules = [...podModules, ...bundledModules, ...spmDepModules];
-    const declaredDeps = (0, exports.collectDeclaredSpmDeps)(podModules, podToNpm);
+const enumerateAllPrebuildModules = (cwd, buildConfiguration, hostProvidedFrameworks = []) => {
+    const hostProvided = new Set(hostProvidedFrameworks);
+    const { modules: allModules, podModules, podToNpm, } = (0, exports.enumeratePrebuildModulesRaw)(cwd, buildConfiguration);
+    const modules = allModules.filter((m) => !hostProvided.has(m.name));
+    // Drop host-provided names from the completeness check
+    const declaredDeps = (0, exports.collectDeclaredSpmDeps)(podModules, podToNpm).filter(({ name }) => !hostProvided.has(name));
     const coveredNames = new Set(modules.map((m) => m.name));
     const missing = declaredDeps.filter(({ name }) => !coveredNames.has(name));
     if (missing.length > 0) {
@@ -536,4 +543,22 @@ const enumerateAllPrebuildModules = (cwd, buildConfiguration) => {
     return modules;
 };
 exports.enumerateAllPrebuildModules = enumerateAllPrebuildModules;
+/**
+ * Walks all three resolution layers (pod scan → npm-bundled → shared `.spm-deps/` cache) without
+ * applying host-provided filtering or running the missing-SPM-dep completeness check.
+ */
+const enumeratePrebuildModulesRaw = (cwd, buildConfiguration) => {
+    const podModules = (0, exports.enumeratePrecompiledModules)(node_path_1.default.join(cwd, 'ios'));
+    const podToNpm = (0, exports.buildPodToNpmPackageMap)(cwd);
+    const seenNames = new Set(podModules.map((m) => m.name));
+    const bundledModules = (0, exports.enumerateBundledSpmDepsXcframeworks)(podModules, podToNpm, buildConfiguration, seenNames);
+    bundledModules.forEach((m) => seenNames.add(m.name));
+    const spmDepModules = (0, exports.enumerateSpmDepsXcframeworks)(cwd, buildConfiguration, seenNames);
+    return {
+        modules: [...podModules, ...bundledModules, ...spmDepModules],
+        podModules,
+        podToNpm,
+    };
+};
+exports.enumeratePrebuildModulesRaw = enumeratePrebuildModulesRaw;
 //# sourceMappingURL=precompiled.js.map
