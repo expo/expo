@@ -11,6 +11,7 @@ import {
   promptExamplesAsync,
 } from './Examples';
 import * as Template from './Template';
+import { configureWorkspacesAsync } from './configureWorkspaces';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
@@ -60,6 +61,11 @@ async function resolveProjectRootArgAsync(
 async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
+
+  // For monorepo templates: normalize workspace-package dependency specs to
+  // the chosen package manager's convention, and write a `pnpm-workspace.yaml`
+  // when pnpm is the resolved manager. No-op for single-app templates.
+  await configureWorkspacesAsync(projectRoot, packageManager);
 
   // Configure package manager, which is unrelated to installing or not
   await configureNodeDependenciesAsync(projectRoot, packageManager);
