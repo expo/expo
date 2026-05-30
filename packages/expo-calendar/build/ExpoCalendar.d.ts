@@ -12,7 +12,7 @@ declare class ExpoCalendarNextModule extends NativeModule {
         color: ProcessedColorValue | undefined;
     }): Promise<ExpoCalendar>;
     getDefaultCalendar(): ExpoCalendar;
-    getDefaultCalendarSync(): unknown;
+    getDefaultCalendarSync(): ExpoCalendar | null;
     getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]>;
     listEvents(calendars: string[], startDate: string | Date, endDate: string | Date): Promise<ExpoCalendarEvent[]>;
     getCalendarById(calendarId: string): Promise<ExpoCalendar>;

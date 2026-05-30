@@ -1,6 +1,6 @@
 import InternalExpoCalendar from './ExpoCalendar';
 import type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, ModifiableAttendeeProperties, AddEventWithFormOptions } from './ExpoCalendar.types';
-import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus, PermissionResponse } from './legacy/Calendar';
+import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus, PermissionResponse, Source } from './legacy/Calendar';
 /**
  * Represents a calendar attendee object.
  */
@@ -45,6 +45,12 @@ export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 /**
  * Gets an instance of the default calendar object.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
+ * @platform ios
+ *
+ * > **Android:** This function is not available on Android. There is no single system-managed
+ * > default calendar on Android. As a workaround, use `getCalendars()` and pick the calendar
+ * > where `isPrimary === true`. Note that `isPrimary` is per-account, so multiple calendars
+ * > may have this flag set when more than one account is registered on the device.
  */
 export declare function getDefaultCalendarSync(): ExpoCalendar;
 /**
@@ -106,8 +112,13 @@ export declare function getRemindersPermissions(): Promise<PermissionResponse>;
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
+ * @platform ios
+ *
+ * > **Android:** This function is not available on Android. There is no first-class concept of
+ * > calendar sources on Android. As a workaround, call `getCalendars()` and aggregate the
+ * > `source` field of each returned calendar.
  */
-export declare const getSourcesSync: () => import("./Calendar").Source[];
+export declare function getSourcesSync(): Source[];
 export type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, AddEventWithFormOptions, } from './ExpoCalendar.types';
 export type { PermissionResponse, Alarm, AlarmLocation, CalendarDialogParams, DaysOfTheWeek, DialogEventResult, OpenEventDialogResult, OpenEventPresentationOptions, PermissionExpiration, PermissionHookOptions, PresentationOptions, RecurrenceRule, RecurringEventOptions, Source, } from './legacy/Calendar';
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, } from './legacy/Calendar';

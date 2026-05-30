@@ -147,6 +147,12 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 /**
  * Gets an instance of the default calendar object.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
+ * @platform ios
+ *
+ * > **Android:** This function is not available on Android. There is no single system-managed
+ * > default calendar on Android. As a workaround, use `getCalendars()` and pick the calendar
+ * > where `isPrimary === true`. Note that `isPrimary` is per-account, so multiple calendars
+ * > may have this flag set when more than one account is registered on the device.
  */
 export function getDefaultCalendarSync() {
     if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendarSync) {
@@ -257,8 +263,18 @@ export async function getRemindersPermissions() {
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
+ * @platform ios
+ *
+ * > **Android:** This function is not available on Android. There is no first-class concept of
+ * > calendar sources on Android. As a workaround, call `getCalendars()` and aggregate the
+ * > `source` field of each returned calendar.
  */
-export const getSourcesSync = InternalExpoCalendar.getSourcesSync;
+export function getSourcesSync() {
+    if (Platform.OS === 'android' || !InternalExpoCalendar.getSourcesSync) {
+        throw new UnavailabilityError('Calendar', 'getSourcesSync');
+    }
+    return InternalExpoCalendar.getSourcesSync();
+}
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, } from './legacy/Calendar';
 /**
  * Check or request permissions to access the user's calendars.
