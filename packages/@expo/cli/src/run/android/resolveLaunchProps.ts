@@ -32,6 +32,21 @@ function resolveCustomLaunchActivity(packageName: string, mainActivity: string):
   return mainActivity.startsWith('.') ? `${packageName}${mainActivity}` : mainActivity;
 }
 
+/**
+ * Expand a dot-prefixed activity shorthand (`.MainActivity`) into its fully
+ * qualified class name using the module's `namespace` from `build.gradle`.
+ * AGP performs the same expansion at manifest merge time, but `am start` reads
+ * the raw `android:name` attribute and resolves dot shorthands against the
+ * applicationId — which can differ from the namespace and point at a class
+ * that does not exist.
+ */
+function expandDotShorthand(activityName: string, namespace: string | null): string {
+  if (!activityName.startsWith('.') || !namespace) {
+    return activityName;
+  }
+  return `${namespace}${activityName}`;
+}
+
 async function getMainActivityAsync(projectRoot: string): Promise<string> {
   const filePath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);
   const androidManifest = await AndroidConfig.Manifest.readAndroidManifestAsync(filePath);
@@ -55,12 +70,15 @@ export async function resolveLaunchPropsAsync(
 ): Promise<LaunchProps> {
   const mainActivity = await getMainActivityAsync(projectRoot);
   const packageName = await new AndroidAppIdResolver(projectRoot).getAppIdFromNativeAsync();
+  const namespace = await AndroidConfig.Package.getNamespaceAsync(projectRoot);
   const customAppId = options.appId;
+
+  const resolvedActivity = expandDotShorthand(mainActivity, namespace);
 
   const launchActivity =
     customAppId && customAppId !== packageName
-      ? `${customAppId}/${resolveCustomLaunchActivity(packageName, mainActivity)}`
-      : `${packageName}/${mainActivity}`;
+      ? `${customAppId}/${resolveCustomLaunchActivity(packageName, resolvedActivity)}`
+      : `${packageName}/${resolvedActivity}`;
 
   return {
     mainActivity,

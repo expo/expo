@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Export `AndroidConfig.Package.getNamespaceAsync` to read the `namespace` declared in the app module's `build.gradle` ([#46351](https://github.com/expo/expo/pull/46351) by [@avarayr](https://github.com/avarayr))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

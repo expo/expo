@@ -80,4 +80,49 @@ describe(resolveLaunchPropsAsync, () => {
       customAppId: 'dev.expo.test',
     });
   });
+
+  // AGP 7.3+ projects can declare a `namespace` that differs from the
+  // `applicationId` (e.g. when the install identifier is set per build flavor
+  // but the Kotlin/Java code lives under a single namespace). The launcher
+  // activity must be expanded against the namespace so `am start` resolves to
+  // a class that actually exists.
+  it(`expands dot-shorthand activity against build.gradle namespace`, async () => {
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        'android/app/build.gradle': rnFixture['android/app/build.gradle'].replace(
+          'android {',
+          "android {\n          namespace 'com.reactnativeproject'"
+        ),
+      },
+      '/'
+    );
+
+    expect(await resolveLaunchPropsAsync('/', {})).toEqual({
+      launchActivity: 'com.bacon.mydevicefamilyproject/com.reactnativeproject.MainActivity',
+      mainActivity: '.MainActivity',
+      packageName: 'com.bacon.mydevicefamilyproject',
+      customAppId: undefined,
+    });
+  });
+
+  it(`expands dot-shorthand activity against namespace with custom app id`, async () => {
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        'android/app/build.gradle': rnFixture['android/app/build.gradle'].replace(
+          'android {',
+          "android {\n          namespace 'com.reactnativeproject'"
+        ),
+      },
+      '/'
+    );
+
+    expect(await resolveLaunchPropsAsync('/', { appId: 'dev.expo.test' })).toEqual({
+      launchActivity: 'dev.expo.test/com.reactnativeproject.MainActivity',
+      mainActivity: '.MainActivity',
+      packageName: 'com.bacon.mydevicefamilyproject',
+      customAppId: 'dev.expo.test',
+    });
+  });
 });

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Expand dot-shorthand Android launch activities against the module `namespace` so `expo run:android` succeeds when `namespace` differs from `applicationId` ([#46351](https://github.com/expo/expo/pull/46351) by [@avarayr](https://github.com/avarayr))
+
 ### 💡 Others
 
 ## 56.1.12 — 2026-05-26
