@@ -83,7 +83,7 @@ export function updateAndroidBuildProperty(
     (prop) => prop.type === 'property' && prop.key === name
   );
   const oldProp = oldPropIndex >= 0 ? gradleProperties[oldPropIndex] : null;
-  if (value) {
+  if (value != null) {
     // found the matched value, add or merge new property
     const newProp: PropertiesItem = {
       type: 'property',

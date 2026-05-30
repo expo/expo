@@ -146,6 +146,17 @@ describe(updateAndroidBuildProperty, () => {
     ]);
   });
 
+  it('should write (not delete) property when `value` is an empty string', () => {
+    const gradleProperties: PropertiesItem[] = [
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'bar', value: 'bar' },
+    ];
+    expect(updateAndroidBuildProperty(gradleProperties, 'bar', '')).toEqual([
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'bar', value: '' },
+    ]);
+  });
+
   it('should still remove with removePropWhenValueIsNull for backwards compatibility', () => {
     const gradleProperties: PropertiesItem[] = [
       { type: 'property', key: 'foo', value: 'foo' },

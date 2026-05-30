@@ -57,7 +57,7 @@ function updateIosBuildPropertiesFromConfig(config, podfileProperties, configToP
   return podfileProperties;
 }
 function updateIosBuildProperty(podfileProperties, name, value, options) {
-  if (value) {
+  if (value != null) {
     podfileProperties[name] = value;
   } else {
     delete podfileProperties[name];

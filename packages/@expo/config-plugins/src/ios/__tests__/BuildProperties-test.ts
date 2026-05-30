@@ -126,6 +126,17 @@ describe(updateIosBuildProperty, () => {
     });
   });
 
+  it('should write (not delete) property when value is an empty string', () => {
+    const podfileProperties = {
+      foo: 'foo',
+      bar: 'bar',
+    };
+    expect(updateIosBuildProperty(podfileProperties, 'bar', '')).toEqual({
+      foo: 'foo',
+      bar: '',
+    });
+  });
+
   it('should still remove property when removePropWhenValueIsNull is passed (backwards compat)', () => {
     const podfileProperties = {
       foo: 'foo',

@@ -59,7 +59,7 @@ function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, config
 function updateAndroidBuildProperty(gradleProperties, name, value, options) {
   const oldPropIndex = gradleProperties.findIndex(prop => prop.type === 'property' && prop.key === name);
   const oldProp = oldPropIndex >= 0 ? gradleProperties[oldPropIndex] : null;
-  if (value) {
+  if (value != null) {
     // found the matched value, add or merge new property
     const newProp = {
       type: 'property',
