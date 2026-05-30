@@ -232,7 +232,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       throw JavaScriptClassNotFoundException()
     }
     return try JavaScriptActor.assumeIsolated {
-      return try runtime.createObject(try jsClass.getProperty("prototype").asObject())
+      let prototype = try jsClass.getProperty("prototype").asObject()
+      return try runtime.createObject(prototype: prototype)
     }
   }
 
