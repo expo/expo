@@ -322,7 +322,7 @@ export default class FileMap extends EventEmitter {
       healthCheck: options.healthCheck,
       perfLoggerFactory: options.perfLoggerFactory,
       resetCache: options.resetCache,
-      useWatchman: options.useWatchman ?? false,
+      useWatchman: options.useWatchman == null ? true : options.useWatchman,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
       enableFallback,

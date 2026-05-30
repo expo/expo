@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Preserve Metro's `useWatchman: null | undefined` semantics so Watchman remains enabled by default while bypassing the native `find` code path.
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-15

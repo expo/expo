@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Preserve Metro's `useWatchman: null | undefined` semantics when creating Expo's file map.
+
 ### 💡 Others
 
 ## 56.1.12 — 2026-05-26
