@@ -8,15 +8,14 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
-
 - Add `@platform ios` JSDoc annotations to iOS-exclusive APIs: `ExpoCalendarReminder` class, `listReminders()`, `createReminder()`, `requestRemindersPermissions`, `getRemindersPermissions`, `useRemindersPermissions`, and `AddEventWithFormOptions.url`.
+- Throw `UnavailabilityError` when iOS-only Reminders APIs (`listReminders()`, `createReminder()`, `ExpoCalendarReminder.get/update/delete`, `requestRemindersPermissions`, `getRemindersPermissions`, `useRemindersPermissions`) are called on Android.
+
+### 💡 Others
 
 ## 56.0.9 — 2026-05-29
 
 ### 💡 Others
-
-- Add `@platform ios` JSDoc annotations to iOS-exclusive APIs: `ExpoCalendarReminder` class, `listReminders()`, `createReminder()`, `requestRemindersPermissions`, `getRemindersPermissions`, `useRemindersPermissions`, and `AddEventWithFormOptions.url`.
 
 ## 56.0.8 — 2026-05-21
 
