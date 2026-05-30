@@ -31,6 +31,7 @@ import {
   rotationEffect,
   offset,
   listRowSeparator,
+  listRowSpacing,
   border,
   onTapGesture,
   onLongPressGesture,
@@ -107,6 +108,7 @@ export default function ModifiersScreen() {
   const [enabledSelection, setEnabledSelection] = useState(false);
 
   const [lineSpacingValue, setLineSpaceingValue] = useState(0);
+  const [listRowSpacingValue, setListRowSpacingValue] = useState(0);
 
   const [enableRowInsets, setEnableRowInsets] = useState({
     top: false,
@@ -138,6 +140,7 @@ export default function ModifiersScreen() {
         <Form
           modifiers={[
             scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
+            listRowSpacing(listRowSpacingValue),
             background(backgroundFormColor),
             frame({
               height: dimensions.height - safeAreaInsets.top - safeAreaInsets.bottom,
@@ -225,6 +228,18 @@ export default function ModifiersScreen() {
             <Text>Default separator</Text>
             <Text>Default separator</Text>
             <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
+          </Section>
+
+          <Section title="List row spacing">
+            <Text>Spacing row one</Text>
+            <Text>Spacing row two</Text>
+            <Text>Spacing row three</Text>
+            <Slider
+              min={0}
+              max={30}
+              value={listRowSpacingValue}
+              onValueChange={setListRowSpacingValue}
+            />
           </Section>
 
           {/* Text modifiers */}

@@ -712,6 +712,22 @@ internal struct ListRowSeparator: ViewModifier, Record {
   }
 }
 
+internal struct ListRowSpacing: ViewModifier, Record {
+  @Field var spacing: Double?
+
+  func body(content: Content) -> some View {
+#if os(iOS)
+    if #available(iOS 15.0, *) {
+      content.listRowSpacing(spacing.map { CGFloat($0) })
+    } else {
+      content
+    }
+#else
+    content
+#endif
+  }
+}
+
 internal enum TextTruncationModeTypes: String, Enumerable {
   case head
   case middle
@@ -1629,6 +1645,10 @@ extension ViewModifierRegistry {
 
     register("listRowSeparator") { params, appContext, _ in
       return try ListRowSeparator(from: params, appContext: appContext)
+    }
+
+    register("listRowSpacing") { params, appContext, _ in
+      return try ListRowSpacing(from: params, appContext: appContext)
     }
 
     register("truncationMode") { params, appContext, _ in
