@@ -44,5 +44,5 @@ index f4a23c5..7f7d95c 100644
 +    override fun onConfigurationChanged(newConfig: Configuration) {
 +        super.onConfigurationChanged(newConfig)
 +        ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
-     }
++    }
  }
