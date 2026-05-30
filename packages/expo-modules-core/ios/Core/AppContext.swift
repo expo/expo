@@ -232,8 +232,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       throw JavaScriptClassNotFoundException()
     }
     return try JavaScriptActor.assumeIsolated {
-      let prototype = try jsClass.getProperty("prototype").asObject()
-      return try runtime.createObject(prototype: prototype)
+      return try runtime.createObject(try jsClass.getProperty("prototype").asObject())
     }
   }
 
@@ -719,9 +718,15 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
     // [0] When ExpoModulesCore is built as separated framework/module,
     // we should explicitly load main bundle's `ExpoModulesProvider` class.
-    if let bundleName = Bundle.main.infoDictionary?["CFBundleName"],
-       let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
-      return providerClass.init()
+    let mainBundleNames = [
+      Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
+      Bundle.main.object(forInfoDictionaryKey: "CFBundleExecutable")
+    ].compactMap { $0 as? String }
+
+    for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: mainBundleNames) {
+      if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+        return providerClass.init()
+      }
     }
 
     // [1] Fallback to `ExpoModulesProvider` class from the current module.
@@ -732,13 +737,48 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
-      if let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
-        return providerClass.init()
+
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: [bundleName]) {
+        if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+          return providerClass.init()
+        }
       }
     }
 
     // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
+  }
+
+  internal static func moduleProviderClassNames(withName providerName: String, bundleNames: [String]) -> [String] {
+    var candidates: [String] = []
+
+    func append(_ moduleName: String) {
+      let candidate = "\(moduleName).\(providerName)"
+      if !candidates.contains(candidate) {
+        candidates.append(candidate)
+      }
+    }
+
+    for bundleName in bundleNames {
+      append(bundleName)
+      append(swiftModuleName(from: bundleName))
+    }
+
+    return candidates
+  }
+
+  private static func swiftModuleName(from bundleName: String) -> String {
+    let sanitized = bundleName
+      .map { character in
+        character.isLetter || character.isNumber || character == "_" ? character : "_"
+      }
+
+    let moduleName = String(sanitized)
+    if let firstCharacter = moduleName.first, firstCharacter.isNumber {
+      return "_\(moduleName)"
+    }
+
+    return moduleName
   }
 
   public func reloadAppAsync(_ reason: String = "Reload from appContext") {
