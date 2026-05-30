@@ -254,7 +254,7 @@ export function GoogleSignInButton() {
 }
 ```
 
-On Android, this uses Credential Manager and never opens a browser. On iOS, the flow uses `ASAuthorization` (the system credential picker) when `EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME` is configured &mdash; without it, iOS falls back to a system browser sheet. Follow the Clerk guides linked at the bottom of this page to register your Android package name, iOS bundle ID, and SHA-256 fingerprints in the Clerk Dashboard and the Google Cloud Console.
+On Android, this uses Credential Manager and never opens a browser. On iOS, the flow uses `ASAuthorization` (the system credential picker) when `EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME` is configured — without it, iOS falls back to a system browser sheet. Follow the Clerk guides linked at the bottom of this page to register your Android package name, iOS bundle ID, and SHA-256 fingerprints in the Clerk Dashboard and the Google Cloud Console.
 
 `useSignInWithApple()` from `@clerk/expo/apple` follows the same pattern (`startAppleAuthenticationFlow()` returning `{ createdSessionId, setActive }`) and is iOS only. App Store Guideline 4.8 requires that any app offering third-party social sign-in must also offer Sign in with Apple on iOS.
 

@@ -5,15 +5,29 @@ describe('DevToolsPlugin', () => {
     const pluginDescriptor = {
       packageName: 'example-plugin',
       packageRoot: '/path/to/example-plugin',
-      webpageRoot: 'https://example.com/plugin',
+      webpageRoot: '/path/to/example-plugin/web',
     };
     const projectRoot = '/path/to/project';
     const plugin = new DevToolsPlugin(pluginDescriptor, projectRoot);
 
     expect(plugin.packageName).toBe('example-plugin');
-    expect(plugin.webpageRoot).toBe('https://example.com/plugin');
+    expect(plugin.webpageRoot).toBe('/path/to/example-plugin/web');
     expect(plugin.executor).toBeUndefined();
     expect(plugin.description).toBe('');
+  });
+
+  it('should reject a webpageRoot that escapes the package directory', () => {
+    expect(
+      () =>
+        new DevToolsPlugin(
+          {
+            packageName: 'malicious-plugin',
+            packageRoot: '/path/to/project/node_modules/malicious-plugin',
+            webpageRoot: '/path/to/project',
+          },
+          '/path/to/project'
+        )
+    ).toThrow(/is not inside packageRoot/);
   });
 
   it('should create an instance from a plugin with only the cli extension set', () => {

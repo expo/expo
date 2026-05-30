@@ -208,15 +208,15 @@ const player2 = useVideoPlayer(videoSource);
 
 ### Playing media from the media library
 
-`expo-video` supports playing videos picked from user's media library using [`expo-media-library`](../sdk/media-library/) or any valid `PHAsset` URI with appropriate permissions.
+`expo-video` supports playing videos picked from user's media library using [`expo-media-library/legacy`](../sdk/media-library-legacy/) or any valid `PHAsset` URI with appropriate permissions.
 
-To play a video from the media library, you should obtain an [`Asset`](../sdk/asset/#asset) object with [`MediaLibrary.getAssetsAsync()`](../sdk/media-library/#medialibrarygetassetsasyncassetsoptions) and use its [`uri`](../sdk/asset/#uri) property as the [`uri`](#videosource) of the video source.
-Before playing, make sure to request the necessary permissions using [`MediaLibrary.requestPermissionsAsync()`](../sdk/media-library/#medialibraryrequestpermissionsasyncwriteonly-granularpermissions).
+To play a video from the media library, you should obtain an [`Asset`](../sdk/asset/#asset) object with [`MediaLibrary.getAssetsAsync()`](../sdk/media-library-legacy/#medialibrarygetassetsasyncassetsoptions) and use its [`uri`](../sdk/asset/#uri) property as the [`uri`](#videosource) of the video source.
+Before playing, make sure to request the necessary permissions using [`MediaLibrary.requestPermissionsAsync()`](../sdk/media-library-legacy/#medialibraryrequestpermissionsasyncwriteonly-granularpermissions).
 
 On iOS make sure **not** to use the `localUri` property of the asset info, as it does not contain the necessary permissions to read the asset.
 
 ```tsx Playing media from media library
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { VideoSource, useVideoPlayer, VideoView } from 'expo-video';
 
 // ...Definition of the component, creating the player etc.

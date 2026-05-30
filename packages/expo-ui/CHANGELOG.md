@@ -6,13 +6,68 @@
 
 ### 🎉 New features
 
-- [iOS] Added `withAnimation(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's [`withAnimation(_:_:)`](https://developer.apple.com/documentation/swiftui/withanimation(_:_:)). ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
+- [jetpack-compose] Added `NavigationBar` and `NavigationBarItem` components.
+- [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
+- [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
+- [swift-ui] Added `<DisclosureGroup.Label>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
+- [universal] Added `<Collapsible.labelStyle>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+
+### 💡 Others
+
+- [universal] Revamp web universal components (`Button`, `Checkbox`, `Picker`, `Slider`,`Switch`,`TextInput`,) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.14 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- [android] Fix `shape` prop on `TextField` / `OutlinedTextField`. ([#46206](https://github.com/expo/expo/pull/46206) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix dotted line beneath Slider track when no label slots are provided ([#46218](https://github.com/expo/expo/pull/46218) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 56.0.13 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- Scope the `@expo/ui` worklet SharedObject serializer to SharedObjects created by `@expo/ui`. ([#46139](https://github.com/expo/expo/pull/46139) by [@roitium](https://github.com/roitium))
+
+## 56.0.12 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- [iOS] Use non-selection `List` initializer in `List` when `selection` prop is not provided. ([#46101](https://github.com/expo/expo/pull/46101) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 56.0.11 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-20
+
+### 🎉 New features
+
+- Added `@expo/ui/community/pager-view` — a drop-in replacement for `react-native-pager-view`. ([#45499](https://github.com/expo/expo/pull/45499) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `textStyle` option to `font` modifier in `@expo/ui/swift-ui` for iOS Dynamic Type scaling. ([#46007](https://github.com/expo/expo/pull/46007) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+### 🐛 Bug fixes
+
+- [universal] Fix universal components dark theme ([#45969](https://github.com/expo/expo/pull/45969) by [@zoontek](https://github.com/zoontek))
+- [universal] Fix `BottomSheet` behavior by making `Host` optional, and fix Android exit animation. ([#46031](https://github.com/expo/expo/pull/46031) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 56.0.9 — 2026-05-19
+
+### 🎉 New features
+
+- [iOS][android] Added `onChange` listener to `useNativeState`. ([#45961](https://github.com/expo/expo/pull/45961) by [@nishan](https://github.com/intergalacticspacehighway))
+- Allow writing to native state from the JS thread. ([#45901](https://github.com/expo/expo/pull/45901) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `withAnimation(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's [`withAnimation(_:_:)`](<https://developer.apple.com/documentation/swiftui/withanimation(_:_:)>). ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `LoadingIndicator` and `ContainedLoadingIndicator` components. ([#41169](https://github.com/expo/expo/pull/41169) by [@suveshmoza](https://github.com/suveshmoza))
 
 ### 🐛 Bug fixes
 
 - [iOS] Unmount `BottomSheet` when it is dismissed. ([#45846](https://github.com/expo/expo/pull/45846) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Apply `modifiers` prop on `Host` instead of silently dropping it. ([#45872](https://github.com/expo/expo/pull/45872) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 

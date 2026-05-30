@@ -8,14 +8,15 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI TabView matches the official SwiftUI [TabView API](https://developer.apple.com/documentation/swiftui/tabview) and switches between styles via the [`tabViewStyle`](modifiers/#tabviewstyleconfig) modifier.
 
-<ComponentDiagram
-  mode="portrait"
-  source="/static/images/expo-ui/tabview/ios-light.webp"
-  darkSource="/static/images/expo-ui/tabview/ios-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="portrait"
+  src="/static/images/expo-ui/tabview/ios-light.webp"
+  darkSrc="/static/images/expo-ui/tabview/ios-dark.webp"
   alt="A TabView with a bottom tab bar showing Home, Search, and Profile tabs in iOS 26 Liquid Glass style"
 />
 
@@ -27,7 +28,7 @@ Expo UI TabView matches the official SwiftUI [TabView API](https://developer.app
 
 ## Usage
 
-Each page is a `<TabView.Tab>` child, identified by a `value` prop. `TabView` does not impose its own height &mdash; give it a frame, or place it inside a parent that does.
+Each page is a `<TabView.Tab>` child, identified by a `value` prop. `TabView` does not impose its own height — give it a frame, or place it inside a parent that does.
 
 ### Page style (swipeable pager)
 

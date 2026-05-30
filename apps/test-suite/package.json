@@ -57,6 +57,7 @@
     "expo-navigation-bar": "workspace:*",
     "expo-network": "workspace:*",
     "expo-notifications": "workspace:*",
+    "expo-observe": "workspace:*",
     "expo-screen-orientation": "workspace:*",
     "expo-secure-store": "workspace:*",
     "expo-sms": "workspace:*",
@@ -75,8 +76,8 @@
     "lodash": "^4.17.19",
     "path": "^0.12.7",
     "react": "19.2.3",
-    "react-native": "0.85.3",
-    "react-native-gesture-handler": "~2.30.0",
+    "react-native": "0.86.0-rc.2",
+    "react-native-gesture-handler": "~2.31.2",
     "react-native-safe-area-context": "^5.6.2",
     "semver": "^7.7.4"
   },

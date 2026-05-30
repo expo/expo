@@ -155,6 +155,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community PagerView replacement',
+    route: 'ui/community-pager-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPagerViewScreen'));
+    },
+  },
+  {
     name: 'Switch component',
     route: 'ui/switch',
     options: {},
@@ -256,6 +264,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: 'NavigationBar component',
+    route: 'ui/navigation-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationBarScreen'));
     },
   },
   {

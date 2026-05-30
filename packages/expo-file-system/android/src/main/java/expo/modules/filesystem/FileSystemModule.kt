@@ -21,7 +21,34 @@ class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
+  private val filesDirectory: File
+    get() = appContext.persistentFilesDirectory
+
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory
+
   private val downloadStore = DownloadTaskStore()
+
+  private fun writeToFile(
+    file: FileSystemFile,
+    content: Either<String, TypedArray>,
+    options: WriteOptions?
+  ) {
+    val append = options?.append ?: false
+    if (content.`is`(String::class)) {
+      content.get(String::class).let {
+        if (options?.encoding == EncodingType.BASE64) {
+          file.write(Base64.decode(it, Base64.DEFAULT), append)
+        } else {
+          file.write(it, append)
+        }
+      }
+    } else if (content.`is`(TypedArray::class)) {
+      content.get(TypedArray::class).let {
+        file.write(it, append)
+      }
+    }
+  }
 
   @RequiresApi(Build.VERSION_CODES.O)
   override fun definition() = ModuleDefinition {
@@ -30,11 +57,11 @@ class FileSystemModule : Module() {
     Events("downloadProgress")
 
     Constant("documentDirectory") {
-      Uri.fromFile(context.filesDir).toString() + "/"
+      Uri.fromFile(filesDirectory).toString() + "/"
     }
 
     Constant("cacheDirectory") {
-      Uri.fromFile(context.cacheDir).toString() + "/"
+      Uri.fromFile(cacheDirectory).toString() + "/"
     }
 
     Constant("bundleDirectory") {
@@ -42,11 +69,11 @@ class FileSystemModule : Module() {
     }
 
     Property("totalDiskSpace") {
-      File(context.filesDir.path).totalSpace
+      filesDirectory.totalSpace
     }
 
     Property("availableDiskSpace") {
-      File(context.filesDir.path).freeSpace
+      filesDirectory.freeSpace
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUUID: String? ->
@@ -132,22 +159,12 @@ class FileSystemModule : Module() {
         file.create(options ?: CreateOptions())
       }
 
-      Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
-        val append = options?.append ?: false
-        if (content.`is`(String::class)) {
-          content.get(String::class).let {
-            if (options?.encoding == EncodingType.BASE64) {
-              file.write(Base64.decode(it, Base64.DEFAULT), append)
-            } else {
-              file.write(it, append)
-            }
-          }
-        }
-        if (content.`is`(TypedArray::class)) {
-          content.get(TypedArray::class).let {
-            file.write(it, append)
-          }
-        }
+      AsyncFunction("write") Coroutine { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
+        writeToFile(file, content, options)
+      }
+
+      Function("writeSync") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
+        writeToFile(file, content, options)
       }
 
       AsyncFunction("text") { file: FileSystemFile ->
@@ -255,10 +272,16 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
-      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
+      AsyncFunction("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
-      Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+      Function("readBytesSync") { fileHandle: FileSystemFileHandle, bytes: Long ->
+        fileHandle.read(bytes)
+      }
+      AsyncFunction("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        fileHandle.write(data)
+      }
+      Function("writeBytesSync") { fileHandle: FileSystemFileHandle, data: ByteArray ->
         fileHandle.write(data)
       }
       Function("close") { fileHandle: FileSystemFileHandle ->

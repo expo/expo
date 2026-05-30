@@ -24,12 +24,28 @@ public final class ExpoUIModule: Module {
         return ObservableState(value: initial["value"])
       }
 
+      Property("__expo_ui_shared_object__") { (_: ObservableState) -> Bool in
+        true
+      }
+
       Function("getValue") { (state: ObservableState) -> Any in
         return state.value ?? NSNull()
       }
 
       Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
-        state.value = wrapper["value"]
+        let newValue = wrapper["value"]
+        // Update state on the UI thread
+        if Thread.isMainThread {
+          state.value = newValue
+        } else {
+          DispatchQueue.main.async {
+            state.value = newValue
+          }
+        }
+      }
+
+      Function("setOnChange") { (state: ObservableState, callback: WorkletCallback?) in
+        state.onChange = callback
       }
     }
 
@@ -109,13 +125,16 @@ public final class ExpoUIModule: Module {
       }
     }
 
-    // MARK: - Views don't support common view modifiers
+    // MARK: - Views that apply common view modifiers internally
+
+    View(HostView.self)
+    View(TextView.self)
+
+    // MARK: - Views that don't support common view modifiers
 
     View(SlotView.self)
     View(NamespaceView.self)
     View(GridRowView.self)
-    View(HostView.self)
-    View(TextView.self)
 
     // MARK: - Expo UI Views
 

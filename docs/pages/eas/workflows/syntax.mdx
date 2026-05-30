@@ -428,7 +428,7 @@ jobs:
 
 ### `jobs.<job_id>.env`
 
-Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `require-approval`, `doc`, `get-build` and `slack` jobs).
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `require-approval`, `doc`, `get-build`, and `slack` jobs).
 
 ```yaml
 jobs:
@@ -439,6 +439,25 @@ jobs:
       RETRY_COUNT: 3
       PREV_JOB_OUTPUT: ${{ needs.previous_job.outputs.some_output }}
     # @end #
+```
+
+### `jobs.<job_id>.hooks`
+
+Some pre-packaged jobs support hooks to run additional steps before or after the main job action (for example, `maestro-cloud`, `maestro`, and `submit`). Hook names are job-specific. See the job's documentation for the available hook keys.
+
+```yaml
+jobs:
+  maestro_test:
+    type: maestro-cloud
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+    hooks:
+      before_maestro_cloud:
+        - run: echo "Before upload"
+      after_maestro_cloud:
+        - run: echo "After upload"
 ```
 
 ### `jobs.<job_id>.defaults.run.working_directory`
@@ -582,7 +601,7 @@ jobs:
 
 ## Interpolation
 
-You can customize the behavior of a workflow &mdash; commands to execute, control flow, environment variables, build profile, app version, and more &mdash; based on the workflow run's context.
+You can customize the behavior of a workflow — commands to execute, control flow, environment variables, build profile, app version, and more — based on the workflow run's context.
 
 Use the `${{ expression }}` syntax to access context properties and functions. For example: `${{ github.ref_name }}` or `${{ needs.build_ios.outputs.build_id }}`.
 
@@ -1019,6 +1038,7 @@ jobs:
       platform: ios | android # required
       profile: string # optional, default: production
       message: string # optional
+      refresh_ad_hoc_provisioning_profile: boolean # optional
 ```
 
 This job outputs the following properties:
@@ -1153,6 +1173,9 @@ jobs:
       build_id: string # required
       profile: string # optional, default: production
       groups: string[] # optional
+    hooks:
+      before_submit: step[] # optional
+      after_submit: step[] # optional
 ```
 
 This job outputs the following properties:
@@ -1246,9 +1269,12 @@ jobs:
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
-      android_system_image_package: string # optional. Android emulator system image package to use.
+      android_system_image_package: string # optional. Android Emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
       output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+    hooks:
+      before_maestro_tests: step[] # optional
+      after_maestro_tests: step[] # optional
 ```
 
 #### `maestro-cloud`
@@ -1280,6 +1306,9 @@ jobs:
       name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
       branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, *not* whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
+    hooks:
+      before_maestro_cloud: step[] # optional. Steps to run before the Maestro Cloud upload.
+      after_maestro_cloud: step[] # optional. Steps to run after the Maestro Cloud upload.
 ```
 
 #### `slack`
@@ -1327,6 +1356,20 @@ This job outputs the following properties:
 {
   "comment_url": string | undefined  // URL of the posted GitHub comment
 }
+```
+
+#### `apple-device-registration-request`
+
+Pauses the workflow until an iOS device enrolls for an Apple Team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
+
+```yaml
+jobs:
+  register_device:
+    # @info #
+    type: apple-device-registration-request
+    params:
+      apple_team_identifier: string # optional
+    # @end #
 ```
 
 #### `require-approval`

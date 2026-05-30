@@ -42,7 +42,7 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     },
     {
         propName: 'EXPO_USE_PRECOMPILED_MODULES',
-        propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? false).toString(),
+        propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? true).toString(),
     },
 ], 'withIosBuildProperties');
 /** @deprecated use built-in `ios.deploymentTarget` property instead. */

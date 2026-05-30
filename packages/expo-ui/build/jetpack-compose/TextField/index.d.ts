@@ -1,7 +1,8 @@
 import type { Ref } from 'react';
 import type { ColorValue } from 'react-native';
-import type { ObservableState } from '../../State/useNativeState';
+import { type ObservableState } from '../../State';
 import type { ModifierConfig } from '../../types';
+import { type ShapeJSXElement } from '../Shape';
 /**
  * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
@@ -169,7 +170,12 @@ type BaseTextFieldProps = {
     onValueChange?: (value: string) => void;
     /** A callback triggered when the field gains or loses focus. */
     onFocusChanged?: (focused: boolean) => void;
-    shape?: object;
+    /**
+     * Shape used for the field's container outline/fill. Use the helpers from
+     * `Shape` (for example, `<Shape.Pill />` or `<Shape.RoundedCorner cornerRadii={...} />`).
+     * Defaults to the Material `OutlinedTextFieldDefaults.shape`/`TextFieldDefaults.shape`.
+     */
+    shape?: ShapeJSXElement;
     modifiers?: ModifierConfig[];
     /** Slot children (e.g. `TextField.Label`, `TextField.Placeholder`). */
     children?: React.ReactNode;

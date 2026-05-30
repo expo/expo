@@ -369,6 +369,7 @@ export function withExtendedResolver(
   const useExpoUnstableWebModule = env.EXPO_UNSTABLE_WEB_MODAL;
   const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
   const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
+  const disableNativeTabsMaterialSymbols = env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
@@ -604,10 +605,18 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ) {
-      const doResolve = getStrictResolver(context, platform);
+      // TODO(@kitten): replace and abstract doResolve logic, since it's unsafe and inefficient
+      function doResolve(moduleName: string) {
+        const projectRootContext: ResolutionContext = {
+          ...context,
+          nodeModulesPaths: [],
+          originModulePath: projectRootOriginPath,
+          disableHierarchicalLookup: false,
+        };
+        return getStrictResolver(projectRootContext, platform)(moduleName);
+      }
 
-      const result = doResolve(moduleName);
-
+      const result = getStrictResolver(context, platform)(moduleName);
       if (result.type !== 'sourceFile') {
         return result;
       }
@@ -631,6 +640,19 @@ export function withExtendedResolver(
         if (webModalModule) {
           debug('Using `_unstable-web-modal` implementation.');
           return webModalModule;
+        }
+      }
+
+      if (disableNativeTabsMaterialSymbols && platform === 'android') {
+        const materialIconConverterModule = doReplace(
+          'expo-router/build/native-tabs/utils/materialIconConverter.android.js',
+          'expo-router/build/native-tabs/utils/materialIconConverter-not-implemented.js'
+        );
+        if (materialIconConverterModule) {
+          debug(
+            'Disabling md support in NativeTabs to tree-shake `expo-symbols` from the Android bundle.'
+          );
+          return materialIconConverterModule;
         }
       }
 
@@ -728,6 +750,7 @@ export function withExtendedResolver(
         if (hmrModule) return hmrModule;
 
         if (useExpoUnstableLogBox) {
+          // TODO(@kitten): This can never resolve with isolated dependencies
           const logBoxModule = doReplace(
             'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
             '@expo/log-box/swap-rn-logbox.js'

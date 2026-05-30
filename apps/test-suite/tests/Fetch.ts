@@ -342,6 +342,41 @@ export function test({ describe, expect, it, ...t }) {
       expect(error).not.toBeNull();
     });
 
+    it('should abort request with AbortSignal.timeout', async () => {
+      const signal = AbortSignal.timeout(500);
+      let error: Error | null = null;
+      try {
+        await fetch('https://httpbin.io/delay/3', {
+          signal,
+        });
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(signal.aborted).toBe(true);
+      expect(signal.reason.name).toBe('TimeoutError');
+    });
+
+    it('should abort request with AbortSignal.any', async () => {
+      const controller = new AbortController();
+      const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(3000)]);
+      setTimeout(() => controller.abort(), 500);
+      let error: Error | null = null;
+      try {
+        await fetch('https://httpbin.io/delay/3', {
+          signal,
+        });
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(signal.aborted).toBe(true);
+    });
+
     it('should abort streaming request', async () => {
       const controller = new AbortController();
       setTimeout(() => controller.abort(), 5000);

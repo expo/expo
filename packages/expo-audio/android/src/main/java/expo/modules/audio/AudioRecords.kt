@@ -124,6 +124,7 @@ enum class AudioStreamEncoding(val value: String) : Enumerable {
   INT16("int16")
 }
 
+@OptimizedRecord
 class AudioStreamOptions : Record {
   @Field var sampleRate: Int = 48000
 

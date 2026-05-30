@@ -5,7 +5,7 @@
  * and TurboModule specs for third-party libraries.
  */
 
-import { execSync } from 'child_process';
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -197,27 +197,29 @@ export async function runCodegenAsync(
   // Ensure output directory exists
   await fs.ensureDir(outputPath);
 
-  // Build the codegen command
-  // The script expects:
-  // -p: path to the library (where package.json with codegenConfig is)
-  // -t: target platform (ios)
-  // -o: output path
-  // -s: source type (library for third-party packages)
-  const command = [
-    'node',
-    `"${codegenScript}"`,
-    `-p "${pkg.path}"`,
-    '-t ios',
-    `-o "${outputPath}"`,
-    '-s library',
-  ].join(' ');
-
   try {
-    execSync(command, {
-      stdio: 'pipe',
-      encoding: 'utf-8',
-      cwd: reactNativePath,
-    });
+    await spawnAsync(
+      'node',
+      [
+        codegenScript,
+        // -p: path to the library (where package.json with codegenConfig is)
+        '-p',
+        pkg.path,
+        // -t: target platform (ios)
+        '-t',
+        'ios',
+        // -o: output path
+        '-o',
+        outputPath,
+        // -s: source type (library for third-party packages)
+        '-s',
+        'library',
+      ],
+      {
+        stdio: 'pipe',
+        cwd: reactNativePath,
+      }
+    );
     // Write version stamp so we can detect staleness on next run
     VersionStamp.write(outputPath, getCodegenStampEntries(pkg), CODEGEN_STAMP_FILENAME);
     return true;

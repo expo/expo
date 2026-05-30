@@ -23,6 +23,7 @@ jest.mock('react-native-screens', () => {
 });
 
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
+const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
 it.each([
   { value: undefined, expected: false },
@@ -162,5 +163,59 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(TabsHost.mock.calls.at(-1)![0].direction).toBe('rtl');
+  });
+});
+
+// TODO: drop this describe block once react-native-screens honors its documented
+// fallback where `icon` is reused when `selectedIcon` is not provided.
+describe('selectedIcon fallback', () => {
+  it('mirrors drawable icon onto selectedIcon when no selected variant is provided', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon drawable="ic_home" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+      type: 'drawableResource',
+      name: 'ic_home',
+    });
+    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+      type: 'drawableResource',
+      name: 'ic_home',
+    });
+  });
+
+  it('does not override an explicitly provided selectedIcon', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              drawable={{ default: 'ic_home', selected: 'ic_home_filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+      type: 'drawableResource',
+      name: 'ic_home',
+    });
+    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+      type: 'drawableResource',
+      name: 'ic_home_filled',
+    });
   });
 });

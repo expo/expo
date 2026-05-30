@@ -1,5 +1,5 @@
 import AppMetrics from 'expo-app-metrics';
-import ExpoObserve, { useObserve } from 'expo-observe';
+import { Observe, useObserve } from 'expo-observe';
 import { checkForUpdateAsync, fetchUpdateAsync, reloadAsync, useUpdates } from 'expo-updates';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
 
@@ -18,7 +18,7 @@ export default function Index() {
   }
 
   async function handleDispatchEvents() {
-    await ExpoObserve.dispatchEvents();
+    await Observe.dispatchEvents();
   }
 
   async function handleClearStoredEntries() {

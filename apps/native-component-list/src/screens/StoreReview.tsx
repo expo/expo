@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   textContainer: {
     marginBottom: 16,

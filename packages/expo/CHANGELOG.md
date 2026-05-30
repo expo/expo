@@ -8,7 +8,51 @@
 
 ### 🐛 Bug fixes
 
+- Decompress `gzip` / `br` / `zstd` `expo/fetch` responses on Android even when the caller sets their own `Accept-Encoding` header. ([#46398](https://github.com/expo/expo/pull/46398) by [@zoontek](https://github.com/zoontek))
+- Fix `bodyUsed` leaking across siblings when fetch Response is cloned twice ([#46397](https://github.com/expo/expo/pull/46397) by [@zoontek](https://github.com/zoontek))
+- Prevent fatal `The stream is not in a state that permits close` in `expo/fetch` when native delivers `didComplete`/`didFailWithError` after the consumer has already canceled the body stream. ([#44909](https://github.com/expo/expo/pull/44909) by [@safaiyeh](https://github.com/safaiyeh))
+
 ### 💡 Others
+
+## 56.0.5 — 2026-05-26
+
+### 💡 Others
+
+- [fetch] Refine **CompressionInterceptor.kt** code. ([#46052](https://github.com/expo/expo/pull/46052) by [@kudo](https://github.com/kudo))
+
+## 56.0.4 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-20
+
+### 🎉 New features
+
+- [fetch][Android] Added `brotli`, `gzip`, and `zstd` decompression support. ([#45458](https://github.com/expo/expo/pull/45458) by [@kudo](https://github.com/kudo))
+- Added `AbortSignal.timeout`, `AbortSignal.any`, and `DOMException` to the native runtime. ([#45441](https://github.com/expo/expo/pull/45441) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix `expo/fetch` not threading through `Request#body` for `whatwg-fetch` request inputs ([#46027](https://github.com/expo/expo/pull/46027) by [@kitten](https://github.com/kitten))
+
+## 56.0.0-preview.13 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Fix `expo/fetch` not respecting its own `NativeRequest` as `RequestInit` inputs ([#45958](https://github.com/expo/expo/pull/45958) by [@kitten](https://github.com/kitten))
+- Accept `credentials: 'same-origin'` in `expo/fetch` mirroring `include` ([#45958](https://github.com/expo/expo/pull/45958) by [@kitten](https://github.com/kitten))
 
 ## 56.0.0-preview.12 — 2026-05-15
 

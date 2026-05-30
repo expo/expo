@@ -13,6 +13,7 @@ jest.mock('../ExpoFetchModule', () => {
   const helloWorld = new TextEncoder().encode('hello world');
 
   class StubNativeResponse {
+    private listeners = new Map<string, Set<(...args: any[]) => void>>();
     private _bodyUsed = false;
 
     // Getters on the prototype, like the real native binding, so super.x works.
@@ -36,9 +37,31 @@ jest.mock('../ExpoFetchModule', () => {
       return this._bodyUsed;
     }
 
-    addListener() {}
-    removeListener() {}
-    removeAllListeners() {}
+    addListener(event: string, listener: (...args: any[]) => void) {
+      if (!this.listeners.has(event)) {
+        this.listeners.set(event, new Set());
+      }
+      this.listeners.get(event)!.add(listener);
+    }
+
+    removeListener(event: string, listener: (...args: any[]) => void) {
+      this.listeners.get(event)?.delete(listener);
+    }
+
+    removeAllListeners(event: string) {
+      this.listeners.delete(event);
+    }
+
+    emit(event: string, ...args: any[]) {
+      const listeners = this.listeners.get(event);
+      if (!listeners) {
+        return;
+      }
+
+      for (const listener of listeners) {
+        listener(...args);
+      }
+    }
 
     async arrayBuffer(): Promise<ArrayBuffer> {
       this._bodyUsed = true;
@@ -79,6 +102,41 @@ describe('FetchResponse', () => {
     expect(Object.prototype.toString.call(FetchResponse.prototype)).toBe('[object Response]');
   });
 
+  it('does not throw when native emits didComplete after the stream was canceled', async () => {
+    // Repros expo/expo#34804: native can deliver didComplete after the JS
+    // consumer has already canceled the stream. Before the fix this would
+    // call controller.close() on an already-closed controller and throw
+    // "The stream is not in a state that permits close" out of the event
+    // listener, surfacing as a fatal unhandled error.
+    const response = makeResponse();
+    const body = response.body!;
+    const reader = body.getReader();
+
+    await reader.cancel('consumer canceled');
+    expect(() => (response as any).emit('didComplete')).not.toThrow();
+  });
+
+  it('does not throw when native emits didFailWithError after the stream was canceled', async () => {
+    const response = makeResponse();
+    const body = response.body!;
+    const reader = body.getReader();
+
+    await reader.cancel('consumer canceled');
+    expect(() => (response as any).emit('didFailWithError', 'late error')).not.toThrow();
+  });
+
+  it('does not throw when native emits didComplete twice', async () => {
+    const response = makeResponse();
+    const body = response.body!;
+    const reader = body.getReader();
+    const readPromise = reader.read();
+
+    (response as any).emit('didComplete');
+    expect(() => (response as any).emit('didComplete')).not.toThrow();
+
+    await readPromise;
+  });
+
   describe('clone()', () => {
     it('returns a Response that exposes the same metadata', () => {
       const response = makeResponse();
@@ -114,6 +172,25 @@ describe('FetchResponse', () => {
       const reCloned = cloned.clone();
       const bytes = await reCloned.arrayBuffer();
       expect(bytes.byteLength).toBe(11);
+    });
+
+    it('does not flip bodyUsed on siblings when a second clone is read', async () => {
+      const response = makeResponse();
+      const second = response.clone();
+      const third = response.clone();
+
+      await third.json().catch(() => {});
+
+      expect(response.bodyUsed).toBe(false);
+      expect(second.bodyUsed).toBe(false);
+      expect(third.bodyUsed).toBe(true);
+    });
+
+    it('lets the original be read after being cloned twice', async () => {
+      const response = makeResponse();
+      response.clone();
+      response.clone();
+      expect((await response.arrayBuffer()).byteLength).toBe(11);
     });
 
     it('throws a TypeError if the body has already been read', async () => {

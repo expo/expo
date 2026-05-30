@@ -75,7 +75,7 @@ jobs:
           path: packages/expo-dev-client/artifacts
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
-        if: failure() && github.repository == 'expo/expo'
+        if: failure()
         with:
           webhook: ${{ secrets.slack_webhook_dev_client }}
           channel: '#dev-clients'

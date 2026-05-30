@@ -8,16 +8,17 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`TextInput`](../universal/textinput) — it renders the appropriate native component per platform.
 
 Expo UI TextField matches the official SwiftUI [TextField API](https://developer.apple.com/documentation/swiftui/textfield) and supports single-line and multiline input, keyboard configuration, submit handling, and an imperative `ref` for programmatic control.
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/textfield/ios-light.webp"
-  darkSource="/static/images/expo-ui/textfield/ios-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/textfield/ios-light.webp"
+  darkSrc="/static/images/expo-ui/textfield/ios-dark.webp"
   alt="TextField and SecureField inside a Form"
 />
 
@@ -186,27 +187,30 @@ When `onTextChange` is marked with the `'worklet'` directive, it runs synchronou
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { keyboardType } from '@expo/ui/swift-ui/modifiers';
-import { useEffectEvent } from 'react';
+import { useCallback } from 'react';
 
 export default function WorkletPhoneMaskExample() {
   const phone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
 
-  const handleTextChange = useEffectEvent((v: string) => {
-    'worklet';
-    const digits = v.replace(/\D/g, '').slice(0, 10);
-    let formatted = digits;
-    if (digits.length > 6) {
-      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-    } else if (digits.length > 3) {
-      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-    }
-    if (formatted !== v) {
-      phone.value = formatted;
-      // Snaps to end for demo. Real masks need smarter cursor handling.
-      selection.value = { start: formatted.length, end: formatted.length };
-    }
-  });
+  const handleTextChange = useCallback(
+    (v: string) => {
+      'worklet';
+      const digits = v.replace(/\D/g, '').slice(0, 10);
+      let formatted = digits;
+      if (digits.length > 6) {
+        formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+      } else if (digits.length > 3) {
+        formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+      }
+      if (formatted !== v) {
+        phone.value = formatted;
+        // Snaps to end for demo. Real masks need smarter cursor handling.
+        selection.value = { start: formatted.length, end: formatted.length };
+      }
+    },
+    [phone, selection]
+  );
 
   return (
     <Host matchContents>

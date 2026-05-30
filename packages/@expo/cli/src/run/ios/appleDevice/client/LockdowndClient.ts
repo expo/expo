@@ -116,7 +116,7 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
   }
 
   async startSession(pairRecord: UsbmuxdPairRecord) {
-    debug(`startSession: ${pairRecord}`);
+    debug('startSession');
 
     const resp = await this.protocolClient.sendMessage({
       Request: 'StartSession',

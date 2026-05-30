@@ -1,9 +1,9 @@
 import type { Android, ExpoConfig, IOS } from '@expo/config-types';
+import { resolveFrom } from '@expo/require-utils';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
 import { boolish } from 'getenv';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 import * as AndroidVersion from '../android/Version';
@@ -17,8 +17,8 @@ export type ExpoConfigUpdates = Pick<
 export const FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
 
 export function getExpoUpdatesPackageVersion(projectRoot: string): string | null {
-  const expoUpdatesPackageJsonPath = resolveFrom.silent(projectRoot, 'expo-updates/package.json');
-  if (!expoUpdatesPackageJsonPath || !fs.existsSync(expoUpdatesPackageJsonPath)) {
+  const expoUpdatesPackageJsonPath = resolveFrom(projectRoot, 'expo-updates/package.json');
+  if (!expoUpdatesPackageJsonPath) {
     return null;
   }
   const packageJson = JSON.parse(fs.readFileSync(expoUpdatesPackageJsonPath, 'utf8'));

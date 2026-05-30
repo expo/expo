@@ -31,7 +31,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
-import okhttp3.brotli.BrotliInterceptor
 import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
@@ -76,7 +75,7 @@ class FileDownloader(
     .cache(getCache())
     .connectTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
     .readTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
-    .addInterceptor(BrotliInterceptor)
+    .addInterceptor(CompressionInterceptor)
     .build()
 
   /**

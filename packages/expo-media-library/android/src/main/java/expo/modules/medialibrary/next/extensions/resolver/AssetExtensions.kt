@@ -40,6 +40,10 @@ suspend fun ContentResolver.queryAssetData(contentUri: Uri): String? =
 suspend fun ContentResolver.queryAssetBucketId(contentUri: Uri): Int? =
   queryOne(contentUri, AssetMediaStoreProperty.BucketId.column, Cursor::getInt)
 
+@RequiresApi(Build.VERSION_CODES.Q)
+suspend fun ContentResolver.queryAssetIsFavorite(contentUri: Uri): Boolean =
+  queryOne(contentUri, AssetMediaStoreProperty.IsFavorite.column, Cursor::getInt) == 1
+
 suspend fun ContentResolver.queryAssetMediaStoreItem(
   contentUri: Uri
 ): AssetMediaStoreItem? = withContext(Dispatchers.IO) {

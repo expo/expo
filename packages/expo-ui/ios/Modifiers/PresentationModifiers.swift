@@ -205,3 +205,17 @@ internal struct InteractiveDismissDisabledModifier: ViewModifier, Record {
     content.interactiveDismissDisabled(isDisabled)
   }
 }
+
+// MARK: - Presentation Background
+
+internal struct PresentationBackgroundModifier: ViewModifier, Record {
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.4, tvOS 16.4, *), let color {
+      content.presentationBackground(color)
+    } else {
+      content
+    }
+  }
+}

@@ -1,7 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "55.0.0",
-  "betaVersion": "56.0.0",
+  "version": "56.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -85,7 +84,7 @@
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.9.3",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@oxlint/plugins": "^1.62.0",
     "@tailwindcss/postcss": "^4.2.2",
     "@tailwindcss/typography": "^0.5.19",

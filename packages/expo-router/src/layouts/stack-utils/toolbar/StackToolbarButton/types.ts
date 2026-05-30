@@ -1,4 +1,4 @@
-import type { ImageRef } from 'expo-image';
+import { SharedRef } from 'expo';
 import type { ReactNode } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -103,7 +103,7 @@ export interface StackToolbarButtonProps {
    *
    * @platform ios
    */
-  image?: ImageRef;
+  image?: InstanceType<SharedRef<'image'>> | null;
   /**
    * Controls how image-based icons are rendered.
    *
@@ -172,7 +172,7 @@ export interface NativeToolbarButtonProps {
   hidesSharedBackground?: boolean;
   icon?: SFSymbol;
   xcassetName?: string;
-  image?: ImageRef;
+  image?: InstanceType<SharedRef<'image'>> | null;
   imageRenderingMode?: 'template' | 'original';
   onPress?: () => void;
   possibleTitles?: string[];

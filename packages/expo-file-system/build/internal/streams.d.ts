@@ -5,13 +5,13 @@ export declare class FileSystemReadableStreamSource implements UnderlyingByteSou
     type: "bytes";
     constructor(handle: FileHandle);
     cancel(): void;
-    pull(controller: ReadableByteStreamController): void;
+    pull(controller: ReadableByteStreamController): Promise<void>;
 }
 export declare class FileSystemWritableSink implements UnderlyingSink {
     handle: FileHandle;
     constructor(handle: FileHandle);
     abort(): void;
     close(): void;
-    write(chunk: Uint8Array): void;
+    write(chunk: Uint8Array): Promise<void>;
 }
 //# sourceMappingURL=streams.d.ts.map

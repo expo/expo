@@ -271,6 +271,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
             navigationEvents_1.unstable_navigationEvents.emit('pagePreloaded', {
                 pathname: routeInfo.pathname,
                 params: routeInfo.params,
+                segments: routeInfo.segments,
                 screenId,
             });
         }
@@ -281,12 +282,13 @@ function AnalyticsListeners({ navigation, screenId, }) {
                 navigationEvents_1.unstable_navigationEvents.emit('pageRemoved', {
                     pathname: routeInfo.pathname,
                     params: routeInfo.params,
+                    segments: routeInfo.segments,
                     screenId,
                 });
             };
         }
         return () => { };
-    }, [routeInfo?.params, routeInfo?.pathname, screenId]);
+    }, [routeInfo?.params, routeInfo?.pathname, routeInfo?.segments, screenId]);
     // Emit `pageFocused` from an effect — not during render — so it fires after the
     // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
     (0, react_2.useEffect)(() => {
@@ -294,11 +296,12 @@ function AnalyticsListeners({ navigation, screenId, }) {
             navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
                 pathname: routeInfo.pathname,
                 params: routeInfo.params,
+                segments: routeInfo.segments,
                 screenId,
             });
             hasBlurredRef.current = false;
         }
-    }, [isFocused, routeInfo?.pathname, routeInfo?.params, screenId]);
+    }, [isFocused, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
     (0, react_2.useEffect)(() => {
         if (routeInfo) {
             const cleanFocus = navigation.addListener('focus', () => {
@@ -308,6 +311,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
                     navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
                         pathname: routeInfo.pathname,
                         params: routeInfo.params,
+                        segments: routeInfo.segments,
                         screenId,
                     });
                     hasBlurredRef.current = false;
@@ -317,6 +321,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
                 navigationEvents_1.unstable_navigationEvents.emit('pageBlurred', {
                     pathname: routeInfo.pathname,
                     params: routeInfo.params,
+                    segments: routeInfo.segments,
                     screenId,
                 });
                 hasBlurredRef.current = true;
@@ -327,7 +332,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
             };
         }
         return () => { };
-    }, [navigation, routeInfo?.pathname, routeInfo?.params, screenId]);
+    }, [navigation, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
     return null;
 }
 function screenOptionsFactory(route, options) {

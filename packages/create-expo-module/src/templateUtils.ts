@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import { usesCompose, usesExpoUI, usesSwiftUI } from './features';
 import type { Platform } from './prompts';
 import {
   buildAppSnippets,
@@ -65,6 +66,10 @@ export function handleSuffix(name: string, suffix: string): string {
     return name;
   }
   return `${name}${suffix}`;
+}
+
+function lowerFirst(value: string): string {
+  return value.charAt(0).toLowerCase() + value.slice(1);
 }
 
 /**
@@ -249,6 +254,16 @@ export async function buildAugmentedData(
   );
   const moduleNamedImports: string[] = [];
   if (features.includes('View')) moduleNamedImports.push(data.project.viewName);
+  if (features.includes('SwiftUIView')) moduleNamedImports.push(data.project.swiftUIViewName);
+  if (features.includes('ComposeView')) moduleNamedImports.push(data.project.composeViewName);
+  if (features.includes('SwiftUIModifier')) {
+    const fnName = lowerFirst(data.project.swiftUIModifierName);
+    moduleNamedImports.push(fnName);
+  }
+  if (features.includes('ComposeModifier')) {
+    const fnName = lowerFirst(data.project.composeModifierName);
+    moduleNamedImports.push(fnName);
+  }
   if (features.includes('SharedObject'))
     moduleNamedImports.push(`use${data.project.sharedObjectName}`);
 
@@ -282,6 +297,9 @@ export async function buildAugmentedData(
     appReactImportSnippets,
     appHookSnippets,
     appJSXSnippets,
+    usesSwiftUI: usesSwiftUI(features),
+    usesCompose: usesCompose(features),
+    usesExpoUI: usesExpoUI(features),
   };
 }
 

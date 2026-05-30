@@ -83,6 +83,20 @@ fi
 `,
     });
 
+    const targetPhases: { value: string; comment?: string }[] =
+      project.pbxNativeTargetSection()[nativeTargetId]?.buildPhases ?? [];
+    const addedIdx = targetPhases.findIndex((p) => p.comment === buildPhaseName);
+    if (addedIdx >= 0) {
+      const [added] = targetPhases.splice(addedIdx, 1);
+      if (added) {
+        const firstEmbedIdx = targetPhases.findIndex((p) =>
+          /^Embed |^\[CP\] Embed /.test(p.comment ?? '')
+        );
+        const insertIdx = firstEmbedIdx >= 0 ? firstEmbedIdx : targetPhases.length;
+        targetPhases.splice(insertIdx, 0, added);
+      }
+    }
+
     return config;
   });
 };

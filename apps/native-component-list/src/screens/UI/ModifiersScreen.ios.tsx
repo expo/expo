@@ -68,6 +68,7 @@ import {
   contentShape,
   shapes,
   resizable,
+  tint,
 } from '@expo/ui/swift-ui/modifiers';
 import { useAssets } from 'expo-asset';
 import { useState } from 'react';
@@ -131,7 +132,9 @@ export default function ModifiersScreen() {
 
   return (
     <ScrollView>
-      <Host matchContents>
+      <Host
+        matchContents
+        modifiers={[tint('#FF6B6B'), font({ size: 16, weight: 'medium', design: 'rounded' })]}>
         <Form
           modifiers={[
             scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
@@ -270,6 +273,18 @@ export default function ModifiersScreen() {
                 <Text modifiers={[font({ size: 20 }), monospacedDigit()]}>0000000000</Text>
               </VStack>
             </HStack>
+
+            {/* Dynamic Type */}
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>
+                Dynamic Type (try Settings &gt; Accessibility &gt; Larger Text)
+              </Text>
+              <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>
+                largeTitle scales
+              </Text>
+              <Text modifiers={[font({ textStyle: 'body' })]}>body scales</Text>
+              <Text modifiers={[font({ textStyle: 'caption' })]}>caption scales</Text>
+            </VStack>
 
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>

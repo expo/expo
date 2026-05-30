@@ -1,8 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import type { ObservableState } from '../../State/useNativeState';
-import { getStateId } from '../../State/utils';
+import { getStateId, type ObservableState } from '../../State';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 

@@ -449,7 +449,9 @@ export const getVersionsInfoAsync = async (options: {
         .replace(/^v/i, '')
         .trim();
 
-    const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED === '1';
+    // Matches hermes-engine.podspec polarity: V1 is the default, classic is
+    // selected only when the consuming app explicitly sets the env var to "0".
+    const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED !== '0';
     const version = isHermesV1Enabled
       ? properties.HERMES_V1_VERSION_NAME
       : properties.HERMES_VERSION_NAME;

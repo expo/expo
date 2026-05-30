@@ -10,6 +10,7 @@ exports.getGitIgnoreSourcesAsync = getGitIgnoreSourcesAsync;
 exports.getCoreAutolinkingSourcesFromRncCliAsync = getCoreAutolinkingSourcesFromRncCliAsync;
 exports.getCoreAutolinkingSourcesFromExpoAndroid = getCoreAutolinkingSourcesFromExpoAndroid;
 exports.getCoreAutolinkingSourcesFromExpoIos = getCoreAutolinkingSourcesFromExpoIos;
+const env_1 = require("@expo/env");
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
@@ -82,7 +83,10 @@ async function getCoreAutolinkingSourcesFromRncCliAsync(projectRoot, options, us
         return [];
     }
     try {
-        const { stdout } = await (0, spawn_async_1.default)('npx', ['react-native', 'config'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('npx', ['react-native', 'config'], {
+            cwd: projectRoot,
+            env: (0, env_1.getOriginalEnv)(),
+        });
         const config = JSON.parse(stdout);
         const results = await parseCoreAutolinkingSourcesAsync({
             config,
@@ -108,7 +112,10 @@ async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, us
         'android',
     ];
     try {
-        const { stdout } = await (0, spawn_async_1.default)('node', args, { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('node', args, {
+            cwd: projectRoot,
+            env: (0, env_1.getOriginalEnv)(),
+        });
         const config = JSON.parse(stdout);
         const results = await parseCoreAutolinkingSourcesAsync({
             config,
@@ -134,7 +141,7 @@ async function getCoreAutolinkingSourcesFromExpoIos(projectRoot, options, useRNC
             '--json',
             '--platform',
             'ios',
-        ], { cwd: projectRoot });
+        ], { cwd: projectRoot, env: (0, env_1.getOriginalEnv)() });
         const config = JSON.parse(stdout);
         const results = await parseCoreAutolinkingSourcesAsync({
             config,
@@ -154,7 +161,7 @@ async function parseCoreAutolinkingSourcesAsync({ config, reasons, contentsId, p
         ? `react-native core autolinking dir for ${platform}`
         : 'react-native core autolinking dir';
     const results = [];
-    const { root } = config;
+    const root = await (0, Utils_1.maybeGetRealPathAsync)(config.root);
     const autolinkingConfig = {};
     for (const [depName, depData] of Object.entries(config.dependencies)) {
         try {

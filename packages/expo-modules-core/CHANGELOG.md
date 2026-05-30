@@ -6,11 +6,46 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [android] Fix nested `Host` double-composing children. ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong))
+
+### 💡 Others
+
+- Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.13 — 2026-05-26
+
+### 🎉 New features
+
+- [Android] Create Compose props without View. ([#46256](https://github.com/expo/expo/pull/46256) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- Native view config attributes now carry a `process` function that unwraps shared objects to their registry id, so callers can pass shared objects directly as view props instead of unwrapping them manually. ([#46212](https://github.com/expo/expo/pull/46212) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.12 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- [Android] Suppress `-Wunused-result` compiler warning in `FrontendConverter.cpp`. ([#46073](https://github.com/expo/expo/pull/46073) by [@tomekzaw](https://github.com/tomekzaw))
+
+## 56.0.11 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [iOS] Fix occasional `SharedObject.emit` crashes caused by an off-thread JSI lookup. ([#45986](https://github.com/expo/expo/pull/45986) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.10 — 2026-05-19
+
+### 🎉 New features
+
 - [iOS] `Decodable` types can now be used as native function arguments. JS values are decoded through the dynamic-type registry, so arrays, dictionaries, optionals, `RawRepresentable` enums and `Convertible`s are coerced consistently. ([#45705](https://github.com/expo/expo/pull/45705) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Keep `ExpoComposeView` content visible during parent view transitions (e.g., `react-native-screens` pop navigation). ([#45942](https://github.com/expo/expo/pull/45942) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 56.0.9 — 2026-05-15
 

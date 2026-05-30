@@ -1,19 +1,14 @@
 {
   "name": "@expo/metro-config",
-  "version": "56.0.9",
+  "version": "56.0.13",
   "description": "A Metro config for running React Native projects with the Metro bundler",
-  "main": "build/ExpoMetroConfig.js",
-  "types": "build/ExpoMetroConfig.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/ExpoMetroConfig.d.ts",
-      "require": "./build/ExpoMetroConfig.js",
-      "default": "./build/ExpoMetroConfig.js"
-    },
-    "./exports": {
-      "types": "./build/exports.d.ts",
-      "require": "./build/exports.js",
-      "default": "./build/exports.js"
+      "types": "./build/index.d.ts",
+      "require": "./build/index.js",
+      "default": "./build/index.js"
     },
     "./babel-transformer": {
       "types": "./build/babel-transformer.d.ts",
@@ -57,19 +52,18 @@
   "files": [
     "build",
     "file-store",
-    "babel-transformer",
-    "exports.d.ts",
-    "exports.js"
+    "babel-transformer"
   ],
   "dependencies": {
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
-    "@expo/config": "workspace:~56.0.6",
-    "@expo/env": "workspace:~2.2.0",
-    "@expo/json-file": "workspace:~10.1.0",
+    "@expo/config": "workspace:~56.0.9",
+    "@expo/env": "workspace:~2.3.0",
+    "@expo/json-file": "workspace:~10.2.0",
     "@expo/metro": "~56.0.0",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/require-utils": "workspace:^56.1.3",
+    "@expo/spawn-async": "^1.8.0",
     "@jridgewell/gen-mapping": "^0.3.13",
     "@jridgewell/remapping": "^2.3.5",
     "@jridgewell/sourcemap-codec": "^1.5.5",

@@ -1,5 +1,5 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
-import * as Calendar from 'expo-calendar';
+import * as Calendar from 'expo-calendar/legacy';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -7,7 +7,6 @@ import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-import Colors from '../constants/Colors';
 import { optionalRequire } from '../navigation/routeBuilder';
 
 export const CalendarsScreens = [
@@ -174,7 +173,6 @@ CalendarsScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.greyBackground,
     paddingHorizontal: 10,
     paddingVertical: 16,
     flex: 1,

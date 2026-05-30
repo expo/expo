@@ -10,6 +10,41 @@
 
 ### 💡 Others
 
+## 56.0.15 — 2026-05-26
+
+### 🎉 New features
+
+- [Android] Create base android package. ([#46090](https://github.com/expo/expo/pull/46090) by [@jakex7](https://github.com/jakex7))
+- [plugin] Create config plugin for android. ([#46091](https://github.com/expo/expo/pull/46091) by [@jakex7](https://github.com/jakex7))
+- [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- Allow string widget family values in the typed config plugin. ([#46133](https://github.com/expo/expo/issues/46133) by [@eliotgevers](https://github.com/eliotgevers))
+- [plugin] Inherit `ios.deploymentTarget` from app config for generated widget extension targets. ([#46193](https://github.com/expo/expo/pull/46193) by [@eliotgevers](https://github.com/eliotgevers))
+
+## 56.0.14 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.11 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-19
+
+### 💡 Others
+
 - Validate/sanitize config-plugin inputs more comprehensively ([#45884](https://github.com/expo/expo/pull/45884) by [@kitten](https://github.com/kitten))
 
 ## 56.0.9 — 2026-05-15

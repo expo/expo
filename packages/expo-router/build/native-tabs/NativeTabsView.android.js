@@ -10,23 +10,11 @@ const appearance_1 = require("./appearance");
 const types_1 = require("./types");
 const optionsIconConverter_1 = require("./utils/optionsIconConverter");
 function NativeTabsView(props) {
-    const { disableIndicator, tabBarRespectsIMEInsets, tabs, unstable_nativeProps } = props;
+    const { tabBarRespectsIMEInsets, tabs, unstable_nativeProps } = props;
     const { android: rawAndroidProps, ios: _ignoredRawIosProps, ...rawHostRestProps } = unstable_nativeProps ?? {};
     const { selectedScreenKey, provenance } = (0, NativeTabsView_shared_1.useSelectedScreenKey)(props);
     const onTabSelected = (0, NativeTabsView_shared_1.useOnTabSelectedHandler)(props.onTabChange);
-    // TODO(@ubax): add per screen labelVisibilityMode + validation function
-    let labelVisibilityMode = props.labelVisibilityMode;
-    if (labelVisibilityMode && !supportedTabBarItemLabelVisibilityModesSet.has(labelVisibilityMode)) {
-        console.warn(`Unsupported labelVisibilityMode: ${labelVisibilityMode}. Supported values are: ${types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`);
-        labelVisibilityMode = undefined;
-    }
-    const androidAppearances = tabs.map((tab) => (0, appearance_1.createAndroidScreenAppearance)({
-        options: tab.options,
-        tintColor: props.tintColor,
-        rippleColor: props.rippleColor,
-        disableIndicator,
-        labelVisibilityMode,
-    }));
+    const androidAppearances = (0, react_1.useMemo)(() => tabs.map((tab) => (0, appearance_1.createAndroidScreenAppearance)(sanitizeAndroidOptions(tab.options))), [tabs]);
     const children = tabs.map((tab, index) => ((0, jsx_runtime_1.jsx)(Screen, { routeKey: tab.routeKey, name: tab.name, options: tab.options, isFocused: selectedScreenKey === tab.routeKey, androidAppearance: androidAppearances[index], contentRenderer: tab.contentRenderer }, tab.routeKey)));
     if (children.length === 0) {
         return null;
@@ -40,7 +28,7 @@ function Screen(props) {
     const { options, androidAppearance, contentRenderer } = props;
     const shared = (0, NativeTabsView_shared_1.useSharedScreenProps)(props);
     const androidIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.icon);
-    const androidSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.selectedIcon);
+    const androidSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.selectedIcon ?? shared.icon);
     const content = (0, jsx_runtime_1.jsx)(NativeTabsView_shared_1.ScreenContent, { options: options, contentRenderer: contentRenderer });
     const wrappedContent = (0, react_1.useMemo)(() => {
         if (!options.disableAutomaticContentInsets) {
@@ -60,4 +48,12 @@ function Screen(props) {
         }, title: shared.title, preventNativeSelection: options.disabled, ...shared.nativeRestOverrides, screenKey: shared.screenKey, children: wrappedContent }));
 }
 const supportedTabBarItemLabelVisibilityModesSet = new Set(types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES);
+function sanitizeAndroidOptions(options) {
+    if (options.labelVisibilityMode &&
+        !supportedTabBarItemLabelVisibilityModesSet.has(options.labelVisibilityMode)) {
+        console.warn(`Unsupported labelVisibilityMode: ${options.labelVisibilityMode}. Supported values are: ${types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`);
+        return { ...options, labelVisibilityMode: undefined };
+    }
+    return options;
+}
 //# sourceMappingURL=NativeTabsView.android.js.map

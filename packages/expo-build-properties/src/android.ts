@@ -369,7 +369,10 @@ export function updateAndroidSettingsGradle({
 }
 
 export const withAndroidPrecompiledHeaders: ConfigPlugin<PluginConfigType> = (config, props) => {
-  if (!props.android?.usePrecompiledHeaders) {
+  if (
+    !props.android?.usePrecompiledHeaders &&
+    process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS !== '1'
+  ) {
     return config;
   }
 

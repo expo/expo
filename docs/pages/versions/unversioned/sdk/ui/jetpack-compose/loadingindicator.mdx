@@ -8,14 +8,15 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Loading Indicators match the official Jetpack Compose [Loading Indicator API](https://m3.material.io/components/loading-indicator/overview).
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/loadingindicator/android-light.webp"
-  darkSource="/static/images/expo-ui/loadingindicator/android-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/loadingindicator/android-light.webp"
+  darkSrc="/static/images/expo-ui/loadingindicator/android-dark.webp"
   alt="Default and contained loading indicators in indeterminate mode"
 />
 

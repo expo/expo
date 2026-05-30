@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.annotation.UiThread
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
@@ -127,6 +128,8 @@ abstract class ExpoComposeView<T : ComposeProps>(
     recomposeScope = currentRecomposeScope
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+      // Hosting children render themselves via their own ComposeView; skip to avoid double-rendering.
+      if (child.shouldUseAndroidLayout) continue
       key(child) {
         with(composableScope ?: ComposableScope()) {
           with(child) {
@@ -142,6 +145,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
     recomposeScope = currentRecomposeScope
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+      if (child.shouldUseAndroidLayout) continue
       if (!filter(child)) {
         continue
       }
@@ -159,6 +163,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   fun Child(composableScope: ComposableScope, index: Int) {
     recomposeScope = currentRecomposeScope
     val child = getChildAt(index) as? ExpoComposeView<*> ?: return
+    if (child.shouldUseAndroidLayout) return
     key(child) {
       with(composableScope) {
         with(child) {
@@ -218,7 +223,41 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   override fun onViewRemoved(child: View?) {
     super.onViewRemoved(child)
+    // Keep compose views alive when view is transitioning
+    // e.g. pop transition from RN screens https://github.com/expo/expo/issues/45914
+    if (child != null && isViewTransitioning(child)) {
+      return
+    }
     recomposeScope?.invalidate()
+  }
+
+  // Children currently animating out via startViewTransition. While a view is in this set,
+  // onViewRemoved skips invalidating the recompose scope so the child's compose subtree
+  // stays alive for the duration of the transition. Mirrors ViewGroup.mTransitioningViews.
+  private val transitioningChildren: MutableSet<View> = mutableSetOf()
+
+  override fun startViewTransition(view: View) {
+    super.startViewTransition(view)
+    if (view.parent == this) {
+      transitioningChildren.add(view)
+    }
+  }
+
+  override fun endViewTransition(view: View) {
+    super.endViewTransition(view)
+    if (transitioningChildren.remove(view) && view.parent != this) {
+      recomposeScope?.invalidate()
+    }
+  }
+
+  @UiThread
+  private fun isViewTransitioning(view: View): Boolean {
+    return transitioningChildren.contains(view)
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    transitioningChildren.clear()
   }
 }
 

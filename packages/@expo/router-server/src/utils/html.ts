@@ -28,6 +28,10 @@ export function escapeUnsafeCharacters(str: string): string {
   return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match] ?? match);
 }
 
+function escapeHtmlAttribute(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 /**
  * Returns a newline-separated `<link rel="preload">` and `<link rel="stylesheet">` pair for each
  * CSS href.
@@ -37,10 +41,13 @@ export function escapeUnsafeCharacters(str: string): string {
  */
 export function createInjectedCssAsString(hrefs: string[]): string {
   return hrefs
-    .flatMap((href) => [
-      `<link rel="preload" href="${href}" as="style">`,
-      `<link rel="stylesheet" href="${href}">`,
-    ])
+    .flatMap((href) => {
+      const safeHref = escapeHtmlAttribute(href);
+      return [
+        `<link rel="preload" href="${safeHref}" as="style">`,
+        `<link rel="stylesheet" href="${safeHref}">`,
+      ];
+    })
     .join('\n');
 }
 
@@ -51,7 +58,7 @@ export function createInjectedCssAsString(hrefs: string[]): string {
  * HTML document's `<body>` element.
  */
 export function createInjectedScriptsAsString(srcs: string[]): string {
-  return srcs.map((src) => `<script src="${src}" defer></script>`).join('\n');
+  return srcs.map((src) => `<script src="${escapeHtmlAttribute(src)}" defer></script>`).join('\n');
 }
 
 /**

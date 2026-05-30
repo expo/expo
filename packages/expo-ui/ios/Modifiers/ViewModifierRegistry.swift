@@ -1806,6 +1806,10 @@ extension ViewModifierRegistry {
     register("interactiveDismissDisabled") { params, appContext, _ in
       return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
     }
+    
+    register("presentationBackground") { params, appContext, _ in
+      return try PresentationBackgroundModifier(from: params, appContext: appContext)
+    }
 
     register("listStyle") { params, appContext, _ in
       return try ListStyleModifier(from: params, appContext: appContext)
@@ -1849,6 +1853,14 @@ extension ViewModifierRegistry {
 
     register("symbolEffect") { params, appContext, _ in
       return try SymbolEffectModifier(from: params, appContext: appContext)
+    }
+
+    register("onScrollPhaseChange") { params, appContext, eventDispatcher in
+      return try OnScrollPhaseChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("onScrollGeometryChange") { params, appContext, eventDispatcher in
+      return try OnScrollGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
   }
 }

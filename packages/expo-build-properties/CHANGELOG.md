@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 56.0.15 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- Fix `useHermesV1` reference to document its current default of `true` (Hermes V1 is the default engine since SDK 56) and that disabling it requires `buildReactNativeFromSource`. ([#46211](https://github.com/expo/expo/pull/46211) by [@yaminyassin](https://github.com/yaminyassin))
+
+## 56.0.14 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Default `ios.usePrecompiledModules` to `true` so the plugin matches the Podfile default (precompiled modules enabled) instead of silently disabling them. ([#46159](https://github.com/expo/expo/pull/46159) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.9 — 2026-05-15
 
 _This version does not introduce any user-facing changes._

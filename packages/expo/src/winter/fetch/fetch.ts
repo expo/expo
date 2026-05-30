@@ -11,8 +11,25 @@ import {
 import type { FetchRequestInit, FetchRequestLike } from './fetch.types';
 
 /** Returns if `input` is a Request object */
-const isRequest = (input: any): input is FetchRequestLike =>
-  input != null && typeof input === 'object' && 'body' in input;
+const isRequest = (input: any): input is FetchRequestLike => {
+  if (input == null || typeof input !== 'object') {
+    return false;
+  } else {
+    return 'body' in input || input instanceof Request || input[Symbol.toStringTag] === 'Request';
+  }
+};
+
+const dangerouslyGetBodyFromRequest = (
+  input: FetchRequestLike | FetchRequestInit | undefined
+): BodyInit | null => {
+  if (input != null && input instanceof Request && '_bodyInit' in input) {
+    // NOTE(@kitten): whatwg-fetch has a hidden property for the body input
+    // TODO(@kitten): We should have our own Request class implementation
+    return (input as any)._noBody !== true ? (input as any)._bodyInit : null;
+  } else {
+    return input?.body ?? null;
+  }
+};
 
 // TODO(@kitten): Do we really want to use our own types for web standards?
 export async function fetch(
@@ -21,11 +38,17 @@ export async function fetch(
 ): Promise<FetchResponse> {
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
-  const body = init?.body ?? (initFromRequest ? input.body : null);
+  const body =
+    dangerouslyGetBodyFromRequest(init) ??
+    (initFromRequest ? dangerouslyGetBodyFromRequest(input) : null);
   const signal = init?.signal ?? (initFromRequest ? input.signal : undefined);
   const redirect = init?.redirect ?? (initFromRequest ? input.redirect : undefined);
   const method = init?.method ?? (initFromRequest ? input.method : undefined);
-  const credentials = init?.credentials ?? (initFromRequest ? input.credentials : undefined);
+
+  let credentials = init?.credentials ?? (initFromRequest ? input.credentials : undefined);
+  if (credentials === 'same-origin') {
+    credentials = 'include';
+  }
 
   let headers = normalizeHeadersInit(
     init?.headers ?? (initFromRequest ? input.headers : undefined)

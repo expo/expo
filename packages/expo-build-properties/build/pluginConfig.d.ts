@@ -23,12 +23,15 @@ export interface SharedBuildConfigFields {
      */
     reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
     /**
-     * Enable the experimental Hermes V1 engine.
+     * Enable Hermes V1 engine. Turning on will provide faster startup times, improved runtime
+     * performance, and reduced memory usage.
      *
-     * In React Native 0.83, using Hermes V1 requires building React Native from source.
-     * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+     * Hermes V1 is the default JavaScript engine starting in React Native 0.84.
+     * Set this to `false` to use the legacy Hermes engine instead, which also
+     * requires setting `buildReactNativeFromSource` to `true`.
      *
-     * @default false
+     * @default true
+     * @see [Hermes V1 as Default](https://reactnative.dev/blog/2026/02/11/react-native-0.84#hermes-v1-as-default)
      */
     useHermesV1?: boolean;
 }
@@ -187,6 +190,8 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
      * When enabled, creates a custom CMakeLists.txt with PCH support for all autolinked
      * native libraries, significantly speeding up C++ compilation by pre-compiling
      * commonly used React Native headers.
+     *
+     * Can also be enabled by setting the `EXPO_USE_ANDROID_PRECOMPILED_HEADERS=1` environment variable.
      *
      * > **Note:** This feature is experimental and might not work with all native libraries.
      *
@@ -397,7 +402,7 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
      * When enabled, sets the `EXPO_USE_PRECOMPILED_MODULES` environment variable to `1`
      * during `pod install`, which causes matching modules to be linked as vendored frameworks.
      *
-     * @default false
+     * @default true
      */
     usePrecompiledModules?: boolean;
 }

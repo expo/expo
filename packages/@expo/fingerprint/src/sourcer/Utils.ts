@@ -24,6 +24,19 @@ export async function getFileBasedHashSourceAsync(
 }
 
 /**
+ * Resolve path aliases before computing relative hash source paths.
+ * On Windows, temp paths can be passed as short paths like `RUNNER~1` while
+ * autolinking returns the long real path, which makes `path.relative()` unstable.
+ */
+export async function maybeGetRealPathAsync(filePath: string): Promise<string> {
+  try {
+    return await fs.realpath(filePath);
+  } catch {
+    return filePath;
+  }
+}
+
+/**
  * A version of `JSON.stringify` that keeps the keys sorted
  */
 export function stringifyJsonSorted(target: any, space?: string | number | undefined): string {

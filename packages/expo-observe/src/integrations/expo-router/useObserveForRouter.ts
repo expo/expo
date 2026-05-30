@@ -2,26 +2,29 @@ import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
 import { use, useCallback, useEffect, useRef } from 'react';
 
 import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';
+import { emitTTI } from './emitTTI';
 import { isInitialized } from './init';
+import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 type MarkInteractive = (typeof AppMetrics)['markInteractive'];
 
 export function useObserveForRouter(): MarkInteractive | null {
+  const initialized = isInitialized();
   const storage = use(ObserveRouterIntegrationContext);
   const isMounted = useRef(true);
   const route = optionalRouter?.useRoute();
   const navigation = optionalRouter?.useNavigation();
   const routeInfo = optionalRouter?.useCurrentRouteInfo();
-  const { pathname, params: routeParams } = routeInfo ?? {};
+  const { pathname, params: routeParams, segments } = routeInfo ?? {};
+  const routePattern = buildRoutePattern(segments);
 
-  const initializedAtMount = useRef(isInitialized());
-  if (initializedAtMount.current !== isInitialized()) {
-    throw new Error(
-      "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
-        'Call `ExpoObserve.configure({ disableRouterIntegration })` once at startup before any screen mounts.'
-    );
-  }
+  useAssertValueDoesNotChange(
+    initialized,
+    "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
+      "Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
+  );
 
   const screenId = route?.key;
   const prevScreenId = useRef(screenId);
@@ -56,39 +59,46 @@ export function useObserveForRouter(): MarkInteractive | null {
         );
         return;
       }
-      if (navigation?.isFocused()) {
-        AppMetrics.markInteractive({
-          ...(attributes ?? {}),
-          routeName: pathname,
-        });
-      }
-
       if (!storage) {
         throw new Error(
           '[expo-observe] markInteractive was called without an active ObserveProvider. Wrap your app in ObserveRoot from expo-observe.'
         );
       }
 
-      // Snapshot times BEFORE writing the new interactive timestamp so the
-      // duplicate-detection logic below sees the *previous* call, not this one.
+      // Snapshot BEFORE the write below so the deferred-TTI check sees the
+      // pre-write state (lastInteractiveCall undefined until this call).
       const currentScreenData = storage.screenTimes[screenId];
 
-      storage.interactiveScreensIds.add(screenId);
-      if (storage.screenTimes[screenId]) {
-        storage.screenTimes[screenId] = {
-          ...storage.screenTimes[screenId],
-          lastInteractiveCall: now,
-        };
+      // Record lastInteractiveCall regardless of focus so the `pageFocused`
+      // listener can emit `tti = ttr` on our behalf when this call lands
+      // before `dispatchTime` has been seeded (cold-launch race).
+      storage.screenTimes[screenId] = {
+        ...storage.screenTimes[screenId],
+        lastInteractiveCall: now,
+      };
+
+      if (!navigation?.isFocused()) {
+        return;
       }
 
-      if (!currentScreenData?.dispatchTime) return;
+      // TTI is recorded once per screen ID for the lifetime of the storage —
+      // re-focusing the same screen (A → B → A) must not produce a second metric
+      const wasAlreadyInteractive = storage.interactiveScreensIds.has(screenId);
+      storage.interactiveScreensIds.add(screenId);
 
-      const previousInteractiveCall = currentScreenData.lastInteractiveCall;
-      const previousWasAfterDispatch =
-        previousInteractiveCall != null && currentScreenData.dispatchTime < previousInteractiveCall;
+      // All async work happens after storage is updated, so a concurrent
+      // pageFocused observes our writes before its own awaited writes.
+      AppMetrics.markInteractive({
+        ...(attributes ?? {}),
+        routeName: routePattern,
+        params: { ...(attributes?.params ?? {}), url: pathname },
+      });
 
-      if (previousWasAfterDispatch) {
-        // We only want to record interactive once per navigation
+      if (wasAlreadyInteractive) return;
+      if (!currentScreenData?.dispatchTime) {
+        // `pageFocused` hasn't recorded the dispatch yet. The focus listener
+        // will see `lastInteractiveCall` set with no `dispatchTime` and emit
+        // TTI = TTR on our behalf.
         return;
       }
 
@@ -98,20 +108,19 @@ export function useObserveForRouter(): MarkInteractive | null {
       // TODO(@ubax): we should count the time against the action which caused the first navigation
       // and add a param stating if during that time there was any navigation
       if (mainSessionId) {
-        await AppMetrics.addCustomMetricToSession({
+        await emitTTI({
           sessionId: mainSessionId,
           timestamp,
-          category: 'navigation',
-          // TODO(@ubax): Use segments.join here to get full routeName and pass pathname and params via params
-          routeName: pathname,
-          name: 'tti',
+          routeName: routePattern,
           value: interactiveTimeSeconds,
-          params: { routeParams },
+          isAppLaunch: !!currentScreenData.isAppLaunch,
+          routeParams,
+          url: pathname,
         });
       }
     },
-    [screenId, navigation, pathname, storage, routeParams]
+    [screenId, navigation, pathname, routePattern, storage, routeParams]
   );
 
-  return initializedAtMount.current ? markInteractive : null;
+  return initialized ? markInteractive : null;
 }

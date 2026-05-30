@@ -146,6 +146,10 @@ it('when no options are passed, default ones are used', () => {
     nativeProps: undefined,
     disableAutomaticContentInsets: undefined,
     contentStyle: undefined,
+    rippleColor: undefined,
+    disableIndicator: undefined,
+    labelVisibilityMode: undefined,
+    tintColor: undefined,
   } as NativeTabOptions);
 });
 

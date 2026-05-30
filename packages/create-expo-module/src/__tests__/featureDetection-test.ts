@@ -141,6 +141,57 @@ describe('detectFeaturesFromContent', () => {
     expect(features).toContain('ViewEvent');
     expect(features).not.toContain('Event');
   });
+
+  it('detects SwiftUIView from Swift ExpoUIView registration', () => {
+    const { features } = detectFeaturesFromContent(`
+      ExpoUIView(MyModuleSwiftUIView.self)
+    `);
+    expect(features).toContain('SwiftUIView');
+    expect(features).not.toContain('ComposeView');
+    expect(features).not.toContain('View');
+  });
+
+  it('detects ComposeView from Kotlin ExpoUIView<Props>("Name") registration', () => {
+    const { features } = detectFeaturesFromContent(`
+      ExpoUIView<MyModuleComposeProps>("MyModuleComposeView") {
+        Content { props -> MyModuleComposeContent(props) }
+      }
+    `);
+    expect(features).toContain('ComposeView');
+    expect(features).not.toContain('SwiftUIView');
+  });
+
+  it('detects SwiftUIModifier from ViewModifierRegistry.register', () => {
+    const { features } = detectFeaturesFromContent(`
+      OnCreate {
+        ViewModifierRegistry.register("customBorder") { params, appContext, _ in
+          return try CustomBorderModifier(from: params, appContext: appContext)
+        }
+      }
+    `);
+    expect(features).toContain('SwiftUIModifier');
+    expect(features).not.toContain('ComposeModifier');
+  });
+
+  it('detects ComposeModifier from ModifierRegistry.register', () => {
+    const { features } = detectFeaturesFromContent(`
+      OnCreate {
+        ModifierRegistry.register("customBorder") { params, _, _, _ ->
+          recordFromMap<Params>(params).toModifier()
+        }
+      }
+    `);
+    expect(features).toContain('ComposeModifier');
+    expect(features).not.toContain('SwiftUIModifier');
+  });
+
+  it('does not double-detect ModifierRegistry inside ViewModifierRegistry', () => {
+    const { features } = detectFeaturesFromContent(`
+      ViewModifierRegistry.register("a") { _, _, _ in }
+    `);
+    expect(features).toContain('SwiftUIModifier');
+    expect(features).not.toContain('ComposeModifier');
+  });
 });
 
 describe('findModuleDefinitionFile', () => {

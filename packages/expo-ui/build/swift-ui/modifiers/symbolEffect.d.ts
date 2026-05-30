@@ -1,4 +1,4 @@
-import { type ObservableState } from '../../State/useNativeState';
+import { type ObservableState } from '../../State';
 type AppearSymbolEffect = {
     effect: 'appear';
     scale?: 'down' | 'up';

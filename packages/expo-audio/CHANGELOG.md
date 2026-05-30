@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 56.0.11 — 2026-05-26
+
+### 💡 Others
+
+- [web] Added a warning when setting volume in browsers on iOS, where Apple does not allow programmatic volume control. ([#44474](https://github.com/expo/expo/pull/44474) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.10 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`. ([#46147](https://github.com/expo/expo/pull/46147) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.9 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.8 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.7 — 2026-05-15
 
 ### 💡 Others

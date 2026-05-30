@@ -19,7 +19,7 @@ import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes
 import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
-import { copyPublicFolderAsync } from './publicFolder';
+import { copyPublicFolderAsync, getPublicFolderPath } from './publicFolder';
 import type { Options } from './resolveOptions';
 import type { ExportAssetMap, BundleOutput, BundleAssetWithFileHashes } from './saveAssets';
 import { getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
@@ -110,7 +110,7 @@ export async function exportAppAsync(
   }
 
   const mode = dev ? 'development' : 'production';
-  const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+  const publicPath = getPublicFolderPath(projectRoot);
   const outputPath = path.resolve(projectRoot, outputDir);
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).

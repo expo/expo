@@ -4,6 +4,7 @@ import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import java.util.UUID
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -19,6 +20,7 @@ import kotlinx.serialization.json.JsonObject
  * should add a real `type` column and lifecycle hooks for
  * foreground/screen/custom sessions.
  */
+@OptimizedRecord
 data class JsSession(
   @Field val id: String,
   @Field val type: String,
@@ -40,6 +42,7 @@ data class JsSession(
   }
 }
 
+@OptimizedRecord
 data class JsMetric(
   @Field val sessionId: String,
   @Field val category: String,
@@ -89,6 +92,7 @@ data class JsMetric(
  * `Session.logs` (so the parent ID is implicit), and the dropped-attribute
  * bookkeeping is only meaningful on the OTel wire payload.
  */
+@OptimizedRecord
 data class JsLogRecord(
   @Field val timestamp: String,
   @Field val name: String,

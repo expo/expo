@@ -1,10 +1,12 @@
 ---
 title: Metrics reference
 sidebar_title: Metrics
-description: A reference of each performance metric tracked by Expo Observe, including concepts and data handling.
+description: A reference of each performance metric tracked by EAS Observe, including concepts and data handling.
 ---
 
-Reference for the performance metrics Expo Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained.
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Reference for the performance metrics EAS Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained.
 
 ## Concepts
 
@@ -79,7 +81,7 @@ This metric is collected automatically.
 
 **What it measures:** Time from when the app finishes native launching to when the root React component first renders on the screen. This is the moment actual content is rendered by React, after the splash screen is hidden. The goal for every app should be to show something meaningful as fast as possible, even if it's a skeleton loading screen.
 
-This metric is collected automatically when you wrap your root layout with `AppMetricsRoot` (see [Get started](/eas/observe/get-started/)). You can also call `AppMetrics.markFirstRender()` manually if needed.
+This metric is collected automatically when you wrap your root layout with the root HOC (see [Get started](/eas/observe/get-started/)):
 
 **How to improve:**
 
@@ -96,7 +98,23 @@ This metric is collected automatically when you wrap your root layout with `AppM
 
 **What it measures:** Time between the warm/cold launch and when the user can actually tap, scroll, and interact with the app in other ways. It is the most important startup metric because it is what users perceive as "the app is ready".
 
-This metric is not reported automatically. To start measuring it, call `AppMetrics.markInteractive()` once the screen is ready for user interaction, for example in a `useEffect` that runs after your initial data has loaded. If your app uses deep links, the main screen may not always be the initial screen, so we recommend calling this function on other screens too. Only the first call per launch is recorded, so it is safe to call it multiple times (for example, when the user navigates between screens). If you use `expo-router`, the metric's event automatically includes the current route name.
+This metric is not reported automatically. To start measuring it, call `markInteractive()` once the screen is ready for user interaction, for example in a `useEffect` that runs after your initial data has loaded. If your app uses deep links, the main screen may not always be the initial screen, so we recommend calling this function on other screens too. Only the first call per launch is recorded, so it is safe to call it multiple times (for example, when the user navigates between screens). If you use `expo-router`, the metric's event automatically includes the current route name.
+
+<Tabs>
+
+<Tab label="SDK 56 and later">
+
+Call `markInteractive()` from the `useObserve()` hook inside a component.
+
+</Tab>
+
+<Tab label="SDK 55">
+
+Call `AppMetrics.markInteractive()` from anywhere in your app.
+
+</Tab>
+
+</Tabs>
 
 **What makes an app "interactive"?**
 
@@ -106,7 +124,7 @@ All of these must be true:
 - Touch handlers are attached and responsive.
 - Navigation is functional.
 
-**How to improve measurement accuracy:** Call `AppMetrics.markInteractive()` only after the screen's content is loaded and touch handlers are active, not just on component mount. If your screen fetches data before becoming usable, place the call after the data is ready.
+**How to improve measurement accuracy:** Call `markInteractive()` only after the screen's content is loaded and touch handlers are active, not just on component mount. If your screen fetches data before becoming usable, place the call after the data is ready.
 
 **How to improve:**
 
@@ -131,7 +149,7 @@ Each TTI event includes extra params to help triage issues:
 - **`expo.device.batteryCharging`** (boolean): Whether the device was plugged in or wirelessly charging. Charging tends to raise sustained CPU performance ceilings on iOS and some Android OEMs, so non-charging samples are the more conservative population to compare against.
 - **`expo.device.thermalState`** (string): One of `nominal`, `fair`, `serious`, `critical`, `unknown`. Sustained `serious`/`critical` states cause the OS to throttle the CPU/GPU and can dramatically slow startup independent of any app change.
 - **`expo.network.connected`** (boolean): Whether the device had an internet-capable network at TTI. If TTI degrades only when this is `true`, the cause is likely a network-bound startup path; if it degrades when `false`, the app is doing more work than it should before showing cached content.
-- **`expo.network.type`** (string): One of `wifi`, `cellular`, `ethernet`, `none`, `other`, `unknown`. Use to compare cellular versus Wi-Fi populations &mdash; large gaps usually point to network-bound startup work. VPN traffic is reported as the underlying transport (typically `wifi` or `cellular`) since the VPN tunnels over it. The value set is intentionally the same on Android and iOS so dashboards don't need per-platform branching.
+- **`expo.network.type`** (string): One of `wifi`, `cellular`, `ethernet`, `none`, `other`, `unknown`. Use to compare cellular versus Wi-Fi populations — large gaps usually point to network-bound startup work. VPN traffic is reported as the underlying transport (typically `wifi` or `cellular`) since the VPN tunnels over it. The value set is intentionally the same on Android and iOS so dashboards don't need per-platform branching.
 
 **How to interpret them:**
 
@@ -143,7 +161,31 @@ Each TTI event includes extra params to help triage issues:
 
 You can attach your own params to the TTI event by passing them to `markInteractive()`. This is useful for slicing TTI by app-specific dimensions such as user cohort, tenant, feature flag variant, or the type of content the screen loaded.
 
+<Tabs>
+
+<Tab label="SDK 56 and later">
+
 ```tsx
+import { useObserve } from 'expo-observe';
+
+const { markInteractive } = useObserve();
+
+markInteractive({
+  params: {
+    tenant: 'acme',
+    cohort: 'beta',
+    cacheHit: true,
+  },
+});
+```
+
+</Tab>
+
+<Tab label="SDK 55">
+
+```tsx
+import { AppMetrics } from 'expo-observe';
+
 AppMetrics.markInteractive({
   params: {
     tenant: 'acme',
@@ -153,14 +195,43 @@ AppMetrics.markInteractive({
 });
 ```
 
+</Tab>
+
+</Tabs>
+
 You can also override the route name attached to the event, which is otherwise populated from the initial route detected by [Expo Router](/router/introduction/). This useful when the screen's logical name differs from the router path, is a dynamic route, or when not using Expo Router:
 
+<Tabs>
+
+<Tab label="SDK 56 and later">
+
 ```tsx
+import { useObserve } from 'expo-observe';
+
+const { markInteractive } = useObserve();
+
+markInteractive({
+  routeName: '/feed',
+  params: { cacheHit: true },
+});
+```
+
+</Tab>
+
+<Tab label="SDK 55">
+
+```tsx
+import { AppMetrics } from 'expo-observe';
+
 AppMetrics.markInteractive({
   routeName: '/feed',
   params: { cacheHit: true },
 });
 ```
+
+</Tab>
+
+</Tabs>
 
 Param values can be strings, numbers, booleans, or other JSON-serializable values.
 
@@ -168,7 +239,7 @@ Param values can be strings, numbers, booleans, or other JSON-serializable value
 
 ### Offline collection
 
-Metrics collected while the device is offline are stored on the device. They are automatically sent to the server when the app moves to the background, provided there is connectivity. You can also call [`ExpoObserve.dispatchEvents()`](/eas/observe/configuration/#dispatchevents) to flush events manually at any time.
+Metrics collected while the device is offline are stored on the device. They are automatically sent to the server when the app moves to the background, provided there is connectivity. You can also call [`Observe.dispatchEvents()`](/eas/observe/configuration/#dispatchevents) to flush events manually at any time.
 
 ### Data retention
 

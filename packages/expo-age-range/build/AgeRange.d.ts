@@ -1,4 +1,4 @@
-import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
+import type { AgeRangeRequest, AgeRangeResponse, AgeRangeRegulatoryFeature } from './ExpoAgeRange.types';
 /**
  * Prompts the user to share their age range with the app. Responses may be cached by the OS for future requests.
  * @return A promise that resolves with user's age range response, or rejects with an error.
@@ -46,4 +46,31 @@ export declare function requestAgeRangeAsync(options: AgeRangeRequest): Promise<
  * @platform ios 26.2+
  */
 export declare function isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
+/**
+ * Displays a system-provided interface for people to acknowledge a significant app update.
+ *
+ * Only on iOS 26.4+, this presents an update acknowledgement dialog and resolves once the user confirms it, or rejects with an error.
+ * On unsupported platforms this resolves immediately without showing any UI.
+ *
+ * Call [`getRequiredRegulatoryFeaturesAsync`](#agerangegetrequiredregulatoryfeaturesasync) first to
+ * determine whether the user actually needs to acknowledge a significant change — only invoke
+ * this function when the returned features include `'significantAppChangeRequiresAdultNotification'`.
+ * Doing so avoids prompting users who are not subject to the regulation.
+ *
+ * @param updateDescription A description of the significant update to show to the user.
+ *
+ * @platform ios 26.4+
+ */
+export declare function showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
+/**
+ * Returns the set of regulatory features that the OS reports as required for the current user.
+ *
+ * Use this to discover which age-assurance obligations apply.
+ *
+ * Resolves with `null` on iOS earlier than 26.4 and on Android and web — treat
+ * `null` as "unknown" rather than "no features required".
+ *
+ * @platform ios 26.4+
+ */
+export declare function getRequiredRegulatoryFeaturesAsync(): Promise<AgeRangeRegulatoryFeature[] | null>;
 //# sourceMappingURL=AgeRange.d.ts.map

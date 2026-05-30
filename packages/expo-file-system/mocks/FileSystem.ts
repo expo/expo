@@ -5,11 +5,15 @@
  * `expo-file-system`) with a small in-memory filesystem so tests can exercise
  * create/write/read/move/copy/delete end-to-end. This module is what
  * `jest-expo`'s preset feeds to `requireNativeModule('FileSystem')`.
+ * Timestamps use a logical clock reset by `__resetMockFileSystem()`; do not use
+ * `Date.now()` here.
  *
  * DO NOT regenerate this file with `expo-modules-test-core` — the generator
  * emits a bare stub and will overwrite the behavior here. Same pattern as
  * `packages/expo-crypto/mocks/ExpoCryptoAES.ts`.
  */
+
+import { FileMode } from '../src/File.types';
 
 export type URL = string;
 export type FileSystemPath = any;
@@ -30,6 +34,8 @@ type Entry = {
   bytes?: Uint8Array;
   type?: string | null;
   exists: boolean;
+  createdAt?: number;
+  modifiedAt?: number;
 };
 
 const store = new Map<string, Entry>();
@@ -37,9 +43,21 @@ const store = new Map<string, Entry>();
 const SEED_DIRS = [documentDirectory, cacheDirectory, bundleDirectory];
 
 function seed() {
+  const t = nextMockTimestamp();
   for (const uri of SEED_DIRS) {
-    store.set(normalizeKey(uri), { kind: 'dir', exists: true });
+    store.set(normalizeKey(uri), { kind: 'dir', exists: true, createdAt: t, modifiedAt: t });
   }
+}
+
+/**
+ * Logical clock used for `createdAt` / `modifiedAt` on stored entries.
+ * Resetting the mock filesystem also resets it so each test sees a stable
+ * sequence of timestamps independent of wall-clock time.
+ */
+let mockClock = 0;
+
+function nextMockTimestamp(): number {
+  return ++mockClock;
 }
 
 /**
@@ -51,6 +69,7 @@ export function __resetMockFileSystem() {
   store.clear();
   listeners.clear();
   cancelled.clear();
+  mockClock = 0;
   seed();
 }
 
@@ -156,8 +175,9 @@ function assertParent(uri: string, allowMissing: boolean) {
     if (next === cursor) break;
     cursor = next;
   }
+  const now = nextMockTimestamp();
   for (const dirKey of missing) {
-    store.set(dirKey, { kind: 'dir', exists: true });
+    store.set(dirKey, { kind: 'dir', exists: true, createdAt: now, modifiedAt: now });
   }
 }
 
@@ -175,18 +195,36 @@ export class FileSystemFile {
     return !!(entry && entry.kind === 'file' && entry.exists);
   }
 
-  get size(): number | null {
+  get size(): number {
     const entry = store.get(normalizeKey(this.uri));
-    return entry && entry.kind === 'file' && entry.exists ? (entry.bytes?.length ?? 0) : null;
+    return entry && entry.kind === 'file' && entry.exists ? (entry.bytes?.length ?? 0) : 0;
   }
 
-  get type(): string | null {
+  get type(): string {
     const entry = store.get(normalizeKey(this.uri));
-    return entry?.type ?? null;
+    return entry?.type ?? '';
   }
 
   get md5(): string | null {
-    return this.exists ? fakeMd5(this.uri, this.size ?? 0) : null;
+    return this.exists ? fakeMd5(this.uri, this.size) : null;
+  }
+
+  get modificationTime(): number | null {
+    const entry = store.get(normalizeKey(this.uri));
+    return entry?.exists ? (entry.modifiedAt ?? null) : null;
+  }
+
+  get lastModified(): number | null {
+    return this.modificationTime;
+  }
+
+  get creationTime(): number | null {
+    const entry = store.get(normalizeKey(this.uri));
+    return entry?.exists ? (entry.createdAt ?? null) : null;
+  }
+
+  get contentUri(): string {
+    return '';
   }
 
   create(options: { intermediates?: boolean; overwrite?: boolean } = {}): void {
@@ -198,10 +236,17 @@ export class FileSystemFile {
       }
     }
     assertParent(this.uri, !!options.intermediates);
-    store.set(key, { kind: 'file', bytes: new Uint8Array(0), exists: true });
+    const now = nextMockTimestamp();
+    store.set(key, {
+      kind: 'file',
+      bytes: new Uint8Array(0),
+      exists: true,
+      createdAt: now,
+      modifiedAt: now,
+    });
   }
 
-  write(
+  writeSync(
     content: string | Uint8Array,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): void {
@@ -213,16 +258,33 @@ export class FileSystemFile {
       bytes = new Uint8Array(content);
     }
     const key = normalizeKey(this.uri);
+    const existing = store.get(key);
+    const now = nextMockTimestamp();
+    const createdAt = existing?.exists ? (existing.createdAt ?? now) : now;
+    const type = existing?.type ?? null;
     if (options.append) {
-      const existing = store.get(key);
       const prior = existing?.bytes ?? new Uint8Array(0);
       const merged = new Uint8Array(prior.length + bytes.length);
       merged.set(prior, 0);
       merged.set(bytes, prior.length);
-      store.set(key, { kind: 'file', bytes: merged, exists: true });
+      store.set(key, {
+        kind: 'file',
+        bytes: merged,
+        type,
+        exists: true,
+        createdAt,
+        modifiedAt: now,
+      });
     } else {
-      store.set(key, { kind: 'file', bytes, exists: true });
+      store.set(key, { kind: 'file', bytes, type, exists: true, createdAt, modifiedAt: now });
     }
+  }
+
+  async write(
+    content: string | Uint8Array,
+    options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
+  ): Promise<void> {
+    this.writeSync(content, options);
   }
 
   private readBytesOrThrow(): Uint8Array {
@@ -267,17 +329,19 @@ export class FileSystemFile {
       exists: true,
       uri: this.uri,
       size,
+      modificationTime: entry.modifiedAt ?? null,
+      creationTime: entry.createdAt ?? null,
       ...(options.md5 ? { md5: fakeMd5(this.uri, size) } : {}),
     };
   }
 
-  open(mode: number | string = 0): FileSystemFileHandle {
+  open(mode?: FileMode): FileSystemFileHandle {
     const key = normalizeKey(this.uri);
     const entry = store.get(key);
     if (!entry || entry.kind !== 'file' || !entry.exists) {
       throw new Error('File does not exist');
     }
-    return new FileSystemFileHandle(key, mode);
+    return new FileSystemFileHandle(key, mode ?? defaultModeForUri(this.uri));
   }
 
   delete(): void {
@@ -311,11 +375,14 @@ export class FileSystemFile {
       throw new Error('Destination already exists');
     }
     assertParent(destKey, false);
+    const now = nextMockTimestamp();
     store.set(destKey, {
       kind: 'file',
       bytes: new Uint8Array(entry.bytes ?? new Uint8Array(0)),
       type: entry.type ?? null,
       exists: true,
+      createdAt: now,
+      modifiedAt: now,
     });
   }
 
@@ -370,19 +437,45 @@ export class FileSystemFileHandle {
   private cursor: number;
   private closed = false;
 
-  constructor(key: string, mode: number | string) {
+  constructor(key: string, mode: FileMode) {
     this.key = key;
-    const modeStr = typeof mode === 'string' ? mode : MODE_NAMES[mode] ?? 'readwrite';
-    this.readOnly = modeStr === 'read';
-    this.writeOnly = modeStr === 'write';
     const entry = store.get(key);
-    if (modeStr === 'truncate') {
-      store.set(key, { kind: 'file', bytes: new Uint8Array(0), exists: true });
-      this.cursor = 0;
-    } else if (modeStr === 'append') {
-      this.cursor = entry?.bytes?.length ?? 0;
-    } else {
-      this.cursor = 0;
+    switch (mode) {
+      case FileMode.ReadWrite:
+        this.readOnly = false;
+        this.writeOnly = false;
+        this.cursor = 0;
+        break;
+      case FileMode.ReadOnly:
+        this.readOnly = true;
+        this.writeOnly = false;
+        this.cursor = 0;
+        break;
+      case FileMode.WriteOnly:
+        this.readOnly = false;
+        this.writeOnly = true;
+        this.cursor = 0;
+        break;
+      case FileMode.Append:
+        this.readOnly = false;
+        this.writeOnly = true;
+        this.cursor = entry?.bytes?.length ?? 0;
+        break;
+      case FileMode.Truncate:
+        this.readOnly = false;
+        this.writeOnly = true;
+        store.set(key, {
+          kind: 'file',
+          bytes: new Uint8Array(0),
+          type: entry?.type ?? null,
+          exists: true,
+          createdAt: entry?.createdAt ?? nextMockTimestamp(),
+          modifiedAt: nextMockTimestamp(),
+        });
+        this.cursor = 0;
+        break;
+      default:
+        assertNever(mode);
     }
   }
 
@@ -390,7 +483,26 @@ export class FileSystemFileHandle {
     if (this.closed) throw new Error('File handle is closed');
   }
 
-  readBytes(count: number): Uint8Array {
+  get offset(): number | null {
+    return this.closed ? null : this.cursor;
+  }
+
+  set offset(value: number | null) {
+    if (this.closed || value == null) {
+      return;
+    }
+    this.cursor = value;
+  }
+
+  get size(): number | null {
+    if (this.closed) {
+      return null;
+    }
+    const entry = store.get(this.key);
+    return entry?.bytes?.length ?? 0;
+  }
+
+  readBytesSync(count: number): Uint8Array {
     this.ensureOpen();
     if (this.writeOnly) throw new Error('File handle is write-only');
     const entry = store.get(this.key);
@@ -400,17 +512,36 @@ export class FileSystemFileHandle {
     return slice;
   }
 
-  writeBytes(buffer: Uint8Array): void {
+  async readBytes(count: number): Promise<Uint8Array> {
+    return this.readBytesSync(count);
+  }
+
+  writeBytesSync(buffer: Uint8Array): void {
     this.ensureOpen();
     if (this.readOnly) throw new Error('File handle is read-only');
-    const entry = store.get(this.key) ?? { kind: 'file' as const, bytes: new Uint8Array(0), exists: true };
+    const entry = store.get(this.key) ?? {
+      kind: 'file' as const,
+      bytes: new Uint8Array(0),
+      exists: true,
+    };
     const prior = entry.bytes ?? new Uint8Array(0);
-    const newLength = Math.max(prior.length, this.cursor + buffer.length);
+    const writeOffset = Math.min(this.cursor, prior.length);
+    const newLength = Math.max(prior.length, writeOffset + buffer.length);
     const merged = new Uint8Array(newLength);
     merged.set(prior, 0);
-    merged.set(buffer, this.cursor);
-    store.set(this.key, { ...entry, kind: 'file', bytes: merged, exists: true });
-    this.cursor += buffer.length;
+    merged.set(buffer, writeOffset);
+    store.set(this.key, {
+      ...entry,
+      kind: 'file',
+      bytes: merged,
+      exists: true,
+      modifiedAt: nextMockTimestamp(),
+    });
+    this.cursor = writeOffset + buffer.length;
+  }
+
+  async writeBytes(buffer: Uint8Array): Promise<void> {
+    this.writeBytesSync(buffer);
   }
 
   close(): void {
@@ -418,15 +549,13 @@ export class FileSystemFileHandle {
   }
 }
 
-// FileMode enum values from src/ExpoFileSystem.types.ts — keep as numbers but
-// map by name so callers using either work.
-const MODE_NAMES: Record<number, string> = {
-  0: 'readwrite',
-  1: 'read',
-  2: 'write',
-  3: 'append',
-  4: 'truncate',
-};
+function assertNever(value: never): never {
+  throw new Error(`Unhandled FileMode in jest-expo mock: ${String(value)}`);
+}
+
+function defaultModeForUri(uri: string): FileMode {
+  return uri.startsWith('content://') ? FileMode.ReadOnly : FileMode.ReadWrite;
+}
 
 export class FileSystemDirectory {
   uri: string;
@@ -442,6 +571,20 @@ export class FileSystemDirectory {
     return !!(entry && entry.kind === 'dir' && entry.exists);
   }
 
+  get size(): number | null {
+    const entry = store.get(normalizeKey(this.uri));
+    if (!entry || entry.kind !== 'dir' || !entry.exists) {
+      return null;
+    }
+    const prefix = `${normalizeKey(this.uri)}/`;
+    let total = 0;
+    for (const [key, e] of store) {
+      if (!e.exists || e.kind !== 'file' || !key.startsWith(prefix)) continue;
+      total += e.bytes?.length ?? 0;
+    }
+    return total;
+  }
+
   info(): any {
     const entry = store.get(normalizeKey(this.uri));
     if (!entry || entry.kind !== 'dir' || !entry.exists) {
@@ -450,7 +593,10 @@ export class FileSystemDirectory {
     return {
       exists: true,
       uri: this.uri,
-      files: directChildren(this.uri).map((child) => child.uri),
+      files: directChildren(this.uri).map((child) => basename(child.uri)),
+      size: this.size,
+      modificationTime: entry.modifiedAt ?? null,
+      creationTime: entry.createdAt ?? null,
     };
   }
 
@@ -467,7 +613,8 @@ export class FileSystemDirectory {
       deleteSubtree(key);
     }
     assertParent(this.uri, !!options.intermediates);
-    store.set(key, { kind: 'dir', exists: true });
+    const now = nextMockTimestamp();
+    store.set(key, { kind: 'dir', exists: true, createdAt: now, modifiedAt: now });
   }
 
   delete(): void {
@@ -500,11 +647,14 @@ export class FileSystemDirectory {
     if (store.get(childKey)?.exists) {
       throw new Error('File already exists');
     }
+    const now = nextMockTimestamp();
     store.set(childKey, {
       kind: 'file',
       bytes: new Uint8Array(0),
       type: mimeType ?? null,
       exists: true,
+      createdAt: now,
+      modifiedAt: now,
     });
     return new FileSystemFile(childKey);
   }
@@ -519,7 +669,8 @@ export class FileSystemDirectory {
     if (store.get(childKey)?.exists) {
       throw new Error('Directory already exists');
     }
-    store.set(childKey, { kind: 'dir', exists: true });
+    const now = nextMockTimestamp();
+    store.set(childKey, { kind: 'dir', exists: true, createdAt: now, modifiedAt: now });
     return new FileSystemDirectory(childKey);
   }
 
@@ -665,21 +816,24 @@ function deleteSubtree(rootKey: string) {
 function copySubtree(srcKey: string, destKey: string) {
   const srcEntry = store.get(srcKey);
   if (!srcEntry) return;
-  store.set(destKey, cloneEntry(srcEntry));
+  const now = nextMockTimestamp();
+  store.set(destKey, cloneEntry(srcEntry, now));
   const prefix = `${srcKey}/`;
   for (const [key, entry] of store) {
     if (!key.startsWith(prefix)) continue;
     const rewritten = destKey + key.slice(srcKey.length);
-    store.set(rewritten, cloneEntry(entry));
+    store.set(rewritten, cloneEntry(entry, now));
   }
 }
 
-function cloneEntry(entry: Entry): Entry {
+function cloneEntry(entry: Entry, timestamp: number): Entry {
   return {
     kind: entry.kind,
     exists: entry.exists,
     type: entry.type ?? null,
     bytes: entry.bytes ? new Uint8Array(entry.bytes) : undefined,
+    createdAt: timestamp,
+    modifiedAt: timestamp,
   };
 }
 
@@ -713,7 +867,8 @@ export async function downloadFileAsync(
     throw err;
   }
 
-  store.set(destKey, { kind: 'file', bytes, exists: true });
+  const now = nextMockTimestamp();
+  store.set(destKey, { kind: 'file', bytes, exists: true, createdAt: now, modifiedAt: now });
   return destKey;
 }
 

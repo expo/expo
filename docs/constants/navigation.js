@@ -393,7 +393,6 @@ export const general = [
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
-        makePage('guides/configuring-js-engines.mdx'),
         makePage('guides/using-bun.mdx'),
         makePage('guides/editing-richtext.mdx'),
         makePage('guides/store-assets.mdx'),
@@ -453,6 +452,7 @@ export const eas = [
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
+    makePage('eas/workflows/rest-api.mdx'),
     makePage('eas/workflows/limitations.mdx'),
     makeGroup('Examples', [
       makePage('eas/workflows/examples/introduction.mdx'),
@@ -591,11 +591,17 @@ export const eas = [
     ),
   ]),
   makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
-  makeSection('Expo Observe', [
+  makeSection('EAS Observe', [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
+    makePage('eas/observe/eas-update.mdx'),
+    makePage('eas/observe/events.mdx'),
     makePage('eas/observe/configuration.mdx'),
+    makeGroup('Integrations', [
+      makePage('eas/observe/integrations/expo-router.mdx'),
+      makePage('eas/observe/integrations/react-navigation.mdx'),
+    ]),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
@@ -701,6 +707,7 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/e2e-tests.mdx'),
+    makePage('archive/configuring-js-engines.mdx'),
   ]),
 ];
 

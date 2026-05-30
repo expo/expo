@@ -1,141 +1,143 @@
 import { ctx } from 'expo-router/_ctx';
 import { getContextKey, sortRoutes, type RouteNode } from 'expo-router/internal/routing';
 
-import { createExpoPages } from './create-expo-pages';
+import { createPages, type CreatePagesApi } from './createPages';
 import { getRoutes } from '../../getRoutesSSR';
 import { evalStaticParamsAsync } from '../../loadStaticParamsAsync';
+import type { EntriesDev } from '../server';
+
+type RouteSettings = {
+  render?: 'static' | 'dynamic';
+  unstable_disableSSR?: boolean;
+};
+
+function readSettings(loaded: { unstable_settings?: unknown }): RouteSettings {
+  const raw = (loaded.unstable_settings ?? {}) as Record<string, unknown>;
+  const render = raw.render === 'static' || raw.render === 'dynamic' ? raw.render : undefined;
+  const unstable_disableSSR =
+    typeof raw.unstable_disableSSR === 'boolean' ? raw.unstable_disableSSR : undefined;
+  return { render, unstable_disableSSR };
+}
 
 const UNIMPLEMENTED_PARAMS = new Proxy(
   {},
   {
-    // Assert that params is unimplemented when accessed.
     get() {
       throw new Error('generateStaticParams(): params is not implemented yet');
     },
   }
 );
 
-export default createExpoPages(async ({ createPage, createLayout }, { getRouteOptions }) => {
-  const routes = getRoutes(ctx, {
-    ...getRouteOptions,
-    platform: process.env.EXPO_OS,
-    skipGenerated: true,
-    importMode: 'lazy',
-  });
+async function loadStaticParamsForRoute(route: RouteNode): Promise<string[][] | undefined> {
+  const loaded = route.loadRoute();
 
-  if (!routes) return;
-
-  async function loadAndConvertStaticParamsAsync(route: RouteNode) {
-    const loaded = route.loadRoute();
-
-    let staticPaths: string[][] | undefined = undefined;
-
-    if (route.dynamic) {
-      const params = await evalStaticParamsAsync(
-        route,
-        { parentParams: UNIMPLEMENTED_PARAMS },
-        loaded.generateStaticParams
-      );
-
-      // Sort `params` like `[{a: 'x', b: 'y'}, { a: 'z', b: 'w' }]` for a route.dynamic like `[{name: 'a', deep: false}, {name: 'b', deep: false}]` to `[['a', 'y'], ['z', 'w]]`
-      staticPaths = params?.map((p) => {
-        const grouped: string[] = [];
-
-        for (const dynamic of route.dynamic!) {
-          const defined = p[dynamic.name];
-          if (!defined) {
-            throw new Error(
-              'generateStaticParams is missing param: ' +
-                dynamic.name +
-                '. In route: ' +
-                route.contextKey
-            );
-          }
-          if (Array.isArray(defined)) {
-            if (defined.length > 1) {
-              throw new Error(
-                'generateStaticParams does not support returning multiple static paths for deep dynamic routes in React Server Components yet. Update route: ' +
-                  route.contextKey
-              );
-            }
-          }
-
-          const first = Array.isArray(defined) ? defined[0] : defined;
-
-          if (first != null) {
-            grouped.push(first);
-          }
-        }
-        return grouped;
-      });
-    } else if (loaded.generateStaticParams) {
+  if (!route.dynamic) {
+    if (loaded.generateStaticParams) {
       throw new Error(
         'Cannot use generateStaticParams without a dynamic route: ' + route.contextKey
       );
     }
-    return staticPaths;
+    return undefined;
   }
-  async function addLayout(route: RouteNode) {
-    const normal = getContextKey(route.contextKey).replace(/\/index$/, '');
 
-    const loaded = route.loadRoute();
+  const params = await evalStaticParamsAsync(
+    route,
+    { parentParams: UNIMPLEMENTED_PARAMS },
+    loaded.generateStaticParams
+  );
 
-    if (loaded.generateStaticParams) {
-      throw new Error(
-        'generateStaticParams is not supported in _layout routes with React Server Components enabled yet.'
-      );
+  return params?.map((p) => {
+    const grouped: string[] = [];
+    for (const dynamic of route.dynamic!) {
+      const defined = p[dynamic.name];
+      if (!defined) {
+        throw new Error(
+          'generateStaticParams is missing param: ' +
+            dynamic.name +
+            '. In route: ' +
+            route.contextKey
+        );
+      }
+      if (Array.isArray(defined) && defined.length > 1) {
+        throw new Error(
+          'generateStaticParams does not support returning multiple static paths for deep dynamic routes in React Server Components yet. Update route: ' +
+            route.contextKey
+        );
+      }
+      const first = Array.isArray(defined) ? defined[0] : defined;
+      if (first != null) {
+        grouped.push(first);
+      }
     }
+    return grouped;
+  });
+}
 
-    createLayout({
-      // NOTE(EvanBacon): Support routes with top-level "use client"
-      component: loaded.default! as any,
-      path: normal as any,
-      render: 'static',
-      ...loaded.unstable_settings,
-    });
+async function registerRouteTree(api: CreatePagesApi, route: RouteNode): Promise<void> {
+  const layoutPath = getContextKey(route.contextKey).replace(/\/index$/, '');
+  const loaded = route.loadRoute();
 
-    await Promise.all(
-      route.children.sort(sortRoutes).map(async (child) => {
-        if (child.type === 'layout') {
-          await addLayout(child);
-        } else {
-          const normal = getContextKey(child.contextKey).replace(/\/index$/, '');
-          const loaded = child.loadRoute();
-          const settings = loaded.unstable_settings;
-
-          // Support generateStaticParams for dynamic routes by defining the route twice.
-          if (loaded.generateStaticParams) {
-            createPage({
-              // NOTE(EvanBacon): Support routes with top-level "use client"
-              component: loaded.default as any,
-              path: normal as any,
-              render: 'static',
-              ...loaded.unstable_settings,
-              staticPaths: (await loadAndConvertStaticParamsAsync(child)) as any,
-            });
-
-            if (settings?.render !== 'static') {
-              createPage({
-                // NOTE(EvanBacon): Support routes with top-level "use client"
-                component: loaded.default as any,
-                path: normal as any,
-                render: 'dynamic',
-                ...settings,
-              });
-            }
-          } else {
-            createPage({
-              // NOTE(EvanBacon): Support routes with top-level "use client"
-              component: loaded.default as any,
-              path: normal as any,
-              render: 'dynamic',
-              ...settings,
-            });
-          }
-        }
-      })
+  if (loaded.generateStaticParams) {
+    throw new Error(
+      'generateStaticParams is not supported in _layout routes with React Server Components enabled yet.'
     );
   }
 
-  await addLayout(routes);
+  const layoutSettings = readSettings(loaded);
+  api.createLayout({
+    component: loaded.default! as any,
+    path: layoutPath,
+    render: layoutSettings.render ?? 'static',
+  });
+
+  await Promise.all(
+    route.children.sort(sortRoutes).map(async (child) => {
+      if (child.type === 'layout') {
+        await registerRouteTree(api, child);
+        return;
+      }
+      const childPath = getContextKey(child.contextKey).replace(/\/index$/, '');
+      const childLoaded = child.loadRoute();
+      const settings = readSettings(childLoaded);
+
+      if (childLoaded.generateStaticParams) {
+        api.createPage({
+          component: childLoaded.default as any,
+          path: childPath,
+          render: 'static',
+          staticPaths: (await loadStaticParamsForRoute(child)) as any,
+          unstable_disableSSR: settings.unstable_disableSSR,
+        });
+        if (settings.render !== 'static') {
+          api.createPage({
+            component: childLoaded.default as any,
+            path: childPath,
+            render: 'dynamic',
+            unstable_disableSSR: settings.unstable_disableSSR,
+          });
+        }
+        return;
+      }
+
+      api.createPage({
+        component: childLoaded.default as any,
+        path: childPath,
+        render: settings.render ?? 'dynamic',
+        unstable_disableSSR: settings.unstable_disableSSR,
+      });
+    })
+  );
+}
+
+export default (getRouteOptions?: Parameters<typeof getRoutes>[1]): EntriesDev => ({
+  default: createPages(async ({ createPage, createLayout, unstable_setBuildData }) => {
+    const routes = getRoutes(ctx, {
+      ...getRouteOptions,
+      platform: process.env.EXPO_OS,
+      skipGenerated: true,
+      importMode: 'lazy',
+    });
+    if (!routes) return;
+    await registerRouteTree({ createPage, createLayout, unstable_setBuildData }, routes);
+  }),
 });

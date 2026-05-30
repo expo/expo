@@ -1,21 +1,25 @@
-import type { ComponentProps, SyntheticEvent } from 'react';
-import { StyleSheet, Text, unstable_createElement, View, type ViewProps } from 'react-native';
+import type { SyntheticEvent } from 'react';
+import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import type { CollapsibleProps } from './types';
+import { createWebComponent } from '../webUtils';
 
-const Details = (
-  props: Omit<ComponentProps<'details'>, 'style'> & { style?: ViewProps['style'] }
-) => unstable_createElement('details', props);
-
-const Summary = (
-  props: Omit<ComponentProps<'summary'>, 'style'> & { style?: ViewProps['style'] }
-) => unstable_createElement('summary', props);
+const Details = createWebComponent('details');
+const Summary = createWebComponent('summary');
 
 /**
  * A primitive that toggles visibility of its content via a labelled tappable
  * header. Controlled via `isOpen` + `onOpenChange`.
  */
-export function Collapsible({ isOpen, onOpenChange, label = '', children }: CollapsibleProps) {
+export function Collapsible({
+  isOpen,
+  onOpenChange,
+  label = '',
+  labelStyle,
+  children,
+}: CollapsibleProps) {
+  const isDark = useColorScheme() === 'dark';
+
   return (
     <Details
       open={isOpen}
@@ -25,9 +29,9 @@ export function Collapsible({ isOpen, onOpenChange, label = '', children }: Coll
           onOpenChange(nextOpen);
         }
       }}
-      style={styles.container}>
+      style={[styles.container, isDark && styles.darkText]}>
       <Summary style={styles.summary}>
-        <Text>{label}</Text>
+        <Text style={[isDark && styles.darkText, labelStyle]}>{label}</Text>
       </Summary>
       <View style={styles.content}>{children}</View>
     </Details>
@@ -52,6 +56,9 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 16,
     paddingBottom: 12,
+  },
+  darkText: {
+    color: '#fff',
   },
 });
 
