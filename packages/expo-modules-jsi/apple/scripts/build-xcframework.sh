@@ -141,9 +141,8 @@ platform_slice_id() {
   esac
 }
 
-# Resolves the xcodebuild directory name for the given platform.
-# Standard macOS builds (excluding Mac Catalyst) output directly
-# to the CONFIGURATION directory without suffix.
+# Resolves the xcodebuild build-products directory name for a given platform.
+# macOS uses no $EFFECTIVE_PLATFORM_NAME suffix; every other SDK appends one.
 platform_build_dir() {
   case "$1" in
     macosx)           echo "${CONFIGURATION}" ;;
@@ -203,7 +202,8 @@ build_slice() {
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
   local framework_src="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"
   local swiftmodule_src="${product_path}/${PACKAGE_NAME}.swiftmodule"
-  # Same directory format as build_dir_name, no suffix for macOS.
+  # GeneratedModuleMaps follows the same $EFFECTIVE_PLATFORM_NAME convention as
+  # build products: no suffix for macOS, "-${platform}" for everything else.
   local generated_maps
   if [[ "$platform" == "macosx" ]]; then
     generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps"
@@ -223,24 +223,26 @@ build_slice() {
   rm -rf "$staging_dir"
   mkdir -p "$staging_dir"
 
-  # Use cp -a (Archive) to strictly preserve symlinks in deep bundles.
-  # Without this, "bundle format is ambiguous" error will occur.
+  # `cp -a` preserves symlinks, attributes, and timestamps. `cp -r` resolves
+  # symlinks into real files, which breaks the macOS versioned-framework bundle
+  # layout (top-level `Foo`, `Resources`, etc. must be symlinks into Versions/Current).
   cp -a "$framework_src" "$staging_dir/"
   if [[ -d "${product_path}/${PACKAGE_NAME}.framework.dSYM" ]]; then
     cp -a "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
   fi
 
-  # Output deep bundles for macOS/Catalyst, flat bundles for others.
+    # Modules and Headers live at the framework root on flat (iOS/tvOS) bundles
+  # and inside Versions/A on versioned (macOS/Catalyst) bundles.
   local framework_root="${staging_dir}/${PACKAGE_NAME}.framework"
-  local content_dir
+  local content_root
   if [[ "$platform" == "macosx" || "$platform" == "maccatalyst" ]]; then
-    content_dir="${framework_root}/Versions/A"
+    content_root="${framework_root}/Versions/A"
   else
-    content_dir="${framework_root}"
+    content_root="${framework_root}"
   fi
 
   # Copy Swift module interfaces and generated headers into the staged framework.
-  local modules_dir="${content_dir}/Modules"
+  local modules_dir="${content_root}/Modules"
   mkdir -p "$modules_dir"
   cp -a "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
   rm -rf "${modules_dir}/${PACKAGE_NAME}.swiftmodule/Project"
@@ -269,12 +271,15 @@ build_slice() {
     mv "$stripped_swiftinterface" "$swiftinterface"
   done < <(find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface')
 
-  local headers_dir="${content_dir}/Headers"
+  local headers_dir="${content_root}/Headers"
   mkdir -p "$headers_dir"
   cp "${generated_maps}/${PACKAGE_NAME}-Swift.h" "$headers_dir/"
   cp "${generated_maps}/${PACKAGE_NAME}.modulemap" "$headers_dir/module.modulemap"
 
-  # Restore root symlinks required for deep bundles.
+  # Add the top-level Headers/Modules symlinks expected on versioned macOS
+  # frameworks. xcodebuild already set up ExpoModulesJSI -> Versions/Current/...
+  # and Resources -> Versions/Current/Resources, but not Headers/Modules since
+  # the SPM build doesn't emit those at that point.
   if [[ "$platform" == "macosx" || "$platform" == "maccatalyst" ]]; then
     ln -sfn "Versions/Current/Headers" "${framework_root}/Headers"
     ln -sfn "Versions/Current/Modules" "${framework_root}/Modules"

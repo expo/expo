@@ -60,3 +60,7 @@ struct JavaScriptRuntimeTests {
 Tests are in `apple/Tests/` and each file covers one type. Some suites use the global actor `@JavaScriptActor` for executor isolation.
 
 Run them with `pnpm test` from the package root, which calls `apple/scripts/test.sh`. The script needs an installed host app's `Pods` directory (defaults to `$EXPO_ROOT_DIR/apps/bare-expo/ios/Pods`); override with `PODS_ROOT`. It symlinks React / hermesvm / ReactNativeDependencies xcframeworks into `apple/.test-frameworks/` so SPM can resolve them as relative-path binary targets, generates the `jsi` modulemap, and runs `xcodebuild test` against an iOS Simulator (override with `DESTINATION`). Extra args pass through to xcodebuild &mdash; e.g. `pnpm test -only-testing TestName`.
+
+## Formatting
+
+Swift sources are formatted with swift-format. From the package root, `pnpm swift:format` rewrites files in place and `pnpm swift:lint` checks without modifying; both delegate to the repo-root `scripts/swift-format.sh`, which reads the repo-root `.swift-format` config and only touches tracked `.swift` files. CI enforces this via `.github/workflows/swift-format.yml`, which pins a specific swift-format version &mdash; mismatched local versions can produce different output, so prefer the pinned one. Style conventions beyond what the formatter enforces live in [`guides/Swift Style Guide.md`](../../guides/Swift%20Style%20Guide.md) at the repo root.

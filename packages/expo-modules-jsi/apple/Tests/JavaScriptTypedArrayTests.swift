@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -107,10 +107,12 @@ struct JavaScriptTypedArrayTests {
 
   @Test
   func `properties with offset and length`() throws {
-    let typedArray = try runtime.eval("""
-      var buf = new ArrayBuffer(16);
-      new Int32Array(buf, 4, 2)
-    """).getTypedArray()
+    let typedArray = try runtime.eval(
+      """
+        var buf = new ArrayBuffer(16);
+        new Int32Array(buf, 4, 2)
+      """
+    ).getTypedArray()
 
     #expect(typedArray.length == 2)
     #expect(typedArray.byteOffset == 4)
@@ -210,11 +212,13 @@ struct JavaScriptTypedArrayTests {
 
   @Test
   func `withUnsafeBytes covers view range, not full buffer`() throws {
-    let typedArray = try runtime.eval("""
-      var buf = new ArrayBuffer(16);
-      new Uint8Array(buf).fill(0xAA);
-      new Uint8Array(buf, 4, 8)
-    """).getTypedArray()
+    let typedArray = try runtime.eval(
+      """
+        var buf = new ArrayBuffer(16);
+        new Uint8Array(buf).fill(0xAA);
+        new Uint8Array(buf, 4, 8)
+      """
+    ).getTypedArray()
 
     #expect(typedArray.byteOffset == 4)
     #expect(typedArray.byteLength == 8)
@@ -271,10 +275,12 @@ struct JavaScriptTypedArrayTests {
 
   @Test
   func `getArrayBuffer respects offset`() throws {
-    let typedArray = try runtime.eval("""
-      var buf = new ArrayBuffer(8);
-      new Uint8Array(buf, 2, 4)
-    """).getTypedArray()
+    let typedArray = try runtime.eval(
+      """
+        var buf = new ArrayBuffer(8);
+        new Uint8Array(buf, 2, 4)
+      """
+    ).getTypedArray()
     let buffer = typedArray.getArrayBuffer()
 
     #expect(typedArray.byteOffset == 2)

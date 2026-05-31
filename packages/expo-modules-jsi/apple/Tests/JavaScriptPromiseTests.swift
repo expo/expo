@@ -1,5 +1,5 @@
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -96,11 +96,12 @@ struct JavaScriptPromiseTests {
   @Test
   func `wrapped promise setup throws when then is unavailable`() throws {
     let runtime = JavaScriptRuntime()
-    let promiseValue = try runtime.eval("""
-    const promise = Promise.resolve(42);
-    promise.then = undefined;
-    promise;
-    """)
+    let promiseValue = try runtime.eval(
+      """
+      const promise = Promise.resolve(42);
+      promise.then = undefined;
+      promise;
+      """)
 
     #expect(throws: Error.self) {
       _ = try promiseValue.getPromise()
@@ -223,7 +224,8 @@ struct JavaScriptPromiseTests {
   @Test
   func `promise from async JavaScript function`() async throws {
     let runtime = JavaScriptRuntime()
-    let result = try await runtime
+    let result =
+      try await runtime
       .eval("(async function() { return 42; })")
       .getFunction()
       .call()
@@ -236,7 +238,8 @@ struct JavaScriptPromiseTests {
   @Test
   func `promise from async JavaScript function with arguments`() async throws {
     let runtime = JavaScriptRuntime()
-    let result = try await runtime
+    let result =
+      try await runtime
       .eval("(async function(a, b) { return a + b; })")
       .getFunction()
       .call(arguments: 15, 27)
@@ -249,7 +252,8 @@ struct JavaScriptPromiseTests {
   @Test
   func `promise catches JavaScript errors`() async throws {
     let runtime = JavaScriptRuntime()
-    let promise = try runtime
+    let promise =
+      try runtime
       .eval("(async function() { throw new Error('async error'); })")
       .getFunction()
       .call()
@@ -267,7 +271,7 @@ struct JavaScriptPromiseTests {
 
     // Resolve from a task
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
       promise.resolve(JavaScriptValue(runtime, 99))
     }
 
@@ -287,7 +291,8 @@ struct JavaScriptPromiseTests {
     runtime.global().setProperty("p2", value: promise2.asValue())
     runtime.global().setProperty("p3", value: promise3.asValue())
 
-    let promiseAll = try runtime
+    let promiseAll =
+      try runtime
       .eval("Promise.all([globalThis.p1, globalThis.p2, globalThis.p3])")
       .getPromise()
 
