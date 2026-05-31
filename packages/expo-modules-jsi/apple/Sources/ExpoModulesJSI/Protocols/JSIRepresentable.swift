@@ -75,8 +75,7 @@ extension UInt8: JSIRepresentableNumber {}
 extension UInt16: JSIRepresentableNumber {}
 extension UInt32: JSIRepresentableNumber {}
 extension UInt64: JSIRepresentableNumber {}
-#if !os(macOS)
-// Float16 is marked unavailable on macOS in the Swift standard library.
+#if arch(arm64) || (!os(macOS) && !targetEnvironment(macCatalyst))
 extension Float16: JSIRepresentableNumber {}
 #endif
 extension Float32: JSIRepresentableNumber {}
