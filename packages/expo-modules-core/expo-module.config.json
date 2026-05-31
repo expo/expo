@@ -6,7 +6,8 @@
   "apple": {
     "podspecPath": [
       "./ExpoModulesCore.podspec",
-      "./ExpoModulesWorklets.podspec"
+      "./ExpoModulesWorklets.podspec",
+      "./ExpoModulesWorkletsAdapter.podspec"
     ]
   },
   "android": {
