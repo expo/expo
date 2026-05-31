@@ -1,6 +1,6 @@
 import { __resetMockFileSystem } from '../../mocks/FileSystem';
 import { FileMode } from '../File.types';
-import { DownloadTask, File, Directory, Paths, UploadTask } from '../index';
+import { DownloadTask, File, Directory, Paths, UploadTask, FileSlice } from '../index';
 
 beforeEach(() => {
   __resetMockFileSystem();
@@ -481,6 +481,166 @@ describe('expo-file-system behavioral mock', () => {
       handle.close();
       expect(file.textSync()).toBe('aZcd!');
     });
+  });
+});
+
+describe('File.slice() / FileSlice', () => {
+  function makeFile(name: string, contents: string): File {
+    const file = new File(Paths.cache, name);
+    file.create();
+    file.writeSync(contents);
+    return file;
+  }
+
+  it('File.slice() returns a FileSlice, not a Blob with materialized data', () => {
+    const file = makeFile('slice-type.txt', 'hello world');
+    const slice = file.slice(0, 5);
+    expect(slice).toBeInstanceOf(FileSlice);
+    expect(slice.size).toBe(5);
+  });
+
+  it('slice reads only the requested byte range', async () => {
+    const file = makeFile('range.txt', 'abcdefghij');
+    const slice = file.slice(2, 7);
+    expect(slice.size).toBe(5);
+    await expect(slice.text()).resolves.toBe('cdefg');
+  });
+
+  it('slice.bytes() returns the correct Uint8Array', async () => {
+    const file = makeFile('bytes.txt', 'hello');
+    const slice = file.slice(1, 4);
+    const bytes = await slice.bytes();
+    expect(Array.from(bytes)).toEqual([101, 108, 108]); // 'ell'
+  });
+
+  it('slice.arrayBuffer() returns an ArrayBuffer of the correct length', async () => {
+    const file = makeFile('ab.txt', 'hello world');
+    const slice = file.slice(0, 5);
+    const ab = await slice.arrayBuffer();
+    expect(ab.byteLength).toBe(5);
+    expect(new TextDecoder().decode(ab)).toBe('hello');
+  });
+
+  it('handles negative start offset (relative to end)', async () => {
+    const file = makeFile('neg-start.txt', 'abcdefghij');
+    const slice = file.slice(-3);
+    expect(slice.size).toBe(3);
+    await expect(slice.text()).resolves.toBe('hij');
+  });
+
+  it('handles negative end offset', async () => {
+    const file = makeFile('neg-end.txt', 'abcdefghij');
+    const slice = file.slice(2, -2);
+    expect(slice.size).toBe(6);
+    await expect(slice.text()).resolves.toBe('cdefgh');
+  });
+
+  it('returns empty data when start >= end', async () => {
+    const file = makeFile('empty-range.txt', 'hello');
+    const slice = file.slice(3, 1);
+    expect(slice.size).toBe(0);
+    await expect(slice.text()).resolves.toBe('');
+    const ab = await slice.arrayBuffer();
+    expect(ab.byteLength).toBe(0);
+  });
+
+  it('clamps start and end to file size', async () => {
+    const file = makeFile('clamp.txt', 'abc');
+    const slice = file.slice(0, 100);
+    expect(slice.size).toBe(3);
+    await expect(slice.text()).resolves.toBe('abc');
+  });
+
+  it('slice with no arguments returns full file range', async () => {
+    const file = makeFile('full.txt', 'full content');
+    const slice = file.slice();
+    expect(slice.size).toBe(12);
+    await expect(slice.text()).resolves.toBe('full content');
+  });
+
+  it('preserves contentType from File when not overridden', () => {
+    const dir = new Directory(Paths.cache, 'typed-slice');
+    dir.create();
+    const file = dir.createFile('data.json', 'application/json') as unknown as File;
+    file.writeSync('{"key":"value"}');
+
+    const slice = new File(file.uri).slice(0, 5);
+    expect(slice.type).toBeDefined();
+  });
+
+  it('overrides contentType when provided', () => {
+    const file = makeFile('override.txt', 'hello');
+    const slice = file.slice(0, 5, 'text/plain');
+    expect(slice.type).toBe('text/plain');
+  });
+
+  describe('nested slices', () => {
+    it('slice of a slice composes offsets correctly', async () => {
+      const file = makeFile('nested.txt', 'abcdefghij');
+      // First slice: bytes 2..8 -> "cdefgh"
+      const outer = file.slice(2, 8);
+      expect(outer.size).toBe(6);
+      // Nested slice: bytes 1..4 of the outer -> "def"
+      const inner = outer.slice(1, 4);
+      expect(inner.size).toBe(3);
+      await expect(inner.text()).resolves.toBe('def');
+    });
+
+    it('deeply nested slices compose correctly', async () => {
+      const file = makeFile('deep.txt', '0123456789');
+      const s1 = file.slice(1, 9); // "12345678"
+      const s2 = s1.slice(1, 7); // "234567"
+      const s3 = s2.slice(1, 5); // "3456"
+      const s4 = s3.slice(1, 3); // "45"
+      expect(s4.size).toBe(2);
+      await expect(s4.text()).resolves.toBe('45');
+    });
+
+    it('nested slice with negative offsets', async () => {
+      const file = makeFile('nested-neg.txt', 'abcdefghij');
+      const outer = file.slice(2, 8); // "cdefgh"
+      const inner = outer.slice(-3); // "fgh"
+      expect(inner.size).toBe(3);
+      await expect(inner.text()).resolves.toBe('fgh');
+    });
+  });
+
+  describe('stream()', () => {
+    it('streams the slice content in chunks', async () => {
+      const file = makeFile('stream.txt', 'the quick brown fox');
+      const slice = file.slice(4, 9); // "quick"
+      const reader = slice.stream().getReader();
+      const chunks: Uint8Array[] = [];
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+      }
+      const all = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
+      let offset = 0;
+      for (const chunk of chunks) {
+        all.set(chunk, offset);
+        offset += chunk.length;
+      }
+      expect(new TextDecoder().decode(all)).toBe('quick');
+    });
+
+    it('empty slice stream closes immediately', async () => {
+      const file = makeFile('empty-stream.txt', 'hello');
+      const slice = file.slice(3, 1); // empty
+      const reader = slice.stream().getReader();
+      const { done } = await reader.read();
+      expect(done).toBe(true);
+    });
+  });
+
+  it('concurrent reads from different slices are independent', async () => {
+    const file = makeFile('concurrent.txt', 'abcdefghij');
+    const s1 = file.slice(0, 5);
+    const s2 = file.slice(5, 10);
+    const [t1, t2] = await Promise.all([s1.text(), s2.text()]);
+    expect(t1).toBe('abcde');
+    expect(t2).toBe('fghij');
   });
 });
 
