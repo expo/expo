@@ -12,6 +12,8 @@
   },
   "scripts": {
     "build": "apple/scripts/build-xcframework.sh",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
     "test": "apple/scripts/test.sh"
   },
   "keywords": [
