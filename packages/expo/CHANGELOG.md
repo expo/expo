@@ -26,6 +26,8 @@ _This version does not introduce any user-facing changes._
 
 _This version does not introduce any user-facing changes._
 
+- Restore RCTHostRuntimeDelegate conformance for react-native-macos ([#46420](https://github.com/expo/expo/pull/46420) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 56.0.5 — 2026-05-26
 
 ### 💡 Others
