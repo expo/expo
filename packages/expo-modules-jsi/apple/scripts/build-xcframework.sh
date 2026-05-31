@@ -115,6 +115,7 @@ platform_destination() {
     appletvos)        echo "tvOS" ;;
     appletvsimulator) echo "tvOS Simulator" ;;
     macosx)           echo "macOS" ;;
+    maccatalyst)      echo "macOS,variant=Mac Catalyst" ;;
     *)
       log "error: Unsupported platform: $1"
       exit 1
@@ -132,6 +133,7 @@ platform_slice_id() {
     appletvos)        echo "tvos-arm64" ;;
     appletvsimulator) echo "tvos-arm64_x86_64-simulator" ;;
     macosx)           echo "macos-arm64_x86_64" ;;
+    maccatalyst)      echo "ios-arm64_x86_64-maccatalyst" ;;
     *)
       log "error: No slice mapping for platform: $1"
       exit 1
@@ -159,6 +161,15 @@ build_slice() {
   local build_dir_name
   build_dir_name=$(platform_build_dir "$platform")
 
+  # Every platform uses its name as the sdk, except for Mac Catalyst,
+  # which is not a separate platform but rather a variant of macOS.
+  local sdk
+  if [[ "$platform" == "maccatalyst" ]]; then
+    sdk="macosx"
+  else
+    sdk="$platform"
+  fi
+
   log "Building framework slice for ${platform}..."
 
   rm -rf "$BUILD_PRODUCTS_PATH"
@@ -172,7 +183,7 @@ build_slice() {
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
-    -sdk "$platform" \
+    -sdk "$sdk" \
     -destination "generic/platform=${destination}" \
     -derivedDataPath "$DERIVED_DATA_PATH" \
     -configuration "$CONFIGURATION" \
@@ -221,10 +232,10 @@ build_slice() {
   fi
 
   # Modules and Headers live at the framework root on flat (iOS/tvOS) bundles
-  # and inside Versions/A on versioned (macOS) bundles.
+  # and inside Versions/A on versioned (macOS/Catalyst) bundles.
   local framework_root="${staging_dir}/${PACKAGE_NAME}.framework"
   local content_root
-  if [[ "$platform" == "macosx" ]]; then
+  if [[ "$platform" == "macosx" || "$platform" == "maccatalyst" ]]; then
     content_root="${framework_root}/Versions/A"
   else
     content_root="${framework_root}"
@@ -269,7 +280,7 @@ build_slice() {
   # frameworks. xcodebuild already set up ExpoModulesJSI -> Versions/Current/...
   # and Resources -> Versions/Current/Resources, but not Headers/Modules since
   # the SPM build doesn't emit those at that point.
-  if [[ "$platform" == "macosx" ]]; then
+  if [[ "$platform" == "macosx" || "$platform" == "maccatalyst" ]]; then
     ln -sfn "Versions/Current/Headers" "${framework_root}/Headers"
     ln -sfn "Versions/Current/Modules" "${framework_root}/Modules"
   fi
@@ -347,7 +358,12 @@ fi
 
 # Determine which platforms to build.
 if [[ -n "${PLATFORM_NAME:-}" ]]; then
-  PLATFORMS=("$PLATFORM_NAME")
+  # Xcode identifies Catalyst with PLATFORM_NAME=macosx but EFFECTIVE_PLATFORM_NAME=-maccatalyst.
+  if [[ "${PLATFORM_NAME}" == "macosx" && "${EFFECTIVE_PLATFORM_NAME:-}" == *maccatalyst* ]]; then
+    PLATFORMS=("maccatalyst")
+  else
+    PLATFORMS=("$PLATFORM_NAME")
+  fi
 else
   PLATFORMS=("iphoneos" "iphonesimulator")
 fi
