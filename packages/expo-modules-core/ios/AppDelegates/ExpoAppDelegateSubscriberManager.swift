@@ -462,9 +462,7 @@ public class ExpoAppDelegateSubscriberManager: NSObject {
    */
   @objc
   public static func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-    let deviceOrientationMask = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
-    let universalOrientationMask = allowedOrientations(for: .unspecified)
-    let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
+    let infoPlistOrientations = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
 
     let parsedSubscribers = ExpoAppDelegateSubscriberRepository.subscribers.filter {
       $0.responds(to: #selector(UIApplicationDelegate.application(_:supportedInterfaceOrientationsFor:)))
@@ -487,13 +485,24 @@ func allowedOrientations(
   for userInterfaceIdiom: UIUserInterfaceIdiom,
   infoDictionary: [String: Any]? = Bundle.main.infoDictionary
 ) -> UIInterfaceOrientationMask {
-  // For now only iPad-specific orientations are supported
-  let deviceString = userInterfaceIdiom == .pad ? "~ipad" : ""
-  var mask: UIInterfaceOrientationMask = []
-  guard let orientations = infoDictionary?["UISupportedInterfaceOrientations\(deviceString)"] as? [String] else {
+  // For now only iPad-specific orientations are supported. When the `~ipad` key is absent,
+  // fall back to the universal `UISupportedInterfaceOrientations` key, matching how UIKit
+  // resolves device-specific keys. We additionally fall back when `~ipad` is present but
+  // resolves to no orientations, treating a malformed entry as if it were absent.
+  if userInterfaceIdiom == .pad,
+    let mask = orientationMask(forKey: "UISupportedInterfaceOrientations~ipad", in: infoDictionary),
+    !mask.isEmpty {
     return mask
   }
+  return orientationMask(forKey: "UISupportedInterfaceOrientations", in: infoDictionary) ?? []
+}
 
+private func orientationMask(forKey key: String, in infoDictionary: [String: Any]?) -> UIInterfaceOrientationMask? {
+  guard let orientations = infoDictionary?[key] as? [String] else {
+    return nil
+  }
+
+  var mask: UIInterfaceOrientationMask = []
   for orientation in orientations {
     switch orientation {
     case "UIInterfaceOrientationPortrait":
