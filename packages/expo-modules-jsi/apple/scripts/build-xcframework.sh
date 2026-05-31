@@ -231,7 +231,7 @@ build_slice() {
     cp -a "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
   fi
 
-    # Modules and Headers live at the framework root on flat (iOS/tvOS) bundles
+  # Modules and Headers live at the framework root on flat (iOS/tvOS) bundles
   # and inside Versions/A on versioned (macOS/Catalyst) bundles.
   local framework_root="${staging_dir}/${PACKAGE_NAME}.framework"
   local content_root

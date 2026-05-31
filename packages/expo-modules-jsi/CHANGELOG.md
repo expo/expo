@@ -8,10 +8,10 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `ExpoModulesJSI.xcframework` build failures for Mac Catalyst and macOS, including missing slices, deep bundles issues, and `Float16` compilation errors. ([#46289](https://github.com/expo/expo/pull/46289) by [@theeket](https://github.com/theeket))
 - [iOS] Fixed the xcframework build failing with a `sed` error when building in an environment that uses GNU `sed` instead of BSD `sed` (e.g. a Nix shell). ([#46389](https://github.com/expo/expo/pull/46389) by [@niteshbalusu11](https://github.com/niteshbalusu11))
 - [iOS] Propagate `JavaScriptPromise` setup failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong))
 - Fix build framework for macOS ([#46413](https://github.com/expo/expo/pull/46413) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix build framework for Mac Catalyst ([#46289](https://github.com/expo/expo/pull/46289) by [@theeket](https://github.com/theeket))
 
 ### 💡 Others
 
