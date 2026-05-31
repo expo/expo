@@ -108,8 +108,11 @@ class FileSystemFileHandle private constructor(
   }
 
   override fun close() {
-    fileChannel.close()
-    parcelFileDescriptor?.close()
+    try {
+      fileChannel.close()
+    } finally {
+      parcelFileDescriptor?.close()
+    }
   }
 
   fun read(length: Long): ByteArray {

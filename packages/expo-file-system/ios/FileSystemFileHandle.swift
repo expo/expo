@@ -77,11 +77,17 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
     try handle.write(contentsOf: bytes)
   }
 
+  override func sharedObjectDidRelease() {
+    try? close()
+  }
+
   func close() throws {
-    try handle.close()
-    if didAccessSecurityScope {
-      file.url.stopAccessingSecurityScopedResource()
+    defer {
+      if didAccessSecurityScope {
+        file.url.stopAccessingSecurityScopedResource()
+      }
     }
+    try handle.close()
   }
 
   var offset: UInt64? {
