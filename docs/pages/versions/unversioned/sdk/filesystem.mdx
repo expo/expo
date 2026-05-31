@@ -241,6 +241,39 @@ try {
 
 </Collapsible>
 
+<Collapsible summary="Random-access reads with FileHandle">
+
+Use [`FileHandle`](#filehandle) for efficient, random-access reads of large files without loading the entire file into memory. Obtain a handle by calling `file.open()`, read or write at any position using the `offset` property, and always close the handle when finished.
+
+```ts example.ts
+import { File, Paths, FileMode } from 'expo-file-system';
+
+const file = new File(Paths.document, 'recording.wav');
+const handle = file.open(FileMode.ReadOnly);
+
+// Read the WAV header (first 44 bytes)
+const header = handle.readBytesSync(44);
+const sampleRate = new DataView(header.buffer).getUint32(24, true);
+console.log(`Sample rate: ${sampleRate} Hz`);
+
+// Seek to a specific offset and read a chunk
+handle.offset = 1024;
+const chunk = await handle.readBytes(4096);
+console.log(`Read ${chunk.length} bytes from offset 1024`);
+
+// Read an entire file in 64 KB chunks
+handle.offset = 0;
+const CHUNK_SIZE = 64 * 1024;
+while (handle.offset! < handle.size!) {
+  const data = await handle.readBytes(CHUNK_SIZE);
+  // Process data...
+}
+
+handle.close();
+```
+
+</Collapsible>
+
 <Collapsible summary="Using legacy FileSystem API">
 
 ```ts example.ts
