@@ -33,7 +33,6 @@ CONFIGURATION="Release"
 DERIVED_DATA_PATH="${PACKAGE_DIR}/.DerivedData"
 SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
 SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
-GENERATED_DIR="${PACKAGE_DIR}/.generated"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
@@ -352,7 +351,7 @@ fi
 # parent `set -eo pipefail` doesn't catch that, the modulemap never gets
 # written, and xcodebuild later fails with `no such module 'jsi'`.
 PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
-GENERATED_MODULE_MAP="${GENERATED_DIR}/module.modulemap"
+GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then
