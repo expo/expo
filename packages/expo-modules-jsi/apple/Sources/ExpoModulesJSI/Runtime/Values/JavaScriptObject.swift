@@ -1,4 +1,4 @@
-``// Copyright 2025-present 650 Industries. All rights reserved.
+// Copyright 2025-present 650 Industries. All rights reserved.
 
 internal import ExpoModulesJSI_Cxx
 internal import jsi

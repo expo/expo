@@ -130,8 +130,6 @@ extension Array: JSIRepresentable where Element: JSIRepresentable {
   }
 }
 
-// TODO: remove when bumping to react-native-macos 0.86
-#if !os(macOS)
 extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresentable {
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> [Key: Value] {
     let object = value.getObject(runtime)
@@ -164,4 +162,3 @@ extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresenta
     return facebook.jsi.Value(runtime, object)
   }
 }
-#endif

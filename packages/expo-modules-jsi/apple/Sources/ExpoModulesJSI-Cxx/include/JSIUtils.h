@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 
 #include <hermes/hermes.h>
+#include <TargetConditionals.h>
 
 #include "HostFunctionClosure.h"
 #include "CppError.h"
