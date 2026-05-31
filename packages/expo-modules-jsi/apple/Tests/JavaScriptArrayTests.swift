@@ -370,7 +370,7 @@ struct JavaScriptArrayTests {
   @Test
   func `array as value can be passed to functions`() throws {
     let array = try runtime.eval("[1, 2, 3]").getArray()
-    let stringify = runtime.global()
+    let stringify = try runtime.global()
       .getPropertyAsObject("JSON")
       .getPropertyAsFunction("stringify")
 
@@ -565,7 +565,7 @@ struct JavaScriptArrayTests {
   @Test
   func `array instanceof Array`() throws {
     let array = try runtime.eval("[1, 2, 3]").getArray()
-    let arrayConstructor = runtime.global().getPropertyAsFunction("Array")
+    let arrayConstructor = try runtime.global().getPropertyAsFunction("Array")
     #expect(array.asValue().getObject().instanceOf(arrayConstructor) == true)
   }
 }
