@@ -2,6 +2,7 @@ package expo.modules.filesystem
 
 import android.content.ContentResolver
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Enumerable
@@ -51,7 +52,8 @@ enum class FileMode(val descriptor: String) : Enumerable {
 
 class FileSystemFileHandle private constructor(
   channel: FileChannel,
-  private val mode: FileMode
+  private val mode: FileMode,
+  private val parcelFileDescriptor: ParcelFileDescriptor? = null
 ) : SharedRef<FileChannel>(channel), AutoCloseable {
   companion object {
     fun forJavaFile(file: File, mode: FileMode): FileSystemFileHandle {
@@ -72,6 +74,14 @@ class FileSystemFileHandle private constructor(
     }
 
     fun forContentURI(uri: Uri, mode: FileMode, contentResolver: ContentResolver): FileSystemFileHandle {
+      if (mode == FileMode.READ_WRITE) {
+        throw Exceptions.IllegalArgument(
+          "READ_WRITE mode is not supported for content:// URIs. " +
+            "Content providers may not support simultaneous read and write access. " +
+            "Use READ or WRITE mode instead."
+        )
+      }
+
       val pfd = contentResolver.openFileDescriptor(uri, mode.descriptor)
         ?: throw Exceptions.IllegalStateException("Could not open file descriptor for uri: $uri")
 
@@ -81,7 +91,7 @@ class FileSystemFileHandle private constructor(
         else -> throw Exceptions.IllegalArgument("Unsupported file mode: '$mode'")
       }
 
-      return FileSystemFileHandle(channel, mode)
+      return FileSystemFileHandle(channel, mode, pfd)
     }
   }
 
@@ -99,6 +109,7 @@ class FileSystemFileHandle private constructor(
 
   override fun close() {
     fileChannel.close()
+    parcelFileDescriptor?.close()
   }
 
   fun read(length: Long): ByteArray {

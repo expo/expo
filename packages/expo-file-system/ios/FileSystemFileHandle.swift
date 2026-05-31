@@ -27,22 +27,32 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let file: FileSystemFile
   let mode: FileMode
   let handle: FileHandle
+  private let didAccessSecurityScope: Bool
 
   init(file: FileSystemFile, mode: FileMode?) throws {
     self.file = file
     self.mode = mode ?? FileMode.readWrite
-    if self.mode.readOnly {
-      handle = try FileHandle(forReadingFrom: file.url)
-    } else if self.mode.writeOnly {
-      handle = try FileHandle(forWritingTo: file.url)
-    } else {
-      handle = try FileHandle(forUpdating: file.url)
-    }
+    self.didAccessSecurityScope = file.url.startAccessingSecurityScopedResource()
 
-    if self.mode == FileMode.append {
-      _ = try handle.seekToEnd()
-    } else if self.mode == FileMode.truncate {
-      try handle.truncate(atOffset: 0)
+    do {
+      if self.mode.readOnly {
+        handle = try FileHandle(forReadingFrom: file.url)
+      } else if self.mode.writeOnly {
+        handle = try FileHandle(forWritingTo: file.url)
+      } else {
+        handle = try FileHandle(forUpdating: file.url)
+      }
+
+      if self.mode == FileMode.append {
+        _ = try handle.seekToEnd()
+      } else if self.mode == FileMode.truncate {
+        try handle.truncate(atOffset: 0)
+      }
+    } catch {
+      if self.didAccessSecurityScope {
+        file.url.stopAccessingSecurityScopedResource()
+      }
+      throw error
     }
 
     super.init(handle)
@@ -69,6 +79,9 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
 
   func close() throws {
     try handle.close()
+    if didAccessSecurityScope {
+      file.url.stopAccessingSecurityScopedResource()
+    }
   }
 
   var offset: UInt64? {
