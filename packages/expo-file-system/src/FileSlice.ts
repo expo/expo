@@ -23,6 +23,10 @@ export class FileSlice implements Blob {
   private readonly _end: number;
   readonly type: string;
 
+  get [Symbol.toStringTag]() {
+    return 'Blob';
+  }
+
   constructor(source: File, start: number, end: number, contentType: string) {
     this.source = source;
     this._start = start;
@@ -42,7 +46,10 @@ export class FileSlice implements Blob {
     try {
       handle.offset = this._start;
       const bytes = await handle.readBytes(this.size);
-      return bytes.buffer as ArrayBuffer;
+      return bytes.buffer.slice(
+        bytes.byteOffset,
+        bytes.byteOffset + bytes.byteLength
+      ) as ArrayBuffer;
     } finally {
       handle.close();
     }
@@ -98,20 +105,25 @@ export class FileSlice implements Blob {
 
     return new ReadableStream({
       async pull(controller) {
-        if (remaining <= 0) {
+        try {
+          if (remaining <= 0) {
+            handle.close();
+            controller.close();
+            return;
+          }
+          const toRead = Math.min(STREAM_CHUNK_SIZE, remaining);
+          const bytes = await handle.readBytes(toRead);
+          remaining -= bytes.length;
+          if (bytes.length === 0) {
+            handle.close();
+            controller.close();
+            return;
+          }
+          controller.enqueue(bytes as Uint8Array<ArrayBuffer>);
+        } catch (err) {
           handle.close();
-          controller.close();
-          return;
+          controller.error(err);
         }
-        const toRead = Math.min(STREAM_CHUNK_SIZE, remaining);
-        const bytes = await handle.readBytes(toRead);
-        remaining -= bytes.length;
-        if (bytes.length === 0) {
-          handle.close();
-          controller.close();
-          return;
-        }
-        controller.enqueue(bytes as Uint8Array<ArrayBuffer>);
       },
       cancel() {
         handle.close();
