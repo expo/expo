@@ -68,6 +68,16 @@ inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Array &array, c
   return array.getProperty(runtime, name);
 }
 
+#if TARGET_OS_OSX
+// react-native-macos (RN 0.81) lacks `jsi::Object::getProperty(Runtime&, const Value&)`,
+// so Swift can't look up a property by a JS Value. Provide a `const char*`-keyed wrapper
+// to use when iterating own property names.
+// TODO: remove when react-native-macos catches up to RN 0.85.
+inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Object &object, const char *name) {
+  return object.getProperty(runtime, name);
+}
+#endif
+
 inline jsi::Value valueFromArray(jsi::IRuntime &runtime, const jsi::Array &array) {
   return jsi::Value(runtime, array);
 }
