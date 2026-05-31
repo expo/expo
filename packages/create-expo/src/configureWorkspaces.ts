@@ -115,7 +115,10 @@ async function expandPatternAsync(projectRoot: string, pattern: string): Promise
 
   // Single trailing wildcard segment — read the parent dir, keep children
   // whose package.json exists.
-  if (segments[segments.length - 1] === '*' && !segments.slice(0, -1).some((s) => s.includes('*'))) {
+  if (
+    segments[segments.length - 1] === '*' &&
+    !segments.slice(0, -1).some((s) => s.includes('*'))
+  ) {
     const parentDir = path.resolve(projectRoot, ...segments.slice(0, -1));
     let entries: fs.Dirent[];
     try {
@@ -135,7 +138,9 @@ async function expandPatternAsync(projectRoot: string, pattern: string): Promise
     return matches;
   }
 
-  debug(`Unsupported workspace pattern "${pattern}" (only literal paths and trailing /* are handled)`);
+  debug(
+    `Unsupported workspace pattern "${pattern}" (only literal paths and trailing /* are handled)`
+  );
   return [];
 }
 
@@ -148,10 +153,7 @@ async function packageJsonExistsAsync(memberDir: string): Promise<boolean> {
   }
 }
 
-async function normalizeWorkspaceDepsAsync(
-  memberDir: string,
-  targetSpec: string
-): Promise<void> {
+async function normalizeWorkspaceDepsAsync(memberDir: string, targetSpec: string): Promise<void> {
   const pkgPath = path.join(memberDir, 'package.json');
   const pkg = await readJsonFileAsync(pkgPath);
   if (!pkg) {
@@ -188,10 +190,7 @@ async function readJsonFileAsync(filePath: string): Promise<any | undefined> {
   }
 }
 
-async function writePnpmWorkspaceYamlAsync(
-  projectRoot: string,
-  patterns: string[]
-): Promise<void> {
+async function writePnpmWorkspaceYamlAsync(projectRoot: string, patterns: string[]): Promise<void> {
   const yamlPath = path.join(projectRoot, PNPM_WORKSPACE_FILENAME);
   const lines = [
     'packages:',
