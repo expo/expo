@@ -131,10 +131,20 @@ platform_slice_id() {
     iphonesimulator)  echo "ios-arm64_x86_64-simulator" ;;
     appletvos)        echo "tvos-arm64" ;;
     appletvsimulator) echo "tvos-arm64_x86_64-simulator" ;;
+    macosx)           echo "macos-arm64_x86_64" ;;
     *)
       log "error: No slice mapping for platform: $1"
       exit 1
       ;;
+  esac
+}
+
+# Resolves the xcodebuild build-products directory name for a given platform.
+# macOS uses no $EFFECTIVE_PLATFORM_NAME suffix; every other SDK appends one.
+platform_build_dir() {
+  case "$1" in
+    macosx)           echo "${CONFIGURATION}" ;;
+    *)                echo "${CONFIGURATION}-$1" ;;
   esac
 }
 
@@ -146,7 +156,8 @@ build_slice() {
   destination=$(platform_destination "$platform")
   local slice_id
   slice_id=$(platform_slice_id "$platform")
-  local build_dir_name="${CONFIGURATION}-${platform}"
+  local build_dir_name
+  build_dir_name=$(platform_build_dir "$platform")
 
   log "Building framework slice for ${platform}..."
 
@@ -180,7 +191,14 @@ build_slice() {
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
   local framework_src="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"
   local swiftmodule_src="${product_path}/${PACKAGE_NAME}.swiftmodule"
-  local generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps-${platform}"
+  # GeneratedModuleMaps follows the same $EFFECTIVE_PLATFORM_NAME convention as
+  # build products: no suffix for macOS, "-${platform}" for everything else.
+  local generated_maps
+  if [[ "$platform" == "macosx" ]]; then
+    generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps"
+  else
+    generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps-${platform}"
+  fi
 
   if [[ ! -d "$framework_src" ]]; then
     log "error: xcodebuild did not produce ${framework_src}"
@@ -194,15 +212,28 @@ build_slice() {
   rm -rf "$staging_dir"
   mkdir -p "$staging_dir"
 
-  cp -r "$framework_src" "$staging_dir/"
+  # `cp -a` preserves symlinks, attributes, and timestamps. `cp -r` resolves
+  # symlinks into real files, which breaks the macOS versioned-framework bundle
+  # layout (top-level `Foo`, `Resources`, etc. must be symlinks into Versions/Current).
+  cp -a "$framework_src" "$staging_dir/"
   if [[ -d "${product_path}/${PACKAGE_NAME}.framework.dSYM" ]]; then
-    cp -r "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
+    cp -a "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
+  fi
+
+  # Modules and Headers live at the framework root on flat (iOS/tvOS) bundles
+  # and inside Versions/A on versioned (macOS) bundles.
+  local framework_root="${staging_dir}/${PACKAGE_NAME}.framework"
+  local content_root
+  if [[ "$platform" == "macosx" ]]; then
+    content_root="${framework_root}/Versions/A"
+  else
+    content_root="${framework_root}"
   fi
 
   # Copy Swift module interfaces and generated headers into the staged framework.
-  local modules_dir="${staging_dir}/${PACKAGE_NAME}.framework/Modules"
+  local modules_dir="${content_root}/Modules"
   mkdir -p "$modules_dir"
-  cp -r "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
+  cp -a "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
   rm -rf "${modules_dir}/${PACKAGE_NAME}.swiftmodule/Project"
 
   # Remove private/package interfaces which reference package-internal and C++ types
@@ -229,10 +260,19 @@ build_slice() {
     mv "$stripped_swiftinterface" "$swiftinterface"
   done < <(find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface')
 
-  local headers_dir="${staging_dir}/${PACKAGE_NAME}.framework/Headers"
+  local headers_dir="${content_root}/Headers"
   mkdir -p "$headers_dir"
   cp "${generated_maps}/${PACKAGE_NAME}-Swift.h" "$headers_dir/"
   cp "${generated_maps}/${PACKAGE_NAME}.modulemap" "$headers_dir/module.modulemap"
+
+  # Add the top-level Headers/Modules symlinks expected on versioned macOS
+  # frameworks. xcodebuild already set up ExpoModulesJSI -> Versions/Current/...
+  # and Resources -> Versions/Current/Resources, but not Headers/Modules since
+  # the SPM build doesn't emit those at that point.
+  if [[ "$platform" == "macosx" ]]; then
+    ln -sfn "Versions/Current/Headers" "${framework_root}/Headers"
+    ln -sfn "Versions/Current/Modules" "${framework_root}/Modules"
+  fi
 
   echo "$current_hash" > "${staging_dir}/.build-hash"
 
