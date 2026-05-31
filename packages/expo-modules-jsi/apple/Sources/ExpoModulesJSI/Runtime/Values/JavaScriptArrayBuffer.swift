@@ -45,6 +45,22 @@ public struct JavaScriptArrayBuffer: ~Copyable {
     return newBuffer
   }
 
+  // MARK: - Zero-copy borrowing
+
+  /// Attempts to obtain the underlying native MutableBuffer without copying.
+  /// Returns `nil` if the buffer is JS-heap-allocated (no MutableBuffer available).
+  /// The returned buffer keeps the underlying memory alive until it is deallocated.
+  public func tryBorrowMutableBuffer() -> JavaScriptMutableBuffer? {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let borrowed = expo.tryBorrowMutableBuffer(runtime.pointee, pointee)
+    guard let data = borrowed.data, let retainer = borrowed.retainer else {
+      return nil
+    }
+    return JavaScriptMutableBuffer(data: data, size: Int(borrowed.size), retainer: retainer)
+  }
+
   // MARK: - Conversions
 
   /// Returns this array buffer as a `JavaScriptValue`.

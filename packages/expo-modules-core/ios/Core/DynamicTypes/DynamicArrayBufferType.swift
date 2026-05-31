@@ -16,9 +16,7 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
     return false
   }
 
-  /**
-   Converts JS array buffer to its native representation.
-   */
+  /// Converts JS array buffer to its native representation.
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.isTypedArray() {
       let typedArray = jsValue.getTypedArray()
@@ -30,6 +28,15 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
       return try typedArray.withUnsafeBytes { bytes in
         switch innerType {
         case is NativeArrayBuffer.Type:
+          let backingBuffer = typedArray.getArrayBuffer()
+          if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
+            return NativeArrayBuffer(
+              wrapping: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
+              count: count,
+              cleanup: {
+                _ = borrowed
+              })
+          }
           return NativeArrayBuffer.copy(of: bytes.baseAddress!, count: count)
         default:
           // Copy the TypedArray's view (respecting its `byteOffset` and `byteLength`) into a
@@ -52,6 +59,14 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
 
     switch innerType {
     case is NativeArrayBuffer.Type:
+      if let borrowed = jsArrayBuffer.tryBorrowMutableBuffer() {
+        return NativeArrayBuffer(
+          wrapping: UnsafeMutableRawPointer(borrowed.data),
+          count: borrowed.size,
+          cleanup: {
+            _ = borrowed
+          })
+      }
       return NativeArrayBuffer.copy(of: UnsafeRawPointer(jsArrayBuffer.data()), count: jsArrayBuffer.size)
     default:
       return ArrayBuffer(jsArrayBuffer)
