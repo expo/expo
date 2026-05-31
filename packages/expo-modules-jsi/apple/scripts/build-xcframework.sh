@@ -396,16 +396,15 @@ fi
 
 PLATFORMS=("${platforms_to_build[@]}")
 
-# Wipe stale intermediates before compiling: DerivedData's module cache, the
-# SwiftPM workspace/.build tree, and the generated modulemap can reference
-# headers or module layouts that no longer match (e.g. after switching branches). 
+# Wipe stale intermediates before compiling: DerivedData's module cache and the
+# SwiftPM workspace/.build tree carry over from earlier runs and can reference
+# headers or module layouts that no longer match (e.g. after switching branches).
 # Only runs when a slice needs rebuilding, so the up-to-date fast path is unaffected.
-# Products/ is preserved. build_slice replaces only the slice it rebuilds.
-log "Clearing stale build state (DerivedData, SwiftPM, generated) before rebuild"
-rm -rf "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH" "$GENERATED_DIR"
-
-# Recreate the modulemap we just deleted.
-PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+# Products/ is preserved. build_slice replaces only the slice it rebuilds. The
+# generated modulemap is left intact — it was already regenerated above for the
+# cache hash, so wiping it here would just force a redundant rebuild.
+log "Clearing stale build state (DerivedData, SwiftPM) before rebuild"
+rm -rf "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
 
 SECONDS=0
 
