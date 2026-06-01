@@ -127,7 +127,7 @@ export default function IgnoreSafeAreaExample() {
 
 ### Forcing a color scheme
 
-Use `colorScheme` to override the appearance of descendant native views. Pass `'light'` or `'dark'` to force one, or omit it to follow the device setting. Android and iOS only — ignored on web.
+Use `colorScheme` to override the appearance of the subtree. Pass `'light'` or `'dark'` to force one, or omit it to follow the device setting. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it sets `data-theme` on the underlying `View` so the design-token CSS variables resolve to the forced scheme regardless of `prefers-color-scheme`.
 
 ```tsx HostColorSchemeExample.tsx
 import { Host, Button } from '@expo/ui';
