@@ -56,12 +56,15 @@ export default function HomeScreen() {
 
 Import and add [`SafeAreaProvider`](https://appandflow.github.io/react-native-safe-area-context/api/safe-area-provider) to the root component file (such as **App.tsx**) before using `SafeAreaView` in your screen component.
 
+{/* prettier-ignore */}
 ```tsx App.tsx
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
   return (
-    return <SafeAreaProvider>...</SafeAreaProvider>;
+    <SafeAreaProvider>
+      {/* Your app content */}
+    </SafeAreaProvider>
   );
 }
 ```
