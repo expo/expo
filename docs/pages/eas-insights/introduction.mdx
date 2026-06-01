@@ -1,76 +1,23 @@
 ---
 title: EAS Insights
 sidebar_title: Introduction
-description: An introduction to EAS Insights which is a preview service for projects using the expo-insights library.
+description: An introduction to EAS Insights, a dashboard that surfaces trends in your app's usage, workflow runs, and Maestro tests.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **important** **EAS Insights** is in [preview](/more/release-statuses/#preview) and subject to breaking changes. While in preview, it is free to use.
+> **important** **EAS Insights** is in [preview](/more/release-statuses/#preview) and subject to breaking changes.
 
-**EAS Insights** is a service that will offer a view into a project's performance, usage, and reach. We are currently offering a preview of Insights that is available to all developers, and we will continue to roll out new features and functionality based on user feedback and suggestions.
+**EAS Insights** is a dashboard that surfaces trends across your project so you can see how your app is doing at a glance. Open your project in the EAS dashboard and select [**Insights**](https://expo.dev/accounts/[account]/projects/[project]/insights) from the navigation menu.
 
-EAS Insights makes it easy to see the state of your app, providing information about usage across platforms, app store versions, and timeframes.
-
-## Integration with EAS Update
-
-If you're already using [EAS Update](/eas-update/introduction/), we provide certain high-level usage insights without any additional client-side changes. This is possible because by aggregating data from client requests to check for an update into a limited Insights view that shows usage over time, as well as usage broken down by platform.
-
-## Use the `expo-insights` library
-
-Developers can add the `expo-insights` library to their projects and gain more precise usage metrics (than those provided by just aggregating update requests) and additional breakdowns by app store version. Currently, the library is limited to sending client events only pertaining to cold starts of the app, but in the future we will expand `expo-insights` to offer new types of events and payloads, to support more advanced functionality.
-
-### Installation
-
-To use the `expo-insights`, make sure your app is linked to your EAS project in **app.json** / **app.config.js** by running `eas init`, then install the library.
-
-<Terminal
-  cmd={{
-    npm: [
-      '# Install EAS CLI if you have not already',
-      '$ npm install --global eas-cli',
-      '',
-      '# Initialize your project EAS if you have not already ',
-      '$ eas init',
-      '',
-      '# Install the library',
-      '$ npx expo install expo-insights',
-    ],
-    yarn: [
-      '# Install EAS CLI if you have not already',
-      '$ yarn global add eas-cli',
-      '',
-      '# Initialize your project EAS if you have not already ',
-      '$ eas init',
-      '',
-      '# Install the library',
-      '$ yarn expo install expo-insights',
-    ],
-    pnpm: [
-      '# Install EAS CLI if you have not already',
-      '$ pnpm add --global eas-cli',
-      '',
-      '# Initialize your project EAS if you have not already ',
-      '$ eas init',
-      '',
-      '# Install the library',
-      '$ pnpm expo install expo-insights',
-    ],
-    bun: [
-      '# Install EAS CLI if you have not already',
-      '$ bun add --global eas-cli',
-      '',
-      '# Initialize your project EAS if you have not already ',
-      '$ eas init',
-      '',
-      '# Install the library',
-      '$ bun expo install expo-insights',
-    ],
-  }}
+<ContentSpotlight
+  alt="The Insights dashboard in the EAS dashboard, with tabs for App usage, Workflows, and Maestro."
+  src="/static/images/eas-insights/insights-overview-light.png"
+  darkSrc="/static/images/eas-insights/insights-overview-dark.png"
 />
 
-After installing the library, create a build either with [EAS](/build/setup/) or [locally](/guides/local-app-development/). The library will automatically send events to EAS Insights when the app is launched.
+Insights groups data into three tabs:
 
-### View insights
-
-To view insights data of your app, in the EAS dashboard, go to projects list, select your project and then select **Insights** from the navigation menu.
+- **[App usage](/eas-insights/app-usage/)**: usage of your app across platforms, app store versions, and time, aggregated from EAS Update requests and the `expo-insights` library.
+- **[Workflows](/eas-insights/workflows/)**: run counts, success rates, and trends for your [EAS Workflows](/eas/workflows/introduction/).
+- **[Maestro](/eas-insights/maestro/)**: pass, flake, and failure trends for the [Maestro](https://maestro.dev/) end-to-end tests you run in EAS Workflows.
