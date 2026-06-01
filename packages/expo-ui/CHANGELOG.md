@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix universal `TextInput` ignoring `style` `backgroundColor` / `borderWidth` and not applying `textAlign` to the placeholder. ([#46441](https://github.com/expo/expo/pull/46441) by [@duyanhv](https://github.com/duyanhv))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-29
