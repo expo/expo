@@ -423,7 +423,19 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     mTasksAndEventsRepository.putEventForAppScopeKey(appScopeKey, body);
 
-    getAppLoader().loadApp(mContextRef.get(),
+    HeadlessAppLoader appLoader = getAppLoader();
+    if (appLoader == null) {
+      // The headless app loader is unavailable because the context has been released
+      // (e.g. the process was killed and the JobService is restoring jobs in the
+      // background before the app context is set up again). Calling loadApp() on a
+      // null loader crashes the OS-level JobService callback with a NullPointerException,
+      // so drop the queued event and let the job finish cleanly instead.
+      Log.e(TAG, "Cannot execute background task '" + task.getName() + "': headless app loader is unavailable (context released). Dropping queued event.");
+      mTasksAndEventsRepository.removeEvents(appScopeKey);
+      return;
+    }
+
+    appLoader.loadApp(mContextRef.get(),
       new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()),
       () -> {
       },
@@ -443,8 +455,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   //region helpers
 
   private HeadlessAppLoader getAppLoader() {
-    if (mContextRef.get() != null) {
-      return AppLoaderProvider.getLoader("react-native-headless", mContextRef.get());
+    // Guard against `mContextRef` itself being null (not just its referent): `executeTask`
+    // runs on the JobScheduler worker thread, which can observe a not-yet-initialized
+    // field, and the WeakReference may also have been cleared once the process is killed.
+    Context context = mContextRef != null ? mContextRef.get() : null;
+    if (context != null) {
+      return AppLoaderProvider.getLoader("react-native-headless", context);
     } else {
       return null;
     }
