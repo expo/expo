@@ -5,6 +5,9 @@ import android.provider.ContactsContract.CommonDataKinds.Phone
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.phone.operations.ExistingPhone
 import expo.modules.contacts.next.domain.wrappers.DataId
+import expo.modules.contacts.next.extensions.getNullableInt
+import expo.modules.contacts.next.extensions.getNullableString
+import expo.modules.contacts.next.extensions.getRequiredString
 
 object PhoneField : ExtractableField.Data<ExistingPhone> {
   override val mimeType = Phone.CONTENT_ITEM_TYPE
@@ -18,14 +21,14 @@ object PhoneField : ExtractableField.Data<ExistingPhone> {
 
   override fun extract(cursor: Cursor): ExistingPhone = with(cursor) {
     return ExistingPhone(
-      dataId = DataId(getString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
-      number = getString(getColumnIndexOrThrow(Phone.NUMBER)),
+      dataId = DataId(getRequiredString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
+      number = getNullableString(getColumnIndexOrThrow(Phone.NUMBER)),
       label = extractLabel()
     )
   }
 
   private fun Cursor.extractLabel(): PhoneLabel =
-    when (getInt(getColumnIndexOrThrow(Phone.TYPE))) {
+    when (getNullableInt(Phone.TYPE)) {
       Phone.TYPE_HOME -> PhoneLabel.Home
       Phone.TYPE_MOBILE -> PhoneLabel.Mobile
       Phone.TYPE_WORK -> PhoneLabel.Work
@@ -46,9 +49,13 @@ object PhoneField : ExtractableField.Data<ExistingPhone> {
       Phone.TYPE_WORK_PAGER -> PhoneLabel.WorkPager
       Phone.TYPE_ASSISTANT -> PhoneLabel.Assistant
       Phone.TYPE_MMS -> PhoneLabel.Mms
+      null -> {
+        val customLabel = getNullableString(getColumnIndexOrThrow(Phone.LABEL))
+        PhoneLabel.MalformedType(customLabel)
+      }
       else -> {
-        val customLabel = getString(getColumnIndexOrThrow(Phone.LABEL))
-        PhoneLabel.Custom(customLabel)
+        val customLabel = getNullableString(getColumnIndexOrThrow(Phone.LABEL))
+        customLabel?.let { PhoneLabel.Custom(it) } ?: PhoneLabel.MalformedCustom
       }
     }
 }
