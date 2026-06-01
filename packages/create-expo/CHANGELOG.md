@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add optional Expo Skills installation for new projects, with interactive skill and agent selection.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
