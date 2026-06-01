@@ -50,23 +50,53 @@ export type StrictResolverFactory = (
 
 const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
-function resolveWithPlatformExtensions(
-  context: ResolutionContext,
-  moduleName: string,
-  platform: string | null
-): Resolution {
-  const sourceExts = platform != null ? getPlatformExtensions(platform, context.sourceExts) : null;
-  if (platform == null || !sourceExts) {
-    return resolver(context, moduleName, platform);
+interface PlatformExtensions {
+  sourceExts: string[];
+  unstable_conditionNames: string[];
+}
+
+function constructPlatformExtensions(
+  config: ConfigT
+): Record<string, PlatformExtensions | undefined> {
+  const platformExtensions: Record<string, PlatformExtensions | undefined> = Object.create(null);
+  // TODO(@kitten): Temporary internal override config for per-platform extensions
+  let unstable_platformExtensions: Record<string, string[] | undefined> | undefined;
+  if (
+    config.resolver &&
+    'unstable_platformExtensions' in config.resolver &&
+    config.resolver.unstable_platformExtensions &&
+    typeof config.resolver.unstable_platformExtensions === 'object'
+  ) {
+    unstable_platformExtensions = config.resolver.unstable_platformExtensions as any;
   }
+  for (const platform of config.resolver?.platforms ?? []) {
+    const customPlatformExtensions = unstable_platformExtensions?.[platform];
+    const sourceExts = getPlatformExtensions(
+      platform,
+      config.resolver.sourceExts,
+      customPlatformExtensions
+    );
+    // Platform-less resolution drops the platform's package-exports conditions, so fold them in.
+    const unstable_conditionNames = [
+      ...config.resolver.unstable_conditionNames,
+      ...(config.resolver.unstable_conditionsByPlatform[platform] ?? []),
+    ];
+    if (sourceExts) {
+      platformExtensions[platform as Platform] = { sourceExts, unstable_conditionNames };
+    }
+  }
+  return platformExtensions;
+}
+
+function resolveWithPlatformExtensions(
+  platformExtensions: PlatformExtensions,
+  context: ResolutionContext,
+  moduleName: string
+): Resolution {
   const platformContext = asWritable(context);
   platformContext.preferNativePlatform = false;
-  platformContext.sourceExts = sourceExts;
-  // Platform-less resolution drops the platform's package-exports conditions, so fold them in.
-  platformContext.unstable_conditionNames = [
-    ...context.unstable_conditionNames,
-    ...(context.unstable_conditionsByPlatform[platform] ?? []),
-  ];
+  platformContext.sourceExts = platformExtensions.sourceExts;
+  platformContext.unstable_conditionNames = platformExtensions.unstable_conditionNames;
   return resolver(platformContext, moduleName, null);
 }
 
@@ -289,12 +319,18 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
+  const platformExtensions = constructPlatformExtensions(config);
+
   const getStrictResolver: StrictResolverFactory = (
     { resolveRequest, ...context },
     platform
   ): StrictResolver => {
     return function doResolve(moduleName: string): Resolution {
-      return resolveWithPlatformExtensions(context, moduleName, platform);
+      if (platform != null && platformExtensions[platform]) {
+        return resolveWithPlatformExtensions(platformExtensions[platform], context, moduleName);
+      } else {
+        return resolver(context, moduleName, platform);
+      }
     };
   };
 

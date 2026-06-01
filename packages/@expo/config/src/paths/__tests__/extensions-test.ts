@@ -45,13 +45,6 @@ describe(getPlatformExtensions, () => {
   it(`returns null for platforms without a custom order`, () => {
     expect(getPlatformExtensions('ios', ['js'])).toBeNull();
   });
-
-  it(`memoizes the result per extensions array`, () => {
-    const extensions = ['js', 'ts'];
-    expect(getPlatformExtensions('tvos', extensions)).toBe(
-      getPlatformExtensions('tvos', extensions)
-    );
-  });
 });
 
 // Enforce that all extensions are returned in the correct order, this is very important!

@@ -70,29 +70,14 @@ const PLATFORM_EXTENSIONS: Record<string, readonly string[]> = {
   macos: ['macos', 'ios', 'native'],
 };
 
-const _platformExtensionsCache = new Map<string, { sourceExts: unknown; result: string[] }>();
-
 /** Expand `extensions` with OOT platform extensions for platform */
 export function getPlatformExtensions(
   platform: string,
-  extensions: readonly string[]
+  extensions: readonly string[],
+  customPlatformExtensions: readonly string[] | undefined
 ): string[] | null {
-  const platforms = PLATFORM_EXTENSIONS[platform];
-  if (!platforms) {
-    return null;
-  }
-  const cached = _platformExtensionsCache.get(platform);
-  if (cached?.sourceExts === extensions) {
-    return cached.result;
-  }
-  const result = getExtensions(platforms, extensions, []);
-  if (cached != null) {
-    cached.sourceExts = extensions;
-    cached.result = result;
-  } else {
-    _platformExtensionsCache.set(platform, { sourceExts: extensions, result });
-  }
-  return result;
+  const platformExtensions = customPlatformExtensions || PLATFORM_EXTENSIONS[platform];
+  return platformExtensions ? getExtensions(platformExtensions, extensions, []) : null;
 }
 
 function _addMiscellaneousExtensions(platforms: string[], fileExtensions: string[]): string[] {
