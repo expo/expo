@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Add hostProvidedFrameworks option to skip Frameworks provided by the host app ([#46355](https://github.com/expo/expo/pull/46355) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [tvOS] Support building tvOS XCFrameworks (detect `platform :tvos` and use tvOS destinations / product dirs; guard tvOS-unavailable back-gesture APIs). ([#46450](https://github.com/expo/expo/pull/46450) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
 
 ### 🐛 Bug fixes
 
