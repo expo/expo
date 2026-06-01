@@ -49,7 +49,7 @@ struct JavaScriptFunctionTests {
     )
 
     let fn = try runtime.global().getPropertyAsFunction("getValue")
-    let obj = runtime.global().getPropertyAsObject("obj")
+    let obj = try runtime.global().getPropertyAsObject("obj")
     let result = try fn.call(this: obj)
 
     #expect(result.getInt() == 42)
@@ -64,7 +64,7 @@ struct JavaScriptFunctionTests {
     )
 
     let fn = try runtime.global().getPropertyAsFunction("add")
-    let obj = runtime.global().getPropertyAsObject("obj")
+    let obj = try runtime.global().getPropertyAsObject("obj")
     let result = try fn.call(this: obj, arguments: 2)
 
     #expect(result.getInt() == 42)

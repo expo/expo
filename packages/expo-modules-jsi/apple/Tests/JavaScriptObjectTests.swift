@@ -86,13 +86,23 @@ struct JavaScriptObjectTests {
     }
 
     @Test
-    func `get property as object`() {
+    func `get property as object`() throws {
       let object = JavaScriptObject(runtime)
       let nested = JavaScriptObject(runtime)
       nested.setProperty("inner", value: "value")
       object.setProperty("nested", nested)
-      let retrieved = object.getPropertyAsObject("nested")
+      let retrieved = try object.getPropertyAsObject("nested")
       #expect(retrieved.getProperty("inner").getString() == "value")
+    }
+
+    @Test
+    func `get property as object throws when property is not an object`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("notAnObject", value: 42)
+
+      #expect(throws: Error.self) {
+        _ = try object.getPropertyAsObject("notAnObject")
+      }
     }
 
     @Test
@@ -205,12 +215,12 @@ struct JavaScriptObjectTests {
     }
 
     @Test
-    func `set property with object`() {
+    func `set property with object`() throws {
       let object = JavaScriptObject(runtime)
       let nested = JavaScriptObject(runtime)
       nested.setProperty("value", value: 42.0)
       object.setProperty("nested", nested)
-      #expect(object.getPropertyAsObject("nested").getProperty("value").getInt() == 42)
+      #expect(try object.getPropertyAsObject("nested").getProperty("value").getInt() == 42)
     }
 
     @Test

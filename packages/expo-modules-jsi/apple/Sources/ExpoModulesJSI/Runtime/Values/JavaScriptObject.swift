@@ -167,20 +167,24 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     }
   }
 
-  /// Same as `getProperty(name).getObject()`.
-  public func getPropertyAsObject(_ name: String) -> JavaScriptObject {
-    guard let runtime else {
-      FatalError.runtimeLost()
+  /// Same as `getProperty(name).getObject()`, but throws instead of aborting when the property is
+  /// not an object.
+  public func getPropertyAsObject(_ name: String) throws -> JavaScriptObject {
+    let property = getProperty(name)
+    guard property.isObject() else {
+      throw PropertyNotObjectError(name: name)
     }
-    return JavaScriptObject(runtime, pointee.getPropertyAsObject(runtime.pointee, name))
+    return property.getObject()
   }
 
-  /// Same as `getProperty(propName).getObject()`.
-  public func getPropertyAsObject(_ propName: JavaScriptPropNameID) -> JavaScriptObject {
-    guard let runtime else {
-      FatalError.runtimeLost()
+  /// Same as `getProperty(propName).getObject()`, but throws instead of aborting when the property is
+  /// not an object.
+  public func getPropertyAsObject(_ propName: JavaScriptPropNameID) throws -> JavaScriptObject {
+    let property = getProperty(propName)
+    guard property.isObject() else {
+      throw PropertyNotObjectError(name: propName.utf8())
     }
-    return JavaScriptObject(runtime, pointee.getProperty(runtime.pointee, propName.pointee).getObject(runtime.pointee))
+    return property.getObject()
   }
 
   /// Same as `getProperty(name).getObject().getFunction()`, but throws instead of aborting when the
@@ -548,6 +552,14 @@ extension JavaScriptObject {
 
     public var description: String {
       return "Property '\(name)' is not a function"
+    }
+  }
+
+  public struct PropertyNotObjectError: Error, CustomStringConvertible {
+    let name: String
+
+    public var description: String {
+      return "Property '\(name)' is not an object"
     }
   }
 }
