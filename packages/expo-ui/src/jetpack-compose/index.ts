@@ -29,7 +29,11 @@ export * from './SyncSwitch';
 export {
   TextField,
   OutlinedTextField,
+  BasicTextField,
   type TextFieldProps,
+  type OutlinedTextFieldProps,
+  type BasicTextFieldProps,
+  type BasicTextFieldRef,
   type TextFieldRef,
   type TextFieldCapitalization,
   type TextFieldImeAction,
@@ -40,7 +44,6 @@ export {
   type TextFieldTextStyle,
   type CommonTextFieldProps,
 } from './TextField';
-export { BasicTextField, type BasicTextFieldProps, type BasicTextFieldRef } from './BasicTextField';
 export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';

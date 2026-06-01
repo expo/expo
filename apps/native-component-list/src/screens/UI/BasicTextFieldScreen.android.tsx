@@ -76,11 +76,7 @@ export default function BasicTextFieldScreen() {
         <Card modifiers={cardModifiers}>
           <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
             <ComposeText style={{ typography: 'labelLarge' }}>decorationBox</ComposeText>
-            <BasicTextField
-              value={value}
-              cursorColor="#7c3aed"
-              onValueChange={setText}
-              modifiers={[fillMaxWidth()]}>
+            <BasicTextField value={value} onValueChange={setText} modifiers={[fillMaxWidth()]}>
               <BasicTextField.DecorationBox>
                 {text.length === 0 ? <ComposeText color="#9ca3af">Type here…</ComposeText> : null}
                 <BasicTextField.InnerTextField />

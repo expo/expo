@@ -1,10 +1,10 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
+import type { CommonTextFieldProps, TextFieldRef } from './shared';
 import { getStateId, useWorkletProp, worklets } from '../../State';
 import type { ViewEvent } from '../../types';
 import { Slot } from '../SlotView';
-import type { CommonTextFieldProps, TextFieldRef } from '../TextField';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 // region Types

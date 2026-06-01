@@ -1,5 +1,5 @@
 import type { ColorValue } from 'react-native';
-import type { CommonTextFieldProps, TextFieldRef } from '../TextField';
+import type { CommonTextFieldProps, TextFieldRef } from './shared';
 /**
  * Imperative methods for `BasicTextField`. Identical to {@link TextFieldRef}.
  */
@@ -29,4 +29,4 @@ declare namespace BasicTextFieldComponent {
     var InnerTextField: () => import("react/jsx-runtime").JSX.Element;
 }
 export { BasicTextFieldComponent as BasicTextField };
-//# sourceMappingURL=index.d.ts.map
+//# sourceMappingURL=BasicTextField.d.ts.map

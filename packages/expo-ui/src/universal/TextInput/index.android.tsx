@@ -1,5 +1,6 @@
 import {
-  TextField as ComposeTextField,
+  BasicTextField,
+  Box,
   Text,
   type TextFieldImeAction,
   type TextFieldKeyboardType,
@@ -11,7 +12,7 @@ import {
   semantics,
   testID as testIDModifier,
 } from '@expo/ui/jetpack-compose/modifiers';
-import { useImperativeHandle, useRef } from 'react';
+import { useImperativeHandle, useRef, useState } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 import { transformToModifiers } from '../transformStyle';
@@ -101,6 +102,11 @@ export function TextInput({
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = (value ?? fallback) as typeof fallback;
 
+  // `BasicTextField` has no built-in placeholder; we render our own in the
+  // decoration and toggle it on the empty<->non-empty boundary only, so typing
+  // doesn't re-render the component on every keystroke.
+  const [showPlaceholder, setShowPlaceholder] = useState(() => !state.value);
+
   const innerRef = useRef<TextFieldRef>(null);
   const isFocusedRef = useRef(false);
   useImperativeHandle(
@@ -153,7 +159,7 @@ export function TextInput({
     : undefined;
 
   return (
-    <ComposeTextField
+    <BasicTextField
       ref={innerRef}
       modifiers={[
         ...(userModifiers ?? []),
@@ -168,30 +174,7 @@ export function TextInput({
       singleLine={!multiline}
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      colors={
-        caretHidden || cursorColor || underlineColorAndroid || placeholderTextColor
-          ? {
-              ...(caretHidden
-                ? { cursorColor: 'transparent' }
-                : cursorColor
-                  ? { cursorColor }
-                  : null),
-              ...(underlineColorAndroid
-                ? {
-                    unfocusedIndicatorColor: underlineColorAndroid,
-                    focusedIndicatorColor: underlineColorAndroid,
-                  }
-                : null),
-              ...(placeholderTextColor
-                ? {
-                    unfocusedPlaceholderColor: placeholderTextColor,
-                    focusedPlaceholderColor: placeholderTextColor,
-                    disabledPlaceholderColor: placeholderTextColor,
-                  }
-                : null),
-            }
-          : undefined
-      }
+      cursorColor={caretHidden ? 'transparent' : (cursorColor ?? selectionColor)}
       textStyle={
         textStyle || (textAlign && textAlign !== 'auto')
           ? {
@@ -211,17 +194,29 @@ export function TextInput({
       }
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
-      onValueChange={onChangeText}
+      onValueChange={
+        placeholder != null
+          ? (text) => {
+              setShowPlaceholder(text.length === 0);
+              onChangeText?.(text);
+            }
+          : onChangeText
+      }
       maxLength={maxLength}
       onFocusChanged={handleFocusChanged}
-      selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
+      selection={selection as Parameters<typeof BasicTextField>[0]['selection']}
       onSelectionChange={onSelectionChange}>
-      {placeholder ? (
-        <ComposeTextField.Placeholder>
-          <Text>{placeholder}</Text>
-        </ComposeTextField.Placeholder>
+      {placeholder != null ? (
+        <BasicTextField.DecorationBox>
+          <Box>
+            {showPlaceholder ? (
+              <Text color={placeholderTextColor as string | undefined}>{placeholder}</Text>
+            ) : null}
+            <BasicTextField.InnerTextField />
+          </Box>
+        </BasicTextField.DecorationBox>
       ) : null}
-    </ComposeTextField>
+    </BasicTextField>
   );
 }
 

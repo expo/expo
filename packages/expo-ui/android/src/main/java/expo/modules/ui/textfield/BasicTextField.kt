@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -69,6 +71,7 @@ data class BasicTextFieldProps(
   val visualTransformation: String? = null,
   val keyboardOptions: TextFieldKeyboardOptionsRecord? = null,
   val cursorColor: Color? = null,
+  val textSelectionColors: TextFieldSelectionColorsRecord? = null,
   val onValueChangeSync: WorkletCallback? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -117,33 +120,49 @@ fun FunctionalComposableScope.BasicTextFieldContent(
   val visualTransformation = props.visualTransformation.toVisualTransformation()
   val cursorBrush = SolidColor(props.cursorColor.composeOrNull ?: androidx.compose.ui.graphics.Color.Black)
 
+  val current = LocalTextSelectionColors.current
+  val selectionColors = props.textSelectionColors?.let { record ->
+    val handle = record.handleColor.composeOrNull
+    val background = record.backgroundColor.composeOrNull
+    if (handle == null && background == null) {
+      current
+    } else {
+      TextSelectionColors(
+        handleColor = handle ?: current.handleColor,
+        backgroundColor = background ?: handle?.copy(alpha = 0.4f) ?: current.backgroundColor
+      )
+    }
+  } ?: current
+
   val decoration: (@Composable () -> Unit)? =
     findChildSlotView(view, "decorationBox")?.let { slot -> { slot.renderSlot() } }
 
-  BasicTextField(
-    value = core.value,
-    onValueChange = core.onValueChange,
-    modifier = core.modifier,
-    enabled = props.enabled,
-    readOnly = props.readOnly,
-    textStyle = textStyle,
-    keyboardOptions = core.keyboardOptions,
-    keyboardActions = core.keyboardActions,
-    singleLine = singleLine,
-    maxLines = maxLines,
-    minLines = minLines,
-    visualTransformation = visualTransformation,
-    cursorBrush = cursorBrush,
-    decorationBox = { innerTextField ->
-      if (decoration != null) {
-        CompositionLocalProvider(LocalInnerTextField provides innerTextField) {
-          decoration()
+  CompositionLocalProvider(LocalTextSelectionColors provides selectionColors) {
+    BasicTextField(
+      value = core.value,
+      onValueChange = core.onValueChange,
+      modifier = core.modifier,
+      enabled = props.enabled,
+      readOnly = props.readOnly,
+      textStyle = textStyle,
+      keyboardOptions = core.keyboardOptions,
+      keyboardActions = core.keyboardActions,
+      singleLine = singleLine,
+      maxLines = maxLines,
+      minLines = minLines,
+      visualTransformation = visualTransformation,
+      cursorBrush = cursorBrush,
+      decorationBox = { innerTextField ->
+        if (decoration != null) {
+          CompositionLocalProvider(LocalInnerTextField provides innerTextField) {
+            decoration()
+          }
+        } else {
+          innerTextField()
         }
-      } else {
-        innerTextField()
       }
-    }
-  )
+    )
+  }
 }
 
 // endregion View
