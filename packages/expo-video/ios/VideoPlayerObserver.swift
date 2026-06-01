@@ -59,6 +59,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?)
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?)
   func onIsExternalPlaybackActiveChanged(player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool)
+func onPlayerDeinit(player: VideoPlayer)
 }
 
 // Default implementations for the delegate
@@ -78,6 +79,7 @@ extension VideoPlayerObserverDelegate {
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {}
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {}
   func onIsExternalPlaybackActiveChanged(player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool) {}
+  func onPlayerDeinit(player: VideoPlayer) {}
 }
 
 // Wrapper used to store WeakReferences to the observer delegate
@@ -208,6 +210,12 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
 
   func unregisterDelegate(delegate: VideoPlayerObserverDelegate) {
     delegates.remove(WeakPlayerObserverDelegate(value: delegate))
+  }
+
+  func notifyPlayerDeinit(player: VideoPlayer) {
+    delegates.forEach { delegate in
+      delegate.value?.onPlayerDeinit(player: player)
+    }
   }
 
   func cleanup() {
