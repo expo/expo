@@ -4,6 +4,7 @@ import PhotosUI
 
 public final class MediaLibraryNextModule: Module {
   private static let libraryDidChangeEvent = "mediaLibraryDidChange"
+  private let assetMapper = AssetMapper()
   private lazy var observerManager = PhotoLibraryObserverManager(onChange: { [weak self] body in
     guard let self = self else {
       return
@@ -27,7 +28,7 @@ public final class MediaLibraryNextModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(Asset.self) {
       Constructor { (id: String) -> Asset in
-        return Asset(id: id)
+        return Asset(id: id, assetMapper: assetMapper)
       }
 
       Property("id") { (this: Asset) in
@@ -123,7 +124,7 @@ public final class MediaLibraryNextModule: Module {
           }
           try await AssetCollectionRepository.shared.add(assets: [asset], to: guardedAlbum.id)
         }
-        return Asset(localIdentifier: newAssetId)
+        return Asset(localIdentifier: newAssetId, assetMapper: assetMapper)
       }
 
       StaticAsyncFunction("delete") { (assets: [Asset]) async throws in
@@ -136,7 +137,7 @@ public final class MediaLibraryNextModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(Query.self) {
       Constructor {
-        return Query()
+        return Query(assetMapper: assetMapper)
       }
 
       Function("eq") { (this: Query, assetField: AssetField, value: Either<MediaTypeNext, Int>) in
@@ -188,11 +189,15 @@ public final class MediaLibraryNextModule: Module {
       AsyncFunction("exe") { (this: Query) in
         try await this.exe()
       }
+
+      AsyncFunction("exeForMetadata") { (this: Query) in
+        try await this.exeForMetadata()
+      }
     }
 
     Class(Album.self) {
       Constructor { (id: String) -> Album in
-        return Album(id: id)
+        return Album(id: id, assetMapper: assetMapper)
       }
 
       Property("id") { (album: Album) in
@@ -221,7 +226,7 @@ public final class MediaLibraryNextModule: Module {
 
       StaticAsyncFunction("getAll") {
         try await checkIfPermissionGranted()
-        return try await Album.getAll()
+        return try await Album.getAll(assetMapper: assetMapper)
       }
 
       StaticAsyncFunction("get") { (title: String) -> Album? in
@@ -229,7 +234,7 @@ public final class MediaLibraryNextModule: Module {
         guard let collection = AssetCollectionRepository.shared.get(byTitle: title) else {
           return nil
         }
-        return Album(id: collection.localIdentifier)
+        return Album(id: collection.localIdentifier, assetMapper: assetMapper)
       }
 
       StaticAsyncFunction("delete") { (albums: [Album], deleteAssets: Bool?) async throws in
@@ -244,7 +249,7 @@ public final class MediaLibraryNextModule: Module {
         let newCollectionId = try await AssetCollectionRepository.shared.add(name: name)
         let phAssetsToAdd = AssetRepository.shared.get(by: assetIds)
         try await AssetCollectionRepository.shared.add(assets: phAssetsToAdd, to: newCollectionId)
-        return Album(id: newCollectionId)
+        return Album(id: newCollectionId, assetMapper: assetMapper)
       }
     }
 

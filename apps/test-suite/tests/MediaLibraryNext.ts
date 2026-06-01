@@ -821,6 +821,54 @@ export async function test(t) {
       t.expect(secondAsset.id).toBe(shorterAsset.id);
       t.expect(thirdAsset.id).toBe(tallerAsset.id);
     });
+
+    t.it('exeForMetadata works correctly for images', async () => {
+      // given
+      const asset = await Asset.create(pngFile.localUri);
+      assetsContainer.push(asset);
+      const albumName = createAlbumName('exeForMetadata works correctly for images');
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const results = await new Query().album(album).exeForMetadata();
+      // then
+      t.expect(results.length).toBe(1);
+      const result = results[0];
+      t.expect(result.id).toBeDefined();
+      t.expect(result.creationTime).toBeDefined();
+      t.expect(result.duration).toBe(null);
+      t.expect(result.filename.toLowerCase()).toMatch(/\.png/);
+      t.expect(result.height).toBeGreaterThan(0);
+      t.expect(result.mediaType).toBeDefined();
+      t.expect(new Date(result.modificationTime).getFullYear()).toBeGreaterThan(1970);
+      t.expect(result.modificationTime).toBeGreaterThan(0);
+      t.expect(result.width).toBeGreaterThan(0);
+      t.expect(result.isFavorite).toBe(false);
+    });
+
+    t.it('exeForMetadata works correctly for videos', async () => {
+      // given
+      const asset = await Asset.create(mp4File.localUri);
+      assetsContainer.push(asset);
+      const albumName = createAlbumName('exeForMetadata works correctly for videos');
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const results = await new Query().album(album).exeForMetadata();
+      // then
+      t.expect(results.length).toBe(1);
+      const result = results[0];
+      t.expect(result.id).toBeDefined();
+      t.expect(result.creationTime).toBeDefined();
+      t.expect(result.duration).toBeGreaterThan(0);
+      t.expect(result.filename.toLowerCase()).toMatch(/\.mp4/);
+      t.expect(result.height).toBeGreaterThan(0);
+      t.expect(result.mediaType).toBeDefined();
+      t.expect(new Date(result.modificationTime).getFullYear()).toBeGreaterThan(1970);
+      t.expect(result.modificationTime).toBeGreaterThan(0);
+      t.expect(result.width).toBeGreaterThan(0);
+      t.expect(result.isFavorite).toBe(false);
+    });
   });
 
   t.describe('asset.getAlbums()', () => {
