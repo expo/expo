@@ -535,6 +535,17 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the border shape used by buttons within this view.
+ * @param shape - The button border shape.
+ * @param cornerRadius - Corner radius, only used with `'roundedRectangle'`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonbordershape(_:)).
+ */
+export const buttonBorderShape = (
+  shape: 'automatic' | 'capsule' | 'roundedRectangle' | 'circle',
+  cornerRadius?: number
+) => createModifier('buttonBorderShape', { shape, cornerRadius });
+
+/**
  * Sets the style for toggles within this view.
  * @param style - The toggle style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/togglestyle(_:)).
@@ -1329,6 +1340,7 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
   | ReturnType<typeof controlSize>
   | ReturnType<typeof labelStyle>

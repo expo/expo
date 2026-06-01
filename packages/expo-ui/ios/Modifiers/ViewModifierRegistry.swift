@@ -1599,6 +1599,10 @@ extension ViewModifierRegistry {
       return try ButtonStyleModifier(from: params, appContext: appContext)
     }
 
+    register("buttonBorderShape") { params, appContext, _ in
+      return try ButtonBorderShapeModifier(from: params, appContext: appContext)
+    }
+
     register("toggleStyle") { params, appContext, _ in
       return try ToggleStyleModifier(from: params, appContext: appContext)
     }
