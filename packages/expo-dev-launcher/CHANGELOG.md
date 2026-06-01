@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Use `RCTPlatformName` instead of hardcoding `ios` when requesting bundles from Metro. ([#46443](https://github.com/expo/expo/pull/46443) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 56.0.18 — 2026-05-29
 
 _This version does not introduce any user-facing changes._
