@@ -1,12 +1,12 @@
-import { getRouteInfoFromState, defaultRouteInfo } from '../getRouteInfoFromState';
+import { computeRouteInfo, defaultRouteInfo, routeInfoFromState } from '../routeInfo';
 
-describe('getRouteInfoFromState', () => {
+describe('routeInfoFromState', () => {
   it('returns defaultRouteInfo when state is undefined', () => {
-    expect(getRouteInfoFromState(undefined)).toBe(defaultRouteInfo);
+    expect(routeInfoFromState(undefined)).toBe(defaultRouteInfo);
   });
 
   it('handles +not-found route', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [{ name: '+not-found' }],
       index: 0,
     });
@@ -17,7 +17,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('handles +not-found route with path', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [{ name: '+not-found', path: '/missing-page' }],
       index: 0,
     });
@@ -27,7 +27,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('handles _sitemap route', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [{ name: '_sitemap' }],
       index: 0,
     });
@@ -39,7 +39,7 @@ describe('getRouteInfoFromState', () => {
 
   it('throws when first route is not __root', () => {
     expect(() =>
-      getRouteInfoFromState({
+      routeInfoFromState({
         routes: [{ name: 'not-root' }],
         index: 0,
       })
@@ -47,7 +47,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('simple route: __root → (group) → home', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -80,7 +80,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('dynamic segment: __root → [id] with params {id: "123"}', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -105,7 +105,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('catch-all segment: __root → [...rest] with params {rest: ["a", "b"]}', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -130,7 +130,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('extra params not in path become searchParams', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -152,7 +152,7 @@ describe('getRouteInfoFromState', () => {
   // The `#` key is treated specially: it's extracted from searchParams into the hash portion
   // of pathnameWithParams, then deleted from searchParams. It IS in `params`, but not in `searchParams`.
   it('hash param is extracted into pathnameWithParams', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -173,7 +173,7 @@ describe('getRouteInfoFromState', () => {
   // File-based routing convention: `settings/index.tsx` maps to `/settings`,
   // so the trailing `index` segment is stripped to produce clean URLs.
   it('strips trailing index segment', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -199,7 +199,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('groups are filtered from pathname but kept in segments', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -225,7 +225,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('decodes URI-encoded params', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -243,7 +243,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('handles malformed URI component (returns as-is)', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -263,7 +263,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('handles incomplete state with screen/params nesting', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -292,7 +292,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('route name starting with / has leading slash stripped', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -310,7 +310,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('decodes array params in catch-all', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -327,7 +327,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('uses index 0 when state has no index property', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -342,7 +342,7 @@ describe('getRouteInfoFromState', () => {
   });
 
   it('uses non-zero index when state has index property', () => {
-    const result = getRouteInfoFromState({
+    const result = routeInfoFromState({
       routes: [
         {
           name: '__root',
@@ -357,5 +357,80 @@ describe('getRouteInfoFromState', () => {
 
     expect(result.segments).toEqual(['second']);
     expect(result.pathname).toBe('/second');
+  });
+});
+
+describe('computeRouteInfo', () => {
+  it('skips the internal slot (__root) — returns the parent unchanged', () => {
+    const parent = defaultRouteInfo;
+    expect(computeRouteInfo(parent, { name: '__root', params: { ignored: '1' } })).toBe(parent);
+  });
+
+  it('extends the parent route info with a dynamic segment, resolving the param', () => {
+    const parent = computeRouteInfo(defaultRouteInfo, { name: '(group)' });
+    const result = computeRouteInfo(parent, { name: '[id]', params: { id: '2' } });
+
+    expect(result.segments).toEqual(['(group)', '[id]']);
+    expect(result.params).toEqual({ id: '2' });
+    expect(result.pathname).toBe('/2');
+  });
+
+  it('returns a stable reference when recomputed with equal params (memoization works)', () => {
+    // computeRouteInfo itself returns a new object each call; reference stability comes from the
+    // caller's useMemo. This asserts the value is deeply equal for equal inputs.
+    const parent = computeRouteInfo(defaultRouteInfo, { name: 'feed' });
+    const a = computeRouteInfo(parent, { name: '[id]', params: { id: '2' } });
+    const b = computeRouteInfo(parent, { name: '[id]', params: { id: '2' } });
+    expect(a).toEqual(b);
+  });
+
+  it('resolves a nested +not-found against its catch-all param', () => {
+    const result = computeRouteInfo(defaultRouteInfo, {
+      name: '+not-found',
+      params: { 'not-found': ['123'] },
+    });
+    expect(result.pathname).toBe('/123');
+    expect(result.segments).toEqual(['+not-found']);
+  });
+
+  it('does not re-unroll a parent screen marker already rendered as a route', () => {
+    // `parent` carries a `screen` marker for `child`, which is also present as a real nested
+    // route. Unrolling must use each level's own params — not the merged params.
+    const parent = computeRouteInfo(defaultRouteInfo, {
+      name: 'parent',
+      params: { screen: 'child', params: {} },
+    });
+    const result = computeRouteInfo(parent, { name: 'child', params: {} });
+    expect(result.pathname).toBe('/parent/child');
+  });
+
+  it('partitions non-path params into search params', () => {
+    const result = computeRouteInfo(defaultRouteInfo, {
+      name: '[id]',
+      params: { id: '123', q: 'x' },
+    });
+    expect(result.pathname).toBe('/123');
+    expect(result.searchParams.get('q')).toBe('x');
+    expect(result.searchParams.has('id')).toBe(false);
+  });
+
+  it('produces the same UrlObject as routeInfoFromState for an equivalent walk', () => {
+    const viaState = routeInfoFromState({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [{ name: '(tabs)', state: { routes: [{ name: 'feed' }], index: 0 } }],
+            index: 0,
+          },
+        },
+      ],
+      index: 0,
+    });
+    const viaPrimitives = computeRouteInfo(
+      computeRouteInfo(computeRouteInfo(defaultRouteInfo, { name: '__root' }), { name: '(tabs)' }),
+      { name: 'feed' }
+    );
+    expect(viaPrimitives).toEqual(viaState);
   });
 });

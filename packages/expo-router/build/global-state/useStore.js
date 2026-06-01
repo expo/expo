@@ -8,8 +8,7 @@ exports.useStore = useStore;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const getRouteInfoFromState_1 = require("./getRouteInfoFromState");
-const routeInfoCache_1 = require("./routeInfoCache");
+const routeInfo_1 = require("./routeInfo");
 const store_1 = require("./store");
 const extractPathFromURL_1 = require("../fork/extractPathFromURL");
 const getStateFromPath_forks_1 = require("../fork/getStateFromPath-forks");
@@ -63,8 +62,6 @@ function useStore(context, linkingConfigOptions, serverUrl) {
             if (!initialPath.startsWith('/'))
                 initialPath = '/' + initialPath;
             initialState = linking.getStateFromPath(initialPath, linking.config);
-            const initialRouteInfo = (0, getRouteInfoFromState_1.getRouteInfoFromState)(initialState);
-            (0, routeInfoCache_1.setCachedRouteInfo)(initialState, initialRouteInfo);
         }
     }
     else {
@@ -89,7 +86,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         context,
     };
     if (initialState) {
-        store_1.storeRef.current.routeInfo = (0, routeInfoCache_1.getCachedRouteInfo)(initialState);
+        store_1.storeRef.current.routeInfo = (0, routeInfo_1.routeInfoFromState)(initialState);
     }
     (0, react_1.useEffect)(() => {
         return () => {

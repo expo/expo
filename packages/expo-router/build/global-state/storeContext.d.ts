@@ -3,7 +3,7 @@ export declare const StoreContext: import("react").Context<{
     readonly state: import("./types").ReactNavigationState | undefined;
     readonly navigationRef: import("../react-navigation").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
-    getRouteInfo(): import("./getRouteInfoFromState").UrlObject;
+    getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: import("./types").StoreRedirects[];
     readonly rootComponent: import("react").ComponentType<any>;
     getStateForHref(href: import("..").Href, options?: import("./types").LinkToOptions): (Partial<Omit<Readonly<{
@@ -32,7 +32,7 @@ export declare const StoreContext: import("react").Context<{
         }> & /*elided*/ any;
     }) | undefined;
     readonly linking: import("../getLinkingConfig").ExpoLinkingOptions | undefined;
-    setFocusedState(state: import("./types").FocusedRouteState): void;
+    setFocusedRouteInfo(routeInfo: import("./routeInfo").UrlObject): void;
     onReady(): void;
     onStateChange(newState: import("./types").ReactNavigationState | undefined): void;
     assertIsReady(): void;
@@ -42,7 +42,7 @@ export declare const useExpoRouterStore: () => {
     readonly state: import("./types").ReactNavigationState | undefined;
     readonly navigationRef: import("../react-navigation").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
-    getRouteInfo(): import("./getRouteInfoFromState").UrlObject;
+    getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: import("./types").StoreRedirects[];
     readonly rootComponent: import("react").ComponentType<any>;
     getStateForHref(href: import("..").Href, options?: import("./types").LinkToOptions): (Partial<Omit<Readonly<{
@@ -71,7 +71,7 @@ export declare const useExpoRouterStore: () => {
         }> & /*elided*/ any;
     }) | undefined;
     readonly linking: import("../getLinkingConfig").ExpoLinkingOptions | undefined;
-    setFocusedState(state: import("./types").FocusedRouteState): void;
+    setFocusedRouteInfo(routeInfo: import("./routeInfo").UrlObject): void;
     onReady(): void;
     onStateChange(newState: import("./types").ReactNavigationState | undefined): void;
     assertIsReady(): void;

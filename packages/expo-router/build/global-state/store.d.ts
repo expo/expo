@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
-import { type UrlObject } from './getRouteInfoFromState';
-import type { FocusedRouteState, LinkToOptions, ReactNavigationState, StoreRedirects } from './types';
+import { type UrlObject } from './routeInfo';
+import type { LinkToOptions, ReactNavigationState, StoreRedirects } from './types';
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
@@ -20,6 +20,13 @@ type StoreRef = {
 export declare const storeRef: {
     current: StoreRef;
 };
+/**
+ * Subscribers to route info changes. `useRouteInfo` registers here via `useSyncExternalStore`; the
+ * store notifies them after a navigation commits so screens (including unfocused ones) re-read the
+ * latest route info.
+ */
+export declare const routeInfoSubscribers: Set<() => void>;
+export declare const routeInfoSubscribe: (callback: () => void) => () => void;
 export declare function getSplashScreenAnimationFrame(): number | undefined;
 export declare function setSplashScreenAnimationFrame(value: number | undefined): void;
 export declare function setHasAttemptedToHideSplash(value: boolean): void;
@@ -57,7 +64,7 @@ export declare const store: {
         }> & /*elided*/ any;
     }) | undefined;
     readonly linking: ExpoLinkingOptions | undefined;
-    setFocusedState(state: FocusedRouteState): void;
+    setFocusedRouteInfo(routeInfo: UrlObject): void;
     onReady(): void;
     onStateChange(newState: ReactNavigationState | undefined): void;
     assertIsReady(): void;

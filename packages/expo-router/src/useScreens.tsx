@@ -4,6 +4,8 @@ import React, { use, useEffect } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
+import { RouteInfoContext } from './global-state/RouteInfoContext';
+import { computeRouteInfo } from './global-state/routeInfo';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
@@ -20,7 +22,6 @@ import {
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
-  useStateForPath,
   type EventConsumer,
   type EventMapBase,
   type NavigationProp,
@@ -310,10 +311,18 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       getState(): NavigationState | undefined;
     };
   }) {
-    const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
+
+    // Extend the parent level's route info with this route, one level at a time. The result is the
+    // route info for the path up to here; the focused leaf publishes it to the store and descendants
+    // extend it further. Memoized so the value (and its reference) changes only when params change.
+    const parentRouteInfo = use(RouteInfoContext);
+    const routeInfo = React.useMemo(
+      () => (route ? computeRouteInfo(parentRouteInfo, route) : parentRouteInfo),
+      [parentRouteInfo, route?.name, route?.params]
+    );
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
@@ -324,25 +333,27 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
-    if (isFocused) {
+    // Only an actual page (a leaf route) publishes route info. Layout routes are skipped: their
+    // nested navigator state can be momentarily unattached mid-navigation, which would make the
+    // `isLeaf` heuristic below true and publish partial, incorrect route info.
+    const publishesRouteInfo = value.type === 'route';
+
+    if (publishesRouteInfo && isFocused) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
-      if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
+      if (isLeaf) store.setFocusedRouteInfo(routeInfo);
     }
 
-    useEffect(
-      () =>
-        navigation.addListener('focus', () => {
-          const state = navigation.getState();
-          const isLeaf = !(state && 'state' in state.routes[state.index]!);
-          // Because setFocusedState caches the route info, this call will only trigger rerenders
-          // if the component itself didn’t rerender and the route info changed.
-          // Otherwise, the update from the `if` above will handle it,
-          // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
-        }),
-      [navigation]
-    );
+    useEffect(() => {
+      if (!publishesRouteInfo) return undefined;
+      return navigation.addListener('focus', () => {
+        const state = navigation.getState();
+        const isLeaf = !(state && 'state' in state.routes[state.index]!);
+        // Covers leaves that gain focus without re-rendering (e.g. switching back to a
+        // kept-alive tab). The route info reference is stable, so this is a no-op unless it changed.
+        if (isLeaf) store.setFocusedRouteInfo(routeInfo);
+      });
+    }, [navigation, routeInfo, publishesRouteInfo]);
 
     useEffect(() => {
       return navigation.addListener('transitionEnd', (e) => {
@@ -362,31 +373,33 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const hasRouteKey = !!route?.key;
 
     return (
-      <Route node={value} params={route?.params}>
-        <SuspenseFallbackContext value={providedSuspenseFallback}>
-          {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
-            <AnalyticsListeners navigation={navigation} screenId={route.key} />
-          )}
-          <ZoomTransitionTargetContextProvider route={route}>
-            <ZoomTransitionEnabler route={route} />
-            <React.Suspense
-              name={route ? `Route(${route.name})` : undefined}
-              fallback={
-                <ResolvedSuspenseFallback
-                  route={value.contextKey}
-                  params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
+      <RouteInfoContext value={routeInfo}>
+        <Route node={value} params={route?.params}>
+          <SuspenseFallbackContext value={providedSuspenseFallback}>
+            {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
+              <AnalyticsListeners navigation={navigation} screenId={route.key} />
+            )}
+            <ZoomTransitionTargetContextProvider route={route}>
+              <ZoomTransitionEnabler route={route} />
+              <React.Suspense
+                name={route ? `Route(${route.name})` : undefined}
+                fallback={
+                  <ResolvedSuspenseFallback
+                    route={value.contextKey}
+                    params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
+                  />
+                }>
+                <WrappedScreenComponent
+                  {...props}
+                  // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+                  // the intention is to make it possible to deduce shared routes.
+                  segment={value.route}
                 />
-              }>
-              <WrappedScreenComponent
-                {...props}
-                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                // the intention is to make it possible to deduce shared routes.
-                segment={value.route}
-              />
-            </React.Suspense>
-          </ZoomTransitionTargetContextProvider>
-        </SuspenseFallbackContext>
-      </Route>
+              </React.Suspense>
+            </ZoomTransitionTargetContextProvider>
+          </SuspenseFallbackContext>
+        </Route>
+      </RouteInfoContext>
     );
   }
 

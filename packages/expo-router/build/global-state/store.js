@@ -33,17 +33,29 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.store = exports.storeRef = void 0;
+exports.store = exports.routeInfoSubscribe = exports.routeInfoSubscribers = exports.storeRef = void 0;
 exports.getSplashScreenAnimationFrame = getSplashScreenAnimationFrame;
 exports.setSplashScreenAnimationFrame = setSplashScreenAnimationFrame;
 exports.setHasAttemptedToHideSplash = setHasAttemptedToHideSplash;
-const getRouteInfoFromState_1 = require("./getRouteInfoFromState");
-const routeInfoCache_1 = require("./routeInfoCache");
+const routeInfo_1 = require("./routeInfo");
 const href_1 = require("../link/href");
 const SplashScreen = __importStar(require("../views/Splash"));
 exports.storeRef = {
     current: {},
 };
+/**
+ * Subscribers to route info changes. `useRouteInfo` registers here via `useSyncExternalStore`; the
+ * store notifies them after a navigation commits so screens (including unfocused ones) re-read the
+ * latest route info.
+ */
+exports.routeInfoSubscribers = new Set();
+const routeInfoSubscribe = (callback) => {
+    exports.routeInfoSubscribers.add(callback);
+    return () => {
+        exports.routeInfoSubscribers.delete(callback);
+    };
+};
+exports.routeInfoSubscribe = routeInfoSubscribe;
 let splashScreenAnimationFrame;
 let hasAttemptedToHideSplash = false;
 function getSplashScreenAnimationFrame() {
@@ -69,7 +81,7 @@ exports.store = {
         return exports.storeRef.current.routeNode;
     },
     getRouteInfo() {
-        return exports.storeRef.current.routeInfo || getRouteInfoFromState_1.defaultRouteInfo;
+        return exports.storeRef.current.routeInfo || routeInfo_1.defaultRouteInfo;
     },
     get redirects() {
         return exports.storeRef.current.redirects || [];
@@ -85,9 +97,11 @@ exports.store = {
     get linking() {
         return exports.storeRef.current.linking;
     },
-    setFocusedState(state) {
-        const routeInfo = (0, routeInfoCache_1.getCachedRouteInfo)(state);
+    setFocusedRouteInfo(routeInfo) {
         exports.storeRef.current.routeInfo = routeInfo;
+        for (const callback of exports.routeInfoSubscribers) {
+            callback();
+        }
     },
     // TODO(@ubax): Refactor onReady logic as it probably should live somewhere else then store
     onReady() {
@@ -119,10 +133,6 @@ exports.store = {
             }
         }
         exports.storeRef.current.state = newState;
-        exports.storeRef.current.routeInfo = (0, routeInfoCache_1.getCachedRouteInfo)(newState);
-        for (const callback of routeInfoCache_1.routeInfoSubscribers) {
-            callback();
-        }
     },
     assertIsReady() {
         if (!exports.storeRef.current.navigationRef.isReady()) {
