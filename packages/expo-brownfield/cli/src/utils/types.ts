@@ -33,6 +33,8 @@ export interface IosConfig extends CommonConfig {
   buildConfiguration: BuildConfiguration;
   derivedDataPath: string;
   device: string;
+  /** `xcodebuild` `-destination` values, one per slice (iOS or tvOS device + simulator). */
+  destinations: string[];
   hostProvidedFrameworks: string[];
   output: 'frameworks' | PackageConfiguration;
   scheme: string;

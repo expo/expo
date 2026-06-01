@@ -168,10 +168,7 @@ export const buildFramework = async (config: IosConfig) => {
     config.scheme,
     '-derivedDataPath',
     config.derivedDataPath,
-    '-destination',
-    'generic/platform=iphoneos',
-    '-destination',
-    'generic/platform=iphonesimulator',
+    ...config.destinations.flatMap((destination) => ['-destination', destination]),
     '-configuration',
     config.buildConfiguration,
     // Ensure dSYMs are produced for both Debug and Release so they can be

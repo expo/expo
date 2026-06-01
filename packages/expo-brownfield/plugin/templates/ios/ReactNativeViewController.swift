@@ -64,6 +64,9 @@ public class ReactNativeViewController: UIViewController {
 
   @objc
   private func setNativeBackEnabled(_ notification: Notification) {
+    // The interactive pop / screen-edge-pan gestures don't exist on tvOS
+    // (there is no swipe-to-go-back), so this is a no-op there.
+    #if !os(tvOS)
     guard let enabled = notification.userInfo?["enabled"] as? Bool else {
       return
     }
@@ -81,5 +84,6 @@ public class ReactNativeViewController: UIViewController {
         }
       }
     }
+    #endif
   }
 }
