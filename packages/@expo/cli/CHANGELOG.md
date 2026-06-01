@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Compare the installed version of `react-native` / `expo` against the recommended version during prebuild, instead of the raw `package.json` spec. Fixes misleading warnings for pnpm catalogs, yarn/pnpm workspaces, npm aliases, and other non-semver specifiers. ([#44880](https://github.com/expo/expo/pull/44880) by [@hknakn](https://github.com/hknakn))
+
 ### 💡 Others
 
 ## 56.1.12 — 2026-05-26
