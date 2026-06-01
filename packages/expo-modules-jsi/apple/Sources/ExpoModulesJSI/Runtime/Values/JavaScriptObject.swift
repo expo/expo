@@ -117,6 +117,15 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, name))
   }
 
+  /// Returns the property of the object with the given prop name id,
+  /// or `undefined` value if the name is not a property of the object.
+  public func getProperty(_ propName: JavaScriptPropNameID) -> JavaScriptValue {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, propName.pointee))
+  }
+
   /// Accesses nested properties in a single subscript operation by traversing the object chain.
   /// This subscript provides a convenient way to access deeply nested properties without
   /// multiple chained calls to `getProperty()`. Each key in the chain is accessed sequentially,
@@ -174,22 +183,24 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptObject(runtime, pointee.getProperty(runtime.pointee, propName.pointee).getObject(runtime.pointee))
   }
 
-  /// Same as `getProperty(name).getObject().getFunction()`.
-  public func getPropertyAsFunction(_ name: String) -> JavaScriptFunction {
-    guard let runtime else {
-      FatalError.runtimeLost()
+  /// Same as `getProperty(name).getObject().getFunction()`, but throws instead of aborting when the
+  /// property is missing or not callable.
+  public func getPropertyAsFunction(_ name: String) throws -> JavaScriptFunction {
+    let property = getProperty(name)
+    guard property.isFunction() else {
+      throw PropertyNotFunctionError(name: name)
     }
-    return JavaScriptFunction(runtime, pointee.getPropertyAsFunction(runtime.pointee, name))
+    return property.getFunction()
   }
 
-  /// Same as `getProperty(propName).getObject().getFunction()`.
-  public func getPropertyAsFunction(_ propName: JavaScriptPropNameID) -> JavaScriptFunction {
-    guard let runtime else {
-      FatalError.runtimeLost()
+  /// Same as `getProperty(propName).getObject().getFunction()`, but throws instead of aborting when the
+  /// property is missing or not callable.
+  public func getPropertyAsFunction(_ propName: JavaScriptPropNameID) throws -> JavaScriptFunction {
+    let property = getProperty(propName)
+    guard property.isFunction() else {
+      throw PropertyNotFunctionError(name: propName.utf8())
     }
-    let jsiFunction = pointee.getProperty(runtime.pointee, propName.pointee).getObject(runtime.pointee).getFunction(
-      runtime.pointee)
-    return JavaScriptFunction(runtime, jsiFunction)
+    return property.getFunction()
   }
 
   /// Returns a prototype of the object. Same as `Object.getPrototypeOf(object)` in JS.
@@ -523,5 +534,17 @@ extension JavaScriptObject: JSIRepresentable {
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return asJSIValue()
+  }
+}
+
+// MARK: - Errors
+
+extension JavaScriptObject {
+  public struct PropertyNotFunctionError: Error, CustomStringConvertible {
+    let name: String
+
+    public var description: String {
+      return "Property '\(name)' is not a function"
+    }
   }
 }

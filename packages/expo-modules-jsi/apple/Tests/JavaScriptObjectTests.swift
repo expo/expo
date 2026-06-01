@@ -101,7 +101,7 @@ struct JavaScriptObjectTests {
       let object = JavaScriptObject(runtime)
       let result = try runtime.eval("(function(x) { return x * 2; })")
       object.setProperty("double", value: result)
-      let fn = object.getPropertyAsFunction("double")
+      let fn = try object.getPropertyAsFunction("double")
       let callResult = try fn.call(arguments: 21)
       #expect(callResult.getInt() == 42)
     }
