@@ -24,7 +24,7 @@ export type LabelProps = {
   icon?: React.ReactNode;
 
   /**
-   * Custom title view. Accepts any React node (e.g. a VStack with title and subtitle).
+   * Custom title view. Accepts any React node (for example, a `VStack` with title and subtitle).
    * When provided, this takes precedence over `title`.
    */
   children?: React.ReactNode;
