@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Disable sextant QR code rendering for Windows Terminal ([#46455](https://github.com/expo/expo/pull/46455) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.1.13 — 2026-05-29
