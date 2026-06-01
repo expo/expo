@@ -237,38 +237,6 @@ export default function CustomContentExample() {
 }
 ```
 
-### Button border shape
-
-Use the `buttonBorderShape` modifier to change the shape of a styled button. Available shapes are: `automatic`, `capsule`, `roundedRectangle`, and `circle` (iOS 26+).
-
-```tsx ButtonBorderShapeExample.tsx
-import { Host, Button } from '@expo/ui/swift-ui';
-import {
-  buttonStyle,
-  controlSize,
-  buttonBorderShape,
-  labelStyle,
-} from '@expo/ui/swift-ui/modifiers';
-
-export default function ButtonBorderShapeExample() {
-  return (
-    <Host matchContents>
-      <Button
-        label="Favorite"
-        systemImage="heart.fill"
-        modifiers={[
-          buttonStyle('glass'),
-          controlSize('extraLarge'),
-          labelStyle('iconOnly'),
-          buttonBorderShape('circle'),
-        ]}
-        onPress={() => alert('Favorited')}
-      />
-    </Host>
-  );
-}
-```
-
 ## API
 
 ```tsx
