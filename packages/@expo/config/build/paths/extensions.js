@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getBareExtensions = getBareExtensions;
 exports.getExtensions = getExtensions;
 exports.getLanguageExtensionsInOrder = getLanguageExtensionsInOrder;
+exports.getPlatformExtensions = getPlatformExtensions;
 function _assert() {
   const data = _interopRequireDefault(require("assert"));
   _assert = function () {
@@ -59,6 +60,16 @@ function getBareExtensions(platforms, languageOptions = {
   // Always add these last
   _addMiscellaneousExtensions(platforms, fileExtensions);
   return fileExtensions;
+}
+const PLATFORM_EXTENSIONS = {
+  tvos: ['tvos', 'ios', 'native'],
+  macos: ['macos', 'ios', 'native']
+};
+
+/** Expand `extensions` with OOT platform extensions for platform */
+function getPlatformExtensions(platform, extensions, customPlatformExtensions) {
+  const platformExtensions = customPlatformExtensions || PLATFORM_EXTENSIONS[platform];
+  return platformExtensions ? getExtensions(platformExtensions, extensions, []) : null;
 }
 function _addMiscellaneousExtensions(platforms, fileExtensions) {
   // Always add these with no platform extension
