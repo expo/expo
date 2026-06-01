@@ -24,7 +24,18 @@ import type {
  * Only `tabPress` is currently supported.
  */
 export type NativeTabNavigationEventMap = {
-  tabPress: { data: { __internalTabsType: 'native' }; canPreventDefault: false };
+  tabPress: {
+    data: {
+      __internalTabsType: 'native';
+      /**
+       * `true` when the native side prevented the selection because the target
+       * tab is `disabled`. The event is still emitted so listeners are notified,
+       * but no navigation occurs.
+       */
+      isPrevented: boolean;
+    };
+    canPreventDefault: false;
+  };
 };
 
 export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'screenKey'>>;
@@ -477,6 +488,13 @@ export interface OnTabChangeEventPayload {
   provenance: number;
   // TODO(@ubax): consider renaming this field
   isNativeAction: boolean;
+  /**
+   * Whether the native side prevented this selection because the target tab is
+   * `disabled`. When `true`, the navigator emits `tabPress` but skips navigation.
+   *
+   * @default false
+   */
+  isPrevented?: boolean;
 }
 
 export interface NativeTabsViewProps extends Omit<
