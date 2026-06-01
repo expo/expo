@@ -12,17 +12,18 @@ export default function LabelScreen() {
         </Section>
 
         <Section title="Custom icon">
-          <Label
-            title="Favorites"
-            icon={<Text modifiers={[foregroundStyle('orange')]}>★</Text>}
-          />
+          <Label title="Favorites" icon={<Text modifiers={[foregroundStyle('orange')]}>★</Text>} />
         </Section>
 
         <Section title="Children — custom title view">
           <Label systemImage="person.fill">
             <VStack alignment="leading" spacing={2}>
               <Text>Title</Text>
-              <Text modifiers={[font({ textStyle: 'subheadline' }), foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+              <Text
+                modifiers={[
+                  font({ textStyle: 'subheadline' }),
+                  foregroundStyle({ type: 'hierarchical', style: 'secondary' }),
+                ]}>
                 Subtitle
               </Text>
             </VStack>
@@ -33,7 +34,11 @@ export default function LabelScreen() {
           <Label systemImage="bell">
             <VStack alignment="leading" spacing={2}>
               <Text>Notifications</Text>
-              <Text modifiers={[font({ textStyle: 'subheadline' }), foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+              <Text
+                modifiers={[
+                  font({ textStyle: 'subheadline' }),
+                  foregroundStyle({ type: 'hierarchical', style: 'secondary' }),
+                ]}>
                 Manage your alerts
               </Text>
             </VStack>
@@ -41,7 +46,11 @@ export default function LabelScreen() {
           <Label systemImage="lock">
             <VStack alignment="leading" spacing={2}>
               <Text>Privacy</Text>
-              <Text modifiers={[font({ textStyle: 'subheadline' }), foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+              <Text
+                modifiers={[
+                  font({ textStyle: 'subheadline' }),
+                  foregroundStyle({ type: 'hierarchical', style: 'secondary' }),
+                ]}>
                 Control your data
               </Text>
             </VStack>
