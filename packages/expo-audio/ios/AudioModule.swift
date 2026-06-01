@@ -120,16 +120,18 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double) -> AudioPlayer in
-        let avPlayer: AVPlayer
+        var preloadedPlayer: AVPlayer?
         if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
-          avPlayer = cachedPlayer
-        } else {
-          avPlayer = AudioUtils.createAVPlayer(from: source)
+          preloadedPlayer = cachedPlayer
+        } else if let source = source, !(source.uri?.isFileURL ?? false) {
+          // If remote, respect the preferredForwardBufferDuration during creation
+          preloadedPlayer = AudioUtils.createAVPlayer(from: source)
           if preferredForwardBufferDuration > 0 {
-            avPlayer.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
+            preloadedPlayer?.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
           }
         }
-        let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
+        
+        let player = AudioPlayer(interval: updateInterval, source: source, preloadedPlayer: preloadedPlayer)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
         player.onPlaybackComplete = { [weak self] in
@@ -167,10 +169,10 @@ public class AudioModule: Module {
         player.isPlaying
       }
 
-      Property("muted") { player in
-        player.ref.isMuted
-      }.set { (player, isMuted: Bool) in
-        player.ref.isMuted = isMuted
+      Property("muted") { (player: AudioPlayer) in
+        player.isMuted
+      }.set { (player: AudioPlayer, isMuted: Bool) in
+        player.isMuted = isMuted
       }
 
       Property("shouldCorrectPitch") { player in
@@ -183,13 +185,13 @@ public class AudioModule: Module {
         player.currentTime
       }
 
-      Property("duration") { player in
-        player.ref.status == .readyToPlay ? player.duration : 0.0
+      Property("duration") { (player: AudioPlayer) in
+        player.isLoaded ? player.duration : 0.0
       }
 
       Property("playbackRate") { player in
         return if player.isPlaying {
-          player.ref.rate
+          player.currentRate
         } else {
           player.currentRate
         }
@@ -199,10 +201,10 @@ public class AudioModule: Module {
         player.isPaused
       }
 
-      Property("volume") { player in
-        player.ref.volume
-      }.set { (player, volume: Double) in
-        player.ref.volume = Float(volume)
+      Property("volume") { (player: AudioPlayer) in
+        player.volume
+      }.set { (player: AudioPlayer, volume: Double) in
+        player.volume = Float(volume)
       }
 
       Property("currentStatus") { player in
@@ -219,30 +221,23 @@ public class AudioModule: Module {
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
         player.currentRate = playerRate
 
-        if player.isPlaying {
-          player.ref.rate = playerRate
-        }
-
         if player.shouldCorrectPitch {
           player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain
-          player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
         } else {
-          player.ref.currentItem?.audioTimePitchAlgorithm = .varispeed
+          player.pitchCorrectionQuality = .varispeed
         }
       }
 
       Function("replace") { (player, source: AudioSource) in
+        var preloaded: AVPlayer?
         if let uri = source.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
-          let cachedItem = cachedPlayer.currentItem
-          cachedPlayer.replaceCurrentItem(with: nil)
-          player.replaceWithPreloadedItem(cachedItem)
-        } else {
-          player.replaceCurrentSource(source: source)
+          preloaded = cachedPlayer
         }
+        player.replaceCurrentSource(source: source, preloadedPlayer: preloaded)
       }
 
       Function("pause") { player in
-        player.ref.pause()
+        player.pause()
         if !player.keepAudioSessionActive {
           deactivateSession()
         }
