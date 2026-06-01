@@ -1,5 +1,5 @@
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -242,7 +242,7 @@ struct JavaScriptObjectTests {
       object.defineProperty("test", descriptor: .init(value: JavaScriptValue(runtime, true)))
       #expect(object.hasProperty("test") == true)
       #expect(object.getProperty("test").getBool() == true)
-      #expect(object.getPropertyNames().contains("test") == false) // non-enumerable by default
+      #expect(object.getPropertyNames().contains("test") == false)  // non-enumerable by default
     }
 
     @Test
@@ -283,14 +283,14 @@ struct JavaScriptObjectTests {
     func `define property with all options`() {
       let object = JavaScriptObject(runtime)
       object.defineProperty("fullAccess", value: 100, options: [.configurable, .enumerable, .writable])
-      
+
       #expect(object.getProperty("fullAccess").getInt() == 100)
       #expect(object.getPropertyNames().contains("fullAccess") == true)
-      
+
       // Can modify
       object.setProperty("fullAccess", value: 200.0)
       #expect(object.getProperty("fullAccess").getInt() == 200)
-      
+
       // Can reconfigure
       object.defineProperty("fullAccess", descriptor: .init(value: JavaScriptValue(runtime, 300)))
       #expect(object.getProperty("fullAccess").getInt() == 300)
@@ -436,7 +436,7 @@ struct JavaScriptObjectTests {
     func `call function that throws error`() throws {
       let obj = try runtime.eval("({ throwError() { throw new Error('test error'); } })")
       let jsObject = obj.getObject()
-      
+
       #expect(throws: Error.self) {
         try jsObject.callFunction("throwError")
       }
@@ -492,7 +492,8 @@ struct JavaScriptObjectTests {
     @Test
     func `PropertyDescriptor with all properties`() {
       let value = JavaScriptValue(runtime, "test")
-      let descriptor = JavaScriptObject.PropertyDescriptor(configurable: true, enumerable: true, writable: true, value: value)
+      let descriptor = JavaScriptObject.PropertyDescriptor(
+        configurable: true, enumerable: true, writable: true, value: value)
       let object = descriptor.toObject(runtime)
       #expect(object.hasProperty("configurable") == true)
       #expect(object.getProperty("configurable").getBool() == true)
@@ -506,7 +507,8 @@ struct JavaScriptObjectTests {
 
     @Test
     func `PropertyDescriptor to object conversion`() {
-      let descriptor = JavaScriptObject.PropertyDescriptor(configurable: false, enumerable: true, writable: false, value: JavaScriptValue(runtime, 42))
+      let descriptor = JavaScriptObject.PropertyDescriptor(
+        configurable: false, enumerable: true, writable: false, value: JavaScriptValue(runtime, 42))
       let object = descriptor.toObject(runtime)
       #expect(object.getProperty("enumerable").getBool() == true)
       #expect(object.getProperty("value").getInt() == 42)

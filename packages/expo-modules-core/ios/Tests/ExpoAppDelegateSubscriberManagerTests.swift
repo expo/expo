@@ -187,6 +187,68 @@ final class ExpoAppDelegateSubscriberManagerTests {
   }
 
   @Test
+  func allowedOrientationsUsesIPadInfoPlistKey() {
+    let infoDictionary: [String: Any] = [
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationPortrait"
+      ],
+      "UISupportedInterfaceOrientations~ipad": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ],
+      "UISupportedInterfaceOrientations~pad": [
+        "UIInterfaceOrientationPortraitUpsideDown"
+      ]
+    ]
+
+    let result = allowedOrientations(for: .pad, infoDictionary: infoDictionary)
+
+    #expect(result == [.landscapeLeft, .landscapeRight])
+  }
+
+  @Test
+  func allowedOrientationsFallsBackToUniversalInfoPlistKeyForIPad() {
+    let infoDictionary: [String: Any] = [
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ]
+    ]
+
+    let result = allowedOrientations(for: .pad, infoDictionary: infoDictionary)
+
+    #expect(result == [.landscapeLeft, .landscapeRight])
+  }
+
+  @Test
+  func `allowed orientations fall back to the universal Info.plist key when the iPad key is empty`() {
+    let infoDictionary: [String: Any] = [
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ],
+      "UISupportedInterfaceOrientations~ipad": [String]()
+    ]
+    let result = allowedOrientations(for: .pad, infoDictionary: infoDictionary)
+    #expect(result == [.landscapeLeft, .landscapeRight])
+  }
+
+  @Test
+  func `allowed orientations fall back to the universal Info.plist key when the iPad key has only unrecognized values`() {
+    let infoDictionary: [String: Any] = [
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ],
+      "UISupportedInterfaceOrientations~ipad": [
+        "UIInterfaceOrientationBogus"
+      ]
+    ]
+    let result = allowedOrientations(for: .pad, infoDictionary: infoDictionary)
+    #expect(result == [.landscapeLeft, .landscapeRight])
+  }
+
+  @Test
   func willContinueUserActivityWithType() {
     let result = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, willContinueUserActivityWithType: "test")
     #expect(result == true)

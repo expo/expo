@@ -1,8 +1,8 @@
 // swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
-import PackageDescription
 import Foundation
+import PackageDescription
 
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let podsRoot = resolvePodsRoot()
@@ -17,7 +17,8 @@ let podsRoot = resolvePodsRoot()
 // `REACT_NATIVE_PATH` is exported by Xcode for hosts that build RN from a
 // non-npm location, e.g. Expo Go.
 let publicHeaders = "\(podsRoot)/Headers/Public"
-let reactNative = ProcessInfo.processInfo.environment["RN_ROOT"]
+let reactNative =
+  ProcessInfo.processInfo.environment["RN_ROOT"]
   ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
   ?? "\(podsRoot)/../../node_modules/react-native"
 let headerSearchPaths = [
@@ -72,7 +73,7 @@ let package = Package(
       name: "ExpoModulesJSI",
       type: .dynamic,
       targets: ["ExpoModulesJSI"],
-    ),
+    )
   ],
   dependencies: [],
   targets: [
@@ -80,7 +81,7 @@ let package = Package(
     .target(
       name: "ExpoModulesJSI",
       dependencies: [
-        "ExpoModulesJSI-Cxx",
+        "ExpoModulesJSI-Cxx"
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -115,7 +116,7 @@ let package = Package(
         // builds without those static libs being available here.
         .unsafeFlags([
           "-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup",
-        ]),
+        ])
       ],
     ),
 
@@ -124,7 +125,7 @@ let package = Package(
       name: "ExpoModulesJSI-Cxx",
       dependencies: [],
       cxxSettings: [
-        .unsafeFlags(cxxIncludeFlags),
+        .unsafeFlags(cxxIncludeFlags)
       ],
     ),
 
@@ -147,10 +148,12 @@ func resolvePodsRoot() -> String {
   if let explicit = env["PODS_ROOT"] {
     return explicit
   }
-  let repoRoot = env["EXPO_ROOT_DIR"] ?? URL(fileURLWithPath: packageDir)
-    .deletingLastPathComponent() // expo-modules-jsi
-    .deletingLastPathComponent() // packages
-    .deletingLastPathComponent() // repo root
+  let repoRoot =
+    env["EXPO_ROOT_DIR"]
+    ?? URL(fileURLWithPath: packageDir)
+    .deletingLastPathComponent()  // expo-modules-jsi
+    .deletingLastPathComponent()  // packages
+    .deletingLastPathComponent()  // repo root
     .path
   return "\(repoRoot)/apps/bare-expo/ios/Pods"
 }
@@ -171,7 +174,8 @@ func resolveTestFrameworks() -> (binaryTargets: [Target], dependencies: [Target.
   let binaryTargets: [Target] = available.map({
     .binaryTarget(name: $0, path: ".test-frameworks/\($0).xcframework")
   })
-  let dependencies: [Target.Dependency] = ["ExpoModulesJSI"]
+  let dependencies: [Target.Dependency] =
+    ["ExpoModulesJSI"]
     + available.map({ .target(name: $0) })
   return (binaryTargets, dependencies)
 }
