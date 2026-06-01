@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expose shared directory for images. ([#46339](https://github.com/expo/expo/pull/46339) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix widget strings file location. ([#46538](https://github.com/expo/expo/pull/46538) by [@jakex7](https://github.com/jakex7))
