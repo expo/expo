@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Temporarily make the Android config plugin opt-in with `enableAndroid`.
+
 ## 56.0.15 — 2026-05-26
 
 ### 🎉 New features
