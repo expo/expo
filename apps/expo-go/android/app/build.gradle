@@ -58,8 +58,8 @@ android {
     applicationId 'host.exp.exponent'
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode 229
-    versionName '56.0.1'
+    versionCode 230
+    versionName '56.0.3'
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
