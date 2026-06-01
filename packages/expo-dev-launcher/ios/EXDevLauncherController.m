@@ -424,7 +424,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     RCTDevLoadingViewSetEnabled(NO);
     [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
-      [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
+      NSString *bundlePath = [NSString stringWithFormat:@"index.bundle?platform=%@&dev=true&minify=false", RCTPlatformName];
+      [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:bundlePath relativeToURL:expoUrl] manifest:nil];
     } else {
       [self _initAppWithUrl:expoUrl bundleUrl:expoUrl manifest:nil];
     }
@@ -434,10 +435,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   };
 
   void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
+    NSURL *resolvedBundleURL = [EXDevLauncherURLHelper bundleURL:bundleURL withResolvedPlatform:RCTPlatformName];
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
     [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:manifest];
-    [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
+    [self _initAppWithUrl:expoUrl bundleUrl:resolvedBundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
