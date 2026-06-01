@@ -43,7 +43,6 @@ export function Host({
   useViewportSizeMeasurement = false,
   ...rest
 }: UniversalHostProps) {
-  // TODO(@zoontek): add support for the colorScheme and seedColor prop
   const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
   const primaryColorScale = useMemo(() => generatePrimaryColorScale('#007aff'), []);
 
@@ -61,7 +60,7 @@ export function Host({
 
   return (
     <>
-      <style href="eui-host" precedence="eui">
+      <style href="expo-ui-host" precedence="expo-ui">
         {globalCss}
       </style>
 
