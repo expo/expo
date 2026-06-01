@@ -43,7 +43,11 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     self.urlRequestHeaders = urlRequestHeaders
     cachedResource = CachedResource(dataFileUrl: saveFilePath, resourceUrl: url, dataPath: saveFilePath)
     super.init()
-    self.session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+    self.session = URLSession(
+      configuration: ExpoNetworkConfiguration.configuration(default: .default),
+      delegate: self,
+      delegateQueue: nil
+    )
   }
 
   deinit {
@@ -182,7 +186,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       return
     }
 
-    let dataTask = session.dataTask(with: request)
+    let dataTask = session.dataTask(with: ExpoNetworkConfiguration.modifiedRequest(request))
 
     // we can't do `if let loadingRequest = loadingRequest.dataRequest` as this would create new variable by copying
     if loadingRequest.dataRequest != nil {

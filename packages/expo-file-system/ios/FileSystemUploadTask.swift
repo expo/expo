@@ -69,9 +69,9 @@ class FileSystemUploadTask: SharedObject {
         request.setValue("multipart/form-data; boundary=\(boundaryString)", forHTTPHeaderField: "Content-Type")
         tempFileURL = bodyFileURL
 
-        uploadTask = session.uploadTask(with: request, fromFile: bodyFileURL)
+        uploadTask = session.uploadTask(with: ExpoNetworkConfiguration.modifiedRequest(request), fromFile: bodyFileURL)
       } else {
-        uploadTask = session.uploadTask(with: request, fromFile: sourceUrl)
+        uploadTask = session.uploadTask(with: ExpoNetworkConfiguration.modifiedRequest(request), fromFile: sourceUrl)
       }
 
       guard let uploadTask else {

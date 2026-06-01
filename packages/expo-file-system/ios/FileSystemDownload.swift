@@ -48,7 +48,11 @@ class DownloadTaskStore: NSObject, URLSessionDownloadDelegate {
   func makeDownloadTask(with request: URLRequest) -> URLSessionDownloadTask {
     queue.sync {
       let currentSession = session ?? {
-        let newSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+        let newSession = URLSession(
+        configuration: ExpoNetworkConfiguration.configuration(default: .default),
+        delegate: self,
+        delegateQueue: nil
+      )
         session = newSession
         return newSession
       }()
@@ -113,6 +117,7 @@ func downloadFileWithStore(
       request.addValue(value, forHTTPHeaderField: key)
     }
   }
+  request = ExpoNetworkConfiguration.modifiedRequest(request)
 
   if let downloadUuid {
     let delegate = DownloadDelegate(
@@ -130,7 +135,8 @@ func downloadFileWithStore(
     downloadStore.store(task: task, delegate: delegate, forUuid: downloadUuid)
     task.resume()
   } else {
-    let downloadTask = URLSession.shared.downloadTask(with: request) { urlOrNil, responseOrNil, errorOrNil in
+    let session = URLSession(configuration: ExpoNetworkConfiguration.configuration(default: .default))
+    let downloadTask = session.downloadTask(with: request) { urlOrNil, responseOrNil, errorOrNil in
       guard errorOrNil == nil else {
         return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
       }
@@ -168,6 +174,8 @@ func downloadFileWithStore(
       }
     }
     downloadTask.resume()
+    // The session is created per download, so let it release once the task finishes.
+    session.finishTasksAndInvalidate()
   }
 }
 

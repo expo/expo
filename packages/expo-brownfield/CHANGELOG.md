@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Apply the app-wide `ExpoNetworkConfiguration` request modifier to the dev-menu manifest fetch. ([#46347](https://github.com/expo/expo/pull/46347) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.15 — 2026-05-26
 
 ### 🎉 New features

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Apply the app-wide `ExpoNetworkConfiguration` session configuration and request modifier to asset downloads. ([#46347](https://github.com/expo/expo/pull/46347) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.15 — 2026-05-26
 
 _This version does not introduce any user-facing changes._
