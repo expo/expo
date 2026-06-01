@@ -3,6 +3,7 @@
 ## Unpublished
 
 ### 🛠 Breaking changes
+- Fixed iOS project name sanitization so names with decomposable accented characters are normalized correctly before stripping invalid characters. ([#45582](https://github.com/expo/expo/pull/45582) by [@jamiees2](https://github.com/jamiees2))
 
 ### 🎉 New features
 

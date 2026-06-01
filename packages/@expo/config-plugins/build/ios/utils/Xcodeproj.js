@@ -110,7 +110,7 @@ function sanitizedName(name) {
   return sanitizedNameForProjects(name) || sanitizedNameForProjects((0, _slugify().default)(name)) || 'app';
 }
 function sanitizedNameForProjects(name) {
-  return name.replace(/[\W_]+/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\W_]+/g, '');
 }
 
 // TODO: it's silly and kind of fragile that we look at app config to determine

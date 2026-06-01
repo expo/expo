@@ -64,9 +64,9 @@ export function sanitizedName(name: string) {
 
 function sanitizedNameForProjects(name: string) {
   return name
-    .replace(/[\W_]+/g, '')
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\W_]+/g, '');
 }
 
 // TODO: it's silly and kind of fragile that we look at app config to determine
