@@ -176,6 +176,7 @@
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "shallowequal": "^1.1.0",
+    "standard-navigation": "^0.0.5",
     "vaul": "^1.1.2"
   }
 }

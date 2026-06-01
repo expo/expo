@@ -1,0 +1,1 @@
+{"version":3,"file":"useStandardState.d.ts","sourceRoot":"","sources":["../../src/standard-navigation/useStandardState.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,KAAK,cAAc,EAAE,MAAM,qBAAqB,CAAC;AAG1D,OAAO,EAAE,KAAK,eAAe,EAAE,MAAM,0BAA0B,CAAC;AAEhE,wBAAgB,gBAAgB,CAAC,YAAY,EAAE,eAAe,GAAG,cAAc,CAc9E"}
