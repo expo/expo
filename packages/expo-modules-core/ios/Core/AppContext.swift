@@ -529,8 +529,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @JavaScriptActor
   private func installModuleClasses(in runtime: JavaScriptRuntime) throws {
-    let coreObject = runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
-    let sharedObjectClass = coreObject.getPropertyAsObject("SharedObject")
+    let coreObject = try runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
+    let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
     let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
 
     // Stored as JavaScriptValue (a class) because JavaScriptObject is ~Copyable
