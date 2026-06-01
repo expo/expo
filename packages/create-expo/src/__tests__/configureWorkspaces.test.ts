@@ -1,6 +1,11 @@
 import { vol } from 'memfs';
 
-import { configureWorkspacesAsync, PNPM_WORKSPACE_FILENAME } from '../configureWorkspaces';
+import {
+  configureWorkspacesAsync,
+  PNPM_WORKSPACE_FILENAME,
+  YARN_RC_FILENAME,
+} from '../configureWorkspaces';
+import type { MonorepoConfig } from '../monorepoConfig';
 
 jest.mock('fs');
 
@@ -57,9 +62,23 @@ const seedMonorepo = (
   vol.fromJSON(json);
 };
 
+const HOISTED: MonorepoConfig = { workspaceConfig: { nodeLinker: 'hoisted' } };
+const ISOLATED: MonorepoConfig = { workspaceConfig: { nodeLinker: 'isolated' } };
+
 describe(configureWorkspacesAsync, () => {
+  const originalUserAgent = process.env.npm_config_user_agent;
+
   beforeEach(() => {
     vol.reset();
+    delete process.env.npm_config_user_agent;
+  });
+
+  afterAll(() => {
+    if (originalUserAgent === undefined) {
+      delete process.env.npm_config_user_agent;
+    } else {
+      process.env.npm_config_user_agent = originalUserAgent;
+    }
   });
 
   it('is a no-op when the root package.json has no workspaces field', async () => {
@@ -85,7 +104,7 @@ describe(configureWorkspacesAsync, () => {
   });
 
   describe('with pnpm', () => {
-    it('rewrites "*" workspace deps to "workspace:*" and writes pnpm-workspace.yaml', async () => {
+    it('rewrites "*" workspace deps to "workspace:*" and writes pnpm-workspace.yaml without nodeLinker', async () => {
       seedMonorepo('*');
 
       await configureWorkspacesAsync(projectRoot, 'pnpm');
@@ -103,9 +122,27 @@ describe(configureWorkspacesAsync, () => {
       expect(tv.dependencies['shared-ui']).toBe('workspace:*');
 
       const yaml = String(vol.readFileSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`));
+      expect(yaml).toBe(['packages:', '  - apps/*', '  - packages/*', ''].join('\n'));
+    });
+
+    it('adds nodeLinker: hoisted when the monorepo config opts in', async () => {
+      seedMonorepo('*');
+
+      await configureWorkspacesAsync(projectRoot, 'pnpm', HOISTED);
+
+      const yaml = String(vol.readFileSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`));
       expect(yaml).toBe(
         ['packages:', '  - apps/*', '  - packages/*', 'nodeLinker: hoisted', ''].join('\n')
       );
+    });
+
+    it('passes other nodeLinker values through verbatim', async () => {
+      seedMonorepo('*');
+
+      await configureWorkspacesAsync(projectRoot, 'pnpm', ISOLATED);
+
+      const yaml = String(vol.readFileSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`));
+      expect(yaml).toContain('nodeLinker: isolated');
     });
 
     it('leaves already-"workspace:*" specs untouched (no needless write)', async () => {
@@ -152,6 +189,85 @@ describe(configureWorkspacesAsync, () => {
       expect(readJson(`${projectRoot}/apps/mobile/package.json`).dependencies['shared-ui']).toBe(
         '*'
       );
+    });
+
+    it('does not write .yarnrc.yml when the monorepo config does not opt into hoisted', async () => {
+      seedMonorepo('workspace:*');
+
+      await configureWorkspacesAsync(projectRoot, 'yarn');
+
+      expect(vol.existsSync(`${projectRoot}/${YARN_RC_FILENAME}`)).toBe(false);
+    });
+
+    it('writes .yarnrc.yml under yarn 2+ when hoisted is requested', async () => {
+      process.env.npm_config_user_agent = 'yarn/4.0.0 npm/? node/v18.0.0 darwin x64';
+      seedMonorepo('workspace:*');
+
+      await configureWorkspacesAsync(projectRoot, 'yarn', HOISTED);
+
+      const yarnRc = String(vol.readFileSync(`${projectRoot}/${YARN_RC_FILENAME}`));
+      expect(yarnRc).toBe('nodeLinker: node-modules\n');
+    });
+
+    it('still writes .yarnrc.yml when the yarn version is unknown (no user agent)', async () => {
+      // No npm_config_user_agent set — common when the user ran `node ./bin/...` directly
+      // or via a non-yarn launcher but yarn happens to be installed locally.
+      seedMonorepo('workspace:*');
+
+      await configureWorkspacesAsync(projectRoot, 'yarn', HOISTED);
+
+      expect(vol.existsSync(`${projectRoot}/${YARN_RC_FILENAME}`)).toBe(true);
+    });
+
+    it('skips .yarnrc.yml under yarn classic (v1)', async () => {
+      process.env.npm_config_user_agent = 'yarn/1.22.19 npm/? node/v18.0.0 darwin x64';
+      seedMonorepo('workspace:*');
+
+      await configureWorkspacesAsync(projectRoot, 'yarn', HOISTED);
+
+      expect(vol.existsSync(`${projectRoot}/${YARN_RC_FILENAME}`)).toBe(false);
+    });
+
+    it('appends to an existing .yarnrc.yml when it does not already declare nodeLinker', async () => {
+      process.env.npm_config_user_agent = 'yarn/3.5.1 npm/? node/v18.0.0 darwin x64';
+      seedMonorepo('workspace:*', {
+        extraMembers: {
+          [`${projectRoot}/${YARN_RC_FILENAME}`]: 'yarnPath: .yarn/releases/yarn-3.5.1.cjs\n',
+        },
+      });
+
+      await configureWorkspacesAsync(projectRoot, 'yarn', HOISTED);
+
+      const yarnRc = String(vol.readFileSync(`${projectRoot}/${YARN_RC_FILENAME}`));
+      expect(yarnRc).toBe(
+        ['yarnPath: .yarn/releases/yarn-3.5.1.cjs', 'nodeLinker: node-modules', ''].join('\n')
+      );
+    });
+
+    it('leaves an existing .yarnrc.yml alone when it already declares nodeLinker', async () => {
+      process.env.npm_config_user_agent = 'yarn/3.5.1 npm/? node/v18.0.0 darwin x64';
+      const userContent = 'nodeLinker: pnp\n';
+      seedMonorepo('workspace:*', {
+        extraMembers: {
+          [`${projectRoot}/${YARN_RC_FILENAME}`]: userContent,
+        },
+      });
+
+      await configureWorkspacesAsync(projectRoot, 'yarn', HOISTED);
+
+      expect(String(vol.readFileSync(`${projectRoot}/${YARN_RC_FILENAME}`))).toBe(userContent);
+    });
+
+    it('does not write .yarnrc.yml under npm or bun even when hoisted is requested', async () => {
+      seedMonorepo('workspace:*');
+
+      await configureWorkspacesAsync(projectRoot, 'npm', HOISTED);
+      expect(vol.existsSync(`${projectRoot}/${YARN_RC_FILENAME}`)).toBe(false);
+
+      vol.reset();
+      seedMonorepo('workspace:*');
+      await configureWorkspacesAsync(projectRoot, 'bun', HOISTED);
+      expect(vol.existsSync(`${projectRoot}/${YARN_RC_FILENAME}`)).toBe(false);
     });
   });
 

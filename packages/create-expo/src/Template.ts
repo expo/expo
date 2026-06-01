@@ -10,6 +10,7 @@ import path from 'path';
 
 import { sanitizedName } from './createFileTransform';
 import { Log } from './log';
+import { consumeMonorepoConfigAsync, type MonorepoConfig } from './monorepoConfig';
 import type { PackageManagerName } from './resolvePackageManager';
 import { formatRunCommand } from './resolvePackageManager';
 import { env } from './utils/env';
@@ -117,11 +118,17 @@ export function resolvePackageModuleId(moduleId: string) {
 /**
  * Extract a template app to a given file path and clean up any properties left over from npm to
  * prepare it for usage.
+ *
+ * Returns the parsed `.expo-monorepo-config.json` (or `undefined` if the
+ * template doesn't ship one) so downstream steps — most notably
+ * `configureWorkspacesAsync` — can consume it in memory. The on-disk config
+ * file is deleted immediately after it's read so it can never leak into the
+ * user's project, regardless of which downstream steps run.
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
   { npmPackage }: { npmPackage?: string | null }
-) {
+): Promise<{ projectRoot: string; monorepoConfig: MonorepoConfig | undefined }> {
   const projectName = path.basename(projectRoot);
 
   debug(`Extracting template app (pkg: ${npmPackage}, projectName: ${projectName})`);
@@ -140,9 +147,16 @@ export async function extractAndPrepareTemplateAppAsync(
     });
   }
 
+  // Read the monorepo config once and remove it from disk immediately so
+  // it can never leak into the user's project — every downstream consumer
+  // takes the parsed object in memory.
+  const monorepoConfig = await consumeMonorepoConfigAsync(projectRoot);
+
   try {
-    const renameConfig = await loadTemplateRenameConfigAsync(projectRoot);
-    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot, renameConfig });
+    const files = await getTemplateFilesToRenameAsync({
+      cwd: projectRoot,
+      renameConfig: monorepoConfig?.renamePatterns,
+    });
     await renameTemplateAppNameAsync({
       cwd: projectRoot,
       files,
@@ -155,38 +169,7 @@ export async function extractAndPrepareTemplateAppAsync(
 
   await sanitizeTemplateAsync(projectRoot);
 
-  return projectRoot;
-}
-
-/**
- * Templates can ship a `.expo-template-rename-config` file at the root, with
- * one glob pattern per line (`#` comments, blank lines, and `!` negations are
- * supported, mirroring `defaultRenameConfig`). When present, its patterns
- * replace the default config — useful for monorepo templates that need to
- * reach inside per-app directories (e.g. `apps/*\/android/**\/build.gradle`).
- *
- * Returns `undefined` if the file is missing or unreadable, in which case the
- * default config is used.
- */
-export const TEMPLATE_RENAME_CONFIG_FILENAME = '.expo-template-rename-config';
-
-export async function loadTemplateRenameConfigAsync(
-  projectRoot: string
-): Promise<string[] | undefined> {
-  const configPath = path.join(projectRoot, TEMPLATE_RENAME_CONFIG_FILENAME);
-  let contents: string;
-  try {
-    contents = await fs.promises.readFile(configPath, { encoding: 'utf-8' });
-  } catch (error: any) {
-    if (error?.code !== 'ENOENT') {
-      Log.log(
-        `Could not read ${TEMPLATE_RENAME_CONFIG_FILENAME}; falling back to the default rename config: ${error?.message ?? error}`
-      );
-    }
-    return undefined;
-  }
-  debug(`Loaded ${TEMPLATE_RENAME_CONFIG_FILENAME} for template rename`);
-  return contents.split(/\r?\n/);
+  return { projectRoot, monorepoConfig };
 }
 
 function escapeXMLCharacters(original: string): string {
@@ -220,9 +203,9 @@ function escapeXMLCharacters(original: string): string {
  * ## The rename config
  *
  * The rename config can be passed directly as a string array to
- * `getTemplateFilesToRenameAsync()`, or shipped with a template as a
- * `.expo-template-rename-config` file at the project root (one pattern per
- * line) — useful for monorepo templates that need to reach inside per-app
+ * `getTemplateFilesToRenameAsync()`, or shipped with a template via the
+ * `renamePatterns` field of `.expo-monorepo-config.json` at the project
+ * root — useful for monorepo templates that need to reach inside per-app
  * directories like `apps/*\/android/**\/build.gradle`.
  *
  * The file patterns are formatted as glob expressions to be interpreted by
@@ -231,9 +214,9 @@ function escapeXMLCharacters(original: string): string {
  * Whitespace is trimmed and whitespace-only lines are ignored.
  *
  * If no rename config has been passed directly to
- * `getTemplateFilesToRenameAsync()` and no `.expo-template-rename-config`
- * file is present in the template, then this default rename config will be
- * used instead.
+ * `getTemplateFilesToRenameAsync()` and the template ships no
+ * `.expo-monorepo-config.json` with `renamePatterns`, then this default
+ * rename config will be used instead.
  */
 export const defaultRenameConfig = [
   // Common
@@ -368,12 +351,6 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
   const projectName = path.basename(projectRoot);
 
   debug(`Sanitizing template or example app (projectName: ${projectName})`);
-
-  // Strip the template-only rename config file so it doesn't ship into the
-  // user's project.
-  await fs.promises
-    .rm(path.join(projectRoot, TEMPLATE_RENAME_CONFIG_FILENAME), { force: true })
-    .catch(() => undefined);
 
   const templatePath = path.join(__dirname, '../template/gitignore');
   const ignorePath = path.join(projectRoot, '.gitignore');

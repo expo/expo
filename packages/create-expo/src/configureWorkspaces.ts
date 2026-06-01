@@ -1,11 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
+import type { MonorepoConfig, WorkspaceConfig } from './monorepoConfig';
 import type { PackageManagerName } from './resolvePackageManager';
 
 const debug = require('debug')('expo:init:workspaces') as typeof console.log;
 
 export const PNPM_WORKSPACE_FILENAME = 'pnpm-workspace.yaml';
+export const YARN_RC_FILENAME = '.yarnrc.yml';
 
 const WORKSPACE_DEP_FIELDS = [
   'dependencies',
@@ -16,13 +18,22 @@ const WORKSPACE_DEP_FIELDS = [
 
 /**
  * Normalize a monorepo template's workspace-package dependency specs to the
- * chosen package manager's convention, and — for pnpm — write a
- * `pnpm-workspace.yaml` so the workspaces are picked up regardless of the root
- * `package.json` `workspaces` field.
+ * chosen package manager's convention, and emit any package-manager-specific
+ * config files needed for the workspaces to resolve correctly.
  *
- * - pnpm requires workspace deps to be written as `"workspace:*"`.
- * - yarn / npm / bun handle workspace links given `"*"` (the convention used by
- *   yarn classic + npm workspaces).
+ * - pnpm requires workspace deps to be written as `"workspace:*"`. We always
+ *   write `pnpm-workspace.yaml` so the packages are picked up regardless of
+ *   the root `package.json` `workspaces` field. If the template's
+ *   `.expo-monorepo-config.json` opts into `workspaceConfig.nodeLinker:
+ *   "hoisted"`, the YAML also includes that field (otherwise pnpm uses its
+ *   default isolated layout).
+ * - yarn / npm / bun handle workspace links given `"*"` (the convention used
+ *   by yarn classic + npm workspaces). For yarn specifically — when the
+ *   template opts into `workspaceConfig.nodeLinker: "hoisted"` — we also
+ *   write a `.yarnrc.yml` with `nodeLinker: node-modules` so yarn 2+ uses a
+ *   traditional `node_modules` layout instead of Plug'n'Play. Yarn classic
+ *   ignores `.yarnrc.yml` and is hoisted by default, so the file would be
+ *   inert there.
  *
  * The function expects the template to use either `"workspace:*"` or `"*"` for
  * intra-monorepo links; other dep specs (semver ranges, file paths, etc.) are
@@ -30,7 +41,8 @@ const WORKSPACE_DEP_FIELDS = [
  */
 export async function configureWorkspacesAsync(
   projectRoot: string,
-  packageManager: PackageManagerName
+  packageManager: PackageManagerName,
+  monorepoConfig?: MonorepoConfig
 ): Promise<void> {
   const rootPackagePath = path.join(projectRoot, 'package.json');
   const rootPackage = await readJsonFileAsync(rootPackagePath);
@@ -45,6 +57,8 @@ export async function configureWorkspacesAsync(
     return;
   }
 
+  const workspaceConfig = monorepoConfig?.workspaceConfig;
+
   const memberPaths = await resolveWorkspaceMemberPathsAsync(projectRoot, workspacePatterns);
   debug(`Found ${memberPaths.length} workspace member(s): ${memberPaths.join(', ')}`);
 
@@ -54,8 +68,42 @@ export async function configureWorkspacesAsync(
   }
 
   if (packageManager === 'pnpm') {
-    await writePnpmWorkspaceYamlAsync(projectRoot, workspacePatterns);
+    await ensurePnpmWorkspaceYamlAsync(projectRoot, workspacePatterns, workspaceConfig?.nodeLinker);
+  } else if (packageManager === 'yarn' && workspaceConfig?.nodeLinker === 'hoisted') {
+    // `.yarnrc.yml` is only consumed by yarn 2+ (berry). Yarn classic (v1)
+    // reads `.yarnrc` (no `.yml` suffix) and is hoisted by default, so we
+    // skip writing the file when we can prove from `npm_config_user_agent`
+    // that the user is on yarn 1. When the version is unknown — the user
+    // didn't launch create-expo via `yarn create expo` — we still write,
+    // since yarn classic harmlessly ignores `.yarnrc.yml`.
+    const yarnMajor = getYarnMajorFromUserAgent();
+    if (yarnMajor === 1) {
+      debug(`Skipping ${YARN_RC_FILENAME}: yarn classic (v${yarnMajor}) is hoisted by default`);
+    } else {
+      await ensureYarnHoistedAsync(projectRoot);
+    }
   }
+}
+
+/**
+ * Parse the `npm_config_user_agent` env var (set when create-expo is launched
+ * via yarn) and return yarn's major version. `undefined` when the user agent
+ * is missing or doesn't lead with `yarn/`.
+ */
+function getYarnMajorFromUserAgent(): number | undefined {
+  const userAgent = process.env.npm_config_user_agent;
+  if (!userAgent) {
+    return undefined;
+  }
+  const match = userAgent.match(/^yarn\/(\d+)/);
+  // The capture group is guaranteed to be present when `match` is truthy
+  // (we matched a literal `yarn/` followed by `(\d+)`), but
+  // `noUncheckedIndexedAccess` still types `match[1]` as `string | undefined`.
+  if (!match || match[1] === undefined) {
+    return undefined;
+  }
+  const major = parseInt(match[1], 10);
+  return Number.isFinite(major) ? major : undefined;
 }
 
 function getWorkspacePatterns(rootPackage: any): string[] {
@@ -190,16 +238,105 @@ async function readJsonFileAsync(filePath: string): Promise<any | undefined> {
   }
 }
 
-async function writePnpmWorkspaceYamlAsync(projectRoot: string, patterns: string[]): Promise<void> {
+/**
+ * Ensure `pnpm-workspace.yaml` contains a `packages:` block listing our
+ * workspace patterns, plus an optional `nodeLinker:` line. If the file
+ * doesn't exist we write it from scratch. If it does exist (e.g. the
+ * template ships its own with extra pnpm settings like
+ * `onlyBuiltDependencies`), we preserve all existing content and only append
+ * the blocks that aren't already declared at the top level — so multiple
+ * sources can contribute to the same YAML without clobbering each other.
+ *
+ * We don't parse the YAML (no parser is bundled with create-expo), so the
+ * "is this top-level key already present?" check is a simple line-prefix
+ * match — good enough for the conventional flat shape pnpm uses.
+ */
+async function ensurePnpmWorkspaceYamlAsync(
+  projectRoot: string,
+  patterns: string[],
+  nodeLinker: WorkspaceConfig['nodeLinker']
+): Promise<void> {
   const yamlPath = path.join(projectRoot, PNPM_WORKSPACE_FILENAME);
-  const lines = [
-    'packages:',
-    ...patterns.map((pattern) => `  - ${quoteIfNeeded(pattern)}`),
-    'nodeLinker: hoisted',
-    '',
-  ];
-  await fs.promises.writeFile(yamlPath, lines.join('\n'), 'utf-8');
-  debug(`Wrote ${yamlPath}`);
+  let existing: string | undefined;
+  try {
+    existing = await fs.promises.readFile(yamlPath, 'utf-8');
+  } catch (error: any) {
+    if (error?.code !== 'ENOENT') {
+      debug(`Could not read existing ${yamlPath}: ${error?.message ?? error}`);
+    }
+  }
+
+  const packagesBlock =
+    patterns.length > 0
+      ? ['packages:', ...patterns.map((pattern) => `  - ${quoteIfNeeded(pattern)}`)].join('\n')
+      : undefined;
+  const nodeLinkerLine = nodeLinker ? `nodeLinker: ${nodeLinker}` : undefined;
+
+  if (existing === undefined) {
+    const lines: string[] = [];
+    if (packagesBlock) lines.push(packagesBlock);
+    if (nodeLinkerLine) lines.push(nodeLinkerLine);
+    lines.push('');
+    await fs.promises.writeFile(yamlPath, lines.join('\n'), 'utf-8');
+    debug(`Wrote ${yamlPath}`);
+    return;
+  }
+
+  let updated = existing;
+  if (packagesBlock && !/^packages:/m.test(updated)) {
+    updated = appendBlock(updated, packagesBlock);
+  }
+  if (nodeLinkerLine && !/^nodeLinker:/m.test(updated)) {
+    updated = appendBlock(updated, nodeLinkerLine);
+  }
+  if (updated !== existing) {
+    await fs.promises.writeFile(yamlPath, updated, 'utf-8');
+    debug(`Appended to existing ${yamlPath}`);
+  } else {
+    debug(`Existing ${yamlPath} already declares the keys we own; leaving it alone`);
+  }
+}
+
+function appendBlock(content: string, block: string): string {
+  const needsLeadingNewline = content.length > 0 && !content.endsWith('\n');
+  return `${content}${needsLeadingNewline ? '\n' : ''}${block}\n`;
+}
+
+/**
+ * Ensure `.yarnrc.yml` declares `nodeLinker: node-modules` so yarn 2+ uses a
+ * hoisted node_modules layout instead of Plug'n'Play. If the template already
+ * ships its own `.yarnrc.yml` with a `nodeLinker:` line, leave it alone; if
+ * the file exists but doesn't mention `nodeLinker:`, append our line; if the
+ * file is missing, create it.
+ *
+ * Yarn classic (v1) ignores `.yarnrc.yml` (it reads `.yarnrc` without the
+ * `.yml` suffix) and is hoisted by default, so writing this file is harmless
+ * there.
+ */
+async function ensureYarnHoistedAsync(projectRoot: string): Promise<void> {
+  const yarnRcPath = path.join(projectRoot, YARN_RC_FILENAME);
+  let existing: string | undefined;
+  try {
+    existing = await fs.promises.readFile(yarnRcPath, 'utf-8');
+  } catch (error: any) {
+    if (error?.code !== 'ENOENT') {
+      debug(`Could not read existing ${yarnRcPath}: ${error?.message ?? error}`);
+    }
+  }
+
+  if (existing === undefined) {
+    await fs.promises.writeFile(yarnRcPath, 'nodeLinker: node-modules\n', 'utf-8');
+    debug(`Wrote ${yarnRcPath}`);
+    return;
+  }
+  if (/^nodeLinker:/m.test(existing)) {
+    debug(`${yarnRcPath} already declares nodeLinker; leaving it alone`);
+    return;
+  }
+  const needsLeadingNewline = existing.length > 0 && !existing.endsWith('\n');
+  const append = `${needsLeadingNewline ? '\n' : ''}nodeLinker: node-modules\n`;
+  await fs.promises.writeFile(yarnRcPath, existing + append, 'utf-8');
+  debug(`Appended nodeLinker: node-modules to ${yarnRcPath}`);
 }
 
 function quoteIfNeeded(value: string): string {

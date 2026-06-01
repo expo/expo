@@ -3,6 +3,7 @@ import type { Endpoints } from '@octokit/types';
 import { createGlobFilter } from '../createFileTransform';
 import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
+import { MONOREPO_CONFIG_FILENAME } from '../monorepoConfig';
 
 const debug = require('debug')('expo:init:github') as typeof console.log;
 
@@ -73,10 +74,16 @@ async function extractRemoteGitHubTarballAsync(
   const strip = directory.length + 1;
   // Only extract the relevant (sub)directories, ignoring irrelevant files
   // The filter auto-ignores dotfiles, unless explicitly included
+  const subDirPrefix = directory.length ? `*/${directory.join('/')}` : '*';
   const filter = createGlobFilter(
-    !directory.length
-      ? ['*/**', '*/ios/.xcode.env']
-      : [`*/${directory.join('/')}/**`, `*/${directory.join('/')}/ios/.xcode.env`],
+    [
+      `${subDirPrefix}/**`,
+      `${subDirPrefix}/ios/.xcode.env`,
+      // Templates ship their monorepo config as a root-level dotfile; without
+      // an explicit allow-list entry, picomatch's default `dot: false` drops
+      // it during extraction so downstream consumers see no config at all.
+      `${subDirPrefix}/${MONOREPO_CONFIG_FILENAME}`,
+    ],
     {
       // Always ignore the `.xcworkspace` folder
       ignore: ['**/ios/*.xcworkspace/**'],

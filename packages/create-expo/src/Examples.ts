@@ -9,6 +9,7 @@ import {
   renameTemplateAppNameAsync,
   sanitizeTemplateAsync,
 } from './Template';
+import { consumeMonorepoConfigAsync, type MonorepoConfig } from './monorepoConfig';
 import { env } from './utils/env';
 import { fetch } from './utils/fetch';
 import { extractNpmTarballAsync } from './utils/npm';
@@ -111,8 +112,19 @@ export async function promptExamplesAsync() {
   return answer;
 }
 
-/** Download and move the selected example from https://github.com/expo/examples. */
-export async function downloadAndExtractExampleAsync(root: string, name: string) {
+/**
+ * Download and move the selected example from https://github.com/expo/examples.
+ *
+ * Returns the parsed `.expo-monorepo-config.json` (or `undefined` if the
+ * example doesn't ship one) so downstream steps — most notably
+ * `configureWorkspacesAsync` — can consume it in memory. The on-disk config
+ * file is deleted immediately after it's read so it can never leak into the
+ * user's project.
+ */
+export async function downloadAndExtractExampleAsync(
+  root: string,
+  name: string
+): Promise<MonorepoConfig | undefined> {
   const projectName = path.basename(root);
   const response = await fetch('https://codeload.github.com/expo/examples/tar.gz/master');
   if (!response.ok) {
@@ -134,7 +146,15 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     filter: (entryName) => entryName.startsWith(prefix),
   });
 
-  const files = await getTemplateFilesToRenameAsync({ cwd: root });
+  // Read the monorepo config once and remove it from disk immediately so
+  // it can never leak into the user's project — every downstream consumer
+  // takes the parsed object in memory.
+  const monorepoConfig = await consumeMonorepoConfigAsync(root);
+
+  const files = await getTemplateFilesToRenameAsync({
+    cwd: root,
+    renameConfig: monorepoConfig?.renamePatterns,
+  });
   await renameTemplateAppNameAsync({
     cwd: root,
     files,
@@ -142,6 +162,8 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
   });
   await sanitizeTemplateAsync(root);
   await sanitizeScriptsAsync(root);
+
+  return monorepoConfig;
 }
 
 function exampleHasNativeCode(root: string): boolean {

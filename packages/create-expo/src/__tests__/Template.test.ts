@@ -4,10 +4,8 @@ import path from 'path';
 
 import {
   getTemplateFilesToRenameAsync,
-  loadTemplateRenameConfigAsync,
   resolvePackageModuleId,
   renameTemplateAppNameAsync,
-  TEMPLATE_RENAME_CONFIG_FILENAME,
 } from '../Template';
 
 jest.mock('fs');
@@ -92,64 +90,6 @@ describe('getTemplateFilesToRenameAsync', () => {
     const files = await getTemplateFilesToRenameAsync({ cwd, renameConfig: [] });
     expect(files).toHaveLength(0);
     expect(spyGlob).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('loadTemplateRenameConfigAsync', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it(`reads ${TEMPLATE_RENAME_CONFIG_FILENAME} as a list of newline-delimited patterns`, async () => {
-    const spyReadFile = jest.spyOn(fs.promises, 'readFile').mockImplementation(async (filePath) => {
-      expect(path.basename(filePath as string)).toBe(TEMPLATE_RENAME_CONFIG_FILENAME);
-      return ['!**/node_modules', 'apps/*/app.json', '# a comment', '', 'apps/*/ios/Podfile'].join(
-        '\n'
-      );
-    });
-
-    const result = await loadTemplateRenameConfigAsync('/fake-project');
-    expect(spyReadFile).toHaveBeenCalledTimes(1);
-    // The loader returns lines verbatim; comment/whitespace stripping happens
-    // inside getTemplateFilesToRenameAsync.
-    expect(result).toEqual([
-      '!**/node_modules',
-      'apps/*/app.json',
-      '# a comment',
-      '',
-      'apps/*/ios/Podfile',
-    ]);
-  });
-
-  it('handles CRLF line endings', async () => {
-    jest
-      .spyOn(fs.promises, 'readFile')
-      .mockResolvedValueOnce(['apps/*/app.json', 'apps/*/ios/Podfile'].join('\r\n'));
-
-    await expect(loadTemplateRenameConfigAsync('/fake-project')).resolves.toEqual([
-      'apps/*/app.json',
-      'apps/*/ios/Podfile',
-    ]);
-  });
-
-  it('returns undefined when the config file is missing (ENOENT)', async () => {
-    jest.spyOn(fs.promises, 'readFile').mockImplementationOnce(async () => {
-      const error: any = new Error('not found');
-      error.code = 'ENOENT';
-      throw error;
-    });
-
-    await expect(loadTemplateRenameConfigAsync('/fake-project')).resolves.toBeUndefined();
-  });
-
-  it('returns undefined on other read errors (and does not throw)', async () => {
-    jest.spyOn(fs.promises, 'readFile').mockImplementationOnce(async () => {
-      const error: any = new Error('permission denied');
-      error.code = 'EACCES';
-      throw error;
-    });
-
-    await expect(loadTemplateRenameConfigAsync('/fake-project')).resolves.toBeUndefined();
   });
 });
 
