@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
 /**
  * A bridging container that hosts SwiftUI views on iOS and Jetpack Compose views on Android.
  * On platforms without a native UI-toolkit binding (web, RN fallback), renders a plain `View`.
- * The `colorScheme`, `layoutDirection`, and `matchContents` props are accepted for API parity but have no effect.
  */
 export function Host({
   children,
