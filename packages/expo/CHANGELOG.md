@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Restore RCTHostRuntimeDelegate conformance for react-native-macos ([#46420](https://github.com/expo/expo/pull/46420) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add explicit `react-native/Libraries/Core/InitializeCore` import to native runtime entrypoint ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ## 56.0.5 — 2026-05-26
 

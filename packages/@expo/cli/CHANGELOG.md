@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+
 ## 56.1.12 — 2026-05-26
 
 _This version does not introduce any user-facing changes._
