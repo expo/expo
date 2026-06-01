@@ -10,7 +10,11 @@ enum SymbolScale: String, Enumerable {
   func imageSymbolScale() -> UIImage.SymbolScale {
     switch self {
     case .default:
+#if os(macOS)
+      return .medium
+#else
       return .default
+#endif
     case .small:
       return .small
     case .medium:
@@ -18,7 +22,11 @@ enum SymbolScale: String, Enumerable {
     case .large:
       return .large
     case .unspecified:
+#if os(macOS)
+      return .medium
+#else
       return .unspecified
+#endif
     }
   }
 }
@@ -35,6 +43,32 @@ enum SymbolWeight: String, Enumerable {
   case heavy
   case black
 
+#if os(macOS)
+  // NSImage has no nested `SymbolWeight`; NSImage.SymbolConfiguration takes NSFont.Weight,
+  // which has no `unspecified` case, so map it to `.regular` to preserve a sensible default.
+  func imageSymbolWeight() -> NSFont.Weight {
+    switch self {
+    case .unspecified, .regular:
+      return .regular
+    case .ultraLight:
+      return .ultraLight
+    case .thin:
+      return .thin
+    case .light:
+      return .light
+    case .medium:
+      return .medium
+    case .semibold:
+      return .semibold
+    case .bold:
+      return .bold
+    case .heavy:
+      return .heavy
+    case .black:
+      return .black
+    }
+  }
+#else
   func imageSymbolWeight() -> UIImage.SymbolWeight {
     switch self {
     case .unspecified:
@@ -59,6 +93,7 @@ enum SymbolWeight: String, Enumerable {
       return .black
     }
   }
+#endif
 }
 
 enum SymbolContentMode: String, Enumerable {
@@ -76,6 +111,21 @@ enum SymbolContentMode: String, Enumerable {
   case bottomLeft
   case bottomRight
 
+#if os(macOS)
+  // NSImageView has no `contentMode`; it uses `imageScaling` with a much smaller set of cases.
+  // Alignment-style cases collapse to `.scaleNone` — NSImageView positions via `imageAlignment` separately.
+  func toContentMode() -> NSImageScaling {
+    switch self {
+    case .scaleToFill:
+      return .scaleAxesIndependently
+    case .scaleAspectFit, .scaleAspectFill:
+      return .scaleProportionallyUpOrDown
+    case .redraw, .center, .top, .bottom, .left, .right,
+         .topLeft, .topRight, .bottomLeft, .bottomRight:
+      return .scaleNone
+    }
+  }
+#else
   func toContentMode() -> UIView.ContentMode {
     switch self {
     case .scaleToFill:
@@ -106,6 +156,7 @@ enum SymbolContentMode: String, Enumerable {
       return .bottomRight
     }
   }
+#endif
 }
 
 enum SymbolType: String, Enumerable {
@@ -139,7 +190,7 @@ internal struct AnimationEffect: Record {
   @Field var wholeSymbol: Bool?
   @Field var direction: AnimationDirection?
 
-  @available(iOS 17.0, tvOS 17.0, *)
+  @available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
   func toEffect() -> EffectAdding {
     switch type {
     case .bounce:
@@ -160,7 +211,7 @@ internal struct VariableColorSpec: Record {
   @Field var hideInactiveLayers: Bool?
   @Field var dimInactiveLayers: Bool?
 
-  @available(iOS 17.0, tvOS 17.0, *)
+  @available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
   func toVariableEffect() -> VariableColorSymbolEffect {
     var effect: VariableColorSymbolEffect = .variableColor
 
