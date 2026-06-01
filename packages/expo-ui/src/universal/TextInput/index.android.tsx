@@ -8,6 +8,7 @@ import {
   useNativeState,
 } from '@expo/ui/jetpack-compose';
 import {
+  fillMaxWidth,
   onSizeChanged,
   semantics,
   testID as testIDModifier,
@@ -208,9 +209,18 @@ export function TextInput({
       onSelectionChange={onSelectionChange}>
       {placeholder != null ? (
         <BasicTextField.DecorationBox>
-          <Box>
+          <Box
+            modifiers={[fillMaxWidth()]}
+            contentAlignment={
+              textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
+            }>
             {showPlaceholder ? (
-              <Text color={placeholderTextColor as string | undefined}>{placeholder}</Text>
+              <Text
+                color={placeholderTextColor as string | undefined}
+                modifiers={[fillMaxWidth()]}
+                style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
+                {placeholder}
+              </Text>
             ) : null}
             <BasicTextField.InnerTextField />
           </Box>
