@@ -15,5 +15,5 @@ export type {
   TextFieldKeyboardOptions,
   TextFieldKeyboardActions,
   TextFieldTextStyle,
-  CommonTextFieldProps,
+  CommonTextFieldProperties,
 } from './shared';

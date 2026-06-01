@@ -42,7 +42,7 @@ export {
   type TextFieldKeyboardActions,
   type TextFieldColors,
   type TextFieldTextStyle,
-  type CommonTextFieldProps,
+  type CommonTextFieldProperties,
 } from './TextField';
 export * from './ToggleButton';
 export * from './Shape';

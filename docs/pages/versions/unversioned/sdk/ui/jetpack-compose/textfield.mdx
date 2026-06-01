@@ -12,19 +12,20 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`TextInput`](../universal/textinput) — it renders the appropriate native component per platform.
 
-Expo UI provides two text field components that match the official Jetpack Compose [TextField API](https://developer.android.com/develop/ui/compose/text/user-input): `TextField` (filled) and `OutlinedTextField` (outlined border). Both variants share the same props and support composable slot children for label, placeholder, icons, prefix, suffix, and supporting text.
+Expo UI provides three text field components that match the official Jetpack Compose [TextField API](https://developer.android.com/develop/ui/compose/text/user-input): `TextField` (filled), `OutlinedTextField` (outlined border), and `BasicTextField` (unstyled). The Material variants `TextField` and `OutlinedTextField` share the same props and support composable slot children for label, placeholder, icons, prefix, suffix, and supporting text. `BasicTextField` has no Material chrome, so you supply your own decoration.
 
-| Type     | Appearance                                     | Purpose                                                                                                       |
-| -------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Filled   | Solid background with a bottom indicator line. | Default text input style following Material3 design. Use for most forms and input fields.                     |
-| Outlined | Transparent background with a border outline.  | Alternative style that provides a distinct visual boundary. Use when filled fields blend into the background. |
+| Type     | Appearance                                                   | Purpose                                                                                                       |
+| -------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Filled   | Solid background with a bottom indicator line.               | Default text input style following Material3 design. Use for most forms and input fields.                     |
+| Outlined | Transparent background with a border outline.                | Alternative style that provides a distinct visual boundary. Use when filled fields blend into the background. |
+| Basic    | No container, indicator, or padding. Just the editable text. | Fully custom-styled inputs. Style it yourself and add decoration through `decorationBox`.                     |
 
 <ContentSpotlight
   variant="component"
   aspect="landscape"
   src="/static/images/expo-ui/textfield/android-light.webp"
   darkSrc="/static/images/expo-ui/textfield/android-dark.webp"
-  alt="Filled and outlined Material 3 text fields"
+  alt="Filled, outlined, and basic (unstyled) text fields"
 />
 
 ## Installation
@@ -33,15 +34,15 @@ Expo UI provides two text field components that match the official Jetpack Compo
 
 ## Usage
 
-### Basic text field
+### Filled text field
 
 A filled text field is the default Material3 text input style.
 
-```tsx BasicTextFieldExample.tsx
+```tsx FilledTextFieldExample.tsx
 import { useState } from 'react';
 import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
 
-export default function BasicTextFieldExample() {
+export default function FilledTextFieldExample() {
   const [value, setValue] = useState('');
 
   return (
@@ -77,6 +78,47 @@ export default function OutlinedTextFieldExample() {
           <Text>you@example.com</Text>
         </OutlinedTextField.Placeholder>
       </OutlinedTextField>
+    </Host>
+  );
+}
+```
+
+### Basic text field
+
+`BasicTextField` is the unstyled Compose primitive, with no container, indicator, or padding. Style it yourself with [modifiers](modifiers) and supply decoration such as a placeholder through `DecorationBox`, placing `InnerTextField` where the editable text should render.
+
+```tsx BasicTextFieldExample.tsx
+import { useState } from 'react';
+import { Host, BasicTextField, Box, Text } from '@expo/ui/jetpack-compose';
+import {
+  background,
+  clip,
+  fillMaxWidth,
+  padding,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BasicTextFieldExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <BasicTextField
+        cursorColor="#7c3aed"
+        onValueChange={setValue}
+        modifiers={[
+          fillMaxWidth(),
+          clip(Shapes.RoundedCorner(12)),
+          background('#f3f4f6'),
+          padding(12, 10, 12, 10),
+        ]}>
+        <BasicTextField.DecorationBox>
+          <Box>
+            {value.length === 0 ? <Text color="#9ca3af">Search…</Text> : null}
+            <BasicTextField.InnerTextField />
+          </Box>
+        </BasicTextField.DecorationBox>
+      </BasicTextField>
     </Host>
   );
 }
@@ -308,7 +350,7 @@ export default function WorkletPhoneMaskExample() {
 ## API
 
 ```tsx
-import { TextField, OutlinedTextField } from '@expo/ui/jetpack-compose';
+import { TextField, OutlinedTextField, BasicTextField } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection packageName="expo-ui/jetpack-compose/textfield" apiName="TextField" />

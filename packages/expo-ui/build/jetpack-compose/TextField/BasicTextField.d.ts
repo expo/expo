@@ -1,5 +1,5 @@
 import type { ColorValue } from 'react-native';
-import type { CommonTextFieldProps, TextFieldRef } from './shared';
+import type { CommonTextFieldProperties, TextFieldRef } from './shared';
 /**
  * Imperative methods for `BasicTextField`. Identical to {@link TextFieldRef}.
  */
@@ -7,11 +7,11 @@ export type BasicTextFieldRef = TextFieldRef;
 /**
  * Props for `BasicTextField`. Mirrors Compose's `BasicTextField`: a bare,
  * unstyled text field with no Material chrome (no container, indicator, or
- * built-in padding). Shares {@link CommonTextFieldProps} with `TextField` and
+ * built-in padding). Shares {@link CommonTextFieldProperties} with `TextField` and
  * `OutlinedTextField`; use `BasicTextField.DecorationBox` to add your own
  * decoration.
  */
-export type BasicTextFieldProps = CommonTextFieldProps & {
+export type BasicTextFieldProps = CommonTextFieldProperties & {
     /**
      * Color of the text cursor. Maps to Compose's `cursorBrush` via
      * `SolidColor(color)`. Defaults to black.

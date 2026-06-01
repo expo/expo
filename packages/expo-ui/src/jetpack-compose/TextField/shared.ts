@@ -101,7 +101,7 @@ export type TextFieldTextStyle = {
  * own decoration props (`isError`, `shape`, `colors`, slot children);
  * `BasicTextField` adds `cursorColor`.
  */
-export type CommonTextFieldProps = {
+export type CommonTextFieldProperties = {
   ref?: Ref<TextFieldRef>;
   /**
    * An observable state that holds the current text value. Create one with

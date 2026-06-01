@@ -1,5 +1,5 @@
 import type { ColorValue } from 'react-native';
-import type { CommonTextFieldProps } from './shared';
+import type { CommonTextFieldProperties } from './shared';
 import { type ObservableState } from '../../State';
 import { type ShapeJSXElement } from '../Shape';
 /**
@@ -50,8 +50,7 @@ export type TextFieldColors = {
     disabledSuffixColor?: ColorValue;
     errorSuffixColor?: ColorValue;
 };
-/** Shared props between `TextField` and `OutlinedTextField`. */
-type BaseTextFieldProps = CommonTextFieldProps & {
+export type TextFieldProps = CommonTextFieldProperties & {
     /** @default false */
     isError?: boolean;
     /**
@@ -60,11 +59,17 @@ type BaseTextFieldProps = CommonTextFieldProps & {
      * Defaults to the Material `OutlinedTextFieldDefaults.shape`/`TextFieldDefaults.shape`.
      */
     shape?: ShapeJSXElement;
-};
-export type TextFieldProps = BaseTextFieldProps & {
     colors?: TextFieldColors;
 };
-export type OutlinedTextFieldProps = BaseTextFieldProps & {
+export type OutlinedTextFieldProps = CommonTextFieldProperties & {
+    /** @default false */
+    isError?: boolean;
+    /**
+     * Shape used for the field's container outline/fill. Use the helpers from
+     * `Shape` (for example, `<Shape.Pill />` or `<Shape.RoundedCorner cornerRadii={...} />`).
+     * Defaults to the Material `OutlinedTextFieldDefaults.shape`/`TextFieldDefaults.shape`.
+     */
+    shape?: ShapeJSXElement;
     colors?: TextFieldColors;
 };
 /**

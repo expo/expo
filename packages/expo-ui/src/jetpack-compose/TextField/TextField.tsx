@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
-import type { CommonTextFieldProps } from './shared';
+import type { CommonTextFieldProperties } from './shared';
 import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
 import type { ViewEvent } from '../../types';
 import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
@@ -59,24 +59,28 @@ export type TextFieldColors = {
   errorSuffixColor?: ColorValue;
 };
 
-/** Shared props between `TextField` and `OutlinedTextField`. */
-type BaseTextFieldProps = CommonTextFieldProps & {
+// Material props inlined per variant (not a shared named base) so docs render them directly.
+export type TextFieldProps = CommonTextFieldProperties & {
   /** @default false */
   isError?: boolean;
-
   /**
    * Shape used for the field's container outline/fill. Use the helpers from
    * `Shape` (for example, `<Shape.Pill />` or `<Shape.RoundedCorner cornerRadii={...} />`).
    * Defaults to the Material `OutlinedTextFieldDefaults.shape`/`TextFieldDefaults.shape`.
    */
   shape?: ShapeJSXElement;
-};
-
-export type TextFieldProps = BaseTextFieldProps & {
   colors?: TextFieldColors;
 };
 
-export type OutlinedTextFieldProps = BaseTextFieldProps & {
+export type OutlinedTextFieldProps = CommonTextFieldProperties & {
+  /** @default false */
+  isError?: boolean;
+  /**
+   * Shape used for the field's container outline/fill. Use the helpers from
+   * `Shape` (for example, `<Shape.Pill />` or `<Shape.RoundedCorner cornerRadii={...} />`).
+   * Defaults to the Material `OutlinedTextFieldDefaults.shape`/`TextFieldDefaults.shape`.
+   */
+  shape?: ShapeJSXElement;
   colors?: TextFieldColors;
 };
 
@@ -85,7 +89,7 @@ export type OutlinedTextFieldProps = BaseTextFieldProps & {
 // region Native
 
 type NativeTextFieldProps = Omit<
-  BaseTextFieldProps,
+  TextFieldProps,
   | 'value'
   | 'selection'
   | 'onValueChange'
