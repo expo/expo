@@ -1,4 +1,10 @@
+import fs from 'node:fs';
 import type { BuildConfiguration, ModuleXCFramework } from './types';
+/**
+ * Returns true when an `entry` refers to a directory either directly OR via a symlink whose
+ * target is a directory.
+ */
+export declare const isDirentDirectory: (entry: fs.Dirent, parentDir: string) => boolean;
 /**
  * Scans `ios/Pods/` for prebuilt xcframeworks installed by autolinking when
  * `EXPO_USE_PRECOMPILED_MODULES=1` is set. A pod is "precompiled" when its directory contains
@@ -119,5 +125,19 @@ export declare const enumerateBundledSpmDepsXcframeworks: (modules: ModuleXCFram
  * xcframework can land on disk without a matching `.binaryTarget` (or vice-versa). Calling this
  * helper from both sites guarantees they agree, and gates both behind the completeness check
  * so we never produce a half-baked package on missing deps.
+ *
+ * `hostProvidedFrameworks` is the set of xcframework names the consuming host iOS app already
+ * provides (typically via its own CocoaPods). Matching entries are filtered out of both the
+ * enumeration result AND the completeness-check input — so we neither ship them nor fail the
+ * build when an `spm.config.json` declares them.
  */
-export declare const enumerateAllPrebuildModules: (cwd: string, buildConfiguration: BuildConfiguration) => ModuleXCFramework[];
+export declare const enumerateAllPrebuildModules: (cwd: string, buildConfiguration: BuildConfiguration, hostProvidedFrameworks?: readonly string[]) => ModuleXCFramework[];
+/**
+ * Walks all three resolution layers (pod scan → npm-bundled → shared `.spm-deps/` cache) without
+ * applying host-provided filtering or running the missing-SPM-dep completeness check.
+ */
+export declare const enumeratePrebuildModulesRaw: (cwd: string, buildConfiguration: BuildConfiguration) => {
+    modules: ModuleXCFramework[];
+    podModules: ModuleXCFramework[];
+    podToNpm: Map<string, NpmPackageInfo>;
+};

@@ -34,23 +34,26 @@ import org.brotli.dec.BrotliInputStream
  * header, and decompresses (and strips `Content-Encoding`/`Content-Length` from) responses
  * encoded with any of the three.
  *
- * Modeled after `okhttp3.brotli.BrotliInterceptor`; this replaces the transparent gzip
- * compression in okhttp's `BridgeInterceptor`. Callers who set their own `Accept-Encoding`
- * opt out of automatic decompression.
+ * Unlike OkHttp, which disables transparent decompression when `Accept-Encoding` is explicitly set by the caller,
+ * this interceptor continues to decompress responses to match the behavior of the Fetch API, iOS `URLSession`,
+ * and [React Native fetch](https://github.com/facebook/react-native/blob/622941d9dca684ecfc8f5086eb42c8178c3062d1/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/network/NetworkingModule.kt#L656-L691).
+ *
+ * The `Content-Encoding` and `Content-Length` headers are removed after
+ * decompression.
  */
-object CompressionInterceptor : Interceptor {
-  override fun intercept(chain: Interceptor.Chain): Response =
-    if (chain.request().header("Accept-Encoding") == null) {
-      val request = chain.request().newBuilder()
-        .header("Accept-Encoding", "zstd, br, gzip")
-        .build()
+object TransparentCompressionInterceptor : Interceptor {
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val request = chain.request()
 
-      val response = chain.proceed(request)
-
-      uncompress(response)
-    } else {
-      chain.proceed(chain.request())
-    }
+    return uncompress(
+      chain.proceed(
+        when (request.header("Accept-Encoding")) {
+          null -> request.newBuilder().header("Accept-Encoding", "zstd, br, gzip").build()
+          else -> request
+        }
+      )
+    )
+  }
 
   internal fun uncompress(response: Response): Response {
     if (!response.promisesBody()) {

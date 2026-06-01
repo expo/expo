@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const EXTRA_MODULE_BUILD_TARGETS = ['plugin', 'cli', 'utils', 'scripts'];
+const EXTRA_MODULE_BUILD_TARGETS = ['plugin', 'cli', 'utils', 'scripts', 'shared'];
 
 let args = getArgs();
 
