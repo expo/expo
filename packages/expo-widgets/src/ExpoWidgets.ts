@@ -48,6 +48,7 @@ class LiveActivityFactoryStub {
 }
 
 const ExpoWidgetsModule = {
+  widgetsDirectory: '',
   reloadAllWidgets(): void {},
   Widget: WidgetStub as typeof NativeWidgetObject,
   LiveActivityFactory: LiveActivityFactoryStub as typeof NativeLiveActivityFactory,
