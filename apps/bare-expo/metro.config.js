@@ -10,31 +10,8 @@ config.resolver.assetExts.push(
   'wasm' // For expo-sqlite on web
 );
 
-// When testing on MacOS we need to swap out `react-native` for `react-native-macos`
-config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (
-    platform === 'macos' &&
-    (moduleName === 'react-native' || moduleName.startsWith('react-native/'))
-  ) {
-    const newModuleName = moduleName.replace('react-native', 'react-native-macos');
-    return context.resolveRequest(context, newModuleName, platform);
-  }
-  return context.resolveRequest(context, moduleName, platform);
-};
 // writing a screenshot otherwise shows a metro refresh banner at the top of the screen which can interfere with another screenshot
 config.resolver.blockList.push(/^e2e/);
-
-// When testing on MacOS we need to include the `react-native-macos/Libraries/Core/InitializeCore` as prepended global module
-const originalGetModulesRunBeforeMainModule = config.serializer.getModulesRunBeforeMainModule;
-config.serializer.getModulesRunBeforeMainModule = () => {
-  try {
-    return [
-      require.resolve('react-native/Libraries/Core/InitializeCore'),
-      require.resolve('react-native-macos/Libraries/Core/InitializeCore'),
-    ];
-  } catch {}
-  return originalGetModulesRunBeforeMainModule();
-};
 
 // `expo-sqlite` uses `SharedArrayBuffer` on web, which requires explicit COOP and COEP headers
 // See: https://github.com/expo/expo/pull/35208
