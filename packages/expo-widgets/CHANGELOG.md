@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Handle undefined props instead fallback to empty object.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
