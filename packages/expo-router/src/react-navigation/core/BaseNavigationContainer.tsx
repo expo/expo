@@ -34,7 +34,17 @@ import { useEventEmitter } from './useEventEmitter';
 import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useNavigationIndependentTree } from './useNavigationIndependentTree';
 import { useOptionsGetters } from './useOptionsGetters';
-import { useSyncState } from './useSyncState';
+import {
+  RootTreeContext,
+  NavigationStoreContext,
+} from '../../global-state/navigation-store/contexts';
+import { navReducer } from '../../global-state/navigation-store/navReducer';
+import {
+  createNavigationStore,
+  getRootNavigationStore,
+  setRootNavigationStore,
+  type NavigationStore,
+} from '../../global-state/navigation-store/navigationStore';
 
 type State = NavigationState | PartialState<NavigationState> | undefined;
 
@@ -102,9 +112,67 @@ export function BaseNavigationContainer({
     );
   }
 
-  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(() =>
-    getPartialState(initialState == null ? undefined : initialState)
-  );
+  // Root navigation state now lives in a single `useReducer` flowed via context, not `useSyncState`.
+  // `store` is the synchronous staging buffer that preserves react-navigation's read-your-writes
+  // cascade (getState reads the live tree); the committed tree is published into React via dispatch.
+  const storeRef = React.useRef<NavigationStore | null>(null);
+  if (storeRef.current === null) {
+    storeRef.current = createNavigationStore(
+      getPartialState(initialState == null ? undefined : initialState)
+    );
+  }
+  const store = storeRef.current;
+
+  // Expose to the imperative drain (which lives above this container and can't read its context).
+  // Only the root (non-independent) container registers — independent nested trees keep their own
+  // store but are not the imperative `router`'s target, so they must not clobber the singleton.
+  if (!independent) {
+    setRootNavigationStore(store);
+  }
+
+  const [state, dispatchTree] = React.useReducer(navReducer, store, (s) => s.getState() as State);
+
+  // The reducer dispatch is referentially stable; wiring it during render is idempotent and makes it
+  // available before effects run (the imperative drain may flush from the first commit).
+  store.setDispatch(dispatchTree);
+
+  React.useEffect(() => {
+    return () => {
+      store.setDispatch(null);
+      if (getRootNavigationStore() === store) {
+        setRootNavigationStore(null);
+      }
+    };
+  }, [store]);
+
+  // `getState` reads the live tree (read-your-writes), NOT the committed `state`, so the synchronous
+  // focus cascade observes each ancestor's write. `setState` stages into the live tree and dispatches
+  // (unless inside a `flushUpdates` batch). This replaces useSyncState's getState/setState.
+  const getState = store.getState;
+
+  const pendingUpdatesRef = React.useRef<(() => void)[]>([]);
+
+  const setState = useLatestCallback((newState: State) => {
+    store.stageRootState(newState);
+  });
+
+  const scheduleUpdate = useLatestCallback((callback: () => void) => {
+    pendingUpdatesRef.current.push(callback);
+  });
+
+  const flushUpdates = useLatestCallback(() => {
+    const pending = pendingUpdatesRef.current;
+    pendingUpdatesRef.current = [];
+    if (pending.length === 0) {
+      return;
+    }
+    // Coalesce all scheduled render-phase writes into a single commit (the batchUpdates analogue).
+    store.batch(() => {
+      for (const update of pending) {
+        update();
+      }
+    });
+  });
 
   const isFirstMountRef = React.useRef<boolean>(true);
 
@@ -409,20 +477,25 @@ export function BaseNavigationContainer({
   });
 
   return (
-    <NavigationIndependentTreeContext.Provider value={false}>
-      <NavigationContainerRefContext.Provider value={navigation}>
-        <NavigationBuilderContext.Provider value={builderContext}>
-          <NavigationStateContext.Provider value={context}>
-            <UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
-              <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                <EnsureSingleNavigator>
-                  <ThemeProvider value={theme}>{children}</ThemeProvider>
-                </EnsureSingleNavigator>
-              </DeprecatedNavigationInChildContext.Provider>
-            </UnhandledActionContext.Provider>
-          </NavigationStateContext.Provider>
-        </NavigationBuilderContext.Provider>
-      </NavigationContainerRefContext.Provider>
-    </NavigationIndependentTreeContext.Provider>
+    <NavigationStoreContext.Provider value={store}>
+      <RootTreeContext.Provider value={state}>
+        <NavigationIndependentTreeContext.Provider value={false}>
+          <NavigationContainerRefContext.Provider value={navigation}>
+            <NavigationBuilderContext.Provider value={builderContext}>
+              <NavigationStateContext.Provider value={context}>
+                <UnhandledActionContext.Provider
+                  value={onUnhandledAction ?? defaultOnUnhandledAction}>
+                  <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
+                    <EnsureSingleNavigator>
+                      <ThemeProvider value={theme}>{children}</ThemeProvider>
+                    </EnsureSingleNavigator>
+                  </DeprecatedNavigationInChildContext.Provider>
+                </UnhandledActionContext.Provider>
+              </NavigationStateContext.Provider>
+            </NavigationBuilderContext.Provider>
+          </NavigationContainerRefContext.Provider>
+        </NavigationIndependentTreeContext.Provider>
+      </RootTreeContext.Provider>
+    </NavigationStoreContext.Provider>
   );
 }

@@ -44,19 +44,51 @@ describe('createNavigationStore', () => {
     expect(store.getState()).toBe(b);
   });
 
-  it('coalesces N synchronous root writes into exactly one REPLACE_ROOT dispatch', () => {
+  it('dispatches a REPLACE_ROOT immediately on a non-batched stage', () => {
     const dispatched: NavAction[] = [];
     const store = createNavigationStore(makeTree(0));
     store.setDispatch((action) => dispatched.push(action));
 
-    store.stageRootState(makeTree(1));
-    store.stageRootState(makeTree(2));
+    const next = makeTree(1);
+    store.stageRootState(next);
+
+    expect(dispatched).toEqual([{ type: 'REPLACE_ROOT', tree: next }]);
+  });
+
+  it('coalesces N synchronous root writes in a batch into exactly one REPLACE_ROOT', () => {
+    const dispatched: NavAction[] = [];
+    const store = createNavigationStore(makeTree(0));
+    store.setDispatch((action) => dispatched.push(action));
+
     const last = makeTree(3);
-    store.stageRootState(last);
-    store.flush();
+    store.batch(() => {
+      store.stageRootState(makeTree(1));
+      store.stageRootState(makeTree(2));
+      store.stageRootState(last);
+      expect(dispatched).toHaveLength(0); // suppressed until the batch ends
+      expect(store.getState()).toBe(last); // but the live tree reads-its-own-writes
+    });
 
     expect(dispatched).toHaveLength(1);
     expect(dispatched[0]).toEqual({ type: 'REPLACE_ROOT', tree: last });
+  });
+
+  it('nested batches coalesce: only the outermost flush dispatches once', () => {
+    // The imperative drain wraps routingQueue.run in batch, and each navigation.dispatch inside it
+    // also batches its cascade. Nested batches must collapse to a single dispatch.
+    const dispatched: NavAction[] = [];
+    const store = createNavigationStore(makeTree(0));
+    store.setDispatch((action) => dispatched.push(action));
+
+    const last = makeTree(9);
+    store.batch(() => {
+      store.batch(() => store.stageRootState(makeTree(1)));
+      expect(dispatched).toHaveLength(0); // inner batch did not flush
+      store.batch(() => store.stageRootState(last));
+      expect(dispatched).toHaveLength(0);
+    });
+
+    expect(dispatched).toEqual([{ type: 'REPLACE_ROOT', tree: last }]);
   });
 
   it('flush is a no-op when nothing is pending', () => {
@@ -68,17 +100,16 @@ describe('createNavigationStore', () => {
     expect(dispatched).toHaveLength(0);
   });
 
-  it('commitSlice composes into the live tree synchronously and flushes one COMMIT_SLICES', () => {
+  it('commitSlice composes into the live tree and dispatches one COMMIT_SLICES', () => {
     const dispatched: NavAction[] = [];
     const store = createNavigationStore(makeTree(0));
     store.setDispatch((action) => dispatched.push(action));
 
     const tabs1 = slice('tabs', 1);
     store.commitSlice('tabs', tabs1);
-    // Live tree updated synchronously so a sibling commit in the same task reads it.
+    // Live tree updated synchronously so a sibling commit in the same batch reads it.
     expect(store.getState().routes[0].state).toBe(tabs1);
 
-    store.flush();
     expect(dispatched).toHaveLength(1);
     expect(dispatched[0]).toEqual({
       type: 'COMMIT_SLICES',
@@ -86,17 +117,18 @@ describe('createNavigationStore', () => {
     });
   });
 
-  it('a staged root takes precedence over pending slices and dev-warns about the drop', () => {
+  it('a staged root in a batch takes precedence over pending slices and dev-warns', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
       const dispatched: NavAction[] = [];
       const store = createNavigationStore(makeTree(0));
       store.setDispatch((action) => dispatched.push(action));
 
-      store.commitSlice('tabs', slice('tabs', 1));
       const root = makeTree(5);
-      store.stageRootState(root);
-      store.flush();
+      store.batch(() => {
+        store.commitSlice('tabs', slice('tabs', 1));
+        store.stageRootState(root);
+      });
 
       expect(dispatched).toHaveLength(1);
       expect(dispatched[0]).toEqual({ type: 'REPLACE_ROOT', tree: root });
@@ -109,32 +141,18 @@ describe('createNavigationStore', () => {
   it('drops the dispatch but keeps the live tree when no reducer is wired (pre-mount)', () => {
     const store = createNavigationStore(makeTree(0));
     const a = makeTree(7);
-    store.stageRootState(a);
-    expect(() => store.flush()).not.toThrow();
+    expect(() => store.stageRootState(a)).not.toThrow();
     // The live tree still holds the result, ready to seed the reducer when the provider mounts.
     expect(store.getState()).toBe(a);
   });
 
-  it('clears pending work after a flush so a subsequent empty flush dispatches nothing', () => {
+  it('setDispatch(null) (unmount) makes a subsequent write a no-op without throwing', () => {
     const dispatched: NavAction[] = [];
     const store = createNavigationStore(makeTree(0));
     store.setDispatch((action) => dispatched.push(action));
-
-    store.stageRootState(makeTree(1));
-    store.flush();
-    store.flush();
-
-    expect(dispatched).toHaveLength(1);
-  });
-
-  it('setDispatch(null) (unmount) drops pending work without throwing', () => {
-    const dispatched: NavAction[] = [];
-    const store = createNavigationStore(makeTree(0));
-    store.setDispatch((action) => dispatched.push(action));
-
-    store.stageRootState(makeTree(1));
     store.setDispatch(null);
-    expect(() => store.flush()).not.toThrow();
+
+    expect(() => store.stageRootState(makeTree(1))).not.toThrow();
     expect(dispatched).toHaveLength(0);
   });
 
@@ -146,7 +164,6 @@ describe('createNavigationStore', () => {
     const before = store.getState();
     store.commitSlice('unknown-key', slice('unknown-key'));
     expect(store.getState()).toBe(before); // live tree unchanged
-    store.flush();
     expect(dispatched).toHaveLength(0); // nothing buffered, nothing dispatched
   });
 
@@ -160,7 +177,6 @@ describe('createNavigationStore', () => {
 
     store.commitSlice('tabs', slice('tabs', 1));
     const live = store.getState();
-    store.flush();
 
     expect(dispatched).toHaveLength(1);
     const replayed = navReducer(initial, dispatched[0]);

@@ -1,5 +1,6 @@
 import { type RefObject, useEffect, useReducer } from 'react';
 
+import { getRootNavigationStore } from './global-state/navigation-store';
 import type { ImperativeRouter } from './global-state/router';
 import { router } from './global-state/router';
 import { routingQueue } from './global-state/routing';
@@ -35,7 +36,14 @@ export function useImperativeApiEmitter(
   // start, or one landing in the StrictMode resubscribe gap) still flush — they fanned out to no
   // subscriber, so nothing else would drain them. Do not gate this on `tick > 0`.
   useEffect(() => {
-    routingQueue.run(ref);
+    const store = getRootNavigationStore();
+    if (store) {
+      // Collapse the whole drain — each action's bubbling + multi-level focus cascade stages into
+      // the live tree — into a single committed tree (one REPLACE_ROOT, one render, one native diff).
+      store.batch(() => routingQueue.run(ref));
+    } else {
+      routingQueue.run(ref);
+    }
   }, [tick, ref]);
 
   return null;

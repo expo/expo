@@ -5,8 +5,11 @@ import type { ReactNavigationState } from '../types';
  * react-navigation already uses (`NavigationState | PartialState<NavigationState>`); the
  * difference is only *where* it lives — in a single root reducer instead of a tree of
  * per-navigator `useSyncState` stores.
+ *
+ * `undefined` is a valid value: before the top navigator runs `getInitialState`, the root tree is
+ * undefined (mirroring react-navigation's `useSyncState<State | undefined>`).
  */
-export type NavigationTree = ReactNavigationState;
+export type NavigationTree = ReactNavigationState | undefined;
 
 /**
  * A single navigator's state, addressed by its navigation-state `key`. A "slice" is just a

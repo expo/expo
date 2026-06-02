@@ -40,6 +40,11 @@ export function replaceSliceByKey(
   targetKey: string,
   slice: NavigationSlice
 ): NavigationTree {
+  // No tree yet (root not initialized) — nothing to address.
+  if (!tree) {
+    return tree;
+  }
+
   // `done` short-circuits the recursion after the single match so we don't keep rebuilding
   // sibling branches (and can never install `slice` at a second colliding key).
   let done = false;
