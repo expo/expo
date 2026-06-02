@@ -39,7 +39,15 @@ class SymbolView: ExpoView {
   }
 
   func reloadSymbol() {
+#if os(macOS)
+    reloadSymbolMacOS()
+#else
+    reloadSymbolIOS()
+#endif
+  }
+
 #if !os(macOS)
+  private func reloadSymbolIOS() {
     guard let image = UIImage(systemName: name) else {
       return
     }
@@ -60,7 +68,9 @@ class SymbolView: ExpoView {
         addSymbolEffects()
       }
     }
+  }
 #else
+  private func reloadSymbolMacOS() {
     guard let image = NSImage(systemSymbolName: name, accessibilityDescription: nil) else {
       return
     }
@@ -82,8 +92,8 @@ class SymbolView: ExpoView {
         addSymbolEffects()
       }
     }
-#endif
   }
+#endif
 
   @available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
   private func addSymbolEffects() {

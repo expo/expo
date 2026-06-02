@@ -11,6 +11,7 @@ enum SymbolScale: String, Enumerable {
     switch self {
     case .default:
 #if os(macOS)
+      // NSImage.SymbolScale has no .default/.unspecified equivalents
       return .medium
 #else
       return .default
