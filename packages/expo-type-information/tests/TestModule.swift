@@ -21,11 +21,17 @@ public class TestModule: Module {
       return "string"
     }
 
+    Function("TestUnicodeCharacters") { () in
+      let 🎉 = "Cheers"
+
+      return "\🎉! 🎉"
+    }
+
     Function("TestUntypedFunction2") { /* Comment 3 */ () in
       // Comment 4
       return TestEnum.simpleCase
     }
-    
+
     Function("TestUntypedFunction3" /* Comment 5 */) {
       return TestRecord2(field1: /* Comment 6 */ 10, "field2")
     }

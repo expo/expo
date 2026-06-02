@@ -8,6 +8,7 @@ import {
   ModuleClassDeclaration,
   serializeTypeInformation,
   TypeInferenceOption,
+  withPreparedSingleFile,
 } from '../src/typeInformation';
 import {
   generateFullTsInterface,
@@ -21,6 +22,7 @@ const swiftFile = fs.realpathSync('./tests/TestModule.swift');
 const defaultArgs: GetFileTypeInformationOptions = {
   input: { inputFileAbsolutePaths: [swiftFile], type: 'file' },
   typeInference: TypeInferenceOption.PREPROCESS_AND_INFERENCE,
+  mapUnicodeCharacters: true,
 };
 
 let defaultArgsFileInfo: FileTypeInformation | null = null;
@@ -105,6 +107,7 @@ it('Generation from string is the same as generation from file. Preprocessing.',
   const fileInfoForString = await getFileTypeInformation({
     input: { type: 'string', fileContent: fs.readFileSync(swiftFile, 'utf8'), language: 'Swift' },
     typeInference: TypeInferenceOption.PREPROCESS_AND_INFERENCE,
+    mapUnicodeCharacters: true,
   });
   expect(fileInfo).toEqual(fileInfoForString);
 });
@@ -113,10 +116,12 @@ it('Generation from string is the same as generation from file. Simple type infe
   const fileInfo = await getFileTypeInformation({
     input: { type: 'file', inputFileAbsolutePaths: [swiftFile] },
     typeInference: TypeInferenceOption.NO_INFERENCE,
+    mapUnicodeCharacters: true,
   });
   const fileInfoForString = await getFileTypeInformation({
     input: { type: 'string', fileContent: fs.readFileSync(swiftFile, 'utf8'), language: 'Swift' },
     typeInference: TypeInferenceOption.NO_INFERENCE,
+    mapUnicodeCharacters: true,
   });
   expect(fileInfo).toEqual(fileInfoForString);
 });
@@ -125,10 +130,29 @@ it('Generation from string is the same as generation from file. No type inferenc
   const fileInfo = await getFileTypeInformation({
     input: { type: 'file', inputFileAbsolutePaths: [swiftFile] },
     typeInference: TypeInferenceOption.SIMPLE_INFERENCE,
+    mapUnicodeCharacters: true,
   });
   const fileInfoForString = await getFileTypeInformation({
     input: { type: 'string', fileContent: fs.readFileSync(swiftFile, 'utf8'), language: 'Swift' },
     typeInference: TypeInferenceOption.SIMPLE_INFERENCE,
+    mapUnicodeCharacters: true,
   });
   expect(fileInfo).toEqual(fileInfoForString);
+});
+
+it('Generation without mapUnicodeCharacters and without typeInference does nothing.', async () => {
+  await withPreparedSingleFile(
+    {
+      input: { type: 'file', inputFileAbsolutePaths: [swiftFile] },
+      typeInference: TypeInferenceOption.NO_INFERENCE,
+      mapUnicodeCharacters: false,
+    },
+    async (filePath: string) => {
+      const [preparedFileContent, originalFileContent] = await Promise.all([
+        fs.promises.readFile(filePath, 'utf8'),
+        fs.promises.readFile(swiftFile, 'utf8'),
+      ]);
+      expect(preparedFileContent).toStrictEqual(originalFileContent);
+    }
+  );
 });

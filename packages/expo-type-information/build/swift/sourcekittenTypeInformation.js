@@ -846,7 +846,7 @@ function returnExpressionEnd(fileContent, returnIndex) {
 // TODO(@HubertBer): This has many problems which need fixing:
 // - return can be inside a string
 // - return Expression end parses incorrectly in case of some strings (check how it parses expo-video)
-function preprocessSwiftFile(originalFileContent) {
+function preprocessReturnStatements(originalFileContent) {
     const newFileContent = [];
     const fileContent = removeComments(originalFileContent);
     const returnPositions = [];
@@ -871,5 +871,26 @@ function preprocessSwiftFile(originalFileContent) {
     }
     newFileContent.push(fileContent.substring(prevEnd, fileContent.length));
     return newFileContent.join('');
+}
+/**
+ * Maps all non-ASCII characters to ASCII strings.
+ * @param fileConent A string with Swift code.
+ * @returns the fileContent string with each non-ASCII character mapped to an ASCII string.
+ */
+function preprocessUnicodeCharacters(fileConent) {
+    return fileConent.replace(/[^\x00-\x7F]/gu, (c) => {
+        const hex = c.codePointAt(0)?.toString().toUpperCase();
+        return `_u${hex}_`;
+    });
+}
+function preprocessSwiftFile(originalFileContent, { preprocessReturns, mapUnicodeCharacters }) {
+    let fileContent = originalFileContent;
+    if (preprocessReturns) {
+        fileContent = preprocessReturnStatements(fileContent);
+    }
+    if (mapUnicodeCharacters) {
+        fileContent = preprocessUnicodeCharacters(fileContent);
+    }
+    return fileContent;
 }
 //# sourceMappingURL=sourcekittenTypeInformation.js.map

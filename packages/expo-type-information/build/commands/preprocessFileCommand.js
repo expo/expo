@@ -16,11 +16,13 @@ function preprocessFileCommand(cli) {
         if (!parsedArgs) {
             return;
         }
-        const { realInputPaths, typeInference } = parsedArgs;
+        const { realInputPaths, typeInference, mapUnicodeCharacters } = parsedArgs;
+        console.log(`${typeInference}, ${mapUnicodeCharacters}`);
         const command = async () => {
             (0, typeInformation_1.withPreparedSingleFile)({
                 input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
                 typeInference,
+                mapUnicodeCharacters,
             }, async (filePath) => {
                 console.log(await fs_1.default.promises.readFile(filePath, 'utf-8'));
             });
