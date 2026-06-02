@@ -253,6 +253,44 @@ export const border = (params: { color: Color; width?: number }) =>
   createModifier('border', params);
 
 /**
+ * The characteristics of a stroke that traces a path.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/strokestyle).
+ */
+export type StrokeStyle = {
+  /** The width of the stroked line. @default 1 */
+  lineWidth?: number;
+  /** The endpoint style of a line segment. @default 'butt' */
+  lineCap?: 'butt' | 'round' | 'square';
+  /** The join type where line segments meet. @default 'miter' */
+  lineJoin?: 'miter' | 'round' | 'bevel';
+  /** The limit past which a miter join is replaced by a bevel. @default 10 */
+  miterLimit?: number;
+  /** The lengths of alternating painted and unpainted segments. An empty array draws a solid line. @default [] */
+  dash?: number[];
+  /** How far into the dash pattern the line starts. @default 0 */
+  dashPhase?: number;
+};
+
+/**
+ * Strokes an inset border along the view's shape.
+ * @param params - The stroke parameters. Color (omit for the foreground style), style, antialiased, shape and cornerRadius.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/insettableshape/strokeborder(_:style:antialiased:)).
+ */
+export const strokeBorder = (params: {
+  color?: Color;
+  style?: StrokeStyle;
+  antialiased?: boolean;
+  shape?:
+    | 'rectangle'
+    | 'circle'
+    | 'capsule'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape';
+  cornerRadius?: number;
+}) => createModifier('strokeBorder', params);
+
+/**
  * Applies scaling transformation.
  * @param scale - Uniform scale factor (1.0 = normal size), or an object with separate `x` and `y` scale factors.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)).
@@ -1554,6 +1592,7 @@ export type BuiltInModifier =
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
+  | ReturnType<typeof strokeBorder>
   | ReturnType<typeof scaleEffect>
   | ReturnType<typeof rotationEffect>
   | ReturnType<typeof rotation3DEffect>
