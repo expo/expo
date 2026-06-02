@@ -1,10 +1,24 @@
 import { NavigationBar, NavigationBarStyle } from 'expo-navigation-bar';
 import * as React from 'react';
-import { Platform, ScrollView } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
+
+const styles = StyleSheet.create({
+  section: {
+    gap: 8,
+  },
+  currentValue: {
+    fontWeight: '700',
+  },
+  buttonsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+  },
+});
 
 export default function NavigationBarScreen() {
   return (
@@ -34,7 +48,6 @@ const STYLES: NavigationBarStyle[] = ['auto', 'inverted', 'light', 'dark'];
 
 function StyleExample() {
   const [style, setStyle] = React.useState<NavigationBarStyle>('auto');
-  const nextStyle = STYLES[STYLES.findIndex((item) => item === style) + 1] ?? 'auto';
 
   React.useEffect(() => {
     NavigationBar.setStyle('auto');
@@ -42,19 +55,31 @@ function StyleExample() {
   }, []);
 
   return (
-    <Button
-      title={`Toggle style: ${nextStyle}`}
-      onPress={() => {
-        NavigationBar.setStyle(nextStyle);
-        setStyle(nextStyle);
-      }}
-    />
+    <View style={styles.section}>
+      <Text>
+        Current: <Text style={styles.currentValue}>{style}</Text>
+      </Text>
+
+      <View style={styles.buttonsRow}>
+        <Text>Toggle:</Text>
+
+        {STYLES.map((nextStyle) => (
+          <Button
+            key={`set-style-btn-${nextStyle}`}
+            title={nextStyle}
+            onPress={() => {
+              NavigationBar.setStyle(nextStyle);
+              setStyle(nextStyle);
+            }}
+          />
+        ))}
+      </View>
+    </View>
   );
 }
 
 function HiddenExample() {
   const [hidden, setHidden] = React.useState(false);
-  const nextHidden = !hidden;
 
   React.useEffect(() => {
     NavigationBar.setHidden(false);
@@ -62,12 +87,25 @@ function HiddenExample() {
   }, []);
 
   return (
-    <Button
-      title={`Toggle hidden: ${nextHidden}`}
-      onPress={() => {
-        NavigationBar.setHidden(nextHidden);
-        setHidden(nextHidden);
-      }}
-    />
+    <View style={styles.section}>
+      <Text>
+        Current: <Text style={styles.currentValue}>{String(hidden)}</Text>
+      </Text>
+
+      <View style={styles.buttonsRow}>
+        <Text>Toggle:</Text>
+
+        {[true, false].map((nextHidden) => (
+          <Button
+            key={`set-hidden-btn-${nextHidden}`}
+            title={String(nextHidden)}
+            onPress={() => {
+              NavigationBar.setHidden(nextHidden);
+              setHidden(nextHidden);
+            }}
+          />
+        ))}
+      </View>
+    </View>
   );
 }
