@@ -263,8 +263,39 @@ const screenProps = MockedComponent.mock.calls[1][0];
 
 ### State Management
 
-- **RouterStore** (`global-state/router-store.tsx`): The global store managing navigation state, and making it accessible imperatively via the `store` object
-- **Routing Queue** (`global-state/routing.ts`): Batches navigation actions and processes them sequentially
+- **Global navigation store** (`global-state/navigation-store/`): The whole nested navigation
+  state lives in a single root `useReducer` (in `BaseNavigationContainer`), flowed down by plain
+  React context (`RootTreeContext`) — **not** `useSyncExternalStore`. The vendored react-navigation
+  `useSyncState` (per-navigator store) was removed; its recursive `SceneView.setCurrentState`
+  cascade is kept, but its root terminus now writes a synchronous `liveTreeRef` staging buffer
+  (`navigationStore.ts`) and dispatches `REPLACE_ROOT` once per logical navigation. `getState()`
+  reads the live buffer (read-your-writes for the synchronous focus cascade); the committed tree
+  flows via context. `navReducer` is dumb (`SEED`/`REPLACE_ROOT`/`COMMIT_SLICES`/`RESET`); all
+  routing/bubbling stays in `useOnAction`/`useOnRouteFocus`.
+- **RouterStore** (`global-state/store.ts`): the imperative `store` object — `store.state` /
+  `store.getRouteInfo()` are **last-committed, imperative-only** reads (canDismiss, getStateForHref,
+  redirects); do not rely on them during render.
+- **Routing Queue** (`global-state/routing.ts`): Batches navigation actions and processes them
+  sequentially; the imperative drain wraps `routingQueue.run` in `store.batch` for atomic commits.
+
+#### Avoiding `useSyncExternalStore` (concurrent-readiness convention)
+
+This package deliberately avoids `useSyncExternalStore` so navigation state can become
+React-governed (concurrent). The convention for reactive reads of an external/derived value:
+read the value during render, keep the last value in a ref, and `forceUpdate` (a `useReducer`
+tick) only when a subscription reports an actually-changed value, with a mount-time re-check to
+close the render→subscribe gap. **Reference implementation: `global-state/useRouteInfo.ts`** (also
+`imperative-api.tsx`, `react-navigation/core/useIsFocused.tsx`). Do not reintroduce
+`useSyncExternalStore` for navigation reads.
+
+> **Intentionally-deferred `useSyncExternalStore` sites** (still present, out of scope for the
+> initial removal): `react-navigation/core/useNavigationState.tsx` + its
+> `utils/useSyncExternalStoreWithSelector.ts` helper (arbitrary user selectors — migrating means
+> re-implementing the selector bail-out by hand; a cleaner follow-up is to drop
+> `NavigationStateListenerProvider` and read state from plain context + a memoized selector);
+> `react-navigation/elements/useFrameSize.tsx` (layout sizing, not navigation state); and
+> `hooks/useLoaderData.ts` + `loaders/LoaderCache.ts` (loader data cache). Route info is also still
+> a hand-rolled external subscription pending a full `RouteInfoContext` migration.
 
 ### Platform-Specific Code
 
