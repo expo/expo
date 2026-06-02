@@ -378,7 +378,7 @@ export type GetFileTypeInformationOptions = {
   input: StringInputOption | FileInputOption;
   /** The desired level of type inference. Defaults to PREPROCESS_AND_INFERENCE if omitted. */
   typeInference?: TypeInferenceOption;
-  /** An option to map uicode characters to ASCII strings to fix underlying SourceKit issue. */
+  /** An option to map unicode code points to ASCII strings to fix underlying SourceKit issue. */
   mapUnicodeCharacters: boolean;
 };
 
