@@ -10,7 +10,7 @@ const typeInformation_1 = require("../typeInformation");
 function preprocessFileCommand(cli) {
     return (0, commandUtils_1.addCommonOptions)(cli.command('preprocess-file'))
         .description('Print the preprocessed file(s) in the state right before parsing them using `sourcekitten`. It helps with checking how the `--module-path`, `--input-path`, and `--type-inference` options affect the parsed file.')
-        .summary('Print the preprocessed file(s) in the state right before parsing them using `sourcekitten`.')
+        .summary('print the preprocessed file(s) in the state right before parsing them using `sourcekitten`')
         .action(async (options) => {
         const parsedArgs = await (0, commandUtils_1.parseCommandArguments)(options);
         if (!parsedArgs) {
