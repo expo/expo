@@ -38,6 +38,7 @@ import {
   onAppear,
   onDisappear,
   onGeometryChange,
+  onAccessibilityReduceMotionChange,
   accessibilityLabel,
   accessibilityIdentifier,
   accessibilityHidden,
@@ -854,6 +855,8 @@ export default function ModifiersScreen() {
 
           <GeometrySection />
 
+          <ReduceMotionSection />
+
           {/* Container Shape Modifier */}
           <Section title="Content Shape Modifier">
             <Text>Try tapping the empty space between texts:</Text>
@@ -1034,6 +1037,22 @@ function GeometrySection() {
         {`global x: ${frame.x.toFixed(0)}  y: ${frame.y.toFixed(0)}  •  size ${frame.width.toFixed(
           0
         )} × ${frame.height.toFixed(0)} (pt)`}
+      </Text>
+    </Section>
+  );
+}
+
+function ReduceMotionSection() {
+  const [isReduceMotionEnabled, setIsReduceMotionEnabled] = useState<boolean | null>(null);
+  return (
+    <Section title="onAccessibilityReduceMotionChange">
+      <Text modifiers={[onAccessibilityReduceMotionChange(setIsReduceMotionEnabled)]}>
+        {isReduceMotionEnabled === null
+          ? 'Waiting for value…'
+          : `Reduce Motion is ${isReduceMotionEnabled ? 'on' : 'off'}`}
+      </Text>
+      <Text modifiers={[font({ size: 13 })]}>
+        Toggle it in Settings → Accessibility → Motion → Reduce Motion.
       </Text>
     </Section>
   );

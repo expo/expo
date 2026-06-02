@@ -204,6 +204,20 @@ export const onGeometryChange = (
   );
 
 /**
+ * Reports the system "Reduce Motion" accessibility setting so you can short-circuit decorative
+ * animations. The key is get-only, so it can be observed here but not set through `environment`.
+ * @param handler - Called with the current value when the view appears and whenever it changes.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion).
+ */
+export const onAccessibilityReduceMotionChange = (
+  handler: (isReduceMotionEnabled: boolean) => void
+) =>
+  createModifierWithEventListener(
+    'onAccessibilityReduceMotionChange',
+    (payload: { isReduceMotionEnabled: boolean }) => handler(payload.isReduceMotionEnabled)
+  );
+
+/**
  * Marks a view as refreshable. Adds pull-to-refresh functionality.
  * @param handler - Async function to call when refresh is triggered.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
@@ -1436,6 +1450,7 @@ export type BuiltInModifier =
   | ReturnType<typeof luminanceToAlpha>
   | ReturnType<typeof onDisappear>
   | ReturnType<typeof onGeometryChange>
+  | ReturnType<typeof onAccessibilityReduceMotionChange>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>

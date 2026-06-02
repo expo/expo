@@ -1564,6 +1564,10 @@ extension ViewModifierRegistry {
       return try OnGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("onAccessibilityReduceMotionChange") { params, appContext, eventDispatcher in
+      return try OnAccessibilityReduceMotionChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("refreshable") { params, appContext, eventDispatcher in
       return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
