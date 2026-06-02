@@ -45,9 +45,8 @@ jest.mock('react-native-screens', () => {
     },
     __triggerTabSelected: (event: Parameters<NonNullable<TabsHostProps['onTabSelected']>>[0]) =>
       triggerTabSelected(event),
-    __triggerTabSelectionPrevented: (
-      event: Parameters<NonNullable<TabsHostProps['onTabSelectionPrevented']>>[0]
-    ) => triggerTabSelectionPrevented(event),
+    __triggerTabSelectionPrevented: (event: TabSelectionPreventedNativeEvent) =>
+      triggerTabSelectionPrevented(event),
   };
 });
 
