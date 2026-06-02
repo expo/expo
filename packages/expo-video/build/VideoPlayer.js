@@ -1,6 +1,6 @@
-import { useReleasingSharedObject } from 'expo-modules-core';
 import NativeVideoModule from './NativeVideoModule';
 import resolveAssetSource from './resolveAssetSource';
+import { useReleasingSharedObjectWithLifecycle } from './useReleasingSharedObjectWithLifecycle';
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = NativeVideoModule.VideoPlayer.prototype.replace;
 NativeVideoModule.VideoPlayer.prototype.replace = function (source, disableWarning = false) {
@@ -32,11 +32,27 @@ export function createVideoPlayer(source, playerBuilderOptions) {
  */
 export function useVideoPlayer(source, setup, playerBuilderOptions) {
     const parsedSource = parseSource(source);
-    return useReleasingSharedObject(() => {
-        const player = new NativeVideoModule.VideoPlayer(parsedSource, false, playerBuilderOptions);
-        setup?.(player);
-        return player;
-    }, [JSON.stringify(parsedSource), JSON.stringify(playerBuilderOptions)]);
+    const parsedSourceKey = JSON.stringify(parsedSource);
+    const playerBuilderOptionsKey = JSON.stringify(playerBuilderOptions);
+    return useReleasingSharedObjectWithLifecycle({
+        factory: () => {
+            const player = new NativeVideoModule.VideoPlayer(parsedSource, false, playerBuilderOptions);
+            setup?.(player);
+            return player;
+        },
+        shouldRecreate: (_player, { previousDependencies, dependencies }) => {
+            // Factory options differ
+            return previousDependencies[1] !== dependencies[1];
+        },
+        update: (player, { previousDependencies, dependencies }) => {
+            // Sources differ
+            if (previousDependencies[0] !== dependencies[0]) {
+                player.replaceAsync(parsedSource).catch((error) => {
+                    console.error('expo-video: Failed to replace video source:', error);
+                });
+            }
+        },
+    }, [parsedSourceKey, playerBuilderOptionsKey]);
 }
 function parseSource(source) {
     if (typeof source === 'number') {
