@@ -11,13 +11,12 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type {
   DefaultRouterOptions,
-  EventMapBase,
-  NavigationState,
   ParamListBase,
   RouteProp,
   ScreenListeners,
   TabNavigationState,
 } from '../react-navigation/native';
+import type { ScreenProps } from '../useScreens';
 
 /**
  * Event map for `NativeTabs` navigation events.
@@ -721,11 +720,11 @@ export interface NativeTabTriggerProps {
    * />
    * ```
    */
-  listeners?:
-    | ScreenListeners<NavigationState, EventMapBase>
-    | ((prop: {
-        route: RouteProp<ParamListBase, string>;
-      }) => ScreenListeners<NavigationState, EventMapBase>);
+  listeners?: ScreenProps<
+    any,
+    TabNavigationState<ParamListBase>,
+    NativeTabNavigationEventMap
+  >['listeners'];
 }
 
 const SUPPORTED_TAB_BAR_ITEM_ROLES = [

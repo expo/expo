@@ -33,9 +33,10 @@ function useOnTabSelectedHandler(onTabChange) {
 }
 function useOnTabSelectionPreventedHandler(onTabChange) {
     return (0, react_1.useCallback)(({ nativeEvent: { preventedScreenKey, provenance } }) => {
-        // `preventedScreenKey` is the disabled tab the user tapped (not the still-active
-        // `selectedScreenKey`). A prevented selection is always a native tap — programmatic
-        // JS navigation bypasses `preventNativeSelection` — so `isNativeAction` is `true`.
+        // Forward the disabled tab the user tapped (`preventedScreenKey`), not the
+        // still-active `selectedScreenKey`. `isNativeAction` is required by the payload
+        // and is always `true` here, since programmatic JS navigation bypasses
+        // `preventNativeSelection` and therefore never reaches this callback.
         onTabChange({
             selectedKey: preventedScreenKey,
             provenance,

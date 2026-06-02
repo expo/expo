@@ -32,6 +32,10 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                 else {
                     const options = (0, NativeTabTrigger_1.convertTabPropsToOptions)(child.props);
                     if (options.hidden === false) {
+                        // NativeTabTrigger types `listeners` against the tab-specific state and
+                        // event map, which is intentionally narrower than the generic ScreenProps
+                        // listeners. Cast to reconcile the variance when collecting heterogeneous
+                        // screen props.
                         screens.push({
                             ...child.props,
                             options,

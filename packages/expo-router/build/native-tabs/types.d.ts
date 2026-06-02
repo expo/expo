@@ -2,7 +2,8 @@ import type { PropsWithChildren } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { TabsHostProps, TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import type { DefaultRouterOptions, EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '../react-navigation/native';
+import type { DefaultRouterOptions, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '../react-navigation/native';
+import type { ScreenProps } from '../useScreens';
 /**
  * Event map for `NativeTabs` navigation events.
  * Only `tabPress` is currently supported.
@@ -603,9 +604,7 @@ export interface NativeTabTriggerProps {
      * />
      * ```
      */
-    listeners?: ScreenListeners<NavigationState, EventMapBase> | ((prop: {
-        route: RouteProp<ParamListBase, string>;
-    }) => ScreenListeners<NavigationState, EventMapBase>);
+    listeners?: ScreenProps<any, TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>['listeners'];
 }
 declare const SUPPORTED_TAB_BAR_ITEM_ROLES: readonly ["bookmarks", "contacts", "downloads", "favorites", "featured", "history", "more", "mostRecent", "mostViewed", "recents", "search", "topRated"];
 export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];
