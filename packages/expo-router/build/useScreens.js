@@ -33,9 +33,6 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSortedScreens = useSortedScreens;
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
@@ -50,7 +47,6 @@ const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
 // Direct import to prevent a require cycle
 const useCurrentRouteInfo_1 = require("./hooks/useCurrentRouteInfo");
-const import_mode_1 = __importDefault(require("./import-mode"));
 const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
 const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
 const navigationEvents_1 = require("./navigationEvents");
@@ -168,12 +164,6 @@ function fromImport(value, { ErrorBoundary, SuspenseFallback, ...component }) {
     }
     return { default: component.default, SuspenseFallback };
 }
-function fromLoadedRoute(value, res) {
-    if (!(res instanceof Promise)) {
-        return fromImport(value, res);
-    }
-    return res.then(fromImport.bind(null, value));
-}
 // TODO: Maybe there's a more React-y way to do this?
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap();
@@ -184,19 +174,22 @@ function getQualifiedRouteComponent(value) {
     }
     let ScreenComponent;
     let LayoutSuspenseFallback;
-    // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
-    if (import_mode_1.default === 'lazy') {
-        ScreenComponent = react_2.default.lazy(async () => {
-            const res = value.loadRoute();
-            return fromLoadedRoute(value, res);
-        });
+    // In lazy mode `loadRoute()` returns a Promise when the route's chunk still needs
+    // to be fetched, and resolves synchronously when the chunk is already registered
+    // with Metro (e.g. preloaded via `<script defer>` in the SSR document). Branch on
+    // the actual return type instead of the import mode so the synchronous case can
+    // skip `React.lazy` — that's what keeps SSR HTML on screen through hydration.
+    const loaded = value.loadRoute();
+    const isAsyncLoad = loaded instanceof Promise;
+    if (isAsyncLoad) {
+        const promise = loaded;
+        ScreenComponent = react_2.default.lazy(() => promise.then((res) => fromImport(value, res)));
         if (__DEV__) {
             ScreenComponent.displayName = `AsyncRoute(${value.route})`;
         }
     }
     else {
-        const res = value.loadRoute();
-        const result = fromImport(value, res);
+        const result = fromImport(value, loaded);
         ScreenComponent = result.default;
         LayoutSuspenseFallback = value.type === 'layout' ? result.SuspenseFallback : undefined;
     }
@@ -214,7 +207,10 @@ function getQualifiedRouteComponent(value) {
         const isFocused = navigation.isFocused();
         const store = (0, storeContext_1.useExpoRouterStore)();
         const InheritedSuspenseFallback = (0, react_2.use)(Route_1.SuspenseFallbackContext);
-        const ResolvedSuspenseFallback = import_mode_1.default === 'lazy'
+        // Only force the default fallback for routes that actually resolved asynchronously.
+        // When the chunk was already available synchronously, fall back to the layout's
+        // SuspenseFallback (or the inherited one) just like in `'sync'` mode.
+        const ResolvedSuspenseFallback = isAsyncLoad
             ? SuspenseFallback_1.SuspenseFallback
             : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? SuspenseFallback_1.SuspenseFallback);
         const providedSuspenseFallback = value.type === 'layout'
