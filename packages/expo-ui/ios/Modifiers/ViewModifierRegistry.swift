@@ -224,6 +224,61 @@ internal struct DisabledModifier: ViewModifier, Record {
   }
 }
 
+internal enum RedactionReason: String, Enumerable {
+  case placeholder
+  case privacy
+  case invalidated
+}
+
+internal struct RedactedModifier: ViewModifier, Record {
+  @Field var reasons: [RedactionReason] = [.placeholder]
+
+  func body(content: Content) -> some View {
+    content.redacted(reason: resolveReasons())
+  }
+
+  private func resolveReasons() -> RedactionReasons {
+    var set: RedactionReasons = []
+    for reason in reasons {
+      switch reason {
+      case .placeholder: set.insert(.placeholder)
+      case .privacy: set.insert(.privacy)
+      case .invalidated:
+        if #available(iOS 17.0, tvOS 17.0, *) {
+          set.insert(.invalidated)
+        }
+      }
+    }
+    return set
+  }
+}
+
+internal struct UnredactedModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    content.unredacted()
+  }
+}
+
+internal struct PrivacySensitiveModifier: ViewModifier, Record {
+  @Field var sensitive: Bool = true
+
+  func body(content: Content) -> some View {
+    content.privacySensitive(sensitive)
+  }
+}
+
+internal struct InvalidatableContentModifier: ViewModifier, Record {
+  @Field var invalidatable: Bool = true
+
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      content.invalidatableContent(invalidatable)
+    } else {
+      content
+    }
+  }
+}
+
 internal struct ZIndexModifier: ViewModifier, Record {
   @Field var index: Double = 0
 
@@ -1531,6 +1586,22 @@ extension ViewModifierRegistry {
 
     register("disabled") { params, appContext, _ in
       return try DisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("redacted") { params, appContext, _ in
+      return try RedactedModifier(from: params, appContext: appContext)
+    }
+
+    register("unredacted") { params, appContext, _ in
+      return try UnredactedModifier(from: params, appContext: appContext)
+    }
+
+    register("privacySensitive") { params, appContext, _ in
+      return try PrivacySensitiveModifier(from: params, appContext: appContext)
+    }
+
+    register("invalidatableContent") { params, appContext, _ in
+      return try InvalidatableContentModifier(from: params, appContext: appContext)
     }
 
     register("zIndex") { params, appContext, _ in
