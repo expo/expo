@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed iOS builds by removing the Swift macro dependency from `randomUUID()`.
+- Fixed iOS builds by removing the Swift macro dependency from `randomUUID()`. ([#46477](https://github.com/expo/expo/pull/46477) by [@AbbanMustafa](https://github.com/AbbanMustafa))
 
 ### 💡 Others
 
