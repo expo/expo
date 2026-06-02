@@ -30,7 +30,6 @@ class NetworkRequestInterceptorTest {
     monitor = NetworkRequestMonitor()
     client = OkHttpClient.Builder()
       .addInterceptor(NetworkRequestInterceptor.forTesting(monitor))
-      .addNetworkInterceptor(NetworkRequestNetworkInterceptor.instance)
       .eventListenerFactory(NetworkRequestEventListener.factory)
       .build()
   }

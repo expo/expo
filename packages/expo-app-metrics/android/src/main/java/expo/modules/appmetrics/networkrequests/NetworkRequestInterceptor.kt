@@ -191,24 +191,6 @@ class NetworkRequestInterceptor private constructor(
 }
 
 /**
- * Network interceptor sibling. Required because OkHttp's redirect chain isn't visible from the
- * application interceptor's `Response` alone — we walk `priorResponse()` to reconstruct it.
- *
- * This interceptor does **not** record requests. Its job is to ensure the application interceptor
- * sees `priorResponse()` populated for every redirect hop. Install it alongside the application
- * interceptor on the same client.
- */
-class NetworkRequestNetworkInterceptor : Interceptor {
-  override fun intercept(chain: Interceptor.Chain): Response {
-    return chain.proceed(chain.request())
-  }
-
-  companion object {
-    val instance: NetworkRequestNetworkInterceptor = NetworkRequestNetworkInterceptor()
-  }
-}
-
-/**
  * Builds a `NetworkRequest` snapshot from interceptor outputs. Pulled out so tests can exercise
  * the field-population logic without spinning up a full OkHttp chain.
  */
@@ -218,7 +200,7 @@ internal fun buildSnapshot(
   response: Response?,
   requestBodyBytes: Long?,
   responseBodyBytes: Long?,
-  phases: NetworkRequestEventListener.Timings?,
+  phases: NetworkRequestEventListener.PhaseTimings?,
   fallbackStart: Date,
   fallbackEnd: Date,
   totalDuration: Double,
@@ -226,8 +208,8 @@ internal fun buildSnapshot(
 ): NetworkRequest {
   val redirects = response?.let { buildRedirectChain(it) } ?: emptyList()
 
-  val requestHeaderBytes = requestPreambleByteCount(originalRequest)
-  val responseHeaderBytes = response?.let { responsePreambleByteCount(it) } ?: 0L
+  val requestHeaderBytes = requestHeaderByteCount(originalRequest)
+  val responseHeaderBytes = response?.let { responseHeaderByteCount(it) } ?: 0L
   // Prefer the counted bytes (truth on the wire) but fall back to declared `contentLength()` so a
   // request the caller never wrote past zero bytes still reports the declared payload size. Zero
   // counts when there's no body are normal and pass through; the takeIf guards against the case
@@ -308,7 +290,7 @@ internal fun buildRedirectChain(final: Response): List<NetworkRequest.Redirect> 
  * single `EventListener` instance across calls otherwise and concurrent writes would race.
  */
 class NetworkRequestEventListener : EventListener() {
-  private val builder = MutableTimings()
+  private val builder = MutablePhaseTimings()
 
   override fun callStart(call: Call) {
     builder.fetchStart = Date()
@@ -384,7 +366,11 @@ class NetworkRequestEventListener : EventListener() {
     }
   }
 
-  internal class MutableTimings(
+  /**
+   * Mutable per-phase scratch space the listener writes into as the call progresses. A separate
+   * type from `PhaseTimings` so the published value (read by the interceptor) is immutable.
+   */
+  internal class MutablePhaseTimings(
     @Volatile var fetchStart: Date? = null,
     @Volatile var dnsStart: Date? = null,
     @Volatile var dnsEnd: Date? = null,
@@ -400,7 +386,7 @@ class NetworkRequestEventListener : EventListener() {
     @Volatile var responseHeadersEnd: Date? = null,
     @Volatile var responseBodyEnd: Date? = null
   ) {
-    fun snapshot() = Timings(
+    fun snapshot() = PhaseTimings(
       fetchStart, dnsStart, dnsEnd,
       connectStart, connectEnd,
       secureConnectStart, secureConnectEnd,
@@ -411,7 +397,12 @@ class NetworkRequestEventListener : EventListener() {
     )
   }
 
-  data class Timings(
+  /**
+   * Per-phase wire timestamps captured from OkHttp's `EventListener` callbacks. The interceptor
+   * folds these into the broader `NetworkRequest.Timings` at finalize time; the latter is the
+   * iOS-mirrored snapshot shape and the only one JS ever sees.
+   */
+  data class PhaseTimings(
     val fetchStart: Date?,
     val dnsStart: Date?,
     val dnsEnd: Date?,
@@ -442,10 +433,10 @@ class NetworkRequestEventListener : EventListener() {
      * `WeakHashMap` isn't thread-safe and OkHttp drives the listener from a pool of dispatcher
      * threads, so every access goes through `synchronized`.
      */
-    private val inFlightTimings = WeakHashMap<Call, Timings>()
+    private val inFlightTimings = WeakHashMap<Call, PhaseTimings>()
 
     /** Removes and returns the timings for `call`, or `null` if none were recorded. */
-    internal fun takeTimings(call: Call): Timings? = synchronized(inFlightTimings) {
+    internal fun takeTimings(call: Call): PhaseTimings? = synchronized(inFlightTimings) {
       inFlightTimings.remove(call)
     }
 
@@ -483,8 +474,8 @@ private class CountingRequestBody(private val delegate: RequestBody) : RequestBo
 
 /**
  * Counting wrapper for the response body. Wraps the upstream `Source` so we see every byte the
- * caller actually pulls off the wire. This is the key footgun Firebase Performance hit on
- * gzipped responses with stripped `Content-Length` — counting at the source avoids it.
+ * caller actually pulls off the wire - counting at the source survives gzip and other cases
+ * where servers return a body without a matching `Content-Length`.
  */
 private class CountingResponseBody(
   private val delegate: ResponseBody,
@@ -533,17 +524,17 @@ private class CountingResponseBody(
 }
 
 /**
- * Approximates the number of bytes the request preamble occupies on the wire — the request line
- * (`METHOD path HTTP/1.1\r\n`) plus the serialized header block (`Name: Value\r\n` per header and
- * the trailing CRLF that terminates the block).
+ * Approximates the number of bytes the request headers occupy on the wire - the HTTP/1.1 request
+ * line (`METHOD path HTTP/1.1\r\n`) plus the serialized header block (`Name: Value\r\n` per
+ * header and the trailing CRLF that terminates the block).
  *
  * iOS gets exact numbers from `URLSessionTaskTransactionMetrics.countOfRequestHeaderBytesSent`.
  * We don't have that on Android, so this is a best-effort match against HTTP/1.1 wire framing.
  * HTTP/2 and HTTP/3 use HPACK/QPACK header compression and a binary framing layer; on those
- * protocols we'll overcount the preamble by a small fixed amount (~10–30 bytes per request) but
- * we cannot reconstruct the on-the-wire HPACK frame sizes from OkHttp's API.
+ * protocols we'll overcount by a small fixed amount (~10-30 bytes per request) but we cannot
+ * reconstruct the on-the-wire HPACK frame sizes from OkHttp's API.
  */
-private fun requestPreambleByteCount(request: Request): Long {
+private fun requestHeaderByteCount(request: Request): Long {
   // "METHOD " + encodedPathQuery + " HTTP/1.1\r\n"
   val pathLength = request.url.encodedPath.length +
     (request.url.encodedQuery?.let { it.length + 1 } ?: 0)
@@ -552,10 +543,10 @@ private fun requestPreambleByteCount(request: Request): Long {
 }
 
 /**
- * Same approximation as `requestPreambleByteCount` but for the response side: the status line
+ * Same approximation as `requestHeaderByteCount` but for the response side: the status line
  * (`HTTP/1.1 STATUSCODE REASON\r\n`) plus the serialized header block.
  */
-private fun responsePreambleByteCount(response: Response): Long {
+private fun responseHeaderByteCount(response: Response): Long {
   val statusLine = response.protocol.toString().length + 1 +
     response.code.toString().length + 1 +
     response.message.length + 2

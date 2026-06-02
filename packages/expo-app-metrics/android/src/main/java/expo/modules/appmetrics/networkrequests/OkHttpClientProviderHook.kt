@@ -45,7 +45,6 @@ object OkHttpClientProviderHook {
       override fun createNewNetworkModuleClient() =
         OkHttpClientProvider.createClientBuilder()
           .addInterceptor(NetworkRequestInterceptor.instance)
-          .addNetworkInterceptor(NetworkRequestNetworkInterceptor.instance)
           .eventListenerFactory(NetworkRequestEventListener.factory)
           .build()
     })

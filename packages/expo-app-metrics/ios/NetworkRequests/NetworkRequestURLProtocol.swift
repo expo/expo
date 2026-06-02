@@ -143,7 +143,11 @@ final class NetworkRequestURLProtocol: URLProtocol {
 
   fileprivate func didReceive(response: URLResponse) {
     capturedResponse = response as? HTTPURLResponse
-    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+    // Forward with `.allowed` so the system URL loading layer can still cache the response per the
+    // caller's `URLRequest.cachePolicy` and the server's `Cache-Control` headers. The inner session
+    // we forwarded through has its own cache disabled (see `makeForwardingSession`), so caching
+    // decisions land on the outer session like they would without our interceptor in the middle.
+    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
   }
 
   fileprivate func didReceive(data: Data) {
@@ -239,9 +243,10 @@ final class NetworkRequestURLProtocol: URLProtocol {
     protocols.removeAll { $0 == NetworkRequestURLProtocol.self }
     protocols = extraProtocols + protocols
     configuration.protocolClasses = protocols
-    // Disable the inner session's own cache layer. The outer session the client gave us is the
-    // authoritative one (we always hand it `cacheStoragePolicy: .notAllowed`), so an independent
-    // cache on the inner session would be invisible to the caller and could serve stale responses.
+    // Disable the inner session's own cache layer so caching decisions land on the outer session
+    // — the one the caller actually owns — like they would without our interceptor in the middle.
+    // An independent cache on the inner session would be invisible to the caller and could serve
+    // stale responses.
     configuration.urlCache = nil
     configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
     return URLSession(configuration: configuration, delegate: bridge, delegateQueue: nil)
