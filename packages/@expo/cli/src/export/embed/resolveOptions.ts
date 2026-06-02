@@ -134,10 +134,11 @@ export function resolveEagerOptionsAsync(
 
   if (!bundleOutput) {
     destination ??= getTemporaryPath();
+    // Apple platforms (ios/tvos/macos) use `main.jsbundle`; Android uses `index.js`.
     bundleOutput =
-      platform === 'ios'
-        ? path.join(destination, 'main.jsbundle')
-        : path.join(destination, 'index.js');
+      platform === 'android'
+        ? path.join(destination, 'index.js')
+        : path.join(destination, 'main.jsbundle');
   }
 
   return {

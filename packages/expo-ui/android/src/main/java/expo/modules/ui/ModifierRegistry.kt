@@ -47,6 +47,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.CompositingStrategy
@@ -54,12 +56,14 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
@@ -179,6 +183,17 @@ internal data class BorderParams(
 @OptimizedRecord
 internal data class ShadowParams(
   @Field val elevation: Int = 0
+) : Record
+
+@OptimizedRecord
+internal data class ShadowGeometryParams(
+  @Field val shape: BuiltinShapeRecord? = null,
+  @Field val radius: Float = 0f,
+  @Field val spread: Float = 0f,
+  @Field val color: Color? = null,
+  @Field val offsetX: Float = 0f,
+  @Field val offsetY: Float = 0f,
+  @Field val alpha: Float = 1f
 ) : Record
 
 @OptimizedRecord
@@ -500,6 +515,36 @@ object ModifierRegistry {
     register("shadow") { map, _, _, _ ->
       val params = recordFromMap<ShadowParams>(map)
       Modifier.shadow(params.elevation.dp)
+    }
+
+    register("dropShadow") { map, _, _, _ ->
+      val params = recordFromMap<ShadowGeometryParams>(map)
+      val shape = params.shape?.let { resolveShape(it) } ?: RectangleShape
+      Modifier.dropShadow(
+        shape,
+        Shadow(
+          radius = params.radius.dp,
+          spread = params.spread.dp,
+          color = params.color.composeOrNull ?: androidx.compose.ui.graphics.Color.Black,
+          offset = DpOffset(params.offsetX.dp, params.offsetY.dp),
+          alpha = params.alpha
+        )
+      )
+    }
+
+    register("innerShadow") { map, _, _, _ ->
+      val params = recordFromMap<ShadowGeometryParams>(map)
+      val shape = params.shape?.let { resolveShape(it) } ?: RectangleShape
+      Modifier.innerShadow(
+        shape,
+        Shadow(
+          radius = params.radius.dp,
+          spread = params.spread.dp,
+          color = params.color.composeOrNull ?: androidx.compose.ui.graphics.Color.Black,
+          offset = DpOffset(params.offsetX.dp, params.offsetY.dp),
+          alpha = params.alpha
+        )
+      )
     }
 
     register("alpha") { map, _, _, _ ->

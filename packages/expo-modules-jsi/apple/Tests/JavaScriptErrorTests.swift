@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -49,9 +49,11 @@ struct JavaScriptErrorTests {
     }
     runtime.global().setProperty("failing", value: fn)
 
-    let result = try runtime.eval("""
-      try { failing(); null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { failing(); null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
     #expect(result[0].getString() == "Boom")
     #expect(result[1].getString() == "ERR_BOOM")
   }
@@ -60,9 +62,10 @@ struct JavaScriptErrorTests {
   func `nested host function errors are independent`() throws {
     let outer = runtime.createFunction("outer") { [self] _, _ in
       // Call inner from JS, which throws; JS catches it, then we throw our own error.
-      let innerResult = try runtime.eval("""
-        try { inner(); 'no error' } catch (e) { e.message }
-      """)
+      let innerResult = try runtime.eval(
+        """
+          try { inner(); 'no error' } catch (e) { e.message }
+        """)
       #expect(innerResult.getString() == "inner boom")
 
       throw CodedError(message: "outer boom", code: "ERR_OUTER")
@@ -74,9 +77,11 @@ struct JavaScriptErrorTests {
     runtime.global().setProperty("outer", value: outer)
     runtime.global().setProperty("inner", value: inner)
 
-    let result = try runtime.eval("""
-      try { outer(); null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { outer(); null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
     #expect(result[0].getString() == "outer boom")
     #expect(result[1].getString() == "ERR_OUTER")
   }
@@ -92,4 +97,3 @@ private struct CodedError: JavaScriptThrowable {
   var message: String
   var code: String
 }
-

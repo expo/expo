@@ -79,8 +79,10 @@ export declare enum FileMode {
 }
 export declare class FileHandle {
     close(): void;
-    readBytes(length: number): Uint8Array<ArrayBuffer>;
-    writeBytes(bytes: Uint8Array): void;
+    readBytes(length: number): Promise<Uint8Array<ArrayBuffer>>;
+    readBytesSync(length: number): Uint8Array<ArrayBuffer>;
+    writeBytes(bytes: Uint8Array): Promise<void>;
+    writeBytesSync(bytes: Uint8Array): void;
     offset: number | null;
     size: number | null;
 }

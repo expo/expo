@@ -272,10 +272,16 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
-      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
+      AsyncFunction("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
-      Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+      Function("readBytesSync") { fileHandle: FileSystemFileHandle, bytes: Long ->
+        fileHandle.read(bytes)
+      }
+      AsyncFunction("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        fileHandle.write(data)
+      }
+      Function("writeBytesSync") { fileHandle: FileSystemFileHandle, data: ByteArray ->
         fileHandle.write(data)
       }
       Function("close") { fileHandle: FileSystemFileHandle ->

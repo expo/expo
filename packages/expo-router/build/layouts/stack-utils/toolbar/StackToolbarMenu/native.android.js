@@ -28,9 +28,12 @@ const NativeToolbarMenu = (props) => {
     const parentClose = (0, react_1.use)(ToolbarMenuCloseContext);
     const isNested = parentClose !== null;
     const toolbarColors = (0, context_1.useToolbarColors)();
-    const tintColor = props.imageRenderingMode === 'original'
-        ? undefined
-        : (props.tintColor ?? toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)());
+    const tintColor = props.tintColor ?? toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)();
+    // `tint={null}` tells `<Icon>` to draw the source in its original colors.
+    // `undefined` would fall back to `LocalContentColor` (i.e. still a tint).
+    // Only the user-provided source respects `imageRenderingMode`; internal
+    // ornaments (submenu arrow, action checkmark) are always tinted.
+    const sourceTint = props.imageRenderingMode === 'original' ? null : tintColor;
     const backgroundColor = (toolbarColors.backgroundColor ??
         (0, defaults_1.DEFAULT_TOOLBAR_BACKGROUND_COLOR)());
     const closeMenu = (0, react_1.useCallback)(() => {
@@ -44,7 +47,7 @@ const NativeToolbarMenu = (props) => {
     // Non-inline nested: DropdownMenu with DropdownMenuItem trigger
     if (isNested) {
         const trailingIcon = ((0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.TrailingIcon, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: arrowRightIcon, tint: tintColor, size: 24 }) }));
-        const leadingIcon = props.source ? ((0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.LeadingIcon, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24 }) })) : null;
+        const leadingIcon = props.source ? ((0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.LeadingIcon, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: sourceTint, size: 24 }) })) : null;
         return ((0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenu, { expanded: expanded, onDismissRequest: () => setExpanded(false), color: backgroundColor, children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Trigger, { children: (0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenuItem, { onClick: () => {
                             if (!props.disabled)
                                 setExpanded(true);
@@ -59,7 +62,7 @@ const NativeToolbarMenu = (props) => {
         }
         return null;
     }
-    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenu, { expanded: expanded, onDismissRequest: () => setExpanded(false), color: backgroundColor, children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Trigger, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: () => setExpanded(true), enabled: !props.disabled, modifiers: [(0, modifiers_1.background)(backgroundColor)], children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24, contentDescription: props.accessibilityLabel }) }) }), (0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Items, { children: (0, jsx_runtime_1.jsx)(ToolbarMenuCloseContext, { value: closeMenu, children: props.children }) })] }) }));
+    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenu, { expanded: expanded, onDismissRequest: () => setExpanded(false), color: backgroundColor, children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Trigger, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: () => setExpanded(true), enabled: !props.disabled, modifiers: [(0, modifiers_1.background)(backgroundColor)], children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: sourceTint, size: 24, contentDescription: props.accessibilityLabel }) }) }), (0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Items, { children: (0, jsx_runtime_1.jsx)(ToolbarMenuCloseContext, { value: closeMenu, children: props.children }) })] }) }));
 };
 exports.NativeToolbarMenu = NativeToolbarMenu;
 /**

@@ -129,20 +129,20 @@ describe('NativeToolbarMenu', () => {
     });
 
     describe('tint color logic', () => {
-      it('sets tintColor to undefined when imageRenderingMode is original', () => {
+      it('sets source tint to null when imageRenderingMode is original', () => {
         render(<NativeToolbarMenu {...defaultProps} imageRenderingMode="original" />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBeUndefined();
+        expect(icon.props.tint).toBeNull();
       });
 
-      it('sets tintColor to undefined when imageRenderingMode is original even with tintColor prop', () => {
+      it('sets source tint to null when imageRenderingMode is original even with tintColor prop', () => {
         render(
           <NativeToolbarMenu {...defaultProps} imageRenderingMode="original" tintColor="red" />
         );
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBeUndefined();
+        expect(icon.props.tint).toBeNull();
       });
 
       it('uses provided tintColor when imageRenderingMode is template', () => {
@@ -315,6 +315,15 @@ describe('NativeToolbarMenu', () => {
       expect(leadingIcon.props.source).toEqual({ uri: 'nested-icon' });
     });
 
+    it('uses null tint on leading icon when imageRenderingMode is original', () => {
+      renderNested({ source: { uri: 'nested-icon' }, imageRenderingMode: 'original' });
+
+      const leadingIcon = within(screen.getByTestId('DropdownMenuItem.LeadingIcon')).getByTestId(
+        'Icon'
+      );
+      expect(leadingIcon.props.tint).toBeNull();
+    });
+
     it('shows arrow-right trailing icon', () => {
       renderNested();
 
@@ -322,6 +331,15 @@ describe('NativeToolbarMenu', () => {
         'Icon'
       );
       expect(trailingIcon.props.source).toBe('mocked-arrow-right');
+    });
+
+    it('still tints the trailing arrow when imageRenderingMode is original', () => {
+      renderNested({ imageRenderingMode: 'original' });
+
+      const trailingIcon = within(screen.getByTestId('DropdownMenuItem.TrailingIcon')).getByTestId(
+        'Icon'
+      );
+      expect(trailingIcon.props.tint).toBe('dynamic:onSurface');
     });
 
     it('forwards disabled prop', () => {

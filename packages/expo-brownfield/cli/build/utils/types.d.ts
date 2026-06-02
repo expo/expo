@@ -26,6 +26,7 @@ export interface IosConfig extends CommonConfig {
     buildConfiguration: BuildConfiguration;
     derivedDataPath: string;
     device: string;
+    hostProvidedFrameworks: string[];
     output: 'frameworks' | PackageConfiguration;
     scheme: string;
     simulator: string;

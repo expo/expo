@@ -16,6 +16,7 @@ const utils_1 = require("./utils");
 const findModules_1 = require("../autolinking/findModules");
 const autolinkingOptions_1 = require("../commands/autolinkingOptions");
 const memoize_1 = require("../memoize");
+const platforms_1 = require("../platforms");
 const reactNativeConfig_1 = require("../reactNativeConfig");
 const config_1 = require("../reactNativeConfig/config");
 function makeCachedDependenciesLinker(params) {
@@ -107,6 +108,15 @@ async function scanDependencyResolutionsForPlatform(linker, platform, extraInclu
             }
             return resolution;
         });
+        // OOT platforms (tvos/macos) ship their react-native fork as a separately-named package
+        // Include it in the sticky output so the module resolver can deduplicate and redirect to it
+        const supportPackage = (0, platforms_1.getSupportPackageForPlatform)(platform);
+        if (supportPackage && supportPackage !== 'react-native') {
+            const supportResolution = resolutions[supportPackage];
+            if (supportResolution) {
+                dependencies[supportPackage] = { ...supportResolution, name: supportPackage };
+            }
+        }
         return dependencies;
     });
 }

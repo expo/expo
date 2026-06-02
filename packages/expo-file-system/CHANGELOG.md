@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - `File.write()` is now asynchronous and returns a Promise. Use `File.writeSync()` for synchronous behavior. ([#45992](https://github.com/expo/expo/pull/45992) by [@wh201906](https://github.com/wh201906))
+- `FileHandle.readBytes()` and `FileHandle.writeBytes()` are now asynchronous and return a Promise. Use `FileHandle.readBytesSync()` and `FileHandle.writeBytesSync()` for synchronous behavior. ([#46280](https://github.com/expo/expo/pull/46280) by [@wh201906](https://github.com/wh201906))
 
 ### 🎉 New features
 

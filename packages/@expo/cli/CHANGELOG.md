@@ -10,7 +10,11 @@
 
 ### 🐛 Bug fixes
 
+- Disable sextant QR code rendering for Windows Terminal ([#46455](https://github.com/expo/expo/pull/46455) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ## 56.1.12 — 2026-05-26
 

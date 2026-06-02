@@ -16,6 +16,11 @@ export type LabelProps = {
      */
     icon?: React.ReactNode;
     /**
+     * Custom title view. Accepts any React node (for example, a `VStack` with title and subtitle).
+     * When provided, this takes precedence over `title`.
+     */
+    children?: React.ReactNode;
+    /**
      * The color of the label icon.
      * @deprecated Use `foregroundStyle` modifier instead.
      */
