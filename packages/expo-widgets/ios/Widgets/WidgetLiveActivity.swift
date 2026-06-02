@@ -6,7 +6,7 @@ import ActivityKit
 struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     var name: String
-    var props: String
+    var props: String?
   }
 }
 

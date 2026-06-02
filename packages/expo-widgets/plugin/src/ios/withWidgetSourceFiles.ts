@@ -283,7 +283,9 @@ struct ${widget.name}TimelineProvider: AppIntentTimelineProvider {
   }
   
   func parseTimeline(configuration: ${widget.name}ConfigurationAppIntent) -> [${widget.name}TimelineEntry] {
-    let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_${widget.name}_timeline") ?? []
+    guard let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_${widget.name}_timeline") else {
+      return [${widget.name}TimelineEntry(date: Date(), name: "${widget.name}", props: nil, entryIndex: nil, configuration: configuration)]
+    }
     let entries: [${widget.name}TimelineEntry?] = timeline.enumerated().map { index, entry in
       guard let entry = entry as? [String: Any], let timestamp = entry["timestamp"] as? Int, let props = entry["props"] as? [String: Any] else {
         return nil
@@ -333,7 +335,7 @@ ${Object.entries(configuration?.parameters ?? {})
   public var body: some View {
     if let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\\(entry.name)_layout"),
        !layout.isEmpty {
-      let node = evaluateLayout(layout: layout, props: entry.props ?? [:], environment: widgetEnvironment)
+      let node = evaluateLayout(layout: layout, props: entry.props, environment: widgetEnvironment)
       WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
     } else {
       WidgetsDynamicView(name: entry.name, kind: .widget, node: createRedBox(message: "No layout found for \\(WidgetsStorage.appGroupIdentifier ?? "")::\\(entry.name)"), entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)

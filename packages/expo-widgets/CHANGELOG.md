@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Handle undefined props instead fallback to empty object. ([#46492](https://github.com/expo/expo/pull/46492) by [@jakex7](https://github.com/jakex7))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

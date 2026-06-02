@@ -86,7 +86,7 @@ public final class WidgetsModule: Module {
         LiveActivityFactory(name: name, layout: layout)
       }
 
-      Function("start") { (liveActivity: LiveActivityFactory, props: String, url: URL?) in
+      Function("start") { (liveActivity: LiveActivityFactory, props: String?, url: URL?) in
         try liveActivity.start(props: props, url: url)
       }
 
@@ -96,7 +96,7 @@ public final class WidgetsModule: Module {
     }
 
     Class("LiveActivity", LiveActivity.self) {
-      AsyncFunction("update") { (instance: LiveActivity, props: String) in
+      AsyncFunction("update") { (instance: LiveActivity, props: String?) in
         try await instance.update(props: props)
       }
 
