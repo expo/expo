@@ -80,8 +80,7 @@ function getSupportedPlatforms(projectRoot: string, exp: Partial<ExpoConfig>): P
   if (resolveFrom(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
   }
-  // TODO(@kitten): Update when XDL schema is modified
-  if ((exp.experiments as any)?.outOfTreePlatforms) {
+  if (exp.experiments?.outOfTreePlatforms) {
     if (resolveFrom(projectRoot, 'react-native-tvos/package.json')) {
       platforms.push('tvos');
     }
@@ -102,7 +101,7 @@ export function getPlatformsFromConfig(projectRoot: string, exp: Partial<ExpoCon
   let platforms =
     (exp?.platforms as Platform[] | undefined) ?? getSupportedPlatforms(projectRoot, exp);
   // TODO(@kitten): Update when XDL schema is modified
-  if (!(exp.experiments as any)?.outOfTreePlatforms) {
+  if (!exp.experiments?.outOfTreePlatforms) {
     platforms = platforms.filter(
       (platform) => platform === 'android' || platform === 'ios' || platform === 'web'
     );
