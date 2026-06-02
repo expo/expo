@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
 
 import type {
   BufferOptions,
@@ -19,15 +19,27 @@ import resolveAssetSource from './resolveAssetSource';
 
 export function useVideoPlayer(
   source: VideoSource,
-  setup?: (player: VideoPlayer) => void
+  setup?: (player: VideoPlayer) => void,
+  _playerBuilderOptions?: unknown
 ): VideoPlayer {
   const parsedSource = typeof source === 'string' ? { uri: source } : source;
 
-  return useMemo(() => {
-    const player = new VideoPlayerWeb(parsedSource);
-    setup?.(player);
-    return player;
-  }, [JSON.stringify(source)]);
+  return useReleasingSharedObjectWithLifecycle(
+    {
+      factory: () => {
+        const player = new VideoPlayerWeb(parsedSource);
+        setup?.(player);
+        return player;
+      },
+      shouldRecreate: () => false,
+      update: (player) => {
+        player.replaceAsync(parsedSource).catch((error) => {
+          console.error('expo-video: Failed to replace video source:', error);
+        });
+      },
+    },
+    [JSON.stringify(source)]
+  );
 }
 
 export function getSourceUri(source?: VideoSource): string | null {
