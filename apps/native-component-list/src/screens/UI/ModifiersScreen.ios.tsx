@@ -301,6 +301,12 @@ export default function ModifiersScreen() {
               <Text modifiers={[font({ textStyle: 'caption' })]}>caption scales</Text>
             </VStack>
 
+            {/* font on concatenated Text runs scales + keeps weight */}
+            <Text>
+              <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Big </Text>
+              <Text modifiers={[font({ textStyle: 'caption' })]}>and small, both scale</Text>
+            </Text>
+
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>
               <Text modifiers={[font({ size: 14 }), textCase('uppercase')]}>uppercase</Text>
