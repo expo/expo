@@ -1,4 +1,2 @@
-import type { JSX } from 'react';
-import type { SymbolViewProps } from './SymbolModule.types';
-export declare function SymbolView(props: SymbolViewProps): JSX.Element;
+export { SymbolView } from './SymbolView.ios';
 //# sourceMappingURL=SymbolView.macos.d.ts.map
