@@ -852,6 +852,46 @@ export const accessibilityElement = (children: 'ignore' | 'combine' | 'contain' 
   createModifier('accessibilityElement', { children });
 
 /**
+ * The set of accessibility traits that can be added to or removed from a view
+ * with `accessibilityAddTraits` and `accessibilityRemoveTraits`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/accessibilitytraits).
+ */
+export type AccessibilityTrait =
+  | 'isButton'
+  | 'isHeader'
+  | 'isImage'
+  | 'isSelected'
+  | 'isLink'
+  | 'isModal'
+  | 'isSummaryElement'
+  | 'updatesFrequently'
+  | 'startsMediaSession'
+  | 'allowsDirectInteraction'
+  | 'causesPageTurn'
+  | 'isToggle'
+  | 'playsSound'
+  | 'isStaticText'
+  | 'isSearchField'
+  | 'isKeyboardKey'
+  | 'isTabBar';
+
+/**
+ * Adds the given accessibility traits to the view.
+ * @param traits - The accessibility traits to add. `isToggle` and `isTabBar` require iOS 17+ and are ignored on older systems.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityaddtraits(_:)).
+ */
+export const accessibilityAddTraits = (traits: AccessibilityTrait[]) =>
+  createModifier('accessibilityAddTraits', { traits });
+
+/**
+ * Removes the given accessibility traits from the view.
+ * @param traits - The accessibility traits to remove. `isToggle` and `isTabBar` require iOS 17+ and are ignored on older systems.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityremovetraits(_:)).
+ */
+export const accessibilityRemoveTraits = (traits: AccessibilityTrait[]) =>
+  createModifier('accessibilityRemoveTraits', { traits });
+
+/**
  * Sets layout priority for the view.
  * @param priority - Layout priority value.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/layoutpriority(_:)).
@@ -1554,6 +1594,8 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityIdentifier>
   | ReturnType<typeof accessibilityHidden>
   | ReturnType<typeof accessibilityElement>
+  | ReturnType<typeof accessibilityAddTraits>
+  | ReturnType<typeof accessibilityRemoveTraits>
   | ReturnType<typeof layoutPriority>
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>
