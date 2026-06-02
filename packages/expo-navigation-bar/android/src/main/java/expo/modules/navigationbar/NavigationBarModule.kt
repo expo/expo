@@ -31,7 +31,7 @@ internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 @Suppress("DEPRECATION")
 internal fun Window.setNavigationBarStyle(
   hasLightBackground: Boolean,
-  isContrastEnforced: Boolean,
+  isContrastEnforced: Boolean
 ) {
   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
     return // isAppearanceLightNavigationBars is not available below Android O.
