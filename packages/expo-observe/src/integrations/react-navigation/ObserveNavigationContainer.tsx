@@ -1,23 +1,9 @@
 import type { NavigationContainerRef } from '@react-navigation/native';
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-  type ComponentProps,
-  type Ref,
-} from 'react';
+import { forwardRef, useImperativeHandle, type ComponentProps, type Ref } from 'react';
 
-import { attachActionListener } from './actionListener';
-import { ObserveReactNavigationIntegrationContext } from './context';
-import { createGetPathname } from './getPathname';
-import { createStateChangeHandler } from './handleStateChange';
+import { ObserveNavigationProvider } from './ObserveNavigationProvider';
 import { isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
-import { createReactNavigationIntegrationStorage } from './storage';
-import type { NavigationStateLike } from './types';
 import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 const NavigationContainer = optionalReactNavigation?.NavigationContainer;
@@ -27,6 +13,13 @@ type NavigationContainerProps = ComponentProps<NonNullable<typeof NavigationCont
 
 export type ObserveNavigationContainerProps = NavigationContainerProps;
 
+/**
+ * Drop-in replacement for React Navigation's `NavigationContainer` (dynamic
+ * configuration). It creates the navigation ref for you and delegates the
+ * instrumentation to {@link ObserveNavigationProvider}, so the two share a
+ * single code path. Pass a `linking` config to resolve a human-readable path
+ * per screen; otherwise screens fall back to their `route.name`.
+ */
 function ObserveNavigationContainerImpl(
   props: ObserveNavigationContainerProps,
   forwardedRef: Ref<NavigationContainerRef<ReactNavigation.RootParamList>>
@@ -38,74 +31,34 @@ function ObserveNavigationContainerImpl(
         "remove the React Navigation integration if it's not needed."
     );
   }
-  const { children, onStateChange, onReady, linking, ...rest } = props;
+  const { children, linking, ...rest } = props;
   const navigationRef = useNavigationContainerRef();
-  const initialized = isInitialized();
 
   useImperativeHandle(
     forwardedRef,
-    () => navigationRef as unknown as NavigationContainerRef<ReactNavigation.RootParamList>,
+    () => navigationRef as NavigationContainerRef<ReactNavigation.RootParamList>,
     [navigationRef]
   );
 
-  const [internal] = useState(() => {
-    if (!initialized) return null;
-    const storage = createReactNavigationIntegrationStorage();
-    const getPathname = createGetPathname(linking);
-    return {
-      storage,
-      getPathname,
-      handleStateChange: createStateChangeHandler(storage, getPathname, performance.now()),
-    };
-  });
-
+  // Keep the container-specific message even though the provider asserts the
+  // same invariant — the container's render runs first, so this is what the
+  // user who reached for `ObserveNavigationContainer` actually sees.
   useAssertValueDoesNotChange(
-    initialized,
+    isInitialized(),
     `[expo-observe] React Navigation integration was toggled after ObserveNavigationContainer mounted. Call \`Observe.configure({ integrations: { 'react-navigation': true } })\` before rendering ObserveNavigationContainer.`
   );
 
-  useEffect(() => {
-    if (!internal) return;
-    return attachActionListener(navigationRef, internal.storage);
-  }, [internal, navigationRef]);
-
-  const onStateChangeMerged = useCallback<NonNullable<NavigationContainerProps['onStateChange']>>(
-    (state) => {
-      internal?.handleStateChange(state as unknown as NavigationStateLike | undefined);
-      onStateChange?.(state);
-    },
-    [internal, onStateChange]
-  );
-
-  // React Navigation's `onStateChange` doesn't fire for the initial state, so
-  // without this the first focused screen would never be recorded — every
-  // subsequent revisit would then look like a cold focus.
-  const onReadyMerged = useCallback<NonNullable<NavigationContainerProps['onReady']>>(() => {
-    if (internal) {
-      const rootState = navigationRef.getRootState() as unknown as NavigationStateLike | undefined;
-      if (rootState) {
-        internal.handleStateChange(rootState);
-      }
-    }
-    onReady?.();
-  }, [internal, navigationRef, onReady]);
-
-  const contextValue = useMemo(
-    () => (internal ? { storage: internal.storage, getPathname: internal.getPathname } : null),
-    [internal]
-  );
-
   return (
-    <NavigationContainer
-      {...rest}
-      linking={linking}
-      ref={navigationRef as unknown as NavigationContainerProps['ref']}
-      onStateChange={onStateChangeMerged}
-      onReady={onReadyMerged}>
-      <ObserveReactNavigationIntegrationContext.Provider value={contextValue}>
+    <ObserveNavigationProvider
+      navigationRef={navigationRef as NavigationContainerRef<ReactNavigation.RootParamList>}
+      linking={linking}>
+      <NavigationContainer
+        {...rest}
+        linking={linking}
+        ref={navigationRef as NavigationContainerProps['ref']}>
         {children}
-      </ObserveReactNavigationIntegrationContext.Provider>
-    </NavigationContainer>
+      </NavigationContainer>
+    </ObserveNavigationProvider>
   );
 }
 

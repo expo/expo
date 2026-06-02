@@ -104,6 +104,20 @@ describe('createStateChangeHandler', () => {
     });
   });
 
+  it('records cold_ttr only once when the initial state is handled twice', async () => {
+    // ObserveNavigationProvider can feed the same initial root state through
+    // both its `isReady()` catch-up and the `state` listener. The focused-key
+    // dedupe must keep cold_ttr to a single emit.
+    const initial = stackState([{ key: 'a' }]);
+    handle(initial);
+    handle(initial);
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddCustomMetric.mock.calls[0][0].params.isAppLaunch).toBe(true);
+  });
+
   it('records cold_ttr with isAppLaunch=false on subsequent navigations to a new screen', async () => {
     handle(stackState([{ key: 'a' }], 0));
     await flushAsync();
