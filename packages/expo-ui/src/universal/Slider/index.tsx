@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
 });
 
 const sliderCss = css`
-  [data-eui-slider]::-webkit-slider-runnable-track {
+  [data-expo-ui-slider]::-webkit-slider-runnable-track {
     height: 4px;
     border-radius: 999px;
     background: linear-gradient(
@@ -37,19 +37,19 @@ const sliderCss = css`
     );
   }
 
-  [data-eui-slider]::-moz-range-track {
+  [data-expo-ui-slider]::-moz-range-track {
     height: 4px;
     border-radius: 999px;
     background: var(--_track-bg);
   }
 
-  [data-eui-slider]::-moz-range-progress {
+  [data-expo-ui-slider]::-moz-range-progress {
     height: 4px;
     border-radius: 999px;
     background: var(--_track-fill);
   }
 
-  [data-eui-slider]::-webkit-slider-thumb {
+  [data-expo-ui-slider]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 18px;
@@ -64,7 +64,7 @@ const sliderCss = css`
     transition-timing-function: ${easings.standard};
   }
 
-  [data-eui-slider]::-moz-range-thumb {
+  [data-expo-ui-slider]::-moz-range-thumb {
     width: 18px;
     height: 18px;
     border-radius: 50%;
@@ -73,19 +73,19 @@ const sliderCss = css`
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   }
 
-  [data-eui-slider]:hover:not(:disabled)::-webkit-slider-thumb {
+  [data-expo-ui-slider]:hover:not(:disabled)::-webkit-slider-thumb {
     transform: scale(1.1);
   }
 
-  [data-eui-slider]:focus-visible {
+  [data-expo-ui-slider]:focus-visible {
     outline: none;
   }
 
-  [data-eui-slider]:focus-visible::-webkit-slider-thumb {
+  [data-expo-ui-slider]:focus-visible::-webkit-slider-thumb {
     box-shadow: ${shadows.focus};
   }
 
-  [data-eui-slider]:active:not(:disabled)::-webkit-slider-thumb {
+  [data-expo-ui-slider]:active:not(:disabled)::-webkit-slider-thumb {
     transform: scale(1.15);
     box-shadow: 0 0 0 6px color-mix(in oklab, ${colors.primary[500]} 18%, transparent);
   }
@@ -107,13 +107,13 @@ export function Slider({
 
   return (
     <View style={styles.view}>
-      <style href="eui-slider" precedence="eui">
+      <style href="expo-ui-slider" precedence="expo-ui">
         {sliderCss}
       </style>
 
       <Input
         type="range"
-        dataSet={{ euiSlider: '' }}
+        dataSet={{ expoUiSlider: '' }}
         value={value}
         min={min}
         max={max}

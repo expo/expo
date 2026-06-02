@@ -7,6 +7,7 @@
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
 
+#import <React/RCTConstants.h>
 #import <React/RCTReconnectingWebSocket.h>
 
 #import <objc/runtime.h>
@@ -22,7 +23,7 @@ static RCTReconnectingWebSocket *createSocketForURL(NSURL * url)
   components.scheme = ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"exps"]) ? @"https" : @"http";
   components.port =  [url port];
   components.path = @"/message";
-  components.queryItems = @[[NSURLQueryItem queryItemWithName:@"role" value:@"ios"]];
+  components.queryItems = @[[NSURLQueryItem queryItemWithName:@"role" value:RCTPlatformName]];
   static dispatch_queue_t queue;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

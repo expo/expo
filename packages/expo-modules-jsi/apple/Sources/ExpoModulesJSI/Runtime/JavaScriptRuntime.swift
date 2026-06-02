@@ -284,7 +284,7 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     }
 
     // Set native constructor as read-only, non-configurable, non-enumerable, non-writable property.
-    let prototype = klassObject.getPropertyAsObject("prototype")
+    let prototype = try klassObject.getPropertyAsObject("prototype")
     prototype.defineProperty(nativeConstructorKey, value: nativeConstructor)
 
     // If the base class is provided, set the inherited prototype.
