@@ -58,6 +58,7 @@
     "ora": "3.4.0",
     "picomatch": "^2.3.2",
     "prompts": "^2.4.2",
+    "resolve-workspace-root": "^2.0.0",
     "update-check": "^1.5.4"
   },
   "engines": {
