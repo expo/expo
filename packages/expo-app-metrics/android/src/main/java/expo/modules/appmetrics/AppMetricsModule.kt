@@ -3,6 +3,7 @@ package expo.modules.appmetrics
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.logevents.LogEventOptions
+import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateEventBody
@@ -183,6 +184,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("getMainSession") Coroutine { ->
         sessionManager.getSessionById(appSessionId)?.let { JsSession.fromSessionWithMetrics(it) }
+      }
+
+      Class(NetworkRequestObserver::class) {
+        Constructor {
+          NetworkRequestObserver(appContext)
+        }
       }
     }
 

@@ -1,0 +1,577 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+
+package expo.modules.appmetrics.networkrequests
+
+import okhttp3.Call
+import okhttp3.EventListener
+import okhttp3.Handshake
+import okhttp3.Headers
+import okhttp3.Interceptor
+import okhttp3.MediaType
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody
+import okio.Buffer
+import okio.BufferedSink
+import okio.BufferedSource
+import okio.ForwardingSink
+import okio.ForwardingSource
+import okio.buffer
+import java.io.IOException
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Proxy
+import java.util.Date
+import java.util.UUID
+import java.util.WeakHashMap
+
+/**
+ * Sentinel header recognised by `NetworkRequestInterceptor` to skip observation. expo-observe's
+ * dispatcher sets it on outgoing telemetry so our own uploads don't recurse through the monitor.
+ * Mirrors `NetworkRequestURLProtocol.internalHeaderName` on iOS — keep the literal in sync.
+ */
+const val INTERNAL_HEADER_NAME = "Expo-AppMetrics-Skip"
+
+/**
+ * Marker tag attached to requests that have already entered our application interceptor. Used by
+ * the double-instrumentation guard: if an app installs `NetworkRequestInterceptor.instance` on a
+ * client that's *also* getting injected by the RN factory hook, the second pass short-circuits
+ * to `chain.proceed(request)` without re-observing.
+ */
+private object AlreadyObservedMarker
+
+/**
+ * OkHttp `Interceptor` that records every HTTP request that traverses an `OkHttpClient` it's
+ * installed on. Sees the original outgoing request (URL the caller fetched) and the final
+ * response after OkHttp follows redirects — emits one `requestStarted` and one `requestCompleted`
+ * per logical fetch.
+ *
+ * Phase timings (`dnsStart`, `connectStart`, etc.) are stitched in from `NetworkRequestEventListener`
+ * via the shared `inFlightTimings` map; the interceptor reads the map when finalizing the snapshot
+ * and removes the entry to avoid leaks.
+ *
+ * Byte counts come from counting `Source`/`Sink` wrappers around the request and response bodies,
+ * giving wire-byte accuracy that survives gzip and chunked encoding. Falls back to declared
+ * `contentLength()` only when no body is present (HEAD, 304, etc.).
+ */
+class NetworkRequestInterceptor private constructor(
+  private val monitor: NetworkRequestMonitor
+) : Interceptor {
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val originalRequest = chain.request()
+
+    // Recursion guard: telemetry uploads carry this header so they aren't observed in turn. We
+    // don't record these, but the per-call event listener still fires for them — its orphaned
+    // timings entry is reclaimed by the weak-keyed `inFlightTimings` map (see there).
+    if (originalRequest.header(INTERNAL_HEADER_NAME) != null) {
+      val stripped = originalRequest.newBuilder().removeHeader(INTERNAL_HEADER_NAME).build()
+      return chain.proceed(stripped)
+    }
+
+    // Double-instrumentation guard: a downstream interceptor in the same chain may already be us.
+    if (originalRequest.tag(AlreadyObservedMarker::class.java) != null) {
+      return chain.proceed(originalRequest)
+    }
+
+    val observationId = UUID.randomUUID()
+    val startedAt = Date()
+    val startNanos = System.nanoTime()
+
+    // Wrap the request body so we can count bytes actually written to the wire (chunked uploads,
+    // gzipped payloads, etc.) instead of trusting `contentLength()`.
+    val countingRequestBody = originalRequest.body?.let { CountingRequestBody(it) }
+    val request = originalRequest.newBuilder()
+      .tag(AlreadyObservedMarker::class.java, AlreadyObservedMarker)
+      .let { builder -> countingRequestBody?.let { builder.method(originalRequest.method, it) } ?: builder }
+      .build()
+
+    monitor.recordStart(NetworkRequestStarted(observationId, originalRequest.url.toString(), originalRequest.method, startedAt))
+
+    var response: Response? = null
+    var error: IOException? = null
+    var countingResponseBody: CountingResponseBody? = null
+    try {
+      val raw = chain.proceed(request)
+      // Wrap the response body so we count bytes pulled off the wire. Replacing the body is safe:
+      // OkHttp delivers our wrapper to the caller verbatim. We can only finalize the snapshot
+      // *after* the caller drains the body — so the wrapper carries an `onComplete` callback that
+      // fires from `close()` (or first EOF) with the final byte count.
+      val wrapped = raw.body?.let { rawBody ->
+        CountingResponseBody(rawBody) { bytesRead ->
+          finalizeAndRecord(
+            observationId = observationId,
+            originalRequest = originalRequest,
+            response = raw,
+            requestBodyBytes = countingRequestBody?.bytesWritten,
+            responseBodyBytes = bytesRead,
+            call = chain.call(),
+            startedAt = startedAt,
+            startNanos = startNanos,
+            error = null
+          )
+        }
+      }
+      response = if (wrapped != null) {
+        raw.newBuilder().body(wrapped).build()
+      } else {
+        raw
+      }
+      countingResponseBody = wrapped
+    } catch (e: IOException) {
+      error = e
+    }
+
+    // Two paths land here without a streaming body to wait on: an error before headers, and a
+    // response with no body (HEAD, 204, 304, ...). Both finalize the snapshot inline.
+    if (error != null || countingResponseBody == null) {
+      finalizeAndRecord(
+        observationId = observationId,
+        originalRequest = originalRequest,
+        response = response,
+        requestBodyBytes = countingRequestBody?.bytesWritten,
+        responseBodyBytes = null,
+        call = chain.call(),
+        startedAt = startedAt,
+        startNanos = startNanos,
+        error = error
+      )
+    }
+
+    if (error != null) {
+      throw error
+    }
+    return response!!
+  }
+
+  private fun finalizeAndRecord(
+    observationId: UUID,
+    originalRequest: Request,
+    response: Response?,
+    requestBodyBytes: Long?,
+    responseBodyBytes: Long?,
+    call: Call,
+    startedAt: Date,
+    startNanos: Long,
+    error: IOException?
+  ) {
+    val endNanos = System.nanoTime()
+    val totalDuration = (endNanos - startNanos) / 1_000_000_000.0
+    val endDate = Date(startedAt.time + ((endNanos - startNanos) / 1_000_000L))
+
+    val phases = NetworkRequestEventListener.takeTimings(call)
+
+    val snapshot = buildSnapshot(
+      id = observationId,
+      originalRequest = originalRequest,
+      response = response,
+      requestBodyBytes = requestBodyBytes,
+      responseBodyBytes = responseBodyBytes,
+      phases = phases,
+      fallbackStart = startedAt,
+      fallbackEnd = endDate,
+      totalDuration = totalDuration,
+      error = error
+    )
+    monitor.record(snapshot)
+  }
+
+  companion object {
+    /** Shared interceptor backed by `NetworkRequestMonitor.shared`. App code adds this to its own
+     `OkHttpClient.Builder` if it wants those requests observed. */
+    val instance: NetworkRequestInterceptor by lazy {
+      NetworkRequestInterceptor(NetworkRequestMonitor.shared)
+    }
+
+    /** Test-only constructor that lets tests drive a dedicated monitor. */
+    internal fun forTesting(monitor: NetworkRequestMonitor): NetworkRequestInterceptor =
+      NetworkRequestInterceptor(monitor)
+  }
+}
+
+/**
+ * Network interceptor sibling. Required because OkHttp's redirect chain isn't visible from the
+ * application interceptor's `Response` alone — we walk `priorResponse()` to reconstruct it.
+ *
+ * This interceptor does **not** record requests. Its job is to ensure the application interceptor
+ * sees `priorResponse()` populated for every redirect hop. Install it alongside the application
+ * interceptor on the same client.
+ */
+class NetworkRequestNetworkInterceptor : Interceptor {
+  override fun intercept(chain: Interceptor.Chain): Response {
+    return chain.proceed(chain.request())
+  }
+
+  companion object {
+    val instance: NetworkRequestNetworkInterceptor = NetworkRequestNetworkInterceptor()
+  }
+}
+
+/**
+ * Builds a `NetworkRequest` snapshot from interceptor outputs. Pulled out so tests can exercise
+ * the field-population logic without spinning up a full OkHttp chain.
+ */
+internal fun buildSnapshot(
+  id: UUID,
+  originalRequest: Request,
+  response: Response?,
+  requestBodyBytes: Long?,
+  responseBodyBytes: Long?,
+  phases: NetworkRequestEventListener.Timings?,
+  fallbackStart: Date,
+  fallbackEnd: Date,
+  totalDuration: Double,
+  error: IOException?
+): NetworkRequest {
+  val redirects = response?.let { buildRedirectChain(it) } ?: emptyList()
+
+  val requestHeaderBytes = requestPreambleByteCount(originalRequest)
+  val responseHeaderBytes = response?.let { responsePreambleByteCount(it) } ?: 0L
+  // Prefer the counted bytes (truth on the wire) but fall back to declared `contentLength()` so a
+  // request the caller never wrote past zero bytes still reports the declared payload size. Zero
+  // counts when there's no body are normal and pass through; the takeIf guards against the case
+  // where Content-Length itself was missing or sentinel `-1`.
+  val requestBytesSent: Long? = if (response != null || error != null) {
+    val body = requestBodyBytes?.takeIf { it > 0 }
+      ?: originalRequest.body?.contentLength()?.takeIf { it > 0 }
+      ?: 0L
+    requestHeaderBytes + body
+  } else null
+  val responseBytesReceived: Long? = response?.let {
+    val body = responseBodyBytes?.takeIf { it > 0 }
+      ?: it.body?.contentLength()?.takeIf { it > 0 }
+      ?: 0L
+    responseHeaderBytes + body
+  }
+
+  val timings = NetworkRequest.Timings(
+    fetchStart = phases?.fetchStart ?: fallbackStart,
+    domainLookupStart = phases?.dnsStart,
+    domainLookupEnd = phases?.dnsEnd,
+    connectStart = phases?.connectStart,
+    connectEnd = phases?.connectEnd,
+    secureConnectionStart = phases?.secureConnectStart,
+    secureConnectionEnd = phases?.secureConnectEnd,
+    requestStart = phases?.requestHeadersStart ?: phases?.requestBodyStart,
+    requestEnd = phases?.requestBodyEnd ?: phases?.requestHeadersEnd,
+    responseStart = phases?.responseHeadersStart,
+    responseEnd = phases?.responseBodyEnd ?: phases?.responseHeadersEnd ?: fallbackEnd,
+    totalDuration = totalDuration
+  )
+
+  return NetworkRequest(
+    id = id,
+    url = originalRequest.url.toString(),
+    method = originalRequest.method,
+    statusCode = response?.code,
+    networkProtocol = response?.protocol?.toString(),
+    requestBytesSent = requestBytesSent,
+    responseBytesReceived = responseBytesReceived,
+    timings = timings,
+    errorDescription = error?.localizedMessage ?: error?.message,
+    redirects = redirects
+  )
+}
+
+/**
+ * Walks `Response.priorResponse()` chronologically and emits one `Redirect` per hop. The chain
+ * is naturally redirect-only — OkHttp doesn't surface intermediate protocol upgrades through
+ * `priorResponse` the way iOS exposes Alt-Svc upgrades through `transactionMetrics`, so no
+ * status-code filter is required.
+ */
+internal fun buildRedirectChain(final: Response): List<NetworkRequest.Redirect> {
+  // Collect tuples (priorResponse, nextResponseInChain) walking backwards, then reverse.
+  val reversed = mutableListOf<NetworkRequest.Redirect>()
+  var next: Response = final
+  var prior: Response? = final.priorResponse
+  while (prior != null) {
+    reversed.add(
+      NetworkRequest.Redirect(
+        fromUrl = prior.request.url.toString(),
+        toUrl = next.request.url.toString(),
+        statusCode = prior.code
+      )
+    )
+    next = prior
+    prior = prior.priorResponse
+  }
+  return reversed.reversed()
+}
+
+/**
+ * OkHttp `EventListener` that captures per-phase timestamps and stashes them in a process-wide
+ * map keyed by `Call`. `NetworkRequestInterceptor` reads (and removes) the entry when finalizing
+ * the snapshot.
+ *
+ * Use the factory rather than the bare class so each `Call` gets its own builder; OkHttp shares a
+ * single `EventListener` instance across calls otherwise and concurrent writes would race.
+ */
+class NetworkRequestEventListener : EventListener() {
+  private val builder = MutableTimings()
+
+  override fun callStart(call: Call) {
+    builder.fetchStart = Date()
+  }
+
+  override fun dnsStart(call: Call, domainName: String) {
+    builder.dnsStart = Date()
+  }
+
+  override fun dnsEnd(call: Call, domainName: String, inetAddressList: List<InetAddress>) {
+    builder.dnsEnd = Date()
+  }
+
+  override fun connectStart(call: Call, inetSocketAddress: InetSocketAddress, proxy: Proxy) {
+    builder.connectStart = Date()
+  }
+
+  override fun secureConnectStart(call: Call) {
+    builder.secureConnectStart = Date()
+  }
+
+  override fun secureConnectEnd(call: Call, handshake: Handshake?) {
+    builder.secureConnectEnd = Date()
+  }
+
+  override fun connectEnd(call: Call, inetSocketAddress: InetSocketAddress, proxy: Proxy, protocol: Protocol?) {
+    builder.connectEnd = Date()
+  }
+
+  override fun requestHeadersStart(call: Call) {
+    builder.requestHeadersStart = Date()
+  }
+
+  override fun requestHeadersEnd(call: Call, request: Request) {
+    builder.requestHeadersEnd = Date()
+  }
+
+  override fun requestBodyStart(call: Call) {
+    builder.requestBodyStart = Date()
+  }
+
+  override fun requestBodyEnd(call: Call, byteCount: Long) {
+    builder.requestBodyEnd = Date()
+  }
+
+  override fun responseHeadersStart(call: Call) {
+    builder.responseHeadersStart = Date()
+  }
+
+  override fun responseHeadersEnd(call: Call, response: Response) {
+    builder.responseHeadersEnd = Date()
+  }
+
+  override fun responseBodyEnd(call: Call, byteCount: Long) {
+    builder.responseBodyEnd = Date()
+  }
+
+  override fun callEnd(call: Call) {
+    publish(call)
+  }
+
+  override fun callFailed(call: Call, ioe: IOException) {
+    publish(call)
+  }
+
+  override fun canceled(call: Call) {
+    publish(call)
+  }
+
+  private fun publish(call: Call) {
+    synchronized(inFlightTimings) {
+      inFlightTimings[call] = builder.snapshot()
+    }
+  }
+
+  internal class MutableTimings(
+    @Volatile var fetchStart: Date? = null,
+    @Volatile var dnsStart: Date? = null,
+    @Volatile var dnsEnd: Date? = null,
+    @Volatile var connectStart: Date? = null,
+    @Volatile var connectEnd: Date? = null,
+    @Volatile var secureConnectStart: Date? = null,
+    @Volatile var secureConnectEnd: Date? = null,
+    @Volatile var requestHeadersStart: Date? = null,
+    @Volatile var requestHeadersEnd: Date? = null,
+    @Volatile var requestBodyStart: Date? = null,
+    @Volatile var requestBodyEnd: Date? = null,
+    @Volatile var responseHeadersStart: Date? = null,
+    @Volatile var responseHeadersEnd: Date? = null,
+    @Volatile var responseBodyEnd: Date? = null
+  ) {
+    fun snapshot() = Timings(
+      fetchStart, dnsStart, dnsEnd,
+      connectStart, connectEnd,
+      secureConnectStart, secureConnectEnd,
+      requestHeadersStart, requestHeadersEnd,
+      requestBodyStart, requestBodyEnd,
+      responseHeadersStart, responseHeadersEnd,
+      responseBodyEnd
+    )
+  }
+
+  data class Timings(
+    val fetchStart: Date?,
+    val dnsStart: Date?,
+    val dnsEnd: Date?,
+    val connectStart: Date?,
+    val connectEnd: Date?,
+    val secureConnectStart: Date?,
+    val secureConnectEnd: Date?,
+    val requestHeadersStart: Date?,
+    val requestHeadersEnd: Date?,
+    val requestBodyStart: Date?,
+    val requestBodyEnd: Date?,
+    val responseHeadersStart: Date?,
+    val responseHeadersEnd: Date?,
+    val responseBodyEnd: Date?
+  )
+
+  companion object {
+    /**
+     * Process-wide map of in-flight call timings. Lifecycle: the listener writes one entry per
+     * call when the call ends, the interceptor reads + removes when it builds the snapshot.
+     *
+     * Keyed weakly on `Call` so any entry the interceptor never takes is reclaimed once the `Call`
+     * is collected, rather than pinned forever. That covers the paths where `finalizeAndRecord`
+     * doesn't run for a call the listener still reported on: the recursion / double-instrumentation
+     * guards (`proceedWithoutObserving`) and responses whose body the caller never drains or closes.
+     * `Call` doesn't override `equals`/`hashCode`, so the map keys on identity as intended.
+     *
+     * `WeakHashMap` isn't thread-safe and OkHttp drives the listener from a pool of dispatcher
+     * threads, so every access goes through `synchronized`.
+     */
+    private val inFlightTimings = WeakHashMap<Call, Timings>()
+
+    /** Removes and returns the timings for `call`, or `null` if none were recorded. */
+    internal fun takeTimings(call: Call): Timings? = synchronized(inFlightTimings) {
+      inFlightTimings.remove(call)
+    }
+
+    /** Factory that installs a fresh listener per call. Wire to `OkHttpClient.Builder.eventListenerFactory(...)`. */
+    val factory: EventListener.Factory = EventListener.Factory { NetworkRequestEventListener() }
+  }
+}
+
+/**
+ * Counting wrapper for the request body. Decorates the `BufferedSink` OkHttp hands the body so we
+ * see every byte actually written to the wire, including chunked-encoding framing and gzip
+ * overhead applied by upstream interceptors.
+ */
+private class CountingRequestBody(private val delegate: RequestBody) : RequestBody() {
+  @Volatile
+  var bytesWritten: Long = 0
+    private set
+
+  override fun contentType(): MediaType? = delegate.contentType()
+  override fun contentLength(): Long = delegate.contentLength()
+  override fun isOneShot(): Boolean = delegate.isOneShot()
+  override fun isDuplex(): Boolean = delegate.isDuplex()
+
+  override fun writeTo(sink: BufferedSink) {
+    val countingSink = object : ForwardingSink(sink) {
+      override fun write(source: Buffer, byteCount: Long) {
+        super.write(source, byteCount)
+        bytesWritten += byteCount
+      }
+    }.buffer()
+    delegate.writeTo(countingSink)
+    countingSink.flush()
+  }
+}
+
+/**
+ * Counting wrapper for the response body. Wraps the upstream `Source` so we see every byte the
+ * caller actually pulls off the wire. This is the key footgun Firebase Performance hit on
+ * gzipped responses with stripped `Content-Length` — counting at the source avoids it.
+ */
+private class CountingResponseBody(
+  private val delegate: ResponseBody,
+  private val onComplete: (bytesRead: Long) -> Unit
+) : ResponseBody() {
+  @Volatile
+  private var bytesRead: Long = 0
+
+  @Volatile
+  private var completed: Boolean = false
+
+  // OkHttp's contract returns the same `BufferedSource` on repeated `source()` calls, so we cache
+  // ours too — wrapping twice would double-count.
+  private val countingSource: BufferedSource by lazy {
+    object : ForwardingSource(delegate.source()) {
+      override fun read(sink: Buffer, byteCount: Long): Long {
+        val read = super.read(sink, byteCount)
+        if (read > 0) {
+          bytesRead += read
+        } else if (read == -1L) {
+          // Body fully drained — fire the completion callback exactly once. Callers that close
+          // the stream without reaching EOF still trigger completion via the `close()` override.
+          fireCompleteOnce()
+        }
+        return read
+      }
+
+      override fun close() {
+        fireCompleteOnce()
+        super.close()
+      }
+    }.buffer()
+  }
+
+  override fun contentType(): MediaType? = delegate.contentType()
+  override fun contentLength(): Long = delegate.contentLength()
+  override fun source(): BufferedSource = countingSource
+
+  private fun fireCompleteOnce() {
+    if (completed) {
+      return
+    }
+    completed = true
+    onComplete(bytesRead)
+  }
+}
+
+/**
+ * Approximates the number of bytes the request preamble occupies on the wire — the request line
+ * (`METHOD path HTTP/1.1\r\n`) plus the serialized header block (`Name: Value\r\n` per header and
+ * the trailing CRLF that terminates the block).
+ *
+ * iOS gets exact numbers from `URLSessionTaskTransactionMetrics.countOfRequestHeaderBytesSent`.
+ * We don't have that on Android, so this is a best-effort match against HTTP/1.1 wire framing.
+ * HTTP/2 and HTTP/3 use HPACK/QPACK header compression and a binary framing layer; on those
+ * protocols we'll overcount the preamble by a small fixed amount (~10–30 bytes per request) but
+ * we cannot reconstruct the on-the-wire HPACK frame sizes from OkHttp's API.
+ */
+private fun requestPreambleByteCount(request: Request): Long {
+  // "METHOD " + encodedPathQuery + " HTTP/1.1\r\n"
+  val pathLength = request.url.encodedPath.length +
+    (request.url.encodedQuery?.let { it.length + 1 } ?: 0)
+  val requestLine = request.method.length + 1 + pathLength + 1 + "HTTP/1.1".length + 2
+  return requestLine + serializedHeaderBytes(request.headers)
+}
+
+/**
+ * Same approximation as `requestPreambleByteCount` but for the response side: the status line
+ * (`HTTP/1.1 STATUSCODE REASON\r\n`) plus the serialized header block.
+ */
+private fun responsePreambleByteCount(response: Response): Long {
+  val statusLine = response.protocol.toString().length + 1 +
+    response.code.toString().length + 1 +
+    response.message.length + 2
+  return statusLine + serializedHeaderBytes(response.headers)
+}
+
+/**
+ * Serialized size of an HTTP/1.1 header block: `Name: Value\r\n` per header plus the trailing
+ * `\r\n` that terminates the block. OkHttp 4.10+ ships `Headers.byteCount()` natively; we
+ * implement it ourselves because we're pinned to 4.9.2 (matches RN's pin).
+ */
+private fun serializedHeaderBytes(headers: Headers): Long {
+  var total = 2L // trailing CRLF terminating the header block
+  for (i in 0 until headers.size) {
+    total += headers.name(i).length + 2 + headers.value(i).length + 2
+  }
+  return total
+}
+
