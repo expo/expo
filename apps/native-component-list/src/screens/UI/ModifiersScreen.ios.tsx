@@ -39,6 +39,7 @@ import {
   onDisappear,
   accessibilityLabel,
   accessibilityIdentifier,
+  accessibilityHidden,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -655,6 +656,16 @@ export default function ModifiersScreen() {
                 </VStack>
               </HStack>
             )}
+
+            {/* accessibilityHidden: decorative SF Symbol skipped by VoiceOver */}
+            <HStack spacing={6}>
+              <Image
+                systemName="exclamationmark.triangle"
+                size={17}
+                modifiers={[accessibilityHidden(true)]}
+              />
+              <Text>Something went wrong</Text>
+            </HStack>
 
             <Text
               modifiers={[
