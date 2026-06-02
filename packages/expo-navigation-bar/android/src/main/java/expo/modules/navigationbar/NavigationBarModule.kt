@@ -66,16 +66,16 @@ class NavigationBarModule : Module(), ExtraWindowEventListener {
   private val currentActivity get() = appContext.throwingActivity
   private val reactContext get() = appContext.reactContext as? ReactApplicationContext
 
-  private fun isNavigationBarContrastEnforced(): Boolean {
+  private val isContrastEnforced: Boolean by lazy {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      return true
+      return@lazy true
     }
 
     val theme = currentActivity.theme
     val resId = android.R.attr.enforceNavigationBarContrast
     val value = TypedValue()
 
-    return if (theme.resolveAttribute(resId, value, true)) {
+    return@lazy if (theme.resolveAttribute(resId, value, true)) {
       value.data != 0
     } else {
       true
@@ -121,10 +121,8 @@ class NavigationBarModule : Module(), ExtraWindowEventListener {
       }
     }
 
-    @Suppress("DEPRECATION")
     AsyncFunction("setStyle") { style: String ->
       val hasLightBackground = style == "dark" // dark content -> light background
-      val isContrastEnforced = isNavigationBarContrastEnforced()
 
       currentActivity.window.setNavigationBarStyle(hasLightBackground, isContrastEnforced)
       extraWindows.forEach { it.setNavigationBarStyle(hasLightBackground, isContrastEnforced) }
@@ -152,8 +150,6 @@ class NavigationBarModule : Module(), ExtraWindowEventListener {
 
   override fun onExtraWindowCreate(window: Window) {
     extraWindows.add(window)
-
-    val isContrastEnforced = isNavigationBarContrastEnforced()
 
     currentActivity.window.let { activityWindow ->
       val controller = WindowCompat.getInsetsController(activityWindow, activityWindow.decorView)
