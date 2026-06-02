@@ -37,6 +37,7 @@ export declare function hasStringAsync(): Promise<boolean>;
  *
  * @returns A promise that fulfills to the URL in the clipboard, or null if no URL is present or permission was denied.
  * @platform ios
+ * @platform macos
  */
 export declare function getUrlAsync(): Promise<string | null>;
 /**
@@ -48,6 +49,7 @@ export declare function getUrlAsync(): Promise<string | null>;
  *
  * @param url The URL to save to the clipboard.
  * @platform ios
+ * @platform macos
  */
 export declare function setUrlAsync(url: string): Promise<void>;
 /**
@@ -55,6 +57,7 @@ export declare function setUrlAsync(url: string): Promise<void>;
  *
  * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
  * @platform ios
+ * @platform macos
  */
 export declare function hasUrlAsync(): Promise<boolean>;
 /**
@@ -103,7 +106,7 @@ export declare function setImageAsync(base64Image: string): Promise<void>;
 export declare function hasImageAsync(): Promise<boolean>;
 /**
  * Adds a listener that will fire whenever the content of the user's clipboard changes. This method
- * is a no-op on Web.
+ * is a no-op on Web and macOS.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
  * single argument that is an object containing information about clipboard contents.
