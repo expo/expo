@@ -9,7 +9,7 @@ class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
     super.onCreate(application)
     AppStartupManager.recordAppCreated(application)
-    // Install the OkHttp factory hook as early as possible — before React Native lazily caches
+    // Install the OkHttp factory hook as early as possible - before React Native lazily caches
     // its client. See `OkHttpClientProviderHook` for the race we're trying to win.
     OkHttpClientProviderHook.installIfNeeded()
   }

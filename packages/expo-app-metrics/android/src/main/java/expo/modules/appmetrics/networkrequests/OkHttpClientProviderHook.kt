@@ -17,7 +17,7 @@ import expo.modules.appmetrics.TAG
  * **Install timing.** `OkHttpClientProvider.getOkHttpClient()` lazily caches its client on first
  * use. The factory we set here is only consulted on that first creation; if RN's networking layer
  * (or another package) already triggered creation before this hook runs, we miss everything that
- * client touches. We can't fix that without bytecode rewriting — Datadog hit the same constraint
+ * client touches. We can't fix that without bytecode rewriting - Datadog hit the same constraint
  * in production (DataDog/dd-sdk-android#513). We log a warning if we detect we landed too late
  * so engineers see it in logcat; the workaround is to install another hook earlier.
  */
@@ -53,7 +53,7 @@ object OkHttpClientProviderHook {
 
   /**
    * `OkHttpClientProvider.client` is `internal`, so we reach it via reflection. Failures are
-   * benign — if the field is no longer present or the access is denied, we assume the client
+   * benign - if the field is no longer present or the access is denied, we assume the client
    * hasn't been cached and skip the warning. Worst case the warning is silent in a future RN
    * version; the factory installation itself is unaffected.
    */

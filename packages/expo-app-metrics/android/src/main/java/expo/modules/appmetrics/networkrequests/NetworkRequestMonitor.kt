@@ -21,7 +21,7 @@ interface NetworkRequestObserverDelegate {
  *
  * The interceptor runs on OkHttp's dispatcher threads; delegates may be added/removed from any
  * thread (JS-facing observers come from the React thread, the singleton is reachable from app
- * code). All shared state is guarded by a single intrinsic lock — the work inside is small and
+ * code). All shared state is guarded by a single intrinsic lock - the work inside is small and
  * synchronous, so contention is negligible.
  */
 class NetworkRequestMonitor internal constructor() {
@@ -43,7 +43,7 @@ class NetworkRequestMonitor internal constructor() {
    * Folds the requests whose `timings.fetchStart` falls within `[start, end]` into a summary.
    * Used by the TTI metric to attach a per-launch network rollup. Bounded by the ring buffer:
    * under heavy network load the earliest requests in the window may have been evicted, in which
-   * case the summary undercounts — acceptable for a TTI-attached signal.
+   * case the summary undercounts - acceptable for a TTI-attached signal.
    */
   fun summarize(start: Date, end: Date): NetworkRequestSummary {
     val inWindow = synchronized(lock) {
@@ -55,17 +55,16 @@ class NetworkRequestMonitor internal constructor() {
     return NetworkRequestSummary.from(inWindow)
   }
 
-  /** Adds a delegate. Held weakly — drop the reference to unsubscribe. */
-  fun addDelegate(delegate: NetworkRequestObserverDelegate) {
-    synchronized(lock) {
-      pruneDelegatesLocked()
-      delegates.add(WeakReference(delegate))
-    }
+  /** Adds a delegate. Held weakly - drop the reference to unsubscribe. */
+  fun addDelegate(delegate: NetworkRequestObserverDelegate) = synchronized(lock) {
+    delegates.removeAll { it.get() == null }
+    delegates.add(WeakReference(delegate))
   }
 
-  fun removeDelegate(delegate: NetworkRequestObserverDelegate) {
-    synchronized(lock) {
-      delegates.removeAll { it.get() === delegate || it.get() == null }
+  fun removeDelegate(delegate: NetworkRequestObserverDelegate) = synchronized(lock) {
+    delegates.removeAll {
+      val strongRef = it.get()
+      strongRef === delegate || strongRef == null
     }
   }
 
@@ -76,7 +75,7 @@ class NetworkRequestMonitor internal constructor() {
       while (recentRequests.size > recentCapacity) {
         recentRequests.removeFirst()
       }
-      pruneDelegatesLocked()
+      delegates.removeAll { it.get() == null }
       delegates.mapNotNull { it.get() }
     }
     for (delegate in snapshot) {
@@ -85,22 +84,18 @@ class NetworkRequestMonitor internal constructor() {
   }
 
   /**
-   * Records that a request has begun. No ring-buffer entry — the started snapshot is purely a
+   * Records that a request has begun. No ring-buffer entry - the started snapshot is purely a
    * notification used to surface in-flight state to subscribers. The corresponding completion
    * event will arrive later with a matching `id`.
    */
   fun recordStart(request: NetworkRequestStarted) {
     val snapshot = synchronized(lock) {
-      pruneDelegatesLocked()
+      delegates.removeAll { it.get() == null }
       delegates.mapNotNull { it.get() }
     }
     for (delegate in snapshot) {
       delegate.onNetworkRequestStarted(request)
     }
-  }
-
-  private fun pruneDelegatesLocked() {
-    delegates.removeAll { it.get() == null }
   }
 
   companion object {

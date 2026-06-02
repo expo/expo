@@ -235,7 +235,7 @@ object AppStartupManager {
     frameMetrics: FrameMetricsRecord,
     userParams: Map<String, Any>?
   ): Map<String, Any> {
-    // Window the network summary to `launchTimeInMillis → now` — same anchor iOS uses
+    // Window the network summary to `launchTimeInMillis -> now` - same anchor iOS uses
     // (`markers.finishedLaunchingDate`). When the anchor is missing we skip the summary
     // entirely; an unbounded window would silently include requests from before launch.
     val networkRequests = launchTimeInMillis?.let { launchStart ->

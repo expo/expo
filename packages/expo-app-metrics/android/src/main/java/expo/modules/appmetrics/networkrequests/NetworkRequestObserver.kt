@@ -78,22 +78,21 @@ class NetworkRequestObserver(appContext: AppContext) :
     )
 
     /**
-     * ISO-8601 in UTC — matches the format iOS's `ISO8601Format()` produces with the default
+     * ISO-8601 in UTC - matches the format iOS's `ISO8601Format()` produces with the default
      * options, so JS receives the same string shape from both platforms.
      *
      * `SimpleDateFormat` isn't thread-safe and OkHttp drives the interceptor from a pool of
      * dispatcher threads, so we stash one formatter per thread. (`java.time.DateTimeFormatter`
      * would be the cleaner choice, but the package targets minSdk 24 and `java.time` requires
-     * 26+ without core-library desugaring — which the rest of the package also avoids; see
+     * 26+ without core-library desugaring - which the rest of the package also avoids; see
      * `TimeUtils.kt`.)
      */
-    private val isoFormatter = object : ThreadLocal<SimpleDateFormat>() {
-      override fun initialValue(): SimpleDateFormat =
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
-          timeZone = TimeZone.getTimeZone("UTC")
-        }
+    private val isoFormatter = ThreadLocal.withInitial {
+      SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+      }
     }
 
-    private fun formatIsoUtc(date: Date): String = isoFormatter.get()!!.format(date)
+    private fun formatIsoUtc(date: Date): String = requireNotNull(isoFormatter.get()).format(date)
   }
 }

@@ -9,7 +9,7 @@ import java.util.UUID
  * Snapshot of a single HTTP request observed by `NetworkRequestInterceptor`. Mirrors the iOS
  * `NetworkRequest` struct field-for-field so the JS payload is symmetric across platforms.
  *
- * The URL is recorded verbatim — including the query string — because callers asked for it. Any
+ * The URL is recorded verbatim - including the query string - because callers asked for it. Any
  * redaction (tokens in query parameters, auth headers, etc.) is the responsibility of whatever
  * downstream layer converts these snapshots into stored metrics.
  */
@@ -26,7 +26,7 @@ data class NetworkRequest(
   /** Response status code, or `null` if the request failed before headers were received. */
   val statusCode: Int?,
 
-  /** Negotiated wire protocol — `http/1.1`, `h2`, `h3` — as reported by OkHttp's `Protocol`. */
+  /** Negotiated wire protocol - `http/1.1`, `h2`, `h3` - as reported by OkHttp's `Protocol`. */
   val networkProtocol: String?,
 
   /** Number of bytes sent on the wire for the request (headers + body). */

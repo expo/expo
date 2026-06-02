@@ -9,7 +9,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * `params` map, so all fields are simple value types.
  *
  * The summary is intentionally small. Anything that would explode cardinality (per-URL p95s, full
- * request lists) belongs in a separate metric/table once we ship one — not on the TTI envelope.
+ * request lists) belongs in a separate metric/table once we ship one - not on the TTI envelope.
  */
 data class NetworkRequestSummary(
   /** Number of requests in the window. */
