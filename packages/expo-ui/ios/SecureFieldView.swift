@@ -70,8 +70,22 @@ private struct StatefulSecureField: View {
   @FocusState.Binding var isFocused: Bool
   let promptText: Text?
 
+  // See `StatefulTextField.userEditing` in TextFieldView.swift.
+  @State private var userEditing = false
+
+  private var textBinding: Binding<String> {
+    Binding(
+      get: { (state.value as? String) ?? "" },
+      set: { newValue in
+        let current = (state.value as? String) ?? ""
+        guard newValue != current else { return }
+        userEditing = true
+        state.value = newValue
+      }
+    )
+  }
+
   var body: some View {
-    let textBinding = state.binding("")
     SecureField(
       promptText == nil ? props.placeholder : "",
       text: textBinding,
@@ -84,10 +98,12 @@ private struct StatefulSecureField: View {
         }
       }
       .onChange(of: state.value as? String) { newValue in
+        guard userEditing else { return }
         if let max = props.maxLength, let str = newValue, str.count > max {
           state.value = String(str.prefix(max))
           return
         }
+        userEditing = false
         props.onTextChange(["value": newValue])
         props.onTextChangeSync?.invoke(arguments: [newValue])
       }
