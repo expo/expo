@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed iOS builds by removing the Swift macro dependency from `randomUUID()`.
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-26
