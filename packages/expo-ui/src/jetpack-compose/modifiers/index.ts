@@ -164,6 +164,42 @@ export const border = (borderWidth: number, borderColor: ColorValue) =>
 export const shadow = (elevation: number) => createModifier('shadow', { elevation });
 
 /**
+ * Options for the `dropShadow` and `innerShadow` modifiers.
+ */
+export type ShadowConfig = {
+  /** Blur radius of the shadow in dp. */
+  radius?: number;
+  /** Amount to expand (positive) or contract (negative) the shadow geometry in dp. */
+  spread?: number;
+  /** Shadow color string (hex). Defaults to black. */
+  color?: ColorValue;
+  /** Horizontal offset of the shadow in dp. */
+  offsetX?: number;
+  /** Vertical offset of the shadow in dp. */
+  offsetY?: number;
+  /** Shadow opacity, from 0.0 to 1.0. */
+  alpha?: number;
+};
+
+/**
+ * Draws a shadow behind the view with control over the blur radius, spread, offset, and color. Unlike
+ * `shadow`, it does not require an elevation value.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export const dropShadow = (shape: BuiltinShape, config: ShadowConfig = {}) =>
+  createModifier('dropShadow', { shape, ...config });
+
+/**
+ * Draws a shadow inside the view to create an inset effect. The view's `background` must come before
+ * this modifier for the shadow to render.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export const innerShadow = (shape: BuiltinShape, config: ShadowConfig = {}) =>
+  createModifier('innerShadow', { shape, ...config });
+
+/**
  * Sets the opacity/alpha of the view.
  * @param alpha - Opacity value (0.0 to 1.0).
  */

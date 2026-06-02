@@ -12,7 +12,7 @@
 - [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
 - [swift-ui] Added `<DisclosureGroup.Label>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
 - [universal] Added `<Collapsible.labelStyle>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
-
+- [jetpack-compose] Added `dropShadow` and `innerShadow` modifiers. ([#46364](https://github.com/expo/expo/discussions/46364) by [@duyanhv](https://github.com/duyanhv))
 ### 🐛 Bug fixes
 
 - [android] Fix universal `TextInput` ignoring `style` `backgroundColor` / `borderWidth` and not applying `textAlign` to the placeholder. ([#46441](https://github.com/expo/expo/pull/46441) by [@duyanhv](https://github.com/duyanhv))
