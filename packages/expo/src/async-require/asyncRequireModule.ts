@@ -67,9 +67,24 @@ function asyncRequireImpl<T>(
   paths: DependencyMapPaths,
   moduleName?: string
 ): Promise<T> | T {
-  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
   const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID, moduleName);
 
+  // Fast path: if the chunk containing this module has already been delivered
+  // (e.g. via a `<script defer>` injected into the SSR document) the module is
+  // already in Metro's registry, and `importAll` returns synchronously. Skipping
+  // `__loadBundleAsync` here prevents a redundant network round-trip and — more
+  // importantly — lets the caller bypass the `Promise` wrapping that forces
+  // React.lazy / Suspense to fall back during hydration.
+  try {
+    return importAll();
+  } catch (e: unknown) {
+    if (!(e instanceof Error) || !e.message.includes('Requiring unknown module')) {
+      throw e;
+    }
+    // Fall through — the module isn't registered yet, fetch the chunk.
+  }
+
+  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
   if (maybeLoadBundlePromise != null) {
     return maybeLoadBundlePromise.then(importAll);
   }
@@ -77,11 +92,17 @@ function asyncRequireImpl<T>(
   return importAll();
 }
 
-async function asyncRequire<T>(
+// NOTE: This used to be `async`, which forced every resolved import to round-trip
+// through a microtask. Returning `asyncRequireImpl`'s result directly lets the
+// sync fast path above stay synchronous through to the caller — required to
+// avoid a Suspense fallback flicker during SSR hydration. Callers that previously
+// chained `.then()` on `import()` should switch to `await` if they need to be
+// agnostic to whether the chunk happens to be preloaded.
+function asyncRequire<T>(
   moduleID: number,
   paths: DependencyMapPaths,
   moduleName?: string
-): Promise<T> {
+): Promise<T> | T {
   return asyncRequireImpl<T>(moduleID, paths, moduleName);
 }
 

@@ -16,10 +16,27 @@ describe('asyncRequireModule', () => {
   let mockRequire: any;
   let asyncRequire: any;
 
+  /**
+   * Simulates Metro's registry: modules listed here resolve synchronously via
+   * `importAll`; modules not in the set throw `Requiring unknown module "<id>".`
+   * exactly like the real runtime, which is what `asyncRequireImpl` looks for
+   * to decide whether to fall through to `__loadBundleAsync`.
+   */
+  let registeredModules: Set<number>;
+
+  function registerModule(id: number) {
+    registeredModules.add(id);
+  }
+
   beforeEach(() => {
-    mockImportAll = jest.fn((id: number, _moduleName?: string) => ({
-      default: `module-${id}`,
-    }));
+    registeredModules = new Set();
+
+    mockImportAll = jest.fn((id: number, _moduleName?: string) => {
+      if (!registeredModules.has(id)) {
+        throw new Error(`Requiring unknown module "${id}".`);
+      }
+      return { default: `module-${id}` };
+    });
 
     // Build a fake require that has importAll attached
     mockRequire = Object.assign(jest.fn(), {
@@ -34,6 +51,7 @@ describe('asyncRequireModule', () => {
 
     // Evaluate the compiled module in a scope where `require` is our mock.
     // We use Function constructor to create a scope with our own `require`.
+    // Keep this snippet in sync with src/async-require/asyncRequireModule.ts.
     const moduleObj = { exports: {} as any };
     // eslint-disable-next-line no-new-func
     const moduleFn = new Function(
@@ -43,10 +61,6 @@ describe('asyncRequireModule', () => {
       '__METRO_GLOBAL_PREFIX__',
       `
       "use strict";
-
-      function makeWorkerContent(url) {
-        return '';
-      }
 
       function maybeLoadBundle(moduleID, paths) {
         var loadBundle = globalThis[(__METRO_GLOBAL_PREFIX__ || '') + '__loadBundleAsync'];
@@ -63,9 +77,17 @@ describe('asyncRequireModule', () => {
       }
 
       function asyncRequireImpl(moduleID, paths, moduleName) {
-        var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
         var importAll = function() { return require.importAll(moduleID, moduleName); };
 
+        try {
+          return importAll();
+        } catch (e) {
+          if (!(e instanceof Error) || e.message.indexOf('Requiring unknown module') === -1) {
+            throw e;
+          }
+        }
+
+        var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
         if (maybeLoadBundlePromise != null) {
           return maybeLoadBundlePromise.then(importAll);
         }
@@ -73,7 +95,7 @@ describe('asyncRequireModule', () => {
         return importAll();
       }
 
-      async function asyncRequire(moduleID, paths, moduleName) {
+      function asyncRequire(moduleID, paths, moduleName) {
         return asyncRequireImpl(moduleID, paths, moduleName);
       }
 
@@ -98,21 +120,37 @@ describe('asyncRequireModule', () => {
     delete (globalThis as any).__METRO_GLOBAL_PREFIX__;
   });
 
-  it('calls importAll with moduleID and moduleName when no bundle loading needed', async () => {
-    const result = await asyncRequire(42, null, 'my-module');
+  it('returns synchronously when the module is already registered', () => {
+    registerModule(42);
 
+    const result = asyncRequire(42, null, 'my-module');
+
+    expect(result).toEqual({ default: 'module-42' });
     expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
+  });
+
+  it('returns synchronously when the chunk has already been delivered, even with split paths', () => {
+    registerModule(42);
+    (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+
+    const paths = { '42': '/bundles/my-module.bundle' };
+    const result = asyncRequire(42, paths, 'my-module');
+
+    // The chunk is already in the registry — we must not refetch.
+    expect((globalThis as any).__loadBundleAsync).not.toHaveBeenCalled();
     expect(result).toEqual({ default: 'module-42' });
   });
 
-  it('calls importAll without moduleName when not provided', async () => {
-    const result = await asyncRequire(42, null);
+  it('calls importAll without moduleName when not provided', () => {
+    registerModule(42);
+
+    const result = asyncRequire(42, null);
 
     expect(mockImportAll).toHaveBeenCalledWith(42, undefined);
     expect(result).toEqual({ default: 'module-42' });
   });
 
-  it('passes moduleName through when bundle loading is required', async () => {
+  it('falls through to __loadBundleAsync when the module is not yet registered', async () => {
     let resolveBundle!: () => void;
     const bundlePromise = new Promise<void>((resolve) => {
       resolveBundle = resolve;
@@ -123,19 +161,35 @@ describe('asyncRequireModule', () => {
     const paths = { '42': '/bundles/my-module.bundle' };
     const resultPromise = asyncRequire(42, paths, 'my-module');
 
-    // importAll should not have been called yet (waiting for bundle)
-    expect(mockImportAll).not.toHaveBeenCalled();
+    // The fast path is allowed to invoke importAll once to probe; what matters
+    // is that the result is async because the bundle hasn't resolved yet.
+    expect(resultPromise).toBeInstanceOf(Promise);
 
-    // Resolve the bundle loading
+    // Simulate the chunk delivering the module, then resolve the load promise.
+    registerModule(42);
     resolveBundle();
     const result = await resultPromise;
 
-    expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
+    expect(mockImportAll).toHaveBeenLastCalledWith(42, 'my-module');
     expect(result).toEqual({ default: 'module-42' });
   });
 
+  it('re-throws non-"unknown module" errors from importAll without fetching the bundle', () => {
+    registerModule(42);
+    const factoryError = new Error('boom from factory');
+    mockImportAll.mockImplementation(() => {
+      throw factoryError;
+    });
+    (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+
+    const paths = { '42': '/bundles/my-module.bundle' };
+    expect(() => asyncRequire(42, paths, 'my-module')).toThrow(factoryError);
+    expect((globalThis as any).__loadBundleAsync).not.toHaveBeenCalled();
+  });
+
   describe('unstable_importMaybeSync', () => {
-    it('returns synchronously when no bundle loading needed', () => {
+    it('returns synchronously when the module is already registered', () => {
+      registerModule(42);
       const result = asyncRequire.unstable_importMaybeSync(42, null);
 
       expect(mockImportAll).toHaveBeenCalledWith(42, undefined);
