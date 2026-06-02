@@ -1058,6 +1058,60 @@ export const font = (params: {
     | 'caption2';
 }) => createModifier('font', params);
 /**
+ * A standard size for Dynamic Type, from `xSmall` through the five
+ * `accessibility` sizes. Mirrors SwiftUI's `DynamicTypeSize`.
+ */
+export type DynamicTypeSizeValue =
+  | 'xSmall'
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'xLarge'
+  | 'xxLarge'
+  | 'xxxLarge'
+  | 'accessibility1'
+  | 'accessibility2'
+  | 'accessibility3'
+  | 'accessibility4'
+  | 'accessibility5';
+/**
+ * Sets or constrains the Dynamic Type size within the view, overriding the
+ * value inherited from the system.
+ *
+ * Four variants matching SwiftUI's `dynamicTypeSize(_:)`:
+ * - `dynamicTypeSize('large')` — fixes the Dynamic Type size to a single value
+ * - `dynamicTypeSize({ max: 'accessibility3' })` — caps growth at a ceiling (`...accessibility3`)
+ * - `dynamicTypeSize({ min: 'large' })` — sets a floor (`large...`)
+ * - `dynamicTypeSize({ min: 'large', max: 'accessibility3' })` — clamps to a range (`large...accessibility3`)
+ *
+ * `min` and `max` are independent: pass either or both. Set it on a `<Host>` to
+ * cascade the constraint to every descendant through the SwiftUI environment.
+ * Keep `min` at or below `max`, or the range traps natively, like SwiftUI.
+ * Per Apple's guidance, prefer capping at an accessibility size over disabling
+ * Dynamic Type entirely.
+ *
+ * @example
+ * ```tsx
+ * // Cap how large text in a tight layout can grow
+ * <Host modifiers={[dynamicTypeSize({ max: 'accessibility3' })]}>...</Host>
+ * ```
+ *
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/dynamictypesize(_:)).
+ */
+export function dynamicTypeSize(size: DynamicTypeSizeValue): ModifierConfig;
+export function dynamicTypeSize(range: {
+  min?: DynamicTypeSizeValue;
+  max?: DynamicTypeSizeValue;
+}): ModifierConfig;
+export function dynamicTypeSize(
+  sizeOrRange: DynamicTypeSizeValue | { min?: DynamicTypeSizeValue; max?: DynamicTypeSizeValue }
+): ModifierConfig {
+  if (typeof sizeOrRange === 'object' && sizeOrRange !== null) {
+    return createModifier('dynamicTypeSize', { min: sizeOrRange.min, max: sizeOrRange.max });
+  }
+  return createModifier('dynamicTypeSize', { size: sizeOrRange });
+}
+/**
  * Asks grid layouts not to offer the view extra size in the specified axes.
  * @param axes - The dimensions in which the grid shouldn’t offer the view a share of any available space. This prevents a flexible view like a Spacer, Divider, or Color from defining the size of a row or column.
  * @returns A view that doesn’t ask an enclosing grid for extra size in one or more axes.
@@ -1404,6 +1458,7 @@ export type BuiltInModifier =
   | ReturnType<typeof badge>
   | ReturnType<typeof listSectionMargins>
   | ReturnType<typeof font>
+  | ReturnType<typeof dynamicTypeSize>
   | ReturnType<typeof gridCellUnsizedAxes>
   | ReturnType<typeof gridCellColumns>
   | ReturnType<typeof gridColumnAlignment>
