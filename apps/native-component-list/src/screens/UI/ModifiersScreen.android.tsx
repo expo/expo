@@ -108,9 +108,7 @@ export default function ModifiersScreen() {
         </Section>
         <Section title="Neumorphic shadow">
           <Host style={{ height: 160 }}>
-            <Box
-              contentAlignment="center"
-              modifiers={[fillMaxSize(), background('#E0E0E0')]}>
+            <Box contentAlignment="center" modifiers={[fillMaxSize(), background('#E0E0E0')]}>
               <Box
                 modifiers={[
                   size(120, 120),

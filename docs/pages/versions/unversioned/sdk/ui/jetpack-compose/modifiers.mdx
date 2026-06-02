@@ -254,7 +254,9 @@ Draws a shadow behind the component with control over the blur radius, spread, o
 import { dropShadow, Shapes } from '@expo/ui/jetpack-compose/modifiers';
 
 <Button
-  modifiers={[dropShadow(Shapes.RoundedCorner(24), { radius: 16, spread: 4, color: '#6200EE', offsetY: 8 })]}>
+  modifiers={[
+    dropShadow(Shapes.RoundedCorner(24), { radius: 16, spread: 4, color: '#6200EE', offsetY: 8 }),
+  ]}>
   Drop shadow
 </Button>;
 ```
@@ -326,7 +328,13 @@ import { dropShadow, border, background, Shapes } from '@expo/ui/jetpack-compose
 
 <Box
   modifiers={[
-    dropShadow(Shapes.Rectangle, { radius: 0, spread: 0, offsetX: 8, offsetY: 8, color: '#000000' }),
+    dropShadow(Shapes.Rectangle, {
+      radius: 0,
+      spread: 0,
+      offsetX: 8,
+      offsetY: 8,
+      color: '#000000',
+    }),
     border(8, '#000000'),
     background('#FFFFFF'),
   ]}
