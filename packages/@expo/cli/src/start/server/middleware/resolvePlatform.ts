@@ -1,3 +1,4 @@
+import type { NativePlatform } from '@expo/config';
 import { parse } from 'url';
 
 import type { ServerRequest } from './server.types';
@@ -7,8 +8,8 @@ const debug = require('debug')(
   'expo:start:server:middleware:resolvePlatform'
 ) as typeof console.log;
 
-/** Supported platforms */
-export type RuntimePlatform = 'ios' | 'android';
+/** Supported native runtime platforms. */
+export type RuntimePlatform = NativePlatform;
 
 /**
  * Extract the runtime platform from the server request.
@@ -55,10 +56,10 @@ export function assertMissingRuntimePlatform(platform?: any): asserts platform {
 /** Assert if the runtime platform is not correct. */
 export function assertRuntimePlatform(platform: string): asserts platform is RuntimePlatform {
   const stringifiedPlatform = String(platform);
-  if (!['android', 'ios', 'web'].includes(stringifiedPlatform)) {
+  if (!['android', 'ios', 'web', 'tvos', 'macos'].includes(stringifiedPlatform)) {
     throw new CommandError(
       'PLATFORM_HEADER',
-      `platform must be "android", "ios", or "web". Received: "${platform}"`
+      `platform must be "android", "ios", "web", "tvos", or "macos". Received: "${platform}"`
     );
   }
 }
