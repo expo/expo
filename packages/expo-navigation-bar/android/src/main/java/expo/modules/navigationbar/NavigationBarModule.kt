@@ -68,17 +68,17 @@ class NavigationBarModule : Module(), ExtraWindowEventListener {
 
   private val isContrastEnforced: Boolean by lazy {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      return@lazy true
-    }
-
-    val theme = currentActivity.theme
-    val resId = android.R.attr.enforceNavigationBarContrast
-    val value = TypedValue()
-
-    return@lazy if (theme.resolveAttribute(resId, value, true)) {
-      value.data != 0
-    } else {
       true
+    } else {
+      val theme = currentActivity.theme
+      val resId = android.R.attr.enforceNavigationBarContrast
+      val value = TypedValue()
+
+      if (theme.resolveAttribute(resId, value, true)) {
+        value.data != 0
+      } else {
+        true
+      }
     }
   }
 
