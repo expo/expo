@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { getWorkspaceGlobsAsync } from 'resolve-workspace-root';
 
 import type { MonorepoConfig, WorkspaceConfig } from './monorepoConfig';
 import type { PackageManagerName } from './resolvePackageManager';
@@ -44,16 +45,14 @@ export async function configureWorkspacesAsync(
   packageManager: PackageManagerName,
   monorepoConfig?: MonorepoConfig
 ): Promise<void> {
-  const rootPackagePath = path.join(projectRoot, 'package.json');
-  const rootPackage = await readJsonFileAsync(rootPackagePath);
-  if (!rootPackage) {
-    debug(`Could not read ${rootPackagePath}; skipping workspace configuration`);
-    return;
-  }
-
-  const workspacePatterns = getWorkspacePatterns(rootPackage);
+  // Use `resolve-workspace-root` so we read workspace globs from whichever
+  // source the template ships — `pnpm-workspace.yaml` for pnpm templates,
+  // `package.json` `workspaces` (array or `{ packages: [...] }` object form)
+  // for bun / npm / yarn. The library only inspects the given root (no parent
+  // traversal) and returns `null` when neither file declares workspaces.
+  const workspacePatterns = (await getWorkspaceGlobsAsync(projectRoot)) ?? [];
   if (!workspacePatterns.length) {
-    debug(`No workspaces declared in ${rootPackagePath}; skipping workspace configuration`);
+    debug(`No workspaces declared at ${projectRoot}; skipping workspace configuration`);
     return;
   }
 
@@ -104,21 +103,6 @@ function getYarnMajorFromUserAgent(): number | undefined {
   }
   const major = parseInt(match[1], 10);
   return Number.isFinite(major) ? major : undefined;
-}
-
-function getWorkspacePatterns(rootPackage: any): string[] {
-  const workspaces = rootPackage?.workspaces;
-  if (!workspaces) {
-    return [];
-  }
-  if (Array.isArray(workspaces)) {
-    return workspaces.filter((p): p is string => typeof p === 'string');
-  }
-  // Yarn supports the object form `{ "packages": [...], "nohoist": [...] }`.
-  if (typeof workspaces === 'object' && Array.isArray(workspaces.packages)) {
-    return workspaces.packages.filter((p: unknown): p is string => typeof p === 'string');
-  }
-  return [];
 }
 
 async function resolveWorkspaceMemberPathsAsync(

@@ -8,6 +8,13 @@ import {
 import type { MonorepoConfig } from '../monorepoConfig';
 
 jest.mock('fs');
+// `resolve-workspace-root` is shipped as an ncc bundle that requires
+// `node:fs` directly. The fs manual mock at `__mocks__/fs.ts` registers a
+// `node:fs` mock factory inside its body, but that only fires after `fs`
+// has been required for the first time — which can be *after* the bundle
+// captures its `node:fs` reference. Pin the mock at the test-file level so
+// the registration is hoisted and active before any imports load.
+jest.mock('node:fs', () => require('memfs').fs);
 
 const projectRoot = '/project';
 
