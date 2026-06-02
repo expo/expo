@@ -151,7 +151,15 @@ internal struct ObservabilityManager {
   private static func sendRequest(to endpointUrl: URL, body: any Encodable) async throws -> Bool {
     var request = URLRequest(url: endpointUrl)
     request.httpMethod = "POST"
-    request.allHTTPHeaderFields = ["Content-Type": "application/json"]
+    request.allHTTPHeaderFields = [
+      "Content-Type": "application/json",
+      // Tells `NetworkRequestURLProtocol` to skip observation so our own telemetry uploads don't
+      // get logged back into the network-request stream. The header reaches o.expo.dev unchanged
+      // (we control that endpoint, so the harmless overhead is fine). The name is duplicated here
+      // rather than imported: expo-observe must not depend on expo-app-metrics internals. Keep it
+      // in sync with `NetworkRequestURLProtocol.internalHeaderName` in expo-app-metrics.
+      "Expo-AppMetrics-Skip": "1"
+    ]
     request.httpBody = try body.toJSONData([])
 
     #if DEBUG
