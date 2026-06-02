@@ -38,6 +38,7 @@ import {
   onAppear,
   onDisappear,
   accessibilityLabel,
+  accessibilityIdentifier,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -684,6 +685,7 @@ export default function ModifiersScreen() {
                 foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 border({ color: '#9B59B6', width: 1 }),
                 accessibilityLabel('Complex styled card with multiple effects'),
+                accessibilityIdentifier('complex-styled-card'),
                 onTapGesture(() => alert('Complex card with multiple modifiers tapped!')),
               ]}>
               ✨ Complex: All effects combined!
