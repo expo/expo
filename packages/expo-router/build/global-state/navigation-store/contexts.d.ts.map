@@ -1,0 +1,1 @@
+{"version":3,"file":"contexts.d.ts","sourceRoot":"","sources":["../../../src/global-state/navigation-store/contexts.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAC;AACzD,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;;GAGG;AACH,eAAO,MAAM,eAAe,yCAA2C,CAAC;AAExE;;;GAGG;AACH,eAAO,MAAM,sBAAsB,iDAA8C,CAAC"}

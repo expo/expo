@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.routeInfoSubscribe = exports.routeInfoSubscribers = void 0;
+exports.notifyRouteInfoSubscribers = exports.routeInfoSubscribe = exports.routeInfoSubscribers = void 0;
 exports.getCachedRouteInfo = getCachedRouteInfo;
 exports.setCachedRouteInfo = setCachedRouteInfo;
 const getRouteInfoFromState_1 = require("./getRouteInfoFromState");
@@ -27,6 +27,11 @@ function setCachedRouteInfo(state, routeInfo) {
     routeInfoCache.set(state, routeInfo);
     routeInfoValuesCache.set(JSON.stringify(routeInfo), routeInfo);
 }
+// Route info is a *derived projection* of the navigation tree, finalized (with leaf-accurate focused
+// params via setFocusedState) when the tree commits. Consumers subscribe to be re-rendered when it
+// changes. This is intentionally a plain pub/sub, not `useSyncExternalStore` — `useRouteInfo`
+// consumes it with useEffect + a reducer tick. (Flowing route info purely through context is a
+// larger follow-up; see the RouteInfoContext design.)
 exports.routeInfoSubscribers = new Set();
 const routeInfoSubscribe = (callback) => {
     exports.routeInfoSubscribers.add(callback);
@@ -35,4 +40,10 @@ const routeInfoSubscribe = (callback) => {
     };
 };
 exports.routeInfoSubscribe = routeInfoSubscribe;
+const notifyRouteInfoSubscribers = () => {
+    for (const callback of exports.routeInfoSubscribers) {
+        callback();
+    }
+};
+exports.notifyRouteInfoSubscribers = notifyRouteInfoSubscribers;
 //# sourceMappingURL=routeInfoCache.js.map

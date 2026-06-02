@@ -40,6 +40,7 @@ const react_1 = require("react");
 const routers_1 = require("../routers");
 const NavigationContext_1 = require("./NavigationContext");
 const types_1 = require("./types");
+const navigation_store_1 = require("../../global-state/navigation-store");
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
 types_1.PrivateValueStore;
@@ -52,9 +53,22 @@ function useNavigationHelpers({ id: navigatorId, onAction, onUnhandledAction, ge
     return React.useMemo(() => {
         const dispatch = (op) => {
             const action = typeof op === 'function' ? op(getState()) : op;
-            const handled = onAction(action);
-            if (!handled) {
-                onUnhandledAction?.(action);
+            const run = () => {
+                const handled = onAction(action);
+                if (!handled) {
+                    onUnhandledAction?.(action);
+                }
+            };
+            // Batch the whole synchronous cascade (the handling navigator's setState plus the ancestor
+            // focus cascade) into one committed tree. This covers direct dispatches — native back, swipe
+            // gesture, tab press, JUMP_TO — that don't go through the imperative drain (which batches on
+            // its own). Nested batches coalesce: only the outermost flushes.
+            const store = (0, navigation_store_1.getRootNavigationStore)();
+            if (store) {
+                store.batch(run);
+            }
+            else {
+                run();
             }
         };
         const actions = {

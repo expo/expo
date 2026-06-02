@@ -120,9 +120,7 @@ exports.store = {
         }
         exports.storeRef.current.state = newState;
         exports.storeRef.current.routeInfo = (0, routeInfoCache_1.getCachedRouteInfo)(newState);
-        for (const callback of routeInfoCache_1.routeInfoSubscribers) {
-            callback();
-        }
+        (0, routeInfoCache_1.notifyRouteInfoSubscribers)();
     },
     assertIsReady() {
         if (!exports.storeRef.current.navigationRef.isReady()) {
