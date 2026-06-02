@@ -34,6 +34,11 @@ export function setCachedRouteInfo(
   routeInfoValuesCache.set(JSON.stringify(routeInfo), routeInfo);
 }
 
+// Route info is a *derived projection* of the navigation tree, finalized (with leaf-accurate focused
+// params via setFocusedState) when the tree commits. Consumers subscribe to be re-rendered when it
+// changes. This is intentionally a plain pub/sub, not `useSyncExternalStore` — `useRouteInfo`
+// consumes it with useEffect + a reducer tick. (Flowing route info purely through context is a
+// larger follow-up; see the RouteInfoContext design.)
 export const routeInfoSubscribers = new Set<() => void>();
 
 export const routeInfoSubscribe = (callback: () => void) => {
@@ -41,4 +46,10 @@ export const routeInfoSubscribe = (callback: () => void) => {
   return () => {
     routeInfoSubscribers.delete(callback);
   };
+};
+
+export const notifyRouteInfoSubscribers = () => {
+  for (const callback of routeInfoSubscribers) {
+    callback();
+  }
 };
