@@ -473,7 +473,7 @@ struct JavaScriptRuntimeTests {
           throw e;
         };
       """)
-    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+    let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
       get: { _ in
@@ -505,7 +505,7 @@ struct JavaScriptRuntimeTests {
           throw e;
         };
       """)
-    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+    let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
       get: { _ in .undefined },

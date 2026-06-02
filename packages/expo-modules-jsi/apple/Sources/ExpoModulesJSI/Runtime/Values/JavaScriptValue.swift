@@ -154,10 +154,22 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    // A primitive can't be an instance of anything, so bail out before touching globals — this keeps
+    // the predicate side-effect free for non-objects (e.g. it won't trigger a replaced constructor's getter).
+    guard isObject() else {
+      return false
+    }
+
     // Since the type names are limited to global constructors (Promise, Error, Array, etc.),
     // caching them to avoid creating new prop names on each call makes a lot of sense.
     let propName = JavaScriptPropNameID.cached(runtime, typeName)
-    return isObject() && getObject().instanceOf(runtime.global().getPropertyAsFunction(propName))
+
+    // A missing or non-callable global constructor means the value can't be its instance, so swallow
+    // the lookup error and report `false` rather than propagating it out of this predicate.
+    guard let constructor = try? runtime.global().getPropertyAsFunction(propName) else {
+      return false
+    }
+    return getObject().instanceOf(constructor)
   }
 
   // MARK: - Asserting conversions ("get functions")

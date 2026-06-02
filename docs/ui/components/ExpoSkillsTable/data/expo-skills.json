@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-05-25T01:22:55.986Z"
+    "fetchedAt": "2026-05-29T10:56:22.852Z"
   },
-  "totalSkills": 15,
+  "totalSkills": 16,
   "skills": [
     {
       "name": "add-app-clip",
@@ -50,6 +50,11 @@
       "name": "expo-module",
       "description": "Guide for creating and writing Expo native modules and views using the Expo Modules API (Swift, Kotlin, TypeScript). Covers module definition DSL, native views, shared objects, config plugins, lifecycle hooks, autolinking, and type system. Use when building or modifying native modules for Expo.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-module/SKILL.md"
+    },
+    {
+      "name": "expo-observe",
+      "description": "Use for anything related to EAS Observe — adding `expo-observe` to an Expo project (AppMetricsRoot/ObserveRoot HOC, markInteractive, the useObserve hook, and the Expo Router / React Navigation integrations for per-route metrics), querying via the EAS CLI (`eas observe:metrics-summary`, `observe:metrics`, `observe:routes`, `observe:events`, `observe:versions`), or interpreting the resulting metrics (cold/warm launch, TTR, TTI, navigation cold/warm TTR, update download, and the TTI frameRate params for triaging slow startups).",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-observe/SKILL.md"
     },
     {
       "name": "expo-tailwind-setup",

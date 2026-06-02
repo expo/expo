@@ -111,4 +111,9 @@ export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['
  * @return An event subscription that can be used to remove the listener.
  */
 export declare function addPushToStartTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']): EventSubscription;
+/**
+ * A directory that can be used to store shared images for widgets.
+ * The contents of this directory are accessible by both the main app and widgets.
+ */
+export declare const widgetsDirectory: string;
 //# sourceMappingURL=Widgets.d.ts.map
