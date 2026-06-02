@@ -849,6 +849,14 @@ export const listRowSeparator = (
 ) => createModifier('listRowSeparator', { visibility, edges });
 
 /**
+ * Sets the vertical spacing between adjacent rows in a list.
+ * @param spacing - The spacing value to use. When omitted, the default spacing is used.
+ * @platform ios 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowspacing(_:)).
+ */
+export const listRowSpacing = (spacing?: number) => createModifier('listRowSpacing', { spacing });
+
+/**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
  * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.
  * You can truncate at the beginning, middle, or end of the text view.
@@ -1378,6 +1386,7 @@ export type BuiltInModifier =
   | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
+  | ReturnType<typeof listRowSpacing>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>
   | ReturnType<typeof kerning>
