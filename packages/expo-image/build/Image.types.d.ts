@@ -52,11 +52,6 @@ export type ImageSource = {
      * Has no effect if `responsivePolicy` is not set to `static`.
      * Ignored if `blurhash` or `thumbhash` is provided (image hashes are never selected if passed in an array).
      *
-     * @deprecated With the `static` responsive policy, source selection now relies on the
-     * `sizes="auto"` attribute, which lets the browser pick the best source from the rendered
-     * layout size. `webMaxViewportWidth` is now only used to build the `sizes` fallback for
-     * browsers that don't yet support `sizes="auto"`, and will be removed once support is
-     * widespread. New code can omit it.
      * @platform web
      */
     webMaxViewportWidth?: number;
@@ -191,10 +186,8 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
      *
      * Defaults to `'lazy'` when `responsivePolicy` is `'static'` (the default policy), because the
      * `sizes="auto"` source selection used by `static` only takes effect on lazily-loaded images.
-     * Pass `'eager'` to opt out (note that `sizes="auto"` is then ignored and the `sizes` fallback
-     * is used instead). Defaults to the browser's behavior (eager) for the other responsive policies.
      *
-     * @default 'lazy' (when `responsivePolicy` is `'static'`), otherwise `'eager'`
+     * @default `'lazy'` (when `responsivePolicy` is `'static'`, otherwise `'eager'`)
      * @platform web
      */
     loading?: 'lazy' | 'eager';
