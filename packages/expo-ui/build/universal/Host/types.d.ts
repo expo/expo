@@ -17,11 +17,12 @@ export interface UniversalHostProps extends ViewProps {
         horizontal?: boolean;
     };
     /**
-     * The color scheme to apply to descendant native views.
+     * The color scheme to apply to the subtree.
      * `'light'` / `'dark'` force a specific appearance; omitted follows the device setting.
      *
      * @platform android
      * @platform ios
+     * @platform web
      */
     colorScheme?: ColorSchemeName;
     /**

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 ## 56.0.7 — 2026-05-21
