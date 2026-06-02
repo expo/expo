@@ -1,4 +1,6 @@
-// This MUST be first to ensure that `fetch` is defined in the React Native environment.
+// WARN(@kitten): We must ensure that the core react-native globals are initialized before ours
+// Otherwise we're relying on `getModulesRunBeforeMainModule` which is unstable or can be missing
+// See: `expo/winter/runtime.native.ts`
 import 'react-native/Libraries/Core/InitializeCore';
 
 // Ensure fetch is installed before adding our fetch polyfill to ensure Headers and Request are available globally.
