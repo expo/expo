@@ -40,7 +40,7 @@ export default function NavigationBarScreen() {
         <Section title="Visibility">
           <HiddenExample />
         </Section>
-        <Section title="Into Modal" row={true}>
+        <Section title="Into Modal" row>
           <ModalExample />
         </Section>
       </Page>
