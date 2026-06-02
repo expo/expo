@@ -1,6 +1,6 @@
 import { NavigationBar, NavigationBarStyle } from 'expo-navigation-bar';
 import * as React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
@@ -18,6 +18,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 4,
   },
+  modal: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
 });
 
 export default function NavigationBarScreen() {
@@ -34,6 +39,9 @@ export default function NavigationBarScreen() {
         </Section>
         <Section title="Visibility">
           <HiddenExample />
+        </Section>
+        <Section title="Into Modal" row={true}>
+          <ModalExample />
         </Section>
       </Page>
     </ScrollView>
@@ -106,6 +114,31 @@ function HiddenExample() {
           />
         ))}
       </View>
+    </View>
+  );
+}
+
+function ModalExample() {
+  const [modalVisible, setModalVisible] = React.useState(false);
+
+  return (
+    <View style={styles.section}>
+      <Button
+        title="Open example Modal"
+        onPress={() => {
+          setModalVisible(true);
+        }}
+      />
+
+      <Modal
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}>
+        <View style={styles.modal}>
+          <Text>style and hidden are preserved</Text>
+        </View>
+      </Modal>
     </View>
   );
 }
