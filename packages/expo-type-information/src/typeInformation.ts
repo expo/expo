@@ -405,7 +405,8 @@ export async function withPreparedSingleFile<T>(
   { input, typeInference, mapUnicodeCharacters }: GetFileTypeInformationOptions,
   fn: (filePath: string) => Promise<T>
 ): Promise<T> {
-  const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+  const shouldPreprocessFile =
+    typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE || mapUnicodeCharacters;
   if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
     return fn(input.inputFileAbsolutePaths[0] as string);
   }

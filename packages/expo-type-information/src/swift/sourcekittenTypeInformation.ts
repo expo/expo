@@ -1184,7 +1184,7 @@ function preprocessReturnStatements(originalFileContent: string): string {
  */
 function preprocessUnicodeCharacters(fileConent: string): string {
   return fileConent.replace(/[^\x00-\x7F]/gu, (c) => {
-    const hex = c.codePointAt(0)?.toString().toUpperCase();
+    const hex = c.codePointAt(0)?.toString(16)?.toUpperCase() ?? '_';
     return `_u${hex}_`;
   });
 }

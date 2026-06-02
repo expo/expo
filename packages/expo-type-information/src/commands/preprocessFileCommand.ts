@@ -23,7 +23,6 @@ export function preprocessFileCommand(cli: commander.Command) {
         return;
       }
       const { realInputPaths, typeInference, mapUnicodeCharacters } = parsedArgs;
-      console.log(`${typeInference}, ${mapUnicodeCharacters}`);
 
       const command = async () => {
         withPreparedSingleFile(

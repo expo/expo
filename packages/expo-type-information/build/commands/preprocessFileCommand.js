@@ -17,7 +17,6 @@ function preprocessFileCommand(cli) {
             return;
         }
         const { realInputPaths, typeInference, mapUnicodeCharacters } = parsedArgs;
-        console.log(`${typeInference}, ${mapUnicodeCharacters}`);
         const command = async () => {
             (0, typeInformation_1.withPreparedSingleFile)({
                 input: { type: 'file', inputFileAbsolutePaths: realInputPaths },

@@ -143,7 +143,7 @@ async function withTempFile(content, fn) {
     }
 }
 async function withPreparedSingleFile({ input, typeInference, mapUnicodeCharacters }, fn) {
-    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE || mapUnicodeCharacters;
     if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
         return fn(input.inputFileAbsolutePaths[0]);
     }
