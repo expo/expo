@@ -8,10 +8,9 @@ const withAndroidWidgets_1 = __importDefault(require("./android/withAndroidWidge
 const withIosWidgets_1 = __importDefault(require("./ios/withIosWidgets"));
 const pkg = require('../../package.json');
 const withWidgets = (config, props) => {
+    const enableAndroid = props?.enableAndroid ?? false;
     const widgets = props?.widgets ?? [];
-    return (0, config_plugins_1.withPlugins)(config, [
-        [withAndroidWidgets_1.default, { widgets }],
-        [withIosWidgets_1.default, { ...(props ?? {}), widgets }],
-    ]);
+    const nextConfig = enableAndroid ? (0, withAndroidWidgets_1.default)(config, { widgets }) : config;
+    return (0, withIosWidgets_1.default)(nextConfig, { ...props, widgets });
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withWidgets, pkg.name, pkg.version);
