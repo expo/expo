@@ -34,16 +34,41 @@ expoModule {
   canBePublished false
 }
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
   namespace "expo.modules.widgets"
   defaultConfig {
     versionCode 1
     versionName '56.0.15'
+
+    externalNativeBuild {
+      cmake {
+        abiFilters(*reactNativeArchitectures())
+        arguments "-DANDROID_STL=c++_shared"
+      }
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
   }
 
   buildFeatures {
     prefab true
     compose true
+  }
+
+  packagingOptions {
+    excludes += [
+      "**/libc++_shared.so",
+      "**/libhermesvm.so",
+    ]
   }
 }
 
@@ -81,6 +106,8 @@ androidComponents {
 }
 
 dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.facebook.react:hermes-android'
   api 'androidx.glance:glance:1.2.0-rc01'
   api 'androidx.glance:glance-appwidget:1.2.0-rc01'
 }
