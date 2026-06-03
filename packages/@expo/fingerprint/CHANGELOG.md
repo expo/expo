@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.19.3 — 2026-05-26
