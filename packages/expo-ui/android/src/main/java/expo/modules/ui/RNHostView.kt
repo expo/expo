@@ -187,6 +187,13 @@ private class TouchDispatchingRootViewGroup(
   private val currentLocation = IntArray(2)
   private var trackingGestureOffset = false
 
+  // True if the sheet consumed scroll on the most recent drag frame
+  // Used to decide the fling handoff in onNestedPreFling.
+  private var sheetMovingOnLastDragFrame = false
+
+  // True once a real fling was dispatched this gesture (its settle is already in motion), so the
+  // gentle-release fallback in onStopNestedScroll doesn't fire a second, redundant settle.
+  private var flingHandledThisGesture = false
 
   var eventDispatcher: EventDispatcher? = null
 
@@ -220,6 +227,8 @@ private class TouchDispatchingRootViewGroup(
       MotionEvent.ACTION_DOWN -> {
         getLocationInWindow(gestureStartLocation)
         trackingGestureOffset = true
+        sheetMovingOnLastDragFrame = false
+        flingHandledThisGesture = false
       }
       MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> trackingGestureOffset = false
     }
@@ -292,20 +301,46 @@ private class TouchDispatchingRootViewGroup(
   }
 
   override fun onStopNestedScroll(target: View) {
+    // Must run BEFORE stopNestedScroll() so the holder is still our parent to receive the fling.
+    settleSheetIfNoFling()
     super.onStopNestedScroll(target)
     stopNestedScroll()
   }
 
+  // A slow (sub-threshold) release never flings, so the ScrollView never triggers the sheet's
+  // onPostFling settle and it hangs where dragged. If the sheet moved during the gesture and no real
+  // fling settled it, dispatch a zero-velocity fling here so the holder snaps it to the nearest anchor.
+  private fun settleSheetIfNoFling() {
+    if (sheetMovingOnLastDragFrame && !flingHandledThisGesture) {
+      flingHandledThisGesture = true
+      dispatchNestedFling(0f, 0f, false)
+    }
+  }
+
   override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
     dispatchNestedPreScroll(dx, dy, consumed, null)
+    // Expand path: the sheet consumes the upward delta here, before the list scrolls.
+    sheetMovingOnLastDragFrame = consumed[1] != 0
   }
 
   override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
-    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null)
+    // Use the `…, type, consumed` variant so we can read how much the sheet ate (consumed[1]).
+    val consumed = IntArray(2)
+    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, ViewCompat.TYPE_TOUCH, consumed)
+    // Collapse path: the sheet consumes the leftover here, after the list couldn't scroll.
+    if (consumed[1] != 0) sheetMovingOnLastDragFrame = true
   }
 
-  override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean =
-    dispatchNestedPreFling(velocityX, velocityY)
+  override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
+    // A real fling is being dispatched; its settle is in motion, so skip the sub-threshold fallback.
+    flingHandledThisGesture = true
+    val composeConsumed = dispatchNestedPreFling(velocityX, velocityY)
+    // RN's ScrollView wants a synchronous yes/no, but Compose's pre-fling is async (returns false
+    // now, settles later). So decide here: if the sheet was mid-move and this is an UP-flick
+    // (velocityY > 0), swallow the list fling so the sheet expands first. A DOWN-flick is left to
+    // pass through so it can still settle/collapse.
+    return composeConsumed || (sheetMovingOnLastDragFrame && velocityY > 0)
+  }
 
   override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
     dispatchNestedFling(velocityX, velocityY, consumed)
