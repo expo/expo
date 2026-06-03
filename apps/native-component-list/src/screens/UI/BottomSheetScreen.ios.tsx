@@ -24,10 +24,13 @@ import {
   foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import type { PresentationDetent } from '@expo/ui/swift-ui/modifiers';
+import { FlashList } from '@shopify/flash-list';
 import * as React from 'react';
-import { Pressable, Text as RNText, View } from 'react-native';
+import { Pressable, StyleSheet, Text as RNText, View } from 'react-native';
 
 const dragIndicatorOptions = ['automatic', 'visible', 'hidden'] as const;
+
+const LIST_DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
 
 type DragIndicatorOption = (typeof dragIndicatorOptions)[number];
 
@@ -55,6 +58,7 @@ export default function BottomSheetScreen() {
 
   const [showRNContent, setShowRNContent] = React.useState(false);
   const [showRNContentWithFlex1, setShowRNContentWithFlex1] = React.useState(false);
+  const [showScrollableList, setShowScrollableList] = React.useState(false);
   const [counter, setCounter] = React.useState(0);
 
   const configuredDetents: PresentationDetent[] = (() => {
@@ -145,6 +149,12 @@ export default function BottomSheetScreen() {
             label="Open RN Content Sheet with flex 1 children"
             onPress={() => setShowRNContentWithFlex1(true)}
           />
+        </Section>
+        <Section title="Scrollable List (FlashList)">
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            Sheet with a nested React Native FlashList
+          </Text>
+          <Button label="Open Scrollable List Sheet" onPress={() => setShowScrollableList(true)} />
         </Section>
       </Form>
 
@@ -280,9 +290,44 @@ export default function BottomSheetScreen() {
           </RNHostView>
         </Group>
       </BottomSheet>
+
+      {/* Scrollable List Sheet (nested FlashList) */}
+      <BottomSheet isPresented={showScrollableList} onIsPresentedChange={setShowScrollableList}>
+        <Group
+          modifiers={[
+            presentationDetents(['medium', 'large']),
+            presentationDragIndicator('visible'),
+          ]}>
+          <RNHostView>
+            <View style={{ flex: 1, padding: 16 }}>
+              <FlashList
+                nestedScrollEnabled
+                style={styles.list}
+                data={LIST_DATA}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <View style={styles.listRow}>
+                    <RNText style={styles.listRowText}>{item}</RNText>
+                  </View>
+                )}
+              />
+            </View>
+          </RNHostView>
+        </Group>
+      </BottomSheet>
     </Host>
   );
 }
+
+const styles = StyleSheet.create({
+  list: { flex: 1 },
+  listRow: {
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#cccccc',
+  },
+  listRowText: { fontSize: 16 },
+});
 
 BottomSheetScreen.navigationOptions = {
   title: 'BottomSheet',

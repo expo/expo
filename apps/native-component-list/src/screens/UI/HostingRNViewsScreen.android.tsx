@@ -6,10 +6,11 @@ import {
   RNHostView,
   Card,
   LazyColumn,
+  Text,
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
-import { Text as RNText, View, Pressable } from 'react-native';
+import { Text as RNText, View, Pressable, FlatList } from 'react-native';
 
 export default function HostingRNViewsScreen() {
   const [counter, setCounter] = useState(0);
@@ -78,6 +79,7 @@ export default function HostingRNViewsScreen() {
             </Row>
           </Column>
         </Card>
+
         <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>RN components without explicit size</ComposeText>
@@ -107,6 +109,20 @@ export default function HostingRNViewsScreen() {
         </Card>
         <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Nested scroll RN ScrollView inside Compose LazyColumn</ComposeText>
+            <RNHostView matchContents>
+              <FlatList
+                style={{ height: 200 }}
+                nestedScrollEnabled
+                data={Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`)}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => <RNText style={{ alignSelf: 'center' }}>{item}</RNText>}
+              />
+            </RNHostView>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>RN components with flex: 1 children</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 20 }} modifiers={[size(100, 100)]}>
               <RNHostView>
@@ -121,6 +137,7 @@ export default function HostingRNViewsScreen() {
             </Row>
           </Column>
         </Card>
+
         <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <RNHostView matchContents>
