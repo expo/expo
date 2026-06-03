@@ -27,6 +27,7 @@
 
 - Allow string widget family values in the typed config plugin. ([#46133](https://github.com/expo/expo/issues/46133) by [@eliotgevers](https://github.com/eliotgevers))
 - [plugin] Inherit `ios.deploymentTarget` from app config for generated widget extension targets. ([#46193](https://github.com/expo/expo/pull/46193) by [@eliotgevers](https://github.com/eliotgevers))
+- [Android] Fix widget strings file location.
 
 ## 56.0.14 — 2026-05-23
 
