@@ -21,8 +21,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.NestedScrollingChild3
 import androidx.core.view.NestedScrollingChildHelper
-import androidx.core.view.NestedScrollingParent3
-import androidx.core.view.NestedScrollingParentHelper
 import androidx.core.view.ViewCompat
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -182,6 +180,7 @@ private class TouchDispatchingRootViewGroup(
   private var jsPointerDispatcher: JSPointerDispatcher? = null
 
   private val childHelper = NestedScrollingChildHelper(this)
+
   // How far this view has moved on-screen since the current gesture started.
   private val gestureStartLocation = IntArray(2)
   private val currentLocation = IntArray(2)
@@ -221,8 +220,7 @@ private class TouchDispatchingRootViewGroup(
     // and we must not override those values.
   }
 
-
- override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     when (ev.actionMasked) {
       MotionEvent.ACTION_DOWN -> {
         getLocationInWindow(gestureStartLocation)
@@ -285,7 +283,6 @@ private class TouchDispatchingRootViewGroup(
     eventDispatcher?.let { jsTouchDispatcher.onChildEndedNativeGesture(ev, it) }
     jsPointerDispatcher?.onChildEndedNativeGesture()
   }
-
 
   override fun handleException(t: Throwable) {
     reactContext.reactApplicationContext.handleException(RuntimeException(t))
@@ -358,25 +355,47 @@ private class TouchDispatchingRootViewGroup(
   override fun hasNestedScrollingParent(type: Int): Boolean = childHelper.hasNestedScrollingParent(type)
 
   override fun dispatchNestedScroll(
-    dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, offsetInWindow: IntArray?
+    dxConsumed: Int,
+    dyConsumed: Int,
+    dxUnconsumed: Int,
+    dyUnconsumed: Int,
+    offsetInWindow: IntArray?
   ): Boolean = childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow)
 
   override fun dispatchNestedScroll(
-    dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, offsetInWindow: IntArray?, type: Int
+    dxConsumed: Int,
+    dyConsumed: Int,
+    dxUnconsumed: Int,
+    dyUnconsumed: Int,
+    offsetInWindow: IntArray?,
+    type: Int
   ): Boolean = childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type)
 
   override fun dispatchNestedScroll(
-    dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, offsetInWindow: IntArray?, type: Int, consumed: IntArray
+    dxConsumed: Int,
+    dyConsumed: Int,
+    dxUnconsumed: Int,
+    dyUnconsumed: Int,
+    offsetInWindow: IntArray?,
+    type: Int,
+    consumed: IntArray
   ) {
     childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type, consumed)
   }
 
   override fun dispatchNestedPreScroll(
-    dx: Int, dy: Int, consumed: IntArray?, offsetInWindow: IntArray?
+    dx: Int,
+    dy: Int,
+    consumed: IntArray?,
+    offsetInWindow: IntArray?
   ): Boolean = childHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow)
 
   override fun dispatchNestedPreScroll(
-    dx: Int, dy: Int, consumed: IntArray?, offsetInWindow: IntArray?, type: Int
+    dx: Int,
+    dy: Int,
+    consumed: IntArray?,
+    offsetInWindow: IntArray?,
+    type: Int
   ): Boolean = childHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type)
 
   override fun dispatchNestedFling(velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
