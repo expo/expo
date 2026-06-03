@@ -6,7 +6,7 @@ internal import ExpoModulesJSI_Cxx
 ///
 /// The data pointer and size are captured at borrow time. Resizable or detached
 /// ArrayBuffers are not supported by this borrowed representation.
-public struct JavaScriptMutableBuffer: ~Copyable, @unchecked Sendable {
+public struct JavaScriptMutableBuffer: ~Copyable {
   public let data: UnsafeMutablePointer<UInt8>
   public let size: Int
 

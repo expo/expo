@@ -210,6 +210,8 @@ struct BorrowedBuffer {
 /**
  * Borrows a native-backed ArrayBuffer. The returned data pointer and size are
  * captured at borrow time, so resizable or detached buffers are not supported.
+ * A non-null retainer must be passed to releaseBorrowedBuffer exactly once.
+ * The {nullptr, 0, nullptr} failure result must not be released.
  */
 inline BorrowedBuffer tryBorrowMutableBuffer(
   jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer
