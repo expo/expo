@@ -22,10 +22,15 @@ class CachePolicyTest {
   }
 
   @Test
-  fun `quoted commas do not split header tokens`() {
-    val policy = CachePolicy.evaluate(mapOf("Vary" to "Accept-Language, \"X-Foo, X-Bar\""), 200)
+  fun `quoted commas in cache-control do not split into spurious directives`() {
+    // `public` here is a quoted field-name inside the `private` directive's
+    // value, not a real cache directive. A naive comma split would surface it as
+    // a standalone directive and wrongly enable Authorization reuse. (Quoted
+    // lists only ever appear in Cache-Control, never in Vary.)
+    val policy = CachePolicy.evaluate(mapOf("Cache-Control" to "private=\"X-Foo, public, X-Bar\""), 200)
 
-    assertEquals(listOf("\"x-foo, x-bar\"", "accept-language"), policy.varyHeaders)
+    assertTrue(policy.isCacheable)
+    assertFalse(policy.allowsAuthorizedReuse)
   }
 
   @Test

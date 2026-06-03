@@ -22,7 +22,22 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   /// the cookie snapshot that `URLSession` is expected to attach.
   private let cacheRequestHeaders: [String: String]
   private let variantKey: String
-  /// Set to `false` when the response status is not useful for offline playback.
+  /// Whether the response may be stored for offline playback. Defaults to `true`
+  /// ("store unless proven otherwise") and is flipped to `false` if the response
+  /// is evaluated as non-cacheable.
+  ///
+  /// Policy is evaluated only on the *first* HTTP response (see the `policyEvaluated`
+  /// guard in `evaluateCachePolicy`) — that's the authoritative content-information
+  /// response carrying the resource's `Cache-Control`/`Vary`. Later range responses
+  /// for the same resource are assumed to share that policy and are not re-evaluated.
+  /// This is deliberate: re-evaluating every range response would let a transient or
+  /// edge non-2xx (e.g. a `416` on an out-of-range request, or a one-off `503`) flip
+  /// storage to denied and evict an otherwise-good download — hurting offline playback.
+  ///
+  /// The default of `true` is safe because this delegate is only reachable on the
+  /// http(s) loader path (`createUrlRequest` always builds an http(s) request from
+  /// `self.url`), so the first response is always an `HTTPURLResponse` and is
+  /// evaluated before any data is saved in `didCompleteWithError`.
   private var responseAllowsStorage: Bool = true
   private var policyEvaluated: Bool = false
   internal var onError: ((Error) -> Void)?
@@ -60,6 +75,12 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     self.variantKey = variantKey
     cachedResource = CachedResource(dataFileUrl: saveFilePath, resourceUrl: url, dataPath: saveFilePath)
     super.init()
+    // Serial delegate queue (maxConcurrentOperationCount = 1): the cache-policy
+    // state below (`policyEvaluated` / `responseAllowsStorage`) is mutated from
+    // `didReceive response:` and read from `didCompleteWithError:`. A serial
+    // queue makes those callbacks non-overlapping so the state is safe without
+    // an extra lock. Do not revert to `delegateQueue: nil` (concurrent) without
+    // adding synchronization, or it reintroduces a data race on that state.
     let delegateQueue = OperationQueue()
     delegateQueue.maxConcurrentOperationCount = 1
     self.session = URLSession(configuration: .default, delegate: self, delegateQueue: delegateQueue)

@@ -22,6 +22,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody.Companion.asResponseBody
 import okio.ForwardingSource
 import okio.buffer
+import java.util.concurrent.ConcurrentHashMap
 
 @OptIn(UnstableApi::class)
 fun buildBaseDataSourceFactory(
@@ -97,6 +98,12 @@ private fun buildCacheVariantRecorder(
   // `Vary` is intentionally read from the terminal response seen by Media3.
   val sourceUrl = videoSource.uri?.toString()
   val requestHeaders = videoSource.headers ?: emptyMap()
+  // Media3's `CacheDataSource` issues many partial/range requests for a single
+  // video, all sharing the same URL and response headers. The variant only
+  // needs to be recorded once per storage key; tracking the keys we've already
+  // recorded avoids a full load+rewrite of the variants file (under lock) on
+  // every chunk during playback.
+  val recordedKeys = ConcurrentHashMap.newKeySet<String>()
   return Interceptor { chain ->
     val response = chain.proceed(chain.request())
     if (sourceUrl != null) {
@@ -107,12 +114,19 @@ private fun buildCacheVariantRecorder(
       val storageKey = cacheStorageKey ?: CacheVariantIndex.storageKey(context, sourceUrl, requestHeaders)
 
       if (!policy.isCacheable) {
+        // A previously cached entry under this key (e.g. one that used to be
+        // cacheable) must go now that the server says otherwise. We also evict
+        // again on close because `FLAG_IGNORE_CACHE_ON_ERROR` may let Media3
+        // write partial bytes for this response before the body stream ends.
+        recordedKeys.remove(storageKey)
         evictCacheEntry(sourceUrl, storageKey)
         return@Interceptor response.evictAfterClose {
           evictCacheEntry(sourceUrl, storageKey)
         }
       }
-      CacheVariantIndex.recordVariant(context, sourceUrl, storageKey, requestHeaders, policy)
+      if (recordedKeys.add(storageKey)) {
+        CacheVariantIndex.recordVariant(context, sourceUrl, storageKey, requestHeaders, policy)
+      }
     }
     response
   }

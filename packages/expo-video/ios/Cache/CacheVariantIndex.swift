@@ -200,6 +200,19 @@ enum CacheVariantIndex {
     return sha256(composite)
   }
 
+  /// Normalizes request headers (lowercased keys) used for variant matching.
+  ///
+  /// On iOS we additionally fold in cookies from `HTTPCookieStorage.shared` when
+  /// the caller didn't pass an explicit `Cookie` header, so cookie-authenticated
+  /// videos get isolated variants. Android does not do this — it only considers
+  /// cookies passed explicitly in `VideoSource.headers` (OkHttp's default has no
+  /// cookie jar). The asymmetry is intentional.
+  ///
+  /// Note the offline trade-off: because cookies are part of the variant
+  /// identity, a rotated/expired session cookie changes the key, so an
+  /// offline-downloaded cookie-authenticated video may no longer match after the
+  /// cookie changes. This is the correct behavior for cross-identity isolation,
+  /// but callers relying on offline playback should prefer stable auth headers.
   static func normalizedRequestHeaders(forUrl url: URL, requestHeaders: [String: String]?) -> [String: String] {
     var out: [String: String] = [:]
     for (key, value) in requestHeaders ?? [:] {

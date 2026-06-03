@@ -20,13 +20,18 @@ struct CachePolicyTests {
   }
 
   @Test
-  func `quoted commas do not split header tokens`() {
+  func `quoted commas in cache-control do not split into spurious directives`() {
+    // `public` here is a quoted field-name inside the `private` directive's
+    // value, not a real cache directive. A naive comma split would surface it as
+    // a standalone directive and wrongly enable Authorization reuse. (Quoted
+    // lists only ever appear in Cache-Control, never in Vary.)
     let policy = CachePolicy.evaluate(
-      responseHeaders: ["Vary": "Accept-Language, \"X-Foo, X-Bar\""],
+      responseHeaders: ["Cache-Control": "private=\"X-Foo, public, X-Bar\""],
       statusCode: 200
     )
 
-    #expect(policy.varyHeaders == ["\"x-foo, x-bar\"", "accept-language"])
+    #expect(policy.isCacheable)
+    #expect(policy.allowsAuthorizedReuse == false)
   }
 
   @Test

@@ -54,9 +54,15 @@ internal object CacheVariantIndex {
     val variants = pruneEvicted(context, url, load(context, url))
 
     if (variants.isEmpty() && hasLegacyCacheEntry(url) && identityValues(normalized).isEmpty()) {
+      // A pre-upgrade, URL-only cache entry exists for an anonymous request.
+      // It is safe (and required for offline playback) to keep reading it: the
+      // request carries no identity headers, so it can't cross-pollinate. The
+      // recorder promotes it to a proper variant on the next network fetch.
+      // `canReadFromCache` must stay `true` here, otherwise the caller would
+      // evict this entry and break offline downloads made before upgrading.
       return CacheStorageKey(
         storageKey = "",
-        canReadFromCache = false
+        canReadFromCache = true
       )
     }
     matchingVariant(variants, normalized)?.let {
@@ -138,6 +144,10 @@ internal object CacheVariantIndex {
     return try {
       url in VideoManager.cache.instance.keys
     } catch (e: IllegalStateException) {
+      // SimpleCache released.
+      false
+    } catch (e: UninitializedPropertyAccessException) {
+      // `VideoManager.cache` not assigned yet (runs before `onModuleCreated`).
       false
     }
   }
@@ -154,7 +164,10 @@ internal object CacheVariantIndex {
     val keys = try {
       VideoManager.cache.instance.keys
     } catch (e: IllegalStateException) {
-      // Cache not initialized yet; nothing to prune against.
+      // SimpleCache released; nothing to prune against.
+      return variants
+    } catch (e: UninitializedPropertyAccessException) {
+      // `VideoManager.cache` not assigned yet; nothing to prune against.
       return variants
     }
     val live = variants.filter { variant ->
