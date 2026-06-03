@@ -1,9 +1,10 @@
 import { Fragment } from 'react';
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { extractFieldSectionSlots } from './FieldSectionSlots';
 import type { FieldSectionProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
+import { colors } from '../webUtils';
 
 const styles = StyleSheet.create({
   hidden: {
@@ -11,15 +12,12 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 12,
   },
   headerText: {
-    color: '#6c6c70',
+    color: colors.gray[900],
     fontSize: 14,
     fontWeight: '500',
-  },
-  headerTextDark: {
-    color: '#98989e',
   },
   headerTextUppercase: {
     textTransform: 'uppercase',
@@ -27,33 +25,29 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.background,
     borderRadius: 12,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.gray[100],
     overflow: 'hidden',
-  },
-  cardDark: {
-    backgroundColor: '#1c1c1e',
   },
   // Gives each row the same minimum height SwiftUI `Form` uses for single-line
   // rows on iOS, so a text-only row doesn't collapse to its text intrinsic
   // size. Taller content (e.g. a Switch) grows the row naturally. Horizontal
   // padding matches SwiftUI `Form`'s built-in row leading/trailing inset.
   rowWrapper: {
-    minHeight: 44,
+    minHeight: 48,
     justifyContent: 'center',
     paddingHorizontal: 16,
   },
   divider: {
-    backgroundColor: '#e5e5ea',
+    backgroundColor: colors.gray[100],
     height: 1,
-    marginLeft: 16,
-  },
-  dividerDark: {
-    backgroundColor: '#38383a',
   },
   footerContainer: {
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 12,
   },
 });
 
@@ -75,34 +69,23 @@ export function FieldSection({
 }: FieldSectionProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
-  const isDarkScheme = useColorScheme() === 'dark';
-
   const { header, footer, rows } = extractFieldSectionSlots(children);
 
   const headerNode =
     header ??
     (title ? (
-      <Text
-        style={[
-          styles.headerText,
-          isDarkScheme && styles.headerTextDark,
-          titleUppercase && styles.headerTextUppercase,
-        ]}>
-        {title}
-      </Text>
+      <Text style={[styles.headerText, titleUppercase && styles.headerTextUppercase]}>{title}</Text>
     ) : null);
 
   return (
     <View style={[style, hidden && styles.hidden]} testID={testID}>
       {headerNode ? <View style={styles.headerContainer}>{headerNode}</View> : null}
       {rows.length > 0 ? (
-        <View style={[styles.card, isDarkScheme && styles.cardDark]}>
+        <View style={styles.card}>
           {rows.map((child, index) => (
             <Fragment key={index}>
               <View style={styles.rowWrapper}>{child}</View>
-              {index < rows.length - 1 ? (
-                <View style={[styles.divider, isDarkScheme && styles.dividerDark]} />
-              ) : null}
+              {index < rows.length - 1 ? <View role="separator" style={styles.divider} /> : null}
             </Fragment>
           ))}
         </View>
