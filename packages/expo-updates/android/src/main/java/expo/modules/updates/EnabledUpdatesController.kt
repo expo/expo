@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -18,7 +19,6 @@ import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.events.UpdatesEventManager
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
@@ -90,7 +90,12 @@ class EnabledUpdatesController(
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context.filesDir).purgeLogEntries {
       if (it != null) {
-        logger.error("UpdatesLogReader: error in purgeLogEntries", it, UpdatesErrorCode.Unknown)
+        // Log directly via android.util.Log rather than through `logger.error`,
+        // which writes via the PersistentFileLog dispatch queue. This callback
+        // is invoked from inside one of that queue's own tasks, so feeding
+        // another entry back into the queue from here re-enters it. Bypassing
+        // the queue keeps the failure path off its own back.
+        Log.e("expo-updates", "UpdatesLogReader: error in purgeLogEntries", it)
       }
     }
   }
