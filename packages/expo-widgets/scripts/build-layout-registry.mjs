@@ -118,11 +118,12 @@ async function writeRegistry(outputPath, registry) {
 
 function createLayoutRegistry(expectedWidgets, capturedLayouts) {
   const registry = { widgets: {} };
-  const captured = capturedLayouts ?? {};
+  const captured = capturedLayouts?.widgets ?? {};
   const capturedNames = new Set(Object.keys(captured));
 
   for (const widget of expectedWidgets) {
-    const layout = captured[widget.name];
+    const capturedWidget = captured[widget.name];
+    const layout = capturedWidget?.layout;
     if (typeof layout !== 'string' || layout.length === 0) {
       throw new Error(
         `Expected ${JSON.stringify(widget.initialLayout)} to register ${JSON.stringify(
@@ -130,7 +131,10 @@ function createLayoutRegistry(expectedWidgets, capturedLayouts) {
         )} with createWidget.`
       );
     }
-    registry.widgets[widget.name] = layout;
+    registry.widgets[widget.name] = { layout };
+    if (capturedWidget.initialProps != null) {
+      registry.widgets[widget.name].initialProps = capturedWidget.initialProps;
+    }
     capturedNames.delete(widget.name);
   }
 

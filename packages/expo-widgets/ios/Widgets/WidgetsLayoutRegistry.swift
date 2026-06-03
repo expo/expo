@@ -1,7 +1,8 @@
 import Foundation
 
-private struct EmbeddedWidgetsLayoutRegistry: Decodable {
-  let widgets: [String: String]
+private struct EmbeddedWidget {
+  let layout: String
+  let initialProps: [String: Any]?
 }
 
 public enum WidgetsLayoutRegistry {
@@ -10,14 +11,21 @@ public enum WidgetsLayoutRegistry {
        !layout.isEmpty {
       return layout
     }
-    if let layout = embeddedLayouts[name],
-       !layout.isEmpty {
-      return layout
+    if let embeddedWidget = embeddedWidgets[name],
+       !embeddedWidget.layout.isEmpty {
+      return embeddedWidget.layout
     }
     return nil
   }
 
-  private static let embeddedLayouts: [String: String] = {
+  public static func initialProps(for name: String) -> [String: Any]? {
+    if let props = WidgetsStorage.getDictionary(forKey: "__expo_widgets_\(name)_initial_props") {
+      return props
+    }
+    return embeddedWidgets[name]?.initialProps
+  }
+
+  private static let embeddedWidgets: [String: EmbeddedWidget] = {
     guard let bundleURL = Bundle.main.url(forResource: "ExpoWidgets", withExtension: "bundle"),
           let bundle = Bundle(url: bundleURL),
           let registryURL = bundle.url(
@@ -25,10 +33,16 @@ public enum WidgetsLayoutRegistry {
             withExtension: "json"
           ),
           let data = try? Data(contentsOf: registryURL),
-          let registry = try? JSONDecoder().decode(EmbeddedWidgetsLayoutRegistry.self, from: data) else {
+          let registry = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+          let widgets = registry["widgets"] as? [String: [String: Any]] else {
       return [:]
     }
 
-    return registry.widgets
+    return widgets.compactMapValues { widget in
+      guard let layout = widget["layout"] as? String else {
+        return nil
+      }
+      return EmbeddedWidget(layout: layout, initialProps: widget["initialProps"] as? [String: Any])
+    }
   }()
 }
