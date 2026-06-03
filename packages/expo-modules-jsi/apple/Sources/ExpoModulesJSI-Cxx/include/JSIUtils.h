@@ -214,18 +214,30 @@ struct BorrowedBuffer {
 inline BorrowedBuffer tryBorrowMutableBuffer(
   jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer
 ) {
-  auto mutableBuf = arrayBuffer.tryGetMutableBuffer(runtime);
-  if (!mutableBuf) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(runtime);
+  if (!mutableBuffer) {
     return {nullptr, 0, nullptr};
   }
-  uint8_t *data = mutableBuf->data();
-  size_t size = mutableBuf->size();
-  auto *retained = new std::shared_ptr<jsi::MutableBuffer>(std::move(mutableBuf));
+  uint8_t *data = mutableBuffer->data();
+  size_t size = mutableBuffer->size();
+  auto *retained = new std::shared_ptr<jsi::MutableBuffer>(std::move(mutableBuffer));
   return {data, size, retained};
+#else
+  (void)runtime;
+  (void)arrayBuffer;
+  return {nullptr, 0, nullptr};
+#endif
 }
 
 inline void releaseBorrowedBuffer(void *_Nonnull retainer) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
   delete static_cast<std::shared_ptr<jsi::MutableBuffer> *>(retainer);
+#else
+  (void)retainer;
+#endif
 }
 
 // MARK: - Native state
