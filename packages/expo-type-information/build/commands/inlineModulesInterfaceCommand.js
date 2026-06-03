@@ -55,7 +55,7 @@ async function inlineModulesWatcher({ appJsonPath, typeInference, mapUnicodeChar
         // Now let's create and add new watchers
         const createWatcherForDir = (dir) => {
             return fs_1.default.watch(dir, { recursive: true, encoding: 'utf-8' }, async (event, fileName) => {
-                if (!fileName) {
+                if (!fileName || !fileName.endsWith('.swift')) {
                     return;
                 }
                 const resolvedFilePath = path_1.default.resolve(dir, fileName);
