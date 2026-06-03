@@ -133,7 +133,14 @@ This will create a new section in the dev menu that includes the buttons you hav
 
 The EAS Update extension provides the ability to view and load published updates in your development client. To install it, you'll need the most recent publish of `expo-updates`:
 
-<Terminal cmd={['$ npx expo install expo-dev-client expo-updates']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client expo-updates'],
+    yarn: ['$ yarn expo install expo-dev-client expo-updates'],
+    pnpm: ['$ pnpm expo install expo-dev-client expo-updates'],
+    bun: ['$ bun expo install expo-dev-client expo-updates'],
+  }}
+/>
 
 #### Configure EAS Update
 
