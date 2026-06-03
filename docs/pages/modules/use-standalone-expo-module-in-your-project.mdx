@@ -68,7 +68,6 @@ Add your native module from **packages** to your apps' dependencies. Update the 
 Run one of your apps to ensure everything works. Then, start the TypeScript compiler in **packages/expo-settings** to watch for changes and rebuild the module's JavaScript:
 
 <Terminal
-  cmdCopy="cd packages/expo-settings && npm run build"
   cmd={{
     npm: ['$ cd packages/expo-settings', '$ npm run build'],
     yarn: ['$ cd packages/expo-settings', '$ yarn run build'],
@@ -117,7 +116,6 @@ Compile and run the app with the following command:
       '$ bun expo run:ios',
     ],
   }}
-  cmdCopy="npx expo run:ios"
 />
 
 You can now use the module in your app. To test it, edit the **src/app/index.tsx** file in your app and render the text message from the `expo-settings` module:
@@ -191,7 +189,6 @@ Run one of your apps to ensure everything works. Then, start the TypeScript comp
 Open another terminal window, compile and run the example app:
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
   cmd={{
     npm: [
       '$ cd example',
@@ -277,7 +274,6 @@ To test the published module in a new project, create a new app and install the 
       '$ bun expo install expo-settings',
     ],
   }}
-  cmdCopy="npx create-expo-app@latest my-app --template default@sdk-56 && cd my-app && npx expo install expo-settings"
 />
 
 You can now use the module in your app! To test it, edit **src/app/index.tsx** and render the text message from **expo-settings**.
@@ -333,7 +329,6 @@ Finally, prebuild your project and run the app by executing the following comman
       '$ bun expo run:ios',
     ],
   }}
-  cmdCopy="npx expo prebuild --clean && npx expo run:ios"
 />
 
 After this configuration, you see the text "Hello world! 👋" displayed in the app.

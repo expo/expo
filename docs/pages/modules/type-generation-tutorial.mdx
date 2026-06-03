@@ -84,7 +84,6 @@ We will now use the `expo-type-information` package to generate a TS interface f
     ],
     bun: ['$ bunx expo-type-information inline-modules-interface --app-json ./app.json --watcher'],
   }}
-  cmdCopy="npx expo-type-information inline-modules-interface --app-json ./app.json --watcher"
 />
 
 The `--app-json` (short `-a`) specifies the path to the app configuration file, where watchedDirectories for inline modules are defined. When using `--watcher` (short `-w`) option the app configuration file and all `watchedDirectories` will be watched and TS interface will be regenerated when these change.
@@ -251,7 +250,6 @@ To see the watcher in action make sure that you have the previous command still 
     ],
     bun: ['$ bunx expo-type-information inline-modules-interface --app-json ./app.json --watcher'],
   }}
-  cmdCopy="npx expo-type-information inline-modules-interface --app-json ./app.json --watcher"
 />
 
 And let's add a new function to the FirstInlineModule:
@@ -390,7 +388,6 @@ Now run a command to generate the interface
     pnpm: ['$ pnpm dlx expo-type-information module-interface --module ./expo-settings'],
     bun: ['$ bunx expo-type-information module-interface --module ./expo-settings'],
   }}
-  cmdCopy="npx expo-type-information module-interface --module ./expo-settings"
 />
 
 If you intend on changing the file and want to see how the interface changes, add the `--watcher` (short `-w`) flag to the command.
@@ -402,7 +399,6 @@ If you intend on changing the file and want to see how the interface changes, ad
     pnpm: ['$ pnpm dlx expo-type-information module-interface --module ./expo-settings -w'],
     bun: ['$ bunx expo-type-information module-interface --module ./expo-settings -w'],
   }}
-  cmdCopy="npx expo-type-information module-interface --module ./expo-settings -w"
 />
 
 The `--module` option (short `-m`) is a path to the root folder of the module. After running this command you should see 3 new generated files in the module package.
