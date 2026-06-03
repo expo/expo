@@ -340,12 +340,7 @@ class AudioControlsService : MediaSessionService() {
     metadata: Metadata? = null,
     options: AudioLockScreenOptions? = null
   ) {
-    appContext?.mainQueue?.launch {
-      val playbackListener = playbackListener ?: return@launch
-      currentPlayer?.ref?.removeListener(playbackListener)
-    }
-
-    playbackListener = null
+    removePlayerListener()
     currentPlayer?.isActiveForLockScreen = false
     hideNotification()
 
@@ -353,12 +348,7 @@ class AudioControlsService : MediaSessionService() {
     currentMetadata = metadata
     currentOptions = options
 
-    metadata?.artworkUrl?.let {
-      loadArtworkFromUrl(it) { bitmap ->
-        currentArtwork = bitmap
-        postOrStartForegroundNotification(startInForeground = false)
-      }
-    }
+    updateArtwork(metadata, postUpdate = false)
     player?.isActiveForLockScreen = true
 
     if (player != null) {
@@ -402,23 +392,20 @@ class AudioControlsService : MediaSessionService() {
     }
     currentMetadata = metadata
     sessionMetadataPlayer?.updateMetadata(metadata)
-    currentMetadata?.artworkUrl?.let {
-      loadArtworkFromUrl(it) { bitmap ->
-        currentArtwork = bitmap
-        postOrStartForegroundNotification(startInForeground = false)
-      }
-    } ?: postOrStartForegroundNotification(startInForeground = false)
+    updateArtwork(metadata)
   }
 
   private fun clearSessionInternal() {
-    currentPlayer?.isActiveForLockScreen = false
+    val player = currentPlayer
+    player?.isActiveForLockScreen = false
     removePlayerListener()
     currentPlayer = null
     currentMetadata = null
     mediaSession?.release()
     mediaSession = null
     sessionMetadataPlayer = null
-    currentPlayer?.assignBasicMediaSession()
+    clearArtwork()
+    player?.assignBasicMediaSession()
     stopForeground(STOP_FOREGROUND_REMOVE)
   }
 
@@ -443,6 +430,7 @@ class AudioControlsService : MediaSessionService() {
     if (player == currentPlayer) {
       currentMetadata = metadata
       currentOptions = options
+      updateArtwork(metadata, postUpdate = false)
 
       mediaSession?.release()
       sessionMetadataPlayer = null
@@ -465,14 +453,6 @@ class AudioControlsService : MediaSessionService() {
         updateSessionCustomLayout(player.ref.isPlaying)
         postOrStartForegroundNotification(startInForeground = false)
       }
-
-      // Reload artwork if metadata has changed
-      metadata?.artworkUrl?.let {
-        loadArtworkFromUrl(it) { bitmap ->
-          currentArtwork = bitmap
-          postOrStartForegroundNotification(startInForeground = false)
-        }
-      }
     } else {
       setActivePlayerInternal(player, metadata, options)
     }
@@ -489,8 +469,9 @@ class AudioControlsService : MediaSessionService() {
 
       artworkLoadJob = scope.launch {
         try {
-          val inputStream = url.openConnection().getInputStream()
-          val bitmap = BitmapFactory.decodeStream(inputStream)
+          val bitmap = url.openConnection().getInputStream().use {
+            BitmapFactory.decodeStream(it)
+          }
 
           if (isActive) {
             callback(bitmap)
@@ -504,6 +485,29 @@ class AudioControlsService : MediaSessionService() {
     }
   }
 
+  private fun updateArtwork(metadata: Metadata?, postUpdate: Boolean = true) {
+    val artworkUrl = metadata?.artworkUrl
+    if (artworkUrl == null) {
+      clearArtwork()
+      if (postUpdate) {
+        postOrStartForegroundNotification(startInForeground = false)
+      }
+      return
+    }
+
+    loadArtworkFromUrl(artworkUrl) { bitmap ->
+      currentArtwork = bitmap
+      postOrStartForegroundNotification(startInForeground = false)
+    }
+  }
+
+  private fun clearArtwork() {
+    artworkLoadJob?.cancel()
+    artworkLoadJob = null
+    currentArtworkUrl = null
+    currentArtwork = null
+  }
+
   private fun hideNotification() {
     val notificationManager: NotificationManager =
       getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -513,8 +517,8 @@ class AudioControlsService : MediaSessionService() {
   override fun onDestroy() {
     super.onDestroy()
 
-    artworkLoadJob?.cancel()
-    artworkLoadJob = null
+    removePlayerListener()
+    clearArtwork()
     scope.cancel()
     mediaSession?.release()
     mediaSession = null
@@ -522,9 +526,6 @@ class AudioControlsService : MediaSessionService() {
     currentPlayer = null
     currentMetadata = null
     currentOptions = null
-    currentArtwork = null
-    currentArtworkUrl = null
-    removePlayerListener()
   }
 
   private fun addPlayerListener(player: AudioPlayer) {
@@ -543,10 +544,13 @@ class AudioControlsService : MediaSessionService() {
   }
 
   private fun removePlayerListener() {
+    // Capture the player and listener in case they change while the coroutine is launching
+    val player = currentPlayer
+    val listener = playbackListener ?: return
+    playbackListener = null
+
     appContext?.mainQueue?.launch {
-      val listener = playbackListener ?: return@launch
-      currentPlayer?.ref?.removeListener(listener)
-      playbackListener = null
+      player?.ref?.removeListener(listener)
     }
   }
 
