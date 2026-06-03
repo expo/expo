@@ -12,8 +12,6 @@
 
 ### 💡 Others
 
-- [docs][android] Update guide of using the integrated approach according to the [bare minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android)
-
 ## 56.0.15 — 2026-05-26
 
 ### 🎉 New features
