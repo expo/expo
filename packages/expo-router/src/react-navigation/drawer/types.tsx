@@ -1,5 +1,6 @@
 import type { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { PanGesture } from 'react-native-gesture-handler';
+import type { NavigatorArgs, NavigatorState } from 'standard-navigation';
 
 import type { HeaderOptions } from '../elements';
 import type {
@@ -212,10 +213,32 @@ export type DrawerNavigationOptions = HeaderOptions & {
   freezeOnBlur?: boolean;
 };
 
-export type DrawerContentComponentProps = {
-  state: DrawerNavigationState<ParamListBase>;
-  navigation: DrawerNavigationHelpers;
+/**
+ * The discrete navigation actions exposed to the drawer views and to a custom `drawerContent`, in place of a
+ * full `navigation` object. `navigate`/`goBack` come from the standard-navigation `actions`; the rest are
+ * derived from the navigator's `dispatch` in `DrawerClient`'s `createProps`.
+ */
+export type DrawerNavigationActions = {
+  navigate: (name: string, params?: object) => void;
+  goBack: () => void;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  toggleDrawer: () => void;
+};
+
+/**
+ * The standard-navigation `emitter.emit` typed for the drawer's event map.
+ */
+export type DrawerEmit = NavigatorArgs<
+  DrawerNavigationOptions,
+  DrawerNavigationEventMap
+>['emitter']['emit'];
+
+export type DrawerContentComponentProps = DrawerNavigationActions & {
+  state: NavigatorState;
   descriptors: DrawerDescriptorMap;
+  isFocused: () => boolean;
+  emit: DrawerEmit;
 };
 
 export type DrawerHeaderProps = {
@@ -245,23 +268,23 @@ export type DrawerNavigationEventMap = {
   /**
    * Event which fires when a transition animation starts.
    */
-  transitionStart: { data: { closing: boolean } };
+  transitionStart: { data: { closing: boolean }; canPreventDefault: false };
   /**
    * Event which fires when a transition animation ends.
    */
-  transitionEnd: { data: { closing: boolean } };
+  transitionEnd: { data: { closing: boolean }; canPreventDefault: false };
   /**
    * Event which fires when navigation gesture starts.
    */
-  gestureStart: { data: undefined };
+  gestureStart: { data: undefined; canPreventDefault: false };
   /**
    * Event which fires when navigation gesture is completed.
    */
-  gestureEnd: { data: undefined };
+  gestureEnd: { data: undefined; canPreventDefault: false };
   /**
    * Event which fires when navigation gesture is canceled.
    */
-  gestureCancel: { data: undefined };
+  gestureCancel: { data: undefined; canPreventDefault: false };
 };
 
 export type DrawerNavigationHelpers = NavigationHelpers<ParamListBase, DrawerNavigationEventMap> &

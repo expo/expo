@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
+- Migrate the `Drawer` navigator to the `standard-navigation` integration. ([@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 
