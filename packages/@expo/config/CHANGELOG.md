@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Update for `experiments.outOfTreePlatforms` typing ([#46497](https://github.com/expo/expo/pull/46497) by [@kitten](https://github.com/kitten))
+
 ## 57.0.0 — 2026-06-25
 
 _This version does not introduce any user-facing changes._

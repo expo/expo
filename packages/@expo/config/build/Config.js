@@ -167,7 +167,6 @@ function getSupportedPlatforms(projectRoot, exp) {
   if ((0, _requireUtils().resolveFrom)(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
   }
-  // TODO(@kitten): Update when XDL schema is modified
   if (exp.experiments?.outOfTreePlatforms) {
     if ((0, _requireUtils().resolveFrom)(projectRoot, 'react-native-tvos/package.json')) {
       platforms.push('tvos');
