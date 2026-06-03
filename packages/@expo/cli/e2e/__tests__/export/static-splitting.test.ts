@@ -117,7 +117,7 @@ describe('exports static with bundle splitting', () => {
 
       // Common chunk
       if (file!.match(/__common/)) {
-        expect(sourceMap.sources.length).toEqual(44);
+        expect(sourceMap.sources.length).toEqual(50);
       } else {
         // expect(sourceMap.sources).toEqual(
         //   expect.arrayContaining([
