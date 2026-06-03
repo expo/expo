@@ -480,6 +480,10 @@ function buildClassProperty(declaration: PropertyDeclaration): ts.PropertyDeclar
   });
 }
 
+function getModuleClassEventsTypeName(moduleClassDeclaration: ModuleClassDeclaration): string {
+  return `${moduleClassDeclaration.name}Events`;
+}
+
 function buildNativeModuleClassDeclaration({
   moduleClassDeclaration,
   exportedModuleName,
@@ -519,7 +523,11 @@ function buildNativeModuleClassDeclaration({
         ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
           ts.factory.createExpressionWithTypeArguments(
             ts.factory.createIdentifier('NativeModule'),
-            undefined
+            [
+              ts.factory.createTypeReferenceNode(
+                getModuleClassEventsTypeName(moduleClassDeclaration)
+              ),
+            ]
           ),
         ]),
       ],
@@ -786,6 +794,30 @@ function buildDefaultViewComponent({
   ];
 }
 
+function buildModuleEventsTypeDeclaration(
+  moduleClassDeclaration: ModuleClassDeclaration,
+  { exported }: { exported?: boolean }
+): ts.Node[] {
+  return [
+    ts.addSyntheticLeadingComment(
+      createTypeAlias({
+        exported,
+        alias: getModuleClassEventsTypeName(moduleClassDeclaration),
+        type: ts.factory.createTypeLiteralNode(
+          moduleClassDeclaration.events.map((event) => {
+            return createPropertySignature({
+              name: event,
+              typeNode: ts.factory.createFunctionTypeNode(undefined, [], voidKeywordType()),
+            });
+          })
+        ),
+      }),
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      ` These events may have arguments that weren't resolved!`
+    ),
+  ];
+}
+
 export function buildExposedTypesDeclarations(
   ctx: GenerationContext,
   options: { exported?: boolean; declare?: boolean }
@@ -803,6 +835,7 @@ export function buildExposedTypesDeclarations(
     ctx.fileInfo.records.flatMap(recordDeclarationMap),
     ctx.fileInfo.enums.flatMap(enumDeclarationMap),
     ctx.module.classes.map(classDeclarationMap),
+    buildModuleEventsTypeDeclaration(ctx.module, options),
   ]);
 }
 
@@ -958,9 +991,11 @@ function buildStableNativeModuleInterface(ctx: GenerationContext): ts.Node[] {
     createImportDeclaration({
       namedImportsNames: [
         ...ctx.fileInfo.usedTypeIdentifiers.difference(getBasicTypesIdentifiers()),
-        ...[generatedModuleTypeAlias, ctx.view ? getViewPropsTypeName(ctx.view) : null].filter(
-          (v) => v !== null
-        ),
+        ...[
+          getModuleClassEventsTypeName(ctx.module),
+          generatedModuleTypeAlias,
+          ctx.view ? getViewPropsTypeName(ctx.view) : null,
+        ].filter((v) => v !== null),
       ],
       importFromName: generatedFilePath,
     }),
@@ -1165,7 +1200,10 @@ export async function generateFullTsInterface(fileTypeInformation: FileTypeInfor
       importFromName: 'expo',
     }),
     createImportDeclaration({
-      namedImportsNames: [...getAllNonBasicTypes(ctx.fileInfo)],
+      namedImportsNames: [
+        ...getAllNonBasicTypes(ctx.fileInfo),
+        getModuleClassEventsTypeName(ctx.module),
+      ],
       importFromName: `./${moduleTypesFileImportName}`,
     }),
     buildNativeModuleClassDeclaration({

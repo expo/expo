@@ -254,6 +254,9 @@ function buildClassProperty(declaration) {
         typeNode: mapTypeToTsTypeNode(declaration.type),
     });
 }
+function getModuleClassEventsTypeName(moduleClassDeclaration) {
+    return `${moduleClassDeclaration.name}Events`;
+}
 function buildNativeModuleClassDeclaration({ moduleClassDeclaration, exportedModuleName, }) {
     const buildClassTypeProperty = (classDeclaration) => createProperty({
         // TODO(@HubertBer): that's a hack, but I couldn't find a proper way to do this
@@ -275,7 +278,9 @@ function buildNativeModuleClassDeclaration({ moduleClassDeclaration, exportedMod
     return [
         typescript_1.default.factory.createClassDeclaration([exportModifier(), declareModifier()], exportedModuleName ?? `${moduleClassDeclaration.name}NativeModuleType`, undefined, [
             typescript_1.default.factory.createHeritageClause(typescript_1.default.SyntaxKind.ExtendsKeyword, [
-                typescript_1.default.factory.createExpressionWithTypeArguments(typescript_1.default.factory.createIdentifier('NativeModule'), undefined),
+                typescript_1.default.factory.createExpressionWithTypeArguments(typescript_1.default.factory.createIdentifier('NativeModule'), [
+                    typescript_1.default.factory.createTypeReferenceNode(getModuleClassEventsTypeName(moduleClassDeclaration)),
+                ]),
             ]),
         ], [
             ...moduleClassDeclaration.constants.map(buildClassProperty),
@@ -398,6 +403,20 @@ function buildDefaultViewComponent({ componentName, propsTypeAlias, }) {
         ], undefined, functionBody),
     ];
 }
+function buildModuleEventsTypeDeclaration(moduleClassDeclaration, { exported }) {
+    return [
+        typescript_1.default.addSyntheticLeadingComment(createTypeAlias({
+            exported,
+            alias: getModuleClassEventsTypeName(moduleClassDeclaration),
+            type: typescript_1.default.factory.createTypeLiteralNode(moduleClassDeclaration.events.map((event) => {
+                return createPropertySignature({
+                    name: event,
+                    typeNode: typescript_1.default.factory.createFunctionTypeNode(undefined, [], voidKeywordType()),
+                });
+            })),
+        }), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, ` These events may have arguments that weren't resolved!`),
+    ];
+}
 function buildExposedTypesDeclarations(ctx, options) {
     const recordDeclarationMap = (recordType) => buildRecordTypeAlias(recordType, options.exported ?? false);
     const enumDeclarationMap = (enumType) => buildEnumTypeDeclaration(enumType, options.exported ?? false, options.declare ?? false);
@@ -408,6 +427,7 @@ function buildExposedTypesDeclarations(ctx, options) {
         ctx.fileInfo.records.flatMap(recordDeclarationMap),
         ctx.fileInfo.enums.flatMap(enumDeclarationMap),
         ctx.module.classes.map(classDeclarationMap),
+        buildModuleEventsTypeDeclaration(ctx.module, options),
     ]);
 }
 function buildModuleDeclarationNodes(ctx) {
@@ -519,7 +539,11 @@ function buildStableNativeModuleInterface(ctx) {
         createImportDeclaration({
             namedImportsNames: [
                 ...ctx.fileInfo.usedTypeIdentifiers.difference(getBasicTypesIdentifiers()),
-                ...[generatedModuleTypeAlias, ctx.view ? getViewPropsTypeName(ctx.view) : null].filter((v) => v !== null),
+                ...[
+                    getModuleClassEventsTypeName(ctx.module),
+                    generatedModuleTypeAlias,
+                    ctx.view ? getViewPropsTypeName(ctx.view) : null,
+                ].filter((v) => v !== null),
             ],
             importFromName: generatedFilePath,
         }),
@@ -682,7 +706,10 @@ async function generateFullTsInterface(fileTypeInformation) {
             importFromName: 'expo',
         }),
         createImportDeclaration({
-            namedImportsNames: [...getAllNonBasicTypes(ctx.fileInfo)],
+            namedImportsNames: [
+                ...getAllNonBasicTypes(ctx.fileInfo),
+                getModuleClassEventsTypeName(ctx.module),
+            ],
             importFromName: `./${moduleTypesFileImportName}`,
         }),
         buildNativeModuleClassDeclaration({
