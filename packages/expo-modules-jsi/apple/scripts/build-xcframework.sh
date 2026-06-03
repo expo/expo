@@ -100,6 +100,13 @@ compute_hash() {
     # sources invalidates the cache.
     echo "PODS_ROOT=${PODS_ROOT:-}"
     echo "RN_ROOT=${RN_ROOT:-}"
+    # Include the Swift toolchain version so upgrading Xcode invalidates the
+    # cache. A slice's .swiftmodule and Clang module cache are tied to the
+    # compiler that produced them; reusing a slice built by an older toolchain
+    # after an Xcode upgrade surfaces as spurious compile errors that look like
+    # source problems. swiftc --version reports the swiftlang/clang tags and the
+    # target triple, so any toolchain change forces a clean rebuild.
+    echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
