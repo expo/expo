@@ -1,7 +1,7 @@
 /**
  * Navigators
  */
-export { createDrawerNavigator } from './navigators/createDrawerNavigator';
+export { createStandardDrawerNavigator } from './navigators/createStandardDrawerNavigator';
 /**
  * Views
  */
@@ -21,5 +21,5 @@ export { DrawerProgressContext, useDrawerProgress } from 'react-native-drawer-la
 /**
  * Types
  */
-export type { DrawerContentComponentProps, DrawerHeaderProps, DrawerNavigationEventMap, DrawerNavigationOptions, DrawerNavigationProp, DrawerNavigatorProps, DrawerOptionsArgs, DrawerScreenProps, } from './types';
+export type { DrawerContentComponentProps, DrawerHeaderProps, DrawerNavigationActions, DrawerNavigationEventMap, DrawerNavigationOptions, DrawerNavigationProp, DrawerNavigatorProps, DrawerOptionsArgs, DrawerScreenProps, } from './types';
 //# sourceMappingURL=index.d.ts.map

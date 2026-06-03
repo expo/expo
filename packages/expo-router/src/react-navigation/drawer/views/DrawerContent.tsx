@@ -2,7 +2,7 @@ import type { DrawerContentComponentProps } from '../types';
 import { DrawerContentScrollView } from './DrawerContentScrollView';
 import { DrawerItemList } from './DrawerItemList';
 
-export function DrawerContent({ descriptors, state, ...rest }: DrawerContentComponentProps) {
+export function DrawerContent({ descriptors, state, ...actions }: DrawerContentComponentProps) {
   const focusedRoute = state.routes[state.index]!;
   const focusedDescriptor = descriptors[focusedRoute.key]!;
   const focusedOptions = focusedDescriptor.options;
@@ -11,10 +11,9 @@ export function DrawerContent({ descriptors, state, ...rest }: DrawerContentComp
 
   return (
     <DrawerContentScrollView
-      {...rest}
       contentContainerStyle={drawerContentContainerStyle}
       style={drawerContentStyle}>
-      <DrawerItemList descriptors={descriptors} state={state} {...rest} />
+      <DrawerItemList descriptors={descriptors} state={state} {...actions} />
     </DrawerContentScrollView>
   );
 }

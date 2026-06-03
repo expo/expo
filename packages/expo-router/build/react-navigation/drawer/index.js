@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useDrawerProgress = exports.DrawerProgressContext = exports.useDrawerStatus = exports.getDrawerStatusFromState = exports.DrawerStatusContext = exports.DrawerView = exports.DrawerToggleButton = exports.DrawerItemList = exports.DrawerItem = exports.DrawerContentScrollView = exports.DrawerContent = exports.createDrawerNavigator = void 0;
+exports.useDrawerProgress = exports.DrawerProgressContext = exports.useDrawerStatus = exports.getDrawerStatusFromState = exports.DrawerStatusContext = exports.DrawerView = exports.DrawerToggleButton = exports.DrawerItemList = exports.DrawerItem = exports.DrawerContentScrollView = exports.DrawerContent = exports.createStandardDrawerNavigator = void 0;
 /**
  * Navigators
  */
-var createDrawerNavigator_1 = require("./navigators/createDrawerNavigator");
-Object.defineProperty(exports, "createDrawerNavigator", { enumerable: true, get: function () { return createDrawerNavigator_1.createDrawerNavigator; } });
+var createStandardDrawerNavigator_1 = require("./navigators/createStandardDrawerNavigator");
+Object.defineProperty(exports, "createStandardDrawerNavigator", { enumerable: true, get: function () { return createStandardDrawerNavigator_1.createStandardDrawerNavigator; } });
 /**
  * Views
  */
