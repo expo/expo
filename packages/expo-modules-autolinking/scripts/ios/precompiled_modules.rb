@@ -567,9 +567,19 @@ module Expo
         pod_name = condition['podName']
         return pod_lookup_map.key?(pod_name) if pod_name
 
-        # Linked when the npm package is installed (Node-resolvable from the project)
+        # Linked when the npm package is present. Two complementary signals, since the
+        # package can be linked via a path the other misses:
+        #   - Node resolution from the project root catches packages that the autolinking
+        #     enumeration drops (optional peers, or transitive deps under shallow linking)
+        #     as long as they're hoisted to a node_modules the project can reach.
+        #   - The autolinking dependency list catches strict (non-hoisted) layouts where a
+        #     transitive-only package isn't Node-resolvable from the project root but is
+        #     still surfaced by real-resolution autolinking (e.g. via a non-optional peer).
         npm_package = condition['npmPackage']
-        return node_module_resolvable?(npm_package, project_directory) if npm_package
+        if npm_package
+          return true if node_module_resolvable?(npm_package, project_directory)
+          return react_native_config.dig('dependencies', npm_package) != nil
+        end
 
         property = condition['podfileProperty']
         return false unless property
