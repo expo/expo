@@ -74,6 +74,14 @@ fun buildCacheDataSourceFactory(
   val sourceUrl = videoSource.uri?.toString()
   val storageKeyResult = sourceUrl?.let { CacheVariantIndex.storageKeyResult(context, it, requestHeaders) }
   val storageKey = storageKeyResult?.storageKey
+  if (storageKeyResult?.cacheable == false) {
+    // Non-cacheable URL (e.g. `Vary: *`): bypass the cache so leftover byte spans
+    // an active player locked from eviction are never read, including offline.
+    if (sourceUrl != null && storageKey != null) {
+      evictCacheEntry(sourceUrl, storageKey)
+    }
+    return buildBaseDataSourceFactory(context, videoSource, storageKey)
+  }
   if (storageKeyResult?.canReadFromCache != true) {
     if (sourceUrl != null && storageKey != null) {
       evictCacheEntry(sourceUrl, storageKey)
@@ -113,19 +121,16 @@ private fun buildCacheVariantRecorder(
       val policy = CachePolicy.evaluate(responseHeaders, response.code)
       val storageKey = cacheStorageKey ?: CacheVariantIndex.storageKey(context, sourceUrl, requestHeaders)
 
+      if (recordedKeys.add(storageKey)) {
+        CacheVariantIndex.recordVariant(context, sourceUrl, storageKey, requestHeaders, policy)
+      }
       if (!policy.isCacheable) {
-        // A previously cached entry under this key (e.g. one that used to be
-        // cacheable) must go now that the server says otherwise. We also evict
-        // again on close because `FLAG_IGNORE_CACHE_ON_ERROR` may let Media3
-        // write partial bytes for this response before the body stream ends.
-        recordedKeys.remove(storageKey)
+        // Best-effort reclaim of any partial bytes Media3 wrote under this key;
+        // the recorded marker is the durable guard if locked spans can't be freed.
         evictCacheEntry(sourceUrl, storageKey)
         return@Interceptor response.evictAfterClose {
           evictCacheEntry(sourceUrl, storageKey)
         }
-      }
-      if (recordedKeys.add(storageKey)) {
-        CacheVariantIndex.recordVariant(context, sourceUrl, storageKey, requestHeaders, policy)
       }
     }
     response

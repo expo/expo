@@ -19,12 +19,15 @@ internal data class CacheVariant(
   val varyHeaders: List<String>,
   val varyValues: Map<String, String>,
   val identityValues: Map<String, String>,
-  val allowsAuthorizedReuse: Boolean
+  val allowsAuthorizedReuse: Boolean,
+  val cacheable: Boolean = true
 )
 
 internal data class CacheStorageKey(
   val storageKey: String,
-  val canReadFromCache: Boolean
+  // Whether the caller may serve bytes already in the Media3 cache for this request.
+  val canReadFromCache: Boolean,
+  val cacheable: Boolean = true
 )
 
 internal object CacheVariantIndex {
@@ -68,7 +71,8 @@ internal object CacheVariantIndex {
     matchingVariant(variants, normalized)?.let {
       return CacheStorageKey(
         storageKey = it.storageKey,
-        canReadFromCache = true
+        canReadFromCache = it.cacheable,
+        cacheable = it.cacheable
       )
     }
     return CacheStorageKey(
@@ -89,6 +93,8 @@ internal object CacheVariantIndex {
     File(context.cacheDir, INDEX_DIR).deleteRecursively()
   }
 
+  // A non-cacheable response (e.g. `Vary: *`) is stored as a `cacheable = false`
+  // marker so later reads bypass the cache instead of serving leftover bytes.
   @Synchronized
   fun recordVariant(
     context: Context,
@@ -97,7 +103,6 @@ internal object CacheVariantIndex {
     requestHeaders: Map<String, String>,
     policy: CachePolicy
   ) {
-    if (!policy.isCacheable) return
     val normalized = normalize(requestHeaders)
     val varyValues = policy.varyHeaders.associateWith { (normalized[it] ?: "") }
     val identityValues = identityValues(normalized)
@@ -106,7 +111,8 @@ internal object CacheVariantIndex {
       varyHeaders = policy.varyHeaders,
       varyValues = varyValues,
       identityValues = identityValues,
-      allowsAuthorizedReuse = policy.allowsAuthorizedReuse
+      allowsAuthorizedReuse = policy.allowsAuthorizedReuse,
+      cacheable = policy.isCacheable
     )
     val existing = load(context, url).filterNot { it.storageKey == storageKey } + variant
     save(context, url, existing)
@@ -254,6 +260,7 @@ internal object CacheVariantIndex {
       .put("varyValues", values)
       .put("identityValues", identityValues)
       .put("allowsAuthorizedReuse", v.allowsAuthorizedReuse)
+      .put("cacheable", v.cacheable)
   }
 
   private fun decode(json: JSONObject): CacheVariant {
@@ -278,7 +285,8 @@ internal object CacheVariantIndex {
       varyHeaders = headers,
       varyValues = values,
       identityValues = identityValues,
-      allowsAuthorizedReuse = json.optBoolean("allowsAuthorizedReuse", false)
+      allowsAuthorizedReuse = json.optBoolean("allowsAuthorizedReuse", false),
+      cacheable = json.optBoolean("cacheable", true)
     )
   }
 
