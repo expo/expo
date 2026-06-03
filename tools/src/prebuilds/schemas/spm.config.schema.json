@@ -190,6 +190,29 @@
                 "sourceOnly": {
                     "type": "boolean",
                     "description": "When true, the product is never prebuilt as an xcframework. The prebuild flow skips it entirely — it does not generate sources, build, or resolve its externalDependencies. The product entry remains so autolinking (`autolinkWhen`) can still register the matching CocoaPods source pod. Use this for companion adapters that must always compile from source because they bridge to a peer pod that may not be present."
+                },
+                "autolinkWhen": {
+                    "type": "object",
+                    "description": "Condition gating whether this product's CocoaPods pod is autolinked into a consumer app (used for companion/adapter pods). One key is used, checked in order: `podName` (a resolved pod with this name is present), `npmPackage` (the npm package is installed / Node-resolvable from the project, even when React Native autolinking skips it — e.g. an optional peer dependency), or `podfileProperty` (a Podfile.properties.json value, autolinked unless it equals `disabledValue`).",
+                    "properties": {
+                        "podName": {
+                            "type": "string",
+                            "description": "Autolink when a resolved product pod with this name is present."
+                        },
+                        "npmPackage": {
+                            "type": "string",
+                            "description": "Autolink when this npm package is installed (Node-resolvable from the project)."
+                        },
+                        "podfileProperty": {
+                            "type": "string",
+                            "description": "Autolink based on a Podfile.properties.json property (see `disabledValue`)."
+                        },
+                        "disabledValue": {
+                            "type": "string",
+                            "description": "Used with `podfileProperty`: skip autolinking only when the property equals this value."
+                        }
+                    },
+                    "additionalProperties": false
                 }
             },
             "required": [ "name", "podName", "targets" ],

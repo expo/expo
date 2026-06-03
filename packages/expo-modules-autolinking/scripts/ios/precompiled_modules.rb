@@ -487,7 +487,7 @@ module Expo
       #     "disabledValue": "false"
       #   }
       #   "autolinkWhen": {
-      #     "podName": "RNWorklets"
+      #     "npmPackage": "react-native-worklets"
       #   }
       def register_companion_pods(podfile, target_definition, project_directory, tests_only: false)
         return if tests_only
@@ -498,7 +498,7 @@ module Expo
           condition = info[:autolink_when]
           next unless condition
           next if target_definition.dependencies.any? { |dep| dep.name == pod_name }
-          next unless companion_autolink_condition_met?(condition, properties)
+          next unless companion_autolink_condition_met?(condition, properties, project_directory)
 
           podspec_file = File.join(info[:podspec_dir], "#{pod_name}.podspec")
           unless File.exist?(podspec_file)
@@ -563,12 +563,13 @@ module Expo
         JSON.parse(File.read(props_path)) rescue {}
       end
 
-      def companion_autolink_condition_met?(condition, properties)
+      def companion_autolink_condition_met?(condition, properties, project_directory)
         pod_name = condition['podName']
         return pod_lookup_map.key?(pod_name) if pod_name
 
+        # Linked when the npm package is installed (Node-resolvable from the project)
         npm_package = condition['npmPackage']
-        return react_native_config.dig('dependencies', npm_package) != nil if npm_package
+        return node_module_resolvable?(npm_package, project_directory) if npm_package
 
         property = condition['podfileProperty']
         return false unless property
@@ -579,6 +580,17 @@ module Expo
 
       def companion_autolink_condition_label(condition)
         condition['podName'] || condition['npmPackage'] || condition['podfileProperty']
+      end
+
+      # True if `package_name` is resolvable from `project_directory` via Node (pnpm/yarn/hoist-safe).
+      def node_module_resolvable?(package_name, project_directory)
+        return false if package_name.nil? || package_name.empty?
+
+        script = "require.resolve('#{package_name}/package.json', { paths: ['#{project_directory}'] })"
+        output, _stderr, status = Open3.capture3('node', '--print', script)
+        status.success? && !output.strip.empty?
+      rescue StandardError
+        false
       end
 
       # ──────────────────────────────────────────────────────────────────────

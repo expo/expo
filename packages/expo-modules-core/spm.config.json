@@ -176,7 +176,7 @@
         "iOS(.v16)"
       ],
       "autolinkWhen": {
-        "podName": "RNWorklets"
+        "npmPackage": "react-native-worklets"
       },
       "externalDependencies": [
         "ReactNativeDependencies",

@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
+- [iOS] Link companion pods like `ExpoModulesWorkletsAdapter` when their backing package (e.g. `react-native-worklets`) is installed but reached only through an optional peer dependency.
 
 ### 💡 Others
 
