@@ -14,6 +14,7 @@
 - Disable sextant QR code rendering for Windows Terminal ([#46455](https://github.com/expo/expo/pull/46455) by [@kitten](https://github.com/kitten))
 - Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 - Remove `@expo/metro-config` install from `expo customize metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
+- Place static entries last in serialized HTML output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
