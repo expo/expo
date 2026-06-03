@@ -35,11 +35,22 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
   const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
 
   const buildConfiguration = resolveBuildConfiguration(options);
-  const device = path.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
+  // tvOS support (e.g. react-native-tvos): when the generated project targets
+  // tvOS its Podfile declares `platform :tvos`, in which case xcodebuild emits
+  // `*-appletvos`/`*-appletvsimulator` product dirs and needs tvOS destinations
+  // instead of the iphoneos/iphonesimulator defaults.
+  const applePlatform = resolveApplePlatform();
+  const deviceSdk = applePlatform === 'tvos' ? 'appletvos' : 'iphoneos';
+  const simulatorSdk = applePlatform === 'tvos' ? 'appletvsimulator' : 'iphonesimulator';
+  const destinations =
+    applePlatform === 'tvos'
+      ? ['generic/platform=tvOS', 'generic/platform=tvOS Simulator']
+      : ['generic/platform=iphoneos', 'generic/platform=iphonesimulator'];
+  const device = path.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-${deviceSdk}`);
   const scheme = resolveScheme(options);
   const simulator = path.join(
     buildProductsPath,
-    `${buildConfiguration.toLowerCase()}-iphonesimulator`
+    `${buildConfiguration.toLowerCase()}-${simulatorSdk}`
   );
   // Detect prebuilt Expo module xcframeworks dropped into ios/Pods/ when the project's
   // expo-build-properties config sets `ios.usePrecompiledModules` (or the user ran
@@ -67,6 +78,7 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     buildConfiguration,
     derivedDataPath,
     device,
+    destinations,
     hostProvidedFrameworks: resolveHostProvidedFrameworks(options),
     simulator,
     scheme: resolveScheme(options),
@@ -193,6 +205,24 @@ const resolveBuildConfiguration = (options: OptionValues): BuildConfiguration =>
 
 const resolveScheme = (options: OptionValues): string => {
   return options.scheme || findScheme();
+};
+
+// Infer whether the generated iOS project actually targets tvOS by reading the
+// platform declaration from the generated Podfile. This keeps the detection
+// decoupled from any specific RN distribution (react-native-tvos etc.).
+const resolveApplePlatform = (): 'ios' | 'tvos' => {
+  try {
+    const podfile = path.join(process.cwd(), 'ios/Podfile');
+    if (fs.existsSync(podfile)) {
+      const contents = fs.readFileSync(podfile, 'utf8');
+      if (/^\s*platform\s+:tvos/m.test(contents)) {
+        return 'tvos';
+      }
+    }
+  } catch {
+    // fall through to the iOS default
+  }
+  return 'ios';
 };
 
 const resolveWorkspace = (options: OptionValues): string => {
