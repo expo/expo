@@ -15,7 +15,7 @@ export function preprocessFileCommand(cli: commander.Command) {
       'Print the preprocessed file(s) in the state right before parsing them using `sourcekitten`. It helps with checking how the `--module-path`, `--input-path`, and `--type-inference` options affect the parsed file.'
     )
     .summary(
-      'Print the preprocessed file(s) in the state right before parsing them using `sourcekitten`.'
+      'print the preprocessed file(s) in the state right before parsing them using `sourcekitten`'
     )
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options);
