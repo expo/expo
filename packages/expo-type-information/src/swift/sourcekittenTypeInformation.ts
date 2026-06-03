@@ -658,6 +658,33 @@ async function parseModuleFunctionSubstructure(
   };
 }
 
+async function parseModuleAsyncFunctionSubstructure(
+  substructure: Structure,
+  file: FileType,
+  options: SwiftFileTypeInformationOptions,
+  isStatic: boolean
+): Promise<FunctionDeclaration> {
+  const functionDeclaration = await parseModuleFunctionSubstructure(
+    substructure,
+    file,
+    options,
+    isStatic
+  );
+  const lastArgument = functionDeclaration.arguments[functionDeclaration.arguments.length - 1];
+  if (!lastArgument) {
+    return functionDeclaration;
+  }
+
+  const isPromiseName = lastArgument.name === 'promise';
+  const isPromiseType =
+    lastArgument.type.kind === TypeKind.IDENTIFIER &&
+    (lastArgument.type.type as TypeIdentifier) === 'Promise';
+  if (isPromiseName || isPromiseType) {
+    functionDeclaration.arguments.pop();
+  }
+  return functionDeclaration;
+}
+
 async function parseModulePropDeclaration(
   substructure: Structure,
   file: FileType,
@@ -894,12 +921,12 @@ async function parseModuleStructure(
       }
       case 'AsyncFunction':
         moduleClassDeclaration.asyncFunctions.push(
-          await parseModuleFunctionSubstructure(structure, file, options, false)
+          await parseModuleAsyncFunctionSubstructure(structure, file, options, false)
         );
         break;
       case 'StaticAsyncFunction':
         moduleClassDeclaration.asyncFunctions.push(
-          await parseModuleFunctionSubstructure(structure, file, options, true)
+          await parseModuleAsyncFunctionSubstructure(structure, file, options, true)
         );
         break;
       case 'StaticFunction':
