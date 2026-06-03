@@ -116,16 +116,68 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
 
     let status = httpResponse.statusCode
     let statusText = HTTPURLResponse.localizedString(forStatusCode: status)
-    let headers = httpResponse.allHeaderFields.reduce(into: [[String]]()) { result, header in
-      if let key = header.key as? String, let value = header.value as? String {
-        result.append([key, value])
-      }
-    }
+    let headers = parseHeaders(from: httpResponse)
     let url = httpResponse.url?.absoluteString ?? ""
     return NativeResponseInit(
       headers: headers, status: status, statusText: statusText, url: url
     )
   }
+
+  private static func parseHeaders(from httpResponse: HTTPURLResponse) -> [[String]] {
+    var result: [[String]] = []
+    for (rawKey, rawValue) in httpResponse.allHeaderFields {
+      guard let key = rawKey as? String, let value = rawValue as? String else {
+        continue
+      }
+      if key.caseInsensitiveCompare("Set-Cookie") == .orderedSame, let url = httpResponse.url {
+        let cookies = HTTPCookie.cookies(withResponseHeaderFields: [key: value], for: url)
+        if cookies.isEmpty {
+          result.append([key, value])
+        } else {
+          for cookie in cookies {
+            result.append([key, Self.reconstructSetCookieHeader(from: cookie)])
+          }
+        }
+      } else {
+        result.append([key, value])
+      }
+    }
+    return result
+  }
+
+  /**
+   Reconstructs a `Set-Cookie` header value from a parsed `HTTPCookie`.
+   */
+  private static func reconstructSetCookieHeader(from cookie: HTTPCookie) -> String {
+    var components: [String] = ["\(cookie.name)=\(cookie.value)"]
+    if !cookie.path.isEmpty {
+      components.append("Path=\(cookie.path)")
+    }
+    if !cookie.domain.isEmpty {
+      components.append("Domain=\(cookie.domain)")
+    }
+    if !cookie.isSessionOnly, let expiresDate = cookie.expiresDate {
+      components.append("Expires=\(Self.cookieDateFormatter.string(from: expiresDate))")
+    }
+    if cookie.isSecure {
+      components.append("Secure")
+    }
+    if cookie.isHTTPOnly {
+      components.append("HttpOnly")
+    }
+    if let sameSite = cookie.sameSitePolicy?.rawValue {
+      components.append("SameSite=\(sameSite)")
+    }
+    return components.joined(separator: "; ")
+  }
+
+  private static let cookieDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone(identifier: "GMT")
+    formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss 'GMT'"
+    return formatter
+  }()
 
   // MARK: - ExpoURLSessionTaskDelegate implementations
 
