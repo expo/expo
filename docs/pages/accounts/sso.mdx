@@ -89,7 +89,14 @@ You'll be prompted to select an Expo username. This will be the username for you
 
 When using the Expo CLI, you can run the following command to log in to your Expo account.
 
-<Terminal cmd={['$ npx expo login --sso']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo login --sso'],
+    yarn: ['$ yarn expo login --sso'],
+    pnpm: ['$ pnpm expo login --sso'],
+    bun: ['$ bun expo login --sso'],
+  }}
+/>
 
 You will be prompted to log in via the Expo website in a browser and will be redirected back to the CLI upon completion.
 

@@ -23,7 +23,14 @@ EAS Hosting offers the fastest path from `npx create-expo-app` to a fully deploy
 
 To deploy your web app, you need to create a static build of your web project. Run the following command to export your web project into a **dist** directory:
 
-<Terminal cmd={['$ npx expo export --platform web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 To publish your web app, run the following command:
 
