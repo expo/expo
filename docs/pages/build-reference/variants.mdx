@@ -157,7 +157,7 @@ When you run `eas build --profile production` the `APP_VARIANT` variable environ
 
 ### Build and use a variant locally
 
-If you [build your app locally](/guides/local-app-overview/) with [`expo run:android|ios`](/workflow/continuous-native-generation/#usage), set the `APP_VARIANT` environment variable to when you run the `expo run` command. For example, to compile the `development` variant for iOS, run:
+If you [build your app locally](/guides/local-app-overview/) with [`expo run:android|ios`](/workflow/continuous-native-generation/#usage), set the `APP_VARIANT` environment variable when you run the `expo run` command. For example, to compile the `development` variant for iOS as a debug build (the default), run:
 
 <Terminal
   cmd={{
@@ -168,14 +168,32 @@ If you [build your app locally](/guides/local-app-overview/) with [`expo run:and
   }}
 />
 
-When you switch variants, the existing native directory (**android** or **ios**) still reflects the previous variant. To ensure that you switch to the correct variant, regenerate the native directories with a clean prebuild before compiling your app locally. For example, to switch to the `preview` variant, generate the native directories with the command below:
+`APP_VARIANT` changes only the app's name and package name on Android and bundle identifier on iOS. It does not affect how the binary is compiled. When you switch variants, the existing **android** and **ios** directories still reflect the previous variant. If a native directory is already present, `expo run` will skip regenerating it and compile it as-is.
+
+To switch variants, you need to regenerate the native directories again with `prebuild --clean` before compiling the app. In the example below, the `development` variant (existing debug build) is switched to `test`, which is a another debug build. To regenerate the **Android** and **ios** directories and then compile the `test` variant, set `APP_VARIANT` on both commands so that the clean prebuild and the compilation use the same variant:
 
 <Terminal
   cmd={{
-    npm: ['$ APP_VARIANT=preview npx expo prebuild --clean'],
-    yarn: ['$ APP_VARIANT=preview yarn expo prebuild --clean'],
-    pnpm: ['$ APP_VARIANT=preview pnpm expo prebuild --clean'],
-    bun: ['$ APP_VARIANT=preview bun expo prebuild --clean'],
+    npm: [
+      '$ APP_VARIANT=test npx expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test npx expo run:ios',
+    ],
+    yarn: [
+      '$ APP_VARIANT=test yarn expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ APP_VARIANT=test pnpm expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test pnpm expo run:ios',
+    ],
+    bun: [
+      '$ APP_VARIANT=test bun expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test bun expo run:ios',
+    ],
   }}
 />
 
