@@ -159,7 +159,14 @@ This guide demonstrates how to create a blurhash of an uploaded image on the bac
 
 Start by installing a few dependencies: [`multer`](https://github.com/expressjs/multer) for handling multipart requests, [`sharp`](https://github.com/lovell/sharp) for converting files to a data buffer, and the official [`blurhash` JavaScript package](https://github.com/woltapp/blurhash/tree/master/TypeScript).
 
-<Terminal cmd={['$ npm install multer sharp blurhash']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install multer sharp blurhash'],
+    yarn: ['$ yarn add multer sharp blurhash'],
+    pnpm: ['$ pnpm add multer sharp blurhash'],
+    bun: ['$ bun add multer sharp blurhash'],
+  }}
+/>
 
 Next, import all required functions from installed packages and initialize `multer`:
 

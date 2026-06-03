@@ -47,6 +47,10 @@ export interface BabelPresetExpoOptions extends BabelPresetExpoPlatformOptions {
     web?: BabelPresetExpoPlatformOptions;
     /** Native-specific settings. */
     native?: BabelPresetExpoPlatformOptions;
+    tvos?: BabelPresetExpoPlatformOptions;
+    macos?: BabelPresetExpoPlatformOptions;
+    ios?: BabelPresetExpoPlatformOptions;
+    android?: BabelPresetExpoPlatformOptions;
 }
 declare function babelPresetExpo(api: ConfigAPI, options?: BabelPresetExpoOptions): TransformOptions;
 export default babelPresetExpo;

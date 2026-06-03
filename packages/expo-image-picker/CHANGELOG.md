@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix broken bounds when cropping images when launching with `launchCameraAsync`. ([#45554](https://github.com/expo/expo/pull/45554) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 - [Web] Drop dependency on `expo-modules-core` `Platform` in favor of inline `window`/`document` checks. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))

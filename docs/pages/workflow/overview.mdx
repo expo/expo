@@ -104,13 +104,36 @@ The default behavior encourages the use of [Continuous Native Generation](/workf
 The following three commands result in more or less the same project:
 
 <Terminal
-  cmd={[
-    '$ npx create-expo-app@latest --template default@sdk-56 MyApp && cd MyApp && npx expo prebuild',
-    '',
-    '$ npx create-expo-app --template bare-minimum',
-    '',
-    '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx create-expo-app@latest --template default@sdk-56 MyApp && cd MyApp && npx expo prebuild',
+      '',
+      '$ npx create-expo-app --template bare-minimum',
+      '',
+      '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
+    ],
+    yarn: [
+      '$ yarn create expo-app --template default@sdk-56 MyApp && cd MyApp && yarn expo prebuild',
+      '',
+      '$ yarn create expo-app --template bare-minimum',
+      '',
+      '$ yarn dlx @react-native-community/cli@latest init MyApp && cd MyApp && yarn dlx install-expo-modules',
+    ],
+    pnpm: [
+      '$ pnpm create expo-app --template default@sdk-56 MyApp && cd MyApp && pnpm expo prebuild',
+      '',
+      '$ pnpm create expo-app --template bare-minimum',
+      '',
+      '$ pnpm dlx @react-native-community/cli@latest init MyApp && cd MyApp && pnpm dlx install-expo-modules',
+    ],
+    bun: [
+      '$ bun create expo --template default@sdk-56 MyApp && cd MyApp && bun expo prebuild',
+      '',
+      '$ bun create expo --template bare-minimum',
+      '',
+      '$ bunx @react-native-community/cli@latest init MyApp && cd MyApp && bunx install-expo-modules',
+    ],
+  }}
 />
 
 </Collapsible>

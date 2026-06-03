@@ -1228,14 +1228,7 @@ public class ViewModifierRegistry {
       return text.monospacedDigit()
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
-      if let family = modifier.family {
-        return text.font(Font.custom(family, size: modifier.size ?? 17))
-      }
-      return text.font(.system(
-        size: modifier.size ?? 17,
-        weight: modifier.weight?.toSwiftUI() ?? .regular,
-        design: modifier.design?.toSwiftUI() ?? .default
-      ))
+      return text.font(modifier.resolveFont())
     case "foregroundColor":
       guard let modifier = try? ForegroundColorModifier(from: params, appContext: appContext),
             let color = modifier.color else { return text }
@@ -1725,6 +1718,10 @@ extension ViewModifierRegistry {
 
     register("font") { params, appContext, _ in
       return try FontModifier(from: params, appContext: appContext)
+    }
+
+    register("dynamicTypeSize") { params, appContext, _ in
+      return try DynamicTypeSizeModifier(from: params, appContext: appContext)
     }
 
     register("gridCellUnsizedAxes") { params, appContext, _ in

@@ -20,7 +20,7 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     const nativeRef = React.useRef(null);
     React.useImperativeHandle(ref, () => ({
         setCameraPosition(config) {
-            nativeRef.current?.setCameraPosition(config);
+            return nativeRef.current?.setCameraPosition(config);
         },
         async selectMarker(id, options) {
             return nativeRef.current?.selectMarker(id, options);

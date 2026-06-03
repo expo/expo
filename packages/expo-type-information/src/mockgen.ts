@@ -351,7 +351,11 @@ export async function getAllExpoModulesInWorkingDirectory(): Promise<FileTypeInf
     await Promise.all(
       files.map((file) =>
         getFileTypeInformation({
-          input: { type: 'file', inputFileAbsolutePaths: [fs.realpathSync(file)] },
+          input: {
+            type: 'file',
+            inputFileAbsolutePaths: [fs.realpathSync(file)],
+          },
+          mapUnicodeCharacters: true,
         })
       )
     )

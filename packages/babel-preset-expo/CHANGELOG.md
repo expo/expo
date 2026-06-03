@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios`, `android`, `macos`, `tvos` per-platform override support ([#46508](https://github.com/expo/expo/pull/46508) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
