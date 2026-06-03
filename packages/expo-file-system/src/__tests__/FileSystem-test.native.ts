@@ -236,6 +236,14 @@ describe('expo-file-system behavioral mock', () => {
     await expect(file.bytes()).resolves.toEqual(payload);
   });
 
+  it('File.writeSync(ArrayBuffer) and File.bytes() roundtrip byte-for-byte', async () => {
+    const file = new File(Paths.cache, 'bin-buffer.dat');
+    const payload = Uint8Array.from([6, 7, 8, 9]).buffer;
+    file.writeSync(payload);
+    expect(Array.from(file.bytesSync())).toEqual([6, 7, 8, 9]);
+    await expect(file.bytes()).resolves.toEqual(new Uint8Array(payload));
+  });
+
   it('File.writeSync with append option appends to existing bytes', () => {
     const file = new File(Paths.cache, 'log.txt');
     file.writeSync('a');
