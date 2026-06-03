@@ -12,6 +12,7 @@ import type {
   StandardRouterNavigatorProps,
   StandardUseNavigationBuilderOptions,
 } from './types';
+import { useProjectedDescriptors } from './useProjectedDescriptors';
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
@@ -31,13 +32,15 @@ const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
 
 /**
+ * > **warning** This API is unstable and may change between minor releases.
+ *
  * Creates a [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) navigator and
  * wires it into Expo Router in one step. Use `unstable_integrateWithRouter` instead if you already
  * have a navigator from `createStandardNavigator`.
  *
  * @param NavigatorContent Renders the navigator UI; receives the standard-navigation `state`,
  * `descriptors`, `actions`, and `emitter`.
- * @param router The router factory to use, for example `StackRouter` or `TabRouter`.
+ * @param router The router factory to use. For example, `StackRouter` or `TabRouter`.
  * @param options See `IntegrateWithRouterOptions`.
  *
  * @example
@@ -46,8 +49,6 @@ const STANDARD_NAVIGATOR_TYPE = 'standard';
  *
  * export const Tabs = unstable_createStandardRouterNavigator(MyTabsContent, TabRouter);
  * ```
- *
- * > **warning** This API is unstable and may change between minor releases.
  */
 export function unstable_createStandardRouterNavigator<
   NavigatorOptions extends object,
@@ -75,12 +76,14 @@ export function unstable_createStandardRouterNavigator<
 }
 
 /**
+ * > **warning** This API is unstable and may change between minor releases.
+ *
  * Wires an existing [`standard-navigation`](https://www.npmjs.com/package/standard-navigation)
  * navigator into Expo Router, returning a navigator component (with a `.Screen` child) usable as a
  * layout. Use `unstable_createStandardRouterNavigator` to create and integrate in one step.
  *
  * @param navigator The object returned by `createStandardNavigator(...)`.
- * @param router The router factory to use, for example `StackRouter` or `TabRouter`.
+ * @param router The router factory to use. For example, `StackRouter` or `TabRouter`.
  * @param options See `IntegrateWithRouterOptions`.
  *
  * @example
@@ -91,8 +94,6 @@ export function unstable_createStandardRouterNavigator<
  * const navigator = createStandardNavigator(MyTabsContent);
  * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter);
  * ```
- *
- * > **warning** This API is unstable and may change between minor releases.
  */
 export function unstable_integrateWithRouter<
   NavigatorOptions extends object,
@@ -124,7 +125,7 @@ export function unstable_integrateWithRouter<
       NavigatorProps,
       RouterOptions
     >(props);
-    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
+    const { state, navigation, descriptors, describe, NavigationContent } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
@@ -135,14 +136,14 @@ export function unstable_integrateWithRouter<
     const { dispatch } = navigation;
 
     const derivedProps = useMemo<Partial<NavigatorProps>>(
-      () => options?.createProps?.({ state, dispatch }) ?? {},
-      [state, dispatch, options]
+      () => options?.createProps?.({ state, dispatch, navigation }) ?? {},
+      [state, dispatch, navigation, options]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
       state: useStandardState(state),
-      descriptors,
-      actions: useStandardActions(navigation),
+      descriptors: useProjectedDescriptors(state, descriptors, describe),
+      actions: useStandardActions(navigation, state.key),
       emitter: useStandardEmitter(navigation),
     };
 
@@ -240,7 +241,6 @@ function partitionNavigatorProps<
 
 function assertStandardNavigator(navigator: unknown): asserts navigator is {
   type: typeof STANDARD_NAVIGATOR_TYPE;
-  version: typeof SUPPORTED_VERSION;
 } {
   if (navigator == null) {
     throw new Error(
@@ -262,10 +262,15 @@ function assertStandardNavigator(navigator: unknown): asserts navigator is {
   }
 
   if (version !== SUPPORTED_VERSION) {
-    throw new Error(
-      `Could not integrate a standard navigator because it targets the standard-navigation v${version} contract, ` +
-        `but this version of expo-router only supports v${SUPPORTED_VERSION}. ` +
-        'Align the installed `standard-navigation` version with your expo-router version, ' +
+    // This is a warning rather than a hard error on purpose: the standard-navigation contract is
+    // versioned by the `standard-navigation` package, not by expo-router, and integration is likely
+    // to keep working across adjacent versions. Blocking here would needlessly break those cases.
+    // If a mismatch does cause problems, this points at the version skew as the likely cause.
+    console.warn(
+      `This standard navigator targets the standard-navigation v${version} contract, ` +
+        `but this version of expo-router was built against v${SUPPORTED_VERSION}. ` +
+        'Integration may still work, but if you hit unexpected navigation behavior, ' +
+        'align the installed `standard-navigation` version with your expo-router version, ' +
         'or check the standard-navigation release notes for migration steps.'
     );
   }

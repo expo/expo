@@ -4,6 +4,7 @@ import type {
   DefaultNavigatorOptions,
   DefaultRouterOptions,
   NavigationAction,
+  NavigationHelpers,
   NavigationState,
   ParamListBase,
 } from '../react-navigation/native';
@@ -39,6 +40,7 @@ export type StandardUseNavigationBuilderOptions<
 export interface StandardNavigatorCreatePropsFactoryDeps<State extends NavigationState> {
   state: State;
   dispatch: (action: NavigationAction) => void;
+  navigation: NavigationHelpers<ParamListBase>;
 }
 
 export interface IntegrateWithRouterOptions<

@@ -13,13 +13,21 @@ function useStandardEmitter(navigation) {
                 data: options.data,
                 target: options.target,
             };
-            const extra = 'defaultPrevented' in result
-                ? {
-                    defaultPrevented: result.defaultPrevented,
-                    preventDefault: result.preventDefault,
-                }
-                : {};
-            return { ...baseEvent, ...extra };
+            if ('defaultPrevented' in result) {
+                return Object.defineProperties(baseEvent, {
+                    defaultPrevented: {
+                        enumerable: true,
+                        get() {
+                            return result.defaultPrevented;
+                        },
+                    },
+                    preventDefault: {
+                        enumerable: true,
+                        value: result.preventDefault,
+                    },
+                });
+            }
+            return baseEvent;
         },
     }), [navigation]);
 }

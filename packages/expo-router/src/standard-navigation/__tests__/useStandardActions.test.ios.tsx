@@ -17,42 +17,44 @@ type Navigation = Parameters<typeof useStandardActions>[0];
 
 // --- Unit: useStandardActions in isolation against a mock dispatch ---
 describe('useStandardActions (unit)', () => {
-  it('back() dispatches GO_BACK', () => {
+  it('back() dispatches GO_BACK targeting the current navigator', () => {
     const dispatch = jest.fn();
-    const { result } = renderHook(() => useStandardActions({ dispatch }));
+    const { result } = renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
 
     result.current.back();
 
-    expect(dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
+    expect(dispatch).toHaveBeenCalledWith({ type: 'GO_BACK', target: 'tab-key' });
   });
 
-  it('navigate(name) dispatches NAVIGATE with undefined params', () => {
+  it('navigate(name) dispatches NAVIGATE with undefined params targeting the current navigator', () => {
     const dispatch = jest.fn();
-    const { result } = renderHook(() => useStandardActions({ dispatch }));
+    const { result } = renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
 
     result.current.navigate('home');
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'NAVIGATE',
       payload: { name: 'home', params: undefined },
+      target: 'tab-key',
     });
   });
 
-  it('navigate(name, params) dispatches NAVIGATE with params', () => {
+  it('navigate(name, params) dispatches NAVIGATE with params targeting the current navigator', () => {
     const dispatch = jest.fn();
-    const { result } = renderHook(() => useStandardActions({ dispatch }));
+    const { result } = renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
 
     result.current.navigate('home', { id: '1' });
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'NAVIGATE',
       payload: { name: 'home', params: { id: '1' } },
+      target: 'tab-key',
     });
   });
 
-  it('returns a stable reference while navigation is unchanged', () => {
+  it('returns a stable reference while navigation and target are unchanged', () => {
     const navigation: Navigation = { dispatch: jest.fn() };
-    const { result, rerender } = renderHook(() => useStandardActions(navigation));
+    const { result, rerender } = renderHook(() => useStandardActions(navigation, 'tab-key'));
     const first = result.current;
 
     rerender({});
@@ -62,12 +64,25 @@ describe('useStandardActions (unit)', () => {
 
   it('returns a new reference when navigation changes', () => {
     const { result, rerender } = renderHook(
-      ({ navigation }: { navigation: Navigation }) => useStandardActions(navigation),
+      ({ navigation }: { navigation: Navigation }) => useStandardActions(navigation, 'tab-key'),
       { initialProps: { navigation: { dispatch: jest.fn() } } }
     );
     const first = result.current;
 
     rerender({ navigation: { dispatch: jest.fn() } });
+
+    expect(result.current).not.toBe(first);
+  });
+
+  it('returns a new reference when the target changes', () => {
+    const navigation: Navigation = { dispatch: jest.fn() };
+    const { result, rerender } = renderHook(
+      ({ target }: { target: string }) => useStandardActions(navigation, target),
+      { initialProps: { target: 'tab-key' } }
+    );
+    const first = result.current;
+
+    rerender({ target: 'other-key' });
 
     expect(result.current).not.toBe(first);
   });

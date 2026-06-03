@@ -27,15 +27,22 @@ export function useStandardEmitter<NavigatorEventMap extends StandardNavigatorEv
           type: options.type,
           data: options.data,
           target: options.target,
-        };
-        const extra =
-          'defaultPrevented' in result
-            ? {
-                defaultPrevented: result.defaultPrevented,
-                preventDefault: result.preventDefault,
-              }
-            : {};
-        return { ...baseEvent, ...extra } as EmitResult<EventName>;
+        } as unknown as EmitResult<EventName>;
+        if ('defaultPrevented' in result) {
+          return Object.defineProperties(baseEvent, {
+            defaultPrevented: {
+              enumerable: true,
+              get() {
+                return result.defaultPrevented;
+              },
+            },
+            preventDefault: {
+              enumerable: true,
+              value: result.preventDefault,
+            },
+          });
+        }
+        return baseEvent;
       },
     }),
     [navigation]

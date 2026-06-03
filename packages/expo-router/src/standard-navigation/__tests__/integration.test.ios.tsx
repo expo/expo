@@ -5,6 +5,11 @@ import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation
 import { router } from '../../imperative-api';
 import type { ParamListBase } from '../../react-navigation/core';
 import {
+  StackRouter,
+  type StackNavigationState,
+  type StackRouterOptions,
+} from '../../react-navigation/native';
+import {
   TabActions,
   TabRouter,
   type TabNavigationState,
@@ -373,6 +378,62 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
   });
 });
 
+describe('preloaded routes projected through the integration (StackRouter)', () => {
+  const StandardStack = unstable_createStandardRouterNavigator<
+    TestOptions,
+    StackNavigationState<ParamListBase>,
+    TestEventMap,
+    object,
+    StackRouterOptions
+  >(NavigatorContent, StackRouter, { useOnlyUserDefinedScreens: true });
+
+  const renderStack = () =>
+    renderRouter({
+      _layout: () => (
+        <StandardStack>
+          <StandardStack.Screen name="index" />
+          <StandardStack.Screen name="second" />
+        </StandardStack>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+  it('projects a preloaded route after the focused index without moving focus', () => {
+    renderStack();
+    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
+
+    act(() => router.prefetch('/second'));
+
+    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
+    expect(lastArgs().state.index).toBe(0);
+  });
+
+  it('covers the projected preloaded route with a descriptor exposing render + navigation', () => {
+    renderStack();
+    act(() => router.prefetch('/second'));
+
+    const preloadedKey = lastArgs().state.routes[1]!.key;
+    const descriptor = lastArgs().descriptors[preloadedKey]!;
+    expect(typeof descriptor.render).toBe('function');
+    // The integration forwards the real react-navigation descriptor, so `.navigation` is usable
+    // by headers/screens even while the route is only preloaded.
+    const withNavigation = descriptor as unknown as { navigation?: { navigate?: unknown } };
+    expect(typeof withNavigation.navigation?.navigate).toBe('function');
+  });
+
+  it('reuses the preloaded route on navigate instead of duplicating it', () => {
+    renderStack();
+    act(() => router.prefetch('/second'));
+    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
+
+    act(() => router.push('/second'));
+
+    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
+    expect(lastArgs().state.index).toBe(1);
+  });
+});
+
 describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
   // Kept in sync with the messages thrown in assertStandardNavigator (index.tsx). The `type` is
   // interpolated via JSON.stringify, so a string becomes `"weird"` and `undefined` stays unquoted.
@@ -385,10 +446,12 @@ describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
     'This value is likely not a standard-navigation navigator. ' +
     'Create it with `createStandardNavigator(...)` from the `standard-navigation` package, ' +
     'or use `unstable_createStandardRouterNavigator(NavigatorContent, router)`.';
+  // Kept in sync with the warning logged in assertStandardNavigator (index.tsx).
   const wrongVersionMessage = (version: number) =>
-    `Could not integrate a standard navigator because it targets the standard-navigation v${version} contract, ` +
-    'but this version of expo-router only supports v1. ' +
-    'Align the installed `standard-navigation` version with your expo-router version, ' +
+    `This standard navigator targets the standard-navigation v${version} contract, ` +
+    'but this version of expo-router was built against v1. ' +
+    'Integration may still work, but if you hit unexpected navigation behavior, ' +
+    'align the installed `standard-navigation` version with your expo-router version, ' +
     'or check the standard-navigation release notes for migration steps.';
 
   it('throws when the navigator is null', () => {
@@ -413,22 +476,34 @@ describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
     ).toThrow(new Error(wrongTypeMessage('"weird"')));
   });
 
-  it('throws when the navigator version is unsupported', () => {
-    expect(() =>
-      unstable_integrateWithRouter(
-        { type: 'standard', version: 2, NavigatorContent: () => null } as any,
-        TabRouter
-      )
-    ).toThrow(new Error(wrongVersionMessage(2)));
+  it('warns but does not throw when the navigator version is unsupported', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      expect(() =>
+        unstable_integrateWithRouter(
+          { type: 'standard', version: 2, NavigatorContent: () => null } as any,
+          TabRouter
+        )
+      ).not.toThrow();
+      expect(warn).toHaveBeenCalledWith(wrongVersionMessage(2));
+    } finally {
+      warn.mockRestore();
+    }
   });
 
-  it('throws a version error for a falsy version (0)', () => {
-    expect(() =>
-      unstable_integrateWithRouter(
-        { type: 'standard', version: 0, NavigatorContent: () => null } as any,
-        TabRouter
-      )
-    ).toThrow(new Error(wrongVersionMessage(0)));
+  it('warns for a falsy version (0)', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      expect(() =>
+        unstable_integrateWithRouter(
+          { type: 'standard', version: 0, NavigatorContent: () => null } as any,
+          TabRouter
+        )
+      ).not.toThrow();
+      expect(warn).toHaveBeenCalledWith(wrongVersionMessage(0));
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it('accepts a navigator produced by the real createStandardNavigator', () => {

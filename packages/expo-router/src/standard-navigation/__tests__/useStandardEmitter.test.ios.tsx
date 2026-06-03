@@ -51,6 +51,9 @@ describe('useStandardEmitter (unit)', () => {
 
     expect(event).toMatchObject({ type: 'cancelable', target: 'k', defaultPrevented: true });
     expect((event as { preventDefault: unknown }).preventDefault).toBe(preventDefault);
+    expect(Object.keys(event)).toEqual(
+      expect.arrayContaining(['defaultPrevented', 'preventDefault'])
+    );
   });
 
   it('omits defaultPrevented/preventDefault when the emit result lacks them', () => {
@@ -60,6 +63,28 @@ describe('useStandardEmitter (unit)', () => {
 
     expect('defaultPrevented' in event).toBe(false);
     expect('preventDefault' in event).toBe(false);
+  });
+
+  it('reflects preventDefault called after emit returns', () => {
+    // Mirrors the real emitter (useEventEmitter): `defaultPrevented` is a live getter over a
+    // closure flag that `preventDefault` mutates.
+    let prevented = false;
+    const { result } = setup({
+      get defaultPrevented() {
+        return prevented;
+      },
+      preventDefault: () => {
+        prevented = true;
+      },
+    });
+
+    const event = result.current.emit({ type: 'cancelable', target: 'k', canPreventDefault: true });
+
+    expect(event.defaultPrevented).toBe(false);
+    event.preventDefault();
+    // The original event's flag flipped, and the returned event observes it live.
+    expect(prevented).toBe(true);
+    expect(event.defaultPrevented).toBe(true);
   });
 
   it('returns a stable reference while navigation is unchanged', () => {

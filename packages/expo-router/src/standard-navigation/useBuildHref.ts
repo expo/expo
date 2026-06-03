@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 
-import { getCachedRouteInfo } from '../global-state/routeInfoCache';
+import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import {
   useStateForPath,
   type NavigationRoute,
@@ -11,8 +11,13 @@ import type { FocusedRouteState } from '../react-navigation/core/NavigationFocus
 // TODO(@ubax): move route info to state - https://linear.app/expo/issue/ENG-21483/refactor-state-to-include-all-route-info-information
 export function useBuildHref() {
   const currentState = useStateForPath();
-  return useCallback(
-    (route: NavigationRoute<ParamListBase, string>) => {
+  return useMemo(() => {
+    const cache = new WeakMap<NavigationRoute<ParamListBase, string>, string>();
+    return (route: NavigationRoute<ParamListBase, string>) => {
+      const cached = cache.get(route);
+      if (cached !== undefined) {
+        return cached;
+      }
       const state: FocusedRouteState = {
         routes: [
           {
@@ -37,8 +42,9 @@ export function useBuildHref() {
 
         return state;
       };
-      return getCachedRouteInfo(addState(currentState)).pathnameWithParams;
-    },
-    [currentState]
-  );
+      const href = getRouteInfoFromState(addState(currentState)).pathnameWithParams;
+      cache.set(route, href);
+      return href;
+    };
+  }, [currentState]);
 }

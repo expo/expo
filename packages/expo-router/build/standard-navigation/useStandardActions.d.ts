@@ -3,6 +3,6 @@ import type { StandardNavigationAction, StandardNavigatorEventMapBase } from './
 type StandardActionHelpers = NavigatorArgs<Record<string, never>, StandardNavigatorEventMapBase>['actions'];
 export declare function useStandardActions(navigation: {
     dispatch: (action: StandardNavigationAction) => void;
-}): StandardActionHelpers;
+}, target: string): StandardActionHelpers;
 export {};
 //# sourceMappingURL=useStandardActions.d.ts.map

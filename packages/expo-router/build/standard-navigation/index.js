@@ -6,6 +6,7 @@ exports.unstable_integrateWithRouter = unstable_integrateWithRouter;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const standard_navigation_1 = require("standard-navigation");
+const useProjectedDescriptors_1 = require("./useProjectedDescriptors");
 const useStandardActions_1 = require("./useStandardActions");
 const useStandardEmitter_1 = require("./useStandardEmitter");
 const useStandardState_1 = require("./useStandardState");
@@ -14,13 +15,15 @@ const native_1 = require("../react-navigation/native");
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
 /**
+ * > **warning** This API is unstable and may change between minor releases.
+ *
  * Creates a [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) navigator and
  * wires it into Expo Router in one step. Use `unstable_integrateWithRouter` instead if you already
  * have a navigator from `createStandardNavigator`.
  *
  * @param NavigatorContent Renders the navigator UI; receives the standard-navigation `state`,
  * `descriptors`, `actions`, and `emitter`.
- * @param router The router factory to use, for example `StackRouter` or `TabRouter`.
+ * @param router The router factory to use. For example, `StackRouter` or `TabRouter`.
  * @param options See `IntegrateWithRouterOptions`.
  *
  * @example
@@ -29,20 +32,20 @@ const STANDARD_NAVIGATOR_TYPE = 'standard';
  *
  * export const Tabs = unstable_createStandardRouterNavigator(MyTabsContent, TabRouter);
  * ```
- *
- * > **warning** This API is unstable and may change between minor releases.
  */
 function unstable_createStandardRouterNavigator(NavigatorContent, router, options) {
     const navigator = (0, standard_navigation_1.createStandardNavigator)(NavigatorContent);
     return unstable_integrateWithRouter(navigator, router, options);
 }
 /**
+ * > **warning** This API is unstable and may change between minor releases.
+ *
  * Wires an existing [`standard-navigation`](https://www.npmjs.com/package/standard-navigation)
  * navigator into Expo Router, returning a navigator component (with a `.Screen` child) usable as a
  * layout. Use `unstable_createStandardRouterNavigator` to create and integrate in one step.
  *
  * @param navigator The object returned by `createStandardNavigator(...)`.
- * @param router The router factory to use, for example `StackRouter` or `TabRouter`.
+ * @param router The router factory to use. For example, `StackRouter` or `TabRouter`.
  * @param options See `IntegrateWithRouterOptions`.
  *
  * @example
@@ -53,21 +56,19 @@ function unstable_createStandardRouterNavigator(NavigatorContent, router, option
  * const navigator = createStandardNavigator(MyTabsContent);
  * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter);
  * ```
- *
- * > **warning** This API is unstable and may change between minor releases.
  */
 function unstable_integrateWithRouter(navigator, router, options) {
     assertStandardNavigator(navigator);
     const { NavigatorContent } = navigator;
     function StandardRouterNavigator(props) {
         const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps(props);
-        const { state, navigation, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(router, useNavigationBuilderProps);
+        const { state, navigation, descriptors, describe, NavigationContent } = (0, native_1.useNavigationBuilder)(router, useNavigationBuilderProps);
         const { dispatch } = navigation;
-        const derivedProps = (0, react_1.useMemo)(() => options?.createProps?.({ state, dispatch }) ?? {}, [state, dispatch, options]);
+        const derivedProps = (0, react_1.useMemo)(() => options?.createProps?.({ state, dispatch, navigation }) ?? {}, [state, dispatch, navigation, options]);
         const standardArgs = {
             state: (0, useStandardState_1.useStandardState)(state),
-            descriptors,
-            actions: (0, useStandardActions_1.useStandardActions)(navigation),
+            descriptors: (0, useProjectedDescriptors_1.useProjectedDescriptors)(state, descriptors, describe),
+            actions: (0, useStandardActions_1.useStandardActions)(navigation, state.key),
             emitter: (0, useStandardEmitter_1.useStandardEmitter)(navigation),
         };
         return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(NavigatorContent
@@ -130,9 +131,14 @@ function assertStandardNavigator(navigator) {
             'or use `unstable_createStandardRouterNavigator(NavigatorContent, router)`.');
     }
     if (version !== SUPPORTED_VERSION) {
-        throw new Error(`Could not integrate a standard navigator because it targets the standard-navigation v${version} contract, ` +
-            `but this version of expo-router only supports v${SUPPORTED_VERSION}. ` +
-            'Align the installed `standard-navigation` version with your expo-router version, ' +
+        // This is a warning rather than a hard error on purpose: the standard-navigation contract is
+        // versioned by the `standard-navigation` package, not by expo-router, and integration is likely
+        // to keep working across adjacent versions. Blocking here would needlessly break those cases.
+        // If a mismatch does cause problems, this points at the version skew as the likely cause.
+        console.warn(`This standard navigator targets the standard-navigation v${version} contract, ` +
+            `but this version of expo-router was built against v${SUPPORTED_VERSION}. ` +
+            'Integration may still work, but if you hit unexpected navigation behavior, ' +
+            'align the installed `standard-navigation` version with your expo-router version, ' +
             'or check the standard-navigation release notes for migration steps.');
     }
 }
