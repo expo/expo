@@ -3,5 +3,5 @@
  *
  * @experimental
  */
-export declare function useCurrentRouteInfo(): import("../global-state/getRouteInfoFromState").UrlObject | undefined;
+export declare function useCurrentRouteInfo(): import("../global-state/routeInfo").UrlObject;
 //# sourceMappingURL=useCurrentRouteInfo.d.ts.map

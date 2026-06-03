@@ -4,12 +4,11 @@ import type { LoaderFunction } from 'expo-server';
 import { use, useMemo, useSyncExternalStore } from 'react';
 
 import { useContextKey } from '../Route';
-import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
+import { RouteInfoContext } from '../global-state/RouteInfoContext';
 import { LoaderCacheContext } from '../loaders/LoaderCache';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { getLoaderData } from '../loaders/getLoaderData';
 import { fetchLoader } from '../loaders/utils';
-import { useStateForPath } from '../react-navigation/native';
 import { getSingularId } from '../useScreens';
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
@@ -43,17 +42,16 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   // invalidation deletes the injected global.
   useSyncExternalStore(loaderCache.subscribe, loaderCache.getSnapshot, loaderCache.getSnapshot);
 
-  const stateForPath = useStateForPath();
+  const routeInfo = use(RouteInfoContext);
   const contextKey = useContextKey();
 
   const resolvedPath = useMemo(() => {
-    const routeInfo = getRouteInfoFromState(stateForPath);
     const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
     const resolvedPathname = `/${getSingularId(contextPath, { params: routeInfo.params })}`;
     const searchString = routeInfo.searchParams?.toString() || '';
 
     return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
-  }, [contextKey, stateForPath]);
+  }, [contextKey, routeInfo]);
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {

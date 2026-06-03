@@ -7,7 +7,7 @@ export declare function useStore(context: RequireContext, linkingConfigOptions: 
     readonly state: ReactNavigationState | undefined;
     readonly navigationRef: import("../react-navigation").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
-    getRouteInfo(): import("./getRouteInfoFromState").UrlObject;
+    getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: StoreRedirects[];
     readonly rootComponent: ComponentType<any>;
     getStateForHref(href: import("..").Href, options?: import("./types").LinkToOptions): (Partial<Omit<Readonly<{
@@ -36,7 +36,7 @@ export declare function useStore(context: RequireContext, linkingConfigOptions: 
         }> & /*elided*/ any;
     }) | undefined;
     readonly linking: ExpoLinkingOptions | undefined;
-    setFocusedState(state: import("./types").FocusedRouteState): void;
+    setFocusedRouteInfo(routeInfo: import("./routeInfo").UrlObject): void;
     onReady(): void;
     onStateChange(newState: ReactNavigationState | undefined): void;
     assertIsReady(): void;

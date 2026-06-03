@@ -5,8 +5,7 @@ import type { ComponentType } from 'react';
 import { Fragment, useEffect } from 'react';
 import { Platform } from 'react-native';
 
-import { getRouteInfoFromState } from './getRouteInfoFromState';
-import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
+import { routeInfoFromState } from './routeInfo';
 import {
   store,
   storeRef,
@@ -79,8 +78,6 @@ export function useStore(
       if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
 
       initialState = linking.getStateFromPath(initialPath, linking.config);
-      const initialRouteInfo = getRouteInfoFromState(initialState);
-      setCachedRouteInfo(initialState as any, initialRouteInfo);
     }
   } else {
     // Only error in production, in development we will show the onboarding screen
@@ -108,7 +105,7 @@ export function useStore(
   };
 
   if (initialState) {
-    storeRef.current.routeInfo = getCachedRouteInfo(initialState);
+    storeRef.current.routeInfo = routeInfoFromState(initialState);
   }
 
   useEffect(() => {

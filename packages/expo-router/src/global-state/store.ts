@@ -1,13 +1,7 @@
 import type { ComponentType } from 'react';
 
-import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
-import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
-import type {
-  FocusedRouteState,
-  LinkToOptions,
-  ReactNavigationState,
-  StoreRedirects,
-} from './types';
+import { defaultRouteInfo, type UrlObject } from './routeInfo';
+import type { LinkToOptions, ReactNavigationState, StoreRedirects } from './types';
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
@@ -31,6 +25,20 @@ type StoreRef = {
 
 export const storeRef = {
   current: {} as StoreRef,
+};
+
+/**
+ * Subscribers to route info changes. `useRouteInfo` registers here via `useSyncExternalStore`; the
+ * store notifies them after a navigation commits so screens (including unfocused ones) re-read the
+ * latest route info.
+ */
+export const routeInfoSubscribers = new Set<() => void>();
+
+export const routeInfoSubscribe = (callback: () => void) => {
+  routeInfoSubscribers.add(callback);
+  return () => {
+    routeInfoSubscribers.delete(callback);
+  };
 };
 
 let splashScreenAnimationFrame: number | undefined;
@@ -79,9 +87,11 @@ export const store = {
   get linking() {
     return storeRef.current.linking;
   },
-  setFocusedState(state: FocusedRouteState) {
-    const routeInfo = getCachedRouteInfo(state);
+  setFocusedRouteInfo(routeInfo: UrlObject) {
     storeRef.current.routeInfo = routeInfo;
+    for (const callback of routeInfoSubscribers) {
+      callback();
+    }
   },
   // TODO(@ubax): Refactor onReady logic as it probably should live somewhere else then store
   onReady() {
@@ -121,12 +131,6 @@ export const store = {
     }
 
     storeRef.current.state = newState;
-
-    storeRef.current.routeInfo = getCachedRouteInfo(newState);
-
-    for (const callback of routeInfoSubscribers) {
-      callback();
-    }
   },
   assertIsReady() {
     if (!storeRef.current.navigationRef.isReady()) {

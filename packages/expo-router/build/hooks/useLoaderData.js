@@ -4,12 +4,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLoaderData = useLoaderData;
 const react_1 = require("react");
 const Route_1 = require("../Route");
-const getRouteInfoFromState_1 = require("../global-state/getRouteInfoFromState");
+const RouteInfoContext_1 = require("../global-state/RouteInfoContext");
 const LoaderCache_1 = require("../loaders/LoaderCache");
 const ServerDataLoaderContext_1 = require("../loaders/ServerDataLoaderContext");
 const getLoaderData_1 = require("../loaders/getLoaderData");
 const utils_1 = require("../loaders/utils");
-const native_1 = require("../react-navigation/native");
 const useScreens_1 = require("../useScreens");
 /**
  * Returns the result of the `loader` function for the calling route.
@@ -37,15 +36,14 @@ function useLoaderData() {
     // Returning early before subscribing would also change hook order on the next render once
     // invalidation deletes the injected global.
     (0, react_1.useSyncExternalStore)(loaderCache.subscribe, loaderCache.getSnapshot, loaderCache.getSnapshot);
-    const stateForPath = (0, native_1.useStateForPath)();
+    const routeInfo = (0, react_1.use)(RouteInfoContext_1.RouteInfoContext);
     const contextKey = (0, Route_1.useContextKey)();
     const resolvedPath = (0, react_1.useMemo)(() => {
-        const routeInfo = (0, getRouteInfoFromState_1.getRouteInfoFromState)(stateForPath);
         const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
         const resolvedPathname = `/${(0, useScreens_1.getSingularId)(contextPath, { params: routeInfo.params })}`;
         const searchString = routeInfo.searchParams?.toString() || '';
         return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
-    }, [contextKey, stateForPath]);
+    }, [contextKey, routeInfo]);
     // First invocation of this hook will happen server-side, so we look up the loaded data from context
     if (serverDataLoaderContext) {
         return serverDataLoaderContext[resolvedPath];
