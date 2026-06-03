@@ -1720,6 +1720,10 @@ extension ViewModifierRegistry {
       return try FontModifier(from: params, appContext: appContext)
     }
 
+    register("dynamicTypeSize") { params, appContext, _ in
+      return try DynamicTypeSizeModifier(from: params, appContext: appContext)
+    }
+
     register("gridCellUnsizedAxes") { params, appContext, _ in
       return try GridCellUnsizedAxes(from: params, appContext: appContext)
     }
