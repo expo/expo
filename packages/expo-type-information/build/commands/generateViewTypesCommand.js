@@ -5,7 +5,7 @@ const commandUtils_1 = require("./commandUtils");
 const typescriptGeneration_1 = require("../typescriptGeneration");
 function generateViewTypesCommand(cli) {
     return (0, commandUtils_1.addCommonOptions)(cli.command('generate-view-types'))
-        .description('Generates a type declaration file for a native View.')
+        .description('generate a type declaration file for a native View')
         .action(async (options) => {
         const parsedArgs = await (0, commandUtils_1.parseCommandArguments)(options);
         if (!parsedArgs) {

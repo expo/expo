@@ -92,7 +92,7 @@ async function inlineModulesWatcher({ appJsonPath, typeInference, mapUnicodeChar
 async function inlineModulesInterfaceCommand(cli) {
     return cli
         .command('inline-modules-interface')
-        .summary('Creates ts interface for every Swift inline module in the project.')
+        .summary('create TypeScript interface for every Swift inline module in the project')
         .description(`Creates a TypeScript interface for every Swift inline module in the project. The interface consists of two files:
 - **Module.generated.ts**: This is regenerated with each run of the command 
 - **Module.tsx**: This one is not regenerated if you change it`)
