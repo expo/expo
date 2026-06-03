@@ -25,8 +25,7 @@
     "@types/babel__code-frame": "^7.27.0",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",
-    "@types/babel__traverse": "^7.20.7",
-    "util": "~0.12.4"
+    "@types/babel__traverse": "^7.20.7"
   },
   "dependencies": {
     "eslint": "^8.57.1",
