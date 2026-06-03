@@ -6,7 +6,6 @@ import {
   RNHostView,
   Card,
   LazyColumn,
-  Text,
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
