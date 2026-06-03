@@ -9,6 +9,7 @@ import {
 } from '@expo/ui/swift-ui/modifiers';
 import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { TextProps, UniversalFontWeight } from './types';
 
@@ -101,9 +102,11 @@ export function Text({
   const modifiers = [...textModifiers, ...universalModifiers];
 
   return (
-    <SwiftUIText modifiers={modifiers} testID={testID}>
-      {children}
-    </SwiftUIText>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <SwiftUIText modifiers={modifiers} testID={testID}>
+        {children}
+      </SwiftUIText>
+    </EnsureHost>
   );
 }
 

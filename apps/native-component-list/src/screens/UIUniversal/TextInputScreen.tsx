@@ -1,7 +1,6 @@
 import {
   Button,
   Column,
-  Host,
   ScrollView,
   Switch,
   Text,
@@ -107,186 +106,180 @@ export default function TextInputScreen() {
   };
 
   return (
-    <Host style={{ flex: 1 }}>
-      <ScrollView style={{ padding: 16 }}>
-        <Column spacing={24}>
-          <Column spacing={8}>
-            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>TextInput</Text>
-            <TextInput
-              ref={inputRef}
-              value={text}
-              placeholder="Type here..."
-              editable={editable}
-              multiline={multiline}
-              keyboardType={keyboardType}
-              autoCapitalize={autoCapitalize}
-              autoCorrect={autoCorrect}
-              returnKeyType={returnKeyType}
-              onSubmitEditing={setLastSubmitted}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              cursorColor={redCursor ? 'red' : undefined}
-              placeholderTextColor={bluePlaceholder ? 'blue' : undefined}
-              textAlign={textAlign}
-              numberOfLines={numberOfLines}
-              style={
-                greenNoBorder
-                  ? { backgroundColor: '#99FF99', borderWidth: 0 }
-                  : customStyle
-                    ? {
-                        width: 240,
-                        padding: 12,
-                        backgroundColor: '#f0f0f0',
-                        borderRadius: 8,
-                        borderColor: 'black',
-                        borderWidth: 1,
-                      }
+    <ScrollView style={{ padding: 16 }}>
+      <Column spacing={24}>
+        <Column spacing={8}>
+          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>TextInput</Text>
+          <TextInput
+            ref={inputRef}
+            value={text}
+            placeholder="Type here..."
+            editable={editable}
+            multiline={multiline}
+            keyboardType={keyboardType}
+            autoCapitalize={autoCapitalize}
+            autoCorrect={autoCorrect}
+            returnKeyType={returnKeyType}
+            onSubmitEditing={setLastSubmitted}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            cursorColor={redCursor ? 'red' : undefined}
+            placeholderTextColor={bluePlaceholder ? 'blue' : undefined}
+            textAlign={textAlign}
+            numberOfLines={numberOfLines}
+            style={
+              greenNoBorder
+                ? { backgroundColor: '#99FF99', borderWidth: 0 }
+                : customStyle
+                  ? {
+                      width: 240,
+                      padding: 12,
+                      backgroundColor: '#f0f0f0',
+                      borderRadius: 8,
+                      borderColor: 'black',
+                      borderWidth: 1,
+                    }
+                  : undefined
+            }
+            textStyle={
+              customTextStyle
+                ? { fontSize: 20, color: 'darkblue', fontWeight: '600', letterSpacing: 0.5 }
+                : undefined
+            }
+            secureTextEntry={secureTextEntry}
+            autoComplete={autoComplete}
+            onContentSizeChange={setContentSize}
+            maxLength={maxLengthOn ? 10 : undefined}
+            caretHidden={caretHidden}
+            selectionColor={yellowSelection ? 'yellow' : undefined}
+            selection={selection}
+            onSelectionChange={setSelectionDisplay}
+            selectTextOnFocus={selectTextOnFocus}
+            modifiers={
+              escapeHatchOn
+                ? Platform.OS === 'ios' && italic
+                  ? [italic()]
+                  : Platform.OS === 'android' && composeShadow
+                    ? [composeShadow(8)]
                     : undefined
-              }
-              textStyle={
-                customTextStyle
-                  ? { fontSize: 20, color: 'darkblue', fontWeight: '600', letterSpacing: 0.5 }
-                  : undefined
-              }
-              secureTextEntry={secureTextEntry}
-              autoComplete={autoComplete}
-              onContentSizeChange={setContentSize}
-              maxLength={maxLengthOn ? 10 : undefined}
-              caretHidden={caretHidden}
-              selectionColor={yellowSelection ? 'yellow' : undefined}
-              selection={selection}
-              onSelectionChange={setSelectionDisplay}
-              selectTextOnFocus={selectTextOnFocus}
-              modifiers={
-                escapeHatchOn
-                  ? Platform.OS === 'ios' && italic
-                    ? [italic()]
-                    : Platform.OS === 'android' && composeShadow
-                      ? [composeShadow(8)]
-                      : undefined
-                  : undefined
-              }
-            />
-            <Text>{`Focused: ${focused}`}</Text>
-            <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
-            <Text>
-              {contentSize
-                ? `Content size: ${contentSize.width.toFixed(1)} × ${contentSize.height.toFixed(1)}`
-                : 'Content size: pending'}
-            </Text>
-            <Text>{`Selection: ${selectionDisplay.start}–${selectionDisplay.end}`}</Text>
-            <Button
-              label="Select 0–7"
-              variant="outlined"
-              onPress={() => {
-                inputRef.current?.focus();
-                inputRef.current?.setSelection(0, 7);
-              }}
-            />
-          </Column>
-
-          <Column spacing={8}>
-            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Props</Text>
-            <Switch value={editable} onValueChange={setEditable} label="editable" />
-            <Switch value={multiline} onValueChange={setMultiline} label="multiline" />
-            <Switch value={autoCorrect} onValueChange={setAutoCorrect} label="autoCorrect" />
-            <Switch value={redCursor} onValueChange={setRedCursor} label="cursorColor (red)" />
-            <Switch
-              value={bluePlaceholder}
-              onValueChange={setBluePlaceholder}
-              label="placeholderTextColor (blue)"
-            />
-            <Switch
-              value={customStyle}
-              onValueChange={setCustomStyle}
-              label="style (240w, gray bg, rounded)"
-            />
-            <Switch
-              value={greenNoBorder}
-              onValueChange={setGreenNoBorder}
-              label="style (green bg, no border — #46300)"
-            />
-            <Switch
-              value={customTextStyle}
-              onValueChange={setCustomTextStyle}
-              label="textStyle (20pt, darkblue, 600)"
-            />
-            <Switch
-              value={secureTextEntry}
-              onValueChange={setSecureTextEntry}
-              label="secureTextEntry"
-            />
-            <Switch value={maxLengthOn} onValueChange={setMaxLengthOn} label="maxLength (10)" />
-            <Switch value={caretHidden} onValueChange={setCaretHidden} label="caretHidden" />
-            <Switch
-              value={yellowSelection}
-              onValueChange={setYellowSelection}
-              label="selectionColor (yellow)"
-            />
-            <Switch
-              value={selectTextOnFocus}
-              onValueChange={setSelectTextOnFocus}
-              label="selectTextOnFocus"
-            />
-            <Switch
-              value={escapeHatchOn}
-              onValueChange={setEscapeHatchOn}
-              label={
-                Platform.OS === 'ios'
-                  ? 'modifiers (italic — iOS escape hatch)'
-                  : 'modifiers (shadow — Android escape hatch)'
-              }
-            />
-            <Button
-              label="ref.focus()"
-              variant="outlined"
-              onPress={() => inputRef.current?.focus()}
-            />
-            <Button
-              label="ref.blur()"
-              variant="outlined"
-              onPress={() => inputRef.current?.blur()}
-            />
-            <Button
-              label="ref.clear()"
-              variant="outlined"
-              onPress={() => inputRef.current?.clear()}
-            />
-            <Button
-              label="ref.isFocused()"
-              variant="outlined"
-              onPress={() => alert(`isFocused: ${inputRef.current?.isFocused()}`)}
-            />
-            <Button
-              label={`keyboardType: ${keyboardType}`}
-              variant="outlined"
-              onPress={cycleKeyboardType}
-            />
-            <Button
-              label={`autoCapitalize: ${autoCapitalize}`}
-              variant="outlined"
-              onPress={cycleAutoCapitalize}
-            />
-            <Button
-              label={`returnKeyType: ${returnKeyType}`}
-              variant="outlined"
-              onPress={cycleReturnKeyType}
-            />
-            <Button label={`textAlign: ${textAlign}`} variant="outlined" onPress={cycleTextAlign} />
-            <Button
-              label={`numberOfLines: ${numberOfLines ?? 'auto'}`}
-              variant="outlined"
-              onPress={cycleNumberOfLines}
-            />
-            <Button
-              label={`autoComplete: ${autoComplete ?? 'none'}`}
-              variant="outlined"
-              onPress={cycleAutoComplete}
-            />
-          </Column>
+                : undefined
+            }
+          />
+          <Text>{`Focused: ${focused}`}</Text>
+          <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
+          <Text>
+            {contentSize
+              ? `Content size: ${contentSize.width.toFixed(1)} × ${contentSize.height.toFixed(1)}`
+              : 'Content size: pending'}
+          </Text>
+          <Text>{`Selection: ${selectionDisplay.start}–${selectionDisplay.end}`}</Text>
+          <Button
+            label="Select 0–7"
+            variant="outlined"
+            onPress={() => {
+              inputRef.current?.focus();
+              inputRef.current?.setSelection(0, 7);
+            }}
+          />
         </Column>
-      </ScrollView>
-    </Host>
+
+        <Column spacing={8}>
+          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Props</Text>
+          <Switch value={editable} onValueChange={setEditable} label="editable" />
+          <Switch value={multiline} onValueChange={setMultiline} label="multiline" />
+          <Switch value={autoCorrect} onValueChange={setAutoCorrect} label="autoCorrect" />
+          <Switch value={redCursor} onValueChange={setRedCursor} label="cursorColor (red)" />
+          <Switch
+            value={bluePlaceholder}
+            onValueChange={setBluePlaceholder}
+            label="placeholderTextColor (blue)"
+          />
+          <Switch
+            value={customStyle}
+            onValueChange={setCustomStyle}
+            label="style (240w, gray bg, rounded)"
+          />
+          <Switch
+            value={greenNoBorder}
+            onValueChange={setGreenNoBorder}
+            label="style (green bg, no border — #46300)"
+          />
+          <Switch
+            value={customTextStyle}
+            onValueChange={setCustomTextStyle}
+            label="textStyle (20pt, darkblue, 600)"
+          />
+          <Switch
+            value={secureTextEntry}
+            onValueChange={setSecureTextEntry}
+            label="secureTextEntry"
+          />
+          <Switch value={maxLengthOn} onValueChange={setMaxLengthOn} label="maxLength (10)" />
+          <Switch value={caretHidden} onValueChange={setCaretHidden} label="caretHidden" />
+          <Switch
+            value={yellowSelection}
+            onValueChange={setYellowSelection}
+            label="selectionColor (yellow)"
+          />
+          <Switch
+            value={selectTextOnFocus}
+            onValueChange={setSelectTextOnFocus}
+            label="selectTextOnFocus"
+          />
+          <Switch
+            value={escapeHatchOn}
+            onValueChange={setEscapeHatchOn}
+            label={
+              Platform.OS === 'ios'
+                ? 'modifiers (italic — iOS escape hatch)'
+                : 'modifiers (shadow — Android escape hatch)'
+            }
+          />
+          <Button
+            label="ref.focus()"
+            variant="outlined"
+            onPress={() => inputRef.current?.focus()}
+          />
+          <Button label="ref.blur()" variant="outlined" onPress={() => inputRef.current?.blur()} />
+          <Button
+            label="ref.clear()"
+            variant="outlined"
+            onPress={() => inputRef.current?.clear()}
+          />
+          <Button
+            label="ref.isFocused()"
+            variant="outlined"
+            onPress={() => alert(`isFocused: ${inputRef.current?.isFocused()}`)}
+          />
+          <Button
+            label={`keyboardType: ${keyboardType}`}
+            variant="outlined"
+            onPress={cycleKeyboardType}
+          />
+          <Button
+            label={`autoCapitalize: ${autoCapitalize}`}
+            variant="outlined"
+            onPress={cycleAutoCapitalize}
+          />
+          <Button
+            label={`returnKeyType: ${returnKeyType}`}
+            variant="outlined"
+            onPress={cycleReturnKeyType}
+          />
+          <Button label={`textAlign: ${textAlign}`} variant="outlined" onPress={cycleTextAlign} />
+          <Button
+            label={`numberOfLines: ${numberOfLines ?? 'auto'}`}
+            variant="outlined"
+            onPress={cycleNumberOfLines}
+          />
+          <Button
+            label={`autoComplete: ${autoComplete ?? 'none'}`}
+            variant="outlined"
+            onPress={cycleAutoComplete}
+          />
+        </Column>
+      </Column>
+    </ScrollView>
   );
 }
 

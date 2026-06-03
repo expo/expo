@@ -1,12 +1,13 @@
 import { RNHostView as ComposeRNHostView } from '@expo/ui/jetpack-compose';
 
+import { withReactNativeHostBoundary } from '../hostContext';
 import { transformToModifiers } from '../transformStyle';
 import type { RNHostViewProps } from './types';
 
 /**
  * Hosts React Native views inside Jetpack Compose views.
  */
-export function RNHostView({
+function RNHostViewContent({
   children,
   matchContents,
   style,
@@ -29,5 +30,7 @@ export function RNHostView({
     </ComposeRNHostView>
   );
 }
+
+export const RNHostView = withReactNativeHostBoundary<RNHostViewProps>(RNHostViewContent);
 
 export * from './types';

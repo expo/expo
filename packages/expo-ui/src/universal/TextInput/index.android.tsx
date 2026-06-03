@@ -15,6 +15,7 @@ import {
 import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 import { enterKeyHintToReturnKeyType, inputModeToKeyboardType, resolveEditable } from './utils';
@@ -156,99 +157,101 @@ export function TextInput({
     : undefined;
 
   return (
-    <ComposeTextField
-      ref={innerRef}
-      modifiers={[
-        ...(userModifiers ?? []),
-        ...transformToModifiers(boxStyle, {}),
-        ...(testID ? [testIDModifier(testID)] : []),
-        ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
-        ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
-      ]}
-      value={state}
-      autoFocus={autoFocus}
-      readOnly={editable === false}
-      singleLine={!multiline}
-      maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      colors={
-        caretHidden ||
-        cursorColor ||
-        underlineColorAndroid ||
-        placeholderTextColor ||
-        styleBackgroundColor ||
-        hideIndicator
-          ? {
-              ...(caretHidden
-                ? { cursorColor: 'transparent' }
-                : cursorColor
-                  ? { cursorColor }
-                  : null),
-              ...(styleBackgroundColor
-                ? {
-                    focusedContainerColor: styleBackgroundColor,
-                    unfocusedContainerColor: styleBackgroundColor,
-                    disabledContainerColor: styleBackgroundColor,
-                    errorContainerColor: styleBackgroundColor,
-                  }
-                : null),
-              ...(underlineColorAndroid
-                ? {
-                    unfocusedIndicatorColor: underlineColorAndroid,
-                    focusedIndicatorColor: underlineColorAndroid,
-                  }
-                : hideIndicator
+    <EnsureHost {...layoutHostOptions(style)}>
+      <ComposeTextField
+        ref={innerRef}
+        modifiers={[
+          ...(userModifiers ?? []),
+          ...transformToModifiers(boxStyle, {}),
+          ...(testID ? [testIDModifier(testID)] : []),
+          ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
+          ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
+        ]}
+        value={state}
+        autoFocus={autoFocus}
+        readOnly={editable === false}
+        singleLine={!multiline}
+        maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
+        minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
+        colors={
+          caretHidden ||
+          cursorColor ||
+          underlineColorAndroid ||
+          placeholderTextColor ||
+          styleBackgroundColor ||
+          hideIndicator
+            ? {
+                ...(caretHidden
+                  ? { cursorColor: 'transparent' }
+                  : cursorColor
+                    ? { cursorColor }
+                    : null),
+                ...(styleBackgroundColor
                   ? {
-                      focusedIndicatorColor: 'transparent',
-                      unfocusedIndicatorColor: 'transparent',
-                      disabledIndicatorColor: 'transparent',
-                      errorIndicatorColor: 'transparent',
+                      focusedContainerColor: styleBackgroundColor,
+                      unfocusedContainerColor: styleBackgroundColor,
+                      disabledContainerColor: styleBackgroundColor,
+                      errorContainerColor: styleBackgroundColor,
                     }
                   : null),
-              ...(placeholderTextColor
-                ? {
-                    unfocusedPlaceholderColor: placeholderTextColor,
-                    focusedPlaceholderColor: placeholderTextColor,
-                    disabledPlaceholderColor: placeholderTextColor,
-                  }
-                : null),
-            }
-          : undefined
-      }
-      textStyle={
-        textStyle || (textAlign && textAlign !== 'auto')
-          ? {
-              ...textStyle,
-              ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
-            }
-          : undefined
-      }
-      visualTransformation={secureTextEntry ? 'password' : undefined}
-      textSelectionColors={
-        selectionColor || selectionHandleColor
-          ? {
-              handleColor: selectionHandleColor ?? selectionColor,
-              backgroundColor: selectionColor,
-            }
-          : undefined
-      }
-      keyboardOptions={keyboardOptions}
-      keyboardActions={keyboardActions}
-      onValueChange={onChangeText}
-      maxLength={maxLength}
-      onFocusChanged={handleFocusChanged}
-      selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
-      onSelectionChange={onSelectionChange}>
-      {placeholder ? (
-        <ComposeTextField.Placeholder>
-          <Text
-            modifiers={[fillMaxWidth()]}
-            style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
-            {placeholder}
-          </Text>
-        </ComposeTextField.Placeholder>
-      ) : null}
-    </ComposeTextField>
+                ...(underlineColorAndroid
+                  ? {
+                      unfocusedIndicatorColor: underlineColorAndroid,
+                      focusedIndicatorColor: underlineColorAndroid,
+                    }
+                  : hideIndicator
+                    ? {
+                        focusedIndicatorColor: 'transparent',
+                        unfocusedIndicatorColor: 'transparent',
+                        disabledIndicatorColor: 'transparent',
+                        errorIndicatorColor: 'transparent',
+                      }
+                    : null),
+                ...(placeholderTextColor
+                  ? {
+                      unfocusedPlaceholderColor: placeholderTextColor,
+                      focusedPlaceholderColor: placeholderTextColor,
+                      disabledPlaceholderColor: placeholderTextColor,
+                    }
+                  : null),
+              }
+            : undefined
+        }
+        textStyle={
+          textStyle || (textAlign && textAlign !== 'auto')
+            ? {
+                ...textStyle,
+                ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
+              }
+            : undefined
+        }
+        visualTransformation={secureTextEntry ? 'password' : undefined}
+        textSelectionColors={
+          selectionColor || selectionHandleColor
+            ? {
+                handleColor: selectionHandleColor ?? selectionColor,
+                backgroundColor: selectionColor,
+              }
+            : undefined
+        }
+        keyboardOptions={keyboardOptions}
+        keyboardActions={keyboardActions}
+        onValueChange={onChangeText}
+        maxLength={maxLength}
+        onFocusChanged={handleFocusChanged}
+        selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
+        onSelectionChange={onSelectionChange}>
+        {placeholder ? (
+          <ComposeTextField.Placeholder>
+            <Text
+              modifiers={[fillMaxWidth()]}
+              style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
+              {placeholder}
+            </Text>
+          </ComposeTextField.Placeholder>
+        ) : null}
+      </ComposeTextField>
+    </EnsureHost>
   );
 }
 

@@ -1,1 +1,1 @@
-{"version":3,"file":"ListItem.ios.d.ts","sourceRoot":"","sources":["../../../src/universal/ListItem/ListItem.ios.tsx"],"names":[],"mappings":"AAKA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,SAAS,CAAC;AAmB7C;;;GAGG;AACH,wBAAgB,QAAQ,CAAC,KAAK,EAAE,aAAa,2CA2B5C;AAED,cAAc,SAAS,CAAC"}
+{"version":3,"file":"ListItem.ios.d.ts","sourceRoot":"","sources":["../../../src/universal/ListItem/ListItem.ios.tsx"],"names":[],"mappings":"AAKA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,SAAS,CAAC;AAoB7C;;;GAGG;AACH,wBAAgB,QAAQ,CAAC,KAAK,EAAE,aAAa,2CA6B5C;AAED,cAAc,SAAS,CAAC"}

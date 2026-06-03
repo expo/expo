@@ -1,6 +1,7 @@
 import { Image as SwiftUIImage } from '@expo/ui/swift-ui';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { IconName, IconProps, IconSelectSpec } from './types';
 
@@ -41,13 +42,15 @@ export function Icon({
   );
 
   return (
-    <SwiftUIImage
-      systemName={systemName}
-      size={size}
-      color={color}
-      onPress={onPress}
-      modifiers={modifiers}
-    />
+    <EnsureHost {...layoutHostOptions(style)}>
+      <SwiftUIImage
+        systemName={systemName}
+        size={size}
+        color={color}
+        onPress={onPress}
+        modifiers={modifiers}
+      />
+    </EnsureHost>
   );
 }
 

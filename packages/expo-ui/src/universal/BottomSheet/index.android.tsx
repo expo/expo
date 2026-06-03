@@ -1,4 +1,4 @@
-import { Column, Host, ModalBottomSheet, type ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import { Column, ModalBottomSheet, type ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import {
   fillMaxHeight,
   padding,
@@ -7,6 +7,7 @@ import {
 } from '@expo/ui/jetpack-compose/modifiers';
 import { useEffect, useRef, useState } from 'react';
 
+import { Host } from '../Host';
 import type { BottomSheetProps, SnapPoint } from './types';
 
 // M3 `ModalBottomSheet` only has partial/expanded states.

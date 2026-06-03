@@ -1,6 +1,7 @@
 import { Spacer as SwiftUISpacer } from '@expo/ui/swift-ui';
 import { frame } from '@expo/ui/swift-ui/modifiers';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { SpacerProps } from './types';
 
@@ -34,11 +35,19 @@ export function Spacer({
   );
 
   if (flexible) {
-    return <SwiftUISpacer minLength={size} modifiers={baseModifiers} testID={testID} />;
+    return (
+      <EnsureHost {...layoutHostOptions(style)}>
+        <SwiftUISpacer minLength={size} modifiers={baseModifiers} testID={testID} />
+      </EnsureHost>
+    );
   }
 
   const sizeModifier = size != null ? [frame({ width: size, height: size })] : [];
-  return <SwiftUISpacer modifiers={[...sizeModifier, ...baseModifiers]} testID={testID} />;
+  return (
+    <EnsureHost {...layoutHostOptions(style)}>
+      <SwiftUISpacer modifiers={[...sizeModifier, ...baseModifiers]} testID={testID} />
+    </EnsureHost>
+  );
 }
 
 export * from './types';

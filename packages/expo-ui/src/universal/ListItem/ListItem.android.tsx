@@ -4,6 +4,7 @@ import { Children, type ReactNode } from 'react';
 
 import { extractListItemSlots } from './ListItemSlots';
 import type { ListItemProps } from './types';
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 
 // Compose hosts can't render raw strings — they need a `Text` composable.
 // Wrap any string/number node so consumers can pass plain strings via shorthand props or compound children.
@@ -26,26 +27,28 @@ export function ListItem(props: ListItemProps) {
   const supporting = slots.supporting ?? supportingText;
 
   return (
-    <ComposeListItem modifiers={onPress ? [clickable(onPress)] : undefined}>
-      <ComposeListItem.HeadlineContent>
-        <>{wrapStrings(slots.headline)}</>
-      </ComposeListItem.HeadlineContent>
-      {supporting != null ? (
-        <ComposeListItem.SupportingContent>
-          {typeof supporting === 'string' || typeof supporting === 'number' ? (
-            <Text>{supporting}</Text>
-          ) : (
-            supporting
-          )}
-        </ComposeListItem.SupportingContent>
-      ) : null}
-      {leading != null ? (
-        <ComposeListItem.LeadingContent>{wrapStrings(leading)}</ComposeListItem.LeadingContent>
-      ) : null}
-      {trailing != null ? (
-        <ComposeListItem.TrailingContent>{wrapStrings(trailing)}</ComposeListItem.TrailingContent>
-      ) : null}
-    </ComposeListItem>
+    <EnsureHost {...intrinsicHostOptions}>
+      <ComposeListItem modifiers={onPress ? [clickable(onPress)] : undefined}>
+        <ComposeListItem.HeadlineContent>
+          <>{wrapStrings(slots.headline)}</>
+        </ComposeListItem.HeadlineContent>
+        {supporting != null ? (
+          <ComposeListItem.SupportingContent>
+            {typeof supporting === 'string' || typeof supporting === 'number' ? (
+              <Text>{supporting}</Text>
+            ) : (
+              supporting
+            )}
+          </ComposeListItem.SupportingContent>
+        ) : null}
+        {leading != null ? (
+          <ComposeListItem.LeadingContent>{wrapStrings(leading)}</ComposeListItem.LeadingContent>
+        ) : null}
+        {trailing != null ? (
+          <ComposeListItem.TrailingContent>{wrapStrings(trailing)}</ComposeListItem.TrailingContent>
+        ) : null}
+      </ComposeListItem>
+    </EnsureHost>
   );
 }
 

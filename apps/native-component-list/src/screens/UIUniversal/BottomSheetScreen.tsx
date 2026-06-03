@@ -1,4 +1,4 @@
-import { BottomSheet, Button, Column, Host, ScrollView, Text } from '@expo/ui';
+import { BottomSheet, Button, Column, ScrollView, Text } from '@expo/ui';
 import { useState } from 'react';
 
 export default function BottomSheetScreen() {
@@ -7,7 +7,7 @@ export default function BottomSheetScreen() {
   const [detentsOpen, setDetentsOpen] = useState(false);
 
   return (
-    <Host style={{ flex: 1 }}>
+    <>
       <Column spacing={12} style={{ padding: 16 }}>
         <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>BottomSheet</Text>
 
@@ -82,7 +82,7 @@ export default function BottomSheetScreen() {
           </Column>
         </ScrollView>
       </BottomSheet>
-    </Host>
+    </>
   );
 }
 

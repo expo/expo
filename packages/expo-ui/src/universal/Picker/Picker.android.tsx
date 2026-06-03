@@ -10,6 +10,7 @@ import {
 import { Text } from '../../jetpack-compose/Text';
 import { TextField, type TextFieldRef } from '../../jetpack-compose/TextField';
 import { menuAnchor, onVisibilityChanged } from '../../jetpack-compose/modifiers';
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 
 /**
  * Android implementation of `Picker`.
@@ -35,34 +36,36 @@ export function Picker<T extends PickerItemValue>({
   }, [selectedLabel, isVisible]);
 
   return (
-    <ExposedDropdownMenuBox
-      expanded={expanded}
-      onExpandedChange={enabled ? setExpanded : undefined}>
-      <TextField
-        ref={textFieldRef}
-        readOnly
-        enabled={enabled}
-        modifiers={[menuAnchor(), onVisibilityChanged((visible) => setIsVisible(visible))]}
-      />
-      <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
-        {items.map((item) => (
-          <DropdownMenuItem
-            key={String(item.value)}
-            onClick={
-              enabled
-                ? () => {
-                    onValueChange(item.value);
-                    setExpanded(false);
-                  }
-                : undefined
-            }>
-            <DropdownMenuItem.Text>
-              <Text>{item.label}</Text>
-            </DropdownMenuItem.Text>
-          </DropdownMenuItem>
-        ))}
-      </ExposedDropdownMenu>
-    </ExposedDropdownMenuBox>
+    <EnsureHost {...intrinsicHostOptions}>
+      <ExposedDropdownMenuBox
+        expanded={expanded}
+        onExpandedChange={enabled ? setExpanded : undefined}>
+        <TextField
+          ref={textFieldRef}
+          readOnly
+          enabled={enabled}
+          modifiers={[menuAnchor(), onVisibilityChanged((visible) => setIsVisible(visible))]}
+        />
+        <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
+          {items.map((item) => (
+            <DropdownMenuItem
+              key={String(item.value)}
+              onClick={
+                enabled
+                  ? () => {
+                      onValueChange(item.value);
+                      setExpanded(false);
+                    }
+                  : undefined
+              }>
+              <DropdownMenuItem.Text>
+                <Text>{item.label}</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+          ))}
+        </ExposedDropdownMenu>
+      </ExposedDropdownMenuBox>
+    </EnsureHost>
   );
 }
 

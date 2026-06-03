@@ -1,9 +1,10 @@
 import { Column, Row } from '@expo/ui/jetpack-compose';
 import { horizontalScroll, verticalScroll } from '@expo/ui/jetpack-compose/modifiers';
 
+import { EnsureHost, fullHostOptions } from '../autoHost';
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { ScrollViewProps } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 export function ScrollView({
   children,
@@ -27,11 +28,14 @@ export function ScrollView({
     extraModifiers
   );
 
-  if (direction === 'horizontal') {
-    return <Row modifiers={[...modifiers, horizontalScroll()]}>{children}</Row>;
-  }
+  const content =
+    direction === 'horizontal' ? (
+      <Row modifiers={[...modifiers, horizontalScroll()]}>{children}</Row>
+    ) : (
+      <Column modifiers={[...modifiers, verticalScroll()]}>{children}</Column>
+    );
 
-  return <Column modifiers={[...modifiers, verticalScroll()]}>{children}</Column>;
+  return <EnsureHost {...fullHostOptions(style)}>{content}</EnsureHost>;
 }
 
 export * from './types';

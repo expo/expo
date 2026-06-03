@@ -24,6 +24,7 @@ import {
 import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 import {
@@ -181,45 +182,49 @@ export function TextInput({
 
   if (secureTextEntry) {
     return (
-      <SecureField
-        ref={secureFieldRef}
-        text={state}
-        placeholder={placeholder}
-        autoFocus={autoFocus}
-        onTextChange={onChangeText}
-        onFocusChange={handleFocusChange}
-        maxLength={maxLength}
-        modifiers={modifiers.length > 0 ? modifiers : undefined}
-        testID={testID}>
-        {placeholderTextColor && placeholder ? (
-          <SecureField.Placeholder>
-            <Text modifiers={[foregroundStyle(placeholderTextColor)]}>{placeholder}</Text>
-          </SecureField.Placeholder>
-        ) : null}
-      </SecureField>
+      <EnsureHost {...layoutHostOptions(style)}>
+        <SecureField
+          ref={secureFieldRef}
+          text={state}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          onTextChange={onChangeText}
+          onFocusChange={handleFocusChange}
+          maxLength={maxLength}
+          modifiers={modifiers.length > 0 ? modifiers : undefined}
+          testID={testID}>
+          {placeholderTextColor && placeholder ? (
+            <SecureField.Placeholder>
+              <Text modifiers={[foregroundStyle(placeholderTextColor)]}>{placeholder}</Text>
+            </SecureField.Placeholder>
+          ) : null}
+        </SecureField>
+      </EnsureHost>
     );
   }
 
   return (
-    <TextField
-      ref={textFieldRef}
-      text={state}
-      placeholder={placeholder}
-      autoFocus={autoFocus}
-      axis={multiline ? 'vertical' : 'horizontal'}
-      onTextChange={onChangeText}
-      onFocusChange={handleFocusChange}
-      selection={selection as Parameters<typeof TextField>[0]['selection']}
-      onSelectionChange={onSelectionChange}
-      maxLength={maxLength}
-      modifiers={modifiers.length > 0 ? modifiers : undefined}
-      testID={testID}>
-      {placeholderTextColor && placeholder ? (
-        <TextField.Placeholder>
-          <Text modifiers={[foregroundStyle(placeholderTextColor)]}>{placeholder}</Text>
-        </TextField.Placeholder>
-      ) : null}
-    </TextField>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <TextField
+        ref={textFieldRef}
+        text={state}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        axis={multiline ? 'vertical' : 'horizontal'}
+        onTextChange={onChangeText}
+        onFocusChange={handleFocusChange}
+        selection={selection as Parameters<typeof TextField>[0]['selection']}
+        onSelectionChange={onSelectionChange}
+        maxLength={maxLength}
+        modifiers={modifiers.length > 0 ? modifiers : undefined}
+        testID={testID}>
+        {placeholderTextColor && placeholder ? (
+          <TextField.Placeholder>
+            <Text modifiers={[foregroundStyle(placeholderTextColor)]}>{placeholder}</Text>
+          </TextField.Placeholder>
+        ) : null}
+      </TextField>
+    </EnsureHost>
   );
 }
 

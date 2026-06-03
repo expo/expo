@@ -2,6 +2,7 @@ import { LazyColumn, useMaterialColors } from '@expo/ui/jetpack-compose';
 
 import { groupFieldGroupChildren } from './groupChildren';
 import type { FieldGroupProps } from './types';
+import { EnsureHost, fullHostOptions } from '../autoHost';
 import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 
@@ -30,11 +31,13 @@ export function FieldGroup({
   const modifiers = transformToModifiers(mergedStyle, { disabled, hidden, testID }, extraModifiers);
 
   return (
-    <LazyColumn
-      verticalArrangement={{ spacedBy: 24 }}
-      contentPadding={{ start: 16, end: 16, top: 16, bottom: 16 }}
-      modifiers={modifiers}>
-      {groupFieldGroupChildren(children)}
-    </LazyColumn>
+    <EnsureHost {...fullHostOptions(style)}>
+      <LazyColumn
+        verticalArrangement={{ spacedBy: 24 }}
+        contentPadding={{ start: 16, end: 16, top: 16, bottom: 16 }}
+        modifiers={modifiers}>
+        {groupFieldGroupChildren(children)}
+      </LazyColumn>
+    </EnsureHost>
   );
 }

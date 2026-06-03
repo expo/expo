@@ -2,6 +2,7 @@ import { Section } from '@expo/ui/swift-ui';
 
 import { extractFieldSectionSlots } from './FieldSectionSlots';
 import type { FieldSectionProps } from './types';
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 
 /**
@@ -31,12 +32,14 @@ export function FieldSection({
   );
 
   return (
-    <Section
-      title={header ? undefined : title}
-      header={header}
-      footer={footer}
-      modifiers={modifiers}>
-      {rows}
-    </Section>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <Section
+        title={header ? undefined : title}
+        header={header}
+        footer={footer}
+        modifiers={modifiers}>
+        {rows}
+      </Section>
+    </EnsureHost>
   );
 }

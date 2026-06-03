@@ -1,5 +1,6 @@
 import { VStack } from '@expo/ui/swift-ui';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { UniversalAlignment } from '../types';
 import type { ColumnProps } from './types';
@@ -37,13 +38,15 @@ export function Column({
   );
 
   return (
-    <VStack
-      alignment={alignmentMap[alignment]}
-      spacing={spacing}
-      modifiers={modifiers}
-      testID={testID}>
-      {children}
-    </VStack>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <VStack
+        alignment={alignmentMap[alignment]}
+        spacing={spacing}
+        modifiers={modifiers}
+        testID={testID}>
+        {children}
+      </VStack>
+    </EnsureHost>
   );
 }
 

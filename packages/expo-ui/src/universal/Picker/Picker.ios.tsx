@@ -8,6 +8,7 @@ import {
 
 import { extractPickerItems } from './PickerItem';
 import type { PickerItemValue, PickerProps } from './types';
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 
 /**
  * iOS implementation of `Picker`.
@@ -28,17 +29,19 @@ export function Picker<T extends PickerItemValue>({
   if (!enabled) modifiers.push(disabledModifier(true));
 
   return (
-    <SwiftUIPicker
-      selection={selectedValue}
-      onSelectionChange={(value) => onValueChange(value as T)}
-      modifiers={modifiers}
-      testID={testID}>
-      {items.map((item) => (
-        <Text key={String(item.value)} modifiers={[tag(item.value)]}>
-          {item.label}
-        </Text>
-      ))}
-    </SwiftUIPicker>
+    <EnsureHost {...intrinsicHostOptions}>
+      <SwiftUIPicker
+        selection={selectedValue}
+        onSelectionChange={(value) => onValueChange(value as T)}
+        modifiers={modifiers}
+        testID={testID}>
+        {items.map((item) => (
+          <Text key={String(item.value)} modifiers={[tag(item.value)]}>
+            {item.label}
+          </Text>
+        ))}
+      </SwiftUIPicker>
+    </EnsureHost>
   );
 }
 

@@ -18,7 +18,7 @@ The universal components in `@expo/ui` are a single-API layer over the platform-
 
 ## Usage
 
-Universal components must still be wrapped in a [`Host`](host), but you import everything, including `Host`, from the package root. The universal `Host` dispatches to the platform-native host on Android and iOS, so there's no need to reach for [`@expo/ui/swift-ui`](../swift-ui) or [`@expo/ui/jetpack-compose`](../jetpack-compose) directly.
+Universal components create a [`Host`](host) automatically when they are rendered outside of an existing host boundary, but you can still import `Host` from the package root to group a larger universal subtree. The universal `Host` dispatches to the platform-native host on Android and iOS, so there's no need to reach for [`@expo/ui/swift-ui`](../swift-ui) or [`@expo/ui/jetpack-compose`](../jetpack-compose) directly.
 
 ```tsx UniversalExample.tsx
 import { Host, Column, Button, Text } from '@expo/ui';
@@ -35,9 +35,11 @@ export default function Example() {
 }
 ```
 
+For a single standalone control, the automatic host is usually enough. When rendering multiple adjacent universal components, wrap them in one `Host` so Android and iOS can mount one platform-native host view for the whole subtree instead of creating one host per standalone component.
+
 ## Components
 
-- **Container:** [`Host`](host) — the required root for every universal subtree.
+- **Container:** [`Host`](host) — groups universal components into one platform-native host subtree.
 - **Layout:** [`Column`](column), [`Row`](row), [`Spacer`](spacer), [`ScrollView`](scrollview).
 - **Display:** [`Text`](text), [`Icon`](icon).
 - **Controls:** [`Button`](button), [`Switch`](switch), [`Checkbox`](checkbox), [`Slider`](slider), [`TextInput`](textinput), [`Picker`](picker).

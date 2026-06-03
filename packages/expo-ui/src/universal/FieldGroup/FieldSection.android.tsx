@@ -8,6 +8,7 @@ import { clip, fillMaxWidth, padding, Shapes } from '@expo/ui/jetpack-compose/mo
 
 import { extractFieldSectionSlots } from './FieldSectionSlots';
 import { getFieldItemPosition, type FieldItemPosition, type FieldSectionProps } from './types';
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 
@@ -56,27 +57,31 @@ export function FieldSection({
     ) : null);
 
   return (
-    <ComposeColumn verticalArrangement={{ spacedBy: 4 }} modifiers={outerModifiers}>
-      {headerNode ? (
-        <ComposeColumn modifiers={[padding(16, 0, 16, 8)]}>{headerNode}</ComposeColumn>
-      ) : null}
-      {rows.length > 0 ? (
-        <ComposeColumn verticalArrangement={{ spacedBy: 2 }} modifiers={[fillMaxWidth()]}>
-          {rows.map((child, index) => {
-            const position = getFieldItemPosition(index, rows.length);
-            return (
-              <ListItem
-                key={index}
-                colors={{ containerColor: colors.surfaceContainer }}
-                modifiers={[fillMaxWidth(), clip(Shapes.RoundedCorner(cornerRadii(position)))]}>
-                <ListItem.HeadlineContent>{child}</ListItem.HeadlineContent>
-              </ListItem>
-            );
-          })}
-        </ComposeColumn>
-      ) : null}
-      {footer ? <ComposeColumn modifiers={[padding(16, 4, 16, 0)]}>{footer}</ComposeColumn> : null}
-    </ComposeColumn>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <ComposeColumn verticalArrangement={{ spacedBy: 4 }} modifiers={outerModifiers}>
+        {headerNode ? (
+          <ComposeColumn modifiers={[padding(16, 0, 16, 8)]}>{headerNode}</ComposeColumn>
+        ) : null}
+        {rows.length > 0 ? (
+          <ComposeColumn verticalArrangement={{ spacedBy: 2 }} modifiers={[fillMaxWidth()]}>
+            {rows.map((child, index) => {
+              const position = getFieldItemPosition(index, rows.length);
+              return (
+                <ListItem
+                  key={index}
+                  colors={{ containerColor: colors.surfaceContainer }}
+                  modifiers={[fillMaxWidth(), clip(Shapes.RoundedCorner(cornerRadii(position)))]}>
+                  <ListItem.HeadlineContent>{child}</ListItem.HeadlineContent>
+                </ListItem>
+              );
+            })}
+          </ComposeColumn>
+        ) : null}
+        {footer ? (
+          <ComposeColumn modifiers={[padding(16, 4, 16, 0)]}>{footer}</ComposeColumn>
+        ) : null}
+      </ComposeColumn>
+    </EnsureHost>
   );
 }
 

@@ -9,7 +9,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A container for universal `@expo/ui` content. On Android and iOS it re-exports the platform-native [`Host` for Jetpack Compose](../jetpack-compose/host)/[`Host` for SwiftUI](../swift-ui/host), so Jetpack Compose/SwiftUI children render exactly as they would in the platform-specific packages. On web, it falls back to a React Native [`View`](https://reactnative.dev/docs/view). Use `Host` as the root of any universal subtree so the same component tree works across all three platforms.
+A container for universal `@expo/ui` content. On Android and iOS it re-exports the platform-native [`Host` for Jetpack Compose](../jetpack-compose/host)/[`Host` for SwiftUI](../swift-ui/host), so Jetpack Compose/SwiftUI children render exactly as they would in the platform-specific packages. On web, it falls back to a React Native [`View`](https://reactnative.dev/docs/view). Universal components create a host automatically when needed, but an explicit `Host` lets you group a larger subtree into one platform-native host view.
 
 ## Installation
 
@@ -28,6 +28,36 @@ export default function HostExample() {
       <Column spacing={12} alignment="center">
         <Text>Hello, world!</Text>
         <Button label="Press me" onPress={() => alert('Pressed')} />
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Automatic hosting and performance
+
+Universal components can be rendered without an explicit `Host`; if no parent host boundary exists, the component creates one with default sizing. This keeps standalone controls concise:
+
+```tsx StandaloneButtonExample.tsx
+import { Button } from '@expo/ui';
+
+export default function StandaloneButtonExample() {
+  return <Button label="Press me" onPress={() => alert('Pressed')} />;
+}
+```
+
+When rendering multiple adjacent universal components, prefer wrapping the group in one `Host`. This avoids creating one platform-native host view per standalone component.
+
+```tsx GroupedButtonsExample.tsx
+import { Host, Column, Button } from '@expo/ui';
+
+export default function GroupedButtonsExample() {
+  return (
+    <Host matchContents>
+      <Column spacing={8}>
+        <Button label="First" onPress={() => {}} />
+        <Button label="Second" onPress={() => {}} />
+        <Button label="Third" onPress={() => {}} />
       </Column>
     </Host>
   );

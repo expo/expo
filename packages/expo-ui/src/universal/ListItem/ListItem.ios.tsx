@@ -4,6 +4,7 @@ import { Children, type ReactNode } from 'react';
 
 import { extractListItemSlots } from './ListItemSlots';
 import type { ListItemProps } from './types';
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 
 // Wrap raw strings/numbers in a SwiftUI `Text` — SwiftUI hosts can't render bare strings.
 function wrapStrings(node: ReactNode): ReactNode {
@@ -41,17 +42,19 @@ export function ListItem(props: ListItemProps) {
   const supporting = slots.supporting ?? supportingText;
 
   return (
-    <Button onPress={onPress} modifiers={[buttonStyle('plain')]} testID={testID}>
-      <HStack alignment="center" spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
-        {wrapStrings(leading)}
-        <VStack alignment="leading" spacing={2}>
-          <>{wrapStrings(slots.headline)}</>
-          {supporting != null ? renderSupporting(supporting) : null}
-        </VStack>
-        <Spacer />
-        {wrapStrings(trailing)}
-      </HStack>
-    </Button>
+    <EnsureHost {...intrinsicHostOptions}>
+      <Button onPress={onPress} modifiers={[buttonStyle('plain')]} testID={testID}>
+        <HStack alignment="center" spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
+          {wrapStrings(leading)}
+          <VStack alignment="leading" spacing={2}>
+            <>{wrapStrings(slots.headline)}</>
+            {supporting != null ? renderSupporting(supporting) : null}
+          </VStack>
+          <Spacer />
+          {wrapStrings(trailing)}
+        </HStack>
+      </Button>
+    </EnsureHost>
   );
 }
 

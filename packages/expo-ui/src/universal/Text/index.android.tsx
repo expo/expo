@@ -1,8 +1,9 @@
 import { Text as ComposeText } from '@expo/ui/jetpack-compose';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { TextProps } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 const textAlignMap: Record<string, 'start' | 'center' | 'end'> = {
   left: 'start',
@@ -43,13 +44,15 @@ export function Text({
   if (textStyle?.lineHeight != null) composeTextStyle.lineHeight = textStyle.lineHeight;
 
   return (
-    <ComposeText
-      color={textStyle?.color}
-      maxLines={numberOfLines}
-      style={Object.keys(composeTextStyle).length > 0 ? composeTextStyle : undefined}
-      modifiers={modifiers}>
-      {children}
-    </ComposeText>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <ComposeText
+        color={textStyle?.color}
+        maxLines={numberOfLines}
+        style={Object.keys(composeTextStyle).length > 0 ? composeTextStyle : undefined}
+        modifiers={modifiers}>
+        {children}
+      </ComposeText>
+    </EnsureHost>
   );
 }
 

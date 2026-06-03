@@ -5,9 +5,10 @@ import {
   TextButton,
 } from '@expo/ui/jetpack-compose';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { ButtonProps, ButtonVariant } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 export function Button({
   children,
@@ -37,7 +38,11 @@ export function Button({
 
   const ButtonComponent = variantComponentMap[variant];
 
-  return <ButtonComponent {...commonProps}>{content}</ButtonComponent>;
+  return (
+    <EnsureHost {...intrinsicHostOptions}>
+      <ButtonComponent {...commonProps}>{content}</ButtonComponent>
+    </EnsureHost>
+  );
 }
 
 const variantComponentMap: Record<

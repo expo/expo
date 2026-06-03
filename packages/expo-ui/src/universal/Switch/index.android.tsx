@@ -1,6 +1,7 @@
 import { Row, Switch as ComposeSwitch, Text } from '@expo/ui/jetpack-compose';
 import { testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 import type { SwitchProps } from './types';
 
 export function Switch({ value, onValueChange, label, disabled, testID, modifiers }: SwitchProps) {
@@ -13,14 +14,17 @@ export function Switch({ value, onValueChange, label, disabled, testID, modifier
     />
   );
 
-  if (label == null) return toggle;
+  const content =
+    label == null ? (
+      toggle
+    ) : (
+      <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 8 }}>
+        <Text>{label}</Text>
+        {toggle}
+      </Row>
+    );
 
-  return (
-    <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 8 }}>
-      <Text>{label}</Text>
-      {toggle}
-    </Row>
-  );
+  return <EnsureHost {...intrinsicHostOptions}>{content}</EnsureHost>;
 }
 
 export * from './types';
