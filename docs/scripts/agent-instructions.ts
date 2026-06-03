@@ -37,7 +37,7 @@ export function buildAgentInstructions(pathname: string): string {
 
 If this page contains errors, outdated information, or gaps that blocked you from completing a task, report it so the docs can be improved:
 
-curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":":robot_face: Agent feedback for docs: <specific, actionable description>","model":"<your model identifier>"}'
+curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":"🤖 Agent feedback for docs: <specific, actionable description>","model":"<your model identifier>"}'
 
 Only submit when you have something specific and actionable to report. Replace <your model identifier> with the model you are running as.
 
