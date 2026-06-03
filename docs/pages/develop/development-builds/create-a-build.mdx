@@ -81,7 +81,14 @@ For detailed, step-by-step instructions, see our [EAS Tutorial](/tutorial/eas/in
 
 ### Install expo-dev-client
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 
 <Collapsible summary="Are you using this library in an existing (bare) React Native app?">
 
@@ -101,7 +108,14 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
   </Requirement>
   <Requirement title="EAS CLI">
     The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
   </Requirement>
   <Requirement title="An Android Emulator (optional)">
     An [Android Emulator](/workflow/android-studio-emulator/) is optional if you want to test your
@@ -125,7 +139,14 @@ Read more about [Android builds on EAS](/tutorial/eas/android-development-build)
   </Requirement>
   <Requirement title="EAS CLI">
     The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
   </Requirement>
   <Requirement title="macOS with iOS Simulator installed">
     iOS Simulators are available only on macOS. Make sure you have the [iOS
@@ -164,7 +185,14 @@ Read more about [iOS Simulator builds on EAS](/tutorial/eas/ios-development-buil
   </Requirement>
   <Requirement title="EAS CLI">
     The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
   </Requirement>
   <Requirement title="Apple Developer account">
     A paid [Apple Developer](https://developer.apple.com/) account for creating [signing
@@ -203,7 +231,14 @@ The development client built in **step 2** is the native side of your app (basic
 
 Depending on how you built the app, this may already be running, but if you close the process for any reason, there is no need to rebuild your development client. Simply restart the JavaScript bundler with:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 This is the same command you would have used with Expo Go. It detects whether your project has `expo-dev-client` installed, in which case it will default to targeting your development build instead of Expo Go.
 

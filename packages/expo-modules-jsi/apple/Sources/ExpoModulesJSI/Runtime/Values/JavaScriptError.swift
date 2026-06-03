@@ -1,5 +1,5 @@
-internal import jsi
 internal import ExpoModulesJSI_Cxx
+internal import jsi
 
 public struct JavaScriptError: JavaScriptType, ~Copyable {
   private weak let runtime: JavaScriptRuntime?
@@ -15,11 +15,9 @@ public struct JavaScriptError: JavaScriptType, ~Copyable {
     self.pointee = facebook.jsi.JSError(runtime.pointee, message)
   }
 
-  /**
-   Creates a JavaScript error from a native error conforming to `JavaScriptThrowable`.
-   Creates a proper JavaScript `Error` instance with `message` set, then attaches
-   the optional `code` property to the error object.
-   */
+  /// Creates a JavaScript error from a native error conforming to `JavaScriptThrowable`.
+  /// Creates a proper JavaScript `Error` instance with `message` set, then attaches
+  /// the optional `code` property to the error object.
   public init(_ runtime: JavaScriptRuntime, from error: any JavaScriptThrowable) {
     self.runtime = runtime
     self.pointee = facebook.jsi.JSError(runtime.pointee, error.message)
@@ -67,7 +65,8 @@ extension JavaScriptError: JavaScriptRepresentable {
 }
 
 extension JavaScriptError: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptError {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptError
+  {
     FatalError.unimplemented()
   }
 
@@ -76,14 +75,12 @@ extension JavaScriptError: JSIRepresentable {
   }
 }
 
-/**
- Makes `expo.CppError` conform to Swift's `Error` protocol so it can be caught
- with `try/catch`, and exposes its message as a native Swift `String`.
-
- The C++ `message` field is bridged to Swift as `_message` (a `std.string`)
- via the `SWIFT_NAME(_message)` annotation in `CppError.h`. This extension
- wraps it in a Swift `String` for cleaner call-site usage.
- */
+/// Makes `expo.CppError` conform to Swift's `Error` protocol so it can be caught
+/// with `try/catch`, and exposes its message as a native Swift `String`.
+///
+/// The C++ `message` field is bridged to Swift as `_message` (a `std.string`)
+/// via the `SWIFT_NAME(_message)` annotation in `CppError.h`. This extension
+/// wraps it in a Swift `String` for cleaner call-site usage.
 extension expo.CppError: Error {
   public var message: String {
     return String(_getMessage())

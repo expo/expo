@@ -535,6 +535,17 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the border shape used by buttons within this view.
+ * @param shape - The button border shape.
+ * @param cornerRadius - Corner radius, only used with `'roundedRectangle'`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonbordershape(_:)).
+ */
+export const buttonBorderShape = (
+  shape: 'automatic' | 'capsule' | 'roundedRectangle' | 'circle',
+  cornerRadius?: number
+) => createModifier('buttonBorderShape', { shape, cornerRadius });
+
+/**
  * Sets the style for toggles within this view.
  * @param style - The toggle style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/togglestyle(_:)).
@@ -836,6 +847,14 @@ export const listRowSeparator = (
   visibility: 'automatic' | 'visible' | 'hidden',
   edges?: 'all' | 'top' | 'bottom'
 ) => createModifier('listRowSeparator', { visibility, edges });
+
+/**
+ * Sets the vertical spacing between adjacent rows in a list.
+ * @param spacing - The spacing value to use. When omitted, the default spacing is used.
+ * @platform ios 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowspacing(_:)).
+ */
+export const listRowSpacing = (spacing?: number) => createModifier('listRowSpacing', { spacing });
 
 /**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
@@ -1329,6 +1348,7 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
   | ReturnType<typeof controlSize>
   | ReturnType<typeof labelStyle>
@@ -1366,6 +1386,7 @@ export type BuiltInModifier =
   | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
+  | ReturnType<typeof listRowSpacing>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>
   | ReturnType<typeof kerning>

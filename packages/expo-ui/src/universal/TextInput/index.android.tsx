@@ -7,6 +7,7 @@ import {
   useNativeState,
 } from '@expo/ui/jetpack-compose';
 import {
+  fillMaxWidth,
   onSizeChanged,
   semantics,
   testID as testIDModifier,
@@ -96,6 +97,8 @@ export function TextInput({
   const numberOfLines = numberOfLinesProp ?? rows;
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
   const returnKeyType = returnKeyTypeProp ?? enterKeyHintToReturnKeyType(enterKeyHint);
+  const { backgroundColor: styleBackgroundColor, ...boxStyle } = style ?? {};
+  const hideIndicator = boxStyle.borderWidth === 0 && underlineColorAndroid == null;
 
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -157,7 +160,7 @@ export function TextInput({
       ref={innerRef}
       modifiers={[
         ...(userModifiers ?? []),
-        ...transformToModifiers(style, {}),
+        ...transformToModifiers(boxStyle, {}),
         ...(testID ? [testIDModifier(testID)] : []),
         ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
         ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
@@ -169,19 +172,39 @@ export function TextInput({
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       colors={
-        caretHidden || cursorColor || underlineColorAndroid || placeholderTextColor
+        caretHidden ||
+        cursorColor ||
+        underlineColorAndroid ||
+        placeholderTextColor ||
+        styleBackgroundColor ||
+        hideIndicator
           ? {
               ...(caretHidden
                 ? { cursorColor: 'transparent' }
                 : cursorColor
                   ? { cursorColor }
                   : null),
+              ...(styleBackgroundColor
+                ? {
+                    focusedContainerColor: styleBackgroundColor,
+                    unfocusedContainerColor: styleBackgroundColor,
+                    disabledContainerColor: styleBackgroundColor,
+                    errorContainerColor: styleBackgroundColor,
+                  }
+                : null),
               ...(underlineColorAndroid
                 ? {
                     unfocusedIndicatorColor: underlineColorAndroid,
                     focusedIndicatorColor: underlineColorAndroid,
                   }
-                : null),
+                : hideIndicator
+                  ? {
+                      focusedIndicatorColor: 'transparent',
+                      unfocusedIndicatorColor: 'transparent',
+                      disabledIndicatorColor: 'transparent',
+                      errorIndicatorColor: 'transparent',
+                    }
+                  : null),
               ...(placeholderTextColor
                 ? {
                     unfocusedPlaceholderColor: placeholderTextColor,
@@ -218,7 +241,11 @@ export function TextInput({
       onSelectionChange={onSelectionChange}>
       {placeholder ? (
         <ComposeTextField.Placeholder>
-          <Text>{placeholder}</Text>
+          <Text
+            modifiers={[fillMaxWidth()]}
+            style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
+            {placeholder}
+          </Text>
         </ComposeTextField.Placeholder>
       ) : null}
     </ComposeTextField>

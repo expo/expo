@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Handle undefined props instead fallback to empty object. ([#46492](https://github.com/expo/expo/pull/46492) by [@jakex7](https://github.com/jakex7))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Temporarily make the Android config plugin opt-in with `enableAndroid`. ([#46463](https://github.com/expo/expo/pull/46463) by [@jakex7](https://github.com/jakex7))
 
 ## 56.0.15 — 2026-05-26
 
@@ -17,11 +21,13 @@
 - [Android] Create base android package. ([#46090](https://github.com/expo/expo/pull/46090) by [@jakex7](https://github.com/jakex7))
 - [plugin] Create config plugin for android. ([#46091](https://github.com/expo/expo/pull/46091) by [@jakex7](https://github.com/jakex7))
 - [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
+- Expose shared directory for images. ([#46339](https://github.com/expo/expo/pull/46339) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
 - Allow string widget family values in the typed config plugin. ([#46133](https://github.com/expo/expo/issues/46133) by [@eliotgevers](https://github.com/eliotgevers))
 - [plugin] Inherit `ios.deploymentTarget` from app config for generated widget extension targets. ([#46193](https://github.com/expo/expo/pull/46193) by [@eliotgevers](https://github.com/eliotgevers))
+- [Android] Fix widget strings file location. ([#46538](https://github.com/expo/expo/pull/46538) by [@jakex7](https://github.com/jakex7))
 
 ## 56.0.14 — 2026-05-23
 

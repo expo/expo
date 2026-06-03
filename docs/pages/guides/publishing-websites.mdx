@@ -53,7 +53,14 @@ Creating a build of the project is the first step to publishing a web app. Wheth
 
 Run the universal export command to compile the project for web:
 
-<Terminal cmd={['$ npx expo export -p web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export -p web'],
+    yarn: ['$ yarn expo export -p web'],
+    pnpm: ['$ pnpm expo export -p web'],
+    bun: ['$ bun expo export -p web'],
+  }}
+/>
 
 The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
 
@@ -63,7 +70,14 @@ The resulting project files are located in the **dist** directory. Any files ins
 
 Use `npx expo serve` to quickly test locally how your website will be hosted in production. Run the following command to serve the static bundle:
 
-<Terminal cmd={['$ npx expo serve']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo serve'],
+    yarn: ['$ yarn expo serve'],
+    pnpm: ['$ pnpm expo serve'],
+    bun: ['$ bun expo serve'],
+  }}
+/>
 
 Open [`http://localhost:8081`](http://localhost:8081) to see your project in action. This is **HTTP only**, so permissions, camera, location, and many other secure features may not work as expected.
 
@@ -90,7 +104,14 @@ When you're ready to go to production, you can instantly deploy your website wit
 
 Install the Netlify CLI by running the following command:
 
-<Terminal cmd={['$ npm install -g netlify-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global netlify-cli'],
+    yarn: ['$ yarn global add netlify-cli'],
+    pnpm: ['$ pnpm add --global netlify-cli'],
+    bun: ['$ bun add --global netlify-cli'],
+  }}
+/>
 
 </Step>
 
@@ -136,7 +157,14 @@ Netlify can also build and deploy when you push to git or open a new pull reques
 
 Install the [Vercel CLI](https://vercel.com/docs/cli).
 
-<Terminal cmd={['$ npm install -g vercel@latest']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global vercel@latest'],
+    yarn: ['$ yarn global add vercel@latest'],
+    pnpm: ['$ pnpm add --global vercel@latest'],
+    bun: ['$ bun add --global vercel@latest'],
+  }}
+/>
 
 </Step>
 <Step label="2">
@@ -263,7 +291,14 @@ In the existing `scripts` property of **package.json**, add `predeploy` and `dep
 
 To deploy, run the following command:
 
-<Terminal cmd={['$ npm run deploy-hosting']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run deploy-hosting'],
+    yarn: ['$ yarn run deploy-hosting'],
+    pnpm: ['$ pnpm run deploy-hosting'],
+    bun: ['$ bun run deploy-hosting'],
+  }}
+/>
 
 Open the URL from the console output to check your deployment, for example: `https://project-name.firebaseapp.com`.
 

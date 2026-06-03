@@ -4,7 +4,13 @@ import {
   fillMaxWidth,
   fillMaxSize,
   height,
+  size,
   background,
+  border,
+  clip,
+  dropShadow,
+  innerShadow,
+  Shapes,
 } from '@expo/ui/jetpack-compose/modifiers';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
@@ -39,6 +45,91 @@ export default function ModifiersScreen() {
               }}
             />
           )}
+        </Section>
+        <Section title="dropShadow">
+          <Host style={{ height: 160 }}>
+            <Box contentAlignment="center" modifiers={[fillMaxSize()]}>
+              <Box
+                modifiers={[
+                  size(120, 120),
+                  dropShadow(Shapes.RoundedCorner(24), {
+                    radius: 16,
+                    spread: 4,
+                    color: '#6200EE',
+                    offsetX: 0,
+                    offsetY: 8,
+                  }),
+                  background('#FFFFFF'),
+                  clip(Shapes.RoundedCorner(24)),
+                ]}
+              />
+            </Box>
+          </Host>
+        </Section>
+        <Section title="innerShadow">
+          <Host style={{ height: 160 }}>
+            <Box contentAlignment="center" modifiers={[fillMaxSize()]}>
+              <Box
+                modifiers={[
+                  size(120, 120),
+                  clip(Shapes.RoundedCorner(24)),
+                  background('#FFFFFF'),
+                  innerShadow(Shapes.RoundedCorner(24), {
+                    radius: 16,
+                    spread: 2,
+                    color: '#000000',
+                    offsetX: 4,
+                    offsetY: 6,
+                  }),
+                ]}
+              />
+            </Box>
+          </Host>
+        </Section>
+        <Section title="Neobrutalist shadow">
+          <Host style={{ height: 160 }}>
+            <Box contentAlignment="center" modifiers={[fillMaxSize()]}>
+              <Box
+                modifiers={[
+                  size(120, 120),
+                  dropShadow(Shapes.Rectangle, {
+                    radius: 0,
+                    spread: 0,
+                    offsetX: 8,
+                    offsetY: 8,
+                    color: '#000000',
+                  }),
+                  border(4, '#000000'),
+                  background('#FFD43B'),
+                ]}
+              />
+            </Box>
+          </Host>
+        </Section>
+        <Section title="Neumorphic shadow">
+          <Host style={{ height: 160 }}>
+            <Box contentAlignment="center" modifiers={[fillMaxSize(), background('#E0E0E0')]}>
+              <Box
+                modifiers={[
+                  size(120, 120),
+                  dropShadow(Shapes.RoundedCorner(24), {
+                    radius: 15,
+                    offsetX: -10,
+                    offsetY: -10,
+                    color: '#FFFFFF',
+                  }),
+                  dropShadow(Shapes.RoundedCorner(24), {
+                    radius: 15,
+                    offsetX: 10,
+                    offsetY: 10,
+                    color: '#B1B1B1',
+                  }),
+                  background('#E0E0E0'),
+                  clip(Shapes.RoundedCorner(24)),
+                ]}
+              />
+            </Box>
+          </Host>
         </Section>
       </ScrollView>
       {showImePadding && (

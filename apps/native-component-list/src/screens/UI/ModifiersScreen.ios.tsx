@@ -31,6 +31,7 @@ import {
   rotationEffect,
   offset,
   listRowSeparator,
+  listRowSpacing,
   border,
   onTapGesture,
   onLongPressGesture,
@@ -107,6 +108,7 @@ export default function ModifiersScreen() {
   const [enabledSelection, setEnabledSelection] = useState(false);
 
   const [lineSpacingValue, setLineSpaceingValue] = useState(0);
+  const [listRowSpacingValue, setListRowSpacingValue] = useState(0);
 
   const [enableRowInsets, setEnableRowInsets] = useState({
     top: false,
@@ -138,6 +140,7 @@ export default function ModifiersScreen() {
         <Form
           modifiers={[
             scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
+            listRowSpacing(listRowSpacingValue),
             background(backgroundFormColor),
             frame({
               height: dimensions.height - safeAreaInsets.top - safeAreaInsets.bottom,
@@ -227,6 +230,18 @@ export default function ModifiersScreen() {
             <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
           </Section>
 
+          <Section title="List row spacing">
+            <Text>Spacing row one</Text>
+            <Text>Spacing row two</Text>
+            <Text>Spacing row three</Text>
+            <Slider
+              min={0}
+              max={30}
+              value={listRowSpacingValue}
+              onValueChange={setListRowSpacingValue}
+            />
+          </Section>
+
           {/* Text modifiers */}
           <Section title="Text modifier">
             <Text
@@ -285,6 +300,12 @@ export default function ModifiersScreen() {
               <Text modifiers={[font({ textStyle: 'body' })]}>body scales</Text>
               <Text modifiers={[font({ textStyle: 'caption' })]}>caption scales</Text>
             </VStack>
+
+            {/* font on concatenated Text runs scales + keeps weight */}
+            <Text>
+              <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Big </Text>
+              <Text modifiers={[font({ textStyle: 'caption' })]}>and small, both scale</Text>
+            </Text>
 
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>

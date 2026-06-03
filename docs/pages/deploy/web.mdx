@@ -27,7 +27,14 @@ If you are building a universal app, you can quickly deploy your web app using [
 
 To deploy your web app, you need to create a static build of your web project. Export your web project into a **dist** directory by running the following command:
 
-<Terminal cmd={['$ npx expo export --platform web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 > Remember to re-run this command every time before deploying when you make changes to your web app.
 

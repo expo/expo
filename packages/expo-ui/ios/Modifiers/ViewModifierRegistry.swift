@@ -712,6 +712,22 @@ internal struct ListRowSeparator: ViewModifier, Record {
   }
 }
 
+internal struct ListRowSpacing: ViewModifier, Record {
+  @Field var spacing: Double?
+
+  func body(content: Content) -> some View {
+#if os(iOS)
+    if #available(iOS 15.0, *) {
+      content.listRowSpacing(spacing.map { CGFloat($0) })
+    } else {
+      content
+    }
+#else
+    content
+#endif
+  }
+}
+
 internal enum TextTruncationModeTypes: String, Enumerable {
   case head
   case middle
@@ -1212,14 +1228,7 @@ public class ViewModifierRegistry {
       return text.monospacedDigit()
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
-      if let family = modifier.family {
-        return text.font(Font.custom(family, size: modifier.size ?? 17))
-      }
-      return text.font(.system(
-        size: modifier.size ?? 17,
-        weight: modifier.weight?.toSwiftUI() ?? .regular,
-        design: modifier.design?.toSwiftUI() ?? .default
-      ))
+      return text.font(modifier.resolveFont())
     case "foregroundColor":
       guard let modifier = try? ForegroundColorModifier(from: params, appContext: appContext),
             let color = modifier.color else { return text }
@@ -1599,6 +1608,10 @@ extension ViewModifierRegistry {
       return try ButtonStyleModifier(from: params, appContext: appContext)
     }
 
+    register("buttonBorderShape") { params, appContext, _ in
+      return try ButtonBorderShapeModifier(from: params, appContext: appContext)
+    }
+
     register("toggleStyle") { params, appContext, _ in
       return try ToggleStyleModifier(from: params, appContext: appContext)
     }
@@ -1625,6 +1638,10 @@ extension ViewModifierRegistry {
 
     register("listRowSeparator") { params, appContext, _ in
       return try ListRowSeparator(from: params, appContext: appContext)
+    }
+
+    register("listRowSpacing") { params, appContext, _ in
+      return try ListRowSpacing(from: params, appContext: appContext)
     }
 
     register("truncationMode") { params, appContext, _ in

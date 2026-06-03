@@ -12,7 +12,7 @@ import { serializeTypeInformation } from '../typeInformation';
 
 export function typeInformationCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('type-information'))
-    .description('Parses Swift module type information and outputs a `FileTypeInformation` JSON.')
+    .description('parse Swift module type information and outputs a `FileTypeInformation` JSON')
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) {

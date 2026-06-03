@@ -1,8 +1,10 @@
 ---
 title: User-defined events
+sidebar_title: Events
 description: Log named events from your app to track custom signals visible in the EAS Observe dashboard.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 User-defined events let you record arbitrary, named events from your app. Use them to track any signal specific to your app that the built-in performance metrics do not cover.
@@ -16,8 +18,8 @@ Call `Observe.logEvent` from anywhere in your app:
 ```tsx
 import { Observe } from 'expo-observe';
 
-function handleSignupComplete() {
-  Observe.logEvent('signup.completed');
+function handleOnboardingComplete() {
+  Observe.logEvent('onboarding.completed');
 }
 ```
 
@@ -28,12 +30,12 @@ The first argument is the event name. Use a stable, dot-separated identifier. Th
 Pass an `attributes` map to record context with the event:
 
 ```tsx
-Observe.logEvent('cart.checkout', {
+Observe.logEvent('report.exported', {
   attributes: {
-    itemCount: 3,
-    totalUsd: 42.5,
-    coupon: 'WELCOME10',
-    items: ['sku-1', 'sku-2', 'sku-3'],
+    format: 'csv',
+    rowCount: 1248,
+    durationMs: 532,
+    filters: ['status:active', 'region:us-west'],
   },
 });
 ```
@@ -45,9 +47,9 @@ Supported attribute value types: `string`, `number`, `boolean`, arrays, and nest
 Events default to `"info"` severity. Override with the `severity` option for warnings or errors you want to surface separately in the dashboard:
 
 ```tsx
-Observe.logEvent('payment.failed', {
+Observe.logEvent('sync.failed', {
   severity: 'error',
-  attributes: { reason: 'card_declined' },
+  attributes: { reason: 'network_timeout' },
 });
 ```
 
@@ -58,22 +60,28 @@ Supported severities, from lowest to highest: `"trace"`, `"debug"`, `"info"`, `"
 Use `body` for a free-form message that complements the structured attributes:
 
 ```tsx
-Observe.logEvent('subscription.expired', {
-  body: 'Subscription expired while user was offline; downgrading to free tier.',
+Observe.logEvent('cache.evicted', {
+  body: 'Cache evicted because disk pressure exceeded the configured threshold.',
   severity: 'warn',
-  attributes: { previousPlan: 'pro' },
+  attributes: { evictedItemCount: 42, freedBytes: 1048576 },
 });
 ```
 
 ## Naming conventions
 
-- Use lowercase, dot-separated names: `task.completed`, `onboarding.skipped`, `cart.checkout`.
-- Pick a vocabulary and stick to it. The dashboard groups by exact event name, so `cart_checkout` and `cart.checkout` will appear as separate rows.
+- Use lowercase, dot-separated names: `task.completed`, `onboarding.skipped`, `report.exported`.
+- Pick a vocabulary and stick to it. The dashboard groups by exact event name, so `report_exported` and `report.exported` will appear as separate rows.
 - Avoid Personally Identifiable Information (PII) in event names, attribute keys, and attribute values. Everything you pass is visible in the dashboard and is dispatched off-device.
 
 ## View events
 
-In the dashboard: open your project and navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe). The default view lists distinct event names with their counts in the selected time range. Click an event name to see individual events with their timestamps, attributes, and the session they belong to.
+In the dashboard: open your project and navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe?tab=events). The default view lists distinct event names with their counts in the selected time range. Click an event name to see individual events with their timestamps, attributes, and the session they belong to.
+
+<ContentSpotlight
+  alt="The Events tab in the EAS Observe dashboard listing distinct event names and their counts."
+  src="/static/images/expo-observe/observe-events-light.png"
+  darkSrc="/static/images/expo-observe/observe-events-dark.png"
+/>
 
 From the CLI:
 
@@ -83,7 +91,7 @@ From the CLI:
     '$ eas observe:events',
     '',
     '# Show individual events for a specific event name',
-    '$ eas observe:events cart.checkout',
+    '$ eas observe:events report.exported',
     '',
     '# Show all events across all names (JSON output)',
     '$ eas observe:events --all-events --json',

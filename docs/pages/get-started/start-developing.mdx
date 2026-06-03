@@ -15,7 +15,14 @@ import { Step } from '~/ui/components/Step';
 ## Start a development server
 To start the development server, run the following command:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
@@ -32,7 +39,14 @@ Make sure you are on the same Wi-Fi network on your computer and your device.
 
 If it still doesn't work, it may be due to the router configuration — this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --tunnel'],
+    yarn: ['$ yarn expo start --tunnel'],
+    pnpm: ['$ pnpm expo start --tunnel'],
+    bun: ['$ bun expo start --tunnel'],
+  }}
+/>
 
 > Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
 

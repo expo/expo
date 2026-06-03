@@ -6,14 +6,21 @@
 
 ### 🎉 New features
 
+- [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+- [web] Honor the `colorScheme` prop on `<Host>` to override the system color scheme for its subtree, matching native parity. ([#46459](https://github.com/expo/expo/pull/46459) by [@zoontek](https://github.com/zoontek))
+- [iOS] Add `buttonBorderShape` SwiftUI modifier, which reshapes a styled button (for example a `glass` button) while preserving its native press effect. ([#46348](https://github.com/expo/expo/pull/46348) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `NavigationBar` and `NavigationBarItem` components.
+- [iOS] Added the SwiftUI `listRowSpacing` modifier. ([#46417](https://github.com/expo/expo/pull/46417) by [@qiyangdev](https://github.com/qiyangdev))
 - [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
 - [swift-ui] Added `<DisclosureGroup.Label>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
 - [universal] Added `<Collapsible.labelStyle>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
-
+- [jetpack-compose] Added `dropShadow` and `innerShadow` modifiers. ([#46364](https://github.com/expo/expo/discussions/46364) by [@duyanhv](https://github.com/duyanhv))
 ### 🐛 Bug fixes
 
+- [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix the `font` modifier dropping Dynamic Type scaling (`relativeTo`) and `weight` on concatenated `Text` runs. The Text-concatenation path now resolves the same `Font` as the view path. ([#46509](https://github.com/expo/expo/pull/46509) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [android] Fix universal `TextInput` ignoring `style` `backgroundColor` / `borderWidth` and not applying `textAlign` to the placeholder. ([#46441](https://github.com/expo/expo/pull/46441) by [@duyanhv](https://github.com/duyanhv))
 
 ### 💡 Others
 

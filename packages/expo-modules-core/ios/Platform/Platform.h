@@ -16,6 +16,7 @@
 @compatibility_alias UIWindow NSWindow;
 @compatibility_alias UIHostingController NSHostingController;
 @compatibility_alias UIImage NSImage;
+@compatibility_alias UIImageView NSImageView;
 
 #ifndef UIApplication
 @compatibility_alias UIApplication NSApplication;

@@ -197,7 +197,14 @@ The **Install** button in the **Build artifact** section generates a QR code for
 
 Start the development server by running the `npx expo start` command from the project directory:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 - On the device, tap the app icon to open the development build.
 

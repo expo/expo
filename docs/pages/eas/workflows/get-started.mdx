@@ -21,7 +21,14 @@ This page walks you through the process of creating your first EAS Workflows for
   <Requirement title="Create a project">
     You'll need to create a project with the following command:
 
-    <Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-56']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
+        yarn: ['$ yarn create expo-app --template default@sdk-56'],
+        pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
+        bun: ['$ bun create expo --template default@sdk-56'],
+      }}
+    />
 
   </Requirement>
   <Requirement title="Sync the project with EAS">

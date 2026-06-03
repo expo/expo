@@ -78,7 +78,12 @@ You can set platform-specific settings (`default`, `android`, `ios` or `web`) fo
 Then, when you are about to start your project, you can use the `--clear` flag to clear the Metro cache. This will ensure that the routes are loaded asynchronously:
 
 <Terminal
-  cmd={['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear']}
+  cmd={{
+    npm: ['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear'],
+    yarn: ['$ yarn expo start --clear', '', '# Or when exporting', '$ yarn expo export --clear'],
+    pnpm: ['$ pnpm expo start --clear', '', '# Or when exporting', '$ pnpm expo export --clear'],
+    bun: ['$ bun expo start --clear', '', '# Or when exporting', '$ bun expo export --clear'],
+  }}
 />
 
 ## Static rendering
