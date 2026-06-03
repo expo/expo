@@ -23,7 +23,7 @@ describe('exports static', () => {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
-          E2E_ROUTER_ASYNC: '',
+          E2E_ROUTER_ASYNC: 'true',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
             { source: '/styled-redirect', destination: '/styled' },
           ] as RedirectConfig[]),

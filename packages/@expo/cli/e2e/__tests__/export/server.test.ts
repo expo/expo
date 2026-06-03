@@ -21,7 +21,7 @@ describe('server-output', () => {
       fixtureName: 'server',
       export: {
         env: {
-          E2E_ROUTER_ASYNC: 'development',
+          E2E_ROUTER_ASYNC: 'true',
         },
       },
       serve: {

@@ -52,7 +52,7 @@ jest.unmock('resolve-from');
           NODE_ENV: 'production',
 
           E2E_ROUTER_SRC: '01-rsc',
-          E2E_ROUTER_ASYNC: 'development',
+          E2E_ROUTER_ASYNC: 'true',
 
           EXPO_USE_STATIC: 'single',
           E2E_ROUTER_JS_ENGINE: 'hermes',

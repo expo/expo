@@ -25,7 +25,7 @@ describe('server-root-group', () => {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_SRC: 'server-root-group',
-          E2E_ROUTER_ASYNC: 'development',
+          E2E_ROUTER_ASYNC: 'true',
         },
       }
     );
