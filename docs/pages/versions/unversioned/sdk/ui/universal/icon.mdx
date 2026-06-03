@@ -20,7 +20,14 @@ A platform-native icon. On Android, it renders a Material Symbol XML vector draw
 
 Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) to use the bundled icons on Android. For a different style or custom axes, see [Custom styles on the Jetpack Compose Icon page](/versions/latest/sdk/ui/jetpack-compose/icon/#custom-styles-via-expomaterial-symbols-cli) — no install needed.
 
-<Terminal cmd={['$ npx expo install @expo/material-symbols']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo/material-symbols'],
+    yarn: ['$ yarn expo install @expo/material-symbols'],
+    pnpm: ['$ pnpm expo install @expo/material-symbols'],
+    bun: ['$ bun expo install @expo/material-symbols'],
+  }}
+/>
 
 ## Usage
 
