@@ -90,7 +90,7 @@ async function inlineModulesWatcher({
     // Now let's create and add new watchers
     const createWatcherForDir = (dir: string) => {
       return fs.watch(dir, { recursive: true, encoding: 'utf-8' }, async (event, fileName) => {
-        if (!fileName) {
+        if (!fileName || !fileName.endsWith('.swift')) {
           return;
         }
 

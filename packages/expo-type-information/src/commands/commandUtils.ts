@@ -360,7 +360,13 @@ export async function generateConciseTsFiles(parsedArgs: ParsedArguments) {
   const { volatileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
     await generateConciseTsInterface(typeInfo);
 
-  const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
+  const mainModule = typeInfo.moduleClasses[0];
+  if (mainModule === undefined) {
+    console.error(`The module at ${JSON.stringify(realInputPaths)} doesn't exist.`);
+    return;
+  }
+
+  const moduleName = mainModule.name;
   const dirName = realOutputPath ?? path.dirname(realInputPaths[0] as string);
 
   try {
