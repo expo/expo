@@ -53,6 +53,7 @@ function addCommonOptions(command) {
         .option('-t, --type-inference <typeInference>', 
     // TODO(@HubertBer) Fix the PREPROCESS_AND_INFERENCE option.
     'Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.', 'SIMPLE_INFERENCE')
+        .option('-s, --skip-unicode-character-mapping', 'skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.')
         .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
 }
 /**
@@ -204,13 +205,22 @@ function parseCommandArguments(options, isOutputFile = true) {
         console.error(`Invalid typeInference option. ${options.typeInference}`);
         return null;
     }
+    const mapUnicodeCharacters = !options.skipUnicodeCharacterMapping;
     const watcher = options.watcher ?? false;
-    return { realInputPaths, realOutputPath, typeInference, watcher, appJsonPath };
+    return {
+        realInputPaths,
+        realOutputPath,
+        typeInference,
+        mapUnicodeCharacters,
+        watcher,
+        appJsonPath,
+    };
 }
-async function getFileTypeInformationFromArgs({ realInputPaths, typeInference, }) {
+async function getFileTypeInformationFromArgs({ realInputPaths, typeInference, mapUnicodeCharacters, }) {
     const typeInfo = await (0, typeInformation_1.getFileTypeInformation)({
         input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
         typeInference,
+        mapUnicodeCharacters,
     });
     if (!typeInfo) {
         console.error(chalk_1.default.red(`Provided files: ${realInputPaths} couldn't be parsed for type information!`));
@@ -268,7 +278,12 @@ async function generateConciseTsFiles(parsedArgs) {
         return;
     }
     const { volatileGeneratedFileContent, moduleTypescriptInterfaceFileContent } = await (0, typescriptGeneration_1.generateConciseTsInterface)(typeInfo);
-    const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
+    const mainModule = typeInfo.moduleClasses[0];
+    if (mainModule === undefined) {
+        console.error(`The module at ${JSON.stringify(realInputPaths)} doesn't exist.`);
+        return;
+    }
+    const moduleName = mainModule.name;
     const dirName = realOutputPath ?? path_1.default.dirname(realInputPaths[0]);
     try {
         await Promise.all([

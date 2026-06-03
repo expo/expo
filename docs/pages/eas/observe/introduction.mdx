@@ -28,7 +28,14 @@ Debugging performance in React Native has traditionally been limited to developm
 
 ## Quick start
 
-<Terminal cmd={['# Install the library', '$ npx expo install expo-observe']} />
+<Terminal
+  cmd={{
+    npm: ['# Install the library', '$ npx expo install expo-observe'],
+    yarn: ['# Install the library', '$ yarn expo install expo-observe'],
+    pnpm: ['# Install the library', '$ pnpm expo install expo-observe'],
+    bun: ['# Install the library', '$ bun expo install expo-observe'],
+  }}
+/>
 
 Wrap your root layout with the `AppMetricsRoot` component (SDK 55) or the `ObserveRoot` component (SDK 56 and later) and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
 

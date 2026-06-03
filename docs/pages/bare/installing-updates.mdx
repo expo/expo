@@ -28,11 +28,25 @@ You may be reading the wrong guide. To use `expo-updates` in a project that uses
 
 To get started, install `expo-updates`:
 
-<Terminal cmd={['$ npx expo install expo-updates']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-updates'],
+    yarn: ['$ yarn expo install expo-updates'],
+    pnpm: ['$ pnpm expo install expo-updates'],
+    bun: ['$ bun expo install expo-updates'],
+  }}
+/>
 
 Then, install pods for iOS:
 
-<Terminal cmd={['$ npx pod-install']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx pod-install'],
+    yarn: ['$ yarn dlx pod-install'],
+    pnpm: ['$ pnpm dlx pod-install'],
+    bun: ['$ bunx pod-install'],
+  }}
+/>
 
 ## Configuring expo-updates library
 

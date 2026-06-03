@@ -13,7 +13,7 @@ import { generateJSXIntrinsicsFileContent } from '../typescriptGeneration';
 export function generateJsxIntrinsics(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-jsx-intrinsics'))
     .description(
-      'Generates a declaration file for a View, updates JSX intrinsics with the View props.'
+      'generate a declaration file for a View, update JSX intrinsics with the View props'
     )
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options);

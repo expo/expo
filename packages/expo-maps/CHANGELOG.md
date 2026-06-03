@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Return the `Promise` from `GoogleMaps.View`'s imperative `setCameraPosition` so callers can `await` it and catch the `Animation cancelled` rejection (matches iOS). ([#46421](https://github.com/expo/expo/pull/46421) by [@chownation](https://github.com/chownation))
+
 ### 💡 Others
 
 ## 56.0.6 — 2026-05-21

@@ -50,7 +50,7 @@ const withAndroidWidgetFiles = (config, widgets) => {
             const packageDirectory = path.join(projectRoot, 'app/src/main/java', ...androidPackage.split('.'));
             const xmlDirectory = path.join(projectRoot, 'app/src/main/res/xml');
             const valuesDirectory = path.join(projectRoot, 'app/src/main/res/values');
-            const widgetsXmlPath = path.join(xmlDirectory, 'expo_widgets.xml');
+            const widgetsXmlPath = path.join(valuesDirectory, 'expo_widgets.xml');
             fs.mkdirSync(packageDirectory, { recursive: true });
             fs.mkdirSync(xmlDirectory, { recursive: true });
             fs.mkdirSync(valuesDirectory, { recursive: true });
