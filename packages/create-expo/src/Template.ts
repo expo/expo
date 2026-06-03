@@ -10,7 +10,7 @@ import path from 'path';
 
 import { sanitizedName } from './createFileTransform';
 import { Log } from './log';
-import { consumeMonorepoConfigAsync, type MonorepoConfig } from './monorepoConfig';
+import { consumeMonorepoConfigAsync } from './monorepoConfig';
 import type { PackageManagerName } from './resolvePackageManager';
 import { formatRunCommand } from './resolvePackageManager';
 import { env } from './utils/env';
@@ -119,16 +119,15 @@ export function resolvePackageModuleId(moduleId: string) {
  * Extract a template app to a given file path and clean up any properties left over from npm to
  * prepare it for usage.
  *
- * Returns the parsed `.expo-monorepo-config.json` (or `undefined` if the
- * template doesn't ship one) so downstream steps — most notably
- * `configureWorkspacesAsync` — can consume it in memory. The on-disk config
- * file is deleted immediately after it's read so it can never leak into the
- * user's project, regardless of which downstream steps run.
+ * If the template ships a `.expo-monorepo-config.json`, its `renamePatterns`
+ * field overrides the default rename config used by the HelloWorld
+ * find-and-replace pass. The config file is read once and deleted from disk
+ * immediately so it can never leak into the user's project.
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
   { npmPackage }: { npmPackage?: string | null }
-): Promise<{ projectRoot: string; monorepoConfig: MonorepoConfig | undefined }> {
+): Promise<string> {
   const projectName = path.basename(projectRoot);
 
   debug(`Extracting template app (pkg: ${npmPackage}, projectName: ${projectName})`);
@@ -147,9 +146,6 @@ export async function extractAndPrepareTemplateAppAsync(
     });
   }
 
-  // Read the monorepo config once and remove it from disk immediately so
-  // it can never leak into the user's project — every downstream consumer
-  // takes the parsed object in memory.
   const monorepoConfig = await consumeMonorepoConfigAsync(projectRoot);
 
   try {
@@ -169,7 +165,7 @@ export async function extractAndPrepareTemplateAppAsync(
 
   await sanitizeTemplateAsync(projectRoot);
 
-  return { projectRoot, monorepoConfig };
+  return projectRoot;
 }
 
 function escapeXMLCharacters(original: string): string {

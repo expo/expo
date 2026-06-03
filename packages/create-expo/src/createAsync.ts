@@ -15,7 +15,6 @@ import { configureWorkspacesAsync } from './configureWorkspaces';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
-import type { MonorepoConfig } from './monorepoConfig';
 import { applySdkVersionToTemplateAsync } from './promptSdkVersion';
 import type { PackageManagerName } from './resolvePackageManager';
 import {
@@ -59,18 +58,14 @@ async function resolveProjectRootArgAsync(
   }
 }
 
-async function setupDependenciesAsync(
-  projectRoot: string,
-  props: Pick<Options, 'install'>,
-  monorepoConfig?: MonorepoConfig
-) {
+async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
 
   // For monorepo templates: normalize workspace-package dependency specs to
   // the chosen package manager's convention, and write a `pnpm-workspace.yaml`
   // when pnpm is the resolved manager. No-op for single-app templates.
-  await configureWorkspacesAsync(projectRoot, packageManager, monorepoConfig);
+  await configureWorkspacesAsync(projectRoot, packageManager);
 
   // Configure package manager, which is unrelated to installing or not
   await configureNodeDependenciesAsync(projectRoot, packageManager);
@@ -136,13 +131,11 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     properties: { phase: AnalyticsEventPhases.ATTEMPT, template: resolvedTemplate },
   });
 
-  let monorepoConfig: MonorepoConfig | undefined;
   await withSectionLog(
     async () => {
-      const result = await Template.extractAndPrepareTemplateAppAsync(projectRoot, {
+      await Template.extractAndPrepareTemplateAppAsync(projectRoot, {
         npmPackage: resolvedTemplate,
       });
-      monorepoConfig = result.monorepoConfig;
     },
     {
       pending: chalk.bold('Locating project files.'),
@@ -152,9 +145,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     }
   );
 
-  debug(`monorepoConfig: ${JSON.stringify(monorepoConfig, null, 2)}`);
-
-  await setupDependenciesAsync(projectRoot, props, monorepoConfig);
+  await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
     generateAgentFiles(projectRoot);
@@ -236,10 +227,9 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     properties: { phase: AnalyticsEventPhases.ATTEMPT, example: resolvedExample },
   });
 
-  let monorepoConfig: MonorepoConfig | undefined;
   await withSectionLog(
     async () => {
-      monorepoConfig = await downloadAndExtractExampleAsync(projectRoot, resolvedExample);
+      await downloadAndExtractExampleAsync(projectRoot, resolvedExample);
     },
     {
       pending: chalk.bold('Locating example files...'),
@@ -249,7 +239,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     }
   );
 
-  await setupDependenciesAsync(projectRoot, props, monorepoConfig);
+  await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
     generateAgentFiles(projectRoot);

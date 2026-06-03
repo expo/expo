@@ -23,28 +23,6 @@ export interface MonorepoConfig {
    * that need to reach inside per-app paths like `apps/*\/android/**\/build.gradle`.
    */
   renamePatterns?: string[];
-
-  /**
-   * Knobs that drive how create-expo writes per-package-manager workspace
-   * configuration (e.g. `pnpm-workspace.yaml`, `.yarnrc.yml`). Workspace-
-   * specific settings live under this object so we can extend it later
-   * (e.g. centralized `workspaces` patterns, pnpm-only options like
-   * `onlyBuiltDependencies`) without crowding the top level.
-   */
-  workspaceConfig?: WorkspaceConfig;
-}
-
-export interface WorkspaceConfig {
-  /**
-   * Controls the `nodeLinker` field that create-expo writes to
-   * `pnpm-workspace.yaml` when pnpm is the resolved package manager, and
-   * — when set to `"hoisted"` — triggers a `.yarnrc.yml` with
-   * `nodeLinker: node-modules` for yarn 2+. Set to `"hoisted"` to opt into
-   * hoisted node_modules (necessary for some React Native / Expo
-   * monorepos). When omitted, no `nodeLinker` line is written and pnpm
-   * uses its default isolated layout.
-   */
-  nodeLinker?: 'hoisted' | 'isolated' | 'pnp';
 }
 
 /**

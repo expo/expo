@@ -15,9 +15,6 @@ describe(loadMonorepoConfigAsync, () => {
       expect(path.basename(filePath as string)).toBe(MONOREPO_CONFIG_FILENAME);
       return JSON.stringify({
         renamePatterns: ['apps/*/app.json', 'apps/*/ios/Podfile'],
-        workspaceConfig: {
-          nodeLinker: 'hoisted',
-        },
       });
     });
 
@@ -25,9 +22,6 @@ describe(loadMonorepoConfigAsync, () => {
     expect(spyReadFile).toHaveBeenCalledTimes(1);
     expect(result).toEqual({
       renamePatterns: ['apps/*/app.json', 'apps/*/ios/Podfile'],
-      workspaceConfig: {
-        nodeLinker: 'hoisted',
-      },
     });
   });
 
