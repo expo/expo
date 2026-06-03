@@ -19,9 +19,6 @@ patchedDependencies:
   '@react-native-community/netinfo':
     hash: ced0cb79848978ecc3e780a4d812d948684346cce85aa5d06f6b91a11e10ad5b
     path: patches/@react-native-community+netinfo.patch
-  '@react-native/dev-middleware':
-    hash: 563dd3c12ac9064f72bebd975abb206061af92d430d10341a2fce54810b5128f
-    path: patches/@react-native+dev-middleware.patch
   '@shopify/react-native-skia@2.6.2':
     hash: ba884424a75156115606f768b005e5af9a39e9836f1acbc8e70c5d2fd5d13044
     path: patches/@shopify__react-native-skia@2.6.2.patch
@@ -1892,7 +1889,7 @@ importers:
         version: 4.4.4
       '@react-native/dev-middleware':
         specifier: 0.86.0-rc.3
-        version: 0.86.0-rc.3(patch_hash=563dd3c12ac9064f72bebd975abb206061af92d430d10341a2fce54810b5128f)
+        version: 0.86.0-rc.3
       accepts:
         specifier: ^1.3.8
         version: 1.3.8
@@ -18884,7 +18881,7 @@ snapshots:
 
   '@react-native/community-cli-plugin@0.86.0-rc.3(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))':
     dependencies:
-      '@react-native/dev-middleware': 0.86.0-rc.3(patch_hash=563dd3c12ac9064f72bebd975abb206061af92d430d10341a2fce54810b5128f)
+      '@react-native/dev-middleware': 0.86.0-rc.3
       debug: 4.4.3
       invariant: 2.2.4
       metro: 0.84.4
@@ -18908,7 +18905,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@react-native/dev-middleware@0.86.0-rc.3(patch_hash=563dd3c12ac9064f72bebd975abb206061af92d430d10341a2fce54810b5128f)':
+  '@react-native/dev-middleware@0.86.0-rc.3':
     dependencies:
       '@isaacs/ttlcache': 1.4.1
       '@react-native/debugger-frontend': 0.86.0-rc.3

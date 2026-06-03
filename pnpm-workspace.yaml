@@ -30,7 +30,6 @@ onlyBuiltDependencies:
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
-  '@react-native/dev-middleware': patches/@react-native+dev-middleware.patch
   '@shopify/react-native-skia@2.6.2': patches/@shopify__react-native-skia@2.6.2.patch
   react-native-gesture-handler: patches/react-native-gesture-handler.patch
   react-native-keyboard-controller: patches/react-native-keyboard-controller.patch
