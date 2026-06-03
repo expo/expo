@@ -170,294 +170,23 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 }
 
 /**
- * A FrameLayout that lets a descendant React Native scrollable (an [android.widget.ScrollView], as
- * used by FlatList / FlashList / ScrollView) cooperate with a Jetpack Compose parent that hosts it
- * through `AndroidView` (e.g. a Material3 `ModalBottomSheet`): the list scrolls until it hits a
- * bound, then the leftover motion drives the Compose parent.
- *
- * This is non-trivial because the two worlds disagree in three ways, each handled here:
- *
- *  1. Two nested-scroll protocols. `android.widget.ScrollView` dispatches on the *framework* API
- *     (the no-`type` parent methods); Compose's `AndroidView` only listens on the *androidx* API
- *     (the `type` variants). We implement both parent protocols and relay everything upward through
- *     [NestedScrollingChild3] to Compose's holder. (The holder only forwards when the hosted view
- *     reports nested scrolling enabled, hence the `init` below.)
- *
- *  2. A coordinate-echo feedback loop. As the Compose parent translates this view while scrolling,
- *     the `MotionEvent`s shift with it; a coordinate-based `ScrollView` misreads the shift as finger
- *     movement and feeds it back to the parent (a per-frame stutter). Compose translates
- *     asynchronously, so the framework's own offset compensation never triggers. [dispatchTouchEvent]
- *     cancels the shift.
- *
- *  3. Fling timing. The View fling wants a synchronous "did you take it?" answer that Compose only
- *     resolves asynchronously, and a sub-threshold release never flings at all. [onNestedPreFling]
- *     and [settleSheetIfNoFling] approximate the handoff so the parent expands/snaps like a
- *     Compose `LazyColumn`.
+ * A thin FrameLayout that intercepts touch events and dispatches them to JS via
+ * JSTouchDispatcher/JSPointerDispatcher, replicating the pattern from React Native's
+ * DialogRootViewGroup in ReactModalHostView.
+ * Implements NestedScrollingChild3 to forward scroll events to the parent compose
  */
-@SuppressLint("ViewConstructor")
-private open class NestedScrollInteropFrameLayout(
+private class TouchDispatchingRootViewGroup(
   context: Context
-) : FrameLayout(context), NestedScrollingParent3, NestedScrollingChild3 {
-  private val parentHelper = NestedScrollingParentHelper(this)
-  private val childHelper = NestedScrollingChildHelper(this)
+) : FrameLayout(context), RootView, NestedScrollingChild3 {
+  private val jsTouchDispatcher = JSTouchDispatcher(this)
+  private var jsPointerDispatcher: JSPointerDispatcher? = null
 
-  // How far this view has moved on-screen since the current gesture started, used to cancel the
-  // coordinate echo (see dispatchTouchEvent).
+  private val childHelper = NestedScrollingChildHelper(this)
+  // How far this view has moved on-screen since the current gesture started.
   private val gestureStartLocation = IntArray(2)
   private val currentLocation = IntArray(2)
   private var trackingGestureOffset = false
 
-  // True when the Compose parent consumed scroll on the most recent drag frame, i.e. it is mid-move
-  // and not settled at an anchor. Drives the fling/settle handoff below.
-  private var sheetMovingOnLastDragFrame = false
-
-  // True once a fling has been dispatched for this gesture (its onPostFling settles the parent), so
-  // the sub-threshold fallback in settleSheetIfNoFling doesn't also fire.
-  private var flingHandledThisGesture = false
-
-  init {
-    // Compose's AndroidViewHolder gates forwarding on the hosted view's isNestedScrollingEnabled.
-    childHelper.isNestedScrollingEnabled = true
-  }
-
-  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    when (ev.actionMasked) {
-      MotionEvent.ACTION_DOWN -> {
-        getLocationInWindow(gestureStartLocation)
-        trackingGestureOffset = true
-        sheetMovingOnLastDragFrame = false
-        flingHandledThisGesture = false
-      }
-      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> trackingGestureOffset = false
-    }
-    // Cancel the coordinate echo: when the Compose parent translates this view via nested scroll,
-    // the dispatched MotionEvents shift with it. A child android.widget.ScrollView derives its
-    // scroll from absolute coordinates and would misread that shift as finger movement, feeding it
-    // back to the parent (a one-frame stutter). Compose translates asynchronously, so the
-    // framework's own mScrollOffset compensation can't catch it. Offset events back by how far we
-    // have actually moved on-screen since the gesture began, then restore so we don't mutate the
-    // event Compose still owns.
-    //
-    // Gated on an active nested-scroll session (hasNestedScrollingParent): only a descendant
-    // scrollable driving the parent should ever move us mid-gesture. Without this gate the
-    // compensation would also fire for unrelated movement — dragging the sheet by a non-scrollable
-    // RN area, or the host animating its position (collapsing header, transition, keyboard) while
-    // touched — and wrongly shift those touches. With it, non-scroll content is completely unaffected.
-    if (trackingGestureOffset && hasNestedScrollingParent()) {
-      getLocationInWindow(currentLocation)
-      val dy = currentLocation[1] - gestureStartLocation[1]
-      if (dy != 0) {
-        ev.offsetLocation(0f, dy.toFloat())
-        val handled = super.dispatchTouchEvent(ev)
-        ev.offsetLocation(0f, -dy.toFloat())
-        return handled
-      }
-    }
-    return super.dispatchTouchEvent(ev)
-  }
-
-  // region NestedScrollingParent — receives deltas from the descendant RN scrollable
-
-  // androidx (`type`) variants — used by androidx children e.g. RecyclerView.
-  override fun onStartNestedScroll(child: View, target: View, axes: Int, type: Int): Boolean =
-    axes and ViewCompat.SCROLL_AXIS_VERTICAL != 0 || axes and ViewCompat.SCROLL_AXIS_HORIZONTAL != 0
-
-  override fun onNestedScrollAccepted(child: View, target: View, axes: Int, type: Int) {
-    parentHelper.onNestedScrollAccepted(child, target, axes, type)
-    // Relay upward so our parent (Compose's holder) becomes our nested-scroll parent.
-    startNestedScroll(axes, type)
-  }
-
-  override fun onStopNestedScroll(target: View, type: Int) {
-    if (type == ViewCompat.TYPE_TOUCH) settleSheetIfNoFling()
-    parentHelper.onStopNestedScroll(target, type)
-    stopNestedScroll(type)
-  }
-
-  override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
-    // Let the Compose parent consume first (used when dragging to expand the sheet).
-    dispatchNestedPreScroll(dx, dy, consumed, null, type)
-    if (type == ViewCompat.TYPE_TOUCH) sheetMovingOnLastDragFrame = consumed[1] != 0
-  }
-
-  override fun onNestedScroll(
-    target: View,
-    dxConsumed: Int,
-    dyConsumed: Int,
-    dxUnconsumed: Int,
-    dyUnconsumed: Int,
-    type: Int,
-    consumed: IntArray
-  ) {
-    // Relay the list's leftover (unconsumed) deltas up to Compose (drags the parent at bounds).
-    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, type, consumed)
-    if (type == ViewCompat.TYPE_TOUCH && consumed[1] != 0) sheetMovingOnLastDragFrame = true
-  }
-
-  override fun onNestedScroll(
-    target: View,
-    dxConsumed: Int,
-    dyConsumed: Int,
-    dxUnconsumed: Int,
-    dyUnconsumed: Int,
-    type: Int
-  ) {
-    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, type)
-  }
-
-  override fun getNestedScrollAxes(): Int = parentHelper.nestedScrollAxes
-
-  // Framework (no-`type`) variants — the protocol android.widget.ScrollView (React Native's
-  // ScrollView / FlatList) actually dispatches with. Without these the session never starts for it.
-  override fun onStartNestedScroll(child: View, target: View, axes: Int): Boolean =
-    axes and ViewCompat.SCROLL_AXIS_VERTICAL != 0 || axes and ViewCompat.SCROLL_AXIS_HORIZONTAL != 0
-
-  override fun onNestedScrollAccepted(child: View, target: View, axes: Int) {
-    parentHelper.onNestedScrollAccepted(child, target, axes)
-    startNestedScroll(axes)
-  }
-
-  override fun onStopNestedScroll(target: View) {
-    settleSheetIfNoFling()
-    parentHelper.onStopNestedScroll(target)
-    stopNestedScroll()
-  }
-
-  override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
-    dispatchNestedPreScroll(dx, dy, consumed, null)
-    sheetMovingOnLastDragFrame = consumed[1] != 0
-  }
-
-  override fun onNestedScroll(
-    target: View,
-    dxConsumed: Int,
-    dyConsumed: Int,
-    dxUnconsumed: Int,
-    dyUnconsumed: Int
-  ) {
-    val consumed = IntArray(2)
-    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, ViewCompat.TYPE_TOUCH, consumed)
-    if (consumed[1] != 0) sheetMovingOnLastDragFrame = true
-  }
-
-  override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
-    // A real fling is being dispatched; its onPreFling/onPostFling settles the parent, so the
-    // sub-threshold fallback in settleSheetIfNoFling must not also fire.
-    flingHandledThisGesture = true
-    // Relay so the parent's (async) pre-fling can run.
-    val composeConsumed = dispatchNestedPreFling(velocityX, velocityY)
-    // Compose's nested-scroll fling is async, so decide the handoff synchronously here:
-    //  - Upward (expand) fling while the parent is mid-move (velocityY > 0): swallow the list fling
-    //    so the parent expands first, matching a Compose LazyColumn.
-    //  - Downward (collapse) fling: do NOT swallow. Returning false lets the ScrollView dispatch
-    //    onNestedFling -> the holder's dispatchPostFling -> the parent snaps to a lower anchor.
-    //    Swallowing would skip onNestedFling and the parent would stop mid-drag without snapping.
-    //    (The list won't spuriously fling: ScrollView's canFling is false at the top with downward
-    //    velocity.)
-    return composeConsumed || (sheetMovingOnLastDragFrame && velocityY > 0)
-  }
-
-  override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
-    dispatchNestedFling(velocityX, velocityY, consumed)
-
-  // A gentle (sub-threshold) release never flings, so android.widget.ScrollView never triggers the
-  // parent's onPostFling settle and it hangs where dragged. If the parent moved during the gesture
-  // and nothing settled it, dispatch a zero-velocity nested fling here (while our parent is still
-  // attached) so the holder snaps it to the nearest anchor — matching a Compose LazyColumn.
-  private fun settleSheetIfNoFling() {
-    if (sheetMovingOnLastDragFrame && !flingHandledThisGesture) {
-      flingHandledThisGesture = true
-      dispatchNestedFling(0f, 0f, false)
-    }
-  }
-
-  // endregion NestedScrollingParent
-
-  // region NestedScrollingChild — relays to our own parent (Compose's AndroidViewHolder)
-
-  override fun setNestedScrollingEnabled(enabled: Boolean) {
-    childHelper.isNestedScrollingEnabled = enabled
-  }
-
-  override fun isNestedScrollingEnabled(): Boolean = childHelper.isNestedScrollingEnabled
-
-  override fun startNestedScroll(axes: Int): Boolean = childHelper.startNestedScroll(axes)
-
-  override fun startNestedScroll(axes: Int, type: Int): Boolean = childHelper.startNestedScroll(axes, type)
-
-  override fun stopNestedScroll() = childHelper.stopNestedScroll()
-
-  override fun stopNestedScroll(type: Int) = childHelper.stopNestedScroll(type)
-
-  override fun hasNestedScrollingParent(): Boolean = childHelper.hasNestedScrollingParent()
-
-  override fun hasNestedScrollingParent(type: Int): Boolean = childHelper.hasNestedScrollingParent(type)
-
-  override fun dispatchNestedScroll(
-    dxConsumed: Int,
-    dyConsumed: Int,
-    dxUnconsumed: Int,
-    dyUnconsumed: Int,
-    offsetInWindow: IntArray?
-  ): Boolean = childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow)
-
-  override fun dispatchNestedScroll(
-    dxConsumed: Int,
-    dyConsumed: Int,
-    dxUnconsumed: Int,
-    dyUnconsumed: Int,
-    offsetInWindow: IntArray?,
-    type: Int
-  ): Boolean = childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type)
-
-  override fun dispatchNestedScroll(
-    dxConsumed: Int,
-    dyConsumed: Int,
-    dxUnconsumed: Int,
-    dyUnconsumed: Int,
-    offsetInWindow: IntArray?,
-    type: Int,
-    consumed: IntArray
-  ) {
-    childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type, consumed)
-  }
-
-  override fun dispatchNestedPreScroll(
-    dx: Int,
-    dy: Int,
-    consumed: IntArray?,
-    offsetInWindow: IntArray?
-  ): Boolean = childHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow)
-
-  override fun dispatchNestedPreScroll(
-    dx: Int,
-    dy: Int,
-    consumed: IntArray?,
-    offsetInWindow: IntArray?,
-    type: Int
-  ): Boolean = childHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type)
-
-  override fun dispatchNestedFling(velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
-    childHelper.dispatchNestedFling(velocityX, velocityY, consumed)
-
-  override fun dispatchNestedPreFling(velocityX: Float, velocityY: Float): Boolean =
-    childHelper.dispatchNestedPreFling(velocityX, velocityY)
-
-  // endregion NestedScrollingChild
-}
-
-/**
- * Adds React Native's [RootView] touch dispatch (JSTouchDispatcher / JSPointerDispatcher) on top of
- * [NestedScrollInteropFrameLayout], so the hosted RN view tree receives touch/pointer events even
- * though it lives in a detached window. Replicates the DialogRootViewGroup pattern from RN's
- * ReactModalHostView.
- */
-@SuppressLint("ViewConstructor")
-private class TouchDispatchingRootViewGroup(
-  context: Context
-) : NestedScrollInteropFrameLayout(context), RootView {
-  private val jsTouchDispatcher = JSTouchDispatcher(this)
-  private var jsPointerDispatcher: JSPointerDispatcher? = null
 
   var eventDispatcher: EventDispatcher? = null
 
@@ -468,6 +197,7 @@ private class TouchDispatchingRootViewGroup(
     if (ReactFeatureFlags.dispatchPointerEvents) {
       jsPointerDispatcher = JSPointerDispatcher(this)
     }
+    childHelper.isNestedScrollingEnabled = true
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -482,6 +212,28 @@ private class TouchDispatchingRootViewGroup(
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     // No-op: don't re-layout children. Yoga calls child.layout() directly
     // and we must not override those values.
+  }
+
+
+ override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    when (ev.actionMasked) {
+      MotionEvent.ACTION_DOWN -> {
+        getLocationInWindow(gestureStartLocation)
+        trackingGestureOffset = true
+      }
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> trackingGestureOffset = false
+    }
+    if (trackingGestureOffset && hasNestedScrollingParent()) {
+      getLocationInWindow(currentLocation)
+      val dy = currentLocation[1] - gestureStartLocation[1]
+      if (dy != 0) {
+        ev.offsetLocation(0f, dy.toFloat())
+        val handled = super.dispatchTouchEvent(ev)
+        ev.offsetLocation(0f, -dy.toFloat())
+        return handled
+      }
+    }
+    return super.dispatchTouchEvent(ev)
   }
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
@@ -525,7 +277,76 @@ private class TouchDispatchingRootViewGroup(
     jsPointerDispatcher?.onChildEndedNativeGesture()
   }
 
+
   override fun handleException(t: Throwable) {
     reactContext.reactApplicationContext.handleException(RuntimeException(t))
   }
+
+  // Parent role: receive scroll from the RN list
+  override fun onStartNestedScroll(child: View, target: View, axes: Int): Boolean =
+    axes and ViewCompat.SCROLL_AXIS_VERTICAL != 0 || axes and ViewCompat.SCROLL_AXIS_HORIZONTAL != 0
+
+  override fun onNestedScrollAccepted(child: View, target: View, axes: Int) {
+    super.onNestedScrollAccepted(child, target, axes)
+    startNestedScroll(axes)
+  }
+
+  override fun onStopNestedScroll(target: View) {
+    super.onStopNestedScroll(target)
+    stopNestedScroll()
+  }
+
+  override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
+    dispatchNestedPreScroll(dx, dy, consumed, null)
+  }
+
+  override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
+    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null)
+  }
+
+  override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean =
+    dispatchNestedPreFling(velocityX, velocityY)
+
+  override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
+    dispatchNestedFling(velocityX, velocityY, consumed)
+
+  // Child role: relay up to the holder
+  override fun setNestedScrollingEnabled(enabled: Boolean) {
+    childHelper.isNestedScrollingEnabled = enabled
+  }
+  override fun isNestedScrollingEnabled(): Boolean = childHelper.isNestedScrollingEnabled
+  override fun startNestedScroll(axes: Int): Boolean = childHelper.startNestedScroll(axes)
+  override fun startNestedScroll(axes: Int, type: Int): Boolean = childHelper.startNestedScroll(axes, type)
+  override fun stopNestedScroll() = childHelper.stopNestedScroll()
+  override fun stopNestedScroll(type: Int) = childHelper.stopNestedScroll(type)
+  override fun hasNestedScrollingParent(): Boolean = childHelper.hasNestedScrollingParent()
+  override fun hasNestedScrollingParent(type: Int): Boolean = childHelper.hasNestedScrollingParent(type)
+
+  override fun dispatchNestedScroll(
+    dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, offsetInWindow: IntArray?
+  ): Boolean = childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow)
+
+  override fun dispatchNestedScroll(
+    dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, offsetInWindow: IntArray?, type: Int
+  ): Boolean = childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type)
+
+  override fun dispatchNestedScroll(
+    dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, offsetInWindow: IntArray?, type: Int, consumed: IntArray
+  ) {
+    childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type, consumed)
+  }
+
+  override fun dispatchNestedPreScroll(
+    dx: Int, dy: Int, consumed: IntArray?, offsetInWindow: IntArray?
+  ): Boolean = childHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow)
+
+  override fun dispatchNestedPreScroll(
+    dx: Int, dy: Int, consumed: IntArray?, offsetInWindow: IntArray?, type: Int
+  ): Boolean = childHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type)
+
+  override fun dispatchNestedFling(velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
+    childHelper.dispatchNestedFling(velocityX, velocityY, consumed)
+
+  override fun dispatchNestedPreFling(velocityX: Float, velocityY: Float): Boolean =
+    childHelper.dispatchNestedPreFling(velocityX, velocityY)
 }
