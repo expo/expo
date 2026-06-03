@@ -142,16 +142,20 @@ async function withTempFile(content, fn) {
         await fs.promises.rm(tempDir, { recursive: true, force: true });
     }
 }
-async function withPreparedSingleFile({ input, typeInference }, fn) {
-    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+async function withPreparedSingleFile({ input, typeInference, mapUnicodeCharacters }, fn) {
+    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE || mapUnicodeCharacters;
     if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
         return fn(input.inputFileAbsolutePaths[0]);
     }
     const fileContent = input.type === 'file'
         ? await mergeFileContents(input.inputFileAbsolutePaths)
         : input.fileContent;
+    const preprocessFileOptions = {
+        preprocessReturns: shouldPreprocessFile,
+        mapUnicodeCharacters,
+    };
     if (shouldPreprocessFile) {
-        return withTempFile((0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent), fn);
+        return withTempFile((0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent, preprocessFileOptions), fn);
     }
     return withTempFile(fileContent, fn);
 }
@@ -163,15 +167,15 @@ async function withPreparedSingleFile({ input, typeInference }, fn) {
  * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it resolves to `null`.
  * @header TypeInformationAbstraction
  */
-async function getFileTypeInformation({ input, typeInference, }) {
-    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+async function getFileTypeInformation({ input, typeInference, mapUnicodeCharacters, }) {
+    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE || mapUnicodeCharacters;
     const typeInferenceOn = typeInference !== TypeInferenceOption.NO_INFERENCE;
     if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
         return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(input.inputFileAbsolutePaths[0], {
             typeInference: typeInferenceOn,
         });
     }
-    return withPreparedSingleFile({ input, typeInference }, async (tempFilePath) => {
+    return withPreparedSingleFile({ input, typeInference, mapUnicodeCharacters }, async (tempFilePath) => {
         return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(tempFilePath, { typeInference: typeInferenceOn });
     });
 }

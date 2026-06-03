@@ -22,13 +22,14 @@ export function preprocessFileCommand(cli: commander.Command) {
       if (!parsedArgs) {
         return;
       }
-      const { realInputPaths, typeInference } = parsedArgs;
+      const { realInputPaths, typeInference, mapUnicodeCharacters } = parsedArgs;
 
       const command = async () => {
         withPreparedSingleFile(
           {
             input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
             typeInference,
+            mapUnicodeCharacters,
           },
           async (filePath) => {
             console.log(await fs.promises.readFile(filePath, 'utf-8'));
