@@ -494,7 +494,10 @@ class ExpoCameraView(
 
     imageCaptureUseCase = imageCaptureBuilder.build()
 
-    val videoCapture = createVideoCapture()
+    val selectedCameraInfo = cameraSelector
+      .filter(cameraProvider.availableCameraInfos)
+      .firstOrNull()
+    val videoCapture = createVideoCapture(selectedCameraInfo)
     imageAnalysisUseCase = createImageAnalyzer()
 
     val useCases = UseCaseGroup.Builder().apply {
@@ -590,7 +593,7 @@ class ExpoCameraView(
     }
   }
 
-  private fun createVideoCapture(): VideoCapture<Recorder> {
+  private fun createVideoCapture(cameraInfo: CameraInfo?): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()
     val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
@@ -611,13 +614,13 @@ class ExpoCameraView(
       if (mirror) {
         setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
       }
-      setVideoStabilizationEnabled(isVideoStabilizationEnabled())
+      setVideoStabilizationEnabled(isVideoStabilizationEnabled(cameraInfo))
     }.build()
   }
 
-  private fun isVideoStabilizationEnabled(): Boolean {
-    val isStabilizationSupported = camera?.cameraInfo?.let { cameraInfo ->
-      Recorder.getVideoCapabilities(cameraInfo).isStabilizationSupported
+  private fun isVideoStabilizationEnabled(cameraInfo: CameraInfo?): Boolean {
+    val isStabilizationSupported = cameraInfo?.let {
+      Recorder.getVideoCapabilities(it).isStabilizationSupported
     } ?: false
 
     return isStabilizationSupported && videoStabilizationMode.isEnabled()
