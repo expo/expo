@@ -160,19 +160,60 @@ Use your Expo account username and password. In this case, the server will gener
 For the full MCP experience with advanced features like taking screenshots from your iOS Simulator, opening DevTools, and automation capabilities, set up a local Expo development server:
 
 <Terminal
-  cmd={[
-    '$ cd /path/to/your-project',
-    '',
-    '# Install the expo-mcp package',
-    '$ npx expo install expo-mcp --dev',
-    '',
-    '# Ensure you are logged in to Expo CLI with the same account as the one used to',
-    '# authenticate with the MCP server',
-    '$ npx expo whoami || npx expo login',
-    '',
-    '# Start the dev server with MCP capabilities',
-    '$ EXPO_UNSTABLE_MCP_SERVER=1 npx expo start',
-  ]}
+  cmd={{
+    npm: [
+      '$ cd /path/to/your-project',
+      '',
+      '# Install the expo-mcp package',
+      '$ npx expo install expo-mcp --dev',
+      '',
+      '# Ensure you are logged in to Expo CLI with the same account as the one used to',
+      '# authenticate with the MCP server',
+      '$ npx expo whoami || npx expo login',
+      '',
+      '# Start the dev server with MCP capabilities',
+      '$ EXPO_UNSTABLE_MCP_SERVER=1 npx expo start',
+    ],
+    yarn: [
+      '$ cd /path/to/your-project',
+      '',
+      '# Install the expo-mcp package',
+      '$ yarn expo install expo-mcp --dev',
+      '',
+      '# Ensure you are logged in to Expo CLI with the same account as the one used to',
+      '# authenticate with the MCP server',
+      '$ yarn expo whoami || yarn expo login',
+      '',
+      '# Start the dev server with MCP capabilities',
+      '$ EXPO_UNSTABLE_MCP_SERVER=1 yarn expo start',
+    ],
+    pnpm: [
+      '$ cd /path/to/your-project',
+      '',
+      '# Install the expo-mcp package',
+      '$ pnpm expo install expo-mcp --dev',
+      '',
+      '# Ensure you are logged in to Expo CLI with the same account as the one used to',
+      '# authenticate with the MCP server',
+      '$ pnpm expo whoami || pnpm expo login',
+      '',
+      '# Start the dev server with MCP capabilities',
+      '$ EXPO_UNSTABLE_MCP_SERVER=1 pnpm expo start',
+    ],
+    bun: [
+      '$ cd /path/to/your-project',
+      '',
+      '# Install the expo-mcp package',
+      '$ bun expo install expo-mcp --dev',
+      '',
+      '# Ensure you are logged in to Expo CLI with the same account as the one used to',
+      '# authenticate with the MCP server',
+      '$ bun expo whoami || bun expo login',
+      '',
+      '# Start the dev server with MCP capabilities',
+      '$ EXPO_UNSTABLE_MCP_SERVER=1 bun expo start',
+    ],
+  }}
 />
 
 > **important** Whenever you start or stop the development server, you need to **reconnect or restart** your MCP server connection in your AI-assisted tool to ensure the AI-assisted tool gets refreshed capabilities.

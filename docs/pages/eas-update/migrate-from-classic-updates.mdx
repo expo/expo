@@ -29,7 +29,14 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
 <Step label="1">
 Install EAS CLI:
 
-<Terminal cmd={['$ npm install --global eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 </Step>
 

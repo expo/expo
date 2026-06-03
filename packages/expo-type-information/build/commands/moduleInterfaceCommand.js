@@ -9,7 +9,7 @@ const commandUtils_1 = require("./commandUtils");
 const typescriptGeneration_1 = require("../typescriptGeneration");
 function moduleInterfaceCommand(cli) {
     return (0, commandUtils_1.addCommonOptions)(cli.command('module-interface'))
-        .summary('Generates a full ts interface for a Swift module.')
+        .summary('generate a full TypeScript interface for a Swift module')
         .description(`Generates a full TypeScript interface for a Swift module. It consists of:
 
 - **types.ts** file with all types defined in the module

@@ -85,13 +85,36 @@ The first time you install the app in the simulator, iOS will ask if you'd like 
 Create a project with the desired SDK version and open it in a simulator to install a particular version of Expo Go.
 
 <Terminal
-  cmd={[
-    '# Bootstrap an SDK 53 project',
-    '$ npx create-expo-app --template blank@53',
-    '',
-    '# Open the app on a simulator to install the required Expo Go app',
-    '$ npx expo start --ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Bootstrap an SDK 53 project',
+      '$ npx create-expo-app --template blank@53',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ npx expo start --ios',
+    ],
+    yarn: [
+      '# Bootstrap an SDK 53 project',
+      '$ yarn create expo-app --template blank@53',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ yarn expo start --ios',
+    ],
+    pnpm: [
+      '# Bootstrap an SDK 53 project',
+      '$ pnpm create expo-app --template blank@53',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ pnpm expo start --ios',
+    ],
+    bun: [
+      '# Bootstrap an SDK 53 project',
+      '$ bun create expo --template blank@53',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ bun expo start --ios',
+    ],
+  }}
 />
 
 ### Expo CLI is printing an error message about `xcrun`, what do I do?

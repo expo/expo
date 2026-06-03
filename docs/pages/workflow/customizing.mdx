@@ -85,7 +85,14 @@ If you intend to use your native module in a single app (you can always change y
 
 Creating a local module scaffolds a Swift and Kotlin module inside the `modules` directory in your project, and these modules are automatically linked to your app.
 
-<Terminal cmd={['$ npx create-expo-module@latest --local', '$ npx expo run']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module@latest --local', '$ npx expo run'],
+    yarn: ['$ yarn create expo-module --local', '$ yarn expo run'],
+    pnpm: ['$ pnpm create expo-module --local', '$ pnpm expo run'],
+    bun: ['$ bun create expo-module --local', '$ bun expo run'],
+  }}
+/>
 
 ### Sharing a module with multiple apps
 
