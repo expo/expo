@@ -154,7 +154,7 @@ When you run `eas build --profile production` the `APP_VARIANT` variable environ
 
 > **Note**: If you use EAS Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. See the EAS Build [Environment variables and secrets](/build/updates) for more information.
 
-### Build and multiple app variants locally
+### Build and run multiple app variants locally
 
 If you [build your app locally](/guides/local-app-overview/) with [`expo run:android|ios`](/workflow/continuous-native-generation/#usage), set the `APP_VARIANT` environment variable when you run the `expo run` command. For example, to compile the `development` variant for iOS as a debug build, run:
 
@@ -167,9 +167,9 @@ If you [build your app locally](/guides/local-app-overview/) with [`expo run:and
   }}
 />
 
-`APP_VARIANT` changes only the app's name and package name on Android and bundle identifier on iOS. It does not affect how the binary is compiled. When you switch variants, the existing **android** and **ios** directories still reflect the previous variant. If a native directory is already present, `expo run` will skip regenerating it and compile it as-is.
+`APP_VARIANT` changes only the app's name and package name on Android and bundle identifier on iOS. It does not affect how the binary is compiled. When you switch variants, the existing **android** and **ios** directories still reflect the previous variant. If a native directory is already present, `expo run` skips regenerating it and compiles it as-is.
 
-To switch variants, you need to regenerate the native directories again with `prebuild --clean` before compiling the app. In the example below, the `development` variant (existing debug build) is switched to `test`, which is a another debug build. To regenerate the **Android** and **ios** directories and then compile the `test` variant, set `APP_VARIANT` on both commands so that the clean prebuild and the compilation use the same variant:
+To switch variants, you need to regenerate the native directories again with `prebuild --clean` before compiling the app. In the example below, the `development` variant (existing debug build) is switched to `test`, which is another debug build. To regenerate the **android** and **ios** directories and then compile the `test` variant, set `APP_VARIANT` on both commands so that the clean prebuild and the compilation use the same variant:
 
 <Terminal
   cmd={{
