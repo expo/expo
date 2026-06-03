@@ -4,6 +4,13 @@ import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs
 import { type EventMapBase, type NavigationProp, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import type { UnknownOutputParams } from './types';
+declare module 'react' {
+    function lazy<T extends React.ComponentType<any>>(load: () => PromiseLike<{
+        default: T;
+    }> | Promise<{
+        default: T;
+    }>): React.LazyExoticComponent<T>;
+}
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>, TState extends NavigationState = NavigationState, TEventMap extends EventMapBase = EventMapBase> = {
     /** Name is required when used inside a Layout component. */
     name?: string;
