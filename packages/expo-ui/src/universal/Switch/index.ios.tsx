@@ -2,6 +2,7 @@ import { Toggle } from '@expo/ui/swift-ui';
 import { disabled as disabledMod } from '@expo/ui/swift-ui/modifiers';
 import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 import type { SwitchProps } from './types';
 
 export function Switch({
@@ -17,13 +18,15 @@ export function Switch({
   if (extraModifiers) modifiers.push(...extraModifiers);
 
   return (
-    <Toggle
-      isOn={value}
-      onIsOnChange={onValueChange}
-      label={label}
-      modifiers={modifiers}
-      testID={testID}
-    />
+    <EnsureHost {...intrinsicHostOptions}>
+      <Toggle
+        isOn={value}
+        onIsOnChange={onValueChange}
+        label={label}
+        modifiers={modifiers}
+        testID={testID}
+      />
+    </EnsureHost>
   );
 }
 

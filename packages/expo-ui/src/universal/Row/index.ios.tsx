@@ -1,5 +1,6 @@
 import { HStack } from '@expo/ui/swift-ui';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { UniversalAlignment } from '../types';
 import type { RowProps } from './types';
@@ -37,13 +38,15 @@ export function Row({
   );
 
   return (
-    <HStack
-      alignment={alignmentMap[alignment]}
-      spacing={spacing}
-      modifiers={modifiers}
-      testID={testID}>
-      {children}
-    </HStack>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <HStack
+        alignment={alignmentMap[alignment]}
+        spacing={spacing}
+        modifiers={modifiers}
+        testID={testID}>
+        {children}
+      </HStack>
+    </EnsureHost>
   );
 }
 

@@ -7,6 +7,7 @@ import {
   type ModifierConfig,
 } from '@expo/ui/jetpack-compose/modifiers';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { SpacerProps } from './types';
@@ -53,7 +54,11 @@ export function Spacer({
     ...(extraModifiers ?? []),
   ]);
 
-  return <ComposeSpacer modifiers={modifiers} />;
+  return (
+    <EnsureHost {...layoutHostOptions(style)}>
+      <ComposeSpacer modifiers={modifiers} />
+    </EnsureHost>
+  );
 }
 
 export * from './types';

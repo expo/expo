@@ -2,6 +2,7 @@ import { Box, Icon as ComposeIcon } from '@expo/ui/jetpack-compose';
 import { size as sizeModifier } from '@expo/ui/jetpack-compose/modifiers';
 import type { ImageSourcePropType } from 'react-native';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { IconName, IconProps, IconSelectSpec } from './types';
@@ -55,24 +56,19 @@ export function Icon({
     extraModifiers
   );
 
-  if (onPress) {
+  const icon = onPress ? (
     // Pin the wrapping Box to the icon's size so it doesn't collapse to 0×0
     // while the native IconView swaps painters between source changes — that
     // would shift surrounding layout for a frame on every state-driven swap.
-    const boxModifiers = size != null ? [sizeModifier(size, size), ...modifiers] : modifiers;
-    return (
-      <Box modifiers={boxModifiers}>
-        <ComposeIcon
-          source={source}
-          size={size}
-          tint={color}
-          contentDescription={accessibilityLabel}
-        />
-      </Box>
-    );
-  }
-
-  return (
+    <Box modifiers={size != null ? [sizeModifier(size, size), ...modifiers] : modifiers}>
+      <ComposeIcon
+        source={source}
+        size={size}
+        tint={color}
+        contentDescription={accessibilityLabel}
+      />
+    </Box>
+  ) : (
     <ComposeIcon
       source={source}
       size={size}
@@ -81,6 +77,8 @@ export function Icon({
       modifiers={modifiers}
     />
   );
+
+  return <EnsureHost {...layoutHostOptions(style)}>{icon}</EnsureHost>;
 }
 
 Icon.select = (spec: IconSelectSpec) => {

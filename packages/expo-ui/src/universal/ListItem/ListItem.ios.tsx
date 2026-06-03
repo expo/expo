@@ -2,6 +2,7 @@ import { Button, HStack, RNHostView, Spacer, Text, VStack } from '@expo/ui/swift
 import { buttonStyle, contentShape, foregroundStyle, shapes } from '@expo/ui/swift-ui/modifiers';
 import { Children, isValidElement, type ReactNode } from 'react';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 import { omitUserOverridden } from '../modifierUtils';
 import { extractListItemSlots } from './ListItemSlots';
 import type { ListItemProps } from './types';
@@ -58,17 +59,19 @@ export function ListItem(props: ListItemProps) {
   ];
 
   return (
-    <Button onPress={onPress} modifiers={buttonModifiers} testID={testID}>
-      <HStack spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
-        {renderAccessory(leading)}
-        <VStack alignment="leading" spacing={2}>
-          <>{wrapStrings(slots.headline)}</>
-          {supporting != null ? renderSupporting(supporting) : null}
-        </VStack>
-        <Spacer />
-        {renderAccessory(trailing)}
-      </HStack>
-    </Button>
+    <EnsureHost {...intrinsicHostOptions}>
+      <Button onPress={onPress} modifiers={buttonModifiers} testID={testID}>
+        <HStack spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
+          {renderAccessory(leading)}
+          <VStack alignment="leading" spacing={2}>
+            <>{wrapStrings(slots.headline)}</>
+            {supporting != null ? renderSupporting(supporting) : null}
+          </VStack>
+          <Spacer />
+          {renderAccessory(trailing)}
+        </HStack>
+      </Button>
+    </EnsureHost>
   );
 }
 

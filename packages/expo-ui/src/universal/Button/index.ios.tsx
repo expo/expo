@@ -2,6 +2,7 @@ import { Button as SwiftUIButton } from '@expo/ui/swift-ui';
 import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 import { omitUserOverridden } from '../modifierUtils';
 import { transformToModifiers } from '../transformStyle';
 import type { ButtonProps, ButtonVariant } from './types';
@@ -40,13 +41,15 @@ export function Button({
   const modifiers = [...buttonSpecificModifiers, ...universalModifiers];
 
   return (
-    <SwiftUIButton
-      onPress={onPress}
-      label={!children ? label : undefined}
-      modifiers={modifiers}
-      testID={testID}>
-      {children as React.ReactElement | undefined}
-    </SwiftUIButton>
+    <EnsureHost {...intrinsicHostOptions}>
+      <SwiftUIButton
+        onPress={onPress}
+        label={!children ? label : undefined}
+        modifiers={modifiers}
+        testID={testID}>
+        {children as React.ReactElement | undefined}
+      </SwiftUIButton>
+    </EnsureHost>
   );
 }
 

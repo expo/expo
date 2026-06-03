@@ -1,4 +1,4 @@
-import { BottomSheet as SwiftUIBottomSheet, Group, Host } from '@expo/ui/swift-ui';
+import { BottomSheet as SwiftUIBottomSheet, Group } from '@expo/ui/swift-ui';
 import {
   frame,
   padding,
@@ -9,6 +9,7 @@ import {
   type PresentationDetent,
 } from '@expo/ui/swift-ui/modifiers';
 
+import { Host } from '../Host';
 import type { BottomSheetProps, SnapPoint } from './types';
 import { resolveContentPadding } from './utils';
 

@@ -2,6 +2,7 @@ import { LazyColumn, PullToRefreshBox } from '@expo/ui/jetpack-compose';
 import { testID as testIDModifier, type ModifierConfig } from '@expo/ui/jetpack-compose/modifiers';
 import { useCallback, useState } from 'react';
 
+import { EnsureHost, fullHostOptions } from '../autoHost';
 import type { ListProps } from './types';
 
 /**
@@ -26,18 +27,20 @@ export function List({ children, onRefresh, testID }: ListProps) {
   const listContent = <LazyColumn modifiers={listModifiers}>{children}</LazyColumn>;
 
   if (!onRefresh) {
-    return listContent;
+    return <EnsureHost {...fullHostOptions()}>{listContent}</EnsureHost>;
   }
 
   return (
-    // `contentAlignment="topCenter"` keeps the refresh indicator centered.
-    // The indicator's own `Modifier.align` resolves outside `BoxScope` and becomes a no-op, so we set it on the parent.
-    <PullToRefreshBox
-      isRefreshing={isRefreshing}
-      onRefresh={handleRefresh}
-      contentAlignment="topCenter">
-      {listContent}
-    </PullToRefreshBox>
+    <EnsureHost {...fullHostOptions()}>
+      {/* `contentAlignment="topCenter"` keeps the refresh indicator centered.
+          The indicator's own `Modifier.align` resolves outside `BoxScope` and becomes a no-op, so we set it on the parent. */}
+      <PullToRefreshBox
+        isRefreshing={isRefreshing}
+        onRefresh={handleRefresh}
+        contentAlignment="topCenter">
+        {listContent}
+      </PullToRefreshBox>
+    </EnsureHost>
   );
 }
 

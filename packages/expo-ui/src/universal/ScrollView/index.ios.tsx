@@ -2,6 +2,7 @@ import { Group, ScrollView as SwiftUIScrollView } from '@expo/ui/swift-ui';
 import { frame, padding } from '@expo/ui/swift-ui/modifiers';
 import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
+import { EnsureHost, fullHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { ScrollViewProps } from './types';
 
@@ -65,13 +66,15 @@ export function ScrollView({
   }
 
   return (
-    <SwiftUIScrollView
-      axes={direction}
-      showsIndicators={showsIndicators}
-      modifiers={scrollModifiers}
-      testID={testID}>
-      <Group modifiers={innerModifiers}>{children}</Group>
-    </SwiftUIScrollView>
+    <EnsureHost {...fullHostOptions(style)}>
+      <SwiftUIScrollView
+        axes={direction}
+        showsIndicators={showsIndicators}
+        modifiers={scrollModifiers}
+        testID={testID}>
+        <Group modifiers={innerModifiers}>{children}</Group>
+      </SwiftUIScrollView>
+    </EnsureHost>
   );
 }
 

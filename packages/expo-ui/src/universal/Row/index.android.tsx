@@ -1,5 +1,6 @@
 import { Row as ComposeRow } from '@expo/ui/jetpack-compose';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { UniversalAlignment } from '../types';
@@ -35,12 +36,14 @@ export function Row({
   );
 
   return (
-    <ComposeRow
-      verticalAlignment={alignmentMap[alignment]}
-      horizontalArrangement={spacing != null ? { spacedBy: spacing } : undefined}
-      modifiers={modifiers}>
-      {children}
-    </ComposeRow>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <ComposeRow
+        verticalAlignment={alignmentMap[alignment]}
+        horizontalArrangement={spacing != null ? { spacedBy: spacing } : undefined}
+        modifiers={modifiers}>
+        {children}
+      </ComposeRow>
+    </EnsureHost>
   );
 }
 
