@@ -8,6 +8,7 @@ on:
       - apps/bare-expo/macos/**
       - packages/expo/**
       - packages/expo-asset/**
+      - packages/expo-clipboard/**
       - packages/expo-constants/**
       - packages/expo-crypto/**
       - packages/expo-dev-client/**
@@ -23,10 +24,12 @@ on:
       - packages/expo-mesh-gradient/**
       - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
+      - packages/expo-network/**
       - packages/expo-sqlite/**
       - packages/expo-structured-headers/**
-      - packages/expo-updates/**
+      - packages/expo-symbols/**
       - packages/expo-updates-interface/**
+      - packages/expo-updates/**
       - packages/expo-web-browser/**
       - "!packages/**/android/**"
       # Common ignores from detect-platform-change action
