@@ -18,7 +18,14 @@ import { SnackInline, Terminal } from '~/ui/components/Snippet';
 
 ## Installation
 
-<Terminal cmd={['$ npx expo install react-native-reanimated react-native-worklets']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-native-reanimated react-native-worklets'],
+    yarn: ['$ yarn expo install react-native-reanimated react-native-worklets'],
+    pnpm: ['$ pnpm expo install react-native-reanimated react-native-worklets'],
+    bun: ['$ bun expo install react-native-reanimated react-native-worklets'],
+  }}
+/>
 
 <br />
 

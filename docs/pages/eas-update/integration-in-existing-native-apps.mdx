@@ -78,7 +78,14 @@ Modify **android/gradle.properties** to set the property that disables automatic
 
 Pass in the environment variable to CocoaPods installation to disable automatic updates initialization.
 
-<Terminal cmd={['$ EX_UPDATES_CUSTOM_INIT=1 npx pod-install']} />
+<Terminal
+  cmd={{
+    npm: ['$ EX_UPDATES_CUSTOM_INIT=1 npx pod-install'],
+    yarn: ['$ EX_UPDATES_CUSTOM_INIT=1 yarn dlx pod-install'],
+    pnpm: ['$ EX_UPDATES_CUSTOM_INIT=1 pnpm dlx pod-install'],
+    bun: ['$ EX_UPDATES_CUSTOM_INIT=1 bunx pod-install'],
+  }}
+/>
 
 ## Set up your React Native app to use expo-updates for loading the release bundle
 

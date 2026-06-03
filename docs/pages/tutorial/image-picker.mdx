@@ -31,7 +31,14 @@ We'll use [`expo-image-picker`](/versions/latest/sdk/imagepicker), a library fro
 
 To install the `expo-image-picker` library, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>C</kbd> in the terminal, then run the following command:
 
-<Terminal cmd={['$ npx expo install expo-image-picker']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-image-picker'],
+    yarn: ['$ yarn expo install expo-image-picker'],
+    pnpm: ['$ pnpm expo install expo-image-picker'],
+    bun: ['$ bun expo install expo-image-picker'],
+  }}
+/>
 
 The [`npx expo install`](/more/expo-cli/#installation) command will install the library and add it to the project's dependencies in **package.json**.
 

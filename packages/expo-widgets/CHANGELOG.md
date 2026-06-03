@@ -4,9 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Handle undefined props instead fallback to empty object. ([#46492](https://github.com/expo/expo/pull/46492) by [@jakex7](https://github.com/jakex7))
+
 ### 🎉 New features
 
+- [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
+- Expose shared directory for images. ([#46339](https://github.com/expo/expo/pull/46339) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
+
+- [Android] Fix widget strings file location. ([#46538](https://github.com/expo/expo/pull/46538) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
@@ -18,8 +25,6 @@
 
 - [Android] Create base android package. ([#46090](https://github.com/expo/expo/pull/46090) by [@jakex7](https://github.com/jakex7))
 - [plugin] Create config plugin for android. ([#46091](https://github.com/expo/expo/pull/46091) by [@jakex7](https://github.com/jakex7))
-- [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
-- Expose shared directory for images. ([#46339](https://github.com/expo/expo/pull/46339) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

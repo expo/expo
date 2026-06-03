@@ -65,6 +65,7 @@ import {
   pickerStyle,
   tag,
   font,
+  dynamicTypeSize,
   lineLimit,
   contentShape,
   shapes,
@@ -299,6 +300,24 @@ export default function ModifiersScreen() {
               </Text>
               <Text modifiers={[font({ textStyle: 'body' })]}>body scales</Text>
               <Text modifiers={[font({ textStyle: 'caption' })]}>caption scales</Text>
+            </VStack>
+
+            {/* font on concatenated Text runs scales + keeps weight */}
+            <Text>
+              <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Big </Text>
+              <Text modifiers={[font({ textStyle: 'caption' })]}>and small, both scale</Text>
+            </Text>
+
+            {/* dynamicTypeSize: clamp how far Dynamic Type scales */}
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>dynamicTypeSize clamp</Text>
+              <Text modifiers={[font({ textStyle: 'body' })]}>body, unbounded</Text>
+              <Text modifiers={[font({ textStyle: 'body' }), dynamicTypeSize({ max: 'large' })]}>
+                body, capped at large
+              </Text>
+              <Text modifiers={[font({ textStyle: 'body' }), dynamicTypeSize('xSmall')]}>
+                body, fixed at xSmall
+              </Text>
             </VStack>
 
             <HStack spacing={20}>

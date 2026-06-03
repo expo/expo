@@ -24,15 +24,16 @@ async function getResolvedWatchedDirectoriesFromAppJson(appJsonPath) {
     }
     return null;
 }
-async function generateInlineModuleTSFiles({ filePath, dirPath, typeInference, }) {
+async function generateInlineModuleTSFiles({ filePath, dirPath, typeInference, mapUnicodeCharacters, }) {
     return await (0, commandUtils_1.generateConciseTsFiles)({
         realInputPaths: [filePath],
         realOutputPath: dirPath,
         typeInference,
         watcher: false,
+        mapUnicodeCharacters,
     });
 }
-async function inlineModulesWatcher({ appJsonPath, typeInference }) {
+async function inlineModulesWatcher({ appJsonPath, typeInference, mapUnicodeCharacters, }) {
     const debouncedInlineModulesTsGeneration = (0, commandUtils_1.debounce)(generateInlineModuleTSFiles);
     const watchedDirectoriesWatchers = new Map();
     const setupWatchedDirectoriesWatchers = async () => {
@@ -54,7 +55,7 @@ async function inlineModulesWatcher({ appJsonPath, typeInference }) {
         // Now let's create and add new watchers
         const createWatcherForDir = (dir) => {
             return fs_1.default.watch(dir, { recursive: true, encoding: 'utf-8' }, async (event, fileName) => {
-                if (!fileName) {
+                if (!fileName || !fileName.endsWith('.swift')) {
                     return;
                 }
                 const resolvedFilePath = path_1.default.resolve(dir, fileName);
@@ -63,6 +64,7 @@ async function inlineModulesWatcher({ appJsonPath, typeInference }) {
                         filePath: resolvedFilePath,
                         dirPath: path_1.default.dirname(resolvedFilePath),
                         typeInference,
+                        mapUnicodeCharacters,
                     });
                 }
             });
@@ -90,7 +92,7 @@ async function inlineModulesWatcher({ appJsonPath, typeInference }) {
 async function inlineModulesInterfaceCommand(cli) {
     return cli
         .command('inline-modules-interface')
-        .summary('Creates ts interface for every Swift inline module in the project.')
+        .summary('create TypeScript interface for every Swift inline module in the project')
         .description(`Creates a TypeScript interface for every Swift inline module in the project. The interface consists of two files:
 - **Module.generated.ts**: This is regenerated with each run of the command 
 - **Module.tsx**: This one is not regenerated if you change it`)
@@ -103,7 +105,7 @@ async function inlineModulesInterfaceCommand(cli) {
             return;
         }
         (0, commandUtils_1.maybePrepareOutputDirectory)(parsedArgs?.realOutputPath);
-        const { appJsonPath, watcher } = parsedArgs;
+        const { appJsonPath, watcher, mapUnicodeCharacters } = parsedArgs;
         if (!appJsonPath) {
             return;
         }
@@ -124,9 +126,14 @@ async function inlineModulesInterfaceCommand(cli) {
             filePath: dirent.path,
             dirPath: dirent.parentPath,
             typeInference: parsedArgs.typeInference,
+            mapUnicodeCharacters,
         }));
         if (watcher) {
-            await inlineModulesWatcher({ appJsonPath, typeInference: parsedArgs.typeInference });
+            await inlineModulesWatcher({
+                appJsonPath,
+                typeInference: parsedArgs.typeInference,
+                mapUnicodeCharacters,
+            });
         }
     });
 }

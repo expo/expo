@@ -155,13 +155,36 @@ If the logs weren't enough to immediately help you understand and fix the root c
 You can verify that your project builds on your local machine with the `npx expo run:android` and `npx expo run:ios` commands, with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).
 
 <Terminal
-  cmd={[
-    '# Locally compile and run the Android app in release mode',
-    '$ npx expo run:android --variant release',
-    '',
-    '# Locally compile and run the iOS app in release mode',
-    '$ npx expo run:ios --configuration Release',
-  ]}
+  cmd={{
+    npm: [
+      '# Locally compile and run the Android app in release mode',
+      '$ npx expo run:android --variant release',
+      '',
+      '# Locally compile and run the iOS app in release mode',
+      '$ npx expo run:ios --configuration Release',
+    ],
+    yarn: [
+      '# Locally compile and run the Android app in release mode',
+      '$ yarn expo run:android --variant release',
+      '',
+      '# Locally compile and run the iOS app in release mode',
+      '$ yarn expo run:ios --configuration Release',
+    ],
+    pnpm: [
+      '# Locally compile and run the Android app in release mode',
+      '$ pnpm expo run:android --variant release',
+      '',
+      '# Locally compile and run the iOS app in release mode',
+      '$ pnpm expo run:ios --configuration Release',
+    ],
+    bun: [
+      '# Locally compile and run the Android app in release mode',
+      '$ bun expo run:android --variant release',
+      '',
+      '# Locally compile and run the iOS app in release mode',
+      '$ bun expo run:ios --configuration Release',
+    ],
+  }}
 />
 
 > If use [CNG](/workflow/continuous-native-generation/), these commands will run `npx expo prebuild` to generate native projects to compile them.You likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, unless you want to start managing these projects directly instead of generating them on demand.

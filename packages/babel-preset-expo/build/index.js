@@ -6,10 +6,15 @@ const syntax_1 = require("./configs/syntax");
 const typescript_1 = require("./configs/typescript");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
-    return {
+    let output = {
         ...options,
         ...options[tag],
     };
+    if ((platform === 'tvos' || platform === 'macos' || platform === 'ios' || platform === 'android') &&
+        options[platform]) {
+        output = { ...output, ...options[platform] };
+    }
+    return output;
 }
 function babelPresetExpo(api, options = {}) {
     const bundler = api.caller(common_1.getBundler);
