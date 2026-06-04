@@ -39,6 +39,46 @@ export type SandboxPresetResult = {
   error?: string;
 };
 
+export type SandboxTaskStatus<T> =
+  | {
+      taskId: string;
+      status: 'running';
+      startedAt: string;
+      timeout: number;
+    }
+  | {
+      taskId: string;
+      status: 'completed';
+      startedAt: string;
+      finishedAt: string;
+      timeout: number;
+      result: T;
+    }
+  | {
+      taskId: string;
+      status: 'failed';
+      startedAt: string;
+      finishedAt?: string;
+      timeout: number;
+      error: string;
+    };
+
+export type SandboxCommandRequest = {
+  command: string;
+  cwd?: string;
+  timeout?: number;
+};
+
+export type SandboxCommandResult = {
+  command: string;
+  cwd: string;
+  success: boolean;
+  exitCode?: number;
+  stdout?: string;
+  stderr?: string;
+  error?: string;
+};
+
 export type SandboxLogResponse = {
   jobId: string;
   logs: string;

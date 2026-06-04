@@ -31,6 +31,24 @@ Run a preset:
 et pr-sandbox run_preset --job-id pr-owner-repo-123-abcdef123456 --preset checkout
 ```
 
+Long-running presets are launched as sandbox tasks. The CLI polls the task status endpoint until the
+task finishes, so checkout/install/test actions are not limited by one long HTTP request.
+
+Run iterative follow-up commands in the same sandbox job:
+
+```sh
+et pr-sandbox run_command \
+  --job-id pr-owner-repo-123-abcdef123456 \
+  --command "pnpm lint"
+
+et pr-sandbox run_command \
+  --job-id pr-owner-repo-123-abcdef123456 \
+  --command "node -e \"console.log(require('./package.json').scripts)\""
+```
+
+`get_logs` shows a running task marker as soon as a long command starts and appends stdout, stderr,
+and exit code after completion.
+
 Collect one evidence JSON file and destroy the job afterwards:
 
 ```sh

@@ -8,10 +8,10 @@
     "types": "wrangler types"
   },
   "dependencies": {
-    "@cloudflare/sandbox": "0.10.1"
+    "@cloudflare/sandbox": "0.11.0"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
-    "wrangler": "^4.0.0"
+    "wrangler": "^4.97.0"
   }
 }

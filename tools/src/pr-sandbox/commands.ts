@@ -1,7 +1,7 @@
 import type { PullRequestRef } from './types';
 import { validateSandboxPreset } from './validation';
 
-const CHECKOUT_TIMEOUT_MS = 120_000;
+const CHECKOUT_TIMEOUT_MS = 600_000;
 const INSTALL_TIMEOUT_MS = 600_000;
 const CHECK_TIMEOUT_MS = 300_000;
 
@@ -54,13 +54,30 @@ export function createPresetCommand(presetInput: string, ref?: PullRequestRef): 
       }
       const cloneUrl = shellQuote(getGitHubCloneUrl(ref));
       const headSha = shellQuote(ref.headSha);
+      const pullRef = shellQuote(`refs/pull/${ref.pullNumber}/head`);
       return {
         command: [
           'rm -rf /workspace/repo',
-          `git clone --filter=blob:none --no-checkout ${cloneUrl} /workspace/repo`,
+          'mkdir -p /workspace/repo',
           'cd /workspace/repo',
-          `git fetch --depth=1 origin ${headSha}`,
-          `git checkout --detach ${headSha}`,
+          'git init -q',
+          'git config gc.auto 0',
+          'git config maintenance.auto false',
+          'git config fetch.writeCommitGraph false',
+          'git config advice.detachedHead false',
+          `git remote add origin ${cloneUrl}`,
+          'git config remote.origin.promisor true',
+          'git config remote.origin.partialclonefilter blob:none',
+          [
+            '(',
+            `git -c protocol.version=2 fetch --depth=1 --filter=blob:none --no-tags origin ${pullRef}`,
+            '||',
+            `git -c protocol.version=2 fetch --depth=1 --filter=blob:none --no-tags origin ${headSha}`,
+            ')',
+          ].join(' '),
+          `test "$(git rev-parse FETCH_HEAD)" = ${headSha}`,
+          'git checkout --detach --force FETCH_HEAD',
+          `printf '%s\\n' ${headSha} > /workspace/.pr-review/head-sha.txt`,
         ].join(' && '),
         timeout: CHECKOUT_TIMEOUT_MS,
       };

@@ -6,7 +6,7 @@ import { PrSandboxClient } from '../pr-sandbox/client';
 import { collectSandboxEvidenceAsync } from '../pr-sandbox/evidence';
 import { fetchPublicPullRequestRefAsync } from '../pr-sandbox/github';
 import type { PrSandboxJobRequest } from '../pr-sandbox/types';
-import { normalizePullRequestRef } from '../pr-sandbox/validation';
+import { normalizePullRequestRef, normalizeSandboxCommandRequest } from '../pr-sandbox/validation';
 
 type ActionOptions = {
   workerUrl?: string;
@@ -17,6 +17,9 @@ type ActionOptions = {
   headSha?: string;
   jobId?: string;
   preset?: string;
+  command?: string;
+  cwd?: string;
+  timeout?: string;
   path?: string;
   output?: string;
   logLimit?: string;
@@ -67,7 +70,7 @@ function requireOption(value: string | undefined, name: string): string {
 async function action(actionName: string | undefined, options: ActionOptions) {
   if (!actionName) {
     throw new Error(
-      'Provide an action: create_pr_job, run_preset, get_logs, read_file, destroy_job, or collect_evidence.'
+      'Provide an action: create_pr_job, run_preset, run_command, get_logs, read_file, destroy_job, or collect_evidence.'
     );
   }
 
@@ -90,6 +93,19 @@ async function action(actionName: string | undefined, options: ActionOptions) {
     case 'get_logs':
       await writeResultAsync(
         await client.getLogsAsync(requireOption(options.jobId, '--job-id')),
+        options.output
+      );
+      return;
+    case 'run_command':
+      await writeResultAsync(
+        await client.runCommandAsync(
+          requireOption(options.jobId, '--job-id'),
+          normalizeSandboxCommandRequest({
+            command: requireOption(options.command, '--command'),
+            cwd: options.cwd,
+            timeout: options.timeout,
+          })
+        ),
         options.output
       );
       return;
@@ -139,6 +155,9 @@ export default (program: Command) => {
     .option('--head-sha <sha>', 'Exact PR head commit SHA.')
     .option('--job-id <id>', 'Sandbox job ID.')
     .option('--preset <name>', 'Sandbox preset to run.')
+    .option('--command <command>', 'Command to run inside the sandbox for run_command.')
+    .option('--cwd <path>', 'Repo-relative working directory for run_command.')
+    .option('--timeout <ms>', 'Timeout in milliseconds for run_command.')
     .option('--path <path>', 'Relative repository path for read_file.')
     .option('--output <path>', 'Optional JSON output path.')
     .option('--log-limit <number>', 'Maximum returned log characters for collect_evidence.')

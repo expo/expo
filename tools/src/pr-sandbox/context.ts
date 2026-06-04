@@ -27,6 +27,6 @@ export function createDeepCodeReviewSandboxContext(report: PrSandboxEvidenceRepo
     'Preset results:',
     ...presetLines,
     '',
-    'Captured logs are available in the evidence JSON under `logs` and have been capped/redacted before returning to Codex.',
+    'Captured preset and interactive command logs are available through the evidence JSON or `get_logs`; logs are capped/redacted before returning to Codex.',
   ].join('\n');
 }

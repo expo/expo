@@ -1,4 +1,4 @@
-FROM docker.io/cloudflare/sandbox:0.10.1
+FROM docker.io/cloudflare/sandbox:0.11.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential \

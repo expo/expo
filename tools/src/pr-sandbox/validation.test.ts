@@ -4,6 +4,8 @@ import { describe, it } from 'node:test';
 import {
   normalizeHeadSha,
   normalizePullRequestRef,
+  normalizeSandboxCommandRequest,
+  normalizeSandboxCwd,
   normalizeSandboxPath,
   parsePublicPullRequestUrl,
   validateSandboxPreset,
@@ -54,5 +56,29 @@ describe('PR sandbox validation', () => {
     );
     assert.throws(() => normalizeSandboxPath('../package.json'));
     assert.throws(() => normalizeSandboxPath('/etc/passwd'));
+  });
+
+  it('should normalize sandbox command requests', () => {
+    assert.deepEqual(
+      normalizeSandboxCommandRequest({
+        command: ' node -e "console.log(1)" ',
+        cwd: './packages/expo',
+        timeout: '1000',
+      }),
+      {
+        command: 'node -e "console.log(1)"',
+        cwd: 'packages/expo',
+        timeout: 1000,
+      }
+    );
+    assert.equal(normalizeSandboxCwd('.'), '.');
+  });
+
+  it('should reject invalid sandbox command requests', () => {
+    assert.throws(() => normalizeSandboxCommandRequest({ command: '' }));
+    assert.throws(() =>
+      normalizeSandboxCommandRequest({ command: 'pnpm lint', cwd: '../outside' })
+    );
+    assert.throws(() => normalizeSandboxCommandRequest({ command: 'pnpm lint', timeout: 600001 }));
   });
 });

@@ -1,0 +1,97 @@
+name: PR Sandbox Session
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_id:
+        description: 'Unique sandbox session ID'
+        required: true
+      repo:
+        description: 'Repository containing the PR, in owner/name format'
+        required: true
+      pull_number:
+        description: 'Pull request number'
+        required: true
+      head_sha:
+        description: 'Exact PR head commit SHA'
+        required: true
+      control_issue:
+        description: 'expo/expo issue or PR number used as the command queue'
+        required: true
+      idle_timeout_seconds:
+        description: 'Seconds before the session exits when idle'
+        required: false
+        default: '1800'
+      controller_login:
+        description: 'GitHub login allowed to enqueue commands'
+        required: true
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: pr-sandbox-session-${{ inputs.session_id }}
+  cancel-in-progress: false
+
+jobs:
+  sandbox_session:
+    if: github.repository == 'expo/expo'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout trusted controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          path: controller
+          persist-credentials: false
+
+      - name: Checkout exact PR head
+        shell: bash
+        env:
+          PR_SANDBOX_REPO: ${{ inputs.repo }}
+          PR_SANDBOX_PULL_NUMBER: ${{ inputs.pull_number }}
+          PR_SANDBOX_HEAD_SHA: ${{ inputs.head_sha }}
+          PR_SANDBOX_REPO_DIR: ${{ github.workspace }}/repo
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$PR_SANDBOX_REPO" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+            echo "Invalid repo: $PR_SANDBOX_REPO" >&2
+            exit 1
+          fi
+          if [[ ! "$PR_SANDBOX_PULL_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
+            echo "Invalid pull number: $PR_SANDBOX_PULL_NUMBER" >&2
+            exit 1
+          fi
+          if [[ ! "$PR_SANDBOX_HEAD_SHA" =~ ^[a-fA-F0-9]{40}$ ]]; then
+            echo "Invalid head SHA: $PR_SANDBOX_HEAD_SHA" >&2
+            exit 1
+          fi
+
+          rm -rf "$PR_SANDBOX_REPO_DIR"
+          mkdir -p "$PR_SANDBOX_REPO_DIR"
+          cd "$PR_SANDBOX_REPO_DIR"
+          git init -q
+          git config gc.auto 0
+          git config maintenance.auto false
+          git config fetch.writeCommitGraph false
+          git config advice.detachedHead false
+          git remote add origin "https://github.com/$PR_SANDBOX_REPO.git"
+          git config remote.origin.promisor true
+          git config remote.origin.partialclonefilter blob:none
+          git -c protocol.version=2 fetch --depth=1 --filter=blob:none --no-tags origin "refs/pull/$PR_SANDBOX_PULL_NUMBER/head" ||
+            git -c protocol.version=2 fetch --depth=1 --filter=blob:none --no-tags origin "$PR_SANDBOX_HEAD_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$PR_SANDBOX_HEAD_SHA"
+          git checkout --detach --force FETCH_HEAD
+          git status --short
+
+      - name: Run command session
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_SANDBOX_SESSION_ID: ${{ inputs.session_id }}
+          PR_SANDBOX_CONTROL_ISSUE: ${{ inputs.control_issue }}
+          PR_SANDBOX_IDLE_TIMEOUT_SECONDS: ${{ inputs.idle_timeout_seconds }}
+          PR_SANDBOX_CONTROLLER_LOGIN: ${{ inputs.controller_login }}
+          PR_SANDBOX_REPO_DIR: ${{ github.workspace }}/repo
+        run: node "$GITHUB_WORKSPACE/controller/.github/scripts/pr-sandbox-session.js"
