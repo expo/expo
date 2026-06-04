@@ -280,6 +280,8 @@ PODS:
     - ExpoModulesJSI
     - ExpoModulesWorklets
     - RNWorklets
+  - ExpoNetwork (56.0.4):
+    - ExpoModulesCore
   - ExpoSQLite (56.0.4):
     - ExpoModulesCore
   - ExpoSymbols (56.0.5):
@@ -325,7 +327,7 @@ PODS:
     - ExpoModulesCore
   - fast_float (8.0.0)
   - FBLazyVector (0.81.7)
-  - fmt (11.0.2)
+  - fmt (12.1.0)
   - glog (0.3.5)
   - hermes-engine (0.81.6):
     - hermes-engine/Pre-built (= 0.81.6)
@@ -334,20 +336,20 @@ PODS:
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
     - RCT-Folly/Default (= 2024.11.18.00)
   - RCT-Folly/Default (2024.11.18.00):
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
   - RCT-Folly/Fabric (2024.11.18.00):
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
   - RCTDeprecation (0.81.7)
   - RCTRequired (0.81.7)
@@ -2905,6 +2907,7 @@ DEPENDENCIES:
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
+  - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
@@ -3067,6 +3070,9 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesWorkletsAdapter:
     :path: "../../../packages/expo-modules-core"
+  ExpoNetwork:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-network/ios"
   ExpoSQLite:
     inhibit_warnings: false
     :path: "../../../packages/expo-sqlite/ios"
@@ -3259,10 +3265,11 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: 93f29833d2a8b957f996eddc05a632eb2bdeaa7d
   ExpoLogBox: 7aa03244fe5eeced5129e4ec7ad5bd9a3994378e
   ExpoMeshGradient: baf62012104fd9c1719de67f88c69958abcd2ed1
-  ExpoModulesCore: 54fe1c082ac0fbc1bd3f4efb9ab1b79797dd352b
+  ExpoModulesCore: c9125d136b81901cdd3aa0e3ed17fd2ab091cac4
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
-  ExpoModulesWorklets: c755176116ae553ede2268ca6837c31eb4081f8a
+  ExpoModulesWorklets: 874ceeb92a8da1dfa32adf197aa65f926e74b9c5
   ExpoModulesWorkletsAdapter: 727a9f57ba304b0425e2eb5297017b01bc9f2ca1
+  ExpoNetwork: d244aa406eb0aba7e36e5f009a061b2744ab11d7
   ExpoSQLite: 38a35f67bbb3370d9bb859aa65d106909c4e3b19
   ExpoSymbols: b3c964ddc1f1c8d8ddb0eeb830e3a8e42b77ed2d
   ExpoWebBrowser: 6e3d90e3fe1952d21a8494872b1e1a485cd50e2f
@@ -3271,10 +3278,10 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   fast_float: 20817c22759af6ac8d4d67e6e059b8b499953656
   FBLazyVector: e8ec216d79635ba4c9fb0e9becc30391ca4bff1b
-  fmt: 24e7591456deb60b4a77518f83d9a916ac84223f
+  fmt: 4cf0c5ec5864511c96d8d4bd7b03c3c69040af06
   glog: 0b31c25149b9d350b2666c7d459229861a00ec07
   hermes-engine: 7219f6e751ad6ec7f3d7ec121830ee34dae40749
-  RCT-Folly: c803cf33238782d5fd21a5e02d44f64068e0e130
+  RCT-Folly: a3d9b23289a456c318f4814703664bdc33c771cc
   RCTDeprecation: 32fb5034012098ad1f67eba8a62d73bdd7d082e7
   RCTRequired: 9f51919b547926d0c148032cf2a7271a37655af4
   RCTTypeSafety: 7a8749345a241f79e1a39960cae63a1a3d24bf8d
@@ -3338,7 +3345,7 @@ SPEC CHECKSUMS:
   React-timing: f91e37f2154ef9b25e1ded28326f9998669145f1
   React-utils: 35e85af00d70760e6fda280c78d184da64d89e3d
   ReactAppDependencyProvider: 17d150a60ad301142905427154168f58641e38c4
-  ReactCodegen: f284c1ec57d6a698b50053195267db4358ed0cc1
+  ReactCodegen: b250a895fde6e9bffd9ff76b1afb8243b3746125
   ReactCommon: b2b6ff304cf01e1b67d8e9646e34d58320be0964
   RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
   RNGestureHandler: 7d628c670dfcc1b9fa5840de5648b87ac0635362
