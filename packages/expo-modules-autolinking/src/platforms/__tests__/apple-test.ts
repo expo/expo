@@ -217,6 +217,101 @@ describe(resolveModuleAsync, () => {
   });
 });
 
+describe('resolveModuleAsync conditional podspecPath (autolinkWhen)', () => {
+  const appRoot = '/app';
+  const commandRoot = '/app/ios';
+
+  const npmGatedConfig = () =>
+    new ExpoModuleConfig({
+      platforms: ['apple'],
+      apple: {
+        podspecPath: [
+          './ExpoModulesCore.podspec',
+          {
+            path: './ExpoModulesWorkletsAdapter.podspec',
+            autolinkWhen: { npmPackage: 'react-native-worklets' },
+          },
+        ],
+      },
+    });
+
+  const resolveCore = (config: ExpoModuleConfig) =>
+    resolveModuleAsync(
+      'expo-modules-core',
+      { name: '', path: '/app/node_modules/expo-modules-core', version: '0.0.1', config },
+      { appRoot, commandRoot }
+    );
+
+  it('includes the conditional pod when the npm package is installed', async () => {
+    vol.fromJSON(
+      {
+        'package.json': '{"name":"app"}',
+        'node_modules/react-native-worklets/package.json': '{"name":"react-native-worklets"}',
+      },
+      appRoot
+    );
+
+    const result = await resolveCore(npmGatedConfig());
+    expect(result?.pods.map((pod) => pod.podName)).toEqual([
+      'ExpoModulesCore',
+      'ExpoModulesWorkletsAdapter',
+    ]);
+  });
+
+  it('omits the conditional pod when the npm package is not installed', async () => {
+    vol.fromJSON({ 'package.json': '{"name":"app"}' }, appRoot);
+
+    const result = await resolveCore(npmGatedConfig());
+    expect(result?.pods.map((pod) => pod.podName)).toEqual(['ExpoModulesCore']);
+  });
+
+  const propertyGatedConfig = () =>
+    new ExpoModuleConfig({
+      platforms: ['apple'],
+      apple: {
+        podspecPath: [
+          'ios/ExpoCamera.podspec',
+          {
+            path: 'ios/ExpoCameraBarcodeScanning.podspec',
+            autolinkWhen: {
+              podfileProperty: 'expo.camera.barcode-scanner-enabled',
+              disabledValue: 'false',
+            },
+          },
+        ],
+      },
+    });
+
+  const resolveCamera = (config: ExpoModuleConfig) =>
+    resolveModuleAsync(
+      'expo-camera',
+      { name: '', path: '/app/node_modules/expo-camera', version: '0.0.1', config },
+      { appRoot, commandRoot }
+    );
+
+  it('omits the conditional pod when the Podfile property is the disabled value', async () => {
+    vol.fromJSON(
+      {
+        'Podfile.properties.json': JSON.stringify({ 'expo.camera.barcode-scanner-enabled': 'false' }),
+      },
+      commandRoot
+    );
+
+    const result = await resolveCamera(propertyGatedConfig());
+    expect(result?.pods.map((pod) => pod.podName)).toEqual(['ExpoCamera']);
+  });
+
+  it('includes the conditional pod when the Podfile property is not disabled', async () => {
+    vol.fromJSON({ 'Podfile.properties.json': JSON.stringify({}) }, commandRoot);
+
+    const result = await resolveCamera(propertyGatedConfig());
+    expect(result?.pods.map((pod) => pod.podName)).toEqual([
+      'ExpoCamera',
+      'ExpoCameraBarcodeScanning',
+    ]);
+  });
+});
+
 describe(resolveExtraBuildDependenciesAsync, () => {
   it('should resolve extra build dependencies from Podfile.properties.json', async () => {
     vol.fromJSON(

@@ -29,7 +29,7 @@ function generateModulesProviderCommand(cli) {
             autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
             appRoot,
         });
-        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
+        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions, { appRoot, commandRoot: autolinkingOptionsLoader.getCommandRoot() });
         const includeModules = new Set(commandArguments.packages ?? []);
         const filteredModules = expoModulesResolveResults.filter((module) => includeModules.has(module.packageName));
         const podfileProperties = await fs_1.default.promises

@@ -46,7 +46,8 @@ export function resolveCommand(cli: commander.CommanderStatic) {
 
       const expoModulesResolveResults = await resolveModulesAsync(
         expoModulesSearchResults,
-        autolinkingOptions
+        autolinkingOptions,
+        { appRoot, commandRoot: autolinkingOptionsLoader.getCommandRoot() }
       );
 
       const extraDependencies = await resolveExtraBuildDependenciesAsync({

@@ -5,10 +5,14 @@ exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
 const concurrency_1 = require("../concurrency");
 const platforms_1 = require("../platforms");
 /** Resolves search results to a list of platform-specific configuration. */
-async function resolveModulesAsync(searchResults, autolinkingOptions) {
+async function resolveModulesAsync(searchResults, autolinkingOptions, context = {}) {
     const platformLinking = (0, platforms_1.getLinkingImplementationForPlatform)(autolinkingOptions.platform);
-    // Additional output property for Cocoapods flags
-    const extraOutput = { flags: autolinkingOptions.flags };
+    // Additional output property for Cocoapods flags and conditional-podspec resolution.
+    const extraOutput = {
+        flags: autolinkingOptions.flags,
+        appRoot: context.appRoot,
+        commandRoot: context.commandRoot,
+    };
     const moduleDescriptorList = await (0, concurrency_1.taskAll)(Object.entries(searchResults), async ([packageName, revision]) => {
         const resolvedModule = await platformLinking.resolveModuleAsync(packageName, revision, extraOutput);
         return resolvedModule

@@ -40,10 +40,6 @@
       "platforms": [
         "iOS(.v16)"
       ],
-      "autolinkWhen": {
-        "podfileProperty": "expo.camera.barcode-scanner-enabled",
-        "disabledValue": "false"
-      },
       "externalDependencies": [],
       "spmPackages": [
         {

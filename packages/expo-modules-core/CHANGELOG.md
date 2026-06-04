@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [iOS] Gate `ExpoModulesWorkletsAdapter` via a conditional `podspecPath` entry (`autolinkWhen`) in `expo-module.config.json` instead of a `spm.config.json` companion-pod gate, fixing the adapter not linking when `react-native-worklets` is installed only transitively or through an optional peer dependency.
+
 - Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
 - `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
 

@@ -2,7 +2,16 @@
   "platforms": ["apple", "android", "web"],
   "apple": {
     "modules": ["CameraViewModule"],
-    "podspecPath": ["ios/ExpoCamera.podspec"]
+    "podspecPath": [
+      "ios/ExpoCamera.podspec",
+      {
+        "path": "ios/ExpoCameraBarcodeScanning.podspec",
+        "autolinkWhen": {
+          "podfileProperty": "expo.camera.barcode-scanner-enabled",
+          "disabledValue": "false"
+        }
+      }
+    ]
   },
   "android": {
     "modules": ["expo.modules.camera.CameraViewModule"]

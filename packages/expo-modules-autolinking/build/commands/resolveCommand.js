@@ -24,7 +24,7 @@ function resolveCommand(cli) {
             autolinkingOptions,
             appRoot,
         });
-        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
+        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions, { appRoot, commandRoot: autolinkingOptionsLoader.getCommandRoot() });
         const extraDependencies = await (0, resolveModules_1.resolveExtraBuildDependenciesAsync)({
             commandRoot: autolinkingOptionsLoader.getCommandRoot(),
             platform,

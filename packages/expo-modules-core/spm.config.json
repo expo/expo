@@ -167,49 +167,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "ExpoModulesWorkletsAdapter",
-      "podName": "ExpoModulesWorkletsAdapter",
-      "sourceOnly": true,
-      "platforms": [
-        "iOS(.v16)"
-      ],
-      "autolinkWhen": {
-        "podName": "RNWorklets"
-      },
-      "externalDependencies": [
-        "ReactNativeDependencies",
-        "React",
-        "Hermes",
-        "expo-modules-jsi/ExpoModulesJSI",
-        "ExpoModulesWorklets",
-        "RNWorklets"
-      ],
-      "targets": [
-        {
-          "type": "objc",
-          "name": "ExpoModulesWorkletsAdapter",
-          "path": "ios/WorkletsAdapter",
-          "pattern": "**/*.{m,mm}",
-          "headerPattern": "**/*.h",
-          "dependencies": [
-            "Hermes",
-            "React",
-            "ReactNativeDependencies",
-            "expo-modules-jsi/ExpoModulesJSI",
-            "ExpoModulesCore",
-            "ExpoModulesWorklets",
-            "RNWorklets"
-          ],
-          "linkedFrameworks": [
-            "Foundation"
-          ],
-          "includeDirectories": [
-            "."
-          ]
-        }
-      ]
     }
   ]
 }

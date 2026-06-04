@@ -49,7 +49,8 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         });
         const expoModulesResolveResults = await resolveModulesAsync(
           expoModulesSearchResults,
-          autolinkingOptions
+          autolinkingOptions,
+          { appRoot, commandRoot: autolinkingOptionsLoader.getCommandRoot() }
         );
 
         const includeModules = new Set(commandArguments.packages ?? []);

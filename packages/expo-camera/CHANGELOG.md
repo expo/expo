@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Gate `ExpoCameraBarcodeScanning` via a conditional `podspecPath` entry (`autolinkWhen` `podfileProperty`) in `expo-module.config.json` instead of a `spm.config.json` companion-pod gate.
+
 ## 56.0.7 — 2026-05-21
 
 ### 🐛 Bug fixes

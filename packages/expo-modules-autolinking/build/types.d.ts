@@ -139,6 +139,40 @@ export type RawAppleModuleConfig = {
     class: string;
 };
 /**
+ * A condition that gates whether a conditional podspec entry is autolinked into the
+ * consumer app. Exactly one key is set.
+ */
+export type AppleAutolinkCondition = {
+    /**
+     * Autolink only when this npm package is installed (Node-resolvable from the project),
+     * even when it's reached transitively or through an optional peer dependency.
+     */
+    npmPackage: string;
+} | {
+    /**
+     * Autolink based on a `Podfile.properties.json` property. Linked unless the property
+     * equals `disabledValue`.
+     */
+    podfileProperty: string;
+    disabledValue?: string;
+};
+/**
+ * A podspec entry that is only autolinked when its `autolinkWhen` condition is met.
+ * Use for companion/adapter podspecs that must compile only when an optional peer
+ * (e.g. `react-native-worklets`) is present.
+ */
+export type ApplePodspecEntry = {
+    /**
+     * Podspec relative path.
+     */
+    path: string;
+    /**
+     * Condition gating whether this podspec is autolinked. When omitted the podspec is
+     * always linked (same as a bare string entry).
+     */
+    autolinkWhen?: AppleAutolinkCondition;
+};
+/**
  * Represents a raw config specific to Apple platforms.
  */
 export type RawModuleConfigApple = {
@@ -156,9 +190,11 @@ export type RawModuleConfigApple = {
     reactDelegateHandlers?: string[];
     /**
      * Podspec relative path.
-     * To have multiple podspecs, string array type is also supported.
+     * To have multiple podspecs, an array is also supported. Each array entry may be a
+     * string (always linked) or an {@link ApplePodspecEntry} object to gate linking on a
+     * condition (e.g. an optional peer dependency being installed).
      */
-    podspecPath?: string | string[];
+    podspecPath?: string | (string | ApplePodspecEntry)[];
     /**
      * Swift product module name. If empty, the pod name is used for Swift imports.
      * To have multiple modules, string array is also supported.

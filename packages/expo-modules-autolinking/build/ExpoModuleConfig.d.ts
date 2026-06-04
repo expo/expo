@@ -1,4 +1,4 @@
-import type { AndroidGradleAarProjectDescriptor, AndroidGradlePluginDescriptor, AndroidPublication, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
+import type { AndroidGradleAarProjectDescriptor, AndroidGradlePluginDescriptor, AndroidPublication, ApplePodspecEntry, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
 export declare class ExpoAndroidModuleConfig {
     classifier: string;
     name: string | null;
@@ -49,7 +49,15 @@ export declare class ExpoModuleConfig {
      */
     appleReactDelegateHandlers(): string[];
     /**
-     * Returns podspec paths defined by the module author.
+     * Returns podspec entries defined by the module author, normalizing bare string paths
+     * into `{ path }` objects. Entries may carry an `autolinkWhen` condition that gates
+     * whether the podspec is linked.
+     */
+    applePodspecEntries(): ApplePodspecEntry[];
+    /**
+     * Returns all podspec paths defined by the module author, regardless of any
+     * `autolinkWhen` condition. Conditional filtering happens at resolve time; this getter
+     * intentionally returns every declared path (e.g. for overlap detection).
      */
     applePodspecPaths(): string[];
     /**
