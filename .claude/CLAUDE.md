@@ -1,4 +1,4 @@
-## expo-tools (`et`)
+## expotools (`et`)
 
 This repo ships its own CLI, `expo-tools`, available directly as `et <command> <...args>`.
 Call it as `et`, not via `npx`, `bunx`, or `pnpm run` — it's already on the PATH. Many of our
