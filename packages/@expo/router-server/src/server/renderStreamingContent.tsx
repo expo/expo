@@ -19,6 +19,7 @@ import ReactDOMServer from 'react-dom/server';
 import { getRootComponent } from '../static/getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
+  createFaviconAsNode,
   createInjectedCssAsNodes,
   createInjectedFontsAsNodes,
   createInjectedInlineCssAsNodes,
@@ -57,6 +58,8 @@ export type GetStreamingContentOptions = {
       hmrId?: string;
     }[];
     js: string[];
+    /** Public href of a favicon generated from `web.favicon` in the app config. */
+    favicon?: string;
   };
 };
 
@@ -123,14 +126,18 @@ export async function getStreamingContent(
 
   const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
   const { headNodes: inlineCssNodes } = createInjectedInlineCssAsNodes(options?.assets?.inlineCss);
+  const faviconNode = options?.assets?.favicon
+    ? createFaviconAsNode(options?.assets?.favicon)
+    : undefined;
 
   const serverDocumentData = {
     headNodes: [
       ...(options?.metadata?.headNodes ?? []),
+      faviconNode,
       getStyleElement({ key: 'rnw-style-element' }),
       ...(headCssNodes ?? []),
       ...(inlineCssNodes ?? []),
-    ],
+    ].filter(Boolean),
     bodyNodes: [<FontResources key="font-resources" />],
   };
 

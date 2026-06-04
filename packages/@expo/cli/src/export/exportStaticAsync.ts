@@ -406,7 +406,11 @@ export async function exportFromServerAsync(
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
-          manifest.assets = { css: cssAssets, js: syncJsAssets };
+          manifest.assets = {
+            css: cssAssets,
+            js: syncJsAssets,
+            favicon: injectFaviconTag ? `${baseUrl}/favicon.ico` : undefined,
+          };
           manifest.rendering = {
             mode: 'ssr',
             file: '_expo/server/render.js',
