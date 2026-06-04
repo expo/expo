@@ -1,3 +1,62 @@
+## expo-tools (`et`)
+
+This repo ships its own CLI, `expo-tools`, available directly as `et <command> <...args>`.
+Call it as `et`, not via `npx`, `bunx`, or `pnpm run` — it's already on the PATH. Many of our
+processes (pod install, native unit tests, prebuild, and more) run through it.
+
+Commands you'll reach for during normal development:
+
+- `et pod-install` — install pods in the directories that are out of sync. Run after changing
+  dependencies or a podspec.
+- `et native-unit-tests` — run native unit tests for all packages that provide them. Scope to
+  one package with `--packages <name>` (e.g. `et native-unit-tests -p ios --packages @expo/ui`).
+- `et check-packages` — verify that packages build and their tests pass.
+
+Run `et --help` to discover the rest (publishing, changelogs, on-call dashboards, and more).
+
+## Rules
+
+- **Red/green:** write the test first and watch it fail, then implement the feature or fix until
+  it passes. Don't write the implementation before the failing test exists.
+
+## Writing tests
+
+### Unit tests
+
+JS/TS unit tests use Jest and live next to the code in `__tests__/` (or `*.test.ts`). They run
+as part of `et check-packages` (see Committing below).
+
+### Native tests
+
+Swift/Kotlin unit tests live in `packages/<pkg>/ios/Tests/` and `android/`, and run through
+`et native-unit-tests` (scope with `--packages <name>`). Adding or changing an iOS `test_spec`
+requires `et pod-install` first.
+
+## Committing
+
+Before committing, run `et check-packages`. It runs the unit tests **and** builds the package's
+JS files. The build output is committed alongside your source changes, so a commit that skips
+this step will be missing its built files. Stage both your source edits and the regenerated
+build output.
+
+## Creating PRs
+
+Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTING.md
+
+**Commit message:** format as `[platform][api] Title`, e.g. `[ios][video] Fix black screen on older devices`.
+
+**PR description** follows the repo template — fill in each section:
+
+- **Why:** the motivation for the change; link relevant issues, forum posts, or feature requests.
+- **How:** how you built the feature or fixed the bug, and why you took that approach.
+- **Test Plan:** how you tested the change and how a reviewer can reproduce it — include terminal
+  output or screenshots when there are no automated tests.
+- **Checklist:** added a `CHANGELOG.md` entry and rebuilt the package sources; confirmed the change
+  works with `npx expo prebuild` & EAS Build if relevant; follows the documentation style guide.
+
+**Before submitting:** run `et check-packages` (builds, lints, and tests), commit the `build/`
+output, and remove stray `console.log`s or commented-out code.
+
 ## Error messages
 
 When writing error messages, consider explaining what, why, and how:
