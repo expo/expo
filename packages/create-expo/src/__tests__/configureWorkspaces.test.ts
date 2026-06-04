@@ -136,28 +136,52 @@ describe(configureWorkspacesAsync, () => {
     });
   });
 
-  describe('with yarn / npm / bun', () => {
-    it.each(['yarn', 'npm', 'bun'] as const)(
-      'rewrites "workspace:*" workspace deps to "*" with %s and does not write pnpm-workspace.yaml',
-      async (manager) => {
-        seedMonorepo('workspace:*');
+  describe('with npm', () => {
+    it('rewrites "workspace:*" workspace deps to "*" with %s and does not write pnpm-workspace.yaml', async () => {
+      seedMonorepo('workspace:*');
 
-        await configureWorkspacesAsync(projectRoot, manager);
+      await configureWorkspacesAsync(projectRoot, 'npm');
 
-        const mobile = readJson(`${projectRoot}/apps/mobile/package.json`);
-        expect(mobile.dependencies['shared-ui']).toBe('*');
-        expect(mobile.devDependencies['shared-config']).toBe('*');
-        expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(false);
-      }
-    );
+      const mobile = readJson(`${projectRoot}/apps/mobile/package.json`);
+      expect(mobile.dependencies['shared-ui']).toBe('*');
+      expect(mobile.devDependencies['shared-config']).toBe('*');
+      expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(false);
+    });
 
-    it('leaves already-"*" specs untouched under yarn', async () => {
+    it('leaves already-"*" specs untouched under npm', async () => {
       seedMonorepo('*');
-      await configureWorkspacesAsync(projectRoot, 'yarn');
+      await configureWorkspacesAsync(projectRoot, 'npm');
       expect(readJson(`${projectRoot}/apps/mobile/package.json`).dependencies['shared-ui']).toBe(
         '*'
       );
     });
+  });
+
+  describe('with yarn / bun', () => {
+    it.each(['yarn', 'bun'] as const)(
+      'rewrites "*" workspace deps to "workspace:*" with %s and does not write pnpm-workspace.yaml',
+      async (manager) => {
+        seedMonorepo('*');
+
+        await configureWorkspacesAsync(projectRoot, manager);
+
+        const mobile = readJson(`${projectRoot}/apps/mobile/package.json`);
+        expect(mobile.dependencies['shared-ui']).toBe('workspace:*');
+        expect(mobile.devDependencies['shared-config']).toBe('workspace:*');
+        expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(false);
+      }
+    );
+
+    it.each(['yarn', 'bun'] as const)(
+      'leaves already-"workspace:*" specs untouched',
+      async (manager) => {
+        seedMonorepo('workspace:*');
+        await configureWorkspacesAsync(projectRoot, manager);
+        expect(readJson(`${projectRoot}/apps/mobile/package.json`).dependencies['shared-ui']).toBe(
+          'workspace:*'
+        );
+      }
+    );
   });
 
   it('leaves non-workspace dep specs (semver ranges, file paths) untouched', async () => {

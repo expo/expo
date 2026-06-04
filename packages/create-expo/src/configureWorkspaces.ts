@@ -21,8 +21,8 @@ const WORKSPACE_DEP_FIELDS = [
  * `pnpm-workspace.yaml` listing the workspace packages so they're picked up
  * regardless of the root `package.json` `workspaces` field.
  *
- * - pnpm requires workspace deps to be written as `"workspace:*"`.
- * - yarn / npm / bun handle workspace links given `"*"` (the convention used
+ * - npm requires workspace deps to be written as `"*"`.
+ * - yarn / npm / bun handle workspace links given `"workspace:*"` (the convention used
  *   by yarn classic + npm workspaces).
  *
  * The function expects the template to use either `"workspace:*"` or `"*"` for
@@ -52,7 +52,7 @@ export async function configureWorkspacesAsync(
   const memberPaths = await resolveWorkspaceMemberPathsAsync(projectRoot, workspacePatterns);
   debug(`Found ${memberPaths.length} workspace member(s): ${memberPaths.join(', ')}`);
 
-  const targetSpec = packageManager === 'pnpm' ? 'workspace:*' : '*';
+  const targetSpec = packageManager === 'npm' ? '*' : 'workspace:*';
   for (const memberPath of memberPaths) {
     await normalizeWorkspaceDepsAsync(memberPath, targetSpec);
   }
