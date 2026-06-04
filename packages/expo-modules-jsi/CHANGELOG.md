@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
+
 ## 56.0.7 — 2026-05-20
 
 ### 🐛 Bug fixes

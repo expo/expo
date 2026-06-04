@@ -173,4 +173,105 @@ class ArrayBufferConversionTest {
     Truth.assertThat(originalBuffer.readByte(0)).isEqualTo(1.toByte())
     Truth.assertThat(copiedBuffer.readByte(0)).isEqualTo(0x42.toByte())
   }
+
+  @Test
+  fun native_array_buffer_arg_should_share_native_backed_array_buffer() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = expo.modules.TestModule.createNative(4);
+        const view = new Uint8Array(buffer);
+        view.fill(1);
+        const processedBuffer = expo.modules.TestModule.fillNativeBuffer(buffer, 0x42);
+        [Array.from(view), Array.from(new Uint8Array(processedBuffer))]
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(0x42, 0x42, 0x42, 0x42).inOrder()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(0x42, 0x42, 0x42, 0x42).inOrder()
+  }
+
+  @Test
+  fun returned_native_backed_array_buffer_should_outlive_native_argument_wrapper() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    evaluateScript(
+      """
+        globalThis.retainedBuffer = (() => {
+          const sourceBuffer = expo.modules.TestModule.createNative(4);
+          new Uint8Array(sourceBuffer).set([1, 2, 3, 4]);
+          return expo.modules.TestModule.fillNativeBuffer(sourceBuffer, 0x42);
+        })();
+      """.trimIndent()
+    )
+
+    forceGc()
+
+    val result = evaluateScript("Array.from(new Uint8Array(globalThis.retainedBuffer))").getArray()
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(0x42, 0x42, 0x42, 0x42).inOrder()
+  }
+
+  @Test
+  fun native_array_buffer_typed_array_arg_should_share_native_backed_view_range() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = expo.modules.TestModule.createNative(5);
+        const fullView = new Uint8Array(buffer);
+        fullView.set([1, 2, 3, 4, 5]);
+        const partialView = new Uint8Array(buffer, 1, 2);
+        const processedBuffer = expo.modules.TestModule.fillNativeBuffer(partialView, 0x42);
+        [Array.from(fullView), Array.from(new Uint8Array(processedBuffer))]
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 0x42, 0x42, 4, 5).inOrder()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(0x42, 0x42).inOrder()
+  }
+
+  @Test
+  fun native_array_buffer_typed_array_arg_should_copy_js_allocated_view() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
+        const fullView = new Uint8Array(buffer);
+        const partialView = new Uint8Array(buffer, 1, 2);
+        const processedBuffer = expo.modules.TestModule.fillNativeBuffer(partialView, 0x42);
+        [Array.from(fullView), Array.from(new Uint8Array(processedBuffer))]
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4, 5).inOrder()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(0x42, 0x42).inOrder()
+  }
+
+  private fun nativeBackedArrayBufferModule() = inlineModule {
+    Name("TestModule")
+
+    Function("createNative") { size: Int ->
+      NativeArrayBuffer.allocate(size)
+    }
+
+    Function("fillNativeBuffer") { buffer: NativeArrayBuffer, value: Int ->
+      buffer.toDirectBuffer().apply {
+        rewind()
+        while (hasRemaining()) {
+          put(value.toByte())
+        }
+      }
+      buffer
+    }
+  }
+
+  private fun forceGc() {
+    repeat(5) {
+      System.gc()
+      System.runFinalization()
+      Thread.sleep(10)
+    }
+  }
 }

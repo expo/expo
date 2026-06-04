@@ -3,7 +3,6 @@
 #pragma once
 #ifdef __cplusplus
 
-#include <hermes/hermes.h>
 #include <TargetConditionals.h>
 
 #include "HostFunctionClosure.h"
@@ -198,6 +197,49 @@ inline jsi::ArrayBuffer createArrayBuffer(
     cleanupFunction(cleanupContext);
   });
   return jsi::ArrayBuffer(runtime, std::move(buffer));
+}
+
+// MARK: - Zero-copy ArrayBuffer borrowing
+
+struct BorrowedBuffer {
+  uint8_t *_Nullable data;
+  size_t size;
+  void *_Nullable retainer;
+};
+
+/**
+ * Borrows a native-backed ArrayBuffer. The returned data pointer and size are
+ * captured at borrow time, so resizable or detached buffers are not supported.
+ * A non-null retainer must be passed to releaseBorrowedBuffer exactly once.
+ * The {nullptr, 0, nullptr} failure result must not be released.
+ */
+inline BorrowedBuffer tryBorrowMutableBuffer(
+  jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(runtime);
+  if (!mutableBuffer) {
+    return {nullptr, 0, nullptr};
+  }
+  uint8_t *data = mutableBuffer->data();
+  size_t size = mutableBuffer->size();
+  auto *retained = new std::shared_ptr<jsi::MutableBuffer>(std::move(mutableBuffer));
+  return {data, size, retained};
+#else
+  (void)runtime;
+  (void)arrayBuffer;
+  return {nullptr, 0, nullptr};
+#endif
+}
+
+inline void releaseBorrowedBuffer(void *_Nonnull retainer) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  delete static_cast<std::shared_ptr<jsi::MutableBuffer> *>(retainer);
+#else
+  (void)retainer;
+#endif
 }
 
 // MARK: - Native state
