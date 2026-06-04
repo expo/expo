@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -119,7 +120,11 @@ internal class HostView(context: Context, appContext: AppContext) :
     val layoutDirection = props.layoutDirection.value.toLayoutDirection()
 
     CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
-      MaterialExpressiveTheme(colorScheme = colorScheme) {
+      // Workaround (pending upstream fix, https://issuetracker.google.com/issues/519816993)
+      // the expressive motion scheme's spring overshoots >1f, and TextField's calculateHeight
+      // extrapolates that overshoot, transiently growing the field and jiggling surrounding
+      // content. Forcing the standard (non-overshooting) spatial spring removes the jiggle.
+      MaterialExpressiveTheme(colorScheme = colorScheme, motionScheme = MotionScheme.standard()) {
         MaybeMatchContentsLayout {
           Children(this@Content)
         }
