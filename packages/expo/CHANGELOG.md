@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Include JavaScript and React component stacks in web dev server error logs. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Forward unhandled errors and rejections to the dev server console. ([#46578](https://github.com/expo/expo/pull/46578) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Decompress `gzip` / `br` / `zstd` `expo/fetch` responses on Android even when the caller sets their own `Accept-Encoding` header. ([#46398](https://github.com/expo/expo/pull/46398) by [@zoontek](https://github.com/zoontek))
 - Fix `bodyUsed` leaking across siblings when fetch Response is cloned twice ([#46397](https://github.com/expo/expo/pull/46397) by [@zoontek](https://github.com/zoontek))
