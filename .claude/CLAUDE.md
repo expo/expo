@@ -1,6 +1,6 @@
 ## expotools (`et`)
 
-This repo ships its own CLI, `expo-tools`, available directly as `et <command> <...args>`.
+This repo ships its own CLI, `expotools`, available directly as `et <command> <...args>`.
 Call it as `et`, not via `npx`, `bunx`, or `pnpm run` — it's already on the PATH. Many of our
 processes (pod install, native unit tests, prebuild, and more) run through it.
 
