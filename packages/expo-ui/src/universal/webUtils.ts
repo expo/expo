@@ -232,7 +232,7 @@ export const generatePrimaryColorScale = (
 
   const scale = {
     // Contrast for filled buttons: pick white or a hue-tinted near-black based on L of 500
-    '--expo-ui-primary-foreground': L < 0.68 ? '#ffffff' : lchToHex([0.18, C * 0.1, H]),
+    '--expo-ui-primary-foreground': L < 0.74 ? '#ffffff' : lchToHex([0.18, C * 0.1, H]),
   } as PrimaryColorScale;
 
   for (const { step, L: tgtL, cMul } of PRIMARY_STOPS) {
