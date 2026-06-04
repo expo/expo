@@ -57,3 +57,24 @@ index d8e9c7cec2f57c124cc2b2fc52b69de8940d3eb5..3eede671066cb814ca43567815e166ac
  
      name = package["name"]
      podspec_path = package_config["podspecPath"]
+diff --git a/third-party-podspecs/fmt.podspec b/third-party-podspecs/fmt.podspec
+index 2f38990e226c13f483aaf1b986302d4094243814..a40c5755e049974e98a4038c177661d2bdc5681f 100644
+--- a/third-party-podspecs/fmt.podspec
++++ b/third-party-podspecs/fmt.podspec
+@@ -8,14 +8,14 @@ fmt_git_url = fmt_config[:git]
+ 
+ Pod::Spec.new do |spec|
+   spec.name = "fmt"
+-  spec.version = "11.0.2"
++  spec.version = "12.1.0"
+   spec.license = { :type => "MIT" }
+   spec.homepage = "https://github.com/fmtlib/fmt"
+   spec.summary = "{fmt} is an open-source formatting library for C++. It can be used as a safe and fast alternative to (s)printf and iostreams."
+   spec.authors = "The fmt contributors"
+   spec.source = {
+     :git => fmt_git_url,
+-    :tag => "11.0.2"
++    :tag => "12.1.0"
+   }
+   spec.pod_target_xcconfig = {
+     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
