@@ -21,6 +21,14 @@ if (typeof window !== 'undefined') {
       originalFunction.apply(console, args);
     };
   });
+
+  window.addEventListener('error', (event) => {
+    HMRClient.log('error', [event.error]);
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    HMRClient.log('error', [event.reason]);
+  });
 }
 
 // This is called native on native platforms
