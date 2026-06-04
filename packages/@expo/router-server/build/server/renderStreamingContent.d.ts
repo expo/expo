@@ -24,6 +24,8 @@ export type GetStreamingContentOptions = {
             hmrId?: string;
         }[];
         js: string[];
+        /** Public href of a favicon generated from `web.favicon` in the app config. */
+        favicon?: string;
     };
 };
 /**
