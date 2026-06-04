@@ -34,7 +34,7 @@ requires `et pod-install` first.
 
 ## Committing
 
-Before committing, run `et check-packages`. It runs the unit tests **and** builds the package's
+Before committing, run `et check-packages <...packages>` with the package names that has changed. It runs the unit tests **and** builds the package's
 JS files. The build output is committed alongside your source changes, so a commit that skips
 this step will be missing its built files. Stage both your source edits and the regenerated
 build output.
