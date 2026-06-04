@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Support conditional `podspecPath` entries in `expo-module.config.json` via `autolinkWhen` (`{ npmPackage }` or `{ podfileProperty }`), evaluated by the autolinking resolver. Gates companion/adapter pods like `ExpoModulesWorkletsAdapter` entirely in autolinking, so they link only when their backing package is installed (even when reached transitively or through an optional peer dependency).
+- [iOS] Support conditional `podspecPath` entries in `expo-module.config.json` via `autolinkWhen` (`{ npmPackage }` or `{ podfileProperty }`), evaluated by the autolinking resolver. Gates companion/adapter pods like `ExpoModulesWorkletsAdapter` entirely in autolinking, so they link only when their backing package is installed (even when reached transitively or through an optional peer dependency). ([#46569](https://github.com/expo/expo/pull/46569) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
