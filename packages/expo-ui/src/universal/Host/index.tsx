@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
 export function Host({
   children,
   colorScheme = 'unspecified',
+  seedColor,
   ignoreSafeArea,
   layoutDirection,
   matchContents = false,
@@ -43,7 +44,7 @@ export function Host({
   ...rest
 }: UniversalHostProps) {
   const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
-  const primaryColorScale = useMemo(() => generatePrimaryColorScale('#007aff'), []);
+  const primaryColorScale = useMemo(() => generatePrimaryColorScale(seedColor), [seedColor]);
 
   const dir =
     layoutDirection === 'leftToRight'

@@ -1,6 +1,8 @@
 import type { ComponentProps, ElementType } from 'react';
 import {
+  processColor,
   unstable_createElement,
+  type ColorValue,
   type ImageStyle,
   type StyleProp,
   type TextStyle,
@@ -137,6 +139,8 @@ export const globalCss = css`
 
 // Color utils
 
+const DEFAULT_PRIMARY_COLOR = '#007aff';
+
 type Lch = [number, number, number];
 
 const srgbToLinear = (c: number): number =>
@@ -204,8 +208,27 @@ type PrimaryColorScale = Record<
   string
 >;
 
-export const generatePrimaryColorScale = (hex: string): Record<string, string> => {
-  const [L, C, H] = hexToLch(hex);
+// Normalize any `ColorValue` (named color, `rgb()` / `rgba()`, hex string, or
+// processed number) to a `#RRGGBB` string. `processColor` returns an
+// `0xAARRGGBB` integer (or `null`/`undefined` for invalid input); alpha is
+// dropped since the scale only needs the base hue.
+const colorValueToHex = (color: ColorValue): string | null => {
+  const argb = processColor(color);
+
+  if (typeof argb !== 'number') {
+    return null;
+  }
+
+  const r = (argb >> 16) & 0xff;
+  const g = (argb >> 8) & 0xff;
+  const b = argb & 0xff;
+  return '#' + [r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('');
+};
+
+export const generatePrimaryColorScale = (
+  color: ColorValue | undefined = DEFAULT_PRIMARY_COLOR
+): Record<string, string> => {
+  const [L, C, H] = hexToLch(colorValueToHex(color) ?? DEFAULT_PRIMARY_COLOR);
 
   const scale = {
     // Contrast for filled buttons: pick white or a hue-tinted near-black based on L of 500
