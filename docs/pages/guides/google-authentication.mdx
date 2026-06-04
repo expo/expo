@@ -8,12 +8,19 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
 You can integrate Google authentication in your Expo app using either of the following libraries:
 
-- [`react-native-nitro-google-signin`](https://react-native-nitro-google-signin.github.io): Uses modern native APIs — including **Android Credential Manager**.
-- [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin): A widely used alternative implementation. Note that **Android Credential Manager APIs are available as part of their paid offering**.
+- [`react-native-nitro-google-signin`](https://react-native-nitro-google-signin.github.io): A library that uses modern native APIs.
+- [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin): A widely used library.
 
 Both libraries provide native sign-in buttons and support authenticating the user (and obtaining authorization to use Google APIs). Because they require custom native code, you'll need to use a [config plugin](/config-plugins/introduction/) in the [app config](/versions/latest/config/app/) and build a development build.
 
-> The legacy Google Sign-In SDK for Android (part of `com.google.android.gms:play-services-auth`) is deprecated and Google recommends migrating to **Android Credential Manager**. See [About the migration from legacy Google Sign-In](https://developer.android.com/identity/sign-in/legacy-gsi-migration).
+## Choosing a library
+
+When choosing between the two libraries, consider the following differences:
+
+- `react-native-nitro-google-signin` includes support for **Android Credential Manager**.
+- `@react-native-google-signin/google-signin` provides **Android Credential Manager APIs as part of their paid offering**.
+
+> **warning** The legacy Google Sign-In SDK for Android (part of `com.google.android.gms:play-services-auth`) is deprecated and Google recommends migrating to **Android Credential Manager**. See [About the migration from legacy Google Sign-In](https://developer.android.com/identity/sign-in/legacy-gsi-migration).
 
 This guide provides information on how to configure the library for your project.
 
@@ -57,10 +64,10 @@ We recommend uploading the app to the Google Play Store if your app intends to r
 
 ### Configure your Firebase or Google Cloud Console project
 
-> Refer to the library documentation for a more in-depth configuration guide:
->
-> - [`react-native-nitro-google-signin`](https://react-native-nitro-google-signin.github.io)
-> - [`@react-native-google-signin/google-signin`](https://react-native-google-signin.github.io/docs/setting-up/get-config-file)
+Refer to the library documentation for a more in-depth configuration guide:
+
+- [`react-native-nitro-google-signin`](https://react-native-nitro-google-signin.github.io/docs/setup/google-cloud)
+- [`@react-native-google-signin/google-signin`](https://react-native-google-signin.github.io/docs/setting-up/get-config-file)
 
 For Android, once you have uploaded your app, you need to provide the SHA-1 certificate fingerprint values when asked while configuring the project in Firebase or Google Cloud Console. There are two types of values that you can provide:
 
