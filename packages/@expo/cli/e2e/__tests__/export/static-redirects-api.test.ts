@@ -23,7 +23,7 @@ describe('server api redirects', () => {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_SRC: 'static-redirects',
-          E2E_ROUTER_ASYNC: 'development',
+          E2E_ROUTER_ASYNC: 'true',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
             { source: '/redirect/permanent/methods', destination: '/methods', permanent: true },
             { source: '/redirect/methods', destination: '/methods' },

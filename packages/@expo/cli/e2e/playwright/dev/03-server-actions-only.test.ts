@@ -23,7 +23,7 @@ test.describe(inputDir, () => {
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: testName,
-      E2E_ROUTER_ASYNC: 'development',
+      E2E_ROUTER_ASYNC: 'true',
       E2E_SERVER_FUNCTIONS: '1',
       TEST_SECRET_VALUE: 'test-secret',
 
