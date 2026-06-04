@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Add the missing `redirects` type to the Expo Router config plugin options. ([#46574](https://github.com/expo/expo/issues/46574) by [@cyphercodes](https://github.com/cyphercodes))
 - [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others

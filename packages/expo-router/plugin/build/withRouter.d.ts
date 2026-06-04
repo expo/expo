@@ -1,4 +1,15 @@
 import { ConfigPlugin } from 'expo/config-plugins';
+type RedirectMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD';
+type RedirectConfig = {
+    /** The previous file path that this route should redirect from */
+    source: string;
+    /** The target file path that this route should redirect to */
+    destination: string;
+    /** Whether the redirect is temporary or permanent. Defaults to `false`. */
+    permanent?: boolean;
+    /** HTTP methods that should be redirected. Omit to redirect all methods. */
+    methods?: RedirectMethod[];
+};
 export type Props = {
     /** Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production, development origin is inferred using the Expo CLI development server. */
     origin?: string;
@@ -17,6 +28,8 @@ export type Props = {
     sitemap?: boolean;
     /** Generate partial typed routes */
     partialTypedGroups?: boolean;
+    /** An array of static redirect rules. */
+    redirects?: RedirectConfig[];
     /** A list of headers that are set on every route response from the server */
     headers?: Record<string, string | string[]>;
     /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */

@@ -3,6 +3,19 @@ import { ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
 
 const schema = require('../options.json');
 
+type RedirectMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD';
+
+type RedirectConfig = {
+  /** The previous file path that this route should redirect from */
+  source: string;
+  /** The target file path that this route should redirect to */
+  destination: string;
+  /** Whether the redirect is temporary or permanent. Defaults to `false`. */
+  permanent?: boolean;
+  /** HTTP methods that should be redirected. Omit to redirect all methods. */
+  methods?: RedirectMethod[];
+};
+
 const withExpoHeadIos: ConfigPlugin = (config) => {
   return withInfoPlist(config, (config) => {
     // TODO: Add a way to enable this...
@@ -45,6 +58,8 @@ export type Props = {
   sitemap?: boolean;
   /** Generate partial typed routes */
   partialTypedGroups?: boolean;
+  /** An array of static redirect rules. */
+  redirects?: RedirectConfig[];
   /** A list of headers that are set on every route response from the server */
   headers?: Record<string, string | string[]>;
   /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */
