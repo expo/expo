@@ -10,6 +10,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "fast-xml-parser": "4.5.4",
     "firebase-admin": "^12.1.0",
     "firebase-functions": "^5.0.1"
   },
@@ -17,5 +18,8 @@
     "firebase-functions-test": "^3.2.0",
     "typescript": "^5.4.5"
   },
-  "private": true
+  "private": true,
+  "resolutions": {
+    "fast-xml-parser": "4.5.4"
+  }
 }
