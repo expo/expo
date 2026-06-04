@@ -292,7 +292,9 @@ describe('resolveModuleAsync conditional podspecPath (autolinkWhen)', () => {
   it('omits the conditional pod when the Podfile property is the disabled value', async () => {
     vol.fromJSON(
       {
-        'Podfile.properties.json': JSON.stringify({ 'expo.camera.barcode-scanner-enabled': 'false' }),
+        'Podfile.properties.json': JSON.stringify({
+          'expo.camera.barcode-scanner-enabled': 'false',
+        }),
       },
       commandRoot
     );

@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
-import { appleAutolinkConditionMetAsync } from '../autolinkCondition';
 import { createMemoizer, _verifyMemoizerFreed } from '../../../memoize';
+import { appleAutolinkConditionMetAsync } from '../autolinkCondition';
 
 const projectRoot = '/fake/project';
 const nativeRoot = '/fake/project/ios';
@@ -89,10 +89,7 @@ describe(appleAutolinkConditionMetAsync, () => {
     );
 
     withMemoizer('is not met when appRoot is missing', async () => {
-      const met = await appleAutolinkConditionMetAsync(
-        { npmPackage: 'react-native-worklets' },
-        {}
-      );
+      const met = await appleAutolinkConditionMetAsync({ npmPackage: 'react-native-worklets' }, {});
       expect(met).toBe(false);
     });
   });

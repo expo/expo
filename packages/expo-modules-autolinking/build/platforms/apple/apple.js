@@ -31,7 +31,8 @@ async function findPodspecFiles(revision, context) {
     if (podspecEntries && podspecEntries.length) {
         const podspecPaths = [];
         for (const entry of podspecEntries) {
-            if (entry.autolinkWhen && !(await (0, autolinkCondition_1.appleAutolinkConditionMetAsync)(entry.autolinkWhen, context))) {
+            if (entry.autolinkWhen &&
+                !(await (0, autolinkCondition_1.appleAutolinkConditionMetAsync)(entry.autolinkWhen, context))) {
                 continue;
             }
             podspecPaths.push(entry.path);
