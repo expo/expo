@@ -166,6 +166,50 @@ describe('symbolicate React stacks', () => {
 `);
   });
 
+  it('should symbolicate a web error stack', async () => {
+    let parsedError: any;
+    jest
+      .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
+      .mockImplementationOnce((_projectRoot, _level, error) => {
+        parsedError = error;
+        return Promise.resolve({
+          isFallback: false,
+          stack: '\n\n  at app/index.tsx:1:1',
+        });
+      });
+
+    reporter._log({
+      type: 'client_log',
+      level: 'error',
+      data: [
+        '[Error: Hello]',
+        'Error: Hello\n    at Page (http://localhost:8081/packages/expo-router/entry.bundle?platform=web&dev=true&hot=false:123:45)',
+      ],
+      mode: 'web',
+    } as any);
+
+    expect(parseErrorStringToObject).toHaveBeenCalledWith(
+      expect.stringContaining('/packages/expo-router/entry.bundle?platform=web')
+    );
+    expect(maybeSymbolicateAndFormatJSErrorStackLogAsync).toHaveBeenCalledTimes(1);
+    expect(parsedError.stack[0]).toEqual({
+      arguments: [],
+      column: 44,
+      file: 'http://localhost:8081/packages/expo-router/entry.bundle?platform=web&dev=true&hot=false',
+      lineNumber: 123,
+      methodName: 'Page',
+    });
+
+    await jest.runAllTimersAsync();
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(''))).toMatchInlineSnapshot(`
+"Web  ERROR [Error: Hello]
+
+  at app/index.tsx:1:1"
+`);
+  });
+
   it(`should symbolicate multiple errors stacks - SDK 54 style`, async () => {
     jest
       .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
