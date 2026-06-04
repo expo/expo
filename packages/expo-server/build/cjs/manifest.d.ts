@@ -7,6 +7,8 @@ import type { ReactNode } from 'react';
 export interface AssetInfo {
     css: string[];
     js: string[];
+    /** Public href of a favicon generated from `web.favicon` in the app config. */
+    favicon?: string;
 }
 /**
  * Rendering configuration. Discriminated union supporting multiple rendering modes.

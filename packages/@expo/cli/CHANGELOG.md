@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Disable sextant QR code rendering for Windows Terminal ([#46455](https://github.com/expo/expo/pull/46455) by [@kitten](https://github.com/kitten))
+- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
