@@ -108,13 +108,17 @@ async function getStreamingContent(location, options) {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
     const { headNodes: headCssNodes } = (0, react_1.createInjectedCssAsNodes)(options?.assets?.css ?? []);
     const { headNodes: inlineCssNodes } = (0, react_1.createInjectedInlineCssAsNodes)(options?.assets?.inlineCss);
+    const faviconNode = options?.assets?.favicon
+        ? (0, react_1.createFaviconAsNode)(options?.assets?.favicon)
+        : undefined;
     const serverDocumentData = {
         headNodes: [
             ...(options?.metadata?.headNodes ?? []),
+            faviconNode,
             getStyleElement({ key: 'rnw-style-element' }),
             ...(headCssNodes ?? []),
             ...(inlineCssNodes ?? []),
-        ],
+        ].filter(Boolean),
         bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {}, "font-resources")],
     };
     return await server_2.default.renderToReadableStream((0, jsx_runtime_1.jsx)(server_1.ServerDocument, { data: serverDocumentData, children: (0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }) }), {
