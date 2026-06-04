@@ -10,7 +10,7 @@ async function resolveModulesAsync(searchResults, autolinkingOptions, context = 
     // Additional output property for Cocoapods flags and conditional-podspec resolution.
     const extraOutput = {
         flags: autolinkingOptions.flags,
-        appRoot: context.appRoot,
+        resolvedDependencyNames: context.resolvedDependencyNames,
         commandRoot: context.commandRoot,
     };
     const moduleDescriptorList = await (0, concurrency_1.taskAll)(Object.entries(searchResults), async ([packageName, revision]) => {

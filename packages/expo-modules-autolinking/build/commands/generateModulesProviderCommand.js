@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateModulesProviderCommand = generateModulesProviderCommand;
 const fs_1 = __importDefault(require("fs"));
 const autolinkingOptions_1 = require("./autolinkingOptions");
-const findModules_1 = require("../autolinking/findModules");
 const generatePackageList_1 = require("../autolinking/generatePackageList");
 const resolveModules_1 = require("../autolinking/resolveModules");
+const dependencies_1 = require("../dependencies");
 /** Generates a source file listing all packages to link in the runtime */
 function generateModulesProviderCommand(cli) {
     return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('generate-modules-provider [searchPaths...]'))
@@ -25,11 +25,15 @@ function generateModulesProviderCommand(cli) {
         });
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
         const appRoot = commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot());
-        const expoModulesSearchResults = await (0, findModules_1.findModulesAsync)({
-            autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-            appRoot,
-        });
-        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions, { appRoot, commandRoot: autolinkingOptionsLoader.getCommandRoot() });
+        const linker = (0, dependencies_1.makeCachedDependenciesLinker)({ projectRoot: appRoot });
+        // The RN-config resolver needs a concrete platform; map the `apple` umbrella to `ios`.
+        const dependencyPlatform = platform === 'apple' ? 'ios' : platform;
+        const [expoModulesSearchResults, dependencyResolutions] = await Promise.all([
+            (0, dependencies_1.scanExpoModuleResolutionsForPlatform)(linker, platform),
+            (0, dependencies_1.scanDependencyResolutionsForPlatform)(linker, dependencyPlatform),
+        ]);
+        const resolvedDependencyNames = new Set(Object.keys(dependencyResolutions));
+        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions, { resolvedDependencyNames, commandRoot: autolinkingOptionsLoader.getCommandRoot() });
         const includeModules = new Set(commandArguments.packages ?? []);
         const filteredModules = expoModulesResolveResults.filter((module) => includeModules.has(module.packageName));
         const podfileProperties = await fs_1.default.promises

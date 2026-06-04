@@ -9,8 +9,8 @@ import type {
 } from '../types';
 
 interface ResolveModulesContext {
-  /** JS project root, used to resolve conditional (`autolinkWhen`) npm packages. */
-  appRoot?: string;
+  /** Resolved native-module dependency names, used to gate conditional (`autolinkWhen`) podspecs. */
+  resolvedDependencyNames?: Set<string>;
   /** Native project directory (e.g. `ios/`) where `Podfile.properties.json` lives. */
   commandRoot?: string;
 }
@@ -25,7 +25,7 @@ export async function resolveModulesAsync(
   // Additional output property for Cocoapods flags and conditional-podspec resolution.
   const extraOutput = {
     flags: autolinkingOptions.flags,
-    appRoot: context.appRoot,
+    resolvedDependencyNames: context.resolvedDependencyNames,
     commandRoot: context.commandRoot,
   };
 

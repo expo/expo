@@ -3,9 +3,13 @@ import fs from 'fs';
 
 import type { AutolinkingCommonArguments } from './autolinkingOptions';
 import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
-import { findModulesAsync } from '../autolinking/findModules';
 import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
 import { resolveModulesAsync } from '../autolinking/resolveModules';
+import {
+  makeCachedDependenciesLinker,
+  scanDependencyResolutionsForPlatform,
+  scanExpoModuleResolutionsForPlatform,
+} from '../dependencies';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
@@ -43,14 +47,18 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
 
         const appRoot = commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot());
-        const expoModulesSearchResults = await findModulesAsync({
-          autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-          appRoot,
-        });
+        const linker = makeCachedDependenciesLinker({ projectRoot: appRoot });
+        // The RN-config resolver needs a concrete platform; map the `apple` umbrella to `ios`.
+        const dependencyPlatform = platform === 'apple' ? 'ios' : platform;
+        const [expoModulesSearchResults, dependencyResolutions] = await Promise.all([
+          scanExpoModuleResolutionsForPlatform(linker, platform),
+          scanDependencyResolutionsForPlatform(linker, dependencyPlatform),
+        ]);
+        const resolvedDependencyNames = new Set(Object.keys(dependencyResolutions));
         const expoModulesResolveResults = await resolveModulesAsync(
           expoModulesSearchResults,
           autolinkingOptions,
-          { appRoot, commandRoot: autolinkingOptionsLoader.getCommandRoot() }
+          { resolvedDependencyNames, commandRoot: autolinkingOptionsLoader.getCommandRoot() }
         );
 
         const includeModules = new Set(commandArguments.packages ?? []);

@@ -1,8 +1,8 @@
 import type { AutolinkingOptions } from '../commands/autolinkingOptions';
 import type { ExtraDependencies, ModuleDescriptor, SearchResults, SupportedPlatform } from '../types';
 interface ResolveModulesContext {
-    /** JS project root, used to resolve conditional (`autolinkWhen`) npm packages. */
-    appRoot?: string;
+    /** Resolved native-module dependency names, used to gate conditional (`autolinkWhen`) podspecs. */
+    resolvedDependencyNames?: Set<string>;
     /** Native project directory (e.g. `ios/`) where `Podfile.properties.json` lives. */
     commandRoot?: string;
 }

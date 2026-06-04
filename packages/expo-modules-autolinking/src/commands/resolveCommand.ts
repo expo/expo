@@ -2,12 +2,16 @@ import type commander from 'commander';
 
 import type { AutolinkingCommonArguments } from './autolinkingOptions';
 import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
-import { findModulesAsync } from '../autolinking/findModules';
 import { getConfiguration } from '../autolinking/getConfiguration';
 import {
   resolveModulesAsync,
   resolveExtraBuildDependenciesAsync,
 } from '../autolinking/resolveModules';
+import {
+  makeCachedDependenciesLinker,
+  scanDependencyResolutionsForPlatform,
+  scanExpoModuleResolutionsForPlatform,
+} from '../dependencies';
 import type {
   ModuleDescriptor,
   CommonNativeModuleDescriptor,
@@ -39,15 +43,31 @@ export function resolveCommand(cli: commander.CommanderStatic) {
       const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
       const appRoot = await autolinkingOptionsLoader.getAppRoot();
 
-      const expoModulesSearchResults = await findModulesAsync({
-        autolinkingOptions,
-        appRoot,
-      });
+      // Resolve once via the cached linker, then derive two outputs that share its scans:
+      // the Expo modules to link, and the full set of resolved native-module dependencies
+      // (used to gate conditional `autolinkWhen` podspecs and surfaced as `resolvedDependencies`).
+      const linker = makeCachedDependenciesLinker({ projectRoot: appRoot });
+      // `scanDependencyResolutionsForPlatform` resolves React Native modules via a concrete
+      // platform; the `apple` umbrella isn't handled by the RN-config resolver, so map it to `ios`.
+      const dependencyPlatform = platform === 'apple' ? 'ios' : platform;
+      const [expoModulesSearchResults, dependencyResolutions] = await Promise.all([
+        scanExpoModuleResolutionsForPlatform(linker, platform),
+        scanDependencyResolutionsForPlatform(linker, dependencyPlatform),
+      ]);
+      const resolvedDependencyNames = new Set(Object.keys(dependencyResolutions));
+      const resolvedDependencies = Object.fromEntries(
+        Object.entries(dependencyResolutions)
+          .filter(([, resolution]) => resolution != null)
+          .map(([name, resolution]) => [
+            name,
+            { root: resolution!.path, version: resolution!.version },
+          ])
+      );
 
       const expoModulesResolveResults = await resolveModulesAsync(
         expoModulesSearchResults,
         autolinkingOptions,
-        { appRoot, commandRoot: autolinkingOptionsLoader.getCommandRoot() }
+        { resolvedDependencyNames, commandRoot: autolinkingOptionsLoader.getCommandRoot() }
       );
 
       const extraDependencies = await resolveExtraBuildDependenciesAsync({
@@ -71,29 +91,18 @@ export function resolveCommand(cli: commander.CommanderStatic) {
         }, new Set()),
       ];
 
+      const output = {
+        extraDependencies,
+        coreFeatures,
+        modules: expoModulesResolveResults,
+        resolvedDependencies,
+        ...(configuration ? { configuration } : {}),
+      };
+
       if (commandArguments.json) {
-        console.log(
-          JSON.stringify({
-            extraDependencies,
-            coreFeatures,
-            modules: expoModulesResolveResults,
-            ...(configuration ? { configuration } : {}),
-          })
-        );
+        console.log(JSON.stringify(output));
       } else {
-        console.log(
-          require('util').inspect(
-            {
-              extraDependencies,
-              coreFeatures,
-              modules: expoModulesResolveResults,
-              ...(configuration ? { configuration } : {}),
-            },
-            false,
-            null,
-            true
-          )
-        );
+        console.log(require('util').inspect(output, false, null, true));
       }
     });
 }

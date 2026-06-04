@@ -218,7 +218,6 @@ describe(resolveModuleAsync, () => {
 });
 
 describe('resolveModuleAsync conditional podspecPath (autolinkWhen)', () => {
-  const appRoot = '/app';
   const commandRoot = '/app/ios';
 
   const npmGatedConfig = () =>
@@ -235,33 +234,23 @@ describe('resolveModuleAsync conditional podspecPath (autolinkWhen)', () => {
       },
     });
 
-  const resolveCore = (config: ExpoModuleConfig) =>
+  const resolveCore = (config: ExpoModuleConfig, resolvedDependencyNames: Set<string>) =>
     resolveModuleAsync(
       'expo-modules-core',
       { name: '', path: '/app/node_modules/expo-modules-core', version: '0.0.1', config },
-      { appRoot, commandRoot }
+      { resolvedDependencyNames, commandRoot }
     );
 
-  it('includes the conditional pod when the npm package is installed', async () => {
-    vol.fromJSON(
-      {
-        'package.json': '{"name":"app"}',
-        'node_modules/react-native-worklets/package.json': '{"name":"react-native-worklets"}',
-      },
-      appRoot
-    );
-
-    const result = await resolveCore(npmGatedConfig());
+  it('includes the conditional pod when the npm package is resolved', async () => {
+    const result = await resolveCore(npmGatedConfig(), new Set(['react-native-worklets']));
     expect(result?.pods.map((pod) => pod.podName)).toEqual([
       'ExpoModulesCore',
       'ExpoModulesWorkletsAdapter',
     ]);
   });
 
-  it('omits the conditional pod when the npm package is not installed', async () => {
-    vol.fromJSON({ 'package.json': '{"name":"app"}' }, appRoot);
-
-    const result = await resolveCore(npmGatedConfig());
+  it('omits the conditional pod when the npm package is not resolved', async () => {
+    const result = await resolveCore(npmGatedConfig(), new Set());
     expect(result?.pods.map((pod) => pod.podName)).toEqual(['ExpoModulesCore']);
   });
 
@@ -286,7 +275,7 @@ describe('resolveModuleAsync conditional podspecPath (autolinkWhen)', () => {
     resolveModuleAsync(
       'expo-camera',
       { name: '', path: '/app/node_modules/expo-camera', version: '0.0.1', config },
-      { appRoot, commandRoot }
+      { commandRoot }
     );
 
   it('omits the conditional pod when the Podfile property is the disabled value', async () => {

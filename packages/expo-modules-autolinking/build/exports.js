@@ -24,16 +24,16 @@ exports.findProjectRootSync = findProjectRootSync;
 exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const findModules_1 = require("./autolinking/findModules");
 const resolveModules_1 = require("./autolinking/resolveModules");
 const autolinkingOptions_1 = require("./commands/autolinkingOptions");
+const dependencies_1 = require("./dependencies");
 __exportStar(require("./types"), exports);
 __exportStar(require("./autolinking"), exports);
 __exportStar(require("./platforms"), exports);
-var dependencies_1 = require("./dependencies");
-Object.defineProperty(exports, "makeCachedDependenciesLinker", { enumerable: true, get: function () { return dependencies_1.makeCachedDependenciesLinker; } });
-Object.defineProperty(exports, "scanDependencyResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.scanDependencyResolutionsForPlatform; } });
-Object.defineProperty(exports, "scanExpoModuleResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.scanExpoModuleResolutionsForPlatform; } });
+var dependencies_2 = require("./dependencies");
+Object.defineProperty(exports, "makeCachedDependenciesLinker", { enumerable: true, get: function () { return dependencies_2.makeCachedDependenciesLinker; } });
+Object.defineProperty(exports, "scanDependencyResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_2.scanDependencyResolutionsForPlatform; } });
+Object.defineProperty(exports, "scanExpoModuleResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_2.scanExpoModuleResolutionsForPlatform; } });
 __exportStar(require("./utilities"), exports);
 /** @deprecated */
 async function mergeLinkingOptionsAsync(argumentsOptions) {
@@ -53,8 +53,17 @@ async function queryAutolinkingModulesFromProjectAsync(projectRoot, options) {
     });
     const appRoot = await autolinkingOptionsLoader.getAppRoot();
     const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(options.platform);
-    const searchResults = await (0, findModules_1.findModulesAsync)({ appRoot, autolinkingOptions });
-    return await (0, resolveModules_1.resolveModulesAsync)(searchResults, autolinkingOptions);
+    const linker = (0, dependencies_1.makeCachedDependenciesLinker)({ projectRoot: appRoot });
+    // The RN-config resolver needs a concrete platform; map the `apple` umbrella to `ios`.
+    const dependencyPlatform = options.platform === 'apple' ? 'ios' : options.platform;
+    const [searchResults, dependencyResolutions] = await Promise.all([
+        (0, dependencies_1.scanExpoModuleResolutionsForPlatform)(linker, options.platform),
+        (0, dependencies_1.scanDependencyResolutionsForPlatform)(linker, dependencyPlatform),
+    ]);
+    return await (0, resolveModules_1.resolveModulesAsync)(searchResults, autolinkingOptions, {
+        resolvedDependencyNames: new Set(Object.keys(dependencyResolutions)),
+        commandRoot: autolinkingOptionsLoader.getCommandRoot(),
+    });
 }
 /** @deprecated */
 function findProjectRootSync(cwd = process.cwd()) {

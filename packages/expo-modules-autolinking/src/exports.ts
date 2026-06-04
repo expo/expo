@@ -1,13 +1,17 @@
 import fs from 'fs';
 import path from 'path';
 
-import { findModulesAsync } from './autolinking/findModules';
 import { resolveModulesAsync } from './autolinking/resolveModules';
 import type { AutolinkingCommonArguments, AutolinkingOptions } from './commands/autolinkingOptions';
 import {
   createAutolinkingOptionsLoader,
   filterMapSearchPaths,
 } from './commands/autolinkingOptions';
+import {
+  makeCachedDependenciesLinker,
+  scanDependencyResolutionsForPlatform,
+  scanExpoModuleResolutionsForPlatform,
+} from './dependencies';
 import type { ModuleDescriptor, SupportedPlatform } from './types';
 
 export * from './types';
@@ -57,8 +61,17 @@ export async function queryAutolinkingModulesFromProjectAsync(
   });
   const appRoot = await autolinkingOptionsLoader.getAppRoot();
   const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(options.platform);
-  const searchResults = await findModulesAsync({ appRoot, autolinkingOptions });
-  return await resolveModulesAsync(searchResults, autolinkingOptions);
+  const linker = makeCachedDependenciesLinker({ projectRoot: appRoot });
+  // The RN-config resolver needs a concrete platform; map the `apple` umbrella to `ios`.
+  const dependencyPlatform = options.platform === 'apple' ? 'ios' : options.platform;
+  const [searchResults, dependencyResolutions] = await Promise.all([
+    scanExpoModuleResolutionsForPlatform(linker, options.platform),
+    scanDependencyResolutionsForPlatform(linker, dependencyPlatform),
+  ]);
+  return await resolveModulesAsync(searchResults, autolinkingOptions, {
+    resolvedDependencyNames: new Set(Object.keys(dependencyResolutions)),
+    commandRoot: autolinkingOptionsLoader.getCommandRoot(),
+  });
 }
 
 /** @deprecated */

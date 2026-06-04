@@ -5,66 +5,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.appleAutolinkConditionMetAsync = appleAutolinkConditionMetAsync;
 const fs_1 = __importDefault(require("fs"));
-const node_module_1 = __importDefault(require("node:module"));
 const path_1 = __importDefault(require("path"));
-const dependencies_1 = require("../../dependencies");
-const utils_1 = require("../../utils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 /**
  * Evaluates whether a conditional podspec entry should be autolinked.
  *
- * This runs in the autolinking resolver — the component that already resolves the
- * dependency graph — so installability is checked in-process rather than from a
- * subprocess at `pod install` time.
+ * The gate consults the already-resolved dependency set rather than re-resolving, so it
+ * stays consistent with how the autolinker actually links native modules.
+ *
+ * When the context is absent (e.g. the deprecated JS API called without it), an
+ * `npmPackage` condition resolves to `false` (the pod is omitted) and a `podfileProperty`
+ * condition resolves to linked-unless-explicitly-disabled.
  */
 async function appleAutolinkConditionMetAsync(condition, context) {
     if ('npmPackage' in condition && condition.npmPackage) {
-        const packageName = condition.npmPackage;
-        const appRoot = context.appRoot;
-        if (!appRoot) {
-            return false;
-        }
-        // Cheap, hoist-aware check first; fall back to a deep dependency-graph walk for strict
-        // (non-hoisted) layouts where a transitively-installed package isn't directly reachable
-        // from the project root — e.g. pnpm with `node-linker=isolated`.
-        return ((await isPackageHoistResolvable(packageName, appRoot)) ||
-            (await isPackageInDependencyGraph(packageName, appRoot)));
+        return !!context.resolvedDependencyNames?.has(condition.npmPackage);
     }
     if ('podfileProperty' in condition && condition.podfileProperty) {
-        const propertiesRoot = context.commandRoot ?? context.appRoot;
-        if (!propertiesRoot) {
+        if (!context.commandRoot) {
             return false;
         }
-        const properties = readPodfileProperties(propertiesRoot);
+        const properties = readPodfileProperties(context.commandRoot);
         // Linked unless the property is explicitly set to the disabled value.
         return properties[condition.podfileProperty] !== condition.disabledValue;
     }
     return false;
-}
-/** True when `packageName`'s `package.json` is reachable from `fromDir` via Node's node_modules lookup. */
-async function isPackageHoistResolvable(packageName, fromDir) {
-    try {
-        for (const modulePath of node_module_1.default._nodeModulePaths(fromDir)) {
-            const packageJsonPath = await (0, utils_1.maybeRealpath)((0, utils_1.fastJoin)((0, utils_1.fastJoin)(modulePath, packageName), 'package.json'));
-            if (packageJsonPath != null) {
-                return true;
-            }
-        }
-    }
-    catch {
-        // ignore and report not resolvable
-    }
-    return false;
-}
-/** True when `packageName` appears anywhere in the recursively-resolved dependency graph. */
-async function isPackageInDependencyGraph(packageName, appRoot) {
-    try {
-        const result = await (0, dependencies_1.scanDependenciesRecursively)(appRoot);
-        return result[packageName] != null;
-    }
-    catch {
-        return false;
-    }
 }
 function readPodfileProperties(nativeRoot) {
     try {

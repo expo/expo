@@ -163,10 +163,24 @@ module Expo
         @react_native_config ||= invoke_autolinking('react-native-config', platform: 'ios')
       end
 
+      # The full `resolve` autolinking output for Apple, memoized so `resolved_modules` and
+      # `resolved_dependencies` share a single invocation.
+      def resolve_output
+        @resolve_output ||= invoke_autolinking('resolve', platform: 'apple')
+      end
+
       # The resolved Expo modules list. Used by scan_node_modules_configs to locate
       # each internal package's spm.config.json via its resolved podspec dir.
       def resolved_modules
-        @resolved_modules ||= invoke_autolinking('resolve', platform: 'apple').fetch('modules', [])
+        @resolved_modules ||= resolve_output.fetch('modules', [])
+      end
+
+      # The resolver's set of resolved native-module dependencies (package name => {root, version}),
+      # respecting include/exclude/remap and using full-depth resolution. Returns nil when the
+      # JS side is older and doesn't emit it, so callers can fall back to `react_native_config`.
+      def resolved_dependencies
+        return @resolved_dependencies unless @resolved_dependencies.nil?
+        @resolved_dependencies = resolve_output.fetch('resolvedDependencies', nil)
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -1348,13 +1362,21 @@ module Expo
         config = JSON.parse(File.read(config_path))
         products = config['products'] || []
 
-        # Resolve via rncli autolinking so we use real node resolution (handles pnpm,
-        # yarn resolutions/PnP, aliased specifiers). Skip if the package isn't installed.
-        dep = react_native_config.dig('dependencies', npm_package)
-        return unless dep
-
-        package_root = dep['root']
-        pkg_version = dep.dig('platforms', 'ios', 'version')
+        # Gate on the resolver's resolved native-module set (rule-respecting, full-depth, so it
+        # catches transitively/optionally-reached packages the react-native-config enumeration
+        # misses under shallow linking). Fall back to react-native-config for older JS that
+        # doesn't emit `resolvedDependencies`. Skip if the package isn't a resolved dependency.
+        if (resolved = resolved_dependencies)
+          dep = resolved[npm_package]
+          return unless dep
+          package_root = dep['root']
+          pkg_version = dep['version']
+        else
+          dep = react_native_config.dig('dependencies', npm_package)
+          return unless dep
+          package_root = dep['root']
+          pkg_version = dep.dig('platforms', 'ios', 'version')
+        end
 
         # codegenConfig.name isn't surfaced by rncli; read it from package.json.
         installed_codegen_name = nil
@@ -1467,7 +1489,7 @@ module Expo
       # Builds a pod info hash for a single product from spm.config.json.
       def build_pod_info(product, pod_name, npm_package, package_dir, type, repo_root)
         product_name = product['name'] || pod_name
-        codegen_name = resolve_codegen_name(product, pod_name, npm_package, type, repo_root)
+        codegen_name = product['codegenName']
         base_dir = custom_modules_path || File.join(repo_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR)
         build_output_dir = File.join(base_dir, npm_package, 'output')
 
@@ -1477,7 +1499,7 @@ module Expo
           build_output_dir = bundled_output_dir
         end
 
-        package_root, podspec_dir = resolve_package_paths(pod_name, package_dir, npm_package, type, repo_root)
+        package_root, podspec_dir = resolve_package_paths(pod_name, package_dir)
 
         targets = (product['targets'] || [])
           .select { |t| t['type'] != 'framework' && !t['path']&.start_with?('.build/') }
@@ -1520,67 +1542,24 @@ module Expo
         end.uniq
       end
 
-      # Resolves the codegen module name. For external packages, prefers codegenConfig.name
-      # from the installed package.json over spm.config.json's codegenName.
-      def resolve_codegen_name(product, pod_name, npm_package, type, repo_root)
-        codegen_name = product['codegenName']
-        return codegen_name unless type == :external && codegen_name
-
-        ext_pkg_json = File.join(repo_root, 'node_modules', npm_package, 'package.json')
-        return codegen_name unless File.exist?(ext_pkg_json)
-
-        begin
-          rn_codegen_name = JSON.parse(File.read(ext_pkg_json)).dig('codegenConfig', 'name')
-          if rn_codegen_name && rn_codegen_name != codegen_name
-            Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: using codegenConfig.name '#{rn_codegen_name}' instead of '#{codegen_name}'"
-            return rn_codegen_name
-          end
-        rescue JSON::ParserError
-          # Fall back to spm.config.json value
-        end
-
-        codegen_name
-      end
-
-      # Resolves the package_root and podspec_dir for a pod.
+      # Resolves the package_root and podspec_dir for an internal Expo module pod.
+      # (External 3rd-party pods are handled by `process_external_config`, which resolves
+      # their root via the autolinking resolver.)
       # @return [Array<String>] [package_root, podspec_dir]
-      def resolve_package_paths(pod_name, package_dir, npm_package, type, repo_root)
-        if type == :internal
-          package_root = package_dir
-          ios_podspec = File.join(package_root, 'ios', "#{pod_name}.podspec")
-          root_podspec = File.join(package_root, "#{pod_name}.podspec")
+      def resolve_package_paths(pod_name, package_dir)
+        package_root = package_dir
+        ios_podspec = File.join(package_root, 'ios', "#{pod_name}.podspec")
+        root_podspec = File.join(package_root, "#{pod_name}.podspec")
 
-          podspec_dir = if File.exist?(ios_podspec)
-            File.join(package_root, 'ios')
-          elsif File.exist?(root_podspec)
-            package_root
-          else
-            File.join(package_root, 'ios')
-          end
-
-          [package_root, podspec_dir]
+        podspec_dir = if File.exist?(ios_podspec)
+          File.join(package_root, 'ios')
+        elsif File.exist?(root_podspec)
+          package_root
         else
-          package_root = resolve_external_package_root(npm_package, repo_root)
-          [package_root, package_root]
+          File.join(package_root, 'ios')
         end
-      end
 
-      # Resolves the package root for an external (3rd-party) npm package.
-      # Tries multiple node_modules locations to support pnpm/yarn workspaces.
-      def resolve_external_package_root(npm_package, repo_root)
-        # Try repo root node_modules first (works for npm/yarn classic)
-        candidate = File.join(repo_root, 'node_modules', npm_package)
-        return candidate if File.exist?(candidate)
-
-        # Try resolving from the Podfile directory (works for pnpm workspaces
-        # where packages are symlinked in the app's node_modules)
-        podfile_dir = Dir.pwd
-        project_root = File.dirname(podfile_dir)
-        candidate = File.join(project_root, 'node_modules', npm_package)
-        return candidate if File.exist?(candidate)
-
-        # Fallback to original path
-        File.join(repo_root, 'node_modules', npm_package)
+        [package_root, podspec_dir]
       end
 
       # Finds the repository root by walking up from the current directory.

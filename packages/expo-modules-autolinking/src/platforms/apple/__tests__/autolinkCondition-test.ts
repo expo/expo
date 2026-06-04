@@ -1,20 +1,8 @@
 import { vol } from 'memfs';
 
-import { createMemoizer, _verifyMemoizerFreed } from '../../../memoize';
 import { appleAutolinkConditionMetAsync } from '../autolinkCondition';
 
-const projectRoot = '/fake/project';
 const nativeRoot = '/fake/project/ios';
-
-function packageJson(name: string, dependencies: Record<string, string> = {}): string {
-  return JSON.stringify({ name, version: '0.0.1', dependencies });
-}
-
-const withMemoizer = (name: string, fn: () => Promise<void>) =>
-  it(name, async () => {
-    await createMemoizer().withMemoizer(fn);
-    expect(_verifyMemoizerFreed()).toBe(true);
-  });
 
 describe(appleAutolinkConditionMetAsync, () => {
   afterEach(() => {
@@ -22,73 +10,23 @@ describe(appleAutolinkConditionMetAsync, () => {
   });
 
   describe('npmPackage', () => {
-    withMemoizer('is met when the package is hoisted to the project node_modules', async () => {
-      vol.fromNestedJSON(
-        {
-          'package.json': packageJson('root', { 'react-native-worklets': '*' }),
-          node_modules: {
-            'react-native-worklets': { 'package.json': packageJson('react-native-worklets') },
-          },
-        },
-        projectRoot
-      );
-
+    it('is met when the package is in the resolved dependency set', async () => {
       const met = await appleAutolinkConditionMetAsync(
         { npmPackage: 'react-native-worklets' },
-        { appRoot: projectRoot }
+        { resolvedDependencyNames: new Set(['react-native-worklets']) }
       );
       expect(met).toBe(true);
     });
 
-    withMemoizer('is not met when the package is not installed', async () => {
-      vol.fromNestedJSON(
-        {
-          'package.json': packageJson('root'),
-          node_modules: {},
-        },
-        projectRoot
-      );
-
+    it('is not met when the package is not in the resolved set', async () => {
       const met = await appleAutolinkConditionMetAsync(
         { npmPackage: 'react-native-worklets' },
-        { appRoot: projectRoot }
+        { resolvedDependencyNames: new Set(['react-native-reanimated']) }
       );
       expect(met).toBe(false);
     });
 
-    withMemoizer(
-      'is met when the package is only reachable transitively (not hoisted)',
-      async () => {
-        // worklets is nested under a dependency and not directly under the project's
-        // node_modules — the cheap hoist check misses it, the deep-graph fallback finds it.
-        vol.fromNestedJSON(
-          {
-            'package.json': packageJson('root', { 'react-native-reanimated': '*' }),
-            node_modules: {
-              'react-native-reanimated': {
-                'package.json': packageJson('react-native-reanimated', {
-                  'react-native-worklets': '*',
-                }),
-                node_modules: {
-                  'react-native-worklets': {
-                    'package.json': packageJson('react-native-worklets'),
-                  },
-                },
-              },
-            },
-          },
-          projectRoot
-        );
-
-        const met = await appleAutolinkConditionMetAsync(
-          { npmPackage: 'react-native-worklets' },
-          { appRoot: projectRoot }
-        );
-        expect(met).toBe(true);
-      }
-    );
-
-    withMemoizer('is not met when appRoot is missing', async () => {
+    it('is not met when the resolved set is absent', async () => {
       const met = await appleAutolinkConditionMetAsync({ npmPackage: 'react-native-worklets' }, {});
       expect(met).toBe(false);
     });
@@ -122,6 +60,11 @@ describe(appleAutolinkConditionMetAsync, () => {
       vol.fromNestedJSON({ 'Podfile.properties.json': JSON.stringify({}) }, nativeRoot);
       const met = await appleAutolinkConditionMetAsync(condition, { commandRoot: nativeRoot });
       expect(met).toBe(true);
+    });
+
+    it('is not met when commandRoot is absent', async () => {
+      const met = await appleAutolinkConditionMetAsync(condition, {});
+      expect(met).toBe(false);
     });
   });
 });

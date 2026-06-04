@@ -2,6 +2,10 @@ import { findModulesAsync } from './findModules';
 import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
 import type { AutolinkingOptions } from '../commands/autolinkingOptions';
 import { createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
+import {
+  makeCachedDependenciesLinker,
+  scanDependencyResolutionsForPlatform,
+} from '../dependencies';
 import type {
   ExtraDependencies,
   ModuleDescriptor,
@@ -50,9 +54,22 @@ async function apiResolveModulesAsync(
   providedOptions: SearchOptions
 ): Promise<ModuleDescriptor[]> {
   const autolinkingOptionsLoader = createAutolinkingOptionsLoader(providedOptions);
+  const appRoot = await autolinkingOptionsLoader.getAppRoot();
+  const linker = makeCachedDependenciesLinker({ projectRoot: appRoot });
+  // The RN-config resolver needs a concrete platform; map the `apple` umbrella to `ios`.
+  const dependencyPlatform =
+    providedOptions.platform === 'apple' ? 'ios' : providedOptions.platform;
+  const dependencyResolutions = await scanDependencyResolutionsForPlatform(
+    linker,
+    dependencyPlatform
+  );
   return resolveModulesAsync(
     searchResults,
-    await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform)
+    await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform),
+    {
+      resolvedDependencyNames: new Set(Object.keys(dependencyResolutions)),
+      commandRoot: autolinkingOptionsLoader.getCommandRoot(),
+    }
   );
 }
 

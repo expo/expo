@@ -72,10 +72,14 @@ export function getSwiftModuleNames(
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
-  extraOutput: { flags?: Record<string, any>; appRoot?: string; commandRoot?: string }
+  extraOutput: {
+    flags?: Record<string, any>;
+    resolvedDependencyNames?: Set<string>;
+    commandRoot?: string;
+  }
 ): Promise<ModuleDescriptorIos | null> {
   const podspecFiles = await findPodspecFiles(revision, {
-    appRoot: extraOutput.appRoot,
+    resolvedDependencyNames: extraOutput.resolvedDependencyNames,
     commandRoot: extraOutput.commandRoot,
   });
   if (!podspecFiles.length) {

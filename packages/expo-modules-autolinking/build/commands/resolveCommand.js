@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveCommand = resolveCommand;
 const autolinkingOptions_1 = require("./autolinkingOptions");
-const findModules_1 = require("../autolinking/findModules");
 const getConfiguration_1 = require("../autolinking/getConfiguration");
 const resolveModules_1 = require("../autolinking/resolveModules");
+const dependencies_1 = require("../dependencies");
 function hasCoreFeatures(module) {
     return module.coreFeatures !== undefined;
 }
@@ -20,11 +20,25 @@ function resolveCommand(cli) {
         });
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
         const appRoot = await autolinkingOptionsLoader.getAppRoot();
-        const expoModulesSearchResults = await (0, findModules_1.findModulesAsync)({
-            autolinkingOptions,
-            appRoot,
-        });
-        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions, { appRoot, commandRoot: autolinkingOptionsLoader.getCommandRoot() });
+        // Resolve once via the cached linker, then derive two outputs that share its scans:
+        // the Expo modules to link, and the full set of resolved native-module dependencies
+        // (used to gate conditional `autolinkWhen` podspecs and surfaced as `resolvedDependencies`).
+        const linker = (0, dependencies_1.makeCachedDependenciesLinker)({ projectRoot: appRoot });
+        // `scanDependencyResolutionsForPlatform` resolves React Native modules via a concrete
+        // platform; the `apple` umbrella isn't handled by the RN-config resolver, so map it to `ios`.
+        const dependencyPlatform = platform === 'apple' ? 'ios' : platform;
+        const [expoModulesSearchResults, dependencyResolutions] = await Promise.all([
+            (0, dependencies_1.scanExpoModuleResolutionsForPlatform)(linker, platform),
+            (0, dependencies_1.scanDependencyResolutionsForPlatform)(linker, dependencyPlatform),
+        ]);
+        const resolvedDependencyNames = new Set(Object.keys(dependencyResolutions));
+        const resolvedDependencies = Object.fromEntries(Object.entries(dependencyResolutions)
+            .filter(([, resolution]) => resolution != null)
+            .map(([name, resolution]) => [
+            name,
+            { root: resolution.path, version: resolution.version },
+        ]));
+        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions, { resolvedDependencyNames, commandRoot: autolinkingOptionsLoader.getCommandRoot() });
         const extraDependencies = await (0, resolveModules_1.resolveExtraBuildDependenciesAsync)({
             commandRoot: autolinkingOptionsLoader.getCommandRoot(),
             platform,
@@ -42,21 +56,18 @@ function resolveCommand(cli) {
                 return acc;
             }, new Set()),
         ];
+        const output = {
+            extraDependencies,
+            coreFeatures,
+            modules: expoModulesResolveResults,
+            resolvedDependencies,
+            ...(configuration ? { configuration } : {}),
+        };
         if (commandArguments.json) {
-            console.log(JSON.stringify({
-                extraDependencies,
-                coreFeatures,
-                modules: expoModulesResolveResults,
-                ...(configuration ? { configuration } : {}),
-            }));
+            console.log(JSON.stringify(output));
         }
         else {
-            console.log(require('util').inspect({
-                extraDependencies,
-                coreFeatures,
-                modules: expoModulesResolveResults,
-                ...(configuration ? { configuration } : {}),
-            }, false, null, true));
+            console.log(require('util').inspect(output, false, null, true));
         }
     });
 }
