@@ -30,13 +30,6 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s)
 
-  # URLSession swizzling is on by default so React Native's `fetch`/`XMLHttpRequest` (which builds
-  # its session from `URLSessionConfiguration.defaultSessionConfiguration`) is observed. Opt out
-  # by setting `EX_APP_METRICS_NO_INTERCEPT_URLSESSION=1`, which defines a compile flag the Swift
-  # side reads. `URLProtocol.registerClass` continues to catch `URLSession.shared` traffic
-  # regardless of this flag.
-  noInterceptURLSession = ENV['EX_APP_METRICS_NO_INTERCEPT_URLSESSION'] == '1'
-
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
@@ -44,10 +37,8 @@ Pod::Spec.new do |s|
       "REACT_NATIVE_VERSION=\"#{reactNativeVersion}\"",
       "EXPO_SDK_VERSION=\"#{expoSdkVersion}\"",
       "EXPO_APP_METRICS_VERSION=\"#{package['version']}\"",
-      noInterceptURLSession ? "EX_APP_METRICS_NO_INTERCEPT_URLSESSION=1" : nil,
       easBuildId ? "EXPO_EAS_BUILD_ID=\"#{easBuildId}\"" : nil
-    ].compact,
-    'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => noInterceptURLSession ? 'EX_APP_METRICS_NO_INTERCEPT_URLSESSION' : ''
+    ].compact
   }
 
   s.source_files = '**/*.{h,m,mm,swift}'

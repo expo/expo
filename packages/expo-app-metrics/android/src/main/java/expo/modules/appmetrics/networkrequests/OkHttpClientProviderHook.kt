@@ -12,8 +12,6 @@ import expo.modules.appmetrics.TAG
  * `XMLHttpRequest` flow through it automatically. App-owned `OkHttpClient` instances need a
  * one-line manual `addInterceptor(NetworkRequestInterceptor.instance)` to opt in.
  *
- * Mirrors the iOS `NetworkRequestConfigurationSwizzling` lifecycle hook in scope.
- *
  * **Install timing.** `OkHttpClientProvider.getOkHttpClient()` lazily caches its client on first
  * use. The factory we set here is only consulted on that first creation; if RN's networking layer
  * (or another package) already triggered creation before this hook runs, we miss everything that

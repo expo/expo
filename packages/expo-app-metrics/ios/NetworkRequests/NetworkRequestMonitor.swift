@@ -3,9 +3,9 @@
 import Foundation
 
 /**
- Receives notifications about HTTP requests observed by `NetworkRequestURLProtocol`. Both methods
- have default no-op implementations so delegates can opt into either start- or complete-time
- notifications without having to implement the other.
+ Receives notifications about HTTP requests observed by `NetworkRequestTaskSwizzling`. Both
+ methods have default no-op implementations so delegates can opt into either start- or
+ complete-time notifications without having to implement the other.
  */
 public protocol NetworkRequestObserverDelegate: AnyObject, Sendable {
   func onNetworkRequestStarted(_ request: NetworkRequestStarted)
@@ -18,15 +18,15 @@ public extension NetworkRequestObserverDelegate {
 }
 
 /**
- A singleton that aggregates `NetworkRequest` snapshots delivered by the URL protocol observer.
+ A singleton that aggregates `NetworkRequest` snapshots delivered by the URLSessionTask swizzles.
 
- The monitor is the central seam between the URL-protocol layer (which sees individual tasks
+ The monitor is the central seam between the swizzle layer (which observes individual tasks
  complete) and whatever future layer routes those observations into telemetry. For now it keeps a
  small in-memory ring buffer of recent requests (useful for debug surfaces and tests) and fans
  each completion out to registered delegates.
 
  Started eagerly at app launch (see `AppMetricsAppDelegateSubscriber.appDelegateWillBeginInitialization`)
- so that `URLProtocol.registerClass` runs before React Native makes its first fetch.
+ so the swizzles run before React Native makes its first fetch.
  */
 @AppMetricsActor
 public final class NetworkRequestMonitor: Sendable {
@@ -43,17 +43,17 @@ public final class NetworkRequestMonitor: Sendable {
   init() {}
 
   /**
-   Confirms the URL protocol class is registered globally. The app-delegate subscriber already
-   registers it synchronously at launch (before the first request); this re-asserts it for any
-   path that reaches the monitor without going through the subscriber. Idempotent — subsequent
-   calls and `URLProtocol.registerClass` itself are no-ops.
+   Confirms the URLSessionTask swizzles are installed. The app-delegate subscriber already
+   installs them synchronously at launch (before the first request); this re-asserts the install
+   for any path that reaches the monitor without going through the subscriber. Idempotent —
+   subsequent calls are no-ops.
    */
   func start() {
     if started {
       return
     }
     started = true
-    NetworkRequestURLProtocol.register()
+    NetworkRequestTaskSwizzling.install()
   }
 
   /**
@@ -94,7 +94,8 @@ public final class NetworkRequestMonitor: Sendable {
 
   /**
    Records a completed request: appends to the ring buffer and fans it out to delegates. Called
-   by `NetworkRequestURLProtocol` from the `AppMetricsActor` context.
+   from `NetworkRequestTaskSwizzling.recordCompletion` (which fires from either the delegate proxy's
+   metrics callback or the `setState:` fallback) on the `AppMetricsActor`.
    */
   func record(_ request: NetworkRequest) {
     recentRequests.append(request)

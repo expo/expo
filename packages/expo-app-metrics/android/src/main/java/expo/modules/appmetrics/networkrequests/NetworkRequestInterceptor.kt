@@ -30,7 +30,7 @@ import java.util.WeakHashMap
 /**
  * Sentinel header recognised by `NetworkRequestInterceptor` to skip observation. expo-observe's
  * dispatcher sets it on outgoing telemetry so our own uploads don't recurse through the monitor.
- * Mirrors `NetworkRequestURLProtocol.internalHeaderName` on iOS — keep the literal in sync.
+ * Mirrors `NetworkRequestTaskSwizzling.internalHeaderName` on iOS — keep the literal in sync.
  */
 const val INTERNAL_HEADER_NAME = "Expo-AppMetrics-Skip"
 
@@ -427,8 +427,9 @@ class NetworkRequestEventListener : EventListener() {
      * Keyed weakly on `Call` so any entry the interceptor never takes is reclaimed once the `Call`
      * is collected, rather than pinned forever. That covers the paths where `finalizeAndRecord`
      * doesn't run for a call the listener still reported on: the recursion / double-instrumentation
-     * guards (`proceedWithoutObserving`) and responses whose body the caller never drains or closes.
-     * `Call` doesn't override `equals`/`hashCode`, so the map keys on identity as intended.
+     * guards that short-circuit to `chain.proceed(...)` without recording, and responses whose body
+     * the caller never drains or closes. `Call` doesn't override `equals`/`hashCode`, so the map
+     * keys on identity as intended.
      *
      * `WeakHashMap` isn't thread-safe and OkHttp drives the listener from a pool of dispatcher
      * threads, so every access goes through `synchronized`.

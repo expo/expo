@@ -3,7 +3,7 @@
 import Foundation
 
 /**
- A `Sendable` snapshot of a single HTTP request observed by `NetworkRequestURLProtocol`.
+ A `Sendable` snapshot of a single HTTP request observed by `NetworkRequestTaskSwizzling`.
 
  The shape is intentionally close to `URLSessionTaskTransactionMetrics` so we can plumb individual
  timing phases into telemetry later without redesigning the type. Until the metrics pipeline is
@@ -149,18 +149,27 @@ extension NetworkRequest {
       totalDuration: metrics?.taskInterval.duration ?? fallbackEnd.timeIntervalSince(fallbackStart)
     )
 
-    // Prefer the transaction's header+body split when metrics arrived, fall back to the task's
-    // total byte counters otherwise — those are populated even when the inner session's metrics
-    // callback never fires (a real failure mode for `URLProtocol`-wrapped tasks).
+    // Prefer the transaction's header+body split when it reports non-zero, fall back to the task's
+    // wall-clock counters otherwise. The transaction counters are 0 in two real cases:
+    // (1) cache hits — `resourceFetchType == .localCache`, no wire traffic occurred;
+    // (2) iOS Simulator — Apple's socket-level instrumentation isn't always wired up there, so
+    //     the counters return 0 even when the request actually moved bytes. `task.countOfBytesSent/
+    //     Received` is wall-clock accurate in both environments.
     let requestBytesSent: Int64? = {
       if let transaction {
-        return transaction.countOfRequestHeaderBytesSent + transaction.countOfRequestBodyBytesSent
+        let fromTransaction = transaction.countOfRequestHeaderBytesSent + transaction.countOfRequestBodyBytesSent
+        if fromTransaction > 0 {
+          return fromTransaction
+        }
       }
       return task?.countOfBytesSent
     }()
     let responseBytesReceived: Int64? = {
       if let transaction {
-        return transaction.countOfResponseHeaderBytesReceived + transaction.countOfResponseBodyBytesReceived
+        let fromTransaction = transaction.countOfResponseHeaderBytesReceived + transaction.countOfResponseBodyBytesReceived
+        if fromTransaction > 0 {
+          return fromTransaction
+        }
       }
       return task?.countOfBytesReceived
     }()

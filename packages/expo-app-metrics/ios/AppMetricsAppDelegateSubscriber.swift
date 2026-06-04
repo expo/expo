@@ -3,20 +3,11 @@ import ExpoModulesCore
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
     AppMetrics.mainSession.appStartupMonitor.markMain()
-    // Register the protocol class and install the swizzle synchronously, before any app code (RN
-    // included) issues its first network request — both `URLProtocol.registerClass` and the
-    // swizzle must already be in place or early requests slip through unobserved. Doing this on the
-    // `AppMetricsActor` would defer it past that point, so it stays inline here. `register()` is
-    // idempotent, so the later `NetworkRequestMonitor.start()` simply confirms it.
-    //
-    // The configuration swizzle is on by default — set `EX_APP_METRICS_NO_INTERCEPT_URLSESSION=1`
-    // in the podspec env to disable. Without it, any session built from a fresh
-    // `URLSessionConfiguration.default`/`.ephemeral` (including React Native's networking) is
-    // invisible; `URLProtocol.registerClass` still catches `URLSession.shared` traffic regardless.
-    NetworkRequestURLProtocol.register()
-    #if !EX_APP_METRICS_NO_INTERCEPT_URLSESSION
-    NetworkRequestConfigurationSwizzling.install(protocolClass: NetworkRequestURLProtocol.self)
-    #endif
+    // Install the URLSessionTask swizzles synchronously before any app code (RN included) issues
+    // its first network request. Doing this on the `AppMetricsActor` would defer it past that
+    // point, so it stays inline here. `install()` is idempotent — subsequent app-delegate calls
+    // are no-ops.
+    NetworkRequestTaskSwizzling.install()
     AppMetricsActor.isolated {
       NetworkPathMonitor.shared.start()
       NetworkRequestMonitor.shared.start()

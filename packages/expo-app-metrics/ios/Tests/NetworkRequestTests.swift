@@ -281,30 +281,27 @@ struct NetworkRequestMonitorWindowingTests {
   }
 }
 
-// Serialized: every test in this suite mutates the process-wide
-// `NetworkRequestURLProtocol.sharedSessionStorage` via `overrideSharedSession`. Running them in
-// parallel races on that storage and surfaces as one test's request escaping into real DNS.
-@Suite("NetworkRequestURLProtocol", .serialized)
-struct NetworkRequestURLProtocolTests {
-  /**
-   End-to-end loopback test: a `URLSession` configured with `NetworkRequestURLProtocol` first and
-   `FakeServerProtocol` second issues a request. Our protocol forwards through an inner session
-   that *also* lists `FakeServerProtocol`, so the fake delivers the response and the protocol
-   records a snapshot.
-   */
+/**
+ End-to-end tests for `NetworkRequestTaskSwizzling`. We register a `FakeServerProtocol` inside the
+ test's URLSession so requests never escape the process; the swizzles still fire on the real
+ `__NSCFLocalSessionTask` Apple creates to drive the URLProtocol, so we observe the full lifecycle
+ just as we would in production.
+
+ Serialized because every test installs the same process-wide swizzles and shares the monitor's
+ ring buffer — concurrent runs would observe each other's traffic and the assertions filter by URL
+ to keep tests independent.
+ */
+@Suite("NetworkRequestTaskSwizzling", .serialized)
+struct NetworkRequestTaskSwizzlingTests {
+  init() {
+    NetworkRequestTaskSwizzling.install()
+  }
+
   @Test
   func `observes a request that completes via the fake server`() async throws {
-    NetworkRequestURLProtocol.overrideSharedSession(
-      NetworkRequestURLProtocol.makeForwardingSession(extraProtocols: [FakeServerProtocol.self])
-    )
-    defer {
-      NetworkRequestURLProtocol.overrideSharedSession(nil)
-    }
-    await clearMonitor()
-
-    let outerConfig = URLSessionConfiguration.ephemeral
-    outerConfig.protocolClasses = [NetworkRequestURLProtocol.self, FakeServerProtocol.self]
-    let session = URLSession(configuration: outerConfig)
+    let config = URLSessionConfiguration.ephemeral
+    config.protocolClasses = [FakeServerProtocol.self]
+    let session = URLSession(configuration: config)
 
     let collector = CollectingDelegate()
     try await AppMetricsActor.isolated {
@@ -317,14 +314,10 @@ struct NetworkRequestURLProtocolTests {
     #expect((response as? HTTPURLResponse)?.statusCode == 200)
     #expect(String(data: data, encoding: .utf8) == "hi")
 
-    // The snapshot is recorded asynchronously via AppMetricsActor.isolated — give it a chance to
-    // run before reading.
     let recorded = await waitForRecorded(matching: url)
     #expect(recorded != nil)
     #expect(recorded?.statusCode == 200)
 
-    // The protocol also publishes a started event before the request resolves, sharing its id
-    // with the completed snapshot for correlation in JS.
     let startEvent = collector.receivedStarts.first { $0.url == url }
     #expect(startEvent != nil)
     #expect(startEvent?.method == "GET")
@@ -333,20 +326,12 @@ struct NetworkRequestURLProtocolTests {
 
   @Test
   func `skips requests that carry the internal opt-out header`() async throws {
-    NetworkRequestURLProtocol.overrideSharedSession(
-      NetworkRequestURLProtocol.makeForwardingSession(extraProtocols: [FakeServerProtocol.self])
-    )
-    defer {
-      NetworkRequestURLProtocol.overrideSharedSession(nil)
-    }
-    await clearMonitor()
-
-    let outerConfig = URLSessionConfiguration.ephemeral
-    outerConfig.protocolClasses = [NetworkRequestURLProtocol.self, FakeServerProtocol.self]
-    let session = URLSession(configuration: outerConfig)
+    let config = URLSessionConfiguration.ephemeral
+    config.protocolClasses = [FakeServerProtocol.self]
+    let session = URLSession(configuration: config)
 
     var request = URLRequest(url: URL(string: "https://fake.test/internal")!)
-    request.setValue("1", forHTTPHeaderField: NetworkRequestURLProtocol.internalHeaderName)
+    request.setValue("1", forHTTPHeaderField: NetworkRequestTaskSwizzling.internalHeaderName)
     _ = try await session.data(for: request)
 
     // Sleep briefly to let any stray recording attempt complete.
@@ -358,24 +343,15 @@ struct NetworkRequestURLProtocolTests {
   }
 
   /**
-   Forwarding a request that carries a body must preserve it. Foundation converts the in-memory
-   `httpBody` into an `httpBodyStream` before `startLoading`, and a plain `dataTask` would drop it
-   — so the protocol forwards via `uploadTask(withStreamedRequest:)` and replays the stream. The
-   fake server echoes whatever body it receives, so a non-empty echo proves the body made it
-   through.
+   With task-resume swizzling the caller's session is never replaced — POST bodies reach the
+   server through the URL loading system's normal path. The fake echoes whatever it receives; a
+   matching echo proves the body wasn't dropped.
    */
   @Test
-  func `forwards the request body for uploads`() async throws {
-    NetworkRequestURLProtocol.overrideSharedSession(
-      NetworkRequestURLProtocol.makeForwardingSession(extraProtocols: [FakeServerProtocol.self])
-    )
-    defer {
-      NetworkRequestURLProtocol.overrideSharedSession(nil)
-    }
-
-    let outerConfig = URLSessionConfiguration.ephemeral
-    outerConfig.protocolClasses = [NetworkRequestURLProtocol.self, FakeServerProtocol.self]
-    let session = URLSession(configuration: outerConfig)
+  func `preserves request bodies for uploads`() async throws {
+    let config = URLSessionConfiguration.ephemeral
+    config.protocolClasses = [FakeServerProtocol.self]
+    let session = URLSession(configuration: config)
 
     let payload = Data("{\"hello\":\"world\"}".utf8)
     var request = URLRequest(url: URL(string: "https://fake.test/echo")!)
@@ -389,8 +365,113 @@ struct NetworkRequestURLProtocolTests {
     #expect(data == payload)
   }
 
-  private func clearMonitor() async {
-    // No public clear API on the shared monitor — tests filter by URL when reading instead.
+  /**
+   With the swizzle approach the caller's `URLSession` configuration is preserved verbatim — no
+   inner session, no replay. Ephemeral sessions used to leak cookies into `HTTPCookieStorage.shared`
+   under the old URLProtocol-replay implementation; this test pins that the leak is gone.
+   `FakeServerProtocol` returns a `Set-Cookie` header for `/cookie-test`, so the assertion would
+   fail loudly if cookies started flowing into the shared jar again.
+   */
+  @Test
+  func `does not leak cookies from an ephemeral session into the shared storage`() async throws {
+    // Wipe any cookie a previous test or stray network state might have planted on `fake.test`.
+    if let stale = HTTPCookieStorage.shared.cookies(for: URL(string: "https://fake.test/")!) {
+      for cookie in stale {
+        HTTPCookieStorage.shared.deleteCookie(cookie)
+      }
+    }
+
+    let config = URLSessionConfiguration.ephemeral
+    config.protocolClasses = [FakeServerProtocol.self]
+    let session = URLSession(configuration: config)
+
+    let url = URL(string: "https://fake.test/cookie-test")!
+    _ = try await session.data(from: url)
+
+    let sharedAfter = HTTPCookieStorage.shared.cookies(for: URL(string: "https://fake.test/")!) ?? []
+    // The ephemeral session's cookie storage is in-memory and isolated; the global shared storage
+    // must not gain any cookies from a request issued on it.
+    #expect(sharedAfter.isEmpty)
+  }
+
+  /**
+   `URLSessionWebSocketTask` extends `URLSessionTask` so the swizzle's `resume` fires on it, but
+   websockets don't produce useful HTTP metrics and we deliberately skip them. We resume a
+   websocket task pointed at a URL that will never connect, then cancel it; the swizzle must not
+   have recorded a snapshot.
+   */
+  @Test
+  func `skips websocket tasks`() async throws {
+    let config = URLSessionConfiguration.ephemeral
+    let session = URLSession(configuration: config)
+    let url = URL(string: "wss://fake.invalid.test/never-connects")!
+    let task = session.webSocketTask(with: url)
+    task.resume()
+    task.cancel()
+
+    try await Task.sleep(nanoseconds: 50_000_000)
+    let recorded = try await AppMetricsActor.isolated {
+      return NetworkRequestMonitor.shared.recent.first(where: { $0.url == url })
+    }.value
+    #expect(recorded == nil)
+  }
+
+  /**
+   Requests marked with `ExpoRequestInterceptorProtocol.requestId` are dev-launcher inner replays —
+   the swizzle must skip them so we don't double-record every request in dev-client builds. Drive
+   the check through `URLProtocol.setProperty(_:forKey:in:)` directly; we don't need the
+   dev-launcher itself to repro the condition.
+   */
+  @Test
+  func `skips dev-launcher inner replay tasks`() async throws {
+    let config = URLSessionConfiguration.ephemeral
+    config.protocolClasses = [FakeServerProtocol.self]
+    let session = URLSession(configuration: config)
+
+    let url = URL(string: "https://fake.test/dev-launcher-replay")!
+    let mutable = (URLRequest(url: url) as NSURLRequest).mutableCopy() as! NSMutableURLRequest
+    URLProtocol.setProperty("test-request-id", forKey: "ExpoRequestInterceptorProtocol.requestId", in: mutable)
+    _ = try await session.data(for: mutable as URLRequest)
+
+    try await Task.sleep(nanoseconds: 50_000_000)
+    let recorded = try await AppMetricsActor.isolated {
+      return NetworkRequestMonitor.shared.recent.first(where: { $0.url == url })
+    }.value
+    #expect(recorded == nil)
+  }
+
+  /**
+   Sessions created without a delegate (and the global `URLSession.shared`-style completion-handler
+   path) skip our `DelegateProxy`, so `didFinishCollectingMetrics:` never fires. The `setState:`
+   fallback has to win after `setStateFallbackDelay` and still record the snapshot — degraded (no
+   per-phase metrics) but present.
+   */
+  @Test
+  func `records delegate-less sessions via the setState fallback`() async throws {
+    let config = URLSessionConfiguration.ephemeral
+    config.protocolClasses = [FakeServerProtocol.self]
+    // Explicitly pass `nil` delegate so our session-init swizzle doesn't get to wrap a real one.
+    // `URLSession(configuration:delegate:delegateQueue:)` with a nil delegate matches the
+    // completion-handler-only mode in Apple's docs.
+    let session = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
+
+    let url = URL(string: "https://fake.test/delegate-less")!
+    let result: (Data, URLResponse?) = try await withCheckedThrowingContinuation { continuation in
+      let task = session.dataTask(with: url) { data, response, error in
+        if let error {
+          continuation.resume(throwing: error)
+          return
+        }
+        continuation.resume(returning: (data ?? Data(), response))
+      }
+      task.resume()
+    }
+    #expect((result.1 as? HTTPURLResponse)?.statusCode == 200)
+    #expect(String(data: result.0, encoding: .utf8) == "hi")
+
+    let recorded = await waitForRecorded(matching: url)
+    #expect(recorded != nil)
+    #expect(recorded?.statusCode == 200)
   }
 
   private func waitForRecorded(matching url: URL, attempts: Int = 50) async -> NetworkRequest? {
@@ -588,8 +669,11 @@ private final class CollectingDelegate: NetworkRequestObserverDelegate, @uncheck
 }
 
 /**
- A trivial `URLProtocol` that pretends to be a server. Echoes the request body back when there is
- one (so tests can assert POST/PUT payloads survived forwarding), otherwise returns a `hi` body.
+ A trivial `URLProtocol` that pretends to be a server. Routes by URL path:
+ - `/cookie-test` returns a `Set-Cookie` header so the cookie-isolation test can detect a leak.
+ - any other path echoes the request body back when there is one (POST/PUT payload assertions) and
+   otherwise returns a `hi` body.
+
  Sits at the tail of the protocol chain in the test's outer session.
  */
 private final class FakeServerProtocol: URLProtocol {
@@ -603,7 +687,10 @@ private final class FakeServerProtocol: URLProtocol {
 
   override func startLoading() {
     let url = request.url!
-    let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+    let headers: [String: String]? = url.path == "/cookie-test"
+      ? ["Set-Cookie": "fake=value; Path=/"]
+      : nil
+    let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: headers)!
     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
     let body = Self.readBody(from: request) ?? Data("hi".utf8)
     client?.urlProtocol(self, didLoad: body)
