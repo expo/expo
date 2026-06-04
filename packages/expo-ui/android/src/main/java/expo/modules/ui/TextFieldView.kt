@@ -4,6 +4,9 @@ import android.graphics.Color
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextField
@@ -277,6 +280,7 @@ private fun ObservableState.extractSelection(textLength: Int): TextRange {
 
 // region View
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FunctionalComposableScope.TextFieldContent(
   props: TextFieldProps,
@@ -466,30 +470,36 @@ fun FunctionalComposableScope.TextFieldContent(
     else -> VisualTransformation.None
   }
 
-  if (isOutlined) {
-    OutlinedTextField(
-      value = value, onValueChange = onValueChange, modifier = modifier,
-      enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
-      label = label, placeholder = placeholder,
-      leadingIcon = leadingIcon, trailingIcon = trailingIcon,
-      prefix = prefix, suffix = suffix, supportingText = supportingText,
-      isError = props.isError, visualTransformation = visualTransformation,
-      keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
-      singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-      shape = shape, colors = colors
-    )
-  } else {
-    TextField(
-      value = value, onValueChange = onValueChange, modifier = modifier,
-      enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
-      label = label, placeholder = placeholder,
-      leadingIcon = leadingIcon, trailingIcon = trailingIcon,
-      prefix = prefix, suffix = suffix, supportingText = supportingText,
-      isError = props.isError, visualTransformation = visualTransformation,
-      keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
-      singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-      shape = shape, colors = colors
-    )
+  // Workaround (pending upstream fix, https://issuetracker.google.com/issues/519816993)
+  // the expressive motion scheme's spring overshoots >1f, and TextField's calculateHeight
+  // extrapolates that overshoot, transiently growing the field and jiggling surrounding
+  // content. Forcing the standard (non-overshooting) spatial spring removes the jiggle.
+  MaterialExpressiveTheme(motionScheme = MotionScheme.standard()) {
+    if (isOutlined) {
+      OutlinedTextField(
+        value = value, onValueChange = onValueChange, modifier = modifier,
+        enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
+        label = label, placeholder = placeholder,
+        leadingIcon = leadingIcon, trailingIcon = trailingIcon,
+        prefix = prefix, suffix = suffix, supportingText = supportingText,
+        isError = props.isError, visualTransformation = visualTransformation,
+        keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
+        singleLine = singleLine, maxLines = maxLines, minLines = minLines,
+        shape = shape, colors = colors
+      )
+    } else {
+      TextField(
+        value = value, onValueChange = onValueChange, modifier = modifier,
+        enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
+        label = label, placeholder = placeholder,
+        leadingIcon = leadingIcon, trailingIcon = trailingIcon,
+        prefix = prefix, suffix = suffix, supportingText = supportingText,
+        isError = props.isError, visualTransformation = visualTransformation,
+        keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
+        singleLine = singleLine, maxLines = maxLines, minLines = minLines,
+        shape = shape, colors = colors
+      )
+    }
   }
 }
 

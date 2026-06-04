@@ -18,6 +18,7 @@
 - [jetpack-compose] Added `dropShadow` and `innerShadow` modifiers. ([#46364](https://github.com/expo/expo/discussions/46364) by [@duyanhv](https://github.com/duyanhv))
 ### 🐛 Bug fixes
 
+- [jetpack-compose] Fix `TextField` jiggling the surrounding content while its label animates on focus (a Material 3 expressive motion spring overshoot). ([#46568](https://github.com/expo/expo/pull/46568) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `BottomSheet` animating open from the bottom-left corner in `fitToContents` mode. ([#46546](https://github.com/expo/expo/pull/46546) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `font` modifier dropping Dynamic Type scaling (`relativeTo`) and `weight` on concatenated `Text` runs. The Text-concatenation path now resolves the same `Font` as the view path. ([#46509](https://github.com/expo/expo/pull/46509) by [@ramonclaudio](https://github.com/ramonclaudio))
