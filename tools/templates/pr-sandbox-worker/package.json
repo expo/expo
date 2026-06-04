@@ -1,0 +1,17 @@
+{
+  "name": "pr-sandbox-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types"
+  },
+  "dependencies": {
+    "@cloudflare/sandbox": "0.10.1"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "wrangler": "^4.0.0"
+  }
+}
