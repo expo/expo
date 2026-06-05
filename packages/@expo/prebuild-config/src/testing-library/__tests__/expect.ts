@@ -28,10 +28,13 @@ function printMatcherDiff(
 }
 
 function getMatcherHint(context: jest.MatcherContext, matcherName: string): string {
-  return context.utils.matcherHint(matcherName, undefined, undefined, {
-    isNot: context.isNot,
-    promise: context.promise,
-  });
+  // Plain-text hint instead of `context.utils.matcherHint(...)` — that helper
+  // wraps the `expect(`, `)`, `.not.` and `(expected)` fragments in
+  // `chalk.dim`, which interleaves ANSI escape codes inside the hint when
+  // colors are enabled. Tests that use `.toThrow(/\.not\.toMatchInfoPlist/)`
+  // need a continuous substring to match, which the colored variant doesn't
+  // provide.
+  return `expect(received).${context.isNot ? 'not.' : ''}${matcherName}(expected)`;
 }
 
 expect.extend({

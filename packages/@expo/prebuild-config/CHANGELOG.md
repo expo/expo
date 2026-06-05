@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `toMatchInfoPlist` and `toMatchAppleEntitlements` testing-library matchers when Jest color output is enabled. The custom matcher hint relied on `context.utils.matcherHint`, which interleaves ANSI escape codes inside `.not.`, breaking `toThrow(/\.not\.toMatchInfoPlist/)`-style assertions.
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-26
