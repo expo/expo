@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `SQLiteProvider` to allow rerendering of `children` while preserving the database connection. ([#44135](https://github.com/expo/expo/pull/44135))
+  
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-21
