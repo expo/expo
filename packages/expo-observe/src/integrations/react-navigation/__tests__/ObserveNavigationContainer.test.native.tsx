@@ -51,7 +51,6 @@ jest.mock('@react-navigation/native', () => {
     __esModule: true,
     NavigationContainer: (props: { children: React.ReactNode }) => mockNavigationContainerFn(props),
     useNavigationContainerRef: jest.fn(() => mockNavRef),
-    getPathFromState: jest.fn(() => '/from-linking'),
     __navigationContainerFn: mockNavigationContainerFn,
     __navigationRef: mockNavRef,
   };
@@ -219,18 +218,6 @@ describe('ObserveNavigationContainer', () => {
     expect(stateChangeHandler).not.toHaveBeenCalled();
   });
 
-  it('builds a linking-aware getPathname and passes it to createStateChangeHandler', () => {
-    const linking = { prefixes: [], config: { screens: { Home: 'home' } } };
-    render(
-      <ObserveNavigationContainer linking={linking as unknown as never}>
-        <Text>child</Text>
-      </ObserveNavigationContainer>
-    );
-
-    const [, getPathname] = createStateChangeHandlerMock.mock.calls[0];
-    expect(getPathname({ index: 0, routes: [] }, { name: 'Home' })).toBe('/from-linking');
-    expect(require('@react-navigation/native').getPathFromState).toHaveBeenCalled();
-  });
 
   it('passes other NavigationContainer props through (e.g. theme)', () => {
     const theme = { dark: true, colors: {} } as unknown as never;

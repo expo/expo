@@ -1,13 +1,13 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { emitTTI } from './emitTTI';
+import { getPathname } from './getPathname';
 import { collectMountedKeys, findFocusedLeaf } from './stateTraversal';
 import type { ReactNavigationIntegrationStorage } from './storage';
-import type { GetPathname, NavigationStateLike } from './types';
+import type { NavigationStateLike } from './types';
 
 export function createStateChangeHandler(
   storage: ReactNavigationIntegrationStorage,
-  getPathname: GetPathname,
   appLaunchTime: number
 ): (state: NavigationStateLike | undefined) => void {
   let previousFocusedKey: string | null = null;
