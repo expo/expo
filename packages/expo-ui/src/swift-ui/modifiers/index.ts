@@ -744,6 +744,17 @@ export const accessibilityIdentifier = (identifier: string) =>
   createModifier('accessibilityIdentifier', { identifier });
 
 /**
+ * Marks the view as decoratively-named so VoiceOver and other assistive
+ * technologies skip it during element traversal. Useful for hero icons or
+ * presentational imagery that's already described by adjacent text.
+ *
+ * @param hidden - Whether the view should be hidden from accessibility. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityhidden(_:)).
+ */
+export const accessibilityHidden = (hidden: boolean = true) =>
+  createModifier('accessibilityHidden', { hidden });
+
+/**
  * Sets layout priority for the view.
  * @param priority - Layout priority value.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/layoutpriority(_:)).
@@ -1425,6 +1436,7 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
   | ReturnType<typeof accessibilityIdentifier>
+  | ReturnType<typeof accessibilityHidden>
   | ReturnType<typeof layoutPriority>
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>
