@@ -1,3 +1,5 @@
+import type { Session } from './Session';
+
 export type AppStartupTimes = {
   /**
    * Time from when the user taps the app to the moment the app starts executing the main code.
@@ -201,24 +203,7 @@ export type CrashKind =
   | 'objcException'
   | 'stackOverflow';
 
-type SessionBase = {
-  id: string;
-  startDate: string;
-  endDate?: string | null;
-  metrics: Metric[];
-  logs: LogRecord[];
-};
-
-export type MainSession = SessionBase & {
-  type: 'main';
-  crashReport?: CrashReport | null;
-};
-
-export type GenericSession = SessionBase & {
-  type: Exclude<SessionType, 'main'>;
-};
-
-export type Session = MainSession | GenericSession;
+export type MetricInput = Omit<Metric, 'sessionId'>;
 
 export type CallStackFrame = {
   binaryName?: string | null;
@@ -267,6 +252,14 @@ export type CrashReport = {
 };
 
 export interface ExpoAppMetricsModuleType {
+  /**
+   * Native `Session` shared-object class. Exposed so the web module can
+   * substitute its own implementation; not intended to be constructed from
+   * user code.
+   *
+   * @private This API is unstable and may change without notice.
+   */
+  Session: typeof Session;
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
   /**
@@ -296,11 +289,11 @@ export interface ExpoAppMetricsModuleType {
   setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null): void;
   clearStoredEntries(): Promise<void>;
   /**
-   * Returns all sessions across the current and historical entries,
-   * ordered with the current launch first.
+   * Returns all sessions across the current and historical entries as shared
+   * objects, ordered with the most recent first. Metrics and logs are not
+   * loaded — fetch them lazily via the returned objects.
    *
    * @private This API is unstable and may change without notice.
-   * @platform ios
    */
   getAllSessions(): Promise<Session[]>;
 
@@ -323,13 +316,11 @@ export interface ExpoAppMetricsModuleType {
   triggerCrash(kind: CrashKind): void;
 
   /**
-   * @private This API is unstable and may change without notice.
-   */
-  addCustomMetricToSession(metric: Metric): Promise<void>;
-  /**
-   * Returns the current main session, including its metrics.
+   * Returns the current main session as a shared object built from in-memory
+   * state — no storage round-trip happens, so the call is synchronous.
+   * Metrics and logs are fetched lazily via the returned object.
    *
    * @private This API is unstable and may change without notice.
    */
-  getMainSession(): Promise<MainSession | null>;
+  getMainSession(): Session;
 }

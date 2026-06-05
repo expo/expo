@@ -113,7 +113,15 @@ class SessionManager(
     }
   }
 
-  suspend fun getAllSessions(): List<SessionWithMetrics> = database.sessionDao().getAll()
+  suspend fun getAllSessionRows(): List<Session> = database.sessionDao().getAllSessionRows()
+
+  suspend fun getSessionRow(id: String): Session? = database.sessionDao().getById(id)
+
+  suspend fun getMetricsForSession(sessionId: String): List<Metric> =
+    database.metricDao().getMetricsForSession(sessionId)
+
+  suspend fun getLogsForSession(sessionId: String): List<LogRecord> =
+    database.logDao().getLogsForSession(sessionId)
 
   suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
 

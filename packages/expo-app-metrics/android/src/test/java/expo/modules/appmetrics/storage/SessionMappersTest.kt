@@ -2,6 +2,7 @@ package expo.modules.appmetrics.storage
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -168,6 +169,69 @@ class SessionMappersTest {
     assertEquals("invalid_credentials", js.body)
     assertEquals("warn", js.severity)
     assertEquals("2025-01-01T00:00:02.000Z", js.timestamp)
+  }
+
+  @Test
+  fun `SessionMetricInput_toMetric injects the sessionId`() {
+    val input = SessionMetricInput(
+      category = "custom",
+      name = "purchase",
+      value = 9.99
+    )
+
+    val metric = input.toMetric("session-42")
+
+    assertEquals("session-42", metric.sessionId)
+  }
+
+  @Test
+  fun `SessionMetricInput_toMetric maps scalar fields verbatim and generates its own metricId`() {
+    val input = SessionMetricInput(
+      category = "custom",
+      name = "purchase",
+      value = 9.99,
+      timestamp = "2025-03-01T12:00:00.000Z",
+      routeName = "Checkout"
+    )
+
+    val metric = input.toMetric("session-42")
+
+    assertEquals("custom", metric.category)
+    assertEquals("purchase", metric.name)
+    assertEquals(9.99, metric.value, 0.0)
+    assertEquals("2025-03-01T12:00:00.000Z", metric.timestamp)
+    assertEquals("Checkout", metric.routeName)
+    // `metricId` is generated natively and `updateId` isn't part of the
+    // JS-facing `MetricInput` contract — neither is caller-settable.
+    assertTrue(metric.metricId.isNotEmpty())
+    assertNull(metric.updateId)
+  }
+
+  @Test
+  fun `SessionMetricInput_toMetric JSON-encodes params`() {
+    val input = SessionMetricInput(
+      category = "custom",
+      name = "purchase",
+      value = 1.0,
+      params = mapOf("screen" to "Home", "attempt" to 3, "flag" to true)
+    )
+
+    val metric = input.toMetric("session-42")
+
+    // Round-trip through the JsMetric decoder to assert the encoding is valid.
+    val decoded = JsMetric.fromMetric(metric).params
+    assertEquals("Home", decoded?.get("screen"))
+    assertEquals(3L, decoded?.get("attempt"))
+    assertEquals(true, decoded?.get("flag"))
+  }
+
+  @Test
+  fun `SessionMetricInput_toMetric yields null params when none provided`() {
+    val input = SessionMetricInput(category = "custom", name = "purchase", value = 1.0)
+
+    val metric = input.toMetric("session-42")
+
+    assertNull(metric.params)
   }
 
   @Test

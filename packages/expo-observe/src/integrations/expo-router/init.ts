@@ -48,8 +48,7 @@ export function initListeners(
 
   const unsubscribeFocus = navigationEvents.addListener('pageFocused', async (e) => {
     // Snapshot both clocks once so every metric written below is stamped with
-    // the moment the focus event fired, not the moment `addCustomMetricToSession`
-    // happens to run after the awaited `getMainSession()` round-trip.
+    // the moment the focus event fired.
     const now = performance.now();
     const timestamp = new Date().toISOString();
 
@@ -100,30 +99,33 @@ export function initListeners(
       storage.interactiveScreensIds.add(e.screenId);
     }
 
+    const mainSession = AppMetrics.getMainSession();
     // All async work happens after storage is updated.
-    const mainSessionId = (await AppMetrics.getMainSession())?.id;
-    if (!mainSessionId) return;
+    const promises: Promise<unknown>[] = [];
 
-    AppMetrics.addCustomMetricToSession({
-      sessionId: mainSessionId,
-      timestamp,
-      category: 'navigation',
-      name,
-      routeName: routePattern,
-      value: ttrSeconds,
-      params: { isAppLaunch, routeParams: e.params, url: e.pathname },
-    });
-    if (hasPendingInteractive) {
-      await emitTTI({
-        sessionId: mainSessionId,
+    promises.push(
+      mainSession.addMetric({
         timestamp,
+        category: 'navigation',
+        name,
         routeName: routePattern,
         value: ttrSeconds,
-        isAppLaunch,
-        routeParams: e.params,
-        url: e.pathname,
-      });
+        params: { isAppLaunch, routeParams: e.params, url: e.pathname },
+      })
+    );
+    if (hasPendingInteractive) {
+      promises.push(
+        emitTTI(mainSession, {
+          timestamp,
+          routeName: routePattern,
+          value: ttrSeconds,
+          isAppLaunch,
+          routeParams: e.params,
+          url: e.pathname,
+        })
+      );
     }
+    await Promise.all(promises);
   });
   cleanup.add(unsubscribeFocus);
 

@@ -15,14 +15,14 @@ import {
 
 import { useTheme } from '@/utils/theme';
 
+type SessionInfo = { metricCount: number; isActive: boolean; endDate: string | null };
+
 export default function SessionsList() {
   const theme = useTheme();
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessionInfo, setSessionInfo] = useState<Map<string, SessionInfo>>(() => new Map());
   const [loaded, setLoaded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const currentMainStart = sessions.find((s) => s.type === 'main')?.startDate;
-  const isActive = (s: Session) =>
-    !s.endDate && currentMainStart != null && s.startDate >= currentMainStart;
 
   const { markInteractive } = useObserve();
   useEffect(() => {
@@ -34,7 +34,20 @@ export default function SessionsList() {
   const refresh = useCallback(async () => {
     const result = await AppMetrics.getAllSessions();
     const sorted = [...result].sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
+    // Metric count, active state, and end date are all lazy now — fetch them
+    // per session in parallel so the rows can render from a plain info map.
+    const info = await Promise.all(
+      sorted.map(async (s) => {
+        const [metrics, isActive, endDate] = await Promise.all([
+          s.getMetrics(),
+          s.isActive(),
+          s.getEndDate(),
+        ]);
+        return [s.id, { metricCount: metrics.length, isActive, endDate }] as const;
+      })
+    );
     setSessions(sorted);
+    setSessionInfo(new Map(info));
     setLoaded(true);
   }, []);
 
@@ -110,7 +123,12 @@ export default function SessionsList() {
             {section.title}
           </Text>
         )}
-        renderItem={({ item }) => <SessionRow session={item} isActive={isActive(item)} />}
+        renderItem={({ item }) => (
+          <SessionRow
+            session={item}
+            info={sessionInfo.get(item.id) ?? { metricCount: 0, isActive: false, endDate: null }}
+          />
+        )}
       />
     </>
   );
@@ -148,10 +166,11 @@ function groupByDay(sessions: Session[]): { title: string; data: Session[] }[] {
   return Array.from(sectionsByKey.values());
 }
 
-function SessionRow({ session, isActive }: { session: Session; isActive: boolean }) {
+function SessionRow({ session, info }: { session: Session; info: SessionInfo }) {
   const theme = useTheme();
+  const { metricCount, isActive, endDate: endDateString } = info;
   const startDate = new Date(session.startDate);
-  const endDate = session.endDate ? new Date(session.endDate) : null;
+  const endDate = endDateString ? new Date(endDateString) : null;
   const duration = endDate ? formatDuration(endDate.getTime() - startDate.getTime()) : null;
   const shortId = session.id.slice(0, 8);
 
@@ -178,7 +197,7 @@ function SessionRow({ session, isActive }: { session: Session; isActive: boolean
           {formatDate(startDate)}
         </Text>
         <View style={styles.badges}>
-          {session.type === 'main' && session.crashReport ? (
+          {session.hasCrashReport ? (
             <View style={[styles.badge, { backgroundColor: theme.background.danger }]}>
               <Text style={[styles.badgeText, { color: theme.text.danger }]}>Crashed</Text>
             </View>
@@ -195,8 +214,8 @@ function SessionRow({ session, isActive }: { session: Session; isActive: boolean
         numberOfLines={1}
         ellipsizeMode="tail">
         {shortId}
-        {duration ? ` · ${duration}` : isActive ? ' · active' : ''} · {session.metrics.length}{' '}
-        metric{session.metrics.length === 1 ? '' : 's'}
+        {duration ? ` · ${duration}` : isActive ? ' · active' : ''} · {metricCount} metric
+        {metricCount === 1 ? '' : 's'}
       </Text>
     </Pressable>
   );

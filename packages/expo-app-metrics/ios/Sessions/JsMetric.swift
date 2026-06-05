@@ -28,3 +28,31 @@ struct JsMetric: Record {
     )
   }
 }
+
+/**
+ JS-facing shape of a metric added through a `Session` shared object. Mirrors the TypeScript
+ `MetricInput` type (`Metric` minus `sessionId`) — the session is implied by the shared object the
+ metric is added to, so the owning id is supplied by the caller via `toMetric(sessionId:)` instead
+ of crossing the bridge; `updateId` is a native-side concern not exposed to JS.
+ */
+struct SessionMetricInput: Record {
+  @Field var category: String = ""
+  @Field var name: String = ""
+  @Field var value: Double = 0
+  @Field var timestamp: String = Date.now.ISO8601Format()
+  @Field var routeName: String?
+  @Field var params: [String: Any]?
+
+  func toMetric(sessionId: String) -> Metric {
+    return Metric(
+      category: Metric.Category(rawValue: category),
+      name: name,
+      value: value,
+      timestamp: timestamp,
+      routeName: routeName,
+      updateId: nil,
+      params: params,
+      sessionId: sessionId
+    )
+  }
+}

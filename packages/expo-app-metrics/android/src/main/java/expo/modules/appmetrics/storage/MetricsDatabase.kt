@@ -176,6 +176,9 @@ interface MetricDao {
 
   @Delete
   suspend fun delete(metrics: List<Metric>)
+
+  @Query("SELECT * FROM metrics WHERE sessionId = :sessionId")
+  suspend fun getMetricsForSession(sessionId: String): List<Metric>
 }
 
 @Dao
@@ -188,6 +191,9 @@ interface LogDao {
 
   @Query("DELETE FROM logs WHERE timestamp < :cutoffTimestamp")
   suspend fun deleteLogsOlderThan(cutoffTimestamp: String)
+
+  @Query("SELECT * FROM logs WHERE sessionId = :sessionId")
+  suspend fun getLogsForSession(sessionId: String): List<LogRecord>
 }
 
 @Dao
@@ -229,9 +235,10 @@ interface SessionDao {
   @Query("DELETE FROM sessions")
   suspend fun deleteAll()
 
-  @Transaction
-  @Query("SELECT * FROM sessions")
-  suspend fun getAll(): List<SessionWithMetrics>
+  // Session rows only, newest-first. Backs the lazy `Session` SharedObjects,
+  // which load their metrics/logs on demand rather than eagerly via @Relation.
+  @Query("SELECT * FROM sessions ORDER BY startTimestamp DESC")
+  suspend fun getAllSessionRows(): List<Session>
 
   @Transaction
   @Query("SELECT * FROM sessions WHERE id = :id")

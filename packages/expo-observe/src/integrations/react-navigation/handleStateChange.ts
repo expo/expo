@@ -14,10 +14,8 @@ export function createStateChangeHandler(
 
   return async function handleStateChange(state) {
     if (!state) return;
-    // Snapshot clocks once so every metric written below is stamped with
-    // the moment the focus actually fired, not the moment
-    // `addCustomMetricToSession` happens to run after the awaited
-    // `getMainSession()` round-trip.
+    // Snapshot clocks once so every metric written below is stamped with the
+    // moment the focus actually fired.
     const now = performance.now();
     const timestamp = new Date().toISOString();
     // Mark all non-focused mounted screens as already rendered so a later
@@ -65,8 +63,7 @@ export function createStateChangeHandler(
     const routeParams = focused.route.params ?? {};
     const name = isInitial ? 'cold_ttr' : 'warm_ttr';
 
-    const mainSessionId = (await AppMetrics.getMainSession())?.id;
-    if (!mainSessionId) return;
+    const mainSession = AppMetrics.getMainSession();
 
     if (isColdAppLaunch) {
       const appLaunchTtrSeconds = (now - appLaunchTime) / 1000;
@@ -77,24 +74,27 @@ export function createStateChangeHandler(
           lastInteractiveCall: now,
         };
       }
-      AppMetrics.addCustomMetricToSession({
-        sessionId: mainSessionId,
-        timestamp,
-        category: 'navigation',
-        name,
-        routeName: pathname,
-        value: appLaunchTtrSeconds,
-        params: { isAppLaunch: true, routeParams },
-      });
-      if (hasPendingInteractive) {
-        await emitTTI({
-          sessionId: mainSessionId,
+      const promises: Promise<unknown>[] = [
+        mainSession.addMetric({
           timestamp,
+          category: 'navigation',
+          name,
           routeName: pathname,
           value: appLaunchTtrSeconds,
-          routeParams,
-        });
+          params: { isAppLaunch: true, routeParams },
+        }),
+      ];
+      if (hasPendingInteractive) {
+        promises.push(
+          emitTTI(mainSession, {
+            timestamp,
+            routeName: pathname,
+            value: appLaunchTtrSeconds,
+            routeParams,
+          })
+        );
       }
+      await Promise.all(promises);
       storage.pendingActions.length = 0;
       return;
     }
@@ -108,24 +108,27 @@ export function createStateChangeHandler(
       };
     }
 
-    AppMetrics.addCustomMetricToSession({
-      sessionId: mainSessionId,
-      timestamp,
-      category: 'navigation',
-      name,
-      routeName: pathname,
-      value: ttrSeconds,
-      params: { isAppLaunch: false, routeParams },
-    });
-    if (hasPendingInteractive) {
-      await emitTTI({
-        sessionId: mainSessionId,
+    const promises: Promise<unknown>[] = [
+      mainSession.addMetric({
         timestamp,
+        category: 'navigation',
+        name,
         routeName: pathname,
         value: ttrSeconds,
-        routeParams,
-      });
+        params: { isAppLaunch: false, routeParams },
+      }),
+    ];
+    if (hasPendingInteractive) {
+      promises.push(
+        emitTTI(mainSession, {
+          timestamp,
+          routeName: pathname,
+          value: ttrSeconds,
+          routeParams,
+        })
+      );
     }
+    await Promise.all(promises);
     storage.pendingActions.length = 0;
   };
 }

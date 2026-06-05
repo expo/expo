@@ -541,6 +541,30 @@ struct MetricsDatabaseTests {
     }
   }
 
+  @Test
+  func `getSessionIdsWithCrashReports returns exactly the ids that have a crash report`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "crashed"))
+      try database.insert(session: makeSessionRow(id: "clean"))
+      try database.setCrashReport(sessionId: "crashed", payload: "{}")
+      // An orphan crash report (no matching session row) must still be reported — `getMainSession`
+      // and `getAllSessions` rely on this set to flag `hasCrashReport` for any id they encounter.
+      try database.setCrashReport(sessionId: "orphan", payload: "{}")
+
+      let ids = try database.getSessionIdsWithCrashReports()
+      #expect(ids == ["crashed", "orphan"])
+    }
+  }
+
+  @Test
+  func `getSessionIdsWithCrashReports is empty when no crash reports exist`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "clean"))
+      let ids = try database.getSessionIdsWithCrashReports()
+      #expect(ids.isEmpty)
+    }
+  }
+
   // MARK: - Helpers
 }
 

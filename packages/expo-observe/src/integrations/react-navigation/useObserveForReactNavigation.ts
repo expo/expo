@@ -111,16 +111,12 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
       }
 
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
-      const mainSessionId = (await AppMetrics.getMainSession())?.id;
-      if (mainSessionId) {
-        await emitTTI({
-          sessionId: mainSessionId,
-          timestamp,
-          routeName: pathname,
-          value: interactiveTimeSeconds,
-          routeParams,
-        });
-      }
+      await emitTTI(AppMetrics.getMainSession(), {
+        timestamp,
+        routeName: pathname,
+        value: interactiveTimeSeconds,
+        routeParams,
+      });
     },
     [screenId, navigation, route, contextValue, stateForPath]
   );

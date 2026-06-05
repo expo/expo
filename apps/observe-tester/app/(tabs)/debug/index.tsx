@@ -41,7 +41,31 @@ export default function Debug() {
       {showAnimation && <JSAnimation />}
       <Button
         title="Log main session to console"
-        onPress={() => AppMetrics.getMainSession().then(JSON.stringify).then(console.log)}
+        onPress={async () => {
+          // The session is a native shared object — stringify a plain
+          // snapshot of its eager properties plus the lazily-fetched data.
+          const session = AppMetrics.getMainSession();
+          const [metrics, logs, crashReport, isActive, endDate] = await Promise.all([
+            session.getMetrics(),
+            session.getLogs(),
+            session.getCrashReport(),
+            session.isActive(),
+            session.getEndDate(),
+          ]);
+          console.log(
+            JSON.stringify({
+              id: session.id,
+              type: session.type,
+              startDate: session.startDate,
+              endDate,
+              isActive,
+              hasCrashReport: session.hasCrashReport,
+              metrics,
+              logs,
+              crashReport,
+            })
+          );
+        }}
         theme="secondary"
       />
     </ScrollView>

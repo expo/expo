@@ -48,8 +48,9 @@ public class Session: MetricsReceiver, @unchecked Sendable {
 
   /**
    Non-registering initializer that builds a session with explicit values.
-   The caller is responsible for adding it to storage (or skipping that step,
-   e.g. in tests).
+   The caller is responsible for adding it to storage (or skipping that step
+   entirely). Used by `SessionRow.toSession()` to hydrate persisted rows for
+   the JS-facing `SessionRef` handles, and by tests.
    */
   init(id: String, type: SessionType, startDate: Date, endDate: Date?) {
     self.id = id

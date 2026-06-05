@@ -8,16 +8,19 @@ import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateEventBody
 import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.memory.MemoryMetricsManager
+import expo.modules.appmetrics.storage.JsLogRecord
 import expo.modules.appmetrics.storage.JsMetric
-import expo.modules.appmetrics.storage.JsSession
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.storage.SessionMetricInput
+import expo.modules.appmetrics.storage.SessionSharedObject
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
@@ -45,6 +48,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   lateinit var updatesMonitoring: UpdatesMonitoring
   private var subscription: UpdatesStateChangeSubscription? = null
   lateinit var appSessionId: String
+
+  lateinit var appSessionStartTimestamp: String
 
   private val moduleCreationTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
 
@@ -117,6 +122,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         sessionManager = SessionManager(context)
 
         appSessionId = sessionManager.createSessionId()
+        appSessionStartTimestamp = TimeUtils.getProcessStartTimestamp()
 
         // Persist the session row eagerly so it's visible to readers
         // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
@@ -127,7 +133,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           sessionManager.deactivateAllSessionsBefore(moduleCreationTimestamp)
           sessionManager.startSessionWithIdAt(
             sessionId = appSessionId,
-            timestamp = TimeUtils.getProcessStartTimestamp(),
+            timestamp = appSessionStartTimestamp,
             metadata = metadata
           )
         }
@@ -166,7 +172,19 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       AsyncFunction("getAllSessions") Coroutine { ->
-        sessionManager.getAllSessions().map { JsSession.fromSessionWithMetrics(it) }
+        sessionManager.getAllSessionRows().map { session ->
+          SessionSharedObject(
+            sessionId = session.id,
+            // Android has no `type` column, so every session is reported as
+            // "main" — a pre-existing divergence from iOS that mirrors
+            // `JsSession.type`. A real type column is future work.
+            type = "main",
+            startDate = session.startTimestamp,
+            // Crash reports are iOS-only (MetricKit); never present on Android.
+            hasCrashReport = false,
+            appContext = appContext
+          )
+        }
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
@@ -175,12 +193,64 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
 
-      AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
-        sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
+      // Synchronous: module functions can't run before `OnCreate` has set
+      // `appSessionId`, so the main session is always available. We build it
+      // from in-memory state captured at launch rather than hitting storage,
+      // so it stays cheap, never returns null, and matches the persisted row.
+      // `isActive`/`getEndDate` read the row live, so they reflect the session
+      // ending even on an object captured while it was still running.
+      Function("getMainSession") {
+        SessionSharedObject(
+          sessionId = appSessionId,
+          type = "main",
+          startDate = appSessionStartTimestamp,
+          hasCrashReport = false,
+          appContext = appContext
+        )
       }
 
-      AsyncFunction("getMainSession") Coroutine { ->
-        sessionManager.getSessionById(appSessionId)?.let { JsSession.fromSessionWithMetrics(it) }
+      Class("Session", SessionSharedObject::class) {
+        // The Android Class component requires a constructor for shared
+        // objects; sessions are opened and managed natively, so constructing
+        // one from JS is a usage error.
+        Constructor { ->
+          throw CodedException(
+            "Session objects can't be created from JavaScript because sessions are opened and managed natively. " +
+              "Get one from AppMetrics.getMainSession() or AppMetrics.getAllSessions() instead."
+          )
+        }
+
+        Property("id", SessionSharedObject::sessionId)
+        Property("type", SessionSharedObject::type)
+        Property("startDate", SessionSharedObject::startDate)
+        Property("hasCrashReport", SessionSharedObject::hasCrashReport)
+
+        AsyncFunction("isActive") Coroutine { ref: SessionSharedObject ->
+          sessionManager.getSessionRow(ref.sessionId)?.isActive ?: true
+        }
+
+        AsyncFunction("getEndDate") Coroutine { ref: SessionSharedObject ->
+          sessionManager.getSessionRow(ref.sessionId)?.endTimestamp
+        }
+
+        AsyncFunction("getMetrics") Coroutine { ref: SessionSharedObject ->
+          sessionManager.getMetricsForSession(ref.sessionId).map { JsMetric.fromMetric(it) }
+        }
+
+        AsyncFunction("getLogs") Coroutine { ref: SessionSharedObject ->
+          sessionManager.getLogsForSession(ref.sessionId).map { JsLogRecord.fromLogRecord(it) }
+        }
+
+        // Crash reports are an iOS-only MetricKit feature; stubbed here so the
+        // JS API has parity across platforms.
+        AsyncFunction("getCrashReport") Coroutine { _: SessionSharedObject ->
+          null
+        }
+
+        AsyncFunction("addMetric") Coroutine { ref: SessionSharedObject, metric: SessionMetricInput ->
+          sessionStartJob?.join()
+          sessionManager.addMetrics(listOf(metric.toMetric(ref.sessionId)), sessionId = ref.sessionId)
+        }
       }
     }
 

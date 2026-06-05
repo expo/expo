@@ -538,6 +538,23 @@ final class MetricsDatabase: Sendable {
     return result
   }
 
+  /**
+   Returns the set of session ids that currently have a stored crash report. Reads only the
+   `sessionId` column — no payload is decoded — so the JS-facing read APIs can cheaply flag
+   `hasCrashReport` across many sessions in a single query instead of probing each one.
+   */
+  @AppMetricsActor
+  func getSessionIdsWithCrashReports() throws -> Set<String> {
+    let statement = try database.prepare("SELECT sessionId FROM crash_reports")
+    var ids: Set<String> = []
+    try statement.forEachRow { row in
+      if let id = row.string(at: 0) {
+        ids.insert(id)
+      }
+    }
+    return ids
+  }
+
   private func deleteCrashReportRow(sessionId: String) throws {
     let statement = try database.prepare("DELETE FROM crash_reports WHERE sessionId = ?1")
     try statement.bindAll([sessionId])

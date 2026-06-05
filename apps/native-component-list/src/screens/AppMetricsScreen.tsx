@@ -1,20 +1,22 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from 'ThemeProvider';
-import AppMetrics, { type MainSession, type Metric } from 'expo-app-metrics';
+import AppMetrics, { type Metric } from 'expo-app-metrics';
 import * as React from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function AppMetricsScreen() {
   const { theme } = useTheme();
-  const [session, setSession] = React.useState<MainSession | null>(null);
+  const [metrics, setMetrics] = React.useState<Metric[]>([]);
   const [refreshing, setRefreshing] = React.useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
       let cancelled = false;
-      AppMetrics.getMainSession().then((s) => {
-        if (!cancelled) setSession(s);
-      });
+      AppMetrics.getMainSession()
+        .getMetrics()
+        .then((m) => {
+          if (!cancelled) setMetrics(m);
+        });
       return () => {
         cancelled = true;
       };
@@ -24,13 +26,13 @@ export default function AppMetricsScreen() {
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try {
-      setSession(await AppMetrics.getMainSession());
+      setMetrics(await AppMetrics.getMainSession().getMetrics());
     } finally {
       setRefreshing(false);
     }
   }, []);
 
-  const navMetrics: Metric[] = (session?.metrics ?? []).filter((m) => m.category === 'navigation');
+  const navMetrics: Metric[] = metrics.filter((m) => m.category === 'navigation');
 
   return (
     <ScrollView

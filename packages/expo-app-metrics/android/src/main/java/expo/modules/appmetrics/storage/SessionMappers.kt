@@ -84,6 +84,33 @@ data class JsMetric(
 }
 
 /**
+ * Payload for `Session.addMetric` — mirrors the TypeScript `MetricInput` type
+ * (`Metric` minus `sessionId`). 
+ */
+@OptimizedRecord
+data class SessionMetricInput(
+  @Field val category: String,
+  @Field val name: String,
+  @Field val value: Double,
+  @Field val timestamp: String = TimeUtils.getCurrentTimestampInISOFormat(),
+  @Field val routeName: String? = null,
+  @Field val params: Map<String, Any?>? = null
+) : Record {
+  fun toMetric(sessionId: String): Metric =
+    Metric(
+      metricId = UUID.randomUUID().toString(),
+      sessionId = sessionId,
+      timestamp = timestamp,
+      category = category,
+      name = name,
+      value = value,
+      routeName = routeName,
+      updateId = null,
+      params = params?.let { JsonAny.encodeMapToJsonString(it) }
+    )
+}
+
+/**
  * JS-facing shape of a log event. Mirrors the TypeScript `LogRecord` type and
  * decodes the storage-only JSON `attributes` column into a typed map.
  *

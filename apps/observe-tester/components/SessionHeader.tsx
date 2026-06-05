@@ -1,18 +1,27 @@
-import type { Session } from 'expo-app-metrics';
+import type { Metric, Session } from 'expo-app-metrics';
 import * as Clipboard from 'expo-clipboard';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '@/utils/theme';
 
-export function SessionHeader({ session }: { session: Session }) {
+export function SessionHeader({
+  session,
+  metrics,
+  isActive,
+  endDate: endDateString,
+}: {
+  session: Session;
+  metrics: Metric[];
+  isActive: boolean;
+  endDate: string | null;
+}) {
   const theme = useTheme();
   const startDate = new Date(session.startDate);
-  const endDate = session.endDate ? new Date(session.endDate) : null;
+  const endDate = endDateString ? new Date(endDateString) : null;
   const duration = endDate
     ? formatDuration(endDate.getTime() - startDate.getTime())
     : 'still running';
-  const crashed = session.type === 'main' && !!session.crashReport;
-  const routeName = session.metrics.find((m) => m.name === 'timeToInteractive')?.routeName;
+  const routeName = metrics.find((m) => m.name === 'timeToInteractive')?.routeName;
 
   return (
     <View style={styles.container}>
@@ -22,9 +31,9 @@ export function SessionHeader({ session }: { session: Session }) {
           background={theme.background.info}
           color={theme.text.info}
         />
-        {crashed ? (
+        {session.hasCrashReport ? (
           <Badge label="Crashed" background={theme.background.danger} color={theme.text.danger} />
-        ) : !session.endDate ? (
+        ) : isActive ? (
           <Badge label="Active" background={theme.background.success} color={theme.text.success} />
         ) : null}
       </View>
@@ -32,7 +41,7 @@ export function SessionHeader({ session }: { session: Session }) {
       <Field label="Started" value={formatDateTime(startDate)} />
       <Field label="Ended" value={endDate ? formatDateTime(endDate) : '—'} />
       <Field label="Duration" value={duration} />
-      <Field label="Metrics" value={String(session.metrics.length)} />
+      <Field label="Metrics" value={String(metrics.length)} />
       {routeName ? <Field label="Initial route" value={routeName} monospace /> : null}
       <Field
         label="Session ID"
