@@ -31,15 +31,15 @@ export type NativeStackNavigationEventMap = {
   /**
    * Event which fires when a transition animation starts.
    */
-  transitionStart: { data: { closing: boolean } };
+  transitionStart: { data: { closing: boolean }; canPreventDefault: false };
   /**
    * Event which fires when a transition animation ends.
    */
-  transitionEnd: { data: { closing: boolean } };
+  transitionEnd: { data: { closing: boolean }; canPreventDefault: false };
   /**
    * Event which fires when a swipe back is canceled on iOS.
    */
-  gestureCancel: { data: undefined };
+  gestureCancel: { data: undefined; canPreventDefault: false };
   /**
    * Event which fires when screen is in sheet presentation & it's detent changes.
    *
@@ -48,7 +48,7 @@ export type NativeStackNavigationEventMap = {
    * * `index` - current detent index in the `sheetAllowedDetents` array,
    * * `stable` - on Android `false` value means that the user is dragging the sheet or it is settling; on iOS it is always `true`.
    */
-  sheetDetentChange: { data: { index: number; stable: boolean } };
+  sheetDetentChange: { data: { index: number; stable: boolean }; canPreventDefault: false };
 };
 
 export type NativeStackNavigationProp<
