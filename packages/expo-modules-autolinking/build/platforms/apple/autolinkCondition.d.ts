@@ -20,4 +20,4 @@ export interface AppleAutolinkContext {
  * `npmPackage` condition resolves to `false` (the pod is omitted) and a `podfileProperty`
  * condition resolves to linked-unless-explicitly-disabled.
  */
-export declare function appleAutolinkConditionMetAsync(condition: AppleAutolinkCondition, context: AppleAutolinkContext): Promise<boolean>;
+export declare function appleAutolinkConditionMet(condition: AppleAutolinkCondition, context: AppleAutolinkContext): boolean;

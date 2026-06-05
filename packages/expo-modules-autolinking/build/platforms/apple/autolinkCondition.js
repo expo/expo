@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appleAutolinkConditionMetAsync = appleAutolinkConditionMetAsync;
+exports.appleAutolinkConditionMet = appleAutolinkConditionMet;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
@@ -17,7 +17,7 @@ const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
  * `npmPackage` condition resolves to `false` (the pod is omitted) and a `podfileProperty`
  * condition resolves to linked-unless-explicitly-disabled.
  */
-async function appleAutolinkConditionMetAsync(condition, context) {
+function appleAutolinkConditionMet(condition, context) {
     if ('npmPackage' in condition && condition.npmPackage) {
         return !!context.resolvedDependencyNames?.has(condition.npmPackage);
     }

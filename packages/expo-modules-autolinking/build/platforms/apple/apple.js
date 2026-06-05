@@ -29,15 +29,9 @@ const indent = '  ';
 async function findPodspecFiles(revision, context) {
     const podspecEntries = revision.config?.applePodspecEntries();
     if (podspecEntries && podspecEntries.length) {
-        const podspecPaths = [];
-        for (const entry of podspecEntries) {
-            if (entry.autolinkWhen &&
-                !(await (0, autolinkCondition_1.appleAutolinkConditionMetAsync)(entry.autolinkWhen, context))) {
-                continue;
-            }
-            podspecPaths.push(entry.path);
-        }
-        return podspecPaths;
+        return podspecEntries
+            .filter((entry) => !entry.autolinkWhen || (0, autolinkCondition_1.appleAutolinkConditionMet)(entry.autolinkWhen, context))
+            .map((entry) => entry.path);
     }
     else {
         return await (0, utils_1.listFilesInDirectories)(revision.path, (basename) => basename.endsWith('.podspec'));

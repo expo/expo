@@ -7,7 +7,6 @@ exports.resolveModulesAsync = apiResolveModulesAsync;
 const findModules_1 = require("./findModules");
 const resolveModules_1 = require("./resolveModules");
 const autolinkingOptions_1 = require("../commands/autolinkingOptions");
-const dependencies_1 = require("../dependencies");
 var getConfiguration_1 = require("./getConfiguration");
 Object.defineProperty(exports, "getConfiguration", { enumerable: true, get: function () { return getConfiguration_1.getConfiguration; } });
 /** @deprecated */
@@ -28,14 +27,6 @@ async function apiResolveExtraBuildDependenciesAsync(providedOptions) {
 /** @deprecated */
 async function apiResolveModulesAsync(searchResults, providedOptions) {
     const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)(providedOptions);
-    const appRoot = await autolinkingOptionsLoader.getAppRoot();
-    const linker = (0, dependencies_1.makeCachedDependenciesLinker)({ projectRoot: appRoot });
-    // The RN-config resolver needs a concrete platform; map the `apple` umbrella to `ios`.
-    const dependencyPlatform = providedOptions.platform === 'apple' ? 'ios' : providedOptions.platform;
-    const dependencyResolutions = await (0, dependencies_1.scanDependencyResolutionsForPlatform)(linker, dependencyPlatform);
-    return (0, resolveModules_1.resolveModulesAsync)(searchResults, await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform), {
-        resolvedDependencyNames: new Set(Object.keys(dependencyResolutions)),
-        commandRoot: autolinkingOptionsLoader.getCommandRoot(),
-    });
+    return (0, resolveModules_1.resolveModulesAsync)(searchResults, await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform));
 }
 //# sourceMappingURL=index.js.map

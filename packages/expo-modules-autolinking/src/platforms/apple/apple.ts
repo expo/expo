@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
-import { type AppleAutolinkContext, appleAutolinkConditionMetAsync } from './autolinkCondition';
+import { type AppleAutolinkContext, appleAutolinkConditionMet } from './autolinkCondition';
 import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { getIosInlineModulesClassNames } from '../../inlineModules/iosInlineModules';
 import type {
@@ -41,17 +41,11 @@ async function findPodspecFiles(
 ): Promise<string[]> {
   const podspecEntries = revision.config?.applePodspecEntries();
   if (podspecEntries && podspecEntries.length) {
-    const podspecPaths: string[] = [];
-    for (const entry of podspecEntries) {
-      if (
-        entry.autolinkWhen &&
-        !(await appleAutolinkConditionMetAsync(entry.autolinkWhen, context))
-      ) {
-        continue;
-      }
-      podspecPaths.push(entry.path);
-    }
-    return podspecPaths;
+    return podspecEntries
+      .filter(
+        (entry) => !entry.autolinkWhen || appleAutolinkConditionMet(entry.autolinkWhen, context)
+      )
+      .map((entry) => entry.path);
   } else {
     return await listFilesInDirectories(revision.path, (basename) => basename.endsWith('.podspec'));
   }
