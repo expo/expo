@@ -498,6 +498,14 @@ internal struct AccessibilityIdentifierModifier: ViewModifier, Record {
   }
 }
 
+internal struct AccessibilityHiddenModifier: ViewModifier, Record {
+  @Field var hidden: Bool = true
+
+  func body(content: Content) -> some View {
+    content.accessibilityHidden(hidden)
+  }
+}
+
 internal struct LayoutPriorityModifier: ViewModifier, Record {
   @Field var priority: Double = 0
 
@@ -1558,6 +1566,10 @@ extension ViewModifierRegistry {
 
     register("accessibilityIdentifier") { params, appContext, _ in
       return try AccessibilityIdentifierModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityHidden") { params, appContext, _ in
+      return try AccessibilityHiddenModifier(from: params, appContext: appContext)
     }
 
     register("layoutPriority") { params, appContext, _ in
