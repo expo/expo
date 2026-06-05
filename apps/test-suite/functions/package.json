@@ -11,7 +11,8 @@
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^12.1.0",
-    "firebase-functions": "^5.0.1"
+    "firebase-functions": "^5.0.1",
+    "form-data": "2.5.4"
   },
   "devDependencies": {
     "firebase-functions-test": "^3.2.0",
