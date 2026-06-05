@@ -59,18 +59,18 @@ Code: index.tsx
   46 |       />
   47 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:44:17)
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:44:17) 
 
 Code: index.tsx
+  151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
   152 |   return (
-  153 |     <Text
-> 154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
-      |              ^
+> 153 |     <Text
+      |     ^
+  154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
   155 |       onPress={onPress}>
   156 |       {title}
-  157 |     </Text>
 Call Stack
-  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:154:14)
+  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:153:5)
   App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:41:7)
     `.trim();
 
@@ -109,21 +109,21 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('Runtime error: throw string').click();
 
-    const expectedConsoleOutput = [
-      'Web  ERROR  E2E_UNHANDLED_THROW_STRING ',
-      '',
-      'Code: index.tsx',
-      '  151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {',
-      '  152 |   return (',
-      '> 153 |     <Text',
-      '      |     ^',
-      "  154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}",
-      '  155 |       onPress={onPress}>',
-      '  156 |       {title}',
-      'Call Stack',
-      '  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:153:5)',
-      '  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:56:7)',
-    ].join('\n');
+    const expectedConsoleOutput = `
+Web  ERROR  E2E_UNHANDLED_THROW_STRING 
+
+Code: index.tsx
+  151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  152 |   return (
+> 153 |     <Text
+      |     ^
+  154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+  155 |       onPress={onPress}>
+  156 |       {title}
+Call Stack
+  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:153:5)
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:56:7)
+    `.trim();
 
     await expectOutput(output, expectedConsoleOutput);
   });
@@ -146,21 +146,19 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('console.error: E2E Error').click();
 
-    // TODO: This is not right, it prints only the component stack (twice)
     const expectedConsoleOutput = `
 Web  ERROR  [Error: E2E_CONSOLE_ERROR_OBJECT] 
 
 Code: index.tsx
-  151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
-  152 |   return (
-> 153 |     <Text
-      |     ^
-  154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
-  155 |       onPress={onPress}>
-  156 |       {title}
+  101 |         title="console.error: E2E Error"
+  102 |         onPress={() => {
+> 103 |           console.error(new Error('E2E_CONSOLE_ERROR_OBJECT'));
+      |                         ^
+  104 |         }}
+  105 |       />
+  106 |       <BigButton
 Call Stack
-  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:153:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:100:7)
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:103:25) 
 
 Code: index.tsx
   151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -187,7 +185,7 @@ Call Stack
     await page.getByText('console.error: E2E string').click();
 
     const expectedConsoleOutput = `
-Web  ERROR  E2E_CONSOLE_ERROR_STRING
+Web  ERROR  E2E_CONSOLE_ERROR_STRING 
 
 Code: index.tsx
   107 |         title="console.error: E2E string"
@@ -198,7 +196,7 @@ Code: index.tsx
   111 |       />
   112 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:109:19)
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:109:19) 
 
 Code: index.tsx
   151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {

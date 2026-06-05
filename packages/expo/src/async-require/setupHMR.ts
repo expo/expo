@@ -58,6 +58,7 @@ function addErrorStacks(data: unknown[], shouldCaptureCurrentStack = false) {
     // for console.* to point to the call site
     const stack = captureCurrentStack();
     if (typeof stack === 'string') {
+      hasStack = true;
       dataWithStacks.push(stack);
     }
   }
