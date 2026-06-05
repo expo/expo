@@ -31,7 +31,7 @@ open class JavaScriptNativeState {
   /// the first `setNativeState` call materializes a pointee, and stays populated
   /// afterward (though its contents may expire when the last JSI slot drops the
   /// strong ref). `acquireShared()` transparently re-allocates if expired.
-  internal private(set) var weakPointee: WeakPointer? = nil
+  private var weakPointee: WeakPointer? = nil
 
   private let factory: InternalFactory
 
@@ -113,14 +113,14 @@ open class JavaScriptNativeState {
   /// Non-owning wrapper around `expo::NativeStateWeak`. `lock()` returns a strong
   /// `shared_ptr` if the pointee is still alive, or `nil` if the last JSI slot has
   /// already dropped it.
-  public struct WeakPointer {
-    internal let inner: expo.NativeStateWeak
+  private struct WeakPointer {
+    let inner: expo.NativeStateWeak
 
-    internal init(_ shared: borrowing expo.NativeStateShared) {
+    init(_ shared: borrowing expo.NativeStateShared) {
       self.inner = expo.makeNativeStateWeak(shared)
     }
 
-    internal func lock() -> expo.NativeStateShared? {
+    func lock() -> expo.NativeStateShared? {
       let strong = inner.lock()
       return strong.__convertToBool() ? strong : nil
     }
