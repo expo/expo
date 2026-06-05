@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Apply `setStyle` and `setHidden` to React Native `<Modal>` windows via `ExtraWindowEventListener` on Android. ([#46491](https://github.com/expo/expo/pull/46491) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
