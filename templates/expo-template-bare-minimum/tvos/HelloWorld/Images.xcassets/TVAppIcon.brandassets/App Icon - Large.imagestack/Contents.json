@@ -1,0 +1,17 @@
+{
+  "layers": [
+    {
+      "filename": "Front.imagestacklayer"
+    },
+    {
+      "filename": "Middle.imagestacklayer"
+    },
+    {
+      "filename": "Back.imagestacklayer"
+    }
+  ],
+  "info": {
+    "version": 1,
+    "author": "expo"
+  }
+}
