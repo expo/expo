@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
+
 ## 56.1.16 — 2026-06-15
 
 ### 🎉 New features

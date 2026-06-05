@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.escapeUnsafeCharacters = escapeUnsafeCharacters;
 exports.createInjectedCssAsString = createInjectedCssAsString;
 exports.createInjectedScriptsAsString = createInjectedScriptsAsString;
+exports.createFaviconAsString = createFaviconAsString;
 exports.getHydrationFlagScriptContents = getHydrationFlagScriptContents;
 exports.getHydrationFlagScriptAsString = getHydrationFlagScriptAsString;
 exports.getLoaderDataScriptContents = getLoaderDataScriptContents;
@@ -62,6 +63,16 @@ function createInjectedCssAsString(hrefs) {
  */
 function createInjectedScriptsAsString(srcs) {
     return srcs.map((src) => `<script src="${escapeHtmlAttribute(src)}" defer></script>`).join('\n');
+}
+/**
+ * Returns a `<link rel="icon" />` HTML string for the given favicon href.
+ *
+ * Used by the SPA export path, which splices into a pre-rendered template instead of a React
+ * tree. Output must stay byte-equivalent to `createFaviconAsNode` (rendered to static markup)
+ * so both rendering paths agree on the tag shape.
+ */
+function createFaviconAsString(href) {
+    return `<link rel="icon" href="${escapeHtmlAttribute(href)}"/>`;
 }
 /**
  * Returns the string content of the hydration flag script, which sets the
