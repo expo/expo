@@ -1,10 +1,13 @@
 # PR Sandbox Evidence Controller
 
-`et pr-sandbox` is the trusted controller-side CLI adapter for collecting execution evidence from
-public PRs. It talks to the Cloudflare Worker in `servers/pr-sandbox-worker` and
-does not send Codex/OpenAI/GitHub write credentials into the sandbox.
+The maintained in-repo backend is `et pr-sandbox-gh`, which dispatches
+`.github/workflows/pr-sandbox-session.yml` and runs PR-controlled commands inside Docker on a
+GitHub-hosted runner. The legacy `et pr-sandbox` command can still talk to an externally deployed
+Cloudflare Worker, but this repository no longer contains Worker source.
 
-## Actions
+Neither backend sends Codex/OpenAI/GitHub write credentials into PR-controlled execution.
+
+## Legacy Worker Actions
 
 - `create_pr_job`: create a sandbox job pinned to a repo, PR number, and exact head SHA.
 - `run_preset`: run one allowlisted preset in that job. Long actions are started as sandbox tasks
@@ -17,9 +20,9 @@ does not send Codex/OpenAI/GitHub write credentials into the sandbox.
 - `collect_evidence`: run the V1 evidence flow and emit JSON with a `context` field for
   `deep-code-review`.
 
-## Deep Code Review Handoff
+## Legacy Worker Handoff
 
-For a public external PR:
+If you have an externally deployed compatible Worker:
 
 ```sh
 et pr-sandbox collect_evidence \
@@ -34,7 +37,7 @@ Feed the generated `context` plus the regular PR metadata/diff into `/deep-code-
 The existing `deep-code-review` skill remains responsible for writing
 `code-review-{pull_number}.json` and for its preview/post-pending/submit gates.
 
-## Interactive Agent Execution
+## Legacy Worker Interactive Execution
 
 An agent can keep the sandbox job alive and run follow-up commands while reviewing:
 
@@ -64,11 +67,11 @@ untrusted PR-controlled data.
 
 ## GitHub Actions Session Backend
 
-`et pr-sandbox-gh` is the alternative backend for large repositories or longer interactive review
-sessions. It dispatches `.github/workflows/pr-sandbox-session.yml`, checks out the exact PR head once
-on a GitHub-hosted runner, then polls a GitHub issue or PR comment thread for commands. Each command
-runs in Docker with the PR checkout mounted at `/workspace/repo`; the workflow token stays on the
-runner side and is not passed into Docker.
+`et pr-sandbox-gh` is the default backend for repository-managed sandbox execution. It dispatches
+`.github/workflows/pr-sandbox-session.yml`, checks out the exact PR head once on a GitHub-hosted
+runner, then polls a GitHub issue or PR comment thread for commands. Each command runs in Docker with
+the PR checkout mounted at `/workspace/repo`; the workflow token stays on the runner side and is not
+passed into Docker.
 
 The control issue should be an `expo/expo` issue or PR number. The workflow only accepts command and
 destroy comments authored by the GitHub login that created the session.
@@ -122,7 +125,6 @@ command and come back later with `get_logs`.
 ## Verification
 
 Local verification covers controller validation, preset selection, command allowlisting, context
-generation, log redaction/truncation, expotools build, and the full expotools test suite. Live Worker
-acceptance still requires a deployed Cloudflare Sandbox Worker because Durable Object/container
-lifecycle cannot be exercised inside the expotools unit test runner. GitHub Actions session
-acceptance requires dispatching `pr-sandbox-session.yml` from a branch that contains the workflow.
+generation, log redaction/truncation, expotools build, and the full expotools test suite. GitHub
+Actions session acceptance requires dispatching `pr-sandbox-session.yml` from a branch that contains
+the workflow. Legacy Worker acceptance requires an externally deployed compatible Worker.

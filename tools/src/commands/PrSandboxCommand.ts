@@ -146,7 +146,7 @@ async function action(actionName: string | undefined, options: ActionOptions) {
 export default (program: Command) => {
   program
     .command('pr-sandbox [action]')
-    .description('Runs narrow Cloudflare Sandbox evidence actions for external PR review.')
+    .description('Runs legacy Worker-compatible sandbox evidence actions for external PR review.')
     .option('--worker-url <url>', 'Cloudflare Worker URL. Defaults to PR_SANDBOX_WORKER_URL.')
     .option('--auth-token <token>', 'Worker bearer token. Defaults to PR_SANDBOX_AUTH_TOKEN.')
     .option('--pr-url <url>', 'Public GitHub pull request URL.')

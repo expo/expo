@@ -62,10 +62,10 @@ For PR URL reviews, use the PR sandbox when execution would materially improve r
 
 **Prerequisites:** Sandbox-backed execution uses one of two controller backends:
 
-- Cloudflare Worker backend: `PR_SANDBOX_WORKER_URL`, `PR_SANDBOX_AUTH_TOKEN`, and a deployed PR sandbox Worker.
-- GitHub Actions session backend: `GITHUB_TOKEN` with permission to dispatch workflows and comment on `expo/expo` issues or PRs.
+- GitHub Actions session backend: `GITHUB_TOKEN` with permission to dispatch workflows and comment on `expo/expo` issues or PRs. This is the maintained in-repo backend.
+- Legacy Cloudflare Worker backend: `PR_SANDBOX_WORKER_URL`, `PR_SANDBOX_AUTH_TOKEN`, and an externally deployed compatible Worker. This repository does not contain the Worker source.
 
-Prefer the Cloudflare Worker backend for small, fast checks. Use the GitHub Actions session backend for large repositories, long dependency installs, or when the Worker hits disk/time limits. If neither backend is available, continue with a static review and mention that sandbox execution was not available. Do not block the review solely because the sandbox is unavailable.
+Use the GitHub Actions session backend by default. Use the legacy Worker backend only when the environment already provides a compatible deployed Worker. If neither backend is available, continue with a static review and mention that sandbox execution was not available. Do not block the review solely because the sandbox is unavailable.
 
 **Resolve the review output directory early** when using sandbox evidence, so evidence files live beside the review JSON:
 
@@ -73,7 +73,7 @@ Prefer the Cloudflare Worker backend for small, fast checks. Use the GitHub Acti
 OUTPUT_DIR="$(bun run .claude/skills/deep-code-review/review-dir.ts)"
 ```
 
-**Baseline evidence flow:** For each PR that needs execution evidence but no follow-up commands, create a sandbox job pinned to the exact PR head SHA, run the automatic evidence collector, and destroy the job when collection completes:
+**Legacy Worker evidence flow:** If a compatible Worker is available, each PR that needs execution evidence can create a sandbox job pinned to the exact PR head SHA, run the automatic evidence collector, and destroy the job when collection completes:
 
 ```bash
 et pr-sandbox collect_evidence \
@@ -86,7 +86,7 @@ et pr-sandbox collect_evidence \
 
 Read the generated evidence JSON and include its `context` field in your review context alongside the PR diff and metadata. Use the `logs` field for concrete pass/fail details, but quote only short snippets when needed.
 
-**Interactive agent execution:** When baseline evidence is inconclusive, or when a finding needs targeted verification, keep a sandbox job alive and issue follow-up commands. This is the preferred pattern for iterative checks such as “run lint”, “inspect scripts”, “run a focused `node -e` reproducer”, or “rerun a package test from a subdirectory”.
+**Legacy Worker interactive execution:** When Worker evidence is inconclusive, or when a finding needs targeted verification, keep a sandbox job alive and issue follow-up commands.
 
 ```bash
 et pr-sandbox create_pr_job \
@@ -134,7 +134,7 @@ et pr-sandbox destroy_job \
   --auth-token "$PR_SANDBOX_AUTH_TOKEN"
 ```
 
-**GitHub Actions session fallback:** For large PRs where the Cloudflare sandbox is too small or too slow, start a GitHub Actions session. The workflow checks out the exact PR head once, then waits for command comments. Commands run in Docker with `/workspace/repo` mounted and no GitHub token in the container.
+**GitHub Actions session flow:** Start a GitHub Actions session for normal sandbox-backed review. The workflow checks out the exact PR head once, then waits for command comments. Commands run in Docker with `/workspace/repo` mounted and no GitHub token in the container.
 
 ```bash
 et pr-sandbox-gh create_session \
