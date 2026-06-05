@@ -47,6 +47,8 @@ type Options = {
   minify: boolean;
   exportServer: boolean;
   baseUrl: string;
+  /** URL prefix for static assets (JS, CSS). Falls back to baseUrl if not set. */
+  assetPrefix?: string;
   includeSourceMaps: boolean;
   entryPoint?: string;
   clear: boolean;
@@ -203,6 +205,7 @@ export async function exportFromServerAsync(
   {
     outputDir,
     baseUrl,
+    assetPrefix,
     exportServer,
     includeSourceMaps,
     routerRoot,
@@ -281,6 +284,7 @@ export async function exportFromServerAsync(
         resources: resources.artifacts,
         template,
         baseUrl,
+        assetPrefix,
         route,
         hydrate: true,
       });

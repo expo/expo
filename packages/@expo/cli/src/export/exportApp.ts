@@ -30,7 +30,10 @@ import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
+import {
+  getAssetPrefixFromExpoConfig,
+  getBaseUrlFromExpoConfig,
+} from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
@@ -90,6 +93,7 @@ export async function exportAppAsync(
   }
 
   const baseUrl = getBaseUrlFromExpoConfig(exp);
+  const assetPrefix = getAssetPrefixFromExpoConfig(exp) || undefined;
 
   if (!bytecode && platforms.some((platform) => platform !== 'web')) {
     Log.warn(
@@ -277,6 +281,7 @@ export async function exportAppAsync(
                 exp: projectConfig.exp,
               }),
               baseUrl,
+              assetPrefix,
             });
 
             // Add the favicon assets to the HTML.
@@ -387,6 +392,7 @@ export async function exportAppAsync(
           outputDir: outputPath,
           minify,
           baseUrl,
+          assetPrefix,
           includeSourceMaps: sourceMaps,
           routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
           reactCompiler: !!exp.experiments?.reactCompiler,

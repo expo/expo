@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `experiments.assetPrefix` config option to serve static assets from a CDN while keeping the app URL unchanged. ([#41520](https://github.com/expo/expo/pull/41520) by [@jtomaszewski](https://github.com/jtomaszewski))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

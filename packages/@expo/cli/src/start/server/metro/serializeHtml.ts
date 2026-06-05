@@ -13,6 +13,7 @@ export function serializeHtmlWithAssets({
   template,
   devBundleUrl,
   baseUrl,
+  assetPrefix,
   route,
   isExporting,
   hydrate,
@@ -21,6 +22,8 @@ export function serializeHtmlWithAssets({
   template: string;
   /** asset prefix used for deploying to non-standard origins like GitHub pages. */
   baseUrl: string;
+  /** URL prefix for static assets (JS, CSS). Falls back to baseUrl if not set. */
+  assetPrefix?: string;
   devBundleUrl?: string;
   route?: RouteNode;
   isExporting: boolean;
@@ -33,6 +36,7 @@ export function serializeHtmlWithAssets({
     isExporting,
     template,
     baseUrl,
+    assetPrefix,
     bundleUrl: isExporting ? undefined : devBundleUrl,
     route,
     hydrate,
@@ -61,6 +65,7 @@ function htmlFromSerialAssets(
     isExporting,
     template,
     baseUrl,
+    assetPrefix,
     bundleUrl,
     route,
     hydrate,
@@ -68,19 +73,24 @@ function htmlFromSerialAssets(
     isExporting: boolean;
     template: string;
     baseUrl: string;
+    /** URL prefix for static assets (JS, CSS). Falls back to baseUrl if not set. */
+    assetPrefix?: string;
     /** This is dev-only. */
     bundleUrl?: string;
     route?: RouteNode;
     hydrate?: boolean;
   }
 ) {
+  // Use assetPrefix for static assets if provided, otherwise fall back to baseUrl
+  const staticAssetPrefix = assetPrefix ?? baseUrl;
+
   // Combine the CSS modules into tags that have hot refresh data attributes.
   const styleString = assets
     .filter((asset) => asset.type.startsWith('css'))
     .map(({ type, metadata, filename, source }) => {
       if (type === 'css') {
         if (isExporting) {
-          return createInjectedCssAsString([combineUrlPath(baseUrl, filename)]);
+          return createInjectedCssAsString([combineUrlPath(staticAssetPrefix, filename)]);
         } else {
           return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
         }
@@ -127,10 +137,10 @@ function htmlFromSerialAssets(
               return '';
             }
             // Mark async chunks as defer so they don't block the page load.
-            // return `<script src="${combineUrlPath(baseUrl, filename)" defer></script>`;
+            // return `<script src="${combineUrlPath(staticAssetPrefix, filename)" defer></script>`;
           }
 
-          return createInjectedScriptsAsString([combineUrlPath(baseUrl, filename)]);
+          return createInjectedScriptsAsString([combineUrlPath(staticAssetPrefix, filename)]);
         })
         .join('');
 

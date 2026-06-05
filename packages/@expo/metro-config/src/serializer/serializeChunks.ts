@@ -65,6 +65,16 @@ function getPlatformOption(
   return _getPlatformOption(...args);
 }
 
+let _getAssetPrefixOption: typeof import('./fork/baseJSBundle').getAssetPrefixOption;
+function getAssetPrefixOption(
+  ...args: Parameters<typeof import('./fork/baseJSBundle').getAssetPrefixOption>
+) {
+  if (!_getAssetPrefixOption) {
+    _getAssetPrefixOption = require('./fork/baseJSBundle').getAssetPrefixOption;
+  }
+  return _getAssetPrefixOption(...args);
+}
+
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 
@@ -139,7 +149,8 @@ export async function graphToSerialAssetsAsync(
   // TODO: Can this be anything besides true?
   const isExporting = true;
   const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
-  const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
+  const assetPrefix = getAssetPrefixOption(graph, { serializerOptions: serializeChunkOptions });
+  const assetPublicUrl = ((assetPrefix ?? baseUrl.replace(/\/+$/, '')) ?? '') + '/assets';
   const platform = getPlatformOption(graph, options) ?? 'web';
   const isHosted =
     platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
