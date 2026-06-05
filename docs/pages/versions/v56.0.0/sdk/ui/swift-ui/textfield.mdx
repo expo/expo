@@ -30,7 +30,7 @@ Expo UI TextField matches the official SwiftUI [TextField API](https://developer
 
 ### Uncontrolled text field
 
-Bind a [`useNativeState`](usenativestate) observable to `text`; the field tracks the user's input on its own, and you read the current value from `textState.value`.
+Bind a [`useNativeState`](usenativestate) observable to `text`. The field tracks the user's input on its own, and you read the current value from `textState.value`.
 
 ```tsx BasicTextFieldExample.tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
@@ -80,7 +80,7 @@ export default function ControlledTextFieldExample() {
 Set `axis="vertical"` to allow the text field to expand vertically. Use the [`lineLimit`](modifiers/#linelimit) modifier to control the visible line count. When using `Host matchContents`, add `fixedSize({ horizontal: false, vertical: true })` so the text field accepts the parent's width while using its ideal height.
 
 ```tsx MultilineTextFieldExample.tsx
-import { Host, TextField } from '@expo/ui/swift-ui';
+import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { lineLimit, fixedSize } from '@expo/ui/swift-ui/modifiers';
 
 export default function MultilineTextFieldExample() {
@@ -104,7 +104,7 @@ export default function MultilineTextFieldExample() {
 Use the [`keyboardType`](modifiers/#keyboardtypekeyboardtype) modifier to display a specific keyboard layout.
 
 ```tsx KeyboardTypeExample.tsx
-import { Host, TextField } from '@expo/ui/swift-ui';
+import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { keyboardType, autocorrectionDisabled } from '@expo/ui/swift-ui/modifiers';
 
 export default function KeyboardTypeExample() {
@@ -127,7 +127,7 @@ export default function KeyboardTypeExample() {
 Use the [`submitLabel`](modifiers/#submitlabelsubmitlabel) modifier to customize the return key and [`onSubmit`](modifiers/#onsubmithandler) to handle the submit action.
 
 ```tsx SubmitHandlingExample.tsx
-import { Host, TextField } from '@expo/ui/swift-ui';
+import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { submitLabel, onSubmit } from '@expo/ui/swift-ui/modifiers';
 
 export default function SubmitHandlingExample() {
