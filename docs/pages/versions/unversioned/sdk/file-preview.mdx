@@ -1,0 +1,114 @@
+---
+title: FilePreview
+description: A library that opens local files using platform-native preview behavior.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-file-preview'
+packageName: 'expo-file-preview'
+platforms: ['android', 'ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
+
+`expo-file-preview` opens local files using platform-native preview behavior. On iOS, it presents the file with Quick Look. On Android, it opens the file through an `ACTION_VIEW` intent using a temporary `content://` URI.
+
+This package is intended for files that already exist locally, such as files downloaded with [`expo-file-system`](./filesystem/), files selected with [`expo-document-picker`](./document-picker/) and copied to cache, or app-generated files. It does not download remote URLs or manage cache cleanup.
+On Android, use files in your app's document or cache directory, such as files created with `Paths.document` or `Paths.cache`.
+`expo-file-preview` does not maintain its own file-type allowlist. Pass the local file URI and a MIME type, then handle `false` or rejected preview calls when the platform cannot preview that file.
+
+## Platform behavior
+
+### iOS&ensp;<PlatformTags platforms={['ios']} />
+
+iOS uses [`QLPreviewController`](https://developer.apple.com/documentation/quicklook/qlpreviewcontroller), the standard Quick Look preview controller. Quick Look supports many common file types, including PDFs, images, plain text, CSV files, Microsoft Office documents, iWork documents, and USDZ files.
+
+### Android&ensp;<PlatformTags platforms={['android']} />
+
+On Android, `expo-file-preview` sends an `ACTION_VIEW` intent for the file URI and MIME type. The operating system opens a matching installed app, shows a chooser when needed, or reports that no app can open the file.
+
+Android does not provide a built-in Quick Look equivalent for every file type, so support for PDFs, Office documents, text files, images, and other formats depends on the apps installed on the user's device.
+
+On Android, `openPreviewAsync` starts the preview intent and rejects if the system reports that no matching activity exists. `canPreviewAsync` performs an upfront package-manager query, so the package includes the Android package visibility query needed for that availability check on Android 11 and later.
+
+## Choosing between preview and sharing
+
+Use `expo-file-preview` when the user wants to view a file. It uses the platform preview surface where one exists and the platform file-viewer handoff where Android has an installed handler.
+
+Use [`expo-sharing`](./sharing/) when the user wants to share, export, save, send, or choose another app for a file. Apps can also compose with `expo-sharing` after a preview error when a share sheet fits their product experience, especially on Android where preview support depends on installed apps.
+
+`expo-file-preview` does not include sharing as an option. Keeping sharing separate avoids duplicating `expo-sharing` and lets apps decide whether a share sheet is an appropriate app-level action for their own experience.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Preview a downloaded file
+
+Download the file with `expo-file-system`, keep a useful file extension, and pass the local URI to `openPreviewAsync`.
+If your app previews multiple remote files, use unique cache filenames so one downloaded file does not accidentally replace or reuse another file with the same extension.
+
+```ts
+import { File, Paths } from 'expo-file-system';
+import * as FilePreview from 'expo-file-preview';
+
+const remoteUrl = 'https://example.com/manual.pdf';
+const file = new File(Paths.cache, 'manual.pdf');
+
+await File.downloadFileAsync(remoteUrl, file, { idempotent: true });
+
+await FilePreview.openPreviewAsync(file.uri, {
+  mimeType: 'application/pdf',
+  title: 'Manual',
+});
+```
+
+### Check whether preview is available
+
+```ts
+import * as FilePreview from 'expo-file-preview';
+
+const canPreview = await FilePreview.canPreviewAsync(file.uri, {
+  mimeType: 'application/pdf',
+});
+
+if (canPreview) {
+  await FilePreview.openPreviewAsync(file.uri, { mimeType: 'application/pdf' });
+}
+```
+
+On iOS, `canPreviewAsync` checks Quick Look support for the local file. On Android, it checks whether any installed app can handle an `ACTION_VIEW` intent for the file URI and MIME type. Invalid local URIs and files your app cannot read reject instead of returning `false`.
+
+You can also call `openPreviewAsync` directly and handle the error if no preview is available. This is useful on Android because installed file handlers can change after your app checks availability. The promise resolves after the platform preview has been opened or handed off; it does not report when the user dismisses the viewer.
+
+### Compose with sharing
+
+If sharing fits your app's experience, you can call `expo-sharing` directly from app code after previewing fails.
+
+```ts
+import * as FilePreview from 'expo-file-preview';
+import * as Sharing from 'expo-sharing';
+
+try {
+  await FilePreview.openPreviewAsync(file.uri, {
+    mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    title: 'Presentation',
+  });
+} catch {
+  await Sharing.shareAsync(file.uri, {
+    mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    dialogTitle: 'Presentation',
+  });
+}
+```
+
+This pattern is useful when a platform cannot preview the file directly but the user can still send it to another app. If your UI has a separate Share button, call `expo-sharing` from that action instead. `expo-file-preview` does not call `expo-sharing` internally.
+
+## API
+
+```js
+import * as FilePreview from 'expo-file-preview';
+```
+
+<APISection packageName="expo-file-preview" apiName="FilePreview" />

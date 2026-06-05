@@ -301,6 +301,10 @@ module.exports = {
           { name: 'evalJsForWebViewAsync', argumentsCount: 2, key: 'evalJsForWebViewAsync' },
         ],
         ExpoFetchModule: [],
+        ExpoFilePreview: [
+          { name: 'canPreviewAsync', argumentsCount: 2, key: 'canPreviewAsync' },
+          { name: 'openPreviewAsync', argumentsCount: 2, key: 'openPreviewAsync' },
+        ],
         ExpoFontLoader: [
           { name: 'getLoadedFonts', argumentsCount: 0, key: 'getLoadedFonts' },
           { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
@@ -1049,6 +1053,12 @@ module.exports = {
         },
         ExpoFetchModule: {
           addListener: { type: 'function' },
+          removeListeners: { type: 'function' },
+        },
+        ExpoFilePreview: {
+          addListener: { type: 'function' },
+          canPreviewAsync: { type: 'function' },
+          openPreviewAsync: { type: 'function' },
           removeListeners: { type: 'function' },
         },
         ExpoFontLoader: {

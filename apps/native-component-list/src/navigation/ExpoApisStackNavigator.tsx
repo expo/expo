@@ -192,6 +192,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/FilePreviewScreen'));
+    },
+    name: 'FilePreview',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/LocalizationScreen'));
     },
     name: 'Localization',

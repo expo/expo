@@ -85,6 +85,7 @@
     "expo-crypto": "workspace:*",
     "expo-device": "workspace:*",
     "expo-document-picker": "workspace:*",
+    "expo-file-preview": "workspace:*",
     "expo-file-system": "workspace:*",
     "expo-font": "workspace:*",
     "expo-gl": "workspace:*",
