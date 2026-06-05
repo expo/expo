@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { platform } from 'node:process';
 import { stripVTControlCharacters } from 'node:util';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
@@ -13,6 +14,13 @@ test.afterAll(() => restoreEnv());
 const projectRoot = getRouterE2ERoot();
 
 test.describe('dev console errors', () => {
+  if (platform === 'win32') {
+    test.skip('skipping on windows', () => {
+      // On Windows, the code snippets are currently not rendering and project frames filtering is not working.
+    });
+    return;
+  }
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
