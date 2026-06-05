@@ -72,6 +72,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Support OOT prebuild for tvos. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
 - Add `pageHeaders` to exported routes manifests ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Apply `pageHeaders` when serving static exports with `expo serve` ([#47781](https://github.com/expo/expo/pull/47781) by [@hassankhan](https://github.com/hassankhan))
 - Create `pageHeaders` rules from loader-declared `Cache-Control` headers for SSG ([#47774](https://github.com/expo/expo/pull/47774) by [@hassankhan](https://github.com/hassankhan))
