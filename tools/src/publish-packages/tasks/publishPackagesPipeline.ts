@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { addTemplateTarball } from './addTemplateTarball';
-import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
+import { bundleIOSPrebuilds, checkIosPrebuildToolchain } from './bundleIOSPrebuilds';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
@@ -81,6 +81,8 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       checkEnvironmentTask,
       checkRepositoryStatus,
       loadRequestedParcels,
+      // Fail fast on a missing iOS toolchain before any version bumps / commits / pushes.
+      checkIosPrebuildToolchain,
       checkPackagesIntegrity,
       selectPackagesToPublish,
       updatePackageVersions,

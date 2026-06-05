@@ -18,7 +18,7 @@ import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addTemplateTarball } from './addTemplateTarball';
-import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
+import { bundleIOSPrebuilds, checkIosPrebuildToolchain } from './bundleIOSPrebuilds';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
 const { cyan } = chalk;
@@ -128,6 +128,8 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
     dependsOn: [
       checkEnvironmentTask,
       loadRequestedParcels,
+      // Fail fast on a missing iOS toolchain before version bumps / Android artifacts.
+      checkIosPrebuildToolchain,
       prepareCanaries,
       checkPackageAccess,
       updatePackageVersions,

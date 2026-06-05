@@ -48,33 +48,24 @@ async function listInstalledXcodesAsync(): Promise<InstalledXcode[]> {
   );
 }
 
-// Returns a restorer that undoes any DEVELOPER_DIR mutation (no-op if none).
+// Validates that the supported toolchain is reachable, without mutating the environment.
+// Returns the active version and, when the active toolchain isn't the supported one, the
+// developer dir of an installed Xcode that is (so callers can switch to it). Throws a
+// what/why/how error when no supported toolchain is active or installed.
 // `readActive` / `listInstalled` are injection seams for tests.
-export async function ensureSupportedToolchainAsync(
+export async function assertSupportedToolchainAvailableAsync(
   readActive: () => Promise<string | null> = () => readXcodeVersionAsync(),
   listInstalled: () => Promise<InstalledXcode[]> = listInstalledXcodesAsync
-): Promise<() => void> {
+): Promise<{ active: string | null; developerDir: string | null }> {
   const active = await readActive();
   if (active === SUPPORTED_XCODE_VERSION) {
-    logger.log(`   Using active toolchain: Xcode ${active}`);
-    return () => {};
+    return { active, developerDir: null };
   }
 
   const installed = await listInstalled();
   const match = installed.find((t) => t.xcode === SUPPORTED_XCODE_VERSION);
   if (match) {
-    const previous = process.env.DEVELOPER_DIR;
-    process.env.DEVELOPER_DIR = match.developerDir;
-    logger.log(
-      `   Switched DEVELOPER_DIR to ${match.developerDir} for this run (will reset after).`
-    );
-    return () => {
-      if (previous === undefined) {
-        delete process.env.DEVELOPER_DIR;
-      } else {
-        process.env.DEVELOPER_DIR = previous;
-      }
-    };
+    return { active, developerDir: match.developerDir };
   }
 
   const activeDescription = active
@@ -89,9 +80,42 @@ export async function ensureSupportedToolchainAsync(
   throw new Error(
     `${activeDescription}, but iOS prebuilds must be built with Xcode ${SUPPORTED_XCODE_VERSION}. ` +
       `Newer Swift compilers emit module interfaces that older consumer toolchains cannot parse, which breaks compilation for downstream consumers. ` +
-      `${found} ` +
-      `Install Xcode ${SUPPORTED_XCODE_VERSION} from https://developer.apple.com/download/all/ (it can coexist with other Xcodes), or rerun with \`--skip-ios-prebuilds\` if you don't need fresh artifacts.`
+      `${found}\n\n` +
+      `To fix this:\n` +
+      `  1. Download "Xcode ${SUPPORTED_XCODE_VERSION}" (the .xip) from https://developer.apple.com/download/all/.\n` +
+      `  2. Expand it: \`xip --expand ~/Downloads/Xcode_${SUPPORTED_XCODE_VERSION}_*.xip\` (or double-click it in Finder).\n` +
+      `  3. Move the resulting Xcode.app into /Applications, renaming it so it coexists with your other Xcodes, e.g.\n` +
+      `     \`mv ~/Downloads/Xcode.app /Applications/Xcode-${SUPPORTED_XCODE_VERSION}.app\`.\n` +
+      `  4. Re-run this command. No \`xcode-select\` needed — it auto-detects any /Applications/Xcode*.app on version ${SUPPORTED_XCODE_VERSION} and uses it for this run only.\n\n` +
+      `Alternatively, rerun with \`--skip-ios-prebuilds\` if you don't need fresh artifacts.`
   );
+}
+
+// Returns a restorer that undoes any DEVELOPER_DIR mutation (no-op if none).
+// `readActive` / `listInstalled` are injection seams for tests.
+export async function ensureSupportedToolchainAsync(
+  readActive: () => Promise<string | null> = () => readXcodeVersionAsync(),
+  listInstalled: () => Promise<InstalledXcode[]> = listInstalledXcodesAsync
+): Promise<() => void> {
+  const { active, developerDir } = await assertSupportedToolchainAvailableAsync(
+    readActive,
+    listInstalled
+  );
+  if (!developerDir) {
+    logger.log(`   Using active toolchain: Xcode ${active}`);
+    return () => {};
+  }
+
+  const previous = process.env.DEVELOPER_DIR;
+  process.env.DEVELOPER_DIR = developerDir;
+  logger.log(`   Switched DEVELOPER_DIR to ${developerDir} for this run (will reset after).`);
+  return () => {
+    if (previous === undefined) {
+      delete process.env.DEVELOPER_DIR;
+    } else {
+      process.env.DEVELOPER_DIR = previous;
+    }
+  };
 }
 
 /**
@@ -116,6 +140,13 @@ const IOS_PREBUILD_PACKAGES = [
   'expo-video',
 ];
 
+// Names of the publish set's packages that ship iOS prebuilds (empty when none do).
+export function iosPrebuildPackagesInSet(parcels: Parcel[]): string[] {
+  return IOS_PREBUILD_PACKAGES.filter((name) =>
+    parcels.some((p) => p.pkg.packageName === name || p.pkg.packageSlug === name)
+  );
+}
+
 const PRECOMPILE_BUILD_DIR = path.join(PACKAGES_DIR, 'precompile', '.build');
 const FLAVORS = ['debug', 'release'] as const;
 
@@ -123,6 +154,30 @@ const FLAVORS = ['debug', 'release'] as const;
 // Resolver: precompiled_modules.rb's shared_spm_dep_source_base.
 const SHARED_SPM_DEPS_SOURCE_DIR = '.spm-deps';
 const SHARED_SPM_DEPS_BUNDLE_SUBPATH = path.join('prebuilds', 'spm-deps');
+
+/**
+ * Fail-fast guard that runs early in the publish pipeline: when the publish set ships iOS
+ * prebuilds, verify the required Xcode toolchain is reachable before any version bumps,
+ * commits, or pushes happen. Without it a missing toolchain only surfaces near the end of
+ * the pipeline (after changes are already committed and pushed), when bundleIOSPrebuilds runs.
+ */
+export const checkIosPrebuildToolchain = new Task<TaskArgs>(
+  {
+    name: 'checkIosPrebuildToolchain',
+    dependsOn: [loadRequestedParcels],
+  },
+  async (parcels: Parcel[], options: CommandOptions) => {
+    if (options.skipIosPrebuilds) {
+      return;
+    }
+    if (iosPrebuildPackagesInSet(parcels).length === 0) {
+      return;
+    }
+    // Throws the what/why/how error when the supported toolchain isn't reachable. Doesn't
+    // switch DEVELOPER_DIR here — bundleIOSPrebuilds does that, scoped to the build itself.
+    await assertSupportedToolchainAvailableAsync();
+  }
+);
 
 /**
  * Builds iOS xcframeworks for selected packages and bundles them into each package's
@@ -142,9 +197,7 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
 
     logger.log('\n📱 Building iOS prebuilds...');
 
-    const relevantParcels = IOS_PREBUILD_PACKAGES.filter((name) =>
-      parcels.some((p) => p.pkg.packageName === name || p.pkg.packageSlug === name)
-    );
+    const relevantParcels = iosPrebuildPackagesInSet(parcels);
     if (relevantParcels.length === 0) {
       logger.log('No iOS prebuild packages in publish set, skipping');
       return;
