@@ -3,8 +3,11 @@ import { nanoid } from 'nanoid/non-secure';
 import type { ComponentProps } from 'react';
 import { Children, useMemo } from 'react';
 
-import { withLayoutContext } from './withLayoutContext';
-import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
+import {
+  createStandardNativeStackNavigator,
+  type ExtendedStackNavigationOptions,
+  type NativeStackContentProps,
+} from '../fork/native-stack/createStandardNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import {
   getInternalExpoRouterParams,
@@ -35,72 +38,59 @@ import {
   type PartialState,
   type Route,
   type RouterConfigOptions,
+  StackActions,
   type StackActionType,
   type StackNavigationState,
   StackRouter as RNStackRouter,
+  type StackRouterOptions,
   type RouteProp,
 } from '../react-navigation/native';
-import type {
-  NativeStackNavigationEventMap,
-  NativeStackNavigationOptions,
-} from '../react-navigation/native-stack';
+import type { NativeStackNavigationEventMap } from '../react-navigation/native-stack';
+import { unstable_integrateWithRouter } from '../standard-navigation';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
 
+export type { ExtendedStackNavigationOptions } from '../fork/native-stack/createStandardNativeStackNavigator';
+
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
-const NativeStackNavigator = createNativeStackNavigator().Navigator;
-
-/**
- * We extend NativeStackNavigationOptions with our custom props
- * to allow for several extra props to be used on web, like modalWidth
- */
-export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
-  webModalStyle?: {
-    /**
-     * Override the width of the modal (px or percentage). Only applies on web platform.
-     * @platform web
-     */
-    width?: number | string;
-    /**
-     * Override the height of the modal (px or percentage). Applies on web desktop.
-     * @platform web
-     */
-    height?: number | string;
-    /**
-     * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
-     * @platform web
-     */
-    minHeight?: number | string;
-    /**
-     * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
-     * @platform web
-     */
-    minWidth?: number | string;
-    /**
-     * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
-     * @platform web
-     */
-    border?: string;
-    /**
-     * Override the overlay background color (any valid CSS color or rgba/hsla value).
-     * @platform web
-     */
-    overlayBackground?: string;
-    /**
-     * Override the modal shadow filter (any valid CSS filter value, e.g. 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none').
-     * @platform web
-     */
-    shadow?: string;
-  };
-};
-
-const RNStack = withLayoutContext<
+const RNStack = unstable_integrateWithRouter<
   ExtendedStackNavigationOptions,
-  typeof NativeStackNavigator,
   StackNavigationState<ParamListBase>,
-  NativeStackNavigationEventMap
->(NativeStackNavigator);
+  NativeStackNavigationEventMap,
+  NativeStackContentProps,
+  StackRouterOptions
+>(createStandardNativeStackNavigator, RNStackRouter, {
+  createProps: ({ state, dispatch, navigation }) => {
+    const target = state.key;
+    return {
+      pop: (count: number, sourceRouteKey: string) =>
+        dispatch({ ...StackActions.pop(count), source: sourceRouteKey, target }),
+      subscribeTabPressPopToTop: () =>
+        // @ts-expect-error: there may not be a tab navigator in parent
+        navigation.addListener?.('tabPress', (e: any) => {
+          const isFocused = navigation.isFocused();
+
+          // Run the operation in the next frame so we're sure all listeners have been run
+          // This is necessary to know if preventDefault() has been called
+          requestAnimationFrame(() => {
+            // The popToTop is automatically triggered on the native side for native tabs,
+            // hence the `__internalTabsType` guard
+            if (
+              state.index > 0 &&
+              isFocused &&
+              !e.defaultPrevented &&
+              e.data?.__internalTabsType !== 'native'
+            ) {
+              // When user taps on already focused tab and we're inside the tab,
+              // reset the stack to replicate native behaviour
+              dispatch({ ...StackActions.popToTop(), target });
+            }
+          });
+        }),
+    };
+  },
+});
 
 type RNNavigationAction = Extract<CommonNavigationAction, { type: 'NAVIGATE' }>;
 type RNPreloadAction = Extract<CommonNavigationAction, { type: 'PRELOAD' }>;

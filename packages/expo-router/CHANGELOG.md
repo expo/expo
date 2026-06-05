@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Migrate the native `Stack` navigator to the `standard-navigation` integration. ([@Ubax](https://github.com/Ubax))
+
 ## 56.2.7 — 2026-05-26
 
 ### 🐛 Bug fixes

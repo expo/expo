@@ -10,6 +10,7 @@ export type NativeStackNavigationEventMap = {
         data: {
             closing: boolean;
         };
+        canPreventDefault: false;
     };
     /**
      * Event which fires when a transition animation ends.
@@ -18,12 +19,14 @@ export type NativeStackNavigationEventMap = {
         data: {
             closing: boolean;
         };
+        canPreventDefault: false;
     };
     /**
      * Event which fires when a swipe back is canceled on iOS.
      */
     gestureCancel: {
         data: undefined;
+        canPreventDefault: false;
     };
     /**
      * Event which fires when screen is in sheet presentation & it's detent changes.
@@ -38,6 +41,7 @@ export type NativeStackNavigationEventMap = {
             index: number;
             stable: boolean;
         };
+        canPreventDefault: false;
     };
 };
 export type NativeStackNavigationProp<ParamList extends ParamListBase, RouteName extends keyof ParamList = string, NavigatorID extends string | undefined = undefined> = NavigationProp<ParamList, RouteName, NavigatorID, StackNavigationState<ParamList>, NativeStackNavigationOptions, NativeStackNavigationEventMap> & StackActionHelpers<ParamList>;

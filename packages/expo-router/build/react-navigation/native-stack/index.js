@@ -1,11 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useProjectedStack = exports.usePreloadedDescriptors = exports.usePopAction = exports.useAnimatedHeaderHeight = exports.NativeStackView = exports.createNativeStackNavigator = void 0;
-/**
- * Navigators
- */
-var createNativeStackNavigator_1 = require("./navigators/createNativeStackNavigator");
-Object.defineProperty(exports, "createNativeStackNavigator", { enumerable: true, get: function () { return createNativeStackNavigator_1.createNativeStackNavigator; } });
+exports.useProjectedStack = exports.usePreloadedDescriptors = exports.usePopAction = exports.useAnimatedHeaderHeight = exports.NativeStackView = void 0;
 /**
  * Views
  */
