@@ -261,6 +261,10 @@ PODS:
   - ExpoModulesWorklets (56.0.14):
     - ExpoModulesCore
     - ExpoModulesJSI
+  - ExpoModulesWorklets/Tests (56.0.14):
+    - ExpoModulesCore
+    - ExpoModulesJSI
+    - ExpoModulesTestCore
   - ExpoModulesWorkletsAdapter (56.0.14):
     - ExpoModulesCore
     - ExpoModulesJSI
@@ -4107,6 +4111,7 @@ DEPENDENCIES:
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
+  - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
@@ -4656,7 +4661,7 @@ SPEC CHECKSUMS:
   ExpoCamera: fc1d2688e9824984e28cf606062da40d2d80b13e
   ExpoCameraBarcodeScanning: a6a8781886a0cf5ebe78184dcc895c0c88e1b8b5
   ExpoCellular: 61e540ab0138c7f441639b51a27b3cca2bbc5ae8
-  ExpoClipboard: eee843698341fd26d571fd2807800f98abb6123c
+  ExpoClipboard: 40221903a1caa68259e022517af49d12962821fe
   ExpoContacts: cb6d1245197b0e59d12172b662ba461b558e8e45
   ExpoCrypto: b54a97c4357d46d7f8de079e69fa89029572244b
   ExpoDevice: f527f8bbefa6efa12f8ef63e9038dd1d5d903697
@@ -4679,12 +4684,12 @@ SPEC CHECKSUMS:
   ExpoLogBox: 7aa03244fe5eeced5129e4ec7ad5bd9a3994378e
   ExpoMailComposer: ea650b89d3b93c7a277b11a8ab7010a7be6d595e
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
-  ExpoModulesCore: 58bb7908bf8f7c1f884a386c9414332203ad92bd
+  ExpoModulesCore: cf0640787fa4ba0978114d33f14328f98a460c31
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
   ExpoModulesTestCore: 768a9a2b0401e87090bc7280cdb0607ab4cad382
-  ExpoModulesWorklets: 3f847eb6ba544bd4b55d585f89b3b18f8cd73a72
+  ExpoModulesWorklets: 02b9efa5f987127bd3b2a7223892cd4e68865600
   ExpoModulesWorkletsAdapter: 99856b2ddb4a5bb9044ea9f5820bd862cbd19b88
-  ExpoNetwork: c9651806f67c5fe93d221f9b4533c98ae6833bb9
+  ExpoNetwork: d244aa406eb0aba7e36e5f009a061b2744ab11d7
   ExpoNotifications: 22f9caefdb674598ee2d11dfe06eebab7a7cc155
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0
   ExpoRouter: 806ab2bc2124594c624ffe6fde15c28e4c4f0b03
@@ -4697,7 +4702,7 @@ SPEC CHECKSUMS:
   ExpoSpeech: fe3706df8653ab8c16ff88251e33fab79b07a420
   ExpoSQLite: 38a35f67bbb3370d9bb859aa65d106909c4e3b19
   ExpoStoreReview: f785057aececd9c63a113c69a82b491e5f90694e
-  ExpoSymbols: f83c91f2897d37102b98b9224c603095630be9d0
+  ExpoSymbols: b3c964ddc1f1c8d8ddb0eeb830e3a8e42b77ed2d
   ExpoSystemUI: 8f4fb641c6a6ebe2a01dda0fbd3fdd952ab5823a
   ExpoTaskManager: f9511a17a4528adb8da94efb639ad592eef8bc53
   ExpoTrackingTransparency: a5117d608c3abd938cd40ebcaa2f00049b886a8c
@@ -4723,7 +4728,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 020d7dbf64ea2ac7f2dc43408d80cc6035c4b3e8
+  hermes-engine: b35a5dc1ffceda2d490f9e9db0decef19984d7dc
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
