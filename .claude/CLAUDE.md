@@ -1,15 +1,13 @@
 ## expotools (`et`)
 
 This repo ships its own CLI, `expotools`, available directly as `et <command> <...args>`.
-Call it as `et`, not via `npx`, `bunx`, or `pnpm run` — it's already on the PATH. Many of our
-processes (pod install, native unit tests, prebuild, and more) run through it.
+Call it as `et`, not via `npx`, `bunx`, or `pnpm run`. It's put on the PATH by `direnv`, so run
+`direnv allow` once in the repo root if `et` isn't found; otherwise invoke it directly with
+`node ./tools/bin/expotools.js <command>`. Many of our processes (native unit tests, prebuild,
+and more) run through it.
 
 Commands you'll reach for during normal development:
 
-- `et pod-install` — install pods in the directories that are out of sync. Run after changing
-  dependencies or a podspec.
-- `et native-unit-tests` — run native unit tests for all packages that provide them. Scope to
-  one package with `--packages <name>` (e.g. `et native-unit-tests -p ios --packages @expo/ui`).
 - `et check-packages` — verify that packages build and their tests pass.
 
 Run `et --help` to discover the rest (publishing, changelogs, on-call dashboards, and more).
@@ -29,23 +27,31 @@ as part of `et check-packages` (see Committing below).
 ### Native tests
 
 Swift/Kotlin unit tests live in `packages/<pkg>/ios/Tests/` and `android/`, and run through
-`et native-unit-tests` (scope with `--packages <name>`). Adding or changing an iOS `test_spec`
-requires `et pod-install` first.
+`et native-unit-tests` (scope with `--packages <name>`).
+
+On iOS/macOS (Android needs no pod step), install pods before running native tests or building,
+and again after adding or changing an iOS `test_spec`. Run `pod install` directly in the relevant
+`apps/*/ios` or `apps/*/macos` directory rather than `et pod-install` — running it directly is
+faster and avoids installing for apps you aren't working on, like Expo Go.
+
+Running native tests:
+`et native-unit-tests` — run native unit tests for all packages that provide them. Scope to
+one package with `--packages <name>` (e.g. `et native-unit-tests -p ios --packages @expo/ui`).
 
 ## Committing
 
-Before committing, run `et check-packages <...packages>` with the package names that has changed. It runs the unit tests **and** builds the package's
+Before committing, run `et check-packages <...packages>` with the names of the packages that changed. It runs the unit tests **and** builds the package's
 JS files. The build output is committed alongside your source changes, so a commit that skips
 this step will be missing its built files. Stage both your source edits and the regenerated
 build output.
 
 ## Creating PRs
 
-Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTING.md
+Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTING.md and the PR template:
 
 **Commit message:** format as `[platform][api] Title`, e.g. `[ios][video] Fix black screen on older devices`.
 
-**PR description** follows the repo template — fill in each section:
+**PR description** follows the [repo PR template](https://github.com/expo/expo/blob/main/.github/PULL_REQUEST_TEMPLATE) — fill in each section:
 
 - **Why:** the motivation for the change; link relevant issues, forum posts, or feature requests.
 - **How:** how you built the feature or fixed the bug, and why you took that approach.
@@ -56,6 +62,11 @@ Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTI
 
 **Before submitting:** run `et check-packages` (builds, lints, and tests), commit the `build/`
 output, and remove stray `console.log`s or commented-out code.
+
+**See also:**
+
+- [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md)
+- [Expo Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)
 
 ## Error messages
 
