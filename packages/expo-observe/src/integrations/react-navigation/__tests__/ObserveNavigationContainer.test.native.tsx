@@ -218,7 +218,6 @@ describe('ObserveNavigationContainer', () => {
     expect(stateChangeHandler).not.toHaveBeenCalled();
   });
 
-
   it('passes other NavigationContainer props through (e.g. theme)', () => {
     const theme = { dark: true, colors: {} } as unknown as never;
     render(
