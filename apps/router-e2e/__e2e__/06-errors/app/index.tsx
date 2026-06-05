@@ -32,6 +32,39 @@ export default function App() {
           console.log(undefinedVariable);
         }}
       />
+      <BigButton
+        title="Log unsymbolicated stack trace"
+        onPress={() => {
+          console.log(new Error('').stack);
+        }}
+      />
+      <BigButton
+        title="Runtime error: throw new Error"
+        onPress={() => {
+          throw new Error('E2E_UNHANDLED_THROW');
+        }}
+      />
+      <BigButton
+        title="Runtime error: async throw new Error"
+        onPress={() => {
+          async function throwAsyncError() {
+            throw new Error('E2E_UNHANDLED_ASYNC_THROW');
+          }
+          void throwAsyncError();
+        }}
+      />
+      <BigButton
+        title="Runtime error: throw string"
+        onPress={() => {
+          throw 'E2E_UNHANDLED_THROW_STRING';
+        }}
+      />
+      <BigButton
+        title="Runtime error: reject string"
+        onPress={() => {
+          void Promise.reject('E2E_UNHANDLED_REJECTION_STRING');
+        }}
+      />
       <Headline>From fixtures:</Headline>
       <BigButton
         title="Build error: syntax error"
@@ -62,6 +95,24 @@ export default function App() {
         title="console.error: Error"
         onPress={() => {
           console.error(new Error('Hello'));
+        }}
+      />
+      <BigButton
+        title="console.error: E2E Error"
+        onPress={() => {
+          console.error(new Error('E2E_CONSOLE_ERROR_OBJECT'));
+        }}
+      />
+      <BigButton
+        title="console.error: E2E string"
+        onPress={() => {
+          console.error('E2E_CONSOLE_ERROR_STRING');
+        }}
+      />
+      <BigButton
+        title="console.warn: E2E string"
+        onPress={() => {
+          console.warn('E2E_CONSOLE_WARN_STRING');
         }}
       />
       <DomButtonWithConsoleError
