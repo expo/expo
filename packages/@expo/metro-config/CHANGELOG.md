@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Support minified `/* webpackIgnore: true */` comments ([#45475](https://github.com/expo/expo/pull/45475) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 - Add misc. OOT platforms as base `react-native` paths for module configs like `getPolyfills` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
