@@ -73,7 +73,8 @@ export async function setupDependenciesAsync(projectRoot: string, props: Pick<Op
   // Install dependencies
   let podsInstalled: boolean = false;
   let nodeModulesInstalled: boolean = false;
-  const needsPodsInstalled = await fs.existsSync(path.join(projectRoot, 'ios'));
+  const needsPodsInstalled =
+    fs.existsSync(path.join(projectRoot, 'ios')) || fs.existsSync(path.join(projectRoot, 'tvos'));
   if (shouldInstall) {
     nodeModulesInstalled = await installNodeDependenciesAsync(projectRoot, packageManager);
     if (needsPodsInstalled) {
