@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
+- Emit a navigator-wide `finishTransitioning` event when a native-stack transition settles, so dismiss-then-navigate flows no longer need a `setTimeout`. The per-route `transitionEnd` cannot fire for a route popped via `goBack`. ([#46607](https://github.com/expo/expo/pull/46607) by [@Elehiggle](https://github.com/Elehiggle))
 
 ### 💡 Others
 

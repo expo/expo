@@ -473,7 +473,11 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
 
   return (
     <SafeAreaProviderCompat>
-      <ScreenStack style={styles.container}>
+      <ScreenStack
+        style={styles.container}
+        onFinishTransitioning={() => {
+          navigation.emit({ type: 'finishTransitioning' });
+        }}>
         {state.routes.concat(state.preloadedRoutes).map((route, index) => {
           const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
           const isFocused = state.index === index;

@@ -39,6 +39,14 @@ export type NativeStackNavigationEventMap = {
             stable: boolean;
         };
     };
+    /**
+     * Event which fires when a stack transition has settled. Emitted without a `target`, so every
+     * listener on the navigator receives it, including listeners registered by a route that has
+     * already been popped.
+     */
+    finishTransitioning: {
+        data: undefined;
+    };
 };
 export type NativeStackNavigationProp<ParamList extends ParamListBase, RouteName extends keyof ParamList = string, NavigatorID extends string | undefined = undefined> = NavigationProp<ParamList, RouteName, NavigatorID, StackNavigationState<ParamList>, NativeStackNavigationOptions, NativeStackNavigationEventMap> & StackActionHelpers<ParamList>;
 export type NativeStackScreenProps<ParamList extends ParamListBase, RouteName extends keyof ParamList = string, NavigatorID extends string | undefined = undefined> = {
