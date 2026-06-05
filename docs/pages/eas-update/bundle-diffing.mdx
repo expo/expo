@@ -54,7 +54,7 @@ Devices apply patches only when `enableBsdiffPatchSupport` is enabled in your [a
 
 ### Upload a bundle manually
 
-If you don't use EAS Build, you can upload an embedded bundle yourself. Build the bundle locally with `npx expo export`, then run:
+If you don't use EAS Build, you can upload an embedded bundle yourself. Point `--bundle` and `--manifest` at the JavaScript bundle and **app.manifest** produced by the native build (for example, **ios/build/App.app/main.jsbundle** on iOS or **android/app/src/main/assets/index.android.bundle** on Android):
 
 <Terminal
   cmd={[
