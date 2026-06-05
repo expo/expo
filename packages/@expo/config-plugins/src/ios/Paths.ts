@@ -185,8 +185,7 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
       .map((filePath) => filePath.replace(/^\//, ''))
       .filter(
         (project) =>
-          !/test|example|sample/i.test(project) ||
-          platformFolders.includes(path.dirname(project))
+          !/test|example|sample/i.test(project) || platformFolders.includes(path.dirname(project))
       )
   ).sort((a, b) => {
     const isAInPlatform = platformFolders.includes(path.dirname(a));
