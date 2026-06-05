@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 56.0.15 — 2026-06-05
+
+### 🐛 Bug fixes
+
+- Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.14 — 2026-05-28
 

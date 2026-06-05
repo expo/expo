@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- [web] Improved `static` image source selection on web to be based on the rendered layout size by leading the generated `sizes` with `auto`, and default `static` images to `loading="lazy"` (opt out with `loading="eager"`). ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.10 — 2026-06-05
+
+### 🎉 New features
+
+- [web] Improved `static` image source selection on web to be based on the rendered layout size by leading the generated `sizes` with `auto`, and default `static` images to `loading="lazy"` (opt out with `loading="eager"`). ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
 
 ### 💡 Others
 

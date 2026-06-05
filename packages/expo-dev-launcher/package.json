@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "56.0.18",
+  "version": "56.0.19",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "repository": {
     "type": "git",

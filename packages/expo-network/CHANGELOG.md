@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [macOS] Add support for the macOS platform. ([#46535](https://github.com/expo/expo/pull/46535) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.5 — 2026-06-05
+
+### 🎉 New features
+
+- [macOS] Add support for the macOS platform. ([#46535](https://github.com/expo/expo/pull/46535) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.4 — 2026-05-19
 

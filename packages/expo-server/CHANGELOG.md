@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
-
 ### 💡 Others
+
+## 56.0.5 — 2026-06-05
+
+### 🐛 Bug fixes
+
+- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 
 ## 56.0.4 — 2026-05-20
 

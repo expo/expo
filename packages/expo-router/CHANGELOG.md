@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
-
 ### 💡 Others
+
+## 56.2.9 — 2026-06-05
+
+### 🐛 Bug fixes
+
+- [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
 
 ## 56.2.8 — 2026-05-29
 

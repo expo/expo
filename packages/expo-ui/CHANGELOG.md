@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.16 — 2026-06-05
+
+### 🎉 New features
+
 - [iOS] Added the SwiftUI `accessibilityHidden` modifier to hide decorative views from VoiceOver and other assistive technologies during element traversal. ([#46579](https://github.com/expo/expo/pull/46579) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `accessibilityIdentifier` modifier to set a stable identifier for UI testing tools such as XCUITest. ([#46556](https://github.com/expo/expo/pull/46556) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `dynamicTypeSize` modifier to set or constrain the Dynamic Type size within a view. Accepts a single size or a `{ min, max }` range, and cascades from `<Host>` to bound how far text scales at the largest accessibility sizes. ([#46540](https://github.com/expo/expo/pull/46540) by [@ramonclaudio](https://github.com/ramonclaudio))
@@ -26,8 +34,6 @@
 - [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `font` modifier dropping Dynamic Type scaling (`relativeTo`) and `weight` on concatenated `Text` runs. The Text-concatenation path now resolves the same `Font` as the view path. ([#46509](https://github.com/expo/expo/pull/46509) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [android] Fix universal `TextInput` ignoring `style` `backgroundColor` / `borderWidth` and not applying `textAlign` to the placeholder. ([#46441](https://github.com/expo/expo/pull/46441) by [@duyanhv](https://github.com/duyanhv))
-
-### 💡 Others
 
 ## 56.0.15 — 2026-05-29
 

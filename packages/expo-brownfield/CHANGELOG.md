@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Add hostProvidedFrameworks option to skip Frameworks provided by the host app ([#46355](https://github.com/expo/expo/pull/46355) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.18 — 2026-06-05
+
+### 🎉 New features
+
+- [iOS] Add hostProvidedFrameworks option to skip Frameworks provided by the host app ([#46355](https://github.com/expo/expo/pull/46355) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.17 — 2026-05-29
 
