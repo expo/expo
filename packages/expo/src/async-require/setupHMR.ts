@@ -19,16 +19,20 @@ if (typeof window !== 'undefined') {
   LEVELS.forEach((level) => {
     const originalFunction = console[level];
     console[level] = function (...args: any[]) {
-      HMRClient.log(level, level === 'error' ? addErrorStacks(args) : args);
+      HMRClient.log(level, level === 'error' ? addErrorStacks(args, true) : args);
       originalFunction.apply(console, args);
     };
   });
 
   window.addEventListener('error', (event) => {
+    // Not capturing current stack as it would only point to this function,
+    // the stack chain is preserved by the browser.
     HMRClient.log('error', addErrorStacks([event.error]));
   });
 
   window.addEventListener('unhandledrejection', (event) => {
+    // Not capturing current stack as it would only point to this function,
+    // the stack chain is preserved by the browser.
     HMRClient.log('error', addErrorStacks([event.reason]));
   });
 }
@@ -36,19 +40,26 @@ if (typeof window !== 'undefined') {
 // This is called native on native platforms
 HMRClient.setup({ isEnabled: true });
 
-function addErrorStacks(data: unknown[]) {
+function addErrorStacks(data: unknown[], shouldCaptureCurrentStack = false) {
   const dataWithStacks = [...data];
   let hasStack = false;
   data.forEach((item) => {
-    if (hasStringKey(item, 'stack')) {
+    // on native handled in packages/@expo/metro-runtime/src/metroServerLogs.native.ts
+    // https://github.com/expo/expo/blob/118528654c982b6df2f4b3e73bbf2ae0b78d84a2/packages/%40expo/metro-runtime/src/metroServerLogs.native.ts#L30
+    // this differs from native implementation where error from native modules
+    // would not pass instanceof Error check
+    if (item instanceof Error && item.stack) {
       hasStack = true;
       dataWithStacks.push(item.stack);
     }
   });
 
-  const stack = captureCurrentStack();
-  if (!hasStack && typeof stack === 'string') {
-    dataWithStacks.push(stack);
+  if (!hasStack && shouldCaptureCurrentStack) {
+    // for console.* to point to the call site
+    const stack = captureCurrentStack();
+    if (typeof stack === 'string') {
+      dataWithStacks.push(stack);
+    }
   }
 
   const react = require('react') as typeof React;
@@ -60,19 +71,11 @@ function addErrorStacks(data: unknown[]) {
   return dataWithStacks;
 }
 
-function hasStringKey(obj: unknown, key: string): obj is { [key: string]: string } {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    key in obj &&
-    typeof (obj as Record<string, unknown>)[key] === 'string'
-  );
-}
-
 class NamelessError extends Error {
   name = '';
 }
 
 function captureCurrentStack() {
+  // If you're reading this, look deeper into the call stack to find the actual error source.
   return new NamelessError().stack;
 }
