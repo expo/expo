@@ -82,7 +82,11 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         });
     }), [navigation, state.index, state.key]);
     // START FORK
-    const { computedState, computedDescriptors, navigationWrapper } = (0, usePreviewTransition_1.usePreviewTransition)(state, navigation, descriptors, describe);
+    // Project preloaded routes as regular routes after `index`, with descriptors covering them.
+    // The view then treats any route positioned after the focused one as preloaded.
+    const { projectedState, projectedDescriptors } = (0, native_stack_1.useProjectedStack)(state, descriptors, describe);
+    const { computedState, computedDescriptors, navigationWrapper } = (0, usePreviewTransition_1.usePreviewTransition)(projectedState, navigation, projectedDescriptors);
+    const pop = (0, native_stack_1.usePopAction)(navigation, state.key);
     // Map internal gesture option to React Navigation's gestureEnabled option
     // This allows Expo Router to override gesture behavior without affecting user settings
     const finalDescriptors = React.useMemo(() => {
@@ -119,12 +123,7 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
     // END FORK
     return ((0, jsx_runtime_1.jsx)(descriptors_context_1.DescriptorsContext, { value: descriptors, children: (0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(composition_options_1.CompositionContext, { value: contextValue, children: (0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { ...rest, 
                     // START FORK
-                    state: computedState, navigation: navigationWrapper, descriptors: mergedDescriptors, 
-                    // state={state}
-                    // navigation={navigation}
-                    // descriptors={descriptors}
-                    // END FORK
-                    describe: describe }) }) }) })
+                    state: computedState, descriptors: mergedDescriptors, emit: navigationWrapper.emit, pop: pop }) }) }) })
     // END FORK
     );
 }

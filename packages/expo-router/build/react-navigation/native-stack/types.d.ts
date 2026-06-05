@@ -1116,6 +1116,36 @@ export type NativeStackHeaderItemCustom = {
  * Items with `type: 'custom'` will not be included in this automatic collapsing behavior.
  */
 export type NativeStackHeaderItem = NativeStackHeaderItemButton | NativeStackHeaderItemMenu | NativeStackHeaderItemSpacing | NativeStackHeaderItemCustom;
+/**
+ * The navigator-level state consumed by `NativeStackView`.
+ *
+ * Routes after `index` are preloaded and rendered natively-detached.
+ */
+export type NativeStackViewState = {
+    index: number;
+    routes: {
+        key: string;
+        name: string;
+        params?: object;
+    }[];
+};
+export type NativeStackEmit = (event: {
+    type: 'transitionStart' | 'transitionEnd';
+    data: {
+        closing: boolean;
+    };
+    target: string;
+} | {
+    type: 'gestureCancel';
+    target: string;
+} | {
+    type: 'sheetDetentChange';
+    data: {
+        index: number;
+        stable: boolean;
+    };
+    target: string;
+}) => void;
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<ParamListBase, string | undefined, StackNavigationState<ParamListBase>, NativeStackNavigationOptions, NativeStackNavigationEventMap, NativeStackNavigationProp<ParamListBase>> & StackRouterOptions & NativeStackNavigationConfig;
 export type NativeStackDescriptor = Descriptor<NativeStackNavigationOptions, NativeStackNavigationProp<ParamListBase>, RouteProp<ParamListBase>>;
 export type NativeStackDescriptorMap = {

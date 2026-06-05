@@ -54,7 +54,7 @@ function isFabric() {
     return 'nativeFabricUIManager' in global;
 }
 const useNativeDriver = react_native_1.Platform.OS !== 'web';
-const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescriptor, nextDescriptor, isPresentationModal, isPreloaded, onWillDisappear, onWillAppear, onAppear, onDisappear, onDismissed, onHeaderBackButtonClicked, onNativeDismissCancelled, onGestureCancel, onSheetDetentChanged, }) => {
+const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescriptor, nextDescriptor, isPresentationModal, isInactive, onWillDisappear, onWillAppear, onAppear, onDisappear, onDismissed, onHeaderBackButtonClicked, onNativeDismissCancelled, onGestureCancel, onSheetDetentChanged, }) => {
     const { route, navigation, options, render } = descriptor;
     let { animation, animationMatchesGesture, presentation = isPresentationModal ? 'modal' : 'card', fullScreenGestureEnabled, } = options;
     const { animationDuration, animationTypeForReplace = 'push', fullScreenGestureShadowEnabled = true, gestureEnabled, gestureDirection = presentation === 'card' ? 'horizontal' : 'vertical', gestureResponseDistance, header, headerBackButtonMenuEnabled, headerShown, headerBackground, headerTransparent, autoHideHomeIndicator, keyboardHandlingEnabled, navigationBarColor, navigationBarTranslucent, navigationBarHidden, orientation, sheetAllowedDetents = [1.0], sheetLargestUndimmedDetentIndex = -1, sheetGrabberVisible = false, sheetCornerRadius = -1.0, sheetElevation = 24, sheetExpandsWhenScrolledToEdge = true, sheetInitialDetentIndex = 0, sheetShouldOverflowTopInset = false, sheetResizeAnimationEnabled = true, statusBarAnimation, statusBarHidden, statusBarStyle, statusBarTranslucent, statusBarBackgroundColor, unstable_sheetFooter, scrollEdgeEffects, freezeOnBlur, contentStyle, } = options;
@@ -205,7 +205,7 @@ const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescripto
                     }
                 },
             });
-    return ((0, jsx_runtime_1.jsx)(native_1.NavigationProvider, { route: route, navigation: navigation, children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackItem, { screenId: route.key, activityState: isPreloaded ? 0 : 2, style: react_native_1.StyleSheet.absoluteFill, "aria-hidden": !focused, customAnimationOnSwipe: animationMatchesGesture, fullScreenSwipeEnabled: fullScreenGestureEnabled, fullScreenSwipeShadowEnabled: fullScreenGestureShadowEnabled, freezeOnBlur: freezeOnBlur, gestureEnabled: react_native_1.Platform.OS === 'android'
+    return ((0, jsx_runtime_1.jsx)(native_1.NavigationProvider, { route: route, navigation: navigation, children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackItem, { screenId: route.key, activityState: isInactive ? 0 : 2, style: react_native_1.StyleSheet.absoluteFill, "aria-hidden": !focused, customAnimationOnSwipe: animationMatchesGesture, fullScreenSwipeEnabled: fullScreenGestureEnabled, fullScreenSwipeShadowEnabled: fullScreenGestureShadowEnabled, freezeOnBlur: freezeOnBlur, gestureEnabled: react_native_1.Platform.OS === 'android'
                 ? // This prop enables handling of system back gestures on Android
                     // Since we handle them in JS side, we disable this
                     false
@@ -239,80 +239,67 @@ const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescripto
                                 navigation,
                             }) })) : null, (0, jsx_runtime_1.jsx)(elements_1.HeaderShownContext.Provider, { value: isParentHeaderShown || headerShown !== false, children: (0, jsx_runtime_1.jsx)(elements_1.HeaderBackContext.Provider, { value: headerBack, children: render() }) })] }) }) }) }));
 };
-function NativeStackView({ state, navigation, descriptors, describe }) {
+function NativeStackView({ state, descriptors, emit, pop }) {
     const { setNextDismissedKey } = (0, useDismissedRouteError_1.useDismissedRouteError)(state);
     (0, useInvalidPreventRemoveError_1.useInvalidPreventRemoveError)(descriptors);
-    const modalRouteKeys = (0, getModalRoutesKeys_1.getModalRouteKeys)(state.routes, descriptors);
-    const preloadedDescriptors = state.preloadedRoutes.reduce((acc, route) => {
-        acc[route.key] = acc[route.key] || describe(route, true);
-        return acc;
-    }, {});
-    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStack, { style: styles.container, children: state.routes.concat(state.preloadedRoutes).map((route, index) => {
-                const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key]);
+    // Routes after `index` are preloaded and rendered natively-detached. Only the routes up to the
+    // focused one participate in back-affordance and modal-grouping computations.
+    const activeRoutes = state.routes.slice(0, state.index + 1);
+    const modalRouteKeys = (0, getModalRoutesKeys_1.getModalRouteKeys)(activeRoutes, descriptors);
+    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStack, { style: styles.container, children: state.routes.map((route, index) => {
+                const descriptor = descriptors[route.key];
                 const isFocused = state.index === index;
                 const isBelowFocused = state.index - 1 === index;
-                const previousKey = state.routes[index - 1]?.key;
-                const nextKey = state.routes[index + 1]?.key;
+                const isInactive = index > state.index;
+                const previousKey = activeRoutes[index - 1]?.key;
+                const nextKey = activeRoutes[index + 1]?.key;
                 const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
                 const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
                 const isModal = modalRouteKeys.includes(route.key);
                 const isModalOnIos = isModal && react_native_1.Platform.OS === 'ios';
-                const isPreloaded = preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
                 // On Fabric, when screen is frozen, animated and reanimated values are not updated
                 // due to component being unmounted. To avoid this, we don't freeze the previous screen there
                 const shouldFreeze = isFabric()
-                    ? !isPreloaded && !isFocused && !isBelowFocused && !isModalOnIos
-                    : !isPreloaded && !isFocused && !isModalOnIos;
-                return ((0, jsx_runtime_1.jsx)(SceneView, { index: index, focused: isFocused, shouldFreeze: shouldFreeze, descriptor: descriptor, previousDescriptor: previousDescriptor, nextDescriptor: nextDescriptor, isPresentationModal: isModal, isPreloaded: isPreloaded, onWillDisappear: () => {
-                        navigation.emit({
+                    ? !isInactive && !isFocused && !isBelowFocused && !isModalOnIos
+                    : !isInactive && !isFocused && !isModalOnIos;
+                return ((0, jsx_runtime_1.jsx)(SceneView, { index: index, focused: isFocused, shouldFreeze: shouldFreeze, descriptor: descriptor, previousDescriptor: previousDescriptor, nextDescriptor: nextDescriptor, isPresentationModal: isModal, isInactive: isInactive, onWillDisappear: () => {
+                        emit({
                             type: 'transitionStart',
                             data: { closing: true },
                             target: route.key,
                         });
                     }, onWillAppear: () => {
-                        navigation.emit({
+                        emit({
                             type: 'transitionStart',
                             data: { closing: false },
                             target: route.key,
                         });
                     }, onAppear: () => {
-                        navigation.emit({
+                        emit({
                             type: 'transitionEnd',
                             data: { closing: false },
                             target: route.key,
                         });
                     }, onDisappear: () => {
-                        navigation.emit({
+                        emit({
                             type: 'transitionEnd',
                             data: { closing: true },
                             target: route.key,
                         });
                     }, onDismissed: (event) => {
-                        navigation.dispatch({
-                            ...native_1.StackActions.pop(event.nativeEvent.dismissCount),
-                            source: route.key,
-                            target: state.key,
-                        });
+                        pop(event.nativeEvent.dismissCount, route.key);
                         setNextDismissedKey(route.key);
                     }, onHeaderBackButtonClicked: () => {
-                        navigation.dispatch({
-                            ...native_1.StackActions.pop(),
-                            source: route.key,
-                            target: state.key,
-                        });
+                        pop(1, route.key);
                     }, onNativeDismissCancelled: (event) => {
-                        navigation.dispatch({
-                            ...native_1.StackActions.pop(event.nativeEvent.dismissCount),
-                            source: route.key,
-                            target: state.key,
-                        });
+                        pop(event.nativeEvent.dismissCount, route.key);
                     }, onGestureCancel: () => {
-                        navigation.emit({
+                        emit({
                             type: 'gestureCancel',
                             target: route.key,
                         });
                     }, onSheetDetentChanged: (event) => {
-                        navigation.emit({
+                        emit({
                             type: 'sheetDetentChange',
                             target: route.key,
                             data: {

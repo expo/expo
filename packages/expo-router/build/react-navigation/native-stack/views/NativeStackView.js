@@ -43,21 +43,19 @@ const elements_1 = require("../../elements");
 const native_1 = require("../../native");
 const useAnimatedHeaderHeight_1 = require("../utils/useAnimatedHeaderHeight");
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
-function NativeStackView({ state, descriptors, describe }) {
+function NativeStackView({ state, descriptors }) {
     const parentHeaderBack = (0, react_1.use)(elements_1.HeaderBackContext);
     const { buildHref } = (0, native_1.useLinkBuilder)();
-    const preloadedDescriptors = state.preloadedRoutes.reduce((acc, route) => {
-        acc[route.key] = acc[route.key] || describe(route, true);
-        return acc;
-    }, {});
-    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: state.routes.concat(state.preloadedRoutes).map((route, i) => {
+    // Routes after `index` are preloaded and rendered hidden. Only the routes up to the focused one
+    // participate in the back-affordance computations.
+    const activeRoutes = state.routes.slice(0, state.index + 1);
+    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: state.routes.map((route, i) => {
             const isFocused = state.index === i;
-            const previousKey = state.routes[i - 1]?.key;
-            const nextKey = state.routes[i + 1]?.key;
+            const previousKey = activeRoutes[i - 1]?.key;
+            const nextKey = activeRoutes[i + 1]?.key;
             const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
             const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
-            const { options, navigation, render } = (descriptors[route.key] ??
-                preloadedDescriptors[route.key]);
+            const { options, navigation, render } = descriptors[route.key];
             const headerBack = previousDescriptor
                 ? {
                     title: (0, elements_1.getHeaderTitle)(previousDescriptor.options, previousDescriptor.route.name),
@@ -67,7 +65,7 @@ function NativeStackView({ state, descriptors, describe }) {
             const canGoBack = headerBack != null;
             const { header, headerShown, headerBackIcon, headerBackImageSource, headerLeft, headerTransparent, headerBackTitle, presentation, contentStyle, ...rest } = options;
             const nextPresentation = nextDescriptor?.options.presentation;
-            const isPreloaded = preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
+            const isInactive = i > state.index;
             return ((0, jsx_runtime_1.jsx)(elements_1.Screen, { focused: isFocused, route: route, navigation: navigation, headerShown: headerShown, headerTransparent: headerTransparent, header: header !== undefined ? (header({
                     back: headerBack,
                     options,
@@ -88,7 +86,7 @@ function NativeStackView({ state, descriptors, describe }) {
                         display: (isFocused ||
                             (nextPresentation != null &&
                                 TRANSPARENT_PRESENTATIONS.includes(nextPresentation))) &&
-                            !isPreloaded
+                            !isInactive
                             ? 'flex'
                             : 'none',
                     },

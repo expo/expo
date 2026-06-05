@@ -73,11 +73,15 @@ const ModalStackView = ({ state, navigation, descriptors, describe }) => {
     const { colors } = (0, native_1.useTheme)();
     const { preventedRoutes } = (0, native_1.usePreventRemoveContext)();
     const { routes: filteredRoutes, index: nonModalIndex } = (0, utils_1.convertStackStateToNonModalState)(state, descriptors, isWeb);
+    // Project preloaded routes as regular routes after `index`, with descriptors covering them.
+    // `NativeStackView` treats any route positioned after the focused one as preloaded.
     const newStackState = {
         ...state,
-        routes: filteredRoutes,
+        routes: [...filteredRoutes, ...state.preloadedRoutes],
         index: nonModalIndex,
     };
+    const projectedDescriptors = (0, native_stack_1.usePreloadedDescriptors)(state.preloadedRoutes, descriptors, describe);
+    const pop = (0, native_stack_1.usePopAction)(navigation, state.key);
     const dismiss = (0, react_1.useCallback)(() => {
         navigation.goBack();
     }, [navigation]);
@@ -87,7 +91,7 @@ const ModalStackView = ({ state, navigation, descriptors, describe }) => {
         const idx = (0, utils_1.findLastNonModalIndex)(state, descriptors);
         return state.routes.slice(idx + 1);
     }, [isWeb, state, descriptors]);
-    return ((0, jsx_runtime_1.jsxs)("div", { style: { flex: 1, display: 'flex' }, children: [(0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { state: newStackState, navigation: navigation, descriptors: descriptors, describe: describe }), isWeb &&
+    return ((0, jsx_runtime_1.jsxs)("div", { style: { flex: 1, display: 'flex' }, children: [(0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { state: newStackState, descriptors: projectedDescriptors, emit: navigation.emit, pop: pop }), isWeb &&
                 overlayRoutes.map((route) => {
                     const isTransparentModal = (0, utils_1.isTransparentModalPresentation)(descriptors[route.key].options);
                     const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
