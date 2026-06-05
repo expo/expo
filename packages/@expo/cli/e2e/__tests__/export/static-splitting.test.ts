@@ -117,7 +117,15 @@ describe('exports static with bundle splitting', () => {
 
       // Common chunk
       if (file!.match(/__common/)) {
-        expect(sourceMap.sources.length).toEqual(44);
+        const sources: string[] = sourceMap.sources;
+        expect(
+          sources.every(
+            (source) => source.startsWith('/packages/') || source.startsWith('/node_modules/')
+          )
+        ).toBe(true);
+        expect(sources.some((source) => source.includes('router-e2e/__e2e__/'))).toBe(
+          false
+        );
       } else {
         // expect(sourceMap.sources).toEqual(
         //   expect.arrayContaining([
