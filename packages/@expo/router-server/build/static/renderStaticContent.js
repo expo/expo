@@ -107,6 +107,10 @@ async function getStaticContent(location, options) {
     if (loadedData) {
         output = output.replace('</head>', `${(0, html_1.createLoaderDataScriptAsString)(loadedData)}</head>`);
     }
+    // Inject favicon link tag. Mirrors `assets.favicon` handling in `getStreamingContent`.
+    if (options?.assets?.favicon) {
+        output = output.replace('</head>', `${(0, html_1.createFaviconAsString)(options.assets.favicon)}</head>`);
+    }
     // Inject hydration assets (JS/CSS bundles). Used in SSR mode
     if (options?.assets) {
         if (options.assets.css.length > 0) {
