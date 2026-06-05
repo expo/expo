@@ -39,30 +39,30 @@ export default function App() {
         }}
       />
       <BigButton
-        title="Runtime error: throw new Error"
+        title="throw new Error()"
         onPress={() => {
-          throw new Error('E2E_UNHANDLED_THROW');
+          throw new Error('unhandled-throw');
         }}
       />
       <BigButton
-        title="Runtime error: async throw new Error"
+        title="async throw new Error()"
         onPress={() => {
           async function throwAsyncError() {
-            throw new Error('E2E_UNHANDLED_ASYNC_THROW');
+            throw new Error('unhandled-async-throw');
           }
           void throwAsyncError();
         }}
       />
       <BigButton
-        title="Runtime error: throw string"
+        title="throw string"
         onPress={() => {
-          throw 'E2E_UNHANDLED_THROW_STRING';
+          throw 'unhandled-throw-string';
         }}
       />
       <BigButton
-        title="Runtime error: reject string"
+        title="Promise.reject(string)"
         onPress={() => {
-          void Promise.reject('E2E_UNHANDLED_REJECTION_STRING');
+          void Promise.reject('unhandled-rejection-string');
         }}
       />
       <Headline>From fixtures:</Headline>
@@ -86,33 +86,21 @@ export default function App() {
       />
       <Headline>From console:</Headline>
       <BigButton
-        title="console.error: string"
+        title="console.error(new Error())"
         onPress={() => {
-          console.error('Hello');
+          console.error(new Error('console-error-object'));
         }}
       />
       <BigButton
-        title="console.error: Error"
+        title="console.error(string)"
         onPress={() => {
-          console.error(new Error('Hello'));
+          console.error('console-error-string');
         }}
       />
       <BigButton
-        title="console.error: E2E Error"
+        title="console.warn(string)"
         onPress={() => {
-          console.error(new Error('E2E_CONSOLE_ERROR_OBJECT'));
-        }}
-      />
-      <BigButton
-        title="console.error: E2E string"
-        onPress={() => {
-          console.error('E2E_CONSOLE_ERROR_STRING');
-        }}
-      />
-      <BigButton
-        title="console.warn: E2E string"
-        onPress={() => {
-          console.warn('E2E_CONSOLE_WARN_STRING');
+          console.warn('console-warn-string');
         }}
       />
       <DomButtonWithConsoleError

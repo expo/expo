@@ -45,15 +45,15 @@ test.describe('dev console errors', () => {
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
-    await page.getByText('Runtime error: throw new Error').click();
+    await page.getByText('throw new Error()', { exact: true }).click();
 
     const expectedConsoleOutput = `
-Web  ERROR  [Error: E2E_UNHANDLED_THROW] 
+Web  ERROR  [Error: unhandled-throw] 
 
 Code: index.tsx
-  42 |         title="Runtime error: throw new Error"
+  42 |         title="throw new Error()"
   43 |         onPress={() => {
-> 44 |           throw new Error('E2E_UNHANDLED_THROW');
+> 44 |           throw new Error('unhandled-throw');
      |                 ^
   45 |         }}
   46 |       />
@@ -62,36 +62,34 @@ Call Stack
   BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:44:17) 
 
 Code: index.tsx
-  151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
-  152 |   return (
-> 153 |     <Text
+  139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  140 |   return (
+> 141 |     <Text
       |     ^
-  154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
-  155 |       onPress={onPress}>
-  156 |       {title}
+  142 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+  143 |       onPress={onPress}>
+  144 |       {title}
 Call Stack
-  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:153:5)
+  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
   App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:41:7)
     `.trim();
 
     await expectOutput(output, expectedConsoleOutput);
   });
 
-  test('prints call stack of unhandled rejections', async ({
-    page,
-  }) => {
+  test('prints call stack of unhandled rejections', async ({ page }) => {
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
-    await page.getByText('Runtime error: async throw new Error').click();
+    await page.getByText('async throw new Error()').click();
 
     const expectedConsoleOutput = `
-Web  ERROR  [Error: E2E_UNHANDLED_ASYNC_THROW] 
+Web  ERROR  [Error: unhandled-async-throw] 
 
 Code: index.tsx
   49 |         onPress={() => {
   50 |           async function throwAsyncError() {
-> 51 |             throw new Error('E2E_UNHANDLED_ASYNC_THROW');
+> 51 |             throw new Error('unhandled-async-throw');
      |                   ^
   52 |           }
   53 |           void throwAsyncError();
@@ -107,21 +105,21 @@ Call Stack
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
-    await page.getByText('Runtime error: throw string').click();
+    await page.getByText('throw string').click();
 
     const expectedConsoleOutput = `
-Web  ERROR  E2E_UNHANDLED_THROW_STRING 
+Web  ERROR  unhandled-throw-string 
 
 Code: index.tsx
-  151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
-  152 |   return (
-> 153 |     <Text
+  139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  140 |   return (
+> 141 |     <Text
       |     ^
-  154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
-  155 |       onPress={onPress}>
-  156 |       {title}
+  142 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+  143 |       onPress={onPress}>
+  144 |       {title}
 Call Stack
-  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:153:5)
+  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
   App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:56:7)
     `.trim();
 
@@ -132,83 +130,79 @@ Call Stack
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
-    await page.getByText('Runtime error: reject string').click();
+    await page.getByText('Promise.reject(string)').click();
 
-    await expectOutput(output, 'Web  ERROR  E2E_UNHANDLED_REJECTION_STRING');
+    await expectOutput(output, 'Web  ERROR  unhandled-rejection-string');
     expectNoStackTrace(output);
   });
 
-  test('prints call stack and component stack for console.error Error', async ({
-    page,
-  }) => {
+  test('prints call stack and component stack for console.error Error', async ({ page }) => {
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
-    await page.getByText('console.error: E2E Error').click();
+    await page.getByText('console.error(new Error())').click();
 
     const expectedConsoleOutput = `
-Web  ERROR  [Error: E2E_CONSOLE_ERROR_OBJECT] 
+Web  ERROR  [Error: console-error-object] 
 
 Code: index.tsx
-  101 |         title="console.error: E2E Error"
-  102 |         onPress={() => {
-> 103 |           console.error(new Error('E2E_CONSOLE_ERROR_OBJECT'));
-      |                         ^
-  104 |         }}
-  105 |       />
-  106 |       <BigButton
+  89 |         title="console.error(new Error())"
+  90 |         onPress={() => {
+> 91 |           console.error(new Error('console-error-object'));
+     |                         ^
+  92 |         }}
+  93 |       />
+  94 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:103:25) 
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:91:25) 
 
 Code: index.tsx
-  151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
-  152 |   return (
-> 153 |     <Text
+  139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  140 |   return (
+> 141 |     <Text
       |     ^
-  154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
-  155 |       onPress={onPress}>
-  156 |       {title}
+  142 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+  143 |       onPress={onPress}>
+  144 |       {title}
 Call Stack
-  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:153:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:100:7)
+  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:88:7)
     `.trim();
 
     await expectOutput(output, expectedConsoleOutput);
   });
 
-  test('prints call stack and component stack of console.error non-Error values (strings)', async ({
-    page,
-  }) => {
+  test('prints call stack and component stack of console.error non-Error values (strings)', async ({ page }) => {
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
-    await page.getByText('console.error: E2E string').click();
+    await page.getByText('console.error(string)').click();
 
     const expectedConsoleOutput = `
-Web  ERROR  E2E_CONSOLE_ERROR_STRING 
+Web  ERROR  console-error-string 
 
 Code: index.tsx
-  107 |         title="console.error: E2E string"
-  108 |         onPress={() => {
-> 109 |           console.error('E2E_CONSOLE_ERROR_STRING');
+   95 |         title="console.error(string)"
+   96 |         onPress={() => {
+>  97 |           console.error('console-error-string');
       |                   ^
-  110 |         }}
-  111 |       />
-  112 |       <BigButton
+   98 |         }}
+   99 |       />
+  100 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:109:19) 
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:97:19) 
 
 Code: index.tsx
-  151 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
-  152 |   return (
-> 153 |     <Text
+  139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  140 |   return (
+> 141 |     <Text
       |     ^
-  154 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
-  155 |       onPress={onPress}>
-  156 |       {title}
+  142 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+  143 |       onPress={onPress}>
+  144 |       {title}
 Call Stack
-  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:153:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:106:7)
+  BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:94:7)
     `.trim();
 
     await expectOutput(output, expectedConsoleOutput);
@@ -218,9 +212,9 @@ Call Stack
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
-    await page.getByText('console.warn: E2E string').click();
+    await page.getByText('console.warn(string)').click();
 
-    await expectOutput(output, 'Web  WARN  E2E_CONSOLE_WARN_STRING');
+    await expectOutput(output, 'Web  WARN  console-warn-string');
     expectNoStackTrace(output);
   });
 });
