@@ -32,7 +32,9 @@ Bundle diffing is enabled by default in SDK 56 and later. To opt out, set `updat
 
 ## Use the embedded bundle as a patch base
 
-On a fresh install, devices boot from the embedded JavaScript bundle. These devices aren't eligible for patches by default. To make the embedded bundle a patch base for future updates, set the `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment variable on a build profile in **eas.json**. This is an experimental opt-in.
+> **info** This is an experimental opt-in. The behavior may change.
+
+On a fresh install, devices boot from the embedded JavaScript bundle. These devices aren't eligible for patches by default. To make the embedded bundle a patch base for future updates, set the `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment variable in the `env` object of a build profile in **eas.json**:
 
 ```json eas.json
 {
@@ -46,13 +48,13 @@ On a fresh install, devices boot from the embedded JavaScript bundle. These devi
 }
 ```
 
-When the build completes, EAS uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it. If the upload fails, the build still succeeds &mdash; only the patch base is missing.
+When the build completes, EAS uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it. If the upload fails, the build still succeeds. Future updates on this channel won't be able to use this build's embedded bundle as a patch base.
 
-Patch application on the device also requires `enableBsdiffPatchSupport`, which is on by default in SDK 56 and later.
+Devices apply patches only when `enableBsdiffPatchSupport` is enabled in your [app config](/workflow/configuration/). It's on by default in SDK 56 and later.
 
-### Manage uploaded embedded bundles
+### Upload a bundle manually
 
-If you build outside of EAS Build, upload an embedded bundle manually:
+If you don't use EAS Build, you can upload an embedded bundle yourself. Build the bundle locally with `npx expo export`, then run:
 
 <Terminal
   cmd={[
@@ -60,6 +62,8 @@ If you build outside of EAS Build, upload an embedded bundle manually:
   ]}
   cmdCopy="eas update:embedded:upload --platform [platform] --bundle [path] --manifest [path] --channel [name]"
 />
+
+### Inspect or delete uploaded bundles
 
 List the embedded bundles registered for your project:
 
@@ -73,7 +77,7 @@ Delete an embedded bundle:
 
 <Terminal cmd={['$ eas update:embedded:delete [id]']} cmdCopy="eas update:embedded:delete [id]" />
 
-Delete is idempotent. Deleting an unknown ID succeeds, so the command is safe to retry from scripts.
+Deleting an unknown ID succeeds, so the command is safe to retry.
 
 ## Verify bundle diffs are being served
 
