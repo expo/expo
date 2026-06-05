@@ -228,6 +228,12 @@ export const defaultRenameConfig = [
   'ios/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme',
   'ios/**/*.xcworkspace/contents.xcworkspacedata',
 
+  // tvOS
+  'tvos/Podfile',
+  'tvos/**/*.xcodeproj/project.pbxproj',
+  'tvos/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme',
+  'tvos/**/*.xcworkspace/contents.xcworkspacedata',
+
   // macOS
   'macos/Podfile',
   'macos/**/*.xcodeproj/project.pbxproj',
@@ -333,8 +339,8 @@ export async function renameTemplateAppNameAsync({
 }
 
 function templateHasNativeCode(root: string): boolean {
-  return [path.join(root, 'android'), path.join(root, 'ios')].some((folder) =>
-    fs.existsSync(folder)
+  return [path.join(root, 'android'), path.join(root, 'ios'), path.join(root, 'tvos')].some(
+    (folder) => fs.existsSync(folder)
   );
 }
 
@@ -482,8 +488,11 @@ export async function installPodsAsync(projectRoot: string) {
     step.succeed('Skipped installing CocoaPods because operating system is not macOS.');
     return false;
   }
+  // Templates may ship `ios/` or `tvos/` (or both). Pick whichever is present;
+  // prefer ios/ for parity with prior behavior when both exist.
+  const platformDir = fs.existsSync(path.join(projectRoot, 'ios')) ? 'ios' : 'tvos';
   const packageManager = new PackageManager.CocoaPodsPackageManager({
-    cwd: path.join(projectRoot, 'ios'),
+    cwd: path.join(projectRoot, platformDir),
     silent: !env.EXPO_DEBUG,
   });
 
@@ -493,7 +502,7 @@ export async function installPodsAsync(projectRoot: string) {
       step.render();
       await packageManager.installCLIAsync();
       step.succeed('Installed CocoaPods CLI');
-      step = logNewSection('Running `pod install` in the `ios` directory.');
+      step = logNewSection(`Running \`pod install\` in the \`${platformDir}\` directory.`);
     } catch (e: any) {
       step.stopAndPersist({
         symbol: '⚠️ ',
@@ -516,7 +525,7 @@ export async function installPodsAsync(projectRoot: string) {
     step.stopAndPersist({
       symbol: '⚠️ ',
       text: chalk.red(
-        'Something went wrong running `pod install` in the `ios` directory. Continuing with initializing the project, you can debug this afterwards.'
+        `Something went wrong running \`pod install\` in the \`${platformDir}\` directory. Continuing with initializing the project, you can debug this afterwards.`
       ),
     });
     if (e.message) {
