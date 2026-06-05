@@ -28,7 +28,7 @@ export function captureStackForServerLogs() {
     }
 
     const hasErrorLikeStack = data.some((item) => {
-      return hasStringKey(item, 'stack')
+      return hasStringKey(item, 'stack');
     });
     const hasComponentStack = data.some(
       (item) =>
