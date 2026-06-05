@@ -334,11 +334,11 @@ export const GROUPS: Group[] = [
     id: 'passthrough',
     title: 'passthrough({ x, y })',
     description:
-      'Synchronous round-trip of a 2D point represented in three different ways. Compares `[String: Any]` dictionary, `Record`, and `SharedObject` decoding/encoding within Expo Modules. TurboModule and BridgeModule provide a dictionary baseline.',
+      'Synchronous round-trip of a 2D point represented in four different ways. Compares `[String: Any]` dictionary, `Record`, `@Record`-synthesized record, and `SharedObject` decoding/encoding within Expo Modules. TurboModule and BridgeModule provide a dictionary baseline.',
     benchmarks: [
       {
         id: 'expo-dict',
-        label: 'ExpoModule (dictionary)',
+        label: 'Dictionary',
         available: ExpoModule?.passthroughDict != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
@@ -350,7 +350,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-record',
-        label: 'ExpoModule (record)',
+        label: 'Record + @Field',
         available: ExpoModule?.passthroughRecord != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
@@ -361,8 +361,20 @@ export const GROUPS: Group[] = [
         },
       },
       {
+        id: 'expo-synthesized-record',
+        label: '@Record',
+        available: ExpoModule?.passthroughSynthesizedRecord != null,
+        async run(iterations) {
+          const point = { x: 1.5, y: 2.5 };
+          ExpoModule.passthroughSynthesizedRecord(point);
+          return timeSync(iterations, () => {
+            ExpoModule.passthroughSynthesizedRecord(point);
+          });
+        },
+      },
+      {
         id: 'expo-shared',
-        label: 'ExpoModule (shared object)',
+        label: 'SharedObject',
         available: ExpoModule?.passthroughSharedObject != null && ExpoModule?.SharedPoint != null,
         async run(iterations) {
           const point = new ExpoModule.SharedPoint(1.5, 2.5);
@@ -374,7 +386,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'turbo-dict',
-        label: 'TurboModule (dictionary)',
+        label: 'Dictionary (TurboModule)',
         available: TurboModule?.passthroughDict != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
@@ -386,7 +398,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'bridge-dict',
-        label: 'BridgeModule (dictionary)',
+        label: 'Dictionary (BridgeModule)',
         available: BridgeModule?.passthroughDict != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
