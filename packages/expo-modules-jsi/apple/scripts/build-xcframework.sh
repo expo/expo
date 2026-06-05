@@ -186,7 +186,20 @@ build_slice() {
   # which causes SDK/platform mismatches. PODS_ROOT and RN_ROOT are forwarded
   # explicitly because Package.swift reads them to resolve header search paths.
   # Run from PACKAGE_DIR so xcodebuild finds the SPM package, not the Pods project.
-  (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
+  #
+  # DEVELOPER_DIR is forwarded too (when set) so the nested xcodebuild builds with
+  # the same toolchain the caller selected. Unlike SDKROOT/PLATFORM_NAME, it only
+  # picks which Xcode to use — not a specific SDK/platform — so it doesn't cause the
+  # mismatches above. Dropping it would silently fall back to the `xcode-select`
+  # default, which breaks callers that pin a toolchain via DEVELOPER_DIR (e.g. the
+  # publish pipeline targeting a specific Xcode) and the in-Xcode build phase when
+  # the running Xcode differs from the global one.
+  local env_args=(PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT")
+  if [[ -n "${DEVELOPER_DIR:-}" ]]; then
+    env_args+=(DEVELOPER_DIR="$DEVELOPER_DIR")
+  fi
+
+  (cd "$PACKAGE_DIR" && env -i "${env_args[@]}" \
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
