@@ -197,37 +197,12 @@ export default function KeyboardActionsExample() {
         singleLine
         keyboardOptions={{ imeAction: 'search' }}
         keyboardActions={{
-          onSearch: value => console.log('Searched:', value),
+          onSearch: (value) => console.log('Searched:', value),
         }}>
         <TextField.Label>
           <Text>Search</Text>
         </TextField.Label>
       </TextField>
-    </Host>
-  );
-}
-```
-
-### Error state
-
-Set `isError` to display the text field in an error state. Combine with `SupportingText` to show an error message.
-
-```tsx ErrorStateExample.tsx
-import { Host, OutlinedTextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
-
-export default function ErrorStateExample() {
-  const email = useNativeState('invalid-email');
-
-  return (
-    <Host matchContents>
-      <OutlinedTextField value={email} isError singleLine>
-        <OutlinedTextField.Label>
-          <Text>Email</Text>
-        </OutlinedTextField.Label>
-        <OutlinedTextField.SupportingText>
-          <Text>Please enter a valid email</Text>
-        </OutlinedTextField.SupportingText>
-      </OutlinedTextField>
     </Host>
   );
 }
