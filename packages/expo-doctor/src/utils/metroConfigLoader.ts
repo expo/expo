@@ -65,7 +65,19 @@ export async function loadMetroUserConfigAsync(
   } else {
     try {
       const MetroConfig = importMetroConfigFromProject(projectRoot);
-      return await MetroConfig.loadConfig({ cwd: projectRoot }, {});
+      // `loadConfig` adds the metro defaults when no config exists, so we need to manually check
+      // if a user config exists first and bail out if it doesn't
+      const { filepath, isEmpty } = await MetroConfig.resolveConfig(undefined, projectRoot);
+      if (isEmpty) {
+        return null;
+      }
+      return await MetroConfig.loadConfig(
+        {
+          cwd: projectRoot,
+          config: filepath,
+        },
+        {}
+      );
     } catch {
       // If we can't load the config, we assume it doesn't exist
       return null;
