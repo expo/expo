@@ -97,10 +97,19 @@ const defaultProviders = {
   // Append a rule to supply Expo.plist data to mods on `mods.ios.expoPlist`
   expoPlist: provider<JSONObject>({
     isIntrospective: true,
-    getFilePath({ modRequest: { projectRoot } }) {
-      // Derive the platform dir from the source root (`{ios,tvos}/<name>`)
-      // rather than hardcoding `ios/`, so tvos-only projects resolve too.
-      return path.resolve(Paths.getSupportingPath(projectRoot), 'Expo.plist');
+    getFilePath({ modRequest: { projectRoot, introspect } }) {
+      try {
+        // Derive the platform dir from the source root (`{ios,tvos}/<name>`)
+        // rather than hardcoding `ios/`, so tvos-only projects resolve too.
+        return path.resolve(Paths.getSupportingPath(projectRoot), 'Expo.plist');
+      } catch (error) {
+        if (introspect) {
+          // No AppDelegate is expected in introspect mode (no native project);
+          // mirror the infoPlist provider and fall back to an empty path.
+          return '';
+        }
+        throw error;
+      }
     },
     async read(filePath, { modRequest: { introspect } }) {
       try {
@@ -299,13 +308,21 @@ const defaultProviders = {
   podfileProperties: provider<Record<string, JSONValue>>({
     isIntrospective: true,
 
-    getFilePath({ modRequest: { projectRoot } }) {
-      // Sibling of the Podfile, which getPodfilePath resolves against
-      // `{ios,tvos}/` so tvos-only projects work too.
-      return path.resolve(
-        path.dirname(Paths.getPodfilePath(projectRoot)),
-        'Podfile.properties.json'
-      );
+    getFilePath({ modRequest: { projectRoot, introspect } }) {
+      try {
+        // Sibling of the Podfile, which getPodfilePath resolves against
+        // `{ios,tvos}/` so tvos-only projects work too.
+        return path.resolve(
+          path.dirname(Paths.getPodfilePath(projectRoot)),
+          'Podfile.properties.json'
+        );
+      } catch (error) {
+        if (introspect) {
+          // No Podfile is expected in introspect mode (no native project).
+          return '';
+        }
+        throw error;
+      }
     },
     async read(filePath) {
       let results: Record<string, JSONValue> = {};
