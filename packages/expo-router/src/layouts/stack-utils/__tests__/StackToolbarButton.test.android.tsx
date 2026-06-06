@@ -52,21 +52,21 @@ describe('NativeToolbarButton', () => {
   };
 
   describe('tint color logic', () => {
-    it('sets tintColor to undefined when imageRenderingMode is original', () => {
+    it('sets tint to null when imageRenderingMode is original', () => {
       render(<NativeToolbarButton {...defaultProps} imageRenderingMode="original" />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
-        tint: undefined,
+        tint: null,
       });
     });
 
-    it('sets tintColor to undefined when imageRenderingMode is original even with tintColor prop', () => {
+    it('sets tint to null when imageRenderingMode is original even with tintColor prop', () => {
       render(
         <NativeToolbarButton {...defaultProps} imageRenderingMode="original" tintColor="red" />
       );
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
-        tint: undefined,
+        tint: null,
       });
     });
 
@@ -145,7 +145,7 @@ describe('NativeToolbarButton', () => {
       );
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
-        tint: undefined,
+        tint: null,
       });
     });
   });

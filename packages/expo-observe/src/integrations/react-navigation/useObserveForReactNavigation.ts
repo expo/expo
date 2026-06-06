@@ -3,6 +3,7 @@ import { use, useCallback, useEffect, useRef } from 'react';
 
 import { ObserveReactNavigationIntegrationContext } from './context';
 import { emitTTI } from './emitTTI';
+import { getPathname } from './getPathname';
 import { isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
 import type { NavigationStateLike } from './types';
@@ -62,14 +63,14 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
           '[expo-observe] markInteractive was called without an active ObserveNavigationContainer. Wrap your tree in <ObserveNavigationContainer>.'
         );
       }
-      const { storage, getPathname } = contextValue;
+      const { storage } = contextValue;
 
       if (!route) {
         return;
       }
       // `useStateForPath` returns the navigation state subtree rooted at the
       // current screen's path, not the full root state. That's intentional:
-      // `getPathFromState` only walks routes/state/params downward, so feeding
+      // `getPathname` only walks the focused route chain downward, so feeding
       // it the subtree produces the same pathname as the full state without
       // requiring access to the root navigation state from inside a leaf hook.
       const pathname = getPathname(stateForPath as NavigationStateLike | undefined) ?? route.name;

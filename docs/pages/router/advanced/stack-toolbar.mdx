@@ -114,7 +114,14 @@ You can browse available symbols in Apple's SF Symbols app.
 
 The recommended source of icons for Android is [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) library. It ships Google's [Material Symbols](https://fonts.google.com/icons) as individual asset subpaths, so Metro only bundles the icons you actually import.
 
-<Terminal cmd={['$ npx expo install @expo/material-symbols']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo/material-symbols'],
+    yarn: ['$ yarn expo install @expo/material-symbols'],
+    pnpm: ['$ pnpm expo install @expo/material-symbols'],
+    bun: ['$ bun expo install @expo/material-symbols'],
+  }}
+/>
 
 Import any icon directly from its own subpath and pass it to the `icon` prop:
 

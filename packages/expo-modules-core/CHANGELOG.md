@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - [android] Fix nested `Host` double-composing children. ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong))
+- [iOS] Read iPad-specific supported orientations from `UISupportedInterfaceOrientations~ipad`. ([#46281](https://github.com/expo/expo/issues/46281) by [@bryandent](https://github.com/bryandent)) ([#46306](https://github.com/expo/expo/pull/46306) by [@mvincentong](https://github.com/mvincentong))
+- [iOS] Throw an actionable error when a worklet is used but `react-native-worklets`'s native adapter isn't linked, instead of a misleading "not an instance of Worklet" failure. ([#46571](https://github.com/expo/expo/pull/46571) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
+
+- Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
+- `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
 
 ## 56.0.13 — 2026-05-26
 

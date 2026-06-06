@@ -29,6 +29,7 @@ class LiveActivityFactoryStub {
     }
 }
 const ExpoWidgetsModule = {
+    widgetsDirectory: '',
     reloadAllWidgets() { },
     Widget: WidgetStub,
     LiveActivityFactory: LiveActivityFactoryStub,

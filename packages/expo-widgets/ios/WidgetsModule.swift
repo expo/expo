@@ -45,6 +45,20 @@ public final class WidgetsModule: Module {
       pushToStartTokenObserverTask = nil
     }
 
+    Constant("widgetsDirectory") { () -> String? in
+      guard let appGroupIdentifier = WidgetsStorage.appGroupIdentifier,
+            let containerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
+        return nil
+      }
+      let directoryUrl = containerUrl.appendingPathComponent("ExpoWidgets", isDirectory: true)
+      do {
+        try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+        return directoryUrl.absoluteString
+      } catch {
+        return nil
+      }
+    }
+
     Function("reloadAllWidgets") {
       WidgetCenter.shared.reloadAllTimelines()
     }
@@ -72,8 +86,9 @@ public final class WidgetsModule: Module {
         LiveActivityFactory(name: name, layout: layout)
       }
 
-      Function("start") { (liveActivity: LiveActivityFactory, props: String, url: URL?, staleDate: Date?) in
-        try liveActivity.start(props: props, url: url, staleDate: staleDate)
+      Function("start") { (liveActivity: LiveActivityFactory, props: String?, url: URL?, staleDateMs: Double?) in
+        let staleDate = staleDateMs.map { Date(timeIntervalSince1970: $0 / 1000.0) }
+        return try liveActivity.start(props: props, url: url, staleDate: staleDate)
       }
 
       Function("getInstances") { (liveActivity: LiveActivityFactory) in
@@ -82,7 +97,8 @@ public final class WidgetsModule: Module {
     }
 
     Class("LiveActivity", LiveActivity.self) {
-      AsyncFunction("update") { (instance: LiveActivity, props: String, staleDate: Date?) in
+      AsyncFunction("update") { (instance: LiveActivity, props: String?, staleDateMs: Double?) in
+        let staleDate = staleDateMs.map { Date(timeIntervalSince1970: $0 / 1000.0) }
         try await instance.update(props: props, staleDate: staleDate)
       }
 

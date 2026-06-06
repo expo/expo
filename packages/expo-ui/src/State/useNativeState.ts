@@ -71,19 +71,11 @@ type NativeObservableState = {
  * Adds a `value` property that delegates to the native `getValue`/`setValue` functions.
  */
 function defineValueProperty(state: NativeObservableState): void {
-  let warnedOnJSWrite = false;
   Object.defineProperty(state, 'value', {
     get() {
       return state.getValue();
     },
     set(v: unknown) {
-      if (__DEV__ && !warnedOnJSWrite && worklets && !worklets.isUIRuntime()) {
-        warnedOnJSWrite = true;
-        console.warn(
-          'ObservableState.value was set from the JS thread, the result may be unexpected. ' +
-            'Use a worklet to update the state.'
-        );
-      }
       state.setValue({ value: v });
     },
   });

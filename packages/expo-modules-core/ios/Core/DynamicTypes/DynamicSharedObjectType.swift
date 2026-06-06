@@ -95,7 +95,7 @@ private func getBaseSharedType(_ appContext: AppContext, nativeType: AnySharedOb
 
 private func newBaseSharedObject(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject? {
   let jsClass = try getBaseSharedType(appContext, nativeType: nativeType)
-  let prototype = jsClass.asObject().getPropertyAsObject("prototype")
+  let prototype = try jsClass.asObject().getPropertyAsObject("prototype")
   return try appContext.runtime.createObject(prototype: prototype)
 }
 

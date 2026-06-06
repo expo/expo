@@ -6,6 +6,7 @@
  */
 import type { ExpoConfig } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
@@ -15,7 +16,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
 
-import { getVirtualFaviconAssetsAsync } from './favicon';
+import { generateFaviconAssetAsync } from './favicon';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
 import type { ExportAssetMap } from './saveAssets';
 import { getFilesFromSerialAssets } from './saveAssets';
@@ -224,7 +225,7 @@ export async function exportFromServerAsync(
   const isExportingWithSSR =
     exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
-  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
+  const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
     outputDir,
     baseUrl,
     files,
@@ -254,7 +255,7 @@ export async function exportFromServerAsync(
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
       const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
-      let renderOpts;
+      const renderOpts: GetStaticContentOptions = {};
 
       if (useServerLoaders) {
         const loaderResponse = await executeLoaderAsync(normalizedPathname, route);
@@ -271,8 +272,12 @@ export async function exportFromServerAsync(
             loaderId: loaderKey,
           });
 
-          renderOpts = { loader: { data, key: loaderKey } };
+          renderOpts.loader = { data, key: loaderKey };
         }
+      }
+
+      if (faviconAsset) {
+        renderOpts.assets = { css: [], js: [], favicon: faviconAsset.href };
       }
 
       const template = await renderAsync(normalizedPathname, route, renderOpts);
@@ -284,10 +289,6 @@ export async function exportFromServerAsync(
         route,
         hydrate: true,
       });
-
-      if (injectFaviconTag) {
-        html = injectFaviconTag(html);
-      }
 
       if (scriptTags) {
         // Inject script tags into the HTML.
@@ -406,7 +407,11 @@ export async function exportFromServerAsync(
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
-          manifest.assets = { css: cssAssets, js: syncJsAssets };
+          manifest.assets = {
+            css: cssAssets,
+            js: syncJsAssets,
+            favicon: faviconAsset?.href,
+          };
           manifest.rendering = {
             mode: 'ssr',
             file: '_expo/server/render.js',

@@ -3,7 +3,7 @@
 #pragma once
 #ifdef __cplusplus
 
-#include <hermes/hermes.h>
+#include <TargetConditionals.h>
 
 #include "HostFunctionClosure.h"
 #include "CppError.h"
@@ -67,6 +67,16 @@ inline void setArrayLength(jsi::IRuntime &runtime, const jsi::Array &array, long
 inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Array &array, const jsi::PropNameID &name) {
   return array.getProperty(runtime, name);
 }
+
+#if TARGET_OS_OSX
+// react-native-macos (RN 0.81) lacks `jsi::Object::getProperty(Runtime&, const Value&)`,
+// so Swift can't look up a property by a JS Value. Provide a `const char*`-keyed wrapper
+// to use when iterating own property names.
+// TODO: remove when react-native-macos catches up to RN 0.85.
+inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Object &object, const char *name) {
+  return object.getProperty(runtime, name);
+}
+#endif
 
 inline jsi::Value valueFromArray(jsi::IRuntime &runtime, const jsi::Array &array) {
   return jsi::Value(runtime, array);
@@ -187,6 +197,49 @@ inline jsi::ArrayBuffer createArrayBuffer(
     cleanupFunction(cleanupContext);
   });
   return jsi::ArrayBuffer(runtime, std::move(buffer));
+}
+
+// MARK: - Zero-copy ArrayBuffer borrowing
+
+struct BorrowedBuffer {
+  uint8_t *_Nullable data;
+  size_t size;
+  void *_Nullable retainer;
+};
+
+/**
+ * Borrows a native-backed ArrayBuffer. The returned data pointer and size are
+ * captured at borrow time, so resizable or detached buffers are not supported.
+ * A non-null retainer must be passed to releaseBorrowedBuffer exactly once.
+ * The {nullptr, 0, nullptr} failure result must not be released.
+ */
+inline BorrowedBuffer tryBorrowMutableBuffer(
+  jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(runtime);
+  if (!mutableBuffer) {
+    return {nullptr, 0, nullptr};
+  }
+  uint8_t *data = mutableBuffer->data();
+  size_t size = mutableBuffer->size();
+  auto *retained = new std::shared_ptr<jsi::MutableBuffer>(std::move(mutableBuffer));
+  return {data, size, retained};
+#else
+  (void)runtime;
+  (void)arrayBuffer;
+  return {nullptr, 0, nullptr};
+#endif
+}
+
+inline void releaseBorrowedBuffer(void *_Nonnull retainer) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  delete static_cast<std::shared_ptr<jsi::MutableBuffer> *>(retainer);
+#else
+  (void)retainer;
+#endif
 }
 
 // MARK: - Native state

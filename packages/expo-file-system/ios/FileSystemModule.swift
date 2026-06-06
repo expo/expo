@@ -264,11 +264,19 @@ public final class FileSystemModule: Module {
     }
 
     Class(FileSystemFileHandle.self) {
-      Function("readBytes") { (fileHandle, bytes: Int) in
+      AsyncFunction("readBytes") { (fileHandle, bytes: Int) in
         try fileHandle.read(bytes)
       }
 
-      Function("writeBytes") { (fileHandle, bytes: Data) in
+      Function("readBytesSync") { (fileHandle, bytes: Int) in
+        try fileHandle.read(bytes)
+      }
+
+      AsyncFunction("writeBytes") { (fileHandle, bytes: Data) in
+        try fileHandle.write(bytes)
+      }
+
+      Function("writeBytesSync") { (fileHandle, bytes: Data) in
         try fileHandle.write(bytes)
       }
 

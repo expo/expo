@@ -1,4 +1,4 @@
-import { type StyleProp, type ViewStyle } from 'react-native';
+import { type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type HostProps = {
     /**
@@ -30,6 +30,12 @@ export type HostProps = {
      * The color scheme of the host view.
      */
     colorScheme?: 'light' | 'dark';
+    /**
+     * Seed color applied to the SwiftUI content as its tint. It propagates
+     * through the SwiftUI environment to theme interactive elements (buttons,
+     * switches, sliders, and similar controls) rendered by the children.
+     */
+    seedColor?: ColorValue;
     /**
      * The layout direction for the SwiftUI content.
      * Defaults to the current locale direction from I18nManager.

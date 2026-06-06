@@ -45,7 +45,14 @@ You can perform full native debugging with Android Studio and Xcode by generatin
 
 Generate the native code for your project by running the following command:
 
-<Terminal cmd={['$ npx expo prebuild -p android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild -p android'],
+    yarn: ['$ yarn expo prebuild -p android'],
+    pnpm: ['$ pnpm expo prebuild -p android'],
+    bun: ['$ bun expo prebuild -p android'],
+  }}
+/>
 
 This will add an **android** directory at the root of your project.
 
@@ -75,7 +82,14 @@ Build the app from Android Studio and connect the debugger. See [Google's docume
 
 Generate the native code for your project by running the following command:
 
-<Terminal cmd={['$ npx expo prebuild -p ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild -p ios'],
+    yarn: ['$ yarn expo prebuild -p ios'],
+    pnpm: ['$ pnpm expo prebuild -p ios'],
+    bun: ['$ bun expo prebuild -p ios'],
+  }}
+/>
 
 This will add an **ios** directory at the root of your project.
 

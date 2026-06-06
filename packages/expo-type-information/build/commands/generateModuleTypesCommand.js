@@ -9,7 +9,7 @@ const commandUtils_1 = require("./commandUtils");
 const typescriptGeneration_1 = require("../typescriptGeneration");
 function generateModuleTypesCommand(cli) {
     return (0, commandUtils_1.addCommonOptions)(cli.command('generate-module-types'))
-        .description('Generates a type declaration file content for a module.')
+        .description('generate a type declaration file content for a module')
         .action(async (options) => {
         const parsedArgs = await (0, commandUtils_1.parseCommandArguments)(options);
         if (!parsedArgs) {

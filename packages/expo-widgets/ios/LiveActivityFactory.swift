@@ -13,7 +13,7 @@ final class LiveActivityFactory: SharedObject {
     WidgetsStorage.set(layout, forKey: "__expo_widgets_live_activity_\(name)_layout")
   }
 
-  func start(props: String, url: URL?, staleDate: Date?) throws -> LiveActivity {
+  func start(props: String?, url: URL?, staleDate: Date?) throws -> LiveActivity {
     guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
     guard ActivityAuthorizationInfo().areActivitiesEnabled else {
       throw LiveActivitiesNotSupportedException()

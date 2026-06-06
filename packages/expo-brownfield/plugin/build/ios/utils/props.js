@@ -9,9 +9,19 @@ const getPluginConfig = (props, config) => {
         targetName,
         buildReactNativeFromSource: props?.buildReactNativeFromSource ?? false,
         multipleFrameworks: props?.multipleFrameworks ?? false,
+        hostProvidedFrameworks: validateHostProvidedFrameworks(props?.hostProvidedFrameworks),
     };
 };
 exports.getPluginConfig = getPluginConfig;
+const validateHostProvidedFrameworks = (value) => {
+    if (value == null) {
+        return [];
+    }
+    if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string' || !entry.trim())) {
+        throw new Error(`Invalid ios.hostProvidedFrameworks ${JSON.stringify(value)}: expected an array of non-empty framework name strings (e.g. ["SDWebImage", "SDWebImageWebPCoder"]). Update the expo-brownfield plugin entry in your app config.`);
+    }
+    return Array.from(new Set(value.map((entry) => entry.trim())));
+};
 const validateBundleIdentifier = (value, fieldName) => {
     if (typeof value !== 'string' || !APPLE_BUNDLE_IDENTIFIER.test(value)) {
         throw new Error(`Invalid ${fieldName} ${JSON.stringify(value)}: must be a valid Apple bundle identifier (e.g. com.example.app). Update your app config and re-run prebuild.`);

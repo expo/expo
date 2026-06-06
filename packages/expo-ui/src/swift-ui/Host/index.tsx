@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { I18nManager, type StyleProp, type ViewStyle } from 'react-native';
+import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -29,6 +29,13 @@ export type HostProps = {
    * The color scheme of the host view.
    */
   colorScheme?: 'light' | 'dark';
+
+  /**
+   * Seed color applied to the SwiftUI content as its tint. It propagates
+   * through the SwiftUI environment to theme interactive elements (buttons,
+   * switches, sliders, and similar controls) rendered by the children.
+   */
+  seedColor?: ColorValue;
 
   /**
    * The layout direction for the SwiftUI content.
@@ -62,6 +69,7 @@ export function Host(props: HostProps) {
     ignoreSafeArea,
     modifiers,
     layoutDirection,
+    seedColor,
     ...restProps
   } = props;
 
@@ -80,6 +88,7 @@ export function Host(props: HostProps) {
         layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
       }
       ignoreSafeArea={ignoreSafeArea}
+      seedColor={seedColor}
       {...restProps}
     />
   );

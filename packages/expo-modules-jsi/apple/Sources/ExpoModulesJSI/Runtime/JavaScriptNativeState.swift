@@ -1,9 +1,7 @@
-internal import jsi
 internal import ExpoModulesJSI_Cxx
+internal import jsi
 
-/**
- Base class for JS object's native state.
- */
+/// Base class for JS object's native state.
 open class JavaScriptNativeState {
   // Stored as an opaque pointer to avoid ARC retaining the bridged C++ type,
   // which could cause memory leaks due to unbalanced reference counting.
@@ -43,17 +41,13 @@ open class JavaScriptNativeState {
     self.pointee = expo.NativeState(ptr, deallocate)
   }
 
-  /**
-   Checks whether the underlying native state has already been released.
-   */
+  /// Checks whether the underlying native state has already been released.
   public var isReleased: Bool {
     return pointee == nil
   }
 
-  /**
-   Sets a deallocator, a closure that is invoked when this native state is no longer attached to any JS object.
-   Replaces any previously set deallocator.
-   */
+  /// Sets a deallocator, a closure that is invoked when this native state is no longer attached to any JS object.
+  /// Replaces any previously set deallocator.
   public func setDeallocator(_ deallocator: @escaping Deallocator) throws(NativeStateReleasedError) {
     if isReleased {
       throw NativeStateReleasedError()
@@ -61,10 +55,8 @@ open class JavaScriptNativeState {
     self.deallocator = deallocator
   }
 
-  /**
-   Turns given C++ `expo.NativeState` into its Swift counterpart.
-   May return `nil` if the native state is of unrelated type.
-   */
+  /// Turns given C++ `expo.NativeState` into its Swift counterpart.
+  /// May return `nil` if the native state is of unrelated type.
   internal static func from(cxx nativeState: expo.NativeState) -> Self? {
     // Get the opaque pointer stored by the C++ native state.
     let context = nativeState.getContext()

@@ -99,6 +99,8 @@ describe(isEnableHermesManaged, () => {
     };
     expect(isEnableHermesManaged(config, 'android')).toBe(true);
     expect(isEnableHermesManaged(config, 'ios')).toBe(true);
+    expect(isEnableHermesManaged(config, 'tvos')).toBe(true);
+    expect(isEnableHermesManaged(config, 'macos')).toBe(true);
   });
 
   it('platform jsEngine should override shared jsEngine', () => {
@@ -116,6 +118,8 @@ describe(isEnableHermesManaged, () => {
     };
     expect(isEnableHermesManaged(config, 'android')).toBe(false);
     expect(isEnableHermesManaged(config, 'ios')).toBe(false);
+    expect(isEnableHermesManaged(config, 'tvos')).toBe(false);
+    expect(isEnableHermesManaged(config, 'macos')).toBe(false);
   });
 });
 
@@ -286,6 +290,18 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
         'ios',
         /* isHermesManaged */ false
       )
+    ).rejects.toThrow();
+
+    expect(readPaths).toEqual(['/expo/ios/Podfile']);
+  });
+
+  it('should run the inconsistency check for tvos against the shared ios project', async () => {
+    const readPaths = addMockedFiles({
+      '/expo/ios/Podfile': '\n  use_react_native!(\n    :hermes_enabled => true\n  )',
+    });
+
+    await expect(
+      maybeThrowFromInconsistentEngineAsync('/expo', '/expo/app.json', 'tvos', false)
     ).rejects.toThrow();
 
     expect(readPaths).toEqual(['/expo/ios/Podfile']);

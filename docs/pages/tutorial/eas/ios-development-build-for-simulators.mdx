@@ -128,7 +128,14 @@ You can use [Expo Orbit](https://expo.dev/orbit) to install the development buil
 
 Start the development server by running the `npx expo start` command from the project directory:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 Press <kbd>I</kbd> in the terminal window to open the project on the iOS Simulator.
 

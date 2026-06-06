@@ -1,6 +1,8 @@
 import type { ComponentProps, ElementType } from 'react';
 import {
+  processColor,
   unstable_createElement,
+  type ColorValue,
   type ImageStyle,
   type StyleProp,
   type TextStyle,
@@ -32,74 +34,74 @@ export const css = (strings: TemplateStringsArray, ...values: unknown[]): string
     .trim();
 
 const lightVariables = css`
-  --eui-background: #ffffff;
-  --eui-foreground: #000000;
+  --expo-ui-background: #ffffff;
+  --expo-ui-foreground: #000000;
 
-  --eui-gray-50: #f9fafb;
-  --eui-gray-100: #f0f1f2;
-  --eui-gray-150: #eaecf0;
-  --eui-gray-200: #e1e4e8;
-  --eui-gray-300: #d7dbdf;
-  --eui-gray-400: #c9d1d9;
-  --eui-gray-500: #687076;
-  --eui-gray-600: #596068;
-  --eui-gray-700: #37414a;
-  --eui-gray-800: #25292e;
-  --eui-gray-900: #11181c;
+  --expo-ui-gray-50: #f9fafb;
+  --expo-ui-gray-100: #f0f1f2;
+  --expo-ui-gray-150: #eaecf0;
+  --expo-ui-gray-200: #e1e4e8;
+  --expo-ui-gray-300: #d7dbdf;
+  --expo-ui-gray-400: #c9d1d9;
+  --expo-ui-gray-500: #687076;
+  --expo-ui-gray-600: #596068;
+  --expo-ui-gray-700: #37414a;
+  --expo-ui-gray-800: #25292e;
+  --expo-ui-gray-900: #11181c;
 
-  --eui-shadow-button: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+  --expo-ui-shadow-button: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
 `;
 
 const darkVariables = css`
-  --eui-background: #0b0f14;
-  --eui-foreground: #ffffff;
+  --expo-ui-background: #0b0f14;
+  --expo-ui-foreground: #ffffff;
 
-  --eui-gray-50: #111418;
-  --eui-gray-100: #1d2128;
-  --eui-gray-150: #252932;
-  --eui-gray-200: #1f242c;
-  --eui-gray-300: #30363d;
-  --eui-gray-400: #484f58;
-  --eui-gray-500: #6e7781;
-  --eui-gray-600: #9aa4ae;
-  --eui-gray-700: #4b5560;
-  --eui-gray-800: #c0c8d0;
-  --eui-gray-900: #e6edf3;
+  --expo-ui-gray-50: #111418;
+  --expo-ui-gray-100: #1d2128;
+  --expo-ui-gray-150: #252932;
+  --expo-ui-gray-200: #1f242c;
+  --expo-ui-gray-300: #30363d;
+  --expo-ui-gray-400: #484f58;
+  --expo-ui-gray-500: #6e7781;
+  --expo-ui-gray-600: #9aa4ae;
+  --expo-ui-gray-700: #4b5560;
+  --expo-ui-gray-800: #c0c8d0;
+  --expo-ui-gray-900: #e6edf3;
 
-  --eui-shadow-button: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --expo-ui-shadow-button: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
 `;
 
 export const colors = {
-  background: 'var(--eui-background)',
-  foreground: 'var(--eui-foreground)',
+  background: 'var(--expo-ui-background)',
+  foreground: 'var(--expo-ui-foreground)',
 
   red: '#cf222e',
 
   primary: {
-    foreground: 'var(--eui-primary-foreground)',
-    50: 'var(--eui-primary-50)',
-    100: 'var(--eui-primary-100)',
-    200: 'var(--eui-primary-200)',
-    300: 'var(--eui-primary-300)',
-    400: 'var(--eui-primary-400)',
-    500: 'var(--eui-primary-500)',
-    600: 'var(--eui-primary-600)',
-    700: 'var(--eui-primary-700)',
-    800: 'var(--eui-primary-800)',
-    900: 'var(--eui-primary-900)',
+    foreground: 'var(--expo-ui-primary-foreground)',
+    50: 'var(--expo-ui-primary-50)',
+    100: 'var(--expo-ui-primary-100)',
+    200: 'var(--expo-ui-primary-200)',
+    300: 'var(--expo-ui-primary-300)',
+    400: 'var(--expo-ui-primary-400)',
+    500: 'var(--expo-ui-primary-500)',
+    600: 'var(--expo-ui-primary-600)',
+    700: 'var(--expo-ui-primary-700)',
+    800: 'var(--expo-ui-primary-800)',
+    900: 'var(--expo-ui-primary-900)',
   },
 
   gray: {
-    50: 'var(--eui-gray-50)',
-    100: 'var(--eui-gray-100)',
-    200: 'var(--eui-gray-200)',
-    300: 'var(--eui-gray-300)',
-    400: 'var(--eui-gray-400)',
-    500: 'var(--eui-gray-500)',
-    600: 'var(--eui-gray-600)',
-    700: 'var(--eui-gray-700)',
-    800: 'var(--eui-gray-800)',
-    900: 'var(--eui-gray-900)',
+    50: 'var(--expo-ui-gray-50)',
+    100: 'var(--expo-ui-gray-100)',
+    200: 'var(--expo-ui-gray-200)',
+    300: 'var(--expo-ui-gray-300)',
+    400: 'var(--expo-ui-gray-400)',
+    500: 'var(--expo-ui-gray-500)',
+    600: 'var(--expo-ui-gray-600)',
+    700: 'var(--expo-ui-gray-700)',
+    800: 'var(--expo-ui-gray-800)',
+    900: 'var(--expo-ui-gray-900)',
   },
 };
 
@@ -114,8 +116,8 @@ export const easings = {
 };
 
 export const shadows = {
-  button: 'var(--eui-shadow-button)',
-  focus: '0 0 0 3px color-mix(in oklab, var(--eui-primary-500) 35%, transparent)',
+  button: 'var(--expo-ui-shadow-button)',
+  focus: '0 0 0 3px color-mix(in oklab, var(--expo-ui-primary-500) 35%, transparent)',
   input: '0 1px 0 rgba(0, 0, 0, 0.02)',
 };
 
@@ -125,13 +127,19 @@ export const globalCss = css`
   }
 
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme]) {
       ${darkVariables}
     }
+  }
+
+  [data-theme='dark'] {
+    ${darkVariables}
   }
 `;
 
 // Color utils
+
+const DEFAULT_PRIMARY_COLOR = '#007aff';
 
 type Lch = [number, number, number];
 
@@ -196,22 +204,41 @@ const PRIMARY_STOPS = [
 ] as const;
 
 type PrimaryColorScale = Record<
-  `--eui-primary-${'foreground' | (typeof PRIMARY_STOPS)[number]['step']}`,
+  `--expo-ui-primary-${'foreground' | (typeof PRIMARY_STOPS)[number]['step']}`,
   string
 >;
 
-export const generatePrimaryColorScale = (hex: string): Record<string, string> => {
-  const [L, C, H] = hexToLch(hex);
+// Normalize any `ColorValue` (named color, `rgb()` / `rgba()`, hex string, or
+// processed number) to a `#RRGGBB` string. `processColor` returns an
+// `0xAARRGGBB` integer (or `null`/`undefined` for invalid input); alpha is
+// dropped since the scale only needs the base hue.
+const colorValueToHex = (color: ColorValue): string | null => {
+  const argb = processColor(color);
+
+  if (typeof argb !== 'number') {
+    return null;
+  }
+
+  const r = (argb >> 16) & 0xff;
+  const g = (argb >> 8) & 0xff;
+  const b = argb & 0xff;
+  return '#' + [r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('');
+};
+
+export const generatePrimaryColorScale = (
+  color: ColorValue | undefined = DEFAULT_PRIMARY_COLOR
+): Record<string, string> => {
+  const [L, C, H] = hexToLch(colorValueToHex(color) ?? DEFAULT_PRIMARY_COLOR);
 
   const scale = {
     // Contrast for filled buttons: pick white or a hue-tinted near-black based on L of 500
-    '--eui-primary-foreground': L < 0.68 ? '#ffffff' : lchToHex([0.18, C * 0.1, H]),
+    '--expo-ui-primary-foreground': L < 0.74 ? '#ffffff' : lchToHex([0.18, C * 0.1, H]),
   } as PrimaryColorScale;
 
   for (const { step, L: tgtL, cMul } of PRIMARY_STOPS) {
     const newL = tgtL == null ? L : tgtL;
     const newC = C * cMul;
-    scale[`--eui-primary-${step}`] = lchToHex([newL, newC, H]);
+    scale[`--expo-ui-primary-${step}`] = lchToHex([newL, newC, H]);
   }
 
   return scale;

@@ -60,6 +60,10 @@ export function getBootstrapContents({
   return parts.join('\n');
 }
 
+export function createFaviconAsNode(href: string): ReactNode {
+  return <link key="favicon" rel="icon" href={href} />;
+}
+
 export function createInjectedFontsAsNodes(
   descriptors: ServerFontResourceDescriptor[]
 ): ReactNode[] {

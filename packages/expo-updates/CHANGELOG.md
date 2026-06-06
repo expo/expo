@@ -8,7 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
+- [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
+
 ### 💡 Others
+
+- [Android] Log purge completion errors via `android.util.Log.e` directly instead of `logger.error`, so the failure path doesn't re-enter the `PersistentFileLog` dispatch queue from inside one of its own tasks. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 
 ## 56.0.17 — 2026-05-26
 

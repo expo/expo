@@ -157,4 +157,9 @@ export function addUserInteractionListener(listener) {
 export function addPushToStartTokenListener(listener) {
     return ExpoWidgetsModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
 }
+/**
+ * A directory that can be used to store shared images for widgets.
+ * The contents of this directory are accessible by both the main app and widgets.
+ */
+export const widgetsDirectory = ExpoWidgetsModule.widgetsDirectory;
 //# sourceMappingURL=Widgets.js.map

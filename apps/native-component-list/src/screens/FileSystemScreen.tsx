@@ -375,9 +375,9 @@ function FileHandleSection({ currentFile }: { currentFile: File | null }) {
       <ListButton
         title="Read 10 bytes"
         disabled={!handleRef.current}
-        onPress={() => {
+        onPress={async () => {
           try {
-            const bytes = handleRef.current!.readBytes(10);
+            const bytes = await handleRef.current!.readBytes(10);
             setHandleInfo(`offset=${handleRef.current!.offset}, size=${handleRef.current!.size}`);
             appendLog(`Read ${bytes.length}B: [${Array.from(bytes).join(', ')}]`);
           } catch (e: any) {
@@ -388,9 +388,9 @@ function FileHandleSection({ currentFile }: { currentFile: File | null }) {
       <ListButton
         title="Write 'TEST' bytes"
         disabled={!handleRef.current}
-        onPress={() => {
+        onPress={async () => {
           try {
-            handleRef.current!.writeBytes(new Uint8Array([84, 69, 83, 84]));
+            await handleRef.current!.writeBytes(new Uint8Array([84, 69, 83, 84]));
             setHandleInfo(`offset=${handleRef.current!.offset}, size=${handleRef.current!.size}`);
             appendLog('Wrote 4 bytes (TEST)');
           } catch (e: any) {

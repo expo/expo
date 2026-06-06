@@ -18,6 +18,7 @@ export type TypeInformationCommandCommonAllArguments = {
   modulePath?: string;
   outputPath?: string;
   typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
+  skipUnicodeCharacterMapping?: boolean;
   watcher?: boolean;
   appJson?: string;
 };
@@ -40,6 +41,7 @@ export interface ParsedArguments {
   realInputPaths: string[];
   realOutputPath?: string;
   typeInference: TypeInferenceOption;
+  mapUnicodeCharacters: boolean;
   watcher: boolean;
   appJsonPath?: string;
 }
@@ -60,6 +62,10 @@ export function addCommonOptions(command: commander.Command): commander.Command 
       // TODO(@HubertBer) Fix the PREPROCESS_AND_INFERENCE option.
       'Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.',
       'SIMPLE_INFERENCE'
+    )
+    .option(
+      '-s, --skip-unicode-character-mapping',
+      'skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.'
     )
     .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
 }
@@ -248,20 +254,31 @@ export function parseCommandArguments(
     return null;
   }
 
+  const mapUnicodeCharacters = !options.skipUnicodeCharacterMapping;
   const watcher = options.watcher ?? false;
-  return { realInputPaths, realOutputPath, typeInference, watcher, appJsonPath };
+  return {
+    realInputPaths,
+    realOutputPath,
+    typeInference,
+    mapUnicodeCharacters,
+    watcher,
+    appJsonPath,
+  };
 }
 
 export async function getFileTypeInformationFromArgs({
   realInputPaths,
   typeInference,
+  mapUnicodeCharacters,
 }: {
   realInputPaths: string[];
   typeInference: TypeInferenceOption;
+  mapUnicodeCharacters: boolean;
 }): Promise<FileTypeInformation | null> {
   const typeInfo = await getFileTypeInformation({
     input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
     typeInference,
+    mapUnicodeCharacters,
   });
 
   if (!typeInfo) {
@@ -343,7 +360,13 @@ export async function generateConciseTsFiles(parsedArgs: ParsedArguments) {
   const { volatileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
     await generateConciseTsInterface(typeInfo);
 
-  const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
+  const mainModule = typeInfo.moduleClasses[0];
+  if (mainModule === undefined) {
+    console.error(`The module at ${JSON.stringify(realInputPaths)} doesn't exist.`);
+    return;
+  }
+
+  const moduleName = mainModule.name;
   const dirName = realOutputPath ?? path.dirname(realInputPaths[0] as string);
 
   try {

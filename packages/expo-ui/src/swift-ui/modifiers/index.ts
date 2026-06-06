@@ -535,6 +535,17 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the border shape used by buttons within this view.
+ * @param shape - The button border shape.
+ * @param cornerRadius - Corner radius, only used with `'roundedRectangle'`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonbordershape(_:)).
+ */
+export const buttonBorderShape = (
+  shape: 'automatic' | 'capsule' | 'roundedRectangle' | 'circle',
+  cornerRadius?: number
+) => createModifier('buttonBorderShape', { shape, cornerRadius });
+
+/**
  * Sets the style for toggles within this view.
  * @param style - The toggle style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/togglestyle(_:)).
@@ -721,6 +732,29 @@ export const accessibilityValue = (value: string) =>
   createModifier('accessibilityValue', { value });
 
 /**
+ * Sets an accessibility identifier for the view.
+ *
+ * Unlike `accessibilityLabel`, this value is for UI testing and is not visible
+ * to the user. UI testing tools such as XCUITest read it to locate the view, so
+ * prefer a stable, machine-readable identifier here.
+ * @param identifier - The accessibility identifier used for UI testing.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityidentifier(_:)).
+ */
+export const accessibilityIdentifier = (identifier: string) =>
+  createModifier('accessibilityIdentifier', { identifier });
+
+/**
+ * Marks the view as decoratively-named so VoiceOver and other assistive
+ * technologies skip it during element traversal. Useful for hero icons or
+ * presentational imagery that's already described by adjacent text.
+ *
+ * @param hidden - Whether the view should be hidden from accessibility. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityhidden(_:)).
+ */
+export const accessibilityHidden = (hidden: boolean = true) =>
+  createModifier('accessibilityHidden', { hidden });
+
+/**
  * Sets layout priority for the view.
  * @param priority - Layout priority value.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/layoutpriority(_:)).
@@ -836,6 +870,14 @@ export const listRowSeparator = (
   visibility: 'automatic' | 'visible' | 'hidden',
   edges?: 'all' | 'top' | 'bottom'
 ) => createModifier('listRowSeparator', { visibility, edges });
+
+/**
+ * Sets the vertical spacing between adjacent rows in a list.
+ * @param spacing - The spacing value to use. When omitted, the default spacing is used.
+ * @platform ios 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowspacing(_:)).
+ */
+export const listRowSpacing = (spacing?: number) => createModifier('listRowSpacing', { spacing });
 
 /**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
@@ -1038,6 +1080,60 @@ export const font = (params: {
     | 'caption'
     | 'caption2';
 }) => createModifier('font', params);
+/**
+ * A standard size for Dynamic Type, from `xSmall` through the five
+ * `accessibility` sizes. Mirrors SwiftUI's `DynamicTypeSize`.
+ */
+export type DynamicTypeSizeValue =
+  | 'xSmall'
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'xLarge'
+  | 'xxLarge'
+  | 'xxxLarge'
+  | 'accessibility1'
+  | 'accessibility2'
+  | 'accessibility3'
+  | 'accessibility4'
+  | 'accessibility5';
+/**
+ * Sets or constrains the Dynamic Type size within the view, overriding the
+ * value inherited from the system.
+ *
+ * Four variants matching SwiftUI's `dynamicTypeSize(_:)`:
+ * - `dynamicTypeSize('large')` — fixes the Dynamic Type size to a single value
+ * - `dynamicTypeSize({ max: 'accessibility3' })` — caps growth at a ceiling (`...accessibility3`)
+ * - `dynamicTypeSize({ min: 'large' })` — sets a floor (`large...`)
+ * - `dynamicTypeSize({ min: 'large', max: 'accessibility3' })` — clamps to a range (`large...accessibility3`)
+ *
+ * `min` and `max` are independent: pass either or both. Set it on a `<Host>` to
+ * cascade the constraint to every descendant through the SwiftUI environment.
+ * Keep `min` at or below `max`, or the range traps natively, like SwiftUI.
+ * Per Apple's guidance, prefer capping at an accessibility size over disabling
+ * Dynamic Type entirely.
+ *
+ * @example
+ * ```tsx
+ * // Cap how large text in a tight layout can grow
+ * <Host modifiers={[dynamicTypeSize({ max: 'accessibility3' })]}>...</Host>
+ * ```
+ *
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/dynamictypesize(_:)).
+ */
+export function dynamicTypeSize(size: DynamicTypeSizeValue): ModifierConfig;
+export function dynamicTypeSize(range: {
+  min?: DynamicTypeSizeValue;
+  max?: DynamicTypeSizeValue;
+}): ModifierConfig;
+export function dynamicTypeSize(
+  sizeOrRange: DynamicTypeSizeValue | { min?: DynamicTypeSizeValue; max?: DynamicTypeSizeValue }
+): ModifierConfig {
+  if (typeof sizeOrRange === 'object' && sizeOrRange !== null) {
+    return createModifier('dynamicTypeSize', { min: sizeOrRange.min, max: sizeOrRange.max });
+  }
+  return createModifier('dynamicTypeSize', { size: sizeOrRange });
+}
 /**
  * Asks grid layouts not to offer the view extra size in the specified axes.
  * @param axes - The dimensions in which the grid shouldn’t offer the view a share of any available space. This prevents a flexible view like a Spacer, Divider, or Color from defining the size of a row or column.
@@ -1329,6 +1425,7 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
   | ReturnType<typeof controlSize>
   | ReturnType<typeof labelStyle>
@@ -1338,6 +1435,8 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
+  | ReturnType<typeof accessibilityIdentifier>
+  | ReturnType<typeof accessibilityHidden>
   | ReturnType<typeof layoutPriority>
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>
@@ -1366,6 +1465,7 @@ export type BuiltInModifier =
   | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
+  | ReturnType<typeof listRowSpacing>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>
   | ReturnType<typeof kerning>
@@ -1383,6 +1483,7 @@ export type BuiltInModifier =
   | ReturnType<typeof badge>
   | ReturnType<typeof listSectionMargins>
   | ReturnType<typeof font>
+  | ReturnType<typeof dynamicTypeSize>
   | ReturnType<typeof gridCellUnsizedAxes>
   | ReturnType<typeof gridCellColumns>
   | ReturnType<typeof gridColumnAlignment>

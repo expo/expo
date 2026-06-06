@@ -350,7 +350,11 @@ export class MetroTerminalReporter extends TerminalReporter {
       let hasStack = false;
       const parsed = data.map((msg) => {
         // Quick check to see if an unsymbolicated stack is being logged.
-        if (typeof msg === 'string' && msg.includes('.bundle//&platform=')) {
+        if (
+          typeof msg === 'string' &&
+          // Native stack frames use `.bundle//&platform=...`; web stack frames use `.bundle?platform=...`.
+          (msg.includes('.bundle//&platform=') || msg.includes('.bundle?platform='))
+        ) {
           const stack = parseErrorStringToObject(msg);
           if (stack) {
             hasStack = true;
