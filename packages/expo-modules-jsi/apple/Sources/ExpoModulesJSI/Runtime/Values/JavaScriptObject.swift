@@ -389,7 +389,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Native state
 
-  /// Returns whether this object has native state previously set by `setNativeState`.
+  /// Returns whether this object carries an `expo::NativeState`-derived JSI native
+  /// state — either one attached from Swift via `setNativeState`, or one produced
+  /// C++-side (e.g. via `addListener`'s `EventEmitter::NativeState`). A `true`
+  /// result does not imply that `getNativeState()` will return a non-nil Swift
+  /// wrapper: C++-produced states carry a null context and are unrecoverable from
+  /// the Swift side by design.
   public func hasNativeState() -> Bool {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -397,13 +402,15 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return expo.hasNativeState(runtime.pointee, pointee)
   }
 
-  /// Returns a native state previously set by `setNativeState`.
-  /// If `hasNativeState()` is false or object's native state is of unrelated type, this will return `nil`.
+  /// Returns the Swift `JavaScriptNativeState` wrapper attached to this object via
+  /// `setNativeState`, or `nil` if there is no native state, the state was
+  /// produced C++-side without a Swift back-pointer, or its concrete type doesn't
+  /// match `T`.
   public func getNativeState<T: JavaScriptNativeState>(as: T.Type = JavaScriptNativeState.self) -> T? {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    guard let cxxNativeState = expo.getNativeState(runtime.pointee, pointee) else {
+    guard let cxxNativeState = expo.getExpoNativeState(runtime.pointee, pointee) else {
       return nil
     }
     return T.from(cxx: cxxNativeState)
@@ -412,16 +419,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// Sets the internal native state property of this object, overwriting any old value.
   /// Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
   /// - TODO: throw a type error if this object is a proxy or host object.
-  public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) throws(JavaScriptNativeState
-    .NativeStateReleasedError)
-  {
+  public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    guard let nativeStatePointee = nativeState.pointee else {
-      throw JavaScriptNativeState.NativeStateReleasedError()
-    }
-    expo.setNativeState(runtime.pointee, pointee, nativeStatePointee)
+    expo.setNativeState(runtime.pointee, self.pointee, nativeState.acquireShared())
   }
 
   /// Unsets the native state of this object.

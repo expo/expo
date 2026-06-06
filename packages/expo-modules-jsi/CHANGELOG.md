@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] `JavaScriptNativeState` can now back any `jsi::NativeState` subtype via a `void *` factory, so consumers without Swift/C++ interop (e.g. `expo-modules-core`) can supply their own pointee. `expo::NativeState` ships from the xcframework as a public C++ header. ([#46330](https://github.com/expo/expo/pull/46330) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.10 — 2026-06-15
 
 ### 🐛 Bug fixes
