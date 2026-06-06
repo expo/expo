@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `seekForwardIntervalSeconds` and `seekBackwardIntervalSeconds` options to `AudioLockScreenOptions` for customizable lock screen skip intervals. ([#44804](https://github.com/expo/expo/pull/44804) by [@radko93](https://github.com/radko93))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))

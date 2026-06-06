@@ -1,4 +1,4 @@
-const SKIP_SECONDS = 10;
+const DEFAULT_SKIP_SECONDS = 10;
 class MediaSessionController {
     activePlayer = null;
     metadata = null;
@@ -123,13 +123,15 @@ class MediaSessionController {
             }
         });
         const seekForward = (details) => {
-            const skipTime = details.seekOffset ?? SKIP_SECONDS;
+            const configured = this.options?.seekForwardIntervalSeconds;
+            const skipTime = details.seekOffset ?? (configured && configured > 0 ? configured : DEFAULT_SKIP_SECONDS);
             const newTime = Math.min(player.currentTime + skipTime, player.duration || 0);
             player.seekTo(newTime);
             this.updatePositionState(player);
         };
         const seekBackward = (details) => {
-            const skipTime = details.seekOffset ?? SKIP_SECONDS;
+            const configured = this.options?.seekBackwardIntervalSeconds;
+            const skipTime = details.seekOffset ?? (configured && configured > 0 ? configured : DEFAULT_SKIP_SECONDS);
             const newTime = Math.max(player.currentTime - skipTime, 0);
             player.seekTo(newTime);
             this.updatePositionState(player);
