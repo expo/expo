@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabsBottomAccessory = exports.NativeTabsTriggerBadge = exports.NativeTabsTriggerPromiseIcon = exports.NativeTabsTriggerVectorIcon = exports.NativeTabsTriggerIcon = exports.NativeTabsTriggerLabel = void 0;
+exports.NativeTabsBottomAccessory = exports.NativeTabsTriggerToolbarItem = exports.NativeTabsTriggerBadge = exports.NativeTabsTriggerPromiseIcon = exports.NativeTabsTriggerVectorIcon = exports.NativeTabsTriggerIcon = exports.NativeTabsTriggerLabel = void 0;
 const primitives_1 = require("../../primitives");
 exports.NativeTabsTriggerLabel = primitives_1.Label;
 /**
@@ -51,6 +51,15 @@ const NativeTabsTriggerPromiseIcon = function NativeTabsTriggerPromiseIcon(props
 };
 exports.NativeTabsTriggerPromiseIcon = NativeTabsTriggerPromiseIcon;
 exports.NativeTabsTriggerBadge = primitives_1.Badge;
+/**
+ * Adds a native iOS 26 toolbar item next to the integrated search control for a search tab.
+ *
+ * @platform iOS 26+
+ */
+const NativeTabsTriggerToolbarItem = () => {
+    return null;
+};
+exports.NativeTabsTriggerToolbarItem = NativeTabsTriggerToolbarItem;
 /**
  * A [bottom accessory](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for `NativeTabs` on iOS 26 and above.
  *

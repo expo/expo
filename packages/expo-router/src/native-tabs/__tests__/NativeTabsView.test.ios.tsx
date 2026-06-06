@@ -81,6 +81,36 @@ it('uses shadowColor when it is passed to NativeTabs in both standardAppearance 
   expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe('red');
 });
 
+it('forwards toolbar items to Tabs.Screen ios props', () => {
+  const onPress = jest.fn();
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" role="search">
+          <NativeTabs.Trigger.ToolbarItem
+            sf="line.3.horizontal.decrease"
+            accessibilityLabel="Filters"
+            onPress={onPress}
+          />
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(TabsScreen).toHaveBeenCalledTimes(1);
+  const ios = TabsScreen.mock.calls[0][0].ios as { toolbarItems?: unknown[] } | undefined;
+  expect(ios?.toolbarItems).toEqual([
+    expect.objectContaining({
+      type: 'button',
+      icon: { type: 'sfSymbol', name: 'line.3.horizontal.decrease' },
+      accessibilityLabel: 'Filters',
+      onPress,
+    }),
+  ]);
+});
+
 describe('unstable_nativeProps', () => {
   it('forwards top-level raw props to Tabs.Host', () => {
     renderRouter({

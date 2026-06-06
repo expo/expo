@@ -7,6 +7,7 @@ export type {
   MaterialIcon,
   NativeTabsTriggerIconProps,
   NativeTabsTriggerBadgeProps,
+  NativeTabsTriggerToolbarItemProps,
   NativeTabsBottomAccessoryProps,
 } from './common/elements';
 export type {
@@ -19,6 +20,7 @@ export type {
   NativeTabsBlurEffect,
   NativeTabsTabBarMinimizeBehavior,
   NativeTabsTabBarItemRole,
+  NativeTabsToolbarItem,
 } from './types';
 export { NativeTabTrigger } from './NativeTabTrigger';
 export { NativeTabs } from './NativeTabs';

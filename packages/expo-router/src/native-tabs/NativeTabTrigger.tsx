@@ -8,9 +8,11 @@ import {
   NativeTabsTriggerIcon,
   NativeTabsTriggerBadge,
   NativeTabsTriggerLabel,
+  NativeTabsTriggerToolbarItem,
   NativeTabsTriggerVectorIcon,
   type NativeTabsTriggerBadgeProps,
   type NativeTabsTriggerLabelProps,
+  type NativeTabsTriggerToolbarItemProps,
 } from './common/elements';
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 import { appendIconOptions } from './utils/optionsIconConverter';
@@ -84,6 +86,7 @@ export const NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
   Icon: NativeTabsTriggerIcon,
   Badge: NativeTabsTriggerBadge,
   VectorIcon: NativeTabsTriggerVectorIcon,
+  ToolbarItem: NativeTabsTriggerToolbarItem,
 });
 
 export function convertTabPropsToOptions(
@@ -138,6 +141,7 @@ export function convertTabPropsToOptions(
     NativeTabsTriggerBadge,
     NativeTabsTriggerLabel,
     NativeTabsTriggerIcon,
+    NativeTabsTriggerToolbarItem,
   ]);
   return allowedChildren.reduce<NativeTabOptions>(
     (acc, child) => {
@@ -147,11 +151,37 @@ export function convertTabPropsToOptions(
         appendLabelOptions(acc, child.props);
       } else if (isChildOfType(child, NativeTabsTriggerIcon)) {
         appendIconOptions(acc, child.props);
+      } else if (isChildOfType(child, NativeTabsTriggerToolbarItem)) {
+        appendToolbarItemOptions(acc, child.props);
       }
       return acc;
     },
     { ...initialOptions }
   );
+}
+
+function appendToolbarItemOptions(
+  options: NativeTabOptions,
+  props: NativeTabsTriggerToolbarItemProps
+) {
+  options.toolbarItems = [
+    ...(options.toolbarItems ?? []),
+    {
+      type: 'button',
+      icon: {
+        type: 'sfSymbol',
+        name: props.sf,
+      },
+      accessibilityLabel: props.accessibilityLabel,
+      accessibilityHint: props.accessibilityHint,
+      badge:
+        props.badgeValue !== null && props.badgeValue !== undefined
+          ? { value: String(props.badgeValue) }
+          : undefined,
+      disabled: props.disabled,
+      onPress: props.onPress,
+    },
+  ];
 }
 
 function appendBadgeOptions(options: NativeTabOptions, props: NativeTabsTriggerBadgeProps) {

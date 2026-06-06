@@ -1,5 +1,5 @@
 import { type ReactElement, type ReactNode } from 'react';
-import { type NativeTabsTriggerBadgeProps, type NativeTabsTriggerLabelProps } from './common/elements';
+import { type NativeTabsTriggerBadgeProps, type NativeTabsTriggerLabelProps, type NativeTabsTriggerToolbarItemProps } from './common/elements';
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -43,6 +43,7 @@ export declare const NativeTabTrigger: typeof NativeTabTriggerImpl & {
     Icon: import("react").FC<import(".").NativeTabsTriggerIconProps>;
     Badge: import("react").FC<NativeTabsTriggerBadgeProps>;
     VectorIcon: typeof import("..").VectorIcon;
+    ToolbarItem: import("react").FC<NativeTabsTriggerToolbarItemProps>;
 };
 export declare function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, disableTransparentOnScrollEdge, disabled, rippleColor, indicatorColor, disableIndicator, labelVisibilityMode, }: NativeTabTriggerProps, isDynamic?: boolean): NativeTabOptions;
 export declare function isNativeTabTrigger(child: ReactNode, contextKey?: string): child is ReactElement<NativeTabTriggerProps & {

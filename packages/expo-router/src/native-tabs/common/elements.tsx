@@ -255,6 +255,53 @@ export interface NativeTabsTriggerBadgeProps {
 
 export const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps> = Badge;
 
+export interface NativeTabsTriggerToolbarItemProps {
+  /**
+   * Position relative to the native search control.
+   *
+   * @default trailing
+   * @platform iOS 26+
+   */
+  placement?: 'trailing';
+  /**
+   * The SF Symbol to display in the toolbar item.
+   *
+   * @platform iOS 26+
+   */
+  sf: SFSymbol;
+  /**
+   * Accessibility label for the toolbar item.
+   */
+  accessibilityLabel: string;
+  /**
+   * Accessibility hint for the toolbar item.
+   */
+  accessibilityHint?: string;
+  /**
+   * Badge value displayed on the toolbar item.
+   *
+   * @platform iOS 26+
+   */
+  badgeValue?: string | number | null;
+  /**
+   * Whether the toolbar item is disabled.
+   */
+  disabled?: boolean;
+  /**
+   * Function to call when the toolbar item is pressed.
+   */
+  onPress: () => void;
+}
+
+/**
+ * Adds a native iOS 26 toolbar item next to the integrated search control for a search tab.
+ *
+ * @platform iOS 26+
+ */
+export const NativeTabsTriggerToolbarItem: React.FC<NativeTabsTriggerToolbarItemProps> = () => {
+  return null;
+};
+
 export interface NativeTabsBottomAccessoryProps {
   children?: React.ReactNode;
 }

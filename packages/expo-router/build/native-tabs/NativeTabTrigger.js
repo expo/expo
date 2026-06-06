@@ -71,6 +71,7 @@ exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     Icon: elements_1.NativeTabsTriggerIcon,
     Badge: elements_1.NativeTabsTriggerBadge,
     VectorIcon: elements_1.NativeTabsTriggerVectorIcon,
+    ToolbarItem: elements_1.NativeTabsTriggerToolbarItem,
 });
 function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, disableTransparentOnScrollEdge, disabled, rippleColor, indicatorColor, disableIndicator, labelVisibilityMode, }, isDynamic = false) {
     const initialOptions = isDynamic
@@ -106,6 +107,7 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
         elements_1.NativeTabsTriggerBadge,
         elements_1.NativeTabsTriggerLabel,
         elements_1.NativeTabsTriggerIcon,
+        elements_1.NativeTabsTriggerToolbarItem,
     ]);
     return allowedChildren.reduce((acc, child) => {
         if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerBadge)) {
@@ -117,8 +119,30 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
         else if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerIcon)) {
             (0, optionsIconConverter_1.appendIconOptions)(acc, child.props);
         }
+        else if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerToolbarItem)) {
+            appendToolbarItemOptions(acc, child.props);
+        }
         return acc;
     }, { ...initialOptions });
+}
+function appendToolbarItemOptions(options, props) {
+    options.toolbarItems = [
+        ...(options.toolbarItems ?? []),
+        {
+            type: 'button',
+            icon: {
+                type: 'sfSymbol',
+                name: props.sf,
+            },
+            accessibilityLabel: props.accessibilityLabel,
+            accessibilityHint: props.accessibilityHint,
+            badge: props.badgeValue !== null && props.badgeValue !== undefined
+                ? { value: String(props.badgeValue) }
+                : undefined,
+            disabled: props.disabled,
+            onPress: props.onPress,
+        },
+    ];
 }
 function appendBadgeOptions(options, props) {
     if (props.children) {

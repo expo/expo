@@ -91,6 +91,46 @@ it('can pass options via elements', () => {
   } as NativeTabOptions);
 });
 
+it('can pass toolbar items via elements', () => {
+  const onPress = jest.fn();
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" role="search">
+          <NativeTabs.Trigger.ToolbarItem
+            sf="line.3.horizontal.decrease"
+            accessibilityLabel="Filters"
+            accessibilityHint="Opens filters"
+            badgeValue={0}
+            disabled
+            onPress={onPress}
+          />
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(NativeTabsView).toHaveBeenCalledTimes(1);
+  expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.toolbarItems).toEqual([
+    {
+      type: 'button',
+      icon: {
+        type: 'sfSymbol',
+        name: 'line.3.horizontal.decrease',
+      },
+      accessibilityLabel: 'Filters',
+      accessibilityHint: 'Opens filters',
+      badge: {
+        value: '0',
+      },
+      disabled: true,
+      onPress,
+    },
+  ] satisfies NativeTabOptions['toolbarItems']);
+});
+
 it('can use universal elements', () => {
   renderRouter({
     _layout: () => (

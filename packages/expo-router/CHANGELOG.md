@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))
+- Add iOS search toolbar items for native tabs. (by [@marcodejongh](https://github.com/marcodejongh))
 
 ### 🐛 Bug fixes
 
