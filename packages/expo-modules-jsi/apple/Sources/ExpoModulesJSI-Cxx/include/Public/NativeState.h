@@ -3,6 +3,18 @@
 #include <memory>
 #include <jsi/jsi.h>
 
+// `SWIFT_RETURNS_INDEPENDENT_VALUE` tells Swift/C++ interop that `getContext()`
+// hands back a value that doesn't borrow from the receiver — required so the
+// method is importable on the now-move-only `expo::NativeState`. The bridging
+// header lives in the Xcode toolchain include path and the macro expands to
+// empty when interop isn't enabled, so non-interop C++ consumers can include
+// this header normally.
+#if __has_include(<swift/bridging>)
+#include <swift/bridging>
+#else
+#define SWIFT_RETURNS_INDEPENDENT_VALUE
+#endif
+
 namespace expo {
 
 /**
@@ -19,6 +31,28 @@ public:
   explicit NativeState(Context context = nullptr, ContextDeallocator contextDeallocator = nullptr)
     : _context(context), _contextDeallocator(contextDeallocator) {}
 
+  // Move-only ownership: each instance's `_contextDeallocator(_context)` runs
+  // exactly once. The move ctor / assignment null the source's deallocator so
+  // the moved-from instance's destructor is a no-op. The user-declared move
+  // implicitly deletes the copy ctor and copy assignment, so copying is rejected
+  // at compile time (matching the contract) without ever spelling `= delete` —
+  // which would otherwise make Swift/C++ interop drop the imported type symbol.
+  NativeState(NativeState &&other) noexcept
+    : _context(other._context), _contextDeallocator(other._contextDeallocator) {
+    other._contextDeallocator = nullptr;
+  }
+  NativeState &operator=(NativeState &&other) noexcept {
+    if (this != &other) {
+      if (_contextDeallocator) {
+        _contextDeallocator(_context);
+      }
+      _context = other._context;
+      _contextDeallocator = other._contextDeallocator;
+      other._contextDeallocator = nullptr;
+    }
+    return *this;
+  }
+
   ~NativeState() override {
     if (_contextDeallocator) {
       _contextDeallocator(_context);
@@ -32,6 +66,7 @@ public:
    different encoding, switch to a tagged layout first so consumers can detect
    mismatches instead of crashing.
    */
+  SWIFT_RETURNS_INDEPENDENT_VALUE
   inline Context getContext() const {
     return _context;
   }
