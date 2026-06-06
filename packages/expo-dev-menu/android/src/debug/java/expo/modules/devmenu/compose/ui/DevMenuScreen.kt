@@ -23,6 +23,8 @@ fun DevMenuScreen(
   appInfo: DevMenuState.AppInfo,
   devToolsSettings: DevToolsSettings,
   customItems: List<DevMenuState.CustomItem> = emptyList(),
+  availableAppKeys: List<String> = emptyList(),
+  currentAppKey: String? = null,
   shouldShowOnboarding: Boolean = false,
   showFab: Boolean = false,
   hasGoHomeAction: Boolean = false,
@@ -60,6 +62,18 @@ fun DevMenuScreen(
     }
 
     Spacer(NewAppTheme.spacing.`5`)
+
+    if (availableAppKeys.size > 1) {
+      ComponentsSection(
+        appKeys = availableAppKeys,
+        currentAppKey = currentAppKey,
+        onSelect = { name ->
+          onAction(DevMenuAction.SwitchComponent(name))
+        }
+      )
+
+      Spacer(NewAppTheme.spacing.`5`)
+    }
 
     if (customItems.isNotEmpty()) {
       CustomItemsSection(

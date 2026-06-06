@@ -16,6 +16,7 @@ sealed class DevMenuAction(val shouldCloseMenu: Boolean = false) {
   data class TriggerCustomCallback(
     val item: DevMenuState.CustomItem
   ) : DevMenuAction(shouldCloseMenu = item.shouldCollapse)
+  data class SwitchComponent(val name: String) : DevMenuAction(shouldCloseMenu = true)
 }
 
 typealias DevMenuActionHandler = (DevMenuAction) -> Unit

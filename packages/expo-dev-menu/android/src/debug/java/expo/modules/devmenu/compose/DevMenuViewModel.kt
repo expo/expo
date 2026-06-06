@@ -72,6 +72,10 @@ class DevMenuViewModel(
     _state.value = _state.value.copy(customItems = items)
   }
 
+  fun updateAvailableAppKeys(keys: List<String>) {
+    _state.value = _state.value.copy(availableAppKeys = keys)
+  }
+
   fun setInPictureInPictureMode(isInPictureInPictureMode: Boolean) {
     if (state.isInPictureInPictureMode == isInPictureInPictureMode) {
       return
@@ -87,7 +91,9 @@ class DevMenuViewModel(
     _state.value = _state.value.copy(
       isOpen = true,
       // Refresh dev tools settings when opening the menu
-      devToolsSettings = devSettings
+      devToolsSettings = devSettings,
+      // The mounted component can change between opens, so re-read it every time the menu is shown.
+      currentAppKey = ComponentSwitcher.currentModuleName(reactHost?.currentReactContext)
     )
   }
 
@@ -124,6 +130,10 @@ class DevMenuViewModel(
       is DevMenuAction.ToggleFab -> toggleFab()
       DevMenuAction.FinishOnboarding -> finishOnboarding()
       is DevMenuAction.TriggerCustomCallback -> action.item.fn.invoke()
+      is DevMenuAction.SwitchComponent -> ComponentSwitcher.switchToComponent(
+        reactHost?.currentReactContext,
+        action.name
+      )
     }
   }
 

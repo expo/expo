@@ -11,6 +11,8 @@ data class DevMenuState(
   val isOnboardingFinished: Boolean = false,
   val showFab: Boolean = VRUtilities.isQuest(),
   val customItems: List<CustomItem> = emptyList(),
+  val availableAppKeys: List<String> = emptyList(),
+  val currentAppKey: String? = null,
   val hasGoHomeAction: Boolean = false,
   val isInPictureInPictureMode: Boolean = false
 ) {

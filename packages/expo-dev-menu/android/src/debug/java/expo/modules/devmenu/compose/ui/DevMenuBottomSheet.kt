@@ -72,6 +72,8 @@ fun DevMenuBottomSheet(
       appInfo = appInfo,
       devToolsSettings = state.devToolsSettings,
       customItems = state.customItems,
+      availableAppKeys = state.availableAppKeys,
+      currentAppKey = state.currentAppKey,
       shouldShowOnboarding = shouldShowOnboarding.value,
       showFab = state.showFab,
       hasGoHomeAction = state.hasGoHomeAction,
