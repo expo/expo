@@ -34,6 +34,10 @@ class ViewManagerWrapperDelegate(
   fun createView(context: Context): View {
     return definition
       .createView(context, moduleHolder.module.appContext)
+      .also { view ->
+        // Store the definition so event invocation can resolve the event callback. See https://github.com/expo/expo/issues/46623.
+        (view as? ExpoView)?.viewDefinition = definition
+      }
   }
 
   fun onViewDidUpdateProps(view: View) {

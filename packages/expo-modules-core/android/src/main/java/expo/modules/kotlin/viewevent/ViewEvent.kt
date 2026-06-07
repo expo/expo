@@ -4,11 +4,13 @@ import android.view.View
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import expo.modules.core.utilities.ifNull
+import expo.modules.kotlin.ModuleRegistry
 import expo.modules.kotlin.getUnimoduleProxy
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.putGeneric
-import expo.modules.kotlin.views.ViewFunctionHolder
+import expo.modules.kotlin.views.ExpoView
+import expo.modules.kotlin.views.ViewManagerDefinition
 
 fun interface ViewEventCallback<T> {
   operator fun invoke(arg: T)
@@ -27,24 +29,20 @@ open class ViewEvent<T>(
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
 
     if (!isValidated) {
-      val holder = appContext.registry.getModuleHolder(view::class.java).ifNull {
-        logger.warn("⚠️ Cannot get module holder for ${view::class.java}")
+      val viewDefinition = resolveViewDefinition(view, appContext.registry)
+
+      if (viewDefinition == null) {
+        logger.warn("⚠️ Cannot find a view definition for ${view::class.java}")
         return
       }
 
-      val callbacksDefinition = if (view is ViewFunctionHolder) {
-        appContext.registry.getViewDefinition(holder, view.name)?.callbacksDefinition
-      } else {
-        appContext.registry.getViewDefinition(holder, view::class.java)?.callbacksDefinition
-      }
-
-      val callbacks = callbacksDefinition.ifNull {
-        logger.warn("⚠️ Cannot get callbacks for ${holder.module::class.java}")
+      val callbacks = viewDefinition.callbacksDefinition.ifNull {
+        logger.warn("⚠️ Cannot get callbacks for ${viewDefinition.name}")
         return
       }
 
       if (!callbacks.names.any { it == name }) {
-        logger.warn("⚠️ Event $name wasn't exported from ${holder.module::class.java}")
+        logger.warn("⚠️ Event $name wasn't exported from ${viewDefinition.name}")
         return
       }
 
@@ -70,4 +68,13 @@ open class ViewEvent<T>(
       }
     }
   }
+}
+
+/**
+ * Resolves the ViewManagerDefinition for view. ExpoViews carry their own, other views resolve by class. See https://github.com/expo/expo/issues/46623.
+ */
+internal fun resolveViewDefinition(view: View, registry: ModuleRegistry): ViewManagerDefinition? {
+  (view as? ExpoView)?.viewDefinition?.let { return it }
+  val holder = registry.getModuleHolder(view::class.java) ?: return null
+  return registry.getViewDefinition(holder, view::class.java)
 }
