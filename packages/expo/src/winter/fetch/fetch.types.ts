@@ -9,7 +9,8 @@ export interface FetchRequestInit {
   signal?: AbortSignal | null;
   redirect?: RequestRedirect;
 
-  // Not supported fields
+  // These fields are accepted for `RequestInit` compatibility but ignored: `expo/fetch` does not
+  // act on them, and they are not forwarded to the native request.
   integrity?: string;
   keepalive?: boolean;
   mode?: RequestMode;

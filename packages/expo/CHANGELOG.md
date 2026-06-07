@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add a spec-compliant `Request` to `expo/fetch` (exported as `Request` and installed as the global on native) that replaces React Native's `whatwg-fetch` polyfill, so request bodies and `FormData` round-trip predictably. ([#46630](https://github.com/expo/expo/pull/46630) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - Include JavaScript and React component stacks in web dev server error logs. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))

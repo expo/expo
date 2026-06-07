@@ -2,6 +2,7 @@ import { ExpoFetchModule } from './ExpoFetchModule';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
 import type { NativeRequest, NativeRequestInit } from './NativeRequest';
+import { Request as ExpoRequest } from './Request';
 import {
   normalizeBodyInitAsync,
   normalizeHeadersInit,
@@ -19,16 +20,19 @@ const isRequest = (input: any): input is FetchRequestLike => {
   }
 };
 
-const dangerouslyGetBodyFromRequest = (
+const getBodyFromRequest = (
   input: FetchRequestLike | FetchRequestInit | undefined
 ): BodyInit | null => {
-  if (input != null && input instanceof Request && '_bodyInit' in input) {
-    // NOTE(@kitten): whatwg-fetch has a hidden property for the body input
-    // TODO(@kitten): We should have our own Request class implementation
-    return (input as any)._noBody !== true ? (input as any)._bodyInit : null;
-  } else {
-    return input?.body ?? null;
+  if (input instanceof ExpoRequest) {
+    return input._bodyInit;
   }
+  if (input != null && input instanceof Request /* global */ && '_bodyInit' in input) {
+    // NOTE(@kitten): whatwg-fetch (React Native's global Request) keeps the body input on a hidden
+    // property. Honor it when a foreign Request reaches `fetch()`, but our own Request is handled
+    // above.
+    return (input as any)._noBody !== true ? (input as any)._bodyInit : null;
+  }
+  return input?.body ?? null;
 };
 
 // TODO(@kitten): Do we really want to use our own types for web standards?
@@ -38,9 +42,7 @@ export async function fetch(
 ): Promise<FetchResponse> {
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
-  const body =
-    dangerouslyGetBodyFromRequest(init) ??
-    (initFromRequest ? dangerouslyGetBodyFromRequest(input) : null);
+  const body = getBodyFromRequest(init) ?? (initFromRequest ? getBodyFromRequest(input) : null);
   const signal = init?.signal ?? (initFromRequest ? input.signal : undefined);
   const redirect = init?.redirect ?? (initFromRequest ? input.redirect : undefined);
   const method = init?.method ?? (initFromRequest ? input.method : undefined);
