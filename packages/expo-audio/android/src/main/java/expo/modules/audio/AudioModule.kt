@@ -28,6 +28,9 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.extractor.mp3.Mp3Extractor
+import androidx.media3.extractor.ts.AdtsExtractor
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -351,8 +354,9 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double ->
-        val mediaSource = createMediaItem(source)
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double, enableConstantBitrateSeeking: Boolean? ->
+        val cbrSeeking = enableConstantBitrateSeeking ?: false
+        val mediaSource = createMediaItem(source, cbrSeeking)
         val bufferDurationMs = (preferredForwardBufferDuration * 1000).toLong()
         runOnMain {
           val player = AudioPlayer(
@@ -360,7 +364,8 @@ class AudioModule : Module() {
             appContext,
             mediaSource,
             updateInterval,
-            bufferDurationMs
+            bufferDurationMs,
+            cbrSeeking
           )
           player.onPlaybackStateChange = { isPlaying ->
             if (!isPlaying && shouldReleaseFocus()) {
@@ -489,7 +494,7 @@ class AudioModule : Module() {
       Function("replace") { player: AudioPlayer, source: AudioSource ->
         runOnMain {
           if (player.ref.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
-            val mediaSource = createMediaItem(source)
+            val mediaSource = createMediaItem(source, player.enableConstantBitrateSeeking)
             val wasPlaying = player.ref.isPlaying
             mediaSource?.let {
               player.setMediaSource(it)
@@ -858,7 +863,7 @@ class AudioModule : Module() {
     }
   }
 
-  private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
+  private fun createMediaItem(source: AudioSource?, enableConstantBitrateSeeking: Boolean = false): MediaSource? = source?.uri?.let { uriString ->
     val uri = uriString.toUri()
     val mediaItem = when {
       isRawResource(uri) -> {
@@ -877,7 +882,7 @@ class AudioModule : Module() {
         else -> DefaultDataSource.Factory(context)
       }
     }
-    return buildMediaSourceFactory(factory, mediaItem)
+    return buildMediaSourceFactory(factory, mediaItem, enableConstantBitrateSeeking)
   }
 
   private fun httpDataSourceFactory(headers: Map<String, String>?): DataSource.Factory {
@@ -924,14 +929,24 @@ class AudioModule : Module() {
 
   private fun buildMediaSourceFactory(
     factory: DataSource.Factory,
-    mediaItem: MediaItem
+    mediaItem: MediaItem,
+    enableConstantBitrateSeeking: Boolean
   ): MediaSource {
     val uri = mediaItem.localConfiguration?.uri
     return when (val type = uri?.let { retrieveStreamType(it) }) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
-      CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
+      CONTENT_TYPE_OTHER -> if (enableConstantBitrateSeeking) {
+        ProgressiveMediaSource.Factory(
+          factory,
+          DefaultExtractorsFactory()
+            .setAdtsExtractorFlags(AdtsExtractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING_ALWAYS)
+            .setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING_ALWAYS)
+        )
+      } else {
+        ProgressiveMediaSource.Factory(factory)
+      }
       else -> throw IllegalStateException("Unsupported type: $type")
     }.createMediaSource(mediaItem)
   }

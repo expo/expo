@@ -138,6 +138,28 @@ export type AudioPlayerOptions = {
    * @platform android
    */
   preferredForwardBufferDuration?: number;
+  /**
+   * If set to `true`, the player can seek through AAC/ADTS and MP3 streams
+   * that don't include a seek table. These are most commonly raw `.aac` voice
+   * notes (the kind produced by `MediaRecorder` with `OutputFormat.AAC_ADTS`)
+   * and older MP3 files without an XING or VBRI header.
+   *
+   * Without this flag, Android's default extractors report these formats as
+   * non-seekable and `seekTo` quietly does nothing: the position stays put
+   * and the next `play()` starts from the beginning. Enabling it tells the
+   * underlying `AdtsExtractor` and `Mp3Extractor` to estimate byte offsets
+   * from the stream's initial bitrate. Constant-bitrate content (the
+   * majority of voice recordings and podcast streams) seeks accurately;
+   * true variable-bitrate content seeks approximately and is off by a few
+   * seconds at worst.
+   *
+   * Noop on iOS and web, where `AVPlayer` and the browser handle seeking
+   * in these formats natively.
+   *
+   * @default false
+   * @platform android
+   */
+  enableConstantBitrateSeeking?: boolean;
 };
 
 /**

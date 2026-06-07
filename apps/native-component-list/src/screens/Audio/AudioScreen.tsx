@@ -72,6 +72,14 @@ export const AudioScreens = [
       return optionalRequire(() => require('./RecordingStreamScreen'));
     },
   },
+  {
+    name: 'Expo Audio ADTS Seek Test',
+    route: 'audio/expo-audio-adts-seek-test',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AdtsSeekTestScreen'));
+    },
+  },
 ];
 
 export default function AudioScreen() {

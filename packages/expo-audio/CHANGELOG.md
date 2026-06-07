@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `enableConstantBitrateSeeking` option to `AudioPlayerOptions` to enable seeking through AAC/ADTS and MP3 streams that don't include a seek table. ([#46131](https://github.com/expo/expo/pull/46131) by [@isekovanic](https://github.com/isekovanic))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))

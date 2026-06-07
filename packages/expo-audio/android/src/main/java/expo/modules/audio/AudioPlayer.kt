@@ -32,7 +32,8 @@ class AudioPlayer(
   appContext: AppContext,
   source: MediaSource?,
   updateInterval: Double,
-  bufferDurationMs: Long = 0
+  bufferDurationMs: Long = 0,
+  val enableConstantBitrateSeeking: Boolean = false
 ) : BaseAudioPlayer(
   player = ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)

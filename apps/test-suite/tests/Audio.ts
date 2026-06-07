@@ -134,6 +134,28 @@ export function test({ describe, expect, it, ...t }: any) {
         });
         await retryForStatus(player, { isLoaded: true });
       });
+
+      it('loads the file when `enableConstantBitrateSeeking` is omitted', async () => {
+        player = createAudioPlayer(mainTestingSource);
+        await retryForStatus(player, { isLoaded: true });
+      });
+
+      it('accepts `enableConstantBitrateSeeking: false` on all platforms', async () => {
+        player = createAudioPlayer(mainTestingSource, { enableConstantBitrateSeeking: false });
+        await retryForStatus(player, { isLoaded: true });
+      });
+
+      it('accepts `enableConstantBitrateSeeking: true` on all platforms (no-op on iOS/web)', async () => {
+        player = createAudioPlayer(mainTestingSource, { enableConstantBitrateSeeking: true });
+        await retryForStatus(player, { isLoaded: true });
+      });
+
+      it('is able to seek with `enableConstantBitrateSeeking: true`', async () => {
+        player = createAudioPlayer(mainTestingSource, { enableConstantBitrateSeeking: true });
+        await retryForStatus(player, { isLoaded: true });
+        await player.seekTo(1);
+        await retryForStatus(player, { currentTime: 1 });
+      });
     });
 
     describe('Player.replace()', () => {

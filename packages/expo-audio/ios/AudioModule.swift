@@ -119,7 +119,9 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double) -> AudioPlayer in
+      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double, _: Bool?) -> AudioPlayer in
+        // `enableConstantBitrateSeeking` is an Android-only concern. AVPlayer seeks
+        // ADTS and MP3 progressive sources natively without configuration.
         let avPlayer: AVPlayer
         if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
           avPlayer = cachedPlayer

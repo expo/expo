@@ -48,7 +48,8 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     source: AudioSource,
     updateInterval: number,
     keepAudioSessionActive: boolean,
-    preferredForwardBufferDuration: number
+    preferredForwardBufferDuration: number,
+    enableConstantBitrateSeeking?: boolean
   );
 
   /**

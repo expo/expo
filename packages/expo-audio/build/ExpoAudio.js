@@ -68,18 +68,19 @@ if (!Platform.isTV || Platform.OS !== 'ios') {
  * ```
  */
 export function useAudioPlayer(source = null, options = {}) {
-    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false, preferredForwardBufferDuration = 0, } = options;
+    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false, preferredForwardBufferDuration = 0, enableConstantBitrateSeeking = false, } = options;
     // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
     // If downloadFirst is false, we resolve the source here.
     // we call .replace() in the useEffect below to replace the source with the downloaded one.
     const initialSource = useMemo(() => {
         return downloadFirst ? null : resolveSource(source);
     }, [JSON.stringify(source), downloadFirst]);
-    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive, preferredForwardBufferDuration), [
+    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive, preferredForwardBufferDuration, enableConstantBitrateSeeking), [
         JSON.stringify(initialSource),
         updateInterval,
         keepAudioSessionActive,
         preferredForwardBufferDuration,
+        enableConstantBitrateSeeking,
     ]);
     // Handle async source resolution for downloadFirst
     useEffect(() => {
@@ -328,9 +329,9 @@ export function createAudioPlaylist(options = {}) {
  * @param options Audio player configuration options.
  */
 export function createAudioPlayer(source = null, options = {}) {
-    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false, preferredForwardBufferDuration = 0, } = options;
+    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false, preferredForwardBufferDuration = 0, enableConstantBitrateSeeking = false, } = options;
     const initialSource = downloadFirst ? null : resolveSource(source);
-    const player = new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive, preferredForwardBufferDuration);
+    const player = new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive, preferredForwardBufferDuration, enableConstantBitrateSeeking);
     if (downloadFirst && source) {
         resolveSourceWithDownload(source)
             .then((resolved) => {
