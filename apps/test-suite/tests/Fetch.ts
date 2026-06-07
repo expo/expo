@@ -1,4 +1,4 @@
-import { fetch } from 'expo/fetch';
+import { fetch, Request } from 'expo/fetch';
 import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
@@ -278,6 +278,163 @@ export function test({ describe, expect, it, ...t }) {
       expect(json.headers['Content-Type'][0].startsWith('multipart/form-data; boundary=')).toBe(
         true
       );
+    });
+  });
+
+  describe('Request', () => {
+    setupTestTimeout(t);
+
+    const itNative = Platform.OS !== 'web' ? it : t.xit;
+
+    itNative('installs our own Request as the global Request', () => {
+      // On native, expo/fetch replaces React Native's whatwg-fetch Request with its own.
+      expect(globalThis.Request).toBe(Request);
+      const request = new Request('https://httpbin.io/get');
+      expect(request).toBeInstanceOf(Request);
+    });
+
+    it('is tagged as a Request', () => {
+      const request = new Request('https://httpbin.io/get');
+      expect(Object.prototype.toString.call(request)).toBe('[object Request]');
+    });
+
+    it('defaults to GET with follow redirect and no body', () => {
+      const request = new Request('https://httpbin.io/get');
+      expect(request.method).toBe('GET');
+      expect(request.redirect).toBe('follow');
+      expect(request.body).toBeNull();
+      expect(request.bodyUsed).toBe(false);
+    });
+
+    it('normalizes the method', () => {
+      expect(new Request('https://httpbin.io/post', { method: 'post' }).method).toBe('POST');
+      expect(new Request('https://httpbin.io/patch', { method: 'patch' }).method).toBe('PATCH');
+    });
+
+    it('rejects a body on a GET or HEAD request', () => {
+      let error: TypeError | null = null;
+      try {
+        // eslint-disable-next-line no-new
+        new Request('https://httpbin.io/get', { body: 'nope' });
+      } catch (e: unknown) {
+        if (e instanceof TypeError) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+    });
+
+    it('applies a default content-type for a string body', () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        body: 'hello',
+      });
+      expect(request.headers.get('content-type')).toBe('text/plain;charset=UTF-8');
+    });
+
+    it('reads its own body as text and json', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        body: JSON.stringify({ foo: 'foo' }),
+      });
+      const clone = request.clone();
+      expect(await request.text()).toBe('{"foo":"foo"}');
+      expect(request.bodyUsed).toBe(true);
+      // The clone keeps an independent, unconsumed body.
+      expect(await clone.json()).toEqual({ foo: 'foo' });
+    });
+
+    it('throws a TypeError when its body is read twice', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        body: 'hello',
+      });
+      await request.text();
+      let error: TypeError | null = null;
+      try {
+        await request.text();
+      } catch (e: unknown) {
+        if (e instanceof TypeError) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+    });
+
+    it('should fetch using a Request object', async () => {
+      const request = new Request('https://httpbin.io/get', {
+        headers: { 'X-Test': 'test' },
+      });
+      const resp = await fetch(request);
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.url).toMatch(/^https?:\/\/httpbin.io\/get$/);
+      expect(json.headers['X-Test'][0]).toBe('test');
+    });
+
+    it('should fetch using a Request built from another Request', async () => {
+      // Mirrors how @atproto/oauth-client re-wraps a request (e.g. its dpop fetch does
+      // `new Request(request, init)`); the url and body must survive the re-wrap. See
+      // https://github.com/expo/expo/issues/45909.
+      const original = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ foo: 'foo' }),
+      });
+      const wrapped = new Request(original);
+      const resp = await fetch(wrapped);
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.url).toMatch(/^https?:\/\/httpbin.io\/post$/);
+      expect(json.json).toEqual({ foo: 'foo' });
+    });
+
+    it('should fetch using a Request object with a json body', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ foo: 'foo' }),
+      });
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.json).toEqual({ foo: 'foo' });
+    });
+
+    it('should fetch using a Request object with an x-www-form-urlencoded body', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'foo=foo',
+      });
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.form).toEqual({ foo: ['foo'] });
+    });
+
+    it('should fetch using a Request object with a FormData body', async () => {
+      const formData = new FormData();
+      formData.append('foo', 'foo');
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        body: formData,
+      });
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.form).toEqual({ foo: ['foo'] });
+      expect(json.headers['Content-Type'][0].startsWith('multipart/form-data; boundary=')).toBe(
+        true
+      );
+    });
+
+    it('should let the init override the Request body', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'original',
+      });
+      const resp = await fetch(request, { body: 'override' });
+      const json = await resp.json();
+      expect(json.data).toBe('override');
     });
   });
 
