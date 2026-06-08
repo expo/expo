@@ -4,6 +4,7 @@ import type { NativeSyntheticEvent } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { Host } from '../Host';
 
 export type BottomSheetProps = {
   /**
@@ -59,18 +60,20 @@ function BottomSheet(props: BottomSheetProps) {
   }
 
   return (
-    <BottomSheetNativeView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}
-      onIsPresentedChange={({ nativeEvent: { isPresented } }) => {
-        onIsPresentedChange?.(isPresented);
-      }}
-      onDismiss={() => {
-        setIsMounted(false);
-        onDismiss?.();
-      }}
-    />
+    <Host style={{ position: 'absolute' }} pointerEvents="none">
+      <BottomSheetNativeView
+        modifiers={modifiers}
+        {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+        {...restProps}
+        onIsPresentedChange={({ nativeEvent: { isPresented } }) => {
+          onIsPresentedChange?.(isPresented);
+        }}
+        onDismiss={() => {
+          setIsMounted(false);
+          onDismiss?.();
+        }}
+      />
+    </Host>
   );
 }
 
