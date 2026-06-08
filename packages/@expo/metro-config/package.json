@@ -95,7 +95,6 @@
     "@types/getenv": "^1.0.0",
     "@types/picomatch": "^4.0.2",
     "dedent": "^1.5.3",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "metro-minify-terser": "^0.84.2",
     "sass": "^1.60.0"

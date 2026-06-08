@@ -1,5 +1,3 @@
-import 'expo/types';
-
 import { createElement } from 'react';
 import { renderInShadowRoot } from './utils/renderInShadowRoot';
 

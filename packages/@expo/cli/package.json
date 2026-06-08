@@ -150,7 +150,6 @@
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
     "expect": "^29.7.0",
-    "expo": "workspace:*",
     "expo-atlas": "^0.4.1",
     "expo-module-scripts": "workspace:*",
     "expo-modules-autolinking": "workspace:*",

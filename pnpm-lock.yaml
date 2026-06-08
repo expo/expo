@@ -1923,6 +1923,9 @@ importers:
       dnssd-advertise:
         specifier: ^1.1.4
         version: 1.1.4
+      expo:
+        specifier: '*'
+        version: link:../../expo
       expo-server:
         specifier: workspace:^56.0.4
         version: link:../../expo-server
@@ -2083,9 +2086,6 @@ importers:
       expect:
         specifier: ^29.7.0
         version: 29.7.0
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-atlas:
         specifier: ^0.4.1
         version: 0.4.3(expo@packages+expo)
@@ -2281,6 +2281,9 @@ importers:
 
   packages/@expo/dom-webview:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -2291,9 +2294,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2508,9 +2508,6 @@ importers:
         specifier: ^0.1.10
         version: 0.1.11
     devDependencies:
-      '@expo/cli':
-        specifier: workspace:*
-        version: link:../cli
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
@@ -2520,9 +2517,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.2.3(@types/react@19.2.14)
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2610,6 +2604,9 @@ importers:
       debug:
         specifier: ^4.3.2
         version: 4.4.3
+      expo:
+        specifier: '*'
+        version: link:../../expo
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
@@ -2656,9 +2653,6 @@ importers:
       dedent:
         specifier: ^1.5.3
         version: 1.7.2
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2723,6 +2717,9 @@ importers:
       anser:
         specifier: ^1.4.9
         version: 1.4.10
+      expo:
+        specifier: '*'
+        version: link:../../expo
       pretty-format:
         specifier: ^29.7.0
         version: 29.7.0
@@ -2742,9 +2739,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-constants:
         specifier: workspace:*
         version: link:../../expo-constants
@@ -2928,6 +2922,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
+      expo:
+        specifier: '*'
+        version: link:../../expo
       expo-constants:
         specifier: workspace:^56.0.16
         version: link:../../expo-constants
@@ -2962,9 +2959,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.2.3(@types/react@19.2.14)
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-router:
         specifier: workspace:*
         version: link:../../expo-router
@@ -3149,6 +3143,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-widgets:
         specifier: workspace:^56.0.15
         version: link:../expo-widgets
@@ -3174,9 +3171,6 @@ importers:
       babel-plugin-module-resolver:
         specifier: ^5.0.2
         version: 5.0.3
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3681,6 +3675,9 @@ importers:
       '@expo/image-utils':
         specifier: workspace:^0.10.1
         version: link:../@expo/image-utils
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-constants:
         specifier: workspace:~56.0.16
         version: link:../expo-constants
@@ -3703,9 +3700,6 @@ importers:
       '@types/react-native__assets':
         specifier: ^1.0.3
         version: 1.0.3
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4098,6 +4092,9 @@ importers:
       '@expo/env':
         specifier: workspace:~2.3.0
         version: link:../@expo/env
+      expo:
+        specifier: '*'
+        version: link:../expo
       react-native:
         specifier: 0.86.0-rc.3
         version: 0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
@@ -4105,9 +4102,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-manifests:
         specifier: workspace:*
         version: link:../expo-manifests
@@ -4151,6 +4145,9 @@ importers:
 
   packages/expo-dev-client:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-dev-launcher:
         specifier: workspace:~56.0.16
         version: link:../expo-dev-launcher
@@ -4170,9 +4167,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4185,6 +4179,9 @@ importers:
       '@expo/schema-utils':
         specifier: workspace:^56.0.0
         version: link:../@expo/schema-utils
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-dev-menu:
         specifier: workspace:~56.0.15
         version: link:../expo-dev-menu
@@ -4198,12 +4195,12 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      expo:
-        specifier: workspace:*
-        version: link:../expo
 
   packages/expo-dev-menu:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-dev-menu-interface:
         specifier: workspace:~56.0.0
         version: link:../expo-dev-menu-interface
@@ -4220,9 +4217,6 @@ importers:
       babel-preset-expo:
         specifier: workspace:*
         version: link:../babel-preset-expo
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4234,9 +4228,9 @@ importers:
         version: 0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
 
   packages/expo-dev-menu-interface:
-    devDependencies:
+    dependencies:
       expo:
-        specifier: workspace:*
+        specifier: '*'
         version: link:../expo
 
   packages/expo-device:
@@ -4363,6 +4357,9 @@ importers:
 
   packages/expo-file-system:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react-native:
         specifier: 0.86.0-rc.3
         version: 0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
@@ -4370,9 +4367,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4382,6 +4376,9 @@ importers:
 
   packages/expo-font:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       fontfaceobserver:
         specifier: ^2.1.0
         version: 2.3.0
@@ -4404,9 +4401,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4459,6 +4453,9 @@ importers:
 
   packages/expo-glass-effect:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -4481,9 +4478,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4592,6 +4586,9 @@ importers:
 
   packages/expo-keep-awake:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -4602,9 +4599,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4764,13 +4758,13 @@ importers:
 
   packages/expo-manifests:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-json-utils:
         specifier: workspace:~56.0.0
         version: link:../expo-json-utils
     devDependencies:
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -5179,6 +5173,9 @@ importers:
       escape-string-regexp:
         specifier: ^4.0.0
         version: 4.0.0
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-constants:
         specifier: workspace:^56.0.16
         version: link:../expo-constants
@@ -5282,9 +5279,6 @@ importers:
       '@types/react-test-renderer':
         specifier: ^19.1.0
         version: 19.1.0
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       immer:
         specifier: ^10.1.1
         version: 10.2.0
@@ -5451,6 +5445,9 @@ importers:
       '@expo/image-utils':
         specifier: workspace:^0.10.1
         version: link:../@expo/image-utils
+      expo:
+        specifier: '*'
+        version: link:../expo
       xml2js:
         specifier: 0.6.0
         version: 0.6.0
@@ -5464,9 +5461,6 @@ importers:
       '@types/xml2js':
         specifier: ~0.4.11
         version: 0.4.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -5577,6 +5571,9 @@ importers:
       '@expo-google-fonts/material-symbols':
         specifier: ^0.4.1
         version: 0.4.27
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -5590,9 +5587,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-font:
         specifier: workspace:*
         version: link:../expo-font
@@ -5742,6 +5736,9 @@ importers:
 
   packages/expo-ui:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -5773,9 +5770,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -5806,6 +5800,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-eas-client:
         specifier: workspace:~56.0.0
         version: link:../expo-eas-client
@@ -5870,9 +5867,6 @@ importers:
       '@vercel/ncc':
         specifier: ^0.38.3
         version: 0.38.4
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-dev-client:
         specifier: workspace:*
         version: link:../expo-dev-client
@@ -5899,9 +5893,9 @@ importers:
         version: 4.38.3
 
   packages/expo-updates-interface:
-    devDependencies:
+    dependencies:
       expo:
-        specifier: workspace:*
+        specifier: '*'
         version: link:../expo
 
   packages/expo-video:

@@ -48,7 +48,6 @@
     "@expo/plist": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
