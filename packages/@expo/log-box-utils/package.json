@@ -2,12 +2,12 @@
   "name": "@expo/log-box-utils",
   "version": "56.0.0",
   "description": "Pure error parsing utilities for Expo LogBox.",
-  "main": "build/utils.js",
-  "types": "build/utils.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/utils.d.ts",
-      "default": "./build/utils.js"
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
     },
     "./package.json": "./package.json"
   },
