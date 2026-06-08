@@ -17,6 +17,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf build",
+    "prepare": "pnpm run build",
     "prepublishOnly": "run-s clean build"
   },
   "dependencies": {},

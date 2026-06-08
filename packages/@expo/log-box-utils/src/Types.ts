@@ -31,7 +31,7 @@ export type LogBoxLogDataLegacy = {
 };
 
 export type MetroStackFrame = {
-  file: string;
+  file: string | null;
   methodName: string;
   lineNumber?: number | null;
   column?: number | null;
