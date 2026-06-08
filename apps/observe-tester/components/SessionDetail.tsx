@@ -16,10 +16,10 @@ import { SessionHeader } from '@/components/SessionHeader';
 import { useTheme } from '@/utils/theme';
 
 /**
- * Presentational session detail screen. Renders a resolved `DebugSession`
- * record (or loading / not-found states). The data loading is the caller's
- * responsibility — the `main`, `foreground`, and `[id]` routes each fetch from
- * their own source and hand the result here.
+ * Presentational session detail screen. Renders a resolved `Session` record
+ * (or loading / not-found states). The data loading is the caller's
+ * responsibility — the `main` and `[id]` routes each fetch from their own
+ * source and hand the result here.
  */
 export function SessionDetail({
   session,
@@ -109,11 +109,11 @@ export function SessionDetail({
 }
 
 /**
- * Resolves a live `Session` shared object into a plain `DebugSession` record by
- * fetching its lazy data, so the `main`/`foreground` routes can render it
- * through the same presentational component as the inactive records.
+ * Normalizes a `Session` into a plain record, forcing `crashReport` to null
+ * since a live (active) session can't have crashed yet. Lets the `main` route
+ * render through the same presentational component as the inactive records.
  */
-export async function liveSessionToRecord(session: Session): Promise<Session> {
+export function liveSessionToRecord(session: Session): Session {
   return {
     id: session.id,
     type: session.type,

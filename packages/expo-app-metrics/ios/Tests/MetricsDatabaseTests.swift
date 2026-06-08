@@ -558,7 +558,6 @@ struct MetricsDatabaseTests {
     }
   }
 
-
   // MARK: - Helpers
 }
 

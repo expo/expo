@@ -45,7 +45,7 @@ export default function Debug() {
           const session = await AppMetrics.getMainSession();
 
           if (session) {
-            console.log(JSON.stringify(session));
+            console.log(JSON.stringify(session, null, 2));
           } else {
             console.error('Main session is null');
           }

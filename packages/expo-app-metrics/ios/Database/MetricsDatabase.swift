@@ -301,13 +301,6 @@ final class MetricsDatabase: Sendable {
     }
   }
 
-  @AppMetricsActor
-  func getInactiveSessions() throws -> [SessionRow] {
-    return try collectSessions(
-      sql: "SELECT \(sessionColumns) FROM sessions WHERE isActive = 0 ORDER BY startTimestamp DESC"
-    )
-  }
-
   /**
    Returns the `main` sessions — newest first — for crash-report attribution. Crashes from past
    launches (delivered by MetricKit on a later launch) are matched against these.
@@ -325,12 +318,29 @@ final class MetricsDatabase: Sendable {
    */
   @AppMetricsActor
   func getInactiveSessionsWithChildren() throws -> [SessionWithChildren] {
-    return try getInactiveSessions().map { session in
-      let metrics = try getMetrics(sessionId: session.id)
-      let logs = try getLogs(sessionId: session.id)
-      let crash = try getCrashReport(sessionId: session.id)
-      return SessionWithChildren(session: session, metrics: metrics, logs: logs, crashReportJSON: crash)
+    return try getInactiveSessions().compactMap { try getSessionWithChildren(id: $0.id) }
+  }
+
+  /**
+   Returns a single session along with its metrics, logs, and crash report, or `nil` if no session
+   with that id exists.
+   */
+  @AppMetricsActor
+  func getSessionWithChildren(id: String) throws -> SessionWithChildren? {
+    guard let session = try getSession(id: id) else {
+      return nil
     }
+    let metrics = try getMetrics(sessionId: session.id)
+    let logs = try getLogs(sessionId: session.id)
+    let crash = try getCrashReport(sessionId: session.id)
+    return SessionWithChildren(session: session, metrics: metrics, logs: logs, crashReportJSON: crash)
+  }
+
+  @AppMetricsActor
+  func getInactiveSessions() throws -> [SessionRow] {
+    return try collectSessions(
+      sql: "SELECT \(sessionColumns) FROM sessions WHERE isActive = 0 ORDER BY startTimestamp DESC"
+    )
   }
 
   /**

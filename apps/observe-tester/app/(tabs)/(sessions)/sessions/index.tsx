@@ -15,8 +15,8 @@ import {
 
 import { useTheme } from '@/utils/theme';
 
-// A row's worth of session data, normalized from either a live `Session` shared
-// object (active sessions) or a plain `DebugSession` record (inactive sessions).
+// A row's worth of session data, normalized from a `Session` record — the live
+// main session or an inactive one.
 type SessionRowData = {
   id: string;
   type: SessionType;
@@ -67,16 +67,7 @@ export default function SessionsList() {
     // Inactive sessions come back as plain eager records.
     const records = await AppMetrics.getInactiveSessions();
     const inactive: SessionRowData[] = records
-      .map((s) => ({
-        id: s.id,
-        type: s.type,
-        startDate: s.startDate,
-        endDate: s.endDate ?? null,
-        isActive: false,
-        metricCount: s.metrics.length,
-        crashed: 'crashReport' in s ? !!s.crashReport : false,
-        href: `/sessions/${s.id}`,
-      }))
+      .map(inactiveSessionToRow)
       .sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
 
     setSections([
@@ -161,6 +152,19 @@ export default function SessionsList() {
       />
     </>
   );
+}
+
+function inactiveSessionToRow(session: Session): SessionRowData {
+  return {
+    id: session.id,
+    type: session.type,
+    startDate: session.startDate,
+    endDate: session.endDate ?? null,
+    isActive: false,
+    metricCount: session.metrics.length,
+    crashed: 'crashReport' in session ? !!session.crashReport : false,
+    href: `/sessions/${session.id}`,
+  };
 }
 
 function SessionRow({ session }: { session: SessionRowData }) {

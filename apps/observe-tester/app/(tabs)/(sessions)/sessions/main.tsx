@@ -1,20 +1,19 @@
-import AppMetrics, { type DebugSession } from 'expo-app-metrics';
+import AppMetrics, { type Session } from 'expo-app-metrics';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 
 import { SessionDetail, liveSessionToRecord } from '@/components/SessionDetail';
 
 export default function MainSessionScreen() {
-  const [session, setSession] = useState<DebugSession | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-      // The main session is a live shared object; resolve its lazy data into a record.
-      liveSessionToRecord(AppMetrics.getMainSession()).then((record) => {
+      AppMetrics.getMainSession().then((mainSession) => {
         if (cancelled) return;
-        setSession(record);
+        setSession(mainSession ? liveSessionToRecord(mainSession) : null);
         setLoaded(true);
       });
       return () => {

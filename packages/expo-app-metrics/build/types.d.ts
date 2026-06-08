@@ -267,7 +267,7 @@ export interface ExpoAppMetricsModuleType {
     setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null): void;
     clearStoredEntries(): Promise<void>;
     /**
-     * Returns the recorded sessions as plain `DebugSession` records, ordered with
+     * Returns the recorded sessions as plain `Session` records, ordered with
      * the most recent first. Each record eagerly includes its metrics, logs, and
      * crash report.
      *
