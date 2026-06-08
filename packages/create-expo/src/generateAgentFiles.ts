@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 function getExpoSdkVersion(root: string): string | null {
@@ -33,14 +34,28 @@ const CLAUDE_SETTINGS_CONTENT = `{
 }
 `;
 
+function isClaudeCodeInstalled(root: string): boolean {
+  const home = os.homedir();
+  return (
+    fs.existsSync(path.join(root, '.claude')) ||
+    (!!home &&
+      (fs.existsSync(path.join(home, '.claude.json')) || fs.existsSync(path.join(home, '.claude'))))
+  );
+}
+
 export function generateAgentFiles(root: string): void {
   const sdkVersion = getExpoSdkVersion(root);
 
   const files: { filePath: string; content: string }[] = [
     { filePath: path.join(root, 'AGENTS.md'), content: getAgentsMdContent(sdkVersion) },
-    { filePath: path.join(root, 'CLAUDE.md'), content: CLAUDE_MD_CONTENT },
-    { filePath: path.join(root, '.claude', 'settings.json'), content: CLAUDE_SETTINGS_CONTENT },
   ];
+
+  if (isClaudeCodeInstalled(root)) {
+    files.push(
+      { filePath: path.join(root, 'CLAUDE.md'), content: CLAUDE_MD_CONTENT },
+      { filePath: path.join(root, '.claude', 'settings.json'), content: CLAUDE_SETTINGS_CONTENT }
+    );
+  }
 
   for (const { filePath, content } of files) {
     if (fs.existsSync(filePath)) {
