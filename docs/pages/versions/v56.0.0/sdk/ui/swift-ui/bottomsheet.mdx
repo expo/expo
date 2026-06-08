@@ -38,7 +38,7 @@ export default function BasicBottomSheetExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
@@ -62,7 +62,7 @@ export default function BottomSheetFitsContentExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented} fitToContents>
@@ -88,14 +88,14 @@ Use the [`presentationDetents`](modifiers/#presentationdetentsdetents-options) m
 
 ```tsx BottomSheetWithDetentsExample.tsx
 import { useState } from 'react';
-import { Host, BottomSheet, Button, Text, VStack, Group } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
 import { presentationDetents } from '@expo/ui/swift-ui/modifiers';
 
 export default function BottomSheetWithDetentsExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
@@ -138,7 +138,7 @@ export default function BottomSheetWithDetentSelectionExample() {
   };
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <Button label="Show Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
@@ -177,7 +177,7 @@ Use the [`presentationBackgroundInteraction`](modifiers/#presentationbackgroundi
 
 ```tsx BottomSheetWithBackgroundInteractionExample.tsx
 import { useState } from 'react';
-import { Host, BottomSheet, Button, Text, VStack, Group } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
 import {
   presentationDetents,
   presentationBackgroundInteraction,
@@ -187,7 +187,7 @@ export default function BottomSheetWithBackgroundInteractionExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
@@ -211,14 +211,14 @@ Use the [`interactiveDismissDisabled`](modifiers/#interactivedismissdisabledisdi
 
 ```tsx NonDismissibleBottomSheetExample.tsx
 import { useState } from 'react';
-import { Host, BottomSheet, Button, Text, VStack, Group } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
 import { interactiveDismissDisabled } from '@expo/ui/swift-ui/modifiers';
 
 export default function NonDismissibleBottomSheetExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
@@ -242,7 +242,7 @@ Use `RNHostView` to embed React Native components inside the bottom sheet. Set `
 ```tsx BottomSheetWithRNContentExample.tsx
 import { useState } from 'react';
 import { Pressable, Text as RNText, View } from 'react-native';
-import { Host, BottomSheet, Button, RNHostView, VStack, Group } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, RNHostView, VStack } from '@expo/ui/swift-ui';
 import { presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
 
 export default function BottomSheetWithRNContentExample() {
@@ -250,12 +250,12 @@ export default function BottomSheetWithRNContentExample() {
   const [counter, setCounter] = useState(0);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented} fitToContents>
           <Group modifiers={[presentationDragIndicator('visible')]}>
-            <RNHostView>
+            <RNHostView matchContents>
               <View style={{ padding: 24 }}>
                 <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
                   React Native Content
@@ -299,14 +299,14 @@ When using React Native content with `flex: 1`, omit the `matchContents` prop on
 ```tsx BottomSheetWithFlexRNContentExample.tsx
 import { useState } from 'react';
 import { Text as RNText, View } from 'react-native';
-import { Host, BottomSheet, Button, RNHostView, VStack, Group } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, RNHostView, VStack } from '@expo/ui/swift-ui';
 import { presentationDetents, presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
 
 export default function BottomSheetWithFlexRNContentExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
