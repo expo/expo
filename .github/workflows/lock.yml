@@ -20,7 +20,6 @@ jobs:
     steps:
       - uses: dessant/lock-threads@1bf7ec25051fe7c00bdd17e6a7cf3d7bfb7dc771 # v5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           issue-inactive-days: '180'
           add-issue-labels: 'outdated'
           exclude-any-issue-labels: 'help wanted'
