@@ -8,6 +8,7 @@ on:
       - apps/bare-expo/macos/**
       - packages/expo/**
       - packages/expo-asset/**
+      - packages/expo-clipboard/**
       - packages/expo-constants/**
       - packages/expo-crypto/**
       - packages/expo-dev-client/**
@@ -23,10 +24,12 @@ on:
       - packages/expo-mesh-gradient/**
       - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
+      - packages/expo-network/**
       - packages/expo-sqlite/**
       - packages/expo-structured-headers/**
-      - packages/expo-updates/**
+      - packages/expo-symbols/**
       - packages/expo-updates-interface/**
+      - packages/expo-updates/**
       - packages/expo-web-browser/**
       - "!packages/**/android/**"
       # Common ignores from detect-platform-change action
@@ -55,8 +58,8 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 26.2
-        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true

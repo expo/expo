@@ -14,6 +14,7 @@ export declare function getBootstrapContents({ hydrate, loadedData, }: {
     hydrate: boolean;
     loadedData: Record<string, unknown> | null;
 }): string;
+export declare function createFaviconAsNode(href: string): ReactNode;
 export declare function createInjectedFontsAsNodes(descriptors: ServerFontResourceDescriptor[]): ReactNode[];
 export {};
 //# sourceMappingURL=react.d.ts.map

@@ -87,6 +87,9 @@ export default function ExpoImage({
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
+  const resolvedLoading =
+    loading ?? (responsivePolicy == null || responsivePolicy === 'static' ? 'lazy' : undefined);
+
   const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
@@ -121,7 +124,7 @@ export default function ExpoImage({
               accessibilityLabel={accessibilityLabel ?? alt}
               cachePolicy={cachePolicy}
               priority={priority}
-              loading={loading}
+              loading={resolvedLoading}
               tintColor={tintColor}
               draggable={draggable}
             />
@@ -154,7 +157,7 @@ export default function ExpoImage({
           className={className}
           cachePolicy={cachePolicy}
           priority={priority}
-          loading={loading}
+          loading={resolvedLoading}
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
           hashPlaceholderStyle={imageHashStyle}

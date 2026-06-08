@@ -1,5 +1,5 @@
 import type { ComponentProps, ElementType } from 'react';
-import { type ImageStyle, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { type ColorValue, type ImageStyle, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 type Simplify<T> = {
     [K in keyof T]: T[K];
 };
@@ -61,6 +61,6 @@ export declare const shadows: {
     input: string;
 };
 export declare const globalCss: string;
-export declare const generatePrimaryColorScale: (hex: string) => Record<string, string>;
+export declare const generatePrimaryColorScale: (color?: ColorValue | undefined) => Record<string, string>;
 export {};
 //# sourceMappingURL=webUtils.d.ts.map

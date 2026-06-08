@@ -7,7 +7,7 @@ description: Track per-screen render and interactive timings by enabling the Rea
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 
-EAS Observe ships an opt-in integration for [React Navigation](https://reactnavigation.org/) that collects per-screen metrics tagged with the screen's path (for example, `/sessions/abc`). This lets you compare navigation performance by screen in the dashboard instead of looking only at app-wide aggregates.
+EAS Observe ships an opt-in integration for [React Navigation](https://reactnavigation.org/) that collects per-screen metrics tagged with the screen's route-name path (for example, `/Tabs/Sessions`). This lets you compare navigation performance by screen in the dashboard instead of looking only at app-wide aggregates.
 
 If your app uses [Expo Router](/router/introduction/), use the [Expo Router integration](/eas/observe/integrations/expo-router/) instead. This page is for apps that use React Navigation directly.
 
@@ -65,8 +65,6 @@ export default function App() {
 }
 ```
 
-> **info** `ObserveNavigationContainer` is a drop-in replacement for `NavigationContainer`. If you pass a `linking` config, the integration uses it to resolve a human-readable path for each screen; otherwise it falls back to the screen's `route.name`.
-
 </Step>
 
 <Step label="3">
@@ -104,11 +102,11 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type      | Description                                                                                             |
-| ------------- | --------- | ------------------------------------------------------------------------------------------------------- |
-| `routeName`   | `string`  | Resolved screen path (for example `/sessions/abc`), or `route.name` if no `linking` config resolves it. |
-| `routeParams` | `object`  | Focused route params (for example, `{ sessionId: 'abc' }`).                                             |
-| `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation.                          |
+| Param         | Type      | Description                                                                    |
+| ------------- | --------- | ------------------------------------------------------------------------------ |
+| `routeName`   | `string`  | Route-name path (for example, `/Tabs/Sessions`).                               |
+| `routeParams` | `object`  | Focused route params (for example, `{ sessionId: 'abc' }`).                    |
+| `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
 
 ### Per-screen warm render (`warm_ttr`)
 
@@ -118,7 +116,7 @@ Emitted at most once per screen instance within a session.
 
 | Param         | Type     | Description                                                 |
 | ------------- | -------- | ----------------------------------------------------------- |
-| `routeName`   | `string` | Resolved screen path, or `route.name`.                      |
+| `routeName`   | `string` | Route-name path (for example, `/Tabs/Sessions`).            |
 | `routeParams` | `object` | Focused route params (for example, `{ sessionId: 'abc' }`). |
 
 ### Per-screen time to interactive (`tti`)
@@ -129,12 +127,13 @@ Emitted at most once per screen instance within a session.
 
 | Param         | Type     | Description                                              |
 | ------------- | -------- | -------------------------------------------------------- |
-| `routeName`   | `string` | Resolved screen path, or `route.name`.                   |
+| `routeName`   | `string` | Route-name path (for example, `/Tabs/Sessions`).         |
 | `routeParams` | `object` | Focused route params.                                    |
 | `...`         | `any`    | Any custom params passed via `markInteractive({ ... })`. |
 
 ## Notes and troubleshooting
 
+- `routeName` is built from route names (`/Tabs/Sessions`), so route params never appear in the path. This keeps metrics stable across distinct param values so the dashboard buckets them together. Param values are still available on the event via `routeParams`.
 - The integration only activates if `@react-navigation/native` is installed at runtime. If it is not installed, `useObserve()` continues to work, but no per-screen navigation metrics are emitted. Rendering `<ObserveNavigationContainer>` without `@react-navigation/native` throws.
 - The integration must be enabled before mount via `Observe.configure({ integrations: { 'react-navigation': true } })`. Toggling it after the app has mounted, or after `<ObserveNavigationContainer>` has mounted, throws.
 - `markInteractive()` only records once the screen is focused. Calls made on an unfocused screen update internal state but do not emit a `tti` event until the screen is focused.

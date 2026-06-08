@@ -16,6 +16,8 @@ export type GetStaticContentOptions = {
     assets?: {
         css: string[];
         js: string[];
+        /** Public href of a favicon generated from `web.favicon` in the app config. */
+        favicon?: string;
     };
 };
 export declare function getStaticContent(location: URL, options?: GetStaticContentOptions): Promise<string>;

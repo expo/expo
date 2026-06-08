@@ -2,6 +2,9 @@ package expo.modules.ui.textfield
 
 import android.graphics.Color
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextField
@@ -182,6 +185,7 @@ data class TextFieldProps(
 
 // region View
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FunctionalComposableScope.TextFieldContent(
   props: TextFieldProps,
@@ -252,30 +256,36 @@ fun FunctionalComposableScope.TextFieldContent(
   val textStyle = props.textStyle.toTextStyle(appContext.reactContext)
   val visualTransformation = props.visualTransformation.toVisualTransformation()
 
-  if (isOutlined) {
-    OutlinedTextField(
-      value = core.value, onValueChange = core.onValueChange, modifier = core.modifier,
-      enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
-      label = label, placeholder = placeholder,
-      leadingIcon = leadingIcon, trailingIcon = trailingIcon,
-      prefix = prefix, suffix = suffix, supportingText = supportingText,
-      isError = props.isError, visualTransformation = visualTransformation,
-      keyboardOptions = core.keyboardOptions, keyboardActions = core.keyboardActions,
-      singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-      shape = shape, colors = colors
-    )
-  } else {
-    TextField(
-      value = core.value, onValueChange = core.onValueChange, modifier = core.modifier,
-      enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
-      label = label, placeholder = placeholder,
-      leadingIcon = leadingIcon, trailingIcon = trailingIcon,
-      prefix = prefix, suffix = suffix, supportingText = supportingText,
-      isError = props.isError, visualTransformation = visualTransformation,
-      keyboardOptions = core.keyboardOptions, keyboardActions = core.keyboardActions,
-      singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-      shape = shape, colors = colors
-    )
+  // Workaround (pending upstream fix, https://issuetracker.google.com/issues/519816993)
+  // the expressive motion scheme's spring overshoots >1f, and TextField's calculateHeight
+  // extrapolates that overshoot, transiently growing the field and jiggling surrounding
+  // content. Forcing the standard (non-overshooting) spatial spring removes the jiggle.
+  MaterialExpressiveTheme(motionScheme = MotionScheme.standard()) {
+    if (isOutlined) {
+      OutlinedTextField(
+        value = core.value, onValueChange = core.onValueChange, modifier = core.modifier,
+        enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
+        label = label, placeholder = placeholder,
+        leadingIcon = leadingIcon, trailingIcon = trailingIcon,
+        prefix = prefix, suffix = suffix, supportingText = supportingText,
+        isError = props.isError, visualTransformation = visualTransformation,
+        keyboardOptions = core.keyboardOptions, keyboardActions = core.keyboardActions,
+        singleLine = singleLine, maxLines = maxLines, minLines = minLines,
+        shape = shape, colors = colors
+      )
+    } else {
+      TextField(
+        value = core.value, onValueChange = core.onValueChange, modifier = core.modifier,
+        enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
+        label = label, placeholder = placeholder,
+        leadingIcon = leadingIcon, trailingIcon = trailingIcon,
+        prefix = prefix, suffix = suffix, supportingText = supportingText,
+        isError = props.isError, visualTransformation = visualTransformation,
+        keyboardOptions = core.keyboardOptions, keyboardActions = core.keyboardActions,
+        singleLine = singleLine, maxLines = maxLines, minLines = minLines,
+        shape = shape, colors = colors
+      )
+    }
   }
 }
 

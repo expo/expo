@@ -12,7 +12,6 @@ import {
 
 import { attachActionListener } from './actionListener';
 import { ObserveReactNavigationIntegrationContext } from './context';
-import { createGetPathname } from './getPathname';
 import { createStateChangeHandler } from './handleStateChange';
 import { isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
@@ -51,11 +50,9 @@ function ObserveNavigationContainerImpl(
   const [internal] = useState(() => {
     if (!initialized) return null;
     const storage = createReactNavigationIntegrationStorage();
-    const getPathname = createGetPathname(linking);
     return {
       storage,
-      getPathname,
-      handleStateChange: createStateChangeHandler(storage, getPathname, performance.now()),
+      handleStateChange: createStateChangeHandler(storage, performance.now()),
     };
   });
 
@@ -90,10 +87,7 @@ function ObserveNavigationContainerImpl(
     onReady?.();
   }, [internal, navigationRef, onReady]);
 
-  const contextValue = useMemo(
-    () => (internal ? { storage: internal.storage, getPathname: internal.getPathname } : null),
-    [internal]
-  );
+  const contextValue = useMemo(() => (internal ? { storage: internal.storage } : null), [internal]);
 
   return (
     <NavigationContainer
