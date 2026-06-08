@@ -14,8 +14,8 @@ exports.parseInterpolation = parseInterpolation;
 exports.parseLogBoxException = parseLogBoxException;
 exports.isError = isError;
 exports.parseLogBoxLog = parseLogBoxLog;
-const react_1 = __importDefault(require("react"));
 const log_box_utils_1 = require("@expo/log-box-utils");
+const react_1 = __importDefault(require("react"));
 const parseErrorStack_1 = require("../utils/parseErrorStack");
 const SUBSTITUTION = '\ufeff%s';
 // https://github.com/krystofwoldrich/react-native/blob/7db31e2fca0f828aa6bf489ae6dc4adef9b7b7c3/packages/react-native/Libraries/LogBox/Data/parseLogBoxLog.js#L130

@@ -43,8 +43,9 @@ exports.parseLogBoxException = parseLogBoxException;
 exports.parseLogBoxLog = parseLogBoxLog;
 exports.parseComponentStack = parseComponentStack;
 exports.hasComponentStack = hasComponentStack;
-// End of web-specific imports
+// We intentionally import from our web-specific parseLogBoxLog implementation to ensure the conversion logic is correct.
 const log_box_utils_1 = require("@expo/log-box-utils");
+// End of web-specific imports
 const parseLogBoxLogWeb = __importStar(require("./parseLogBoxLog"));
 const parseErrorStack_1 = require("../utils/parseErrorStack");
 // Exported method must be compatible with upstream React Native.

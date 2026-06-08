@@ -8,8 +8,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseUnexpectedThrownValue = parseUnexpectedThrownValue;
-const parseErrorStack_1 = require("./parseErrorStack");
 const log_box_utils_1 = require("@expo/log-box-utils");
+const parseErrorStack_1 = require("./parseErrorStack");
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
