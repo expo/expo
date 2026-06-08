@@ -9,7 +9,10 @@
   "exports": {
     "./package.json": "./package.json",
     "./static/template/*": "./static/template/*",
-    ".": "./build/src/index.js",
+    ".": {
+      "source": "./src/index.ts",
+      "default": "./build/src/index.js"
+    },
     "./ts-declarations/react-server-dom-webpack": "./ts-declarations/react-server-dom-webpack/index.d.ts",
     "./ts-declarations/*": "./ts-declarations/*",
     "./*": "./*.js",

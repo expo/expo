@@ -6,8 +6,12 @@
   "types": "build/StatusBar.d.ts",
   "exports": {
     ".": {
-      "types": "./build/StatusBar.d.ts",
-      "default": "./src/StatusBar.ts"
+      "types": {
+        "source": "./src/StatusBar.ts",
+        "default": "./build/StatusBar.d.ts"
+      },
+      "source": "./src/StatusBar.ts",
+      "default": "./build/StatusBar.js"
     },
     "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",

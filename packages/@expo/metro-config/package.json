@@ -6,17 +6,29 @@
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
     "./babel-transformer": {
-      "types": "./build/babel-transformer.d.ts",
+      "types": {
+        "source": "./src/babel-transformer.ts",
+        "default": "./build/babel-transformer.d.ts"
+      },
+      "source": "./src/babel-transformer.ts",
       "require": "./build/babel-transformer.js",
       "default": "./build/babel-transformer.js"
     },
     "./file-store": {
-      "types": "./build/file-store.d.ts",
+      "types": {
+        "source": "./src/file-store.ts",
+        "default": "./build/file-store.d.ts"
+      },
+      "source": "./src/file-store.ts",
       "require": "./build/file-store.js",
       "default": "./build/file-store.js"
     },

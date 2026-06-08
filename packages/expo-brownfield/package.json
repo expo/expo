@@ -7,8 +7,11 @@
   "bin": "./bin/cli.js",
   "exports": {
     ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
       "source": "./src/index.ts",
-      "types": "./build/index.d.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json",

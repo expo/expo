@@ -6,12 +6,20 @@
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
     "./exports": {
-      "types": "./build/exports.d.ts",
+      "types": {
+        "source": "./src/exports.ts",
+        "default": "./build/exports.d.ts"
+      },
+      "source": "./src/exports.ts",
       "require": "./build/exports.js",
       "default": "./build/exports.js"
     },
