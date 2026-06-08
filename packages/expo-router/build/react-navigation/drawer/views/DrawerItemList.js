@@ -8,7 +8,7 @@ const DrawerItem_1 = require("./DrawerItem");
 /**
  * Component that renders the navigation list in the drawer.
  */
-function DrawerItemList({ state, navigation, descriptors }) {
+function DrawerItemList({ state, descriptors, emit, navigate, closeDrawer, }) {
     const { buildHref } = (0, native_1.useLinkBuilder)();
     const focusedRoute = state.routes[state.index];
     const focusedDescriptor = descriptors[focusedRoute.key];
@@ -17,16 +17,18 @@ function DrawerItemList({ state, navigation, descriptors }) {
     return state.routes.map((route, i) => {
         const focused = i === state.index;
         const onPress = () => {
-            const event = navigation.emit({
+            const event = emit({
                 type: 'drawerItemPress',
                 target: route.key,
                 canPreventDefault: true,
             });
             if (!event.defaultPrevented) {
-                navigation.dispatch({
-                    ...(focused ? native_1.DrawerActions.closeDrawer() : native_1.CommonActions.navigate(route)),
-                    target: state.key,
-                });
+                if (focused) {
+                    closeDrawer();
+                }
+                else {
+                    navigate(route.name, route.params);
+                }
             }
         };
         const { title, drawerLabel, drawerIcon, drawerLabelStyle, drawerItemStyle, drawerAllowFontScaling, } = descriptors[route.key].options;

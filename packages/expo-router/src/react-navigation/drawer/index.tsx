@@ -1,7 +1,7 @@
 /**
  * Navigators
  */
-export { createDrawerNavigator } from './navigators/createDrawerNavigator';
+export { createStandardDrawerNavigator } from './navigators/createStandardDrawerNavigator';
 
 /**
  * Views
@@ -27,6 +27,7 @@ export { DrawerProgressContext, useDrawerProgress } from 'react-native-drawer-la
 export type {
   DrawerContentComponentProps,
   DrawerHeaderProps,
+  DrawerNavigationActions,
   DrawerNavigationEventMap,
   DrawerNavigationOptions,
   DrawerNavigationProp,
