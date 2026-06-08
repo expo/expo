@@ -1616,6 +1616,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-app-metrics:
+        specifier: workspace:*
+        version: link:../../packages/expo-app-metrics
       expo-application:
         specifier: workspace:*
         version: link:../../packages/expo-application
