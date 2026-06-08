@@ -39,6 +39,14 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       return weakDelegate?.bundleURL()
     }
 
+#if RCT_REMOVE_LEGACY_ARCH
+    // React Native 0.87+ removed the legacy architecture, so the New Architecture is always enabled
+    // and the bridge-based configuration below no longer exists on the delegate.
+    let configuration = RCTRootViewFactoryConfiguration(
+      bundleURLBlock: bundleUrlBlock,
+      newArchEnabled: true
+    )
+#else
     let configuration = RCTRootViewFactoryConfiguration(
       bundleURLBlock: bundleUrlBlock,
       newArchEnabled: weakDelegate.newArchEnabled()
@@ -48,14 +56,8 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       return weakDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
     }
 
-    configuration.jsRuntimeConfiguratorDelegate = delegate
-
     configuration.createBridgeWithDelegate = { delegate, launchOptions in
       weakDelegate.createBridge(with: delegate, launchOptions: launchOptions)
-    }
-
-    configuration.customizeRootView = { rootView in
-      weakDelegate.customize(rootView)
     }
 
     // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
@@ -81,6 +83,13 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       configuration.bridgeDidNotFindModule = { bridge, moduleName in
         weakDelegate.bridge(bridge, didNotFindModule: moduleName)
       }
+    }
+#endif
+
+    configuration.jsRuntimeConfiguratorDelegate = delegate
+
+    configuration.customizeRootView = { rootView in
+      weakDelegate.customize(rootView)
     }
 
     return ExpoReactRootViewFactory(
