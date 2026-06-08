@@ -94,6 +94,35 @@ function NavigationContainerInner(
   useDocumentTitle(refContainer, documentTitle);
 
   const [lastUnhandledLink, setLastUnhandledLink] = React.useState<string | undefined>();
+  const pendingUnhandledLinkRef = React.useRef<string | undefined>(undefined);
+  const hasPendingUnhandledLinkRef = React.useRef(false);
+  const hasMountedRef = React.useRef(false);
+
+  // Initial linking can resolve while NavigationContainer is rendering.
+  // Queue that bookkeeping update until after mount to avoid a render-time state update.
+  const onUnhandledLinking = useLatestCallback((link: string | undefined) => {
+    if (hasMountedRef.current) {
+      setLastUnhandledLink(link);
+      return;
+    }
+
+    pendingUnhandledLinkRef.current = link;
+    hasPendingUnhandledLinkRef.current = true;
+  });
+
+  React.useEffect(() => {
+    hasMountedRef.current = true;
+
+    if (hasPendingUnhandledLinkRef.current) {
+      hasPendingUnhandledLinkRef.current = false;
+      setLastUnhandledLink(pendingUnhandledLinkRef.current);
+      pendingUnhandledLinkRef.current = undefined;
+    }
+
+    return () => {
+      hasMountedRef.current = false;
+    };
+  }, []);
 
   const { getInitialState } = useLinking(
     refContainer,
@@ -102,7 +131,7 @@ function NavigationContainerInner(
       prefixes: [],
       ...linking,
     },
-    setLastUnhandledLink
+    onUnhandledLinking
   );
 
   const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
