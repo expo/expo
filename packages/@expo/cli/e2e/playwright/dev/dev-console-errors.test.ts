@@ -54,6 +54,7 @@ test.describe('dev console errors', () => {
         output,
         `
 Web  ERROR  [Error: unhandled-throw]
+
 Call Stack
   BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
   handleClick (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
@@ -65,6 +66,7 @@ Call Stack
   dispatchEventForPluginEventSystem (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
   dispatchEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
   dispatchDiscreteEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+
 Call Stack
   div (<anonymous>)
   createElement (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\createElement\\index.js)
@@ -140,6 +142,7 @@ Call Stack
         output,
         `
 Web  ERROR  [Error: unhandled-async-throw]
+
 Call Stack
   throwAsyncError (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
   BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
@@ -186,6 +189,7 @@ Call Stack
         output,
         `
 Web  ERROR  unhandled-throw-string
+
 Call Stack
   div (<anonymous>)
   createElement (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\createElement\\index.js)
@@ -260,6 +264,7 @@ Call Stack
         output,
         `
 Web  ERROR  [Error: console-error-object]
+
 Call Stack
   BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
   handleClick (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
@@ -271,6 +276,7 @@ Call Stack
   dispatchEventForPluginEventSystem (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
   dispatchEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
   dispatchDiscreteEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+
 Call Stack
   div (<anonymous>)
   createElement (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\createElement\\index.js)
@@ -346,6 +352,7 @@ Call Stack
         output,
         `
 Web  ERROR  console-error-string
+
 Call Stack
   captureCurrentStack (packages\\expo\\src\\async-require\\setupHMR.ts)
   addErrorStacks (packages\\expo\\src\\async-require\\setupHMR.ts)
@@ -362,6 +369,7 @@ Call Stack
   dispatchEventForPluginEventSystem (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
   dispatchEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
   dispatchDiscreteEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+
 Call Stack
   div (<anonymous>)
   createElement (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\createElement\\index.js)
