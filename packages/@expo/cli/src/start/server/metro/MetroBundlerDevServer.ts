@@ -1,3 +1,4 @@
+import { events } from '2g';
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -34,7 +35,6 @@ import {
 } from 'expo-server/private';
 import path from 'path';
 
-import { events } from '../../../events';
 import type {
   BundleAssetWithFileHashes,
   ExportAssetDescriptor,
@@ -158,21 +158,24 @@ const EXPO_GO_METRO_PORT = 8081;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
-// prettier-ignore
-export const event = events('devserver', (t) => [
-  t.event<'start', {
-    mode: 'production' | 'development';
-    web: boolean;
-    baseUrl: string;
-    asyncRoutes: boolean;
-    routerRoot: string;
-    serverComponents: boolean;
-    serverActions: boolean;
-    serverRendering: boolean;
-    apiRoutes: boolean;
-    exporting: boolean;
-  }>(),
-]);
+declare module '2g' {
+  interface EventRegistry {
+    'devserver:start': {
+      mode: 'production' | 'development';
+      web: boolean;
+      baseUrl: string;
+      asyncRoutes: boolean;
+      routerRoot: string;
+      serverComponents: boolean;
+      serverActions: boolean;
+      serverRendering: boolean;
+      apiRoutes: boolean;
+      exporting: boolean;
+    };
+  }
+}
+
+export const event = events('devserver');
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
