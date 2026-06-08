@@ -28,6 +28,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `PagerView` offsetting `ScrollView` by safe area insets. ([#46637](https://github.com/expo/expo/pull/46637) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `SegmentedControl` being overlapped by sibling components inside a `ScrollView`, by disabling the `Host` safe area insets. ([#46575](https://github.com/expo/expo/pull/46575) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Fix `TextField` jiggling the surrounding content while its label animates on focus (a Material 3 expressive motion spring overshoot). ([#46568](https://github.com/expo/expo/pull/46568) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `BottomSheet` animating open from the bottom-left corner in `fitToContents` mode. ([#46546](https://github.com/expo/expo/pull/46546) by [@nishan](https://github.com/intergalacticspacehighway))
