@@ -12,6 +12,10 @@
       "types": "./build/index.d.ts",
       "default": "./build/index.js"
     },
+    "./LogBox": {
+      "types": "./build/LogBox.d.ts",
+      "default": "./build/LogBox.js"
+    },
     "./utils": {
       "types": "./utils.d.ts",
       "default": "./utils.js"
