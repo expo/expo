@@ -294,6 +294,10 @@ private class TouchDispatchingRootViewGroup(
     jsPointerDispatcher?.onChildEndedNativeGesture()
   }
 
+  override fun handleException(t: Throwable) {
+    reactContext.reactApplicationContext.handleException(RuntimeException(t))
+  }
+
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     // Forward the request up so Compose learns the list claimed the gesture and its own sheet-drag
     // yields. But don't call super: setting our own FLAG_DISALLOW_INTERCEPT would skip
