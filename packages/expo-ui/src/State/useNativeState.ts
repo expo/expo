@@ -38,9 +38,6 @@ export type ObservableState<T> = SharedObject & {
    *     'worklet';
    *     console.log('changed to', value);
    *   };
-   *   return () => {
-   *     state.onChange = null;
-   *   };
    * }, []);
    * ```
    */
@@ -96,7 +93,14 @@ function defineOnChangeProperty(state: NativeObservableState): void {
     set(fn: ((value: unknown) => void) | null | undefined) {
       if (!fn) {
         currentFn = null;
-        state.setOnChange(null);
+        try {
+          state.setOnChange(null);
+        } catch {
+          // On unmount the shared object is often released before this cleanup
+          // runs (useReleasingSharedObject releases it earlier in the component),
+          // so setOnChange throws "already released". Clearing a listener on a
+          // gone object is a no-op, so ignore it rather than crash teardown.
+        }
         return;
       }
       if (!worklets) {

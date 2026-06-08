@@ -123,8 +123,9 @@ async function renderApp(children: React.ReactNode) {
       {children}
     </ObserveNavigationContainer>
   );
-  // The initial cold metric fires from `onReady` and resolves an awaited
-  // `getMainSession()` before emitting — flush microtasks before asserting.
+  // The initial cold metric fires from the provider's `isReady()` catch-up /
+  // `state` ref listener and resolves an awaited `getMainSession()` before
+  // emitting — flush microtasks before asserting.
   await act(async () => {
     await flushAsync();
   });
