@@ -1,5 +1,6 @@
+import type { Session } from 'expo-app-metrics';
 export declare function emitTTI(args: {
-    sessionId: string;
+    session: Pick<Session, 'addMetric'>;
     timestamp: string;
     routeName: string | undefined;
     value: number;
