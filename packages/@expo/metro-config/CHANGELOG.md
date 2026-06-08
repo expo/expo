@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix stack frame collapsing for Windows paths. ([#46645](https://github.com/expo/expo/pull/46645) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 - Add misc. OOT platforms as base `react-native` paths for module configs like `getPolyfills` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))

@@ -67,7 +67,8 @@ describe(getDefaultCustomizeFrame, () => {
         default: { ...path, sep: '\\' },
       }));
 
-      const { getDefaultCustomizeFrame } = require('../customizeFrame') as typeof import('../customizeFrame');
+      const { getDefaultCustomizeFrame } =
+        require('../customizeFrame') as typeof import('../customizeFrame');
       const customizeFrame = getDefaultCustomizeFrame();
 
       expect(
@@ -91,25 +92,22 @@ describe(getDefaultCustomizeFrame, () => {
     'C:\\Users\\app\\src\\index.tsx',
     'D:/Users/app/src/index.tsx',
     'K:\\Users\\app\\src\\index.tsx',
-  ])(
-    'does not treat Windows absolute path %s as a URL',
-    file => {
-      const customizeFrame = getDefaultCustomizeFrame();
+  ])('does not treat Windows absolute path %s as a URL', (file) => {
+    const customizeFrame = getDefaultCustomizeFrame();
 
-      expect(
-        customizeFrame({
-          file,
-          lineNumber: 10,
-          column: 20,
-          methodName: 'render',
-        })
-      ).toEqual({
+    expect(
+      customizeFrame({
         file,
         lineNumber: 10,
         column: 20,
         methodName: 'render',
-        collapse: false,
-      });
-    }
-  );
+      })
+    ).toEqual({
+      file,
+      lineNumber: 10,
+      column: 20,
+      methodName: 'render',
+      collapse: false,
+    });
+  });
 });
