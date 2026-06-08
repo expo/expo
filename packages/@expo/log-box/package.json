@@ -38,8 +38,9 @@
     "watch": "run-p watch:lib watch:bundle",
     "watch:lib": "tsc -p tsconfig.lib.json --watch",
     "watch:bundle": "node ./scripts/watch-bundle.mjs",
-    "prepublishOnly": "run-s clean build",
-    "build": "run-s build:lib build:bundle",
+    "prepublishOnly": "run-s clean build:publish",
+    "build": "run-s build:lib",
+    "build:publish": "run-s build:lib build:bundle",
     "build:lib": "tsc -p tsconfig.lib.json && node ./scripts/copy-css-modules.mjs",
     "build:bundle": "node ./scripts/build-bundle.mjs",
     "export:web": "expo export -p web --no-minify"
