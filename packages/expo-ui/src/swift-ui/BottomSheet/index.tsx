@@ -2,9 +2,9 @@ import { requireNativeView } from 'expo';
 import { useState, type ComponentType } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 
+import { Host } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { Host } from '../Host';
 
 export type BottomSheetProps = {
   /**

@@ -362,7 +362,7 @@ export default function BottomSheetWithScrollableContentExample() {
               <View style={{ padding: 16 }}>
                 <FlatList
                   data={DATA}
-                  keyExtractor={(item) => item}
+                  keyExtractor={item => item}
                   renderItem={({ item }) => <RNText style={{ paddingVertical: 16 }}>{item}</RNText>}
                 />
               </View>
