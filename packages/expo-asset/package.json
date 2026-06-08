@@ -69,7 +69,6 @@
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/react-native__assets": "^1.0.3",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

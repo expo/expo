@@ -29,7 +29,6 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "expo": "workspace:*"
+    "@types/node": "^22.14.0"
   }
 }

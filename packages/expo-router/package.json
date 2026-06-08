@@ -330,7 +330,6 @@
     "@types/react-dom": "^19.1.7",
     "@types/react-is": "^19.0.0",
     "@types/react-test-renderer": "^19.1.0",
-    "expo": "workspace:*",
     "immer": "^10.1.1",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-reanimated": "~4.4.1",

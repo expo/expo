@@ -81,7 +81,6 @@
     "@types/picomatch": "^4.0.0",
     "@types/react": "~19.2.0",
     "@vercel/ncc": "^0.38.3",
-    "expo": "workspace:*",
     "expo-dev-client": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "express": "^5.1.0",

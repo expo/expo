@@ -149,7 +149,6 @@
     "@types/babel__core": "^7.20.5",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react-native-reanimated": "4.4.1",
     "react-native-worklets": "0.9.2"
