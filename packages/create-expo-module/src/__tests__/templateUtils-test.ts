@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { getGeneratedWebStubSentinel, updateWebStub } from '../templateUtils';
+import { getGeneratedWebStubSentinel, getTemplateDistTag, updateWebStub } from '../templateUtils';
 import type { SubstitutionData } from '../types';
 
 const mockData: SubstitutionData = {
@@ -32,6 +32,25 @@ async function writeMinimalWebTemplate(templateDir: string) {
     'export default class <%- project.moduleName %> {}\n'
   );
 }
+
+describe('getTemplateDistTag', () => {
+  it('maps an SDK-aligned version to its `sdk-<major>` tag', () => {
+    expect(getTemplateDistTag('56.0.3')).toBe('sdk-56');
+    expect(getTemplateDistTag('54.0.45')).toBe('sdk-54');
+    expect(getTemplateDistTag('50.0.0')).toBe('sdk-50');
+  });
+
+  it('falls back to `latest` for versions from the old, non-SDK-aligned scheme', () => {
+    expect(getTemplateDistTag('1.0.15')).toBe('latest');
+    expect(getTemplateDistTag('0.5.0')).toBe('latest');
+  });
+
+  it('falls back to `latest` for missing or unparsable versions', () => {
+    expect(getTemplateDistTag(undefined)).toBe('latest');
+    expect(getTemplateDistTag('')).toBe('latest');
+    expect(getTemplateDistTag('not-a-version')).toBe('latest');
+  });
+});
 
 describe('updateWebStub', () => {
   let tmpDir: string;

@@ -5,6 +5,7 @@ import path from 'node:path';
 
 import { usesExpoUI } from './features';
 import { installDependencies, type PackageManagerName } from './packageManager';
+import { getTemplateDistTag } from './templateUtils';
 import type { SubstitutionData } from './types';
 import { env } from './utils/env';
 import { newStep } from './utils/ora';
@@ -37,18 +38,38 @@ export async function createExampleApp(
   }
 
   await newStep('Initializing the example app', async (step) => {
-    const templateVersion = env.EXPO_BETA ? 'next' : 'latest';
-    const template = `expo-template-blank-typescript@${templateVersion}`;
-    debug(`Using example template: ${template}`);
-    const command = createCommand(packageManager, exampleProjectSlug, template);
+    // Pin the example template to the same SDK as the module template (derived from the CLI's own
+    // version), so `create-expo-module@sdk-XX` scaffolds an SDK XX example rather than always using
+    // `latest`. Fall back to `latest` when the SDK can't be determined or its template isn't published.
+    const templateVersion = env.EXPO_BETA
+      ? 'next'
+      : getTemplateDistTag(require('../package.json').version);
+
+    const initExampleApp = async (templateVersion: string): Promise<void> => {
+      const template = `expo-template-blank-typescript@${templateVersion}`;
+      debug(`Using example template: ${template}`);
+      const command = createCommand(packageManager, exampleProjectSlug, template);
+
+      try {
+        await spawnAsync(packageManager, command, {
+          cwd: targetDir,
+        });
+      } catch (error: any) {
+        throw new Error(
+          `${command.join(' ')} failed with exit code: ${error?.status}.\n\nError stack:\n${error?.stderr}`
+        );
+      }
+    };
+
     try {
-      await spawnAsync(packageManager, command, {
-        cwd: targetDir,
-      });
+      await initExampleApp(templateVersion);
     } catch (error: any) {
-      throw new Error(
-        `${command.join(' ')} failed with exit code: ${error?.status}.\n\nError stack:\n${error?.stderr}`
-      );
+      if (templateVersion !== 'latest' && templateVersion !== 'next') {
+        debug(`Failed to use the "${templateVersion}" example template, falling back to "latest".`);
+        await initExampleApp('latest');
+      } else {
+        throw error;
+      }
     }
 
     step.succeed('Initialized the example app');
