@@ -5,7 +5,10 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
-    ".": "./build/index.js",
+    ".": {
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
     "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js"

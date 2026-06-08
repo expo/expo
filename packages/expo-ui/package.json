@@ -53,8 +53,12 @@
       "default": "./build/community/datetime-picker/index.js"
     },
     "./community/bottom-sheet": {
-      "types": "./build/community/bottom-sheet/index.d.ts",
-      "default": "./src/community/bottom-sheet/index.tsx"
+      "types": {
+        "source": "./src/community/bottom-sheet/index.tsx",
+        "default": "./build/community/bottom-sheet/index.d.ts"
+      },
+      "source": "./src/community/bottom-sheet/index.tsx",
+      "default": "./build/community/bottom-sheet/index.js"
     },
     "./community/segmented-control": {
       "types": {

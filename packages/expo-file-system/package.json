@@ -10,12 +10,20 @@
     "./package.json": "./package.json",
     "./plugin": "./plugin/build/index.js",
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./legacy": {
-      "types": "./build/legacy/index.d.ts",
-      "default": "./src/legacy/index.ts"
+      "types": {
+        "source": "./src/legacy/index.ts",
+        "default": "./build/legacy/index.d.ts"
+      },
+      "source": "./src/legacy/index.ts",
+      "default": "./build/legacy/index.js"
     }
   },
   "sideEffects": false,

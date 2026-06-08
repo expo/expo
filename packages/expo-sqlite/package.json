@@ -10,12 +10,16 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "default": "./build/index.js",
-      "types": "./build/index.d.ts"
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./kv-store": {
-      "default": "./kv-store.js",
-      "types": "./kv-store.d.ts"
+      "types": "./kv-store.d.ts",
+      "default": "./kv-store.js"
     },
     "./localStorage/install": {
       "default": "./localStorage/install.js"

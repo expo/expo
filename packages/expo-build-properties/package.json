@@ -5,8 +5,14 @@
   "main": "build/withBuildProperties.js",
   "types": "build/withBuildProperties.d.ts",
   "exports": {
-    ".": "./build/withBuildProperties.js",
-    "./plugin": "./build/index.js",
+    ".": {
+      "source": "./src/withBuildProperties.ts",
+      "default": "./build/withBuildProperties.js"
+    },
+    "./plugin": {
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
     "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
   },
