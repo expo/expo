@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { getLogFile, shouldReduceLogs } from '../events';
 import {
   checkDependencies,
   printDependencyCheckResult,
@@ -22,7 +21,7 @@ import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';
 import { env } from '../utils/env';
-import { isInteractive } from '../utils/interactive';
+import { isInteractive, shouldReduceLogs } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 
@@ -77,10 +76,6 @@ export async function startAsync(
 ) {
   if (!shouldReduceLogs()) {
     Log.log(chalk.gray(`Starting project at ${projectRoot}`));
-    const logFile = getLogFile();
-    if (!isInteractive() && logFile) {
-      Log.log(chalk.gray(`Logs: ${logFile}`));
-    }
   }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
