@@ -13,7 +13,7 @@ import {
   semantics,
   testID as testIDModifier,
 } from '@expo/ui/jetpack-compose/modifiers';
-import { useImperativeHandle, useRef, useState } from 'react';
+import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 import { transformToModifiers } from '../transformStyle';
@@ -103,11 +103,6 @@ export function TextInput({
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = (value ?? fallback) as typeof fallback;
 
-  // `BasicTextField` has no built-in placeholder; we render our own in the
-  // decoration and toggle it on the empty<->non-empty boundary only, so typing
-  // doesn't re-render the component on every keystroke.
-  const [showPlaceholder, setShowPlaceholder] = useState(() => !state.value);
-
   const innerRef = useRef<TextFieldRef>(null);
   const isFocusedRef = useRef(false);
   useImperativeHandle(
@@ -195,37 +190,30 @@ export function TextInput({
       }
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
-      onValueChange={
-        placeholder != null
-          ? (text) => {
-              setShowPlaceholder(text.length === 0);
-              onChangeText?.(text);
-            }
-          : onChangeText
-      }
+      onValueChange={onChangeText}
       maxLength={maxLength}
       onFocusChanged={handleFocusChanged}
       selection={selection as Parameters<typeof BasicTextField>[0]['selection']}
       onSelectionChange={onSelectionChange}>
-      {placeholder != null ? (
-        <BasicTextField.DecorationBox>
-          <Box
-            modifiers={[fillMaxWidth()]}
-            contentAlignment={
-              textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
-            }>
-            {showPlaceholder ? (
+      <BasicTextField.DecorationBox>
+        <Box
+          modifiers={[fillMaxWidth()]}
+          contentAlignment={
+            textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
+          }>
+          {placeholder != null ? (
+            <BasicTextField.Placeholder>
               <Text
                 color={placeholderTextColor as string | undefined}
                 modifiers={[fillMaxWidth()]}
                 style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
                 {placeholder}
               </Text>
-            ) : null}
-            <BasicTextField.InnerTextField />
-          </Box>
-        </BasicTextField.DecorationBox>
-      ) : null}
+            </BasicTextField.Placeholder>
+          ) : null}
+          <BasicTextField.InnerTextField />
+        </Box>
+      </BasicTextField.DecorationBox>
     </BasicTextField>
   );
 }

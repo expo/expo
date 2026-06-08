@@ -1,5 +1,5 @@
 import type { ColorValue } from 'react-native';
-import type { CommonTextFieldProperties, TextFieldRef } from './shared';
+import { type CommonTextFieldProperties, type TextFieldRef } from './shared';
 /**
  * Imperative methods for `BasicTextField`. Identical to {@link TextFieldRef}.
  */
@@ -14,7 +14,8 @@ export type BasicTextFieldRef = TextFieldRef;
 export type BasicTextFieldProps = CommonTextFieldProperties & {
     /**
      * Color of the text cursor. Maps to Compose's `cursorBrush` via
-     * `SolidColor(color)`. Defaults to black.
+     * `SolidColor(color)`. Defaults to the theme's primary color
+     * (`MaterialTheme.colorScheme.primary`) so it stays visible in light and dark.
      */
     cursorColor?: ColorValue;
 };
@@ -27,6 +28,9 @@ declare namespace BasicTextFieldComponent {
         children: React.ReactNode;
     }) => import("react/jsx-runtime").JSX.Element;
     var InnerTextField: () => import("react/jsx-runtime").JSX.Element;
+    var Placeholder: (props: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 export { BasicTextFieldComponent as BasicTextField };
 //# sourceMappingURL=BasicTextField.d.ts.map

@@ -40,6 +40,7 @@ import expo.modules.ui.textfield.BasicTextFieldContent
 import expo.modules.ui.textfield.BasicTextFieldProps
 import expo.modules.ui.textfield.InnerTextFieldView
 import expo.modules.ui.textfield.KeyboardActionEvent
+import expo.modules.ui.textfield.PlaceholderView
 import expo.modules.ui.textfield.TextFieldContent
 import expo.modules.ui.textfield.TextFieldProps
 import expo.modules.ui.textfield.TextFieldSelectionPayload
@@ -164,6 +165,7 @@ class ExpoUIModule : Module() {
       Events("onSlotEvent")
     }
     View(InnerTextFieldView::class)
+    View(PlaceholderView::class)
     View(IconView::class)
     View(LazyColumnView::class)
     View(LazyRowView::class)

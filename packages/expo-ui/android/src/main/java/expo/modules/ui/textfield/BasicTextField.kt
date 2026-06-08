@@ -6,10 +6,12 @@ import android.graphics.Color
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.isUnspecified
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.AsyncFunctionHandle2
@@ -53,6 +55,34 @@ class InnerTextFieldView(context: Context, appContext: AppContext) :
 }
 
 // endregion Inner text field plumbing
+
+// region Placeholder plumbing
+
+/**
+ * Tracks whether textfield is empty, in order to render placeholder slot
+ */
+val LocalTextFieldIsEmpty = compositionLocalOf { true }
+
+class PlaceholderProps : ComposeProps
+
+/**
+ * Slot view for `BasicTextField.Placeholder`. Renders its children only while
+ * the field is empty.
+ */
+@SuppressLint("ViewConstructor")
+class PlaceholderView(context: Context, appContext: AppContext) :
+  ExpoComposeView<PlaceholderProps>(context, appContext) {
+  override val props = PlaceholderProps()
+
+  @Composable
+  override fun ComposableScope.Content() {
+    if (LocalTextFieldIsEmpty.current) {
+      Children(this)
+    }
+  }
+}
+
+// endregion Placeholder plumbing
 
 // region Props
 
@@ -116,9 +146,11 @@ fun FunctionalComposableScope.BasicTextFieldContent(
   val maxLines = props.maxLines ?: if (singleLine) 1 else Int.MAX_VALUE
   val minLines = props.minLines ?: 1
 
-  val textStyle = props.textStyle.toTextStyle(appContext.reactContext)
+  val textStyle = props.textStyle.toTextStyle(appContext.reactContext).let {
+    if (it.color.isUnspecified) it.copy(color = MaterialTheme.colorScheme.onSurface) else it
+  }
   val visualTransformation = props.visualTransformation.toVisualTransformation()
-  val cursorBrush = SolidColor(props.cursorColor.composeOrNull ?: androidx.compose.ui.graphics.Color.Black)
+  val cursorBrush = SolidColor(props.cursorColor.composeOrNull ?: MaterialTheme.colorScheme.primary)
 
   val current = LocalTextSelectionColors.current
   val selectionColors = props.textSelectionColors?.let { record ->
@@ -154,7 +186,10 @@ fun FunctionalComposableScope.BasicTextFieldContent(
       cursorBrush = cursorBrush,
       decorationBox = { innerTextField ->
         if (decoration != null) {
-          CompositionLocalProvider(LocalInnerTextField provides innerTextField) {
+          CompositionLocalProvider(
+            LocalInnerTextField provides innerTextField,
+            LocalTextFieldIsEmpty provides core.value.text.isEmpty()
+          ) {
             decoration()
           }
         } else {

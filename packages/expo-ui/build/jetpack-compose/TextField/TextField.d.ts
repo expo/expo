@@ -1,5 +1,5 @@
 import type { ColorValue } from 'react-native';
-import type { CommonTextFieldProperties } from './shared';
+import { type CommonTextFieldProperties } from './shared';
 import { type ObservableState } from '../../State';
 import { type ShapeJSXElement } from '../Shape';
 /**

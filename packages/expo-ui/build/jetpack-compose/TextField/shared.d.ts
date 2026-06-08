@@ -1,7 +1,7 @@
 import type { ReactNode, Ref } from 'react';
 import type { ColorValue } from 'react-native';
-import type { ObservableState } from '../../State';
-import type { ModifierConfig } from '../../types';
+import { type ObservableState } from '../../State';
+import type { ModifierConfig, ViewEvent } from '../../types';
 /**
  * Can be used for imperatively focusing and setting text/selection on the
  * `TextField`, `OutlinedTextField`, and `BasicTextField` components.
@@ -135,4 +135,47 @@ export type CommonTextFieldProperties = {
     /** Slot children that configure the field's decoration. */
     children?: ReactNode;
 };
+/**
+ * Keys consumed (and reshaped) by {@link useCommonTextFieldProps}. Everything
+ * else on the props passes through untouched.
+ */
+type TransformedKeys = 'value' | 'selection' | 'modifiers' | 'children' | 'keyboardActions' | 'onValueChange' | 'onFocusChanged' | 'onSelectionChange';
+/**
+ * Native-facing prop shape shared by every Compose text field variant. The
+ * observable-backed props collapse to shared-object ids, and the public
+ * callbacks become `nativeEvent`-wrapped listeners.
+ */
+export type CommonNativeTextFieldProps = {
+    modifiers?: ModifierConfig[];
+    children?: ReactNode;
+    value?: number | null;
+    selection?: number | null;
+    onValueChangeSync?: number | null;
+} & ViewEvent<'onValueChange', {
+    text: string;
+    selection: {
+        start: number;
+        end: number;
+    };
+}> & ViewEvent<'onFocusChanged', {
+    value: boolean;
+}> & ViewEvent<'onSelectionChange', {
+    start: number;
+    end: number;
+}> & ViewEvent<'onKeyboardAction', {
+    action: string;
+    value: string;
+}>;
+/**
+ * Shared prop transform for the Compose text field variants. Resolves the
+ * `value`/`selection` observables to ids, detects whether `onValueChange` is a
+ * worklet (and routes it to `onValueChangeSync` if so), and adapts the public
+ * callbacks to the native event shape. Variant-specific props (`variant`,
+ * `shape`, `cursorColor`, the placeholder slot, ...) pass through untouched, so
+ * each component layers its extras on the result. Keeping this in one place
+ * stops the worklet detection and event plumbing from drifting between
+ * `TextField` and `BasicTextField`.
+ */
+export declare function useCommonTextFieldProps<T extends CommonTextFieldProperties>(props: T): CommonNativeTextFieldProps & Omit<T, TransformedKeys>;
+export {};
 //# sourceMappingURL=shared.d.ts.map

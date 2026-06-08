@@ -1,8 +1,9 @@
 import type { ReactNode, Ref } from 'react';
 import type { ColorValue } from 'react-native';
 
-import type { ObservableState } from '../../State';
-import type { ModifierConfig } from '../../types';
+import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
+import type { ModifierConfig, ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * Can be used for imperatively focusing and setting text/selection on the
@@ -171,3 +172,86 @@ export type CommonTextFieldProperties = {
   /** Slot children that configure the field's decoration. */
   children?: ReactNode;
 };
+
+// region Native transform
+
+/**
+ * Keys consumed (and reshaped) by {@link useCommonTextFieldProps}. Everything
+ * else on the props passes through untouched.
+ */
+type TransformedKeys =
+  | 'value'
+  | 'selection'
+  | 'modifiers'
+  | 'children'
+  | 'keyboardActions'
+  | 'onValueChange'
+  | 'onFocusChanged'
+  | 'onSelectionChange';
+
+/**
+ * Native-facing prop shape shared by every Compose text field variant. The
+ * observable-backed props collapse to shared-object ids, and the public
+ * callbacks become `nativeEvent`-wrapped listeners.
+ */
+export type CommonNativeTextFieldProps = {
+  modifiers?: ModifierConfig[];
+  children?: ReactNode;
+  value?: number | null;
+  selection?: number | null;
+  onValueChangeSync?: number | null;
+} & ViewEvent<'onValueChange', { text: string; selection: { start: number; end: number } }> &
+  ViewEvent<'onFocusChanged', { value: boolean }> &
+  ViewEvent<'onSelectionChange', { start: number; end: number }> &
+  ViewEvent<'onKeyboardAction', { action: string; value: string }>;
+
+export function useCommonTextFieldProps<T extends CommonTextFieldProperties>(
+  props: T
+): CommonNativeTextFieldProps & Omit<T, TransformedKeys> {
+  const {
+    value,
+    selection,
+    modifiers,
+    children,
+    keyboardActions,
+    onValueChange,
+    onFocusChanged,
+    onSelectionChange,
+    ...rest
+  } = props;
+
+  const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
+  const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
+
+  return {
+    ...rest,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    children,
+    value: getStateId(value),
+    selection: getStateId(selection),
+    onValueChangeSync: getStateId(workletCallback),
+    onValueChange:
+      !isWorklet && onValueChange ? (event) => onValueChange(event.nativeEvent.text) : undefined,
+    onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
+    onSelectionChange: onSelectionChange
+      ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
+      : undefined,
+    onKeyboardAction: keyboardActions
+      ? (event) => {
+          const { action, value } = event.nativeEvent;
+          const actionMap: Record<string, ((v: string) => void) | undefined> = {
+            done: keyboardActions.onDone,
+            go: keyboardActions.onGo,
+            next: keyboardActions.onNext,
+            previous: keyboardActions.onPrevious,
+            search: keyboardActions.onSearch,
+            send: keyboardActions.onSend,
+          };
+          actionMap[action]?.(value);
+        }
+      : undefined,
+  };
+}
+
+// endregion Native transform

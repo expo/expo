@@ -85,7 +85,7 @@ export default function OutlinedTextFieldExample() {
 
 ### Basic text field
 
-`BasicTextField` is the unstyled Compose primitive, with no container, indicator, or padding. Style it yourself with [modifiers](modifiers) and supply decoration such as a placeholder through `DecorationBox`, placing `InnerTextField` where the editable text should render.
+`BasicTextField` is the unstyled Compose primitive, with no container, indicator, or padding. Style it yourself with [modifiers](modifiers) and supply decoration through `DecorationBox`, placing `InnerTextField` where the editable text should render. Wrap placeholder content in `Placeholder` to have it shown only while the field is empty, toggled natively from the field's text.
 
 ```tsx BasicTextFieldExample.tsx
 import { useState } from 'react';
@@ -114,7 +114,9 @@ export default function BasicTextFieldExample() {
         ]}>
         <BasicTextField.DecorationBox>
           <Box>
-            {value.length === 0 ? <Text color="#9ca3af">Search…</Text> : null}
+            <BasicTextField.Placeholder>
+              <Text color="#9ca3af">Search…</Text>
+            </BasicTextField.Placeholder>
             <BasicTextField.InnerTextField />
           </Box>
         </BasicTextField.DecorationBox>

@@ -1,12 +1,14 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
-import type { CommonTextFieldProperties } from './shared';
-import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
-import type { ViewEvent } from '../../types';
+import {
+  type CommonNativeTextFieldProps,
+  type CommonTextFieldProperties,
+  useCommonTextFieldProps,
+} from './shared';
+import { type ObservableState } from '../../State';
 import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 import { Slot } from '../SlotView';
-import { createViewModifierEventListener } from '../modifiers/utils';
 
 // region Types
 
@@ -98,18 +100,12 @@ type NativeTextFieldProps = Omit<
   | 'keyboardActions'
   | 'children'
   | 'shape'
-> & {
-  variant: 'filled' | 'outlined';
-  colors?: TextFieldColors;
-  shape?: ShapeRecordProps;
-  children?: React.ReactNode;
-  value?: number | null;
-  selection?: number | null;
-  onValueChangeSync?: number | null;
-} & ViewEvent<'onValueChange', { text: string; selection: { start: number; end: number } }> &
-  ViewEvent<'onFocusChanged', { value: boolean }> &
-  ViewEvent<'onSelectionChange', { start: number; end: number }> &
-  ViewEvent<'onKeyboardAction', { action: string; value: string }>;
+> &
+  CommonNativeTextFieldProps & {
+    variant: 'filled' | 'outlined';
+    colors?: TextFieldColors;
+    shape?: ShapeRecordProps;
+  };
 
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
   'ExpoUI',
@@ -120,52 +116,11 @@ function useTransformedProps(
   props: TextFieldProps | OutlinedTextFieldProps,
   variant: 'filled' | 'outlined'
 ): NativeTextFieldProps {
-  const {
-    value,
-    selection,
-    modifiers,
-    children,
-    keyboardActions,
-    onValueChange,
-    onFocusChanged,
-    onSelectionChange,
-    shape,
-    ...restProps
-  } = props;
-
-  const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
-  const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
-
+  const { shape, ...rest } = props;
   return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
+    ...useCommonTextFieldProps(rest),
     variant,
     shape: parseJSXShape(shape),
-    children,
-    value: getStateId(value),
-    selection: getStateId(selection),
-    onValueChangeSync: getStateId(workletCallback),
-    onValueChange:
-      !isWorklet && onValueChange ? (event) => onValueChange(event.nativeEvent.text) : undefined,
-    onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
-    onSelectionChange: onSelectionChange
-      ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
-      : undefined,
-    onKeyboardAction: keyboardActions
-      ? (event) => {
-          const { action, value } = event.nativeEvent;
-          const actionMap: Record<string, ((v: string) => void) | undefined> = {
-            done: keyboardActions.onDone,
-            go: keyboardActions.onGo,
-            next: keyboardActions.onNext,
-            previous: keyboardActions.onPrevious,
-            search: keyboardActions.onSearch,
-            send: keyboardActions.onSend,
-          };
-          actionMap[action]?.(value);
-        }
-      : undefined,
   };
 }
 

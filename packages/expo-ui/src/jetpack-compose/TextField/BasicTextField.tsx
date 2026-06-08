@@ -1,11 +1,13 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
-import type { CommonTextFieldProperties, TextFieldRef } from './shared';
-import { getStateId, useWorkletProp, worklets } from '../../State';
-import type { ViewEvent } from '../../types';
+import {
+  type CommonNativeTextFieldProps,
+  type CommonTextFieldProperties,
+  type TextFieldRef,
+  useCommonTextFieldProps,
+} from './shared';
 import { Slot } from '../SlotView';
-import { createViewModifierEventListener } from '../modifiers/utils';
 
 // region Types
 
@@ -24,7 +26,8 @@ export type BasicTextFieldRef = TextFieldRef;
 export type BasicTextFieldProps = CommonTextFieldProperties & {
   /**
    * Color of the text cursor. Maps to Compose's `cursorBrush` via
-   * `SolidColor(color)`. Defaults to black.
+   * `SolidColor(color)`. Defaults to the theme's primary color
+   * (`MaterialTheme.colorScheme.primary`) so it stays visible in light and dark.
    */
   cursorColor?: ColorValue;
 };
@@ -42,15 +45,8 @@ type NativeBasicTextFieldProps = Omit<
   | 'onSelectionChange'
   | 'keyboardActions'
   | 'children'
-> & {
-  children?: React.ReactNode;
-  value?: number | null;
-  selection?: number | null;
-  onValueChangeSync?: number | null;
-} & ViewEvent<'onValueChange', { text: string; selection: { start: number; end: number } }> &
-  ViewEvent<'onFocusChanged', { value: boolean }> &
-  ViewEvent<'onSelectionChange', { start: number; end: number }> &
-  ViewEvent<'onKeyboardAction', { action: string; value: string }>;
+> &
+  CommonNativeTextFieldProps;
 
 const BasicTextFieldNativeView: React.ComponentType<NativeBasicTextFieldProps> = requireNativeView(
   'ExpoUI',
@@ -62,51 +58,11 @@ const InnerTextFieldNativeView: React.ComponentType<object> = requireNativeView(
   'InnerTextFieldView'
 );
 
+const PlaceholderNativeView: React.ComponentType<{ children?: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'PlaceholderView');
+
 function useTransformedProps(props: BasicTextFieldProps): NativeBasicTextFieldProps {
-  const {
-    value,
-    selection,
-    modifiers,
-    children,
-    keyboardActions,
-    onValueChange,
-    onFocusChanged,
-    onSelectionChange,
-    ...restProps
-  } = props;
-
-  const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
-  const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
-
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-    children,
-    value: getStateId(value),
-    selection: getStateId(selection),
-    onValueChangeSync: getStateId(workletCallback),
-    onValueChange:
-      !isWorklet && onValueChange ? (event) => onValueChange(event.nativeEvent.text) : undefined,
-    onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
-    onSelectionChange: onSelectionChange
-      ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
-      : undefined,
-    onKeyboardAction: keyboardActions
-      ? (event) => {
-          const { action, value } = event.nativeEvent;
-          const actionMap: Record<string, ((v: string) => void) | undefined> = {
-            done: keyboardActions.onDone,
-            go: keyboardActions.onGo,
-            next: keyboardActions.onNext,
-            previous: keyboardActions.onPrevious,
-            search: keyboardActions.onSearch,
-            send: keyboardActions.onSend,
-          };
-          actionMap[action]?.(value);
-        }
-      : undefined,
-  };
+  return useCommonTextFieldProps(props);
 }
 
 // endregion Native
@@ -131,6 +87,17 @@ function InnerTextField() {
   return <InnerTextFieldNativeView />;
 }
 
+/**
+ * A placeholder shown only while the field is empty. Place it inside
+ * {@link DecorationBox}, typically overlaying {@link InnerTextField}. Its
+ * visibility is toggled natively from the field's text, so it stays correct for
+ * every change — typing, `clear()`, `setText`, and writes to the `value`
+ * observable — without a JS round-trip.
+ */
+function Placeholder(props: { children: React.ReactNode }) {
+  return <PlaceholderNativeView>{props.children}</PlaceholderNativeView>;
+}
+
 // endregion Slot components
 
 // region Component
@@ -144,6 +111,7 @@ function BasicTextFieldComponent(props: BasicTextFieldProps) {
 
 BasicTextFieldComponent.DecorationBox = DecorationBox;
 BasicTextFieldComponent.InnerTextField = InnerTextField;
+BasicTextFieldComponent.Placeholder = Placeholder;
 
 // endregion Component
 
