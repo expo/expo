@@ -171,7 +171,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
  * A thin FrameLayout that intercepts touch events and dispatches them to JS via
  * JSTouchDispatcher/JSPointerDispatcher, replicating the pattern from React Native's
  * DialogRootViewGroup in ReactModalHostView.
- * Implements NestedScrollingChild3 to forward scroll events to the parent compose
+ * Implements NestedScrollingChild3 to forward scroll events to the parent compose. Since compose can only listen to NestedScrollingChild3 events
  */
 private class TouchDispatchingRootViewGroup(
   context: Context
@@ -179,19 +179,20 @@ private class TouchDispatchingRootViewGroup(
   private val jsTouchDispatcher = JSTouchDispatcher(this)
   private var jsPointerDispatcher: JSPointerDispatcher? = null
 
+  // The "child face": this helper does the real work of finding the nearest scrolling-aware
+  // ancestor (Compose, here) and forwarding our scroll offers to it.
   private val childHelper = NestedScrollingChildHelper(this)
 
-  // How far this view has moved on-screen since the current gesture started.
+  // How far the sheet has slid this view on-screen since the gesture began. Used to keep the
+  // FlatList's touch coordinates coherent while the view moves under the finger.
   private val gestureStartLocation = IntArray(2)
   private val currentLocation = IntArray(2)
   private var trackingGestureOffset = false
 
-  // True if the sheet consumed scroll on the most recent drag frame
-  // Used to decide the fling handoff in onNestedPreFling.
+  // True if the sheet consumed scroll on the most recent drag frame; drives the settle decision.
   private var sheetMovingOnLastDragFrame = false
 
-  // True once a real fling was dispatched this gesture (its settle is already in motion), so the
-  // gentle-release fallback in onStopNestedScroll doesn't fire a second, redundant settle.
+  // True once a fling was dispatched this gesture, so the gentle-release settle doesn't double-fire.
   private var flingHandledThisGesture = false
 
   var eventDispatcher: EventDispatcher? = null
@@ -221,26 +222,35 @@ private class TouchDispatchingRootViewGroup(
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    when (ev.actionMasked) {
-      MotionEvent.ACTION_DOWN -> {
-        getLocationInWindow(gestureStartLocation)
-        trackingGestureOffset = true
-        sheetMovingOnLastDragFrame = false
-        flingHandledThisGesture = false
-      }
-      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> trackingGestureOffset = false
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      // dispatchTouchEvent is the true start of every gesture, so reset all per-gesture state here.
+      getLocationInWindow(gestureStartLocation)
+      trackingGestureOffset = true
+      sheetMovingOnLastDragFrame = false
+      flingHandledThisGesture = false
     }
-    if (trackingGestureOffset && hasNestedScrollingParent()) {
+
+    // While a nested scroll is in flight the sheet may be sliding this whole view up/down. Re-express
+    // every event as if the view hadn't moved, so the FlatList's own scroll tracking stays coherent.
+    val handled = if (trackingGestureOffset && hasNestedScrollingParent()) {
       getLocationInWindow(currentLocation)
       val dy = currentLocation[1] - gestureStartLocation[1]
       if (dy != 0) {
         ev.offsetLocation(0f, dy.toFloat())
-        val handled = super.dispatchTouchEvent(ev)
+        val result = super.dispatchTouchEvent(ev)
         ev.offsetLocation(0f, -dy.toFloat())
-        return handled
+        result
+      } else {
+        super.dispatchTouchEvent(ev)
       }
+    } else {
+      super.dispatchTouchEvent(ev)
     }
-    return super.dispatchTouchEvent(ev)
+
+    if (ev.actionMasked == MotionEvent.ACTION_UP || ev.actionMasked == MotionEvent.ACTION_CANCEL) {
+      trackingGestureOffset = false
+    }
+    return handled
   }
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
@@ -284,29 +294,64 @@ private class TouchDispatchingRootViewGroup(
     jsPointerDispatcher?.onChildEndedNativeGesture()
   }
 
-  override fun handleException(t: Throwable) {
-    reactContext.reactApplicationContext.handleException(RuntimeException(t))
+  override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+    // Forward the request up so Compose learns the list claimed the gesture and its own sheet-drag
+    // yields. But don't call super: setting our own FLAG_DISALLOW_INTERCEPT would skip
+    // onInterceptTouchEvent, which must keep firing to dispatch touches to JS (the reason #43716
+    // added this override).
+    parent?.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
 
-  // Parent role: receive scroll from the RN list
+  // --- Parent face: catch the FlatList's scroll offers and relay them up via the child face. ---
   override fun onStartNestedScroll(child: View, target: View, axes: Int): Boolean =
-    axes and ViewCompat.SCROLL_AXIS_VERTICAL != 0 || axes and ViewCompat.SCROLL_AXIS_HORIZONTAL != 0
+    axes and ViewCompat.SCROLL_AXIS_VERTICAL != 0
 
   override fun onNestedScrollAccepted(child: View, target: View, axes: Int) {
     super.onNestedScrollAccepted(child, target, axes)
     startNestedScroll(axes)
   }
 
+  override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
+    // Expand path: offer the delta to the sheet (above us) before the list scrolls with the rest.
+    dispatchNestedPreScroll(dx, dy, consumed, null)
+    // Did the sheet move this frame? consumed[1] is what it consumed in y axis.
+    sheetMovingOnLastDragFrame = consumed[1] != 0
+  }
+
+  override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
+    // Collapse path: after the list scrolled what it could, hand the leftover up to the sheet.
+    // Use the (…, type, consumed) variant so we can read how much the sheet ate (consumed[1]).
+    val consumed = IntArray(2)
+    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, ViewCompat.TYPE_TOUCH, consumed)
+    if (consumed[1] != 0) sheetMovingOnLastDragFrame = true
+  }
+
+  override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
+    // A real fling is being dispatched, so its settle is already in motion; note that so the
+    // gentle-release fallback in onStopNestedScroll doesn't add a second, redundant settle.
+    flingHandledThisGesture = true
+    val composeConsumed = dispatchNestedPreFling(velocityX, velocityY)
+    // RN's ScrollView wants a synchronous yes/no, but Compose's pre-fling is async (it returns false
+    // now and settles later). So decide here: if the sheet was mid-move and this is an up-flick
+    // (velocityY > 0), swallow the list's fling so the sheet finishes expanding. A down-flick passes
+    // through so it can still settle/collapse.
+    return composeConsumed || (sheetMovingOnLastDragFrame && velocityY > 0)
+  }
+
+  override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
+    // Post-fling: hand the leftover flick up so the sheet can fling to its next anchor.
+    dispatchNestedFling(velocityX, velocityY, consumed)
+
   override fun onStopNestedScroll(target: View) {
-    // Must run BEFORE stopNestedScroll() so the holder is still our parent to receive the fling.
+    // Must run BEFORE stopNestedScroll() so Compose is still our parent and can receive the fling.
     settleSheetIfNoFling()
     super.onStopNestedScroll(target)
     stopNestedScroll()
   }
 
-  // A slow (sub-threshold) release never flings, so the ScrollView never triggers the sheet's
-  // onPostFling settle and it hangs where dragged. If the sheet moved during the gesture and no real
-  // fling settled it, dispatch a zero-velocity fling here so the holder snaps it to the nearest anchor.
+  // A slow (sub-threshold) release never flings, so the sheet would hang where it was dragged. If the
+  // sheet moved this gesture and no real fling settled it, dispatch a zero-velocity fling so the
+  // holder snaps it to the nearest anchor.
   private fun settleSheetIfNoFling() {
     if (sheetMovingOnLastDragFrame && !flingHandledThisGesture) {
       flingHandledThisGesture = true
@@ -314,35 +359,9 @@ private class TouchDispatchingRootViewGroup(
     }
   }
 
-  override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
-    dispatchNestedPreScroll(dx, dy, consumed, null)
-    // Expand path: the sheet consumes the upward delta here, before the list scrolls.
-    sheetMovingOnLastDragFrame = consumed[1] != 0
-  }
-
-  override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
-    // Use the `…, type, consumed` variant so we can read how much the sheet ate (consumed[1]).
-    val consumed = IntArray(2)
-    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, ViewCompat.TYPE_TOUCH, consumed)
-    // Collapse path: the sheet consumes the leftover here, after the list couldn't scroll.
-    if (consumed[1] != 0) sheetMovingOnLastDragFrame = true
-  }
-
-  override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
-    // A real fling is being dispatched; its settle is in motion, so skip the sub-threshold fallback.
-    flingHandledThisGesture = true
-    val composeConsumed = dispatchNestedPreFling(velocityX, velocityY)
-    // RN's ScrollView wants a synchronous yes/no, but Compose's pre-fling is async (returns false
-    // now, settles later). So decide here: if the sheet was mid-move and this is an UP-flick
-    // (velocityY > 0), swallow the list fling so the sheet expands first. A DOWN-flick is left to
-    // pass through so it can still settle/collapse.
-    return composeConsumed || (sheetMovingOnLastDragFrame && velocityY > 0)
-  }
-
-  override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
-    dispatchNestedFling(velocityX, velocityY, consumed)
-
-  // Child role: relay up to the holder
+  // --- Child face: the wrapper's upstream voice. The parent hooks above relay through these. ---
+  // So we listen to ViewGroup nested scroll methods and call below methods from them, 
+  // which essentially converts regular Nested scrolling methods to NestedScrollingChild3.
   override fun setNestedScrollingEnabled(enabled: Boolean) {
     childHelper.isNestedScrollingEnabled = enabled
   }
