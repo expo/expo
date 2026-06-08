@@ -10,7 +10,7 @@
     },
     "./lib": {
       "types": "./build/index.d.ts",
-      "default": "./lib.ts"
+      "default": "./build/index.js"
     },
     "./utils": {
       "types": "./utils.d.ts",
@@ -20,11 +20,11 @@
     "./swap-rn-logbox-parser.js": "./swap-rn-logbox-parser.js",
     "./logbox-web-polyfill": {
       "types": "./build/logbox-web-polyfill.d.ts",
-      "default": "./src/logbox-web-polyfill.tsx"
+      "default": "./build/logbox-web-polyfill.js"
     },
     "./Data/LogBoxLog": {
       "types": "./build/Data/LogBoxLog.d.ts",
-      "default": "./src/Data/LogBoxLog.ts"
+      "default": "./build/Data/LogBoxLog.js"
     },
     "./package.json": "./package.json"
   },
