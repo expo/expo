@@ -1,4 +1,4 @@
-import AppMetrics, { type Session, type SessionType } from 'expo-app-metrics';
+import AppMetrics, { type DebugSession, type Session, type SessionType } from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
 import { type Href, router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -50,9 +50,9 @@ export default function SessionsList() {
       AppMetrics.getMainSession(),
       AppMetrics.getForegroundSession(),
     ]);
-    const active = live
-      .filter((session): session is Session => session != null)
-      .map(liveSessionToRow);
+    const active = await Promise.all(
+      live.filter((session): session is Session => session != null).map(liveSessionToRow)
+    );
 
     const records = await AppMetrics.getInactiveSessions();
     const inactive: SessionRowData[] = records
@@ -143,20 +143,20 @@ export default function SessionsList() {
   );
 }
 
-function liveSessionToRow(session: Session): SessionRowData {
+async function liveSessionToRow(session: Session): Promise<SessionRowData> {
   return {
     id: session.id,
     type: session.type,
     startDate: session.startDate,
     endDate: null,
     isActive: true,
-    metricCount: session.metrics.length,
+    metricCount: (await session.getMetrics()).length,
     crashed: false,
     href: `/sessions/${session.type}`,
   };
 }
 
-function inactiveSessionToRow(session: Session): SessionRowData {
+function inactiveSessionToRow(session: DebugSession): SessionRowData {
   return {
     id: session.id,
     type: session.type,
@@ -164,7 +164,7 @@ function inactiveSessionToRow(session: Session): SessionRowData {
     endDate: session.endDate ?? null,
     isActive: false,
     metricCount: session.metrics.length,
-    crashed: 'crashReport' in session ? !!session.crashReport : false,
+    crashed: !!session.crashReport,
     href: `/sessions/${session.id}`,
   };
 }

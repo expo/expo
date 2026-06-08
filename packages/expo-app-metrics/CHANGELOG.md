@@ -16,3 +16,4 @@
 ### 💡 Others
 
 - Add private `getForegroundSession` ([#46657](https://github.com/expo/expo/pull/46657) by [@Ubax](https://github.com/Ubax))
+- Add session shared object API ([#46652](https://github.com/expo/expo/pull/46652) by [@Ubax](https://github.com/Ubax))

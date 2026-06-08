@@ -1,5 +1,7 @@
 import type { SharedObject } from 'expo';
 
+import type { Session } from './Session';
+
 export type AppStartupTimes = {
   /**
    * Time from when the user taps the app to the moment the app starts executing the main code.
@@ -203,24 +205,11 @@ export type CrashKind =
   | 'objcException'
   | 'stackOverflow';
 
-type SessionBase = {
-  id: string;
-  startDate: string;
-  endDate?: string | null;
-  metrics: Metric[];
-  logs: LogRecord[];
-};
-
-export type MainSession = SessionBase & {
-  type: 'main';
-  crashReport?: CrashReport | null;
-};
-
-export type GenericSession = SessionBase & {
-  type: Exclude<SessionType, 'main'>;
-};
-
-export type Session = MainSession | GenericSession;
+/**
+ * Payload accepted by `Session.addMetric`. The owning session is implied by the
+ * receiver, so the input carries every `Metric` field except `sessionId`.
+ */
+export type MetricInput = Omit<Metric, 'sessionId'>;
 
 export type CallStackFrame = {
   binaryName?: string | null;
@@ -373,6 +362,30 @@ export declare class NetworkRequestObserver extends SharedObject<NetworkRequestO
   constructor();
 }
 
+/**
+ * A historic session and its recorded data, returned by `getInactiveSessions()`
+ * as a plain eager record (not a shared object). Debug-only: intended for
+ * inspecting on-device history, not production use.
+ *
+ * @private This API is unstable, debug-only, and may change without notice.
+ */
+export type DebugSession = {
+  /** Unique identifier (UUID) of the session. */
+  id: string;
+  /** Kind of session. */
+  type: SessionType;
+  /** ISO 8601 timestamp of when the session started. */
+  startDate: string;
+  /** ISO 8601 timestamp of when the session ended, or `null`/absent while active. */
+  endDate?: string | null;
+  /** Metrics recorded during the session. */
+  metrics: Metric[];
+  /** Log events recorded during the session. */
+  logs: LogRecord[];
+  /** Crash report attached to the session, if any. Never present on Android (MetricKit is iOS-only). */
+  crashReport?: CrashReport | null;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
@@ -412,7 +425,7 @@ export interface ExpoAppMetricsModuleType {
    *
    * @private This API is unstable and may change without notice.
    */
-  getInactiveSessions(): Promise<Session[]>;
+  getInactiveSessions(): Promise<DebugSession[]>;
 
   /**
    * Simulates a crash report, attributing it to the current main session.
@@ -438,18 +451,17 @@ export interface ExpoAppMetricsModuleType {
   addCustomMetricToSession(metric: Metric): Promise<void>;
 
   /**
-   * Returns the current main session, including its metrics.
+   * Returns the main session — the per-launch session that tracks the entire
+   * app process — as a shared object built from in-memory state, so the call
+   * is synchronous and never returns `null`. Metrics and logs are fetched
+   * lazily via the returned object.
+   *
+   * The returned object is a static reference: repeated calls return the same
+   * object while it stays referenced, so `getMainSession() === getMainSession()`.
    *
    * @private This API is unstable and may change without notice.
    */
-  getMainSession(): Promise<MainSession | null>;
-
-  /**
-   * Class for subscribing to HTTP requests observed by the native networking interceptor.
-   * Construct an instance to begin receiving `requestStarted`/`requestCompleted` events;
-   * release the instance (drop all references) to stop.
-   */
-  NetworkRequestObserver: typeof NetworkRequestObserver;
+  getMainSession(): Session;
 
   /**
    * Resolves to the current foreground session — created when the app becomes
@@ -461,4 +473,20 @@ export interface ExpoAppMetricsModuleType {
    * @platform ios
    */
   getForegroundSession(): Promise<Session | null>;
+
+  /**
+   * Class for subscribing to HTTP requests observed by the native networking interceptor.
+   * Construct an instance to begin receiving `requestStarted`/`requestCompleted` events;
+   * release the instance (drop all references) to stop.
+   */
+  NetworkRequestObserver: typeof NetworkRequestObserver;
+
+  /**
+   * Native `Session` shared-object class (live main/foreground sessions).
+   * Exposed so the web module can substitute its own implementation; not
+   * intended to be constructed from user code.
+   *
+   * @private This API is unstable and may change without notice.
+   */
+  Session: typeof Session;
 }
