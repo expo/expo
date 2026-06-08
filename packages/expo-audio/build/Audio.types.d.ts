@@ -344,7 +344,25 @@ export type RecordingStartOptions = {
      */
     atTime?: number;
 };
+/**
+ * Directory where the recording file is stored.
+ *
+ * - `cache`: Stores recordings in the app cache directory, a place to store files that can be deleted by the system when the device runs low on storage.
+ * - `document`: Stores recordings in the app document directory, a place to store files that are safe from being deleted by the system.
+ *
+ * @platform android
+ * @platform ios
+ */
+export type RecordingDirectory = 'cache' | 'document';
 export type RecordingOptions = {
+    /**
+     * The directory where the recording file should be stored.
+     *
+     * @default 'cache'
+     * @platform android
+     * @platform ios
+     */
+    directory?: RecordingDirectory;
     /**
      * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
      */
