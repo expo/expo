@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.INTERNAL_CALLSITES_REGEX = void 0;
 exports.getDefaultCustomizeFrame = getDefaultCustomizeFrame;
 const url_1 = require("url");
+const filePath_1 = require("./utils/filePath");
 // Import only the types here, the values will be imported from the project, at runtime.
 exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     '/Libraries/Renderer/implementations/.+\\.js$',
@@ -62,6 +63,12 @@ exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     'node_modules/.+/',
 ].join('|'));
 function isUrl(value) {
+    // Windows absolute paths (e.g. `C:\path\to\file.js`) are parsed as a URL with a
+    // single-letter (drive) protocol by `new URL`. Treat those as file paths, not URLs,
+    // otherwise every Windows frame is incorrectly collapsed and stripped of its location.
+    if (/^[a-zA-Z]:[\\/]/.test(value)) {
+        return false;
+    }
     try {
         // eslint-disable-next-line no-new
         new url_1.URL(value);
@@ -88,7 +95,9 @@ function getDefaultCustomizeFrame() {
                 collapse: true,
             };
         }
-        let collapse = Boolean(frame.file && exports.INTERNAL_CALLSITES_REGEX.test(frame.file));
+        // INTERNAL_CALLSITES_REGEX uses POSIX separators (`/`). On Windows `frame.file`
+        // uses `\`, so it must be normalized to POSIX or no library frames would collapse.
+        let collapse = Boolean(frame.file && exports.INTERNAL_CALLSITES_REGEX.test((0, filePath_1.toPosixPath)(frame.file)));
         if (!collapse) {
             // This represents the first frame of the stacktrace.
             // Often this looks like: `__r(0);`.
