@@ -333,7 +333,7 @@ export default function BottomSheetWithFlexRNContentExample() {
 }
 ```
 
-### Scrollable React Native content (FlatList, FlashList)
+### Scrollable React Native content
 
 Nest a scrollable React Native list such as `FlatList`, `ScrollView`, or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list) inside the sheet with `RNHostView`. Size the sheet with [`presentationDetents`](modifiers/#presentationdetentsdetents-options) and the list scrolls within that height.
 
@@ -362,7 +362,7 @@ export default function BottomSheetWithScrollableContentExample() {
               <View style={{ padding: 16 }}>
                 <FlatList
                   data={DATA}
-                  keyExtractor={item => item}
+                  keyExtractor={(item) => item}
                   renderItem={({ item }) => <RNText style={{ paddingVertical: 16 }}>{item}</RNText>}
                 />
               </View>

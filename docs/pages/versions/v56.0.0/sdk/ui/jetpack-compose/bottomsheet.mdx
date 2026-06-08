@@ -274,7 +274,7 @@ export default function FlexRNContentExample() {
 }
 ```
 
-### Scrollable React Native content (FlatList, FlashList)
+### Scrollable React Native content
 
 Nest a scrollable React Native list such as `FlatList`, `ScrollView`, or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list) inside the sheet with `RNHostView`. Set `nestedScrollEnabled` on the scrollable so it scrolls its own content first, and once it reaches the top edge the remaining drag moves the sheet. Without `nestedScrollEnabled` the list consumes the gesture and the sheet stays put.
 
@@ -302,7 +302,7 @@ export default function ScrollableContentBottomSheetExample() {
                 nestedScrollEnabled
                 style={{ flex: 1 }}
                 data={DATA}
-                keyExtractor={item => item}
+                keyExtractor={(item) => item}
                 renderItem={({ item }) => <RNText style={{ paddingVertical: 16 }}>{item}</RNText>}
               />
             </RNHostView>
