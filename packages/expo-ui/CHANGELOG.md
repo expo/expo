@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [universal][android] Use `BasicTextField` component instead of Filled Material TextField. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🎉 New features
 
+- [jetpack-compose] Added `BasicTextField` component. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS][web] Added `seedColor` prop to the universal and SwiftUI `<Host>`, used as the SwiftUI tint on iOS and to derive the primary color scale on web. ([#46566](https://github.com/expo/expo/pull/46566) by [@zoontek](https://github.com/zoontek))
 - [iOS] Added the SwiftUI `accessibilityHidden` modifier to hide decorative views from VoiceOver and other assistive technologies during element traversal. ([#46579](https://github.com/expo/expo/pull/46579) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `accessibilityIdentifier` modifier to set a stable identifier for UI testing tools such as XCUITest. ([#46556](https://github.com/expo/expo/pull/46556) by [@ramonclaudio](https://github.com/ramonclaudio))
