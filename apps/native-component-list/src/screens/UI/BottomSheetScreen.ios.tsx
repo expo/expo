@@ -88,7 +88,7 @@ export default function BottomSheetScreen() {
     if ('fraction' in detent) return `${detent.fraction * 100}%`;
     return `${detent.height}pt`;
   };
-
+  const [listDetent, setListDetent] = React.useState<PresentationDetent>('medium');
   return (
     <Host style={{ flex: 1 }}>
       <Form>
@@ -295,7 +295,10 @@ export default function BottomSheetScreen() {
       <BottomSheet isPresented={showScrollableList} onIsPresentedChange={setShowScrollableList}>
         <Group
           modifiers={[
-            presentationDetents(['medium', 'large']),
+            presentationDetents(['medium', 'large'], {
+              selection: listDetent,
+              onSelectionChange: setListDetent,
+            }),
             presentationDragIndicator('visible'),
           ]}>
           <RNHostView>
