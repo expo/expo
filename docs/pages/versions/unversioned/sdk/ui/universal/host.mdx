@@ -141,6 +141,25 @@ export default function HostColorSchemeExample() {
 }
 ```
 
+### Seeding the color theme
+
+Use `seedColor` to derive the theme applied to the subtree from a single base color. Each platform interprets it natively. On Android, it generates a full Material 3 palette (`SchemeTonalSpot`, the same algorithm as Material You) that themes Compose children and is exposed to descendants via [`useMaterialColors`](../jetpack-compose/colors#usematerialcolorsoptions). On iOS, it is applied as the SwiftUI tint, propagating through the environment to theme interactive controls such as buttons, switches, and sliders. On web, it generates a primary color scale exposed as CSS variables to the underlying `View`. When omitted, each platform falls back to its default theme.
+
+```tsx HostSeedColorExample.tsx
+import { Host, Column, Button, Switch } from '@expo/ui';
+
+export default function HostSeedColorExample() {
+  return (
+    <Host seedColor="#00bc7d" style={{ flex: 1 }}>
+      <Column spacing={12} alignment="center">
+        <Button label="Themed button" onPress={() => {}} />
+        <Switch value onValueChange={() => {}} />
+      </Column>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

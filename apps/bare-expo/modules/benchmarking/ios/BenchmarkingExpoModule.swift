@@ -9,6 +9,12 @@ struct Point: Record {
   var y: Double = 0
 }
 
+@Record
+struct SynthesizedPoint {
+  var x: Double = 0
+  var y: Double = 0
+}
+
 final class SharedPoint: SharedObject {
   var x: Double = 0
   var y: Double = 0
@@ -58,6 +64,10 @@ public final class BenchmarkingExpoModule: Module {
     }
 
     Function("passthroughRecord") { (point: Point) in
+      return point
+    }
+
+    Function("passthroughSynthesizedRecord") { (point: SynthesizedPoint) in
       return point
     }
 

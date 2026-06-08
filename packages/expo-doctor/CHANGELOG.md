@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix SDK 55 Metro config check for missing `metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 1.19.8 — 2026-05-23

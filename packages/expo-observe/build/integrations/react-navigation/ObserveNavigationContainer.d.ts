@@ -9,7 +9,7 @@ declare const NavigationContainer: (<RootParamList extends {} = ReactNavigation.
         routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, "stale" | "routes">> & {
+    }>, "routes" | "stale">> & {
         routes: (Omit<import("@react-navigation/native").Route<string>, "key"> & {
             state?: import("@react-navigation/native").InitialState;
         })[];
@@ -32,7 +32,7 @@ export declare const ObserveNavigationContainer: import("react").ForwardRefExoti
         routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, "stale" | "routes">> & {
+    }>, "routes" | "stale">> & {
         routes: (Omit<import("@react-navigation/native").Route<string>, "key"> & {
             state?: import("@react-navigation/native").InitialState;
         })[];

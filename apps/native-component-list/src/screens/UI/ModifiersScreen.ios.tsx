@@ -38,6 +38,8 @@ import {
   onAppear,
   onDisappear,
   accessibilityLabel,
+  accessibilityIdentifier,
+  accessibilityHidden,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -655,6 +657,16 @@ export default function ModifiersScreen() {
               </HStack>
             )}
 
+            {/* accessibilityHidden: decorative SF Symbol skipped by VoiceOver */}
+            <HStack spacing={6}>
+              <Image
+                systemName="exclamationmark.triangle"
+                size={17}
+                modifiers={[accessibilityHidden(true)]}
+              />
+              <Text>Something went wrong</Text>
+            </HStack>
+
             <Text
               modifiers={[
                 background('#E67E22'),
@@ -684,6 +696,7 @@ export default function ModifiersScreen() {
                 foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 border({ color: '#9B59B6', width: 1 }),
                 accessibilityLabel('Complex styled card with multiple effects'),
+                accessibilityIdentifier('complex-styled-card'),
                 onTapGesture(() => alert('Complex card with multiple modifiers tapped!')),
               ]}>
               ✨ Complex: All effects combined!

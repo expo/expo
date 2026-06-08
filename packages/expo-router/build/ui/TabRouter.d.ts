@@ -16,22 +16,7 @@ export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | Repla
         params?: object;
     };
 };
-export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {
-    type: "GO_BACK";
-    source?: string;
-    target?: string;
-} | {
-    type: "NAVIGATE";
-    payload: {
-        name: string;
-        params?: object;
-        path?: string;
-        merge?: boolean;
-        pop?: boolean;
-    };
-    source?: string;
-    target?: string;
-} | {
+export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, import("../react-navigation/routers/CommonActions").GoBackAction | import("../react-navigation/routers/CommonActions").NavigateAction | {
     type: "NAVIGATE_DEPRECATED";
     payload: {
         name: string;
