@@ -9,7 +9,7 @@
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/utils/path.ts#L1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.path2regexp = exports.getPathMapping = exports.parsePathWithSlug = exports.extname = exports.joinPath = exports.fileURLToFilePath = exports.filePathToFileURL = exports.decodeFilePathFromAbsolute = exports.encodeFilePathToAbsolute = void 0;
+exports.extname = exports.joinPath = exports.fileURLToFilePath = exports.filePathToFileURL = exports.decodeFilePathFromAbsolute = exports.encodeFilePathToAbsolute = void 0;
 // Terminology:
 // - filePath: posix-like file path, e.g. `/foo/bar.js` or `c:/foo/bar.js`
 //   This is used by Vite.
@@ -81,94 +81,4 @@ const extname = (filePath) => {
     return index > 0 ? filePath.slice(index) : '';
 };
 exports.extname = extname;
-const parsePathWithSlug = (path) => path
-    .split('/')
-    .filter(Boolean)
-    .map((name) => {
-    let type = 'literal';
-    const isSlug = name.startsWith('[') && name.endsWith(']');
-    if (isSlug) {
-        type = 'group';
-        name = name.slice(1, -1);
-    }
-    const isWildcard = name.startsWith('...');
-    if (isWildcard) {
-        type = 'wildcard';
-        name = name.slice(3);
-    }
-    return { type, name };
-});
-exports.parsePathWithSlug = parsePathWithSlug;
-const getPathMapping = (pathSpec, pathname) => {
-    const actual = pathname.split('/').filter(Boolean);
-    if (pathSpec.length > actual.length) {
-        return null;
-    }
-    const mapping = {};
-    let wildcardStartIndex = -1;
-    for (let i = 0; i < pathSpec.length; i++) {
-        const { type, name } = pathSpec[i];
-        if (type === 'literal') {
-            if (name !== actual[i]) {
-                return null;
-            }
-        }
-        else if (type === 'wildcard') {
-            wildcardStartIndex = i;
-            break;
-        }
-        else if (name) {
-            mapping[name] = actual[i];
-        }
-    }
-    if (wildcardStartIndex === -1) {
-        if (pathSpec.length !== actual.length) {
-            return null;
-        }
-        return mapping;
-    }
-    let wildcardEndIndex = -1;
-    for (let i = 0; i < pathSpec.length; i++) {
-        const { type, name } = pathSpec[pathSpec.length - i - 1];
-        if (type === 'literal') {
-            if (name !== actual[actual.length - i - 1]) {
-                return null;
-            }
-        }
-        else if (type === 'wildcard') {
-            wildcardEndIndex = actual.length - i - 1;
-            break;
-        }
-        else if (name) {
-            mapping[name] = actual[actual.length - i - 1];
-        }
-    }
-    if (wildcardStartIndex === -1 || wildcardEndIndex === -1) {
-        throw new Error('Invalid wildcard path');
-    }
-    const wildcardName = pathSpec[wildcardStartIndex].name;
-    if (wildcardName) {
-        mapping[wildcardName] = actual.slice(wildcardStartIndex, wildcardEndIndex + 1);
-    }
-    return mapping;
-};
-exports.getPathMapping = getPathMapping;
-/**
- * Transform a path spec to a regular expression.
- */
-const path2regexp = (path) => {
-    const parts = path.map(({ type, name }) => {
-        if (type === 'literal') {
-            return name;
-        }
-        else if (type === 'group') {
-            return `([^/]+)`;
-        }
-        else {
-            return `(.*)`;
-        }
-    });
-    return `^/${parts.join('/')}$`;
-};
-exports.path2regexp = path2regexp;
 //# sourceMappingURL=path.js.map

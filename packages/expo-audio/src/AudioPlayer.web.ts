@@ -1,13 +1,13 @@
-import {
+import type {
   AudioMetadata,
   AudioPlayerOptions,
   AudioSource,
   AudioStatus,
   PitchCorrectionQuality,
 } from './Audio.types';
-import { AudioLockScreenOptions } from './AudioConstants';
+import type { AudioLockScreenOptions } from './AudioConstants';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE } from './AudioEventKeys';
-import { AudioPlayer, AudioEvents } from './AudioModule.types';
+import type { AudioPlayer, AudioEvents } from './AudioModule.types';
 import { isAudioActive } from './AudioModule.web';
 import {
   getAudioContext,
@@ -20,6 +20,11 @@ import {
 import { mediaSessionController } from './MediaSessionController.web';
 
 export const activePlayers = new Set<AudioPlayerWeb>();
+
+let hasWarnedIOSVolume = false;
+function isIOSSafari(): boolean {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+}
 
 export class AudioPlayerWeb
   extends globalThis.expo.SharedObject<AudioEvents>
@@ -101,6 +106,13 @@ export class AudioPlayerWeb
   }
 
   set volume(value: number) {
+    if (!hasWarnedIOSVolume && isIOSSafari()) {
+      hasWarnedIOSVolume = true;
+      console.warn(
+        'expo-audio: Programmatic volume control is not supported in browsers on iOS. ' +
+          'Apple requires volume to be controlled exclusively by the device physical buttons.'
+      );
+    }
     this.media.volume = value;
   }
 

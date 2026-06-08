@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 
-import { DocumentPickerAsset, DocumentPickerOptions, DocumentPickerResult } from './types';
+import type { DocumentPickerAsset, DocumentPickerOptions, DocumentPickerResult } from './types';
 
 export default {
   async getDocumentAsync({

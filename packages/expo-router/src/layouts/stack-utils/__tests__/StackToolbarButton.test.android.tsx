@@ -52,21 +52,21 @@ describe('NativeToolbarButton', () => {
   };
 
   describe('tint color logic', () => {
-    it('sets tintColor to undefined when imageRenderingMode is original', () => {
+    it('sets tint to null when imageRenderingMode is original', () => {
       render(<NativeToolbarButton {...defaultProps} imageRenderingMode="original" />);
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tint: undefined,
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        tint: null,
       });
     });
 
-    it('sets tintColor to undefined when imageRenderingMode is original even with tintColor prop', () => {
+    it('sets tint to null when imageRenderingMode is original even with tintColor prop', () => {
       render(
         <NativeToolbarButton {...defaultProps} imageRenderingMode="original" tintColor="red" />
       );
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tint: undefined,
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        tint: null,
       });
     });
 
@@ -75,7 +75,7 @@ describe('NativeToolbarButton', () => {
         <NativeToolbarButton {...defaultProps} imageRenderingMode="template" tintColor="red" />
       );
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'red',
       });
     });
@@ -83,7 +83,7 @@ describe('NativeToolbarButton', () => {
     it('falls back to dynamic onSurface when imageRenderingMode is template and no tintColor', () => {
       render(<NativeToolbarButton {...defaultProps} imageRenderingMode="template" />);
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'dynamic:onSurface',
       });
     });
@@ -91,7 +91,7 @@ describe('NativeToolbarButton', () => {
     it('uses provided tintColor when imageRenderingMode is undefined', () => {
       render(<NativeToolbarButton {...defaultProps} tintColor="red" />);
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'red',
       });
     });
@@ -99,7 +99,7 @@ describe('NativeToolbarButton', () => {
     it('falls back to dynamic onSurface when both imageRenderingMode and tintColor are undefined', () => {
       render(<NativeToolbarButton {...defaultProps} />);
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'dynamic:onSurface',
       });
     });
@@ -117,7 +117,7 @@ describe('NativeToolbarButton', () => {
     it('uses context tintColor when no prop tintColor', () => {
       renderWithColors(defaultProps, { tintColor: 'context-tint' });
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'context-tint',
       });
     });
@@ -125,7 +125,7 @@ describe('NativeToolbarButton', () => {
     it('prop tintColor takes precedence over context tintColor', () => {
       renderWithColors({ ...defaultProps, tintColor: 'prop-tint' }, { tintColor: 'context-tint' });
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'prop-tint',
       });
     });
@@ -133,7 +133,7 @@ describe('NativeToolbarButton', () => {
     it('falls back to default when no prop or context tintColor', () => {
       renderWithColors(defaultProps, {});
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'dynamic:onSurface',
       });
     });
@@ -144,8 +144,8 @@ describe('NativeToolbarButton', () => {
         { tintColor: 'context-tint' }
       );
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tint: undefined,
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        tint: null,
       });
     });
   });
@@ -190,7 +190,7 @@ describe('NativeToolbarButton', () => {
       (hidden) => {
         render(<NativeToolbarButton {...defaultProps} hidden={hidden} />);
 
-        expect(MockedAnimatedItemContainer.mock.calls[0][0]).toMatchObject({
+        expect(MockedAnimatedItemContainer.mock.calls[0]![0]).toMatchObject({
           visible: !hidden,
         });
       }
@@ -201,7 +201,7 @@ describe('NativeToolbarButton', () => {
       (disabled) => {
         render(<NativeToolbarButton {...defaultProps} disabled={disabled} />);
 
-        expect(MockedIconButton.mock.calls[0][0]).toMatchObject({
+        expect(MockedIconButton.mock.calls[0]![0]).toMatchObject({
           enabled: !disabled,
         });
       }
@@ -211,7 +211,7 @@ describe('NativeToolbarButton', () => {
       const onPress = jest.fn();
       render(<NativeToolbarButton {...defaultProps} onPress={onPress} />);
 
-      expect(MockedIconButton.mock.calls[0][0]).toMatchObject({
+      expect(MockedIconButton.mock.calls[0]![0]).toMatchObject({
         onClick: onPress,
       });
     });
@@ -220,9 +220,39 @@ describe('NativeToolbarButton', () => {
       const source = { uri: 'my-icon' };
       render(<NativeToolbarButton {...defaultProps} source={source} />);
 
-      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         source,
         size: 24,
+      });
+    });
+
+    it('passes accessibilityLabel to Icon as contentDescription', () => {
+      render(<NativeToolbarButton {...defaultProps} accessibilityLabel="Open settings" />);
+
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: 'Open settings',
+      });
+    });
+
+    it('passes accessibilityLabel even when imageRenderingMode is original', () => {
+      render(
+        <NativeToolbarButton
+          {...defaultProps}
+          imageRenderingMode="original"
+          accessibilityLabel="Open settings"
+        />
+      );
+
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: 'Open settings',
+      });
+    });
+
+    it('omits contentDescription when accessibilityLabel is not provided', () => {
+      render(<NativeToolbarButton {...defaultProps} />);
+
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: undefined,
       });
     });
   });

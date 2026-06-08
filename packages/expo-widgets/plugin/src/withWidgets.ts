@@ -1,14 +1,8 @@
-import { ConfigPlugin, createRunOncePlugin, StaticPlugin, withPlugins } from 'expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
+import withAndroidWidgets from './android/withAndroidWidgets';
+import withIosWidgets from './ios/withIosWidgets';
 import { WidgetConfig } from './types/WidgetConfig.type';
-import withAppGroupEntitlements from './withAppGroupEntitlements';
-import withAppInfoPlist from './withAppInfoPlist';
-import withEasConfig from './withEasConfig';
-import withIosWarning from './withIosWarning';
-import withPodsLinking from './withPodsLinking';
-import withPushNotifications from './withPushNotifications';
-import withWidgetSourceFiles from './withWidgetSourceFiles';
-import withTargetXcodeProject from './xcode/withTargetXcodeProject';
 
 const pkg = require('../../package.json');
 
@@ -21,74 +15,20 @@ export type ExpoWidgetsConfigPluginProps = {
   enablePushNotifications?: boolean;
   // Enable frequent updates for widgets. Defaults to false.
   frequentUpdates?: boolean;
+  /**
+   * Enable the Android config plugin. Defaults to false.
+   * This option will be removed and Android widget will be enabled by default in the future.
+   */
+  enableAndroid?: boolean;
   widgets?: WidgetConfig[];
 };
 
 const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps | undefined> = (config, props) => {
-  let plugins: (StaticPlugin | ConfigPlugin | string)[] = [];
-  const deploymentTarget = '16.2';
-  const targetName = 'ExpoWidgetsTarget';
-
-  let bundleIdentifier = props?.bundleIdentifier;
-  if (!bundleIdentifier) {
-    bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
-    plugins.push([
-      withIosWarning,
-      {
-        property: 'bundleIdentifier',
-        warning: `Expo Widgets: No bundle identifier provided, using fallback: ${bundleIdentifier}.`,
-      },
-    ]);
-  }
-
-  let groupIdentifier = props?.groupIdentifier;
-  if (!groupIdentifier) {
-    if (!config.ios?.bundleIdentifier) {
-      throw new Error(
-        'iOS bundle identifier is required. Please set `ios.bundleIdentifier` in `app.json` or `app.config.js`'
-      );
-    }
-    groupIdentifier = `group.${config.ios.bundleIdentifier}`;
-    plugins.push([
-      withIosWarning,
-      {
-        property: 'groupIdentifier',
-        warning: `Expo Widgets: No group identifier provided, using fallback: ${groupIdentifier}.`,
-      },
-    ]);
-  }
-
+  const enableAndroid = props?.enableAndroid ?? false;
   const widgets = props?.widgets ?? [];
-  const enablePushNotifications = props?.enablePushNotifications ?? false;
-  const frequentUpdates = props?.frequentUpdates ?? false;
 
-  let sharedFiles: string[] = [];
-  const setFiles = (files: string[]) => {
-    sharedFiles = [...sharedFiles, ...files];
-  };
-  const getFileUris = () => sharedFiles;
-
-  plugins = [
-    ...plugins,
-    [withEasConfig, { targetName, bundleIdentifier, groupIdentifier }],
-    [withPodsLinking, { targetName }],
-    [withWidgetSourceFiles, { targetName, widgets, groupIdentifier, onFilesGenerated: setFiles }],
-    [withAppInfoPlist, { frequentUpdates, groupIdentifier }],
-    [withPushNotifications, { enablePushNotifications }],
-    [withAppGroupEntitlements, { groupIdentifier }],
-    [
-      withTargetXcodeProject,
-      {
-        targetName,
-        bundleIdentifier,
-        deploymentTarget,
-        appleTeamId: config.ios?.appleTeamId,
-        getFileUris,
-      },
-    ],
-  ];
-
-  return withPlugins(config, plugins);
+  const nextConfig = enableAndroid ? withAndroidWidgets(config, { widgets }) : config;
+  return withIosWidgets(nextConfig, { ...props, widgets });
 };
 
 export default createRunOncePlugin(withWidgets, pkg.name, pkg.version);

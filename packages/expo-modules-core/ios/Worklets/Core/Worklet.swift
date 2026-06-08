@@ -20,34 +20,21 @@ public class Worklet: AnySerializable {
   }
 
   /**
-   Schedules the worklet to be executed on the given runtime.
-   */
-  public func schedule(on runtime: WorkletRuntime) {
-    WorkletExecutor.schedule(serializable.jsSerializable, runtime: runtime)
-  }
-
-  /**
    Schedules the worklet to be executed on the given runtime with arguments.
    */
-  public func schedule(on runtime: WorkletRuntime, arguments: [Any]) {
-    WorkletExecutor.schedule(serializable.jsSerializable, runtime: runtime, arguments: arguments)
-  }
-
-  /**
-   Executes the worklet synchronously on the given  runtime.
-   This blocks the current thread until the worklet completes.
-   */
-  public func execute(on runtime: WorkletRuntime) {
-    WorkletExecutor.execute(serializable.jsSerializable, runtime: runtime)
+  public func schedule(on runtime: WorkletRuntime, arguments: [Any] = []) {
+    runtime.schedule(serializable.jsSerializable, arguments: arguments)
   }
 
   /**
    Executes the worklet synchronously on the given runtime with arguments.
    This blocks the current thread until the worklet completes.
    */
-  public func execute(on runtime: WorkletRuntime, arguments: [Any]) {
-    WorkletExecutor.execute(serializable.jsSerializable, runtime: runtime, arguments: arguments)
+  public func execute(on runtime: WorkletRuntime, arguments: [Any] = []) {
+    runtime.execute(serializable.jsSerializable, arguments: arguments)
   }
+
+  // MARK: - AnyArgument
 
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicWorkletType()
@@ -57,5 +44,15 @@ public class Worklet: AnySerializable {
 internal final class NotWorkletException: GenericException<SerializableValueType>, @unchecked Sendable {
   override var reason: String {
     "Expected Serializable of type Worklet but got \(param)"
+  }
+}
+
+/// Thrown when a worklet operation is attempted but the `react-native-worklets` native
+/// adapter isn't linked (its provider is `nil`). Replaces misleading lower-level errors.
+internal final class WorkletsNotInstalledException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "This feature requires `react-native-worklets`, but its native adapter isn't linked — usually " +
+    "because the package isn't installed (it's an optional peer dependency of libraries like Expo UI " +
+    "and Reanimated). Install it with `npx expo install react-native-worklets`, then rebuild the app."
   }
 }

@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 2.1.0 — 2026-05-20
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 2.0.22 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.21 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.20 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.19 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.18 - 2026-03-19
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.17 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.16 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

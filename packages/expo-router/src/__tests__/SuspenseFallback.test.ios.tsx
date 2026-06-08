@@ -1,8 +1,9 @@
 import { screen } from '@testing-library/react-native';
-import React, { use } from 'react';
+import { use } from 'react';
 import { Text, View } from 'react-native';
 
-import { Slot, SuspenseFallbackProps } from '../exports';
+import type { SuspenseFallbackProps } from '../exports';
+import { Slot } from '../exports';
 import { renderRouter } from '../testing-library';
 
 const renderFallback = (route: string, testID = 'custom-fallback') => (
@@ -10,6 +11,35 @@ const renderFallback = (route: string, testID = 'custom-fallback') => (
     <Text>Loading {route}...</Text>
   </View>
 );
+
+// TODO(@ubax): this is only a workaround to clean-up CI outputs. Find a better solution
+// Tests in this file use a never-resolving promise to keep a route in its Suspense fallback.
+// React 19 schedules passive effects for the suspended subtree via reconnectPassiveEffects,
+// and PreventRemoveProvider (mounted by the implicit Stack navigator) updates a parent
+// provider's state from one of those effects after the render's act wrapper has closed.
+// That update is harmless (it's part of the suspended boundary's own bookkeeping and the
+// tests never assert against it), but React's test renderer surfaces it as an act warning.
+// Silence only that specific warning so other unexpected console.error output still fails CI.
+let consoleErrorSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  const originalError = console.error;
+  consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
+    const format = typeof args[0] === 'string' ? args[0] : '';
+    const componentName = typeof args[1] === 'string' ? args[1] : '';
+    if (
+      format.startsWith('An update to %s inside a test was not wrapped in act') &&
+      componentName === 'PreventRemoveProvider'
+    ) {
+      return;
+    }
+    originalError(...args);
+  });
+});
+
+afterEach(() => {
+  consoleErrorSpy.mockRestore();
+});
 
 it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', () => {
   const pending = new Promise<string>(() => {});

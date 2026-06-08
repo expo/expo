@@ -1,3 +1,4 @@
+import { CommonActions } from '../core';
 /**
  * Helper to build a href for a screen based on the linking options.
  */
@@ -5,22 +6,7 @@ export declare function useBuildHref(): (name: string, params?: object) => strin
 /**
  * Helper to build a navigation action from a href based on the linking options.
  */
-export declare const useBuildAction: () => (href: string) => {
-    type: "GO_BACK";
-    source?: string;
-    target?: string;
-} | {
-    type: "NAVIGATE";
-    payload: {
-        name: string;
-        params?: object;
-        path?: string;
-        merge?: boolean;
-        pop?: boolean;
-    };
-    source?: string;
-    target?: string;
-} | {
+export declare const useBuildAction: () => (href: string) => CommonActions.GoBackAction | CommonActions.NavigateAction | {
     type: "NAVIGATE_DEPRECATED";
     payload: {
         name: string;
@@ -58,15 +44,15 @@ export declare const useBuildAction: () => (href: string) => {
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+        routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
         type: string;
         stale: false;
-    }> | import("../core").PartialState<Readonly<{
+    }> | import(".").PartialState<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+        routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
         type: string;
         stale: false;
     }>> | (Omit<Readonly<{
@@ -74,22 +60,22 @@ export declare const useBuildAction: () => (href: string) => {
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+        routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "routes"> & {
-        routes: Omit<import("../core").Route<string>, "key">[];
+        routes: Omit<import(".").Route<string>, "key">[];
     })) | undefined;
 } | {
     type: "NAVIGATE";
     payload: {
         name: string;
-        params?: import("../core").NavigatorScreenParams<Readonly<{
+        params?: import(".").NavigatorScreenParams<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+            routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
             type: string;
             stale: false;
         }>>;
@@ -103,22 +89,7 @@ export declare const useBuildAction: () => (href: string) => {
  */
 export declare function useLinkBuilder(): {
     buildHref: (name: string, params?: object) => string | undefined;
-    buildAction: (href: string) => {
-        type: "GO_BACK";
-        source?: string;
-        target?: string;
-    } | {
-        type: "NAVIGATE";
-        payload: {
-            name: string;
-            params?: object;
-            path?: string;
-            merge?: boolean;
-            pop?: boolean;
-        };
-        source?: string;
-        target?: string;
-    } | {
+    buildAction: (href: string) => CommonActions.GoBackAction | CommonActions.NavigateAction | {
         type: "NAVIGATE_DEPRECATED";
         payload: {
             name: string;
@@ -156,15 +127,15 @@ export declare function useLinkBuilder(): {
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+            routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
             type: string;
             stale: false;
-        }> | import("../core").PartialState<Readonly<{
+        }> | import(".").PartialState<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+            routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
             type: string;
             stale: false;
         }>> | (Omit<Readonly<{
@@ -172,22 +143,22 @@ export declare function useLinkBuilder(): {
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+            routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "routes"> & {
-            routes: Omit<import("../core").Route<string>, "key">[];
+            routes: Omit<import(".").Route<string>, "key">[];
         })) | undefined;
     } | {
         type: "NAVIGATE";
         payload: {
             name: string;
-            params?: import("../core").NavigatorScreenParams<Readonly<{
+            params?: import(".").NavigatorScreenParams<Readonly<{
                 key: string;
                 index: number;
                 routeNames: string[];
                 history?: unknown[];
-                routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+                routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
                 type: string;
                 stale: false;
             }>>;

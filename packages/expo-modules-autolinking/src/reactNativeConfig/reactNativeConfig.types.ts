@@ -1,5 +1,3 @@
-import type { SupportedPlatform } from '../types';
-
 /** Dependency configuration for Android platform. */
 export interface RNConfigDependencyAndroid {
   sourceDir: string;
@@ -36,6 +34,8 @@ export interface RNConfigDependency {
   platforms: {
     android?: RNConfigDependencyAndroid;
     ios?: RNConfigDependencyIos;
+    tvos?: RNConfigDependencyIos;
+    macos?: RNConfigDependencyIos;
     web?: RNConfigDependencyWeb;
   };
 }
@@ -47,6 +47,12 @@ export interface RNConfigResult {
   dependencies: Record<string, RNConfigDependency>;
   project: {
     ios?: {
+      sourceDir: string;
+    };
+    tvos?: {
+      sourceDir: string;
+    };
+    macos?: {
       sourceDir: string;
     };
   };
@@ -61,6 +67,8 @@ export interface RNConfigReactNativePlatformsConfig {
   platforms?: {
     android?: RNConfigReactNativePlatformsConfigAndroid;
     ios?: RNConfigReactNativePlatformsConfigIos;
+    tvos?: RNConfigReactNativePlatformsConfigIos;
+    macos?: RNConfigReactNativePlatformsConfigIos;
     web?: RNConfigReactNativePlatformsConfigWeb;
   };
 }
@@ -93,6 +101,12 @@ export interface RNConfigReactNativeAppProjectConfig {
     packageName: string;
   };
   ios?: {
+    sourceDir: string;
+  };
+  tvos?: {
+    sourceDir: string;
+  };
+  macos?: {
     sourceDir: string;
   };
 }

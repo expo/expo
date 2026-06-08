@@ -48,9 +48,9 @@ export const TemplateBareMinimumDiffViewer = () => {
 
   return (
     <>
-      <div className={mergeClasses('grid grid-cols-2 gap-4', 'max-sm-gutters:grid-cols-1')}>
+      <div className={mergeClasses('grid grid-cols-2 gap-4', 'max-sm:grid-cols-1')}>
         <div>
-          <RawH4 className="max-sm-gutters:my-0! mt-2">From SDK version:</RawH4>
+          <RawH4 className="mt-2 max-sm:my-0!">From SDK version:</RawH4>
           <VersionSelector
             version={fromVersion as string}
             setVersion={newFromVersion =>
@@ -60,7 +60,7 @@ export const TemplateBareMinimumDiffViewer = () => {
           />
         </div>
         <div>
-          <RawH4 className="max-sm-gutters:my-0! mt-2">To SDK version:</RawH4>
+          <RawH4 className="mt-2 max-sm:my-0!">To SDK version:</RawH4>
           <VersionSelector
             version={toVersion as string}
             setVersion={newToVersion =>

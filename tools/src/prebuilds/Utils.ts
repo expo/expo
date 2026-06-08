@@ -209,9 +209,9 @@ export const validatePodNamesAsync = async (
       searchPath = pkg.path;
       podspecPattern = `${podName}.podspec`;
     } else {
-      // Expo packages: podspec could be in root or ios/ subdirectory
+      // Expo packages: podspec could be in root, ios/, or apple/ subdirectory
       searchPath = pkg.path;
-      podspecPattern = `{${podName}.podspec,ios/${podName}.podspec}`;
+      podspecPattern = `{${podName}.podspec,ios/${podName}.podspec,apple/${podName}.podspec}`;
     }
 
     // Look for matching podspec
@@ -223,7 +223,7 @@ export const validatePodNamesAsync = async (
     if (foundPodspecs.length === 0) {
       // Find all podspecs in the package to help debug
       const allPodspecs = await glob(
-        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec}',
+        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec,apple/*.podspec}',
         {
           cwd: searchPath,
           absolute: false,
@@ -449,7 +449,9 @@ export const getVersionsInfoAsync = async (options: {
         .replace(/^v/i, '')
         .trim();
 
-    const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED === '1';
+    // Matches hermes-engine.podspec polarity: V1 is the default, classic is
+    // selected only when the consuming app explicitly sets the env var to "0".
+    const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED !== '0';
     const version = isHermesV1Enabled
       ? properties.HERMES_V1_VERSION_NAME
       : properties.HERMES_VERSION_NAME;
@@ -546,6 +548,7 @@ export const createAsyncSpinner = (
         logger.log(`${Prefix} ${chalk.yellow('⚠')} ${effectivePrefix(chalk.yellow)}${text ?? ''}`);
       },
       info: (text?: string) => {
+        if (!logger.isVerbose()) return;
         logger.log(`${Prefix} ${chalk.blue('ℹ')} ${effectivePrefix(chalk.green)}${text ?? ''}`);
       },
     };

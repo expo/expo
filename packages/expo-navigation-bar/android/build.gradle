@@ -4,17 +4,18 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '55.0.8'
+version = '56.0.3'
 
 android {
   namespace "expo.modules.navigationbar"
   defaultConfig {
     versionCode 1
-    versionName '55.0.8'
+    versionName '56.0.3'
   }
 }
 
 dependencies {
   implementation 'androidx.core:core:1.17.0'
   implementation 'androidx.appcompat:appcompat:1.7.1'
+  implementation 'com.facebook.react:react-android'
 }

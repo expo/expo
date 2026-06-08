@@ -1,4 +1,4 @@
-import { AssetMetadata } from './AssetSources';
+import { type AssetMetadata } from './AssetSources';
 export type AssetDescriptor = {
     name: string;
     type: string;
@@ -7,7 +7,7 @@ export type AssetDescriptor = {
     width?: number | null;
     height?: number | null;
 };
-export { AssetMetadata };
+export type { AssetMetadata } from './AssetSources';
 /**
  * Android resource URL prefix.
  * @hidden

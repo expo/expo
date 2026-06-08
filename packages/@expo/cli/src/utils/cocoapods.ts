@@ -1,4 +1,5 @@
-import { getPackageJson, PackageJSONConfig } from '@expo/config';
+import type { PackageJSONConfig } from '@expo/config';
+import { getPackageJson } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
@@ -85,7 +86,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
       // prompt user -- do you want to install cocoapods right now?
       step.text = 'CocoaPods CLI not found in your PATH, installing it now.';
       step.stopAndPersist();
-      await PackageManager.CocoaPodsPackageManager.installCLIAsync({
+      await packageManager.installCLIAsync({
         nonInteractive: true,
         spawnOptions: {
           ...packageManager.options,

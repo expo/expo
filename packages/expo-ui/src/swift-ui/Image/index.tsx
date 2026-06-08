@@ -1,10 +1,10 @@
 import { requireNativeView } from 'expo';
-import { ColorValue } from 'react-native';
-import { type SFSymbol } from 'sf-symbols-typescript';
+import type { ColorValue } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { type ViewEvent } from '../../types';
+import type { ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 export interface ImageProps extends CommonViewModifierProps {
   /**
@@ -12,6 +12,10 @@ export interface ImageProps extends CommonViewModifierProps {
    * For example: 'photo', 'heart.fill', 'star.circle'
    */
   systemName?: SFSymbol;
+  /**
+   * The asset catalog name of a custom SF Symbol imported as a symbol set.
+   */
+  assetName?: string;
   /**
    * The URI of the local image file to display.
    * For example: 'file:///path/to/image.jpg'

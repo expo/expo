@@ -36,7 +36,14 @@ Enable static rendering in your project's [app config](/versions/latest/config/a
 
 Start the development server:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
@@ -44,12 +51,26 @@ Start the development server:
 
 To bundle your static website for production, run the export command:
 
-<Terminal cmd={['$ npx expo export --platform web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 This will create a **dist** directory with your statically rendered website. If you have files in a local **public** directory, these will be copied over as well.
 You can test the production build locally by running the following command and opening the linked URL in your browser:
 
-<Terminal cmd={['$ npx serve dist']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx serve dist'],
+    yarn: ['$ yarn dlx serve dist'],
+    pnpm: ['$ pnpm dlx serve dist'],
+    bun: ['$ bunx serve dist'],
+  }}
+/>
 
 This project can be deployed to almost every hosting service. Note that this is not a single-page application, nor does it contain a custom server API. This means dynamic routes (for example, **src/app/[id].tsx**) will not arbitrarily work. You may need to build a serverless function to handle dynamic routes.
 
@@ -99,7 +120,7 @@ export async function generateStaticParams(): Promise<Record<string, string>[]> 
 
 ```tsx src/app/[id]/_layout.tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
-  /* @info Any dynamic children that export <CODE>generateStaticParams</CODE> will be invoked once for every entry in the array. */
+  /* @info Any dynamic children that export `generateStaticParams` will be invoked once for every entry in the array. */
   return [{ id: 'one' }, { id: 'two' }];
   /* @end */
 }
@@ -152,7 +173,7 @@ By default, every page is wrapped with some small HTML boilerplate, this is know
 
 You can customize the root HTML file by creating a **src/app/+html.tsx** file in your project. This file exports a React component that only ever runs in Node.js, which means global CSS cannot be imported inside of it. The component will wrap all routes in the **app** directory. This is useful for adding global `<head>` elements or disabling body scrolling.
 
-> **Note**: Global context providers should go in the [Root Layout](/router/basics/layout/#root-layout) component, not the Root HTML component.
+> **Note**: Global context providers should go in the [Root Layout](/router/basics/navigation-layouts/#root-layout) component, not the Root HTML component.
 
 ```tsx src/app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
@@ -187,7 +208,7 @@ export default function Root({ children }: PropsWithChildren) {
 - The `children` prop comes with the root `<div id="root" />` tag included inside.
 - The JavaScript scripts are appended after the static render.
 - React Native web styles are statically injected automatically.
-- Global CSS should not be imported into this file. Instead, use the [Root Layout](/router/basics/layout/#root-layout). Expo Router traverses the dependency graph starting from the root layout, so importing CSS elsewhere can cause unexpected loading order where **node_modules** CSS takes precedence over your custom styles.
+- Global CSS should not be imported into this file. Instead, use the [Root Layout](/router/basics/navigation-layouts/#root-layout). Expo Router traverses the dependency graph starting from the root layout, so importing CSS elsewhere can cause unexpected loading order where **node_modules** CSS takes precedence over your custom styles.
 - Browser APIs like `window.location` are unavailable in this component as it only runs in Node.js during static rendering.
 
 ### `expo-router/html`

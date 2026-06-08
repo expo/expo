@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
@@ -106,6 +107,7 @@ class UpdatesDevLauncherController(
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
 
   override val reloadScreenManager = ReloadScreenManager()
+  override var reactHost: WeakReference<ReactHost> = WeakReference(null)
 
   override fun onEventListenerStartObserving() {
     // no-op for UpdatesDevLauncherController
@@ -141,6 +143,9 @@ class UpdatesDevLauncherController(
 
   override val updateUrl: Uri?
     get() = updatesConfiguration?.updateUrl
+
+  override val requestHeaders: Map<String, String>?
+    get() = updatesConfiguration?.requestHeaders
 
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     return DisabledUpdatesStateChangeSubscription()

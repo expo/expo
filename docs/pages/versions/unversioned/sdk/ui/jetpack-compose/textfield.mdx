@@ -3,11 +3,14 @@ title: TextField
 description: Jetpack Compose TextField components for native Material3 text input.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`TextInput`](../universal/textinput) — it renders the appropriate native component per platform.
 
 Expo UI provides two text field components that match the official Jetpack Compose [TextField API](https://developer.android.com/develop/ui/compose/text/user-input): `TextField` (filled) and `OutlinedTextField` (outlined border). Both variants share the same props and support composable slot children for label, placeholder, icons, prefix, suffix, and supporting text.
 
@@ -16,28 +19,68 @@ Expo UI provides two text field components that match the official Jetpack Compo
 | Filled   | Solid background with a bottom indicator line. | Default text input style following Material3 design. Use for most forms and input fields.                     |
 | Outlined | Transparent background with a border outline.  | Alternative style that provides a distinct visual boundary. Use when filled fields blend into the background. |
 
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/textfield/android-light.webp"
+  darkSrc="/static/images/expo-ui/textfield/android-dark.webp"
+  alt="Filled and outlined Material 3 text fields"
+/>
+
 ## Installation
 
 <APIInstallSection />
 
 ## Usage
 
-### Basic text field
+### Uncontrolled text field
 
-A filled text field is the default Material3 text input style.
+Bind a [`useNativeState`](usenativestate) observable to `value`. The field tracks the user's input on its own, and you read the current value from `text.value`. The filled style shown here is the default Material3 text input.
 
 ```tsx BasicTextFieldExample.tsx
-import { useState } from 'react';
-import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
+import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
 
 export default function BasicTextFieldExample() {
-  const [value, setValue] = useState('');
+  const text = useNativeState('');
 
   return (
     <Host matchContents>
-      <TextField onValueChange={setValue}>
+      <TextField value={text}>
         <TextField.Label>
           <Text>Username</Text>
+        </TextField.Label>
+      </TextField>
+    </Host>
+  );
+}
+```
+
+### Controlled text field
+
+Pass a [`useNativeState`](usenativestate) observable as `value` and an `onValueChange` worklet to transform or validate input before writing it back. The example below uppercases the text as it is typed.
+
+> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+
+```tsx ControlledTextFieldExample.tsx
+import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import { useCallback } from 'react';
+
+export default function ControlledTextFieldExample() {
+  const text = useNativeState('');
+
+  const handleValueChange = useCallback(
+    (value: string) => {
+      'worklet';
+      text.value = value.toUpperCase();
+    },
+    [text]
+  );
+
+  return (
+    <Host matchContents>
+      <TextField value={text} onValueChange={handleValueChange}>
+        <TextField.Label>
+          <Text>Name</Text>
         </TextField.Label>
       </TextField>
     </Host>
@@ -50,15 +93,14 @@ export default function BasicTextFieldExample() {
 Use `OutlinedTextField` for a text field with a border outline instead of a filled background.
 
 ```tsx OutlinedTextFieldExample.tsx
-import { useState } from 'react';
-import { Host, OutlinedTextField, Text } from '@expo/ui/jetpack-compose';
+import { Host, OutlinedTextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
 
 export default function OutlinedTextFieldExample() {
-  const [value, setValue] = useState('');
+  const text = useNativeState('');
 
   return (
     <Host matchContents>
-      <OutlinedTextField onValueChange={setValue}>
+      <OutlinedTextField value={text}>
         <OutlinedTextField.Label>
           <Text>Email</Text>
         </OutlinedTextField.Label>
@@ -76,15 +118,14 @@ export default function OutlinedTextFieldExample() {
 Both `TextField` and `OutlinedTextField` support 7 composable slots that match the Compose API: `Label`, `Placeholder`, `LeadingIcon`, `TrailingIcon`, `Prefix`, `Suffix`, and `SupportingText`.
 
 ```tsx TextFieldSlotsExample.tsx
-import { useState } from 'react';
-import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
+import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
 
 export default function TextFieldSlotsExample() {
-  const [value, setValue] = useState('');
+  const text = useNativeState('');
 
   return (
     <Host matchContents>
-      <TextField onValueChange={setValue}>
+      <TextField value={text}>
         <TextField.Label>
           <Text>Price</Text>
         </TextField.Label>
@@ -114,16 +155,15 @@ export default function TextFieldSlotsExample() {
 Use the `keyboardOptions` prop to configure the keyboard type, capitalization, auto-correct, and IME action.
 
 ```tsx KeyboardOptionsExample.tsx
-import { useState } from 'react';
-import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
+import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
 
 export default function KeyboardOptionsExample() {
-  const [value, setValue] = useState('');
+  const text = useNativeState('');
 
   return (
     <Host matchContents>
       <TextField
-        onValueChange={setValue}
+        value={text}
         singleLine
         keyboardOptions={{
           keyboardType: 'email',
@@ -145,21 +185,19 @@ export default function KeyboardOptionsExample() {
 Use the `keyboardActions` prop to handle IME action button presses. The triggered callback depends on the `imeAction` set in `keyboardOptions`. Each callback receives the current text value.
 
 ```tsx KeyboardActionsExample.tsx
-import { useState } from 'react';
-import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
+import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
 
 export default function KeyboardActionsExample() {
-  const [value, setValue] = useState('');
-  const [submitted, setSubmitted] = useState('');
+  const text = useNativeState('');
 
   return (
     <Host matchContents>
       <TextField
-        onValueChange={setValue}
+        value={text}
         singleLine
         keyboardOptions={{ imeAction: 'search' }}
         keyboardActions={{
-          onSearch: text => setSubmitted(text),
+          onSearch: value => console.log('Searched:', value),
         }}>
         <TextField.Label>
           <Text>Search</Text>
@@ -170,58 +208,48 @@ export default function KeyboardActionsExample() {
 }
 ```
 
-### Error state
-
-Set `isError` to display the text field in an error state. Combine with `SupportingText` to show an error message.
-
-```tsx ErrorStateExample.tsx
-import { useState } from 'react';
-import { Host, OutlinedTextField, Text } from '@expo/ui/jetpack-compose';
-
-export default function ErrorStateExample() {
-  const [value, setValue] = useState('');
-  const hasError = value.length > 0 && !value.includes('@');
-
-  return (
-    <Host matchContents>
-      <OutlinedTextField onValueChange={setValue} isError={hasError} singleLine>
-        <OutlinedTextField.Label>
-          <Text>Email</Text>
-        </OutlinedTextField.Label>
-        <OutlinedTextField.SupportingText>
-          <Text>{hasError ? 'Please enter a valid email' : 'Required'}</Text>
-        </OutlinedTextField.SupportingText>
-      </OutlinedTextField>
-    </Host>
-  );
-}
-```
-
 ### Imperative ref
 
-Use a ref to imperatively set text, focus, or blur the text field.
+Use a ref to imperatively set text, clear the field, change the selection, or move focus.
 
 ```tsx ImperativeRefExample.tsx
-import { useRef, useState } from 'react';
-import { Host, TextField, TextFieldRef, Button, Row, Text, Column } from '@expo/ui/jetpack-compose';
+import { useRef } from 'react';
+import {
+  Host,
+  TextField,
+  TextFieldRef,
+  Button,
+  Row,
+  Text,
+  Column,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 import { padding } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function ImperativeRefExample() {
   const ref = useRef<TextFieldRef>(null);
-  const [value, setValue] = useState('');
+  const text = useNativeState('');
 
   return (
     <Host matchContents>
       <Column>
-        <TextField ref={ref} onValueChange={setValue} singleLine>
+        <TextField ref={ref} value={text} singleLine>
           <TextField.Label>
             <Text>Name</Text>
           </TextField.Label>
         </TextField>
         <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
-          <Button onClick={() => ref.current?.setText('Hello!')}>
+          <Button onClick={() => ref.current?.setText('Hello world')}>
             <Text>Set text</Text>
           </Button>
+          <Button onClick={() => ref.current?.clear()}>
+            <Text>Clear</Text>
+          </Button>
+          <Button onClick={() => ref.current?.setSelection(0, 5)}>
+            <Text>Select first word</Text>
+          </Button>
+        </Row>
+        <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
           <Button onClick={() => ref.current?.focus()}>
             <Text>Focus</Text>
           </Button>
@@ -230,6 +258,57 @@ export default function ImperativeRefExample() {
           </Button>
         </Row>
       </Column>
+    </Host>
+  );
+}
+```
+
+### Worklet text masking
+
+When `onValueChange` is marked with the `'worklet'` directive, it runs synchronously on the UI thread, so writes to [`useNativeState`](usenativestate) observables inside the callback take effect before the next frame. There is no flicker between the typed text and the masked text. The example below masks a phone number as the user types and writes both `value` and `selection` from the worklet to keep the cursor at the end of the formatted value.
+
+> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+
+```tsx WorkletPhoneMaskExample.tsx
+import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+import { useCallback } from 'react';
+
+export default function WorkletPhoneMaskExample() {
+  const phone = useNativeState('');
+  const selection = useNativeState({ start: 0, end: 0 });
+
+  const handleValueChange = useCallback(
+    (v: string) => {
+      'worklet';
+      const digits = v.replace(/\D/g, '').slice(0, 10);
+      let formatted = digits;
+      if (digits.length > 6) {
+        formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+      } else if (digits.length > 3) {
+        formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+      }
+      if (formatted !== v) {
+        phone.value = formatted;
+        // Snaps to end for demo. Real masks need smarter cursor handling.
+        selection.value = { start: formatted.length, end: formatted.length };
+      }
+    },
+    [phone, selection]
+  );
+
+  return (
+    <Host matchContents>
+      <TextField
+        value={phone}
+        selection={selection}
+        keyboardOptions={{ keyboardType: 'phone' }}
+        modifiers={[fillMaxWidth()]}
+        onValueChange={handleValueChange}>
+        <TextField.Placeholder>
+          <Text>(555) 123-4567</Text>
+        </TextField.Placeholder>
+      </TextField>
     </Host>
   );
 }

@@ -1,5 +1,6 @@
-import { ListForEach, type ListForEachProps } from './ListForEach';
+import { ListForEach } from './ListForEach';
 import { type CommonViewModifierProps } from '../types';
+export { ListForEach, type ListForEachProps } from './ListForEach';
 export interface ListProps extends CommonViewModifierProps {
     /**
      * The children elements to be rendered inside the list.
@@ -18,9 +19,8 @@ export interface ListProps extends CommonViewModifierProps {
 /**
  * A list component that renders its children using a native SwiftUI `List`.
  */
-export declare function List(props: ListProps): import("react").JSX.Element;
+export declare function List(props: ListProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace List {
     var ForEach: typeof ListForEach;
 }
-export { ListForEach, ListForEachProps };
 //# sourceMappingURL=index.d.ts.map

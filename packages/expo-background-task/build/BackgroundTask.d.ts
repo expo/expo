@@ -1,4 +1,5 @@
-import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
+import type { BackgroundTaskOptions } from './BackgroundTask.types';
+import { BackgroundTaskStatus } from './BackgroundTask.types';
 /**
  * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
  * while on native platforms it returns `BackgroundTaskStatus.Available`.
@@ -17,7 +18,7 @@ export declare const getStatusAsync: () => Promise<BackgroundTaskStatus>;
  * import * as TaskManager from 'expo-task-manager';
  *
  * // Register the task outside of the component
- * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, () => {
+ * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
  *   try {
  *     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
  *   } catch (error) {
@@ -59,5 +60,5 @@ export declare function triggerTaskWorkerForTestingAsync(): Promise<boolean>;
 export declare function addExpirationListener(listener: () => void): {
     remove: () => void;
 };
-export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
+export { BackgroundTaskStatus, BackgroundTaskResult, type BackgroundTaskOptions, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.d.ts.map

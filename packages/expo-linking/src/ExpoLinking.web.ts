@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 
-import { URLListener } from './Linking.types';
+import type { URLListener } from './Linking.types';
 
 export default {
   addListener(eventName: 'onURLReceived' | string, listener: URLListener): { remove(): void } {
@@ -27,4 +27,6 @@ export default {
     if (typeof window === 'undefined') return '';
     return window.location.href;
   },
+
+  clearInitialURL(): void {},
 };

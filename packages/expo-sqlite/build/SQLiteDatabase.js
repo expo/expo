@@ -3,7 +3,7 @@ import ExpoSQLite from './ExpoSQLite';
 import { flattenOpenOptions } from './NativeDatabase';
 import { registerDatabaseForDevToolsAsync, unregisterDatabaseForDevToolsAsync, } from './SQLiteDevToolsClient';
 import { SQLiteSession } from './SQLiteSession';
-import { SQLiteStatement, } from './SQLiteStatement';
+import { SQLiteStatement } from './SQLiteStatement';
 import { SQLiteTaggedQuery } from './SQLiteTaggedQuery';
 import { createDatabasePath } from './pathUtils';
 /**

@@ -1,4 +1,5 @@
-import { PermissionStatus, Platform, } from 'expo-modules-core';
+import { PermissionStatus } from 'expo';
+import { Platform } from 'expo-modules-core';
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements
  * specified by the parameter type `Measurement`.

@@ -33,6 +33,7 @@ struct DevMenuRootView: View {
     .id(navigationId)
     .onReceive(DevMenuManager.shared.menuWillShowPublisher) { _ in
       navigationId = UUID()
+      viewModel.refresh()
     }
 #else
     NavigationStack {
@@ -41,11 +42,8 @@ struct DevMenuRootView: View {
     .id(navigationId)
     .onReceive(DevMenuManager.shared.menuWillShowPublisher) { _ in
       navigationId = UUID()
+      viewModel.refresh()
     }
 #endif
   }
-}
-
-#Preview {
-  DevMenuRootView()
 }

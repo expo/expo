@@ -15,6 +15,7 @@ import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
 import { getPrecompileDir } from '../Directories';
+import { getPackageByName } from '../Packages';
 import {
   ObjcTarget,
   SwiftTarget,
@@ -105,6 +106,57 @@ function getReactNativeMinorVersion(pkgPath: string): number {
 }
 
 const _packageVersionCache: Record<string, string> = {};
+
+let _macroPluginFlagsCache: string[] | null = null;
+
+/**
+ * Returns the Swift compiler `-Xfrontend -load-plugin-executable` flags that load the
+ * ExpoModules macros plugin (e.g. `@OptimizedFunction`). The plugin executable ships
+ * inside `expo-modules-core`'s hoisted `node_modules`. Mirrors the Cocoapods path used
+ * by `project_integrator.rb#integrate_core_macro_plugins` so SPM and Pods agree on
+ * which binary implements the macros.
+ */
+function getExpoModulesMacroPluginFlags(): string[] {
+  if (_macroPluginFlagsCache !== null) {
+    return _macroPluginFlagsCache;
+  }
+  const corePkg = getPackageByName('expo-modules-core');
+  if (!corePkg) {
+    throw new Error(
+      `Could not locate the "expo-modules-core" package while generating Package.swift. ` +
+        `The ExpoModules macros plugin executable (used to expand @OptimizedFunction etc.) ships ` +
+        `under "expo-modules-core/node_modules/@expo/expo-modules-macros-plugin/apple". ` +
+        `Ensure expo-modules-core is installed in the workspace before running the prebuild.`
+    );
+  }
+  const macrosToolPath = path.join(
+    corePkg.path,
+    'node_modules',
+    '@expo',
+    'expo-modules-macros-plugin',
+    'apple',
+    'ExpoModulesMacros-tool'
+  );
+  _macroPluginFlagsCache = [
+    '-Xfrontend',
+    '-load-plugin-executable',
+    '-Xfrontend',
+    `${macrosToolPath}#ExpoModulesMacros`,
+  ];
+  return _macroPluginFlagsCache;
+}
+
+/**
+ * Returns true when a Swift target should load the ExpoModules macros plugin —
+ * either it is ExpoModulesCore itself, or it depends on ExpoModulesCore directly
+ * (`"ExpoModulesCore"`) or via the cross-package form (`"expo-modules-core/ExpoModulesCore"`).
+ */
+function targetUsesExpoModulesMacros(targetName: string, dependencies: string[]): boolean {
+  if (targetName === 'ExpoModulesCore') {
+    return true;
+  }
+  return dependencies.some((dep) => dep === 'ExpoModulesCore' || dep.endsWith('/ExpoModulesCore'));
+}
 
 /**
  * Resolves the package version from the package.json in the given path.
@@ -317,6 +369,77 @@ async function generatePackageSwiftAsync(
   );
   return generatePackageSwiftContent(context);
 }
+
+/**
+ * Finds target dependencies that reference sibling products in the same spm.config.json.
+ * Returns the dependency names that are sibling products.
+ */
+export function findSiblingProductDependencies(
+  product: SPMProduct,
+  allProducts: SPMProduct[]
+): string[] {
+  const siblingNames = new Set(
+    allProducts.filter((p) => p.name !== product.name).map((p) => p.name)
+  );
+  const result: string[] = [];
+  for (const target of product.targets) {
+    if (target.type === 'framework') continue;
+    for (const dep of target.dependencies || []) {
+      if (siblingNames.has(dep) && !result.includes(dep)) {
+        result.push(dep);
+      }
+    }
+  }
+  return result;
+}
+
+/**
+ * Resolves a dep name to that dep's own `externalDependencies`, or `null` to
+ * leave it as a leaf (cache deps, unknown packages, sibling targets).
+ */
+export type ExternalDepResolver = (depName: string) => string[] | null;
+
+/**
+ * BFS over `seedDeps`, pulling in each resolvable dep's transitive externals.
+ * Preserves first-occurrence order, deduplicates, terminates on cycles.
+ */
+export function expandTransitiveExternalDeps(
+  seedDeps: string[],
+  resolveDeps: ExternalDepResolver
+): string[] {
+  const visited = new Set<string>();
+  const result: string[] = [];
+  const queue: string[] = [...seedDeps];
+  while (queue.length > 0) {
+    const dep = queue.shift()!;
+    if (visited.has(dep)) continue;
+    visited.add(dep);
+    result.push(dep);
+    for (const next of resolveDeps(dep) ?? []) if (!visited.has(next)) queue.push(next);
+  }
+  return result;
+}
+
+/**
+ * Reads `package/Product` deps from the monorepo's spm.config.json files.
+ * Used so a consumer that depends on `expo-modules-core/ExpoModulesCore`
+ * automatically gets ExpoModulesCore's own external deps (e.g. JSI).
+ */
+export const resolveExternalDepsFromMonorepo: ExternalDepResolver = (depName) => {
+  if (!depName.includes('/')) {
+    return null;
+  }
+  const parts = depName.split('/');
+  const isScoped = parts[0].startsWith('@');
+  const packageName = isScoped ? `${parts[0]}/${parts[1]}` : parts[0];
+  const productName = isScoped ? parts[2] : parts[1];
+  const depPkg = getPackageByName(packageName);
+  if (!depPkg?.hasSwiftPMConfiguration()) {
+    return null;
+  }
+  const matched = depPkg.getSwiftPMConfiguration().products.find((p) => p.name === productName);
+  return matched?.externalDependencies ?? null;
+};
 
 // Main Export: SPMPackage
 
@@ -755,7 +878,7 @@ async function resolveSourceTarget(
  * @param artifactPaths - Paths to downloaded artifacts from centralized cache
  * @param packageSwiftDir - Directory where Package.swift will be located
  */
-function buildSwiftSettings(
+export function buildSwiftSettings(
   externalDeps: string[],
   artifactPaths: ArtifactPaths | null,
   packageSwiftDir: string,
@@ -785,6 +908,13 @@ function buildSwiftSettings(
 
   // Always emit common flags (modules)
   pushUnsafeFlags([settings], commonCxxFlags);
+
+  // Load the ExpoModules macros plugin so Swift can expand macros like @OptimizedFunction.
+  // Required for ExpoModulesCore itself and any Swift target that depends on it; without
+  // this the compiler errors with "external macro implementation type ... could not be found".
+  if (target && targetUsesExpoModulesMacros(target.name, externalDeps)) {
+    pushUnsafeFlags([settings], getExpoModulesMacroPluginFlags());
+  }
 
   // Debug/release-specific include paths (wrapped with -Xcc for Swift→Clang)
   pushUnsafeFlags(
@@ -1206,8 +1336,22 @@ async function buildPackageSwiftContext(
     { buildPath: string; productName: string; versionPrefix?: string }
   >();
 
-  // Add external dependencies as binary targets
-  const externalDeps = product.externalDependencies || [];
+  // Compute effective external dependencies: the product's own, plus any transitive
+  // external deps from sibling products this target depends on. The Swift compiler
+  // needs sibling's transitive deps to resolve imports in their .swiftinterface.
+  const spmConfig = pkg.getSwiftPMConfiguration();
+  const siblingDeps = findSiblingProductDependencies(product, spmConfig.products);
+  const transitiveExternalDeps = siblingDeps.flatMap((dep) => {
+    const sibling = spmConfig.products.find((p) => p.name === dep);
+    return sibling?.externalDependencies || [];
+  });
+
+  // Walk cross-package transitive externalDependencies so the generated
+  // Package.swift includes binary targets for everything reachable.
+  const externalDeps = expandTransitiveExternalDeps(
+    [...(product.externalDependencies ?? []), ...transitiveExternalDeps],
+    resolveExternalDepsFromMonorepo
+  );
   for (const depName of externalDeps) {
     spinner.info(`Resolving external dependency: ${depName}`);
 
@@ -1380,6 +1524,52 @@ async function buildPackageSwiftContext(
       });
       addedTargets.add(target.name);
     }
+  }
+
+  // Add sibling products (other products in the same spm.config.json) as binary targets.
+  // Products are built in definition order, so the dependency's xcframework must already exist.
+  for (const dep of siblingDeps) {
+    if (addedTargets.has(dep)) continue;
+    const xcframeworkPath = Frameworks.getFrameworkPath(pkg.buildPath, dep, buildType);
+    if (!(await fs.pathExists(xcframeworkPath))) {
+      throw new SpinnerError(
+        `Sibling product "${dep}" xcframework not found at ${xcframeworkPath}. ` +
+          `Ensure "${dep}" is defined before "${product.name}" in the products array of spm.config.json.`,
+        spinner
+      );
+    }
+    const relativePath = path.relative(packageSwiftDir, xcframeworkPath);
+    spinner.info(`Adding sibling product: ${dep}`);
+    resolvedTargets.push({
+      type: 'binary',
+      name: dep,
+      path: relativePath,
+      dependencies: [],
+      linkedFrameworks: [],
+    });
+    addedTargets.add(dep);
+    xcframeworkPaths.set(dep, { buildPath: pkg.buildPath, productName: dep });
+  }
+
+  // Inject transitive external deps into source target deps so Swift can resolve
+  // module imports from the sibling's .swiftinterface files.
+  if (transitiveExternalDeps.length > 0) {
+    for (const target of product.targets) {
+      if (target.type === 'framework') continue;
+      const deps = target.dependencies || [];
+      if (deps.some((d) => siblingDeps.includes(d))) {
+        target.dependencies = Array.from(new Set([...deps, ...transitiveExternalDeps]));
+      }
+    }
+  }
+
+  // Inject cross-package transitive external deps into source target deps so
+  // the Swift compiler can resolve `@_exported import` chains through them.
+  for (const target of product.targets) {
+    if (target.type === 'framework') continue;
+    const deps = target.dependencies ?? [];
+    const expanded = expandTransitiveExternalDeps(deps, resolveExternalDepsFromMonorepo);
+    if (expanded.length !== deps.length) target.dependencies = expanded;
   }
 
   // Process each product's targets

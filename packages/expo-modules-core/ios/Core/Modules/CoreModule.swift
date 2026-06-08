@@ -2,6 +2,7 @@
 
 internal import React
 import Foundation
+import ExpoModulesJSI
 
 private let WORKLET_RUNTIME_KEY = "_WORKLET_RUNTIME"
 

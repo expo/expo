@@ -1,19 +1,19 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#ifdef __APPLE__
-#include <ExpoModulesJSI/JSIUtils.h>
-#else
 #include "JSIUtils.h"
-#endif
-
 #include "SharedObject.h"
 
 namespace expo::SharedObject {
 
 #pragma mark - NativeState
 
-NativeState::NativeState(ObjectId objectId, ObjectReleaser releaser)
-: EventEmitter::NativeState(), objectId(objectId), releaser(std::move(releaser)) {}
+NativeState::NativeState(ObjectId objectId,
+                         ObjectReleaser releaser,
+                         void *context,
+                         void (*contextDeallocator)(void *))
+: EventEmitter::NativeState(context, contextDeallocator),
+  objectId(objectId),
+  releaser(std::move(releaser)) {}
 
 NativeState::~NativeState() {
   releaser(objectId);

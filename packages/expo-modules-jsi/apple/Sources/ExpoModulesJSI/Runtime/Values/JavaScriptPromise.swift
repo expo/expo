@@ -1,19 +1,17 @@
-internal import jsi
 internal import ExpoModulesJSI_Cxx
+internal import jsi
 
-/**
- A Swift representation of a JavaScript Promise.
-
- `JavaScriptPromise` bridges JavaScript promises with Swift's async/await, allowing you to create
- deferred promises that can be resolved or rejected from Swift, or wrap existing JavaScript promises
- to await their results. It provides type-safe access to promise resolution and rejection, integrating
- JavaScript's asynchronous patterns with Swift's concurrency model.
- */
+/// A Swift representation of a JavaScript Promise.
+///
+/// `JavaScriptPromise` bridges JavaScript promises with Swift's async/await, allowing you to create
+/// deferred promises that can be resolved or rejected from Swift, or wrap existing JavaScript promises
+/// to await their results. It provides type-safe access to promise resolution and rejection, integrating
+/// JavaScript's asynchronous patterns with Swift's concurrency model.
 public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private typealias PromiseContinuation = CheckedContinuation<JavaScriptValue.Ref, any Error>
 
   private weak let runtime: JavaScriptRuntime?
-  private let object: JavaScriptObject
+  private var object: JavaScriptObject
   private let deferredPromise = DeferredPromise()
 
   // Create refs for resolve and reject functions.
@@ -21,43 +19,43 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private let resolveFunction = JavaScriptValue.Ref()
   private let rejectFunction = JavaScriptValue.Ref()
 
-  /**
-   Initializes a promise from the existing object. The promise may already be settled.
-   It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
-   */
+  /// Initializes a promise from the existing object. The promise may already be settled.
+  /// It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
   @JavaScriptActor
-  public init(_ runtime: JavaScriptRuntime, _ object: consuming JavaScriptObject) {
+  public init(_ runtime: JavaScriptRuntime, _ object: consuming JavaScriptObject) throws {
     self.runtime = runtime
     self.object = object
-    try! setUpCallbacks()
+    try setUpCallbacks()
   }
 
-  /**
-   Creates a new promise whose resolver or rejecter must be called from the outside (also known as a deferred promise).
-   */
+  /// Creates a new promise whose resolver or rejecter must be called from the outside (also known as a deferred promise).
   @JavaScriptActor
-  public init(_ runtime: JavaScriptRuntime) {
+  public init(_ runtime: JavaScriptRuntime) throws {
     self.runtime = runtime
+    // Initialize the non-copyable field before any throwing work. Swift requires a
+    // consistently initialized value on every throwing initializer path.
+    self.object = runtime.createObject()
 
     // Create function that is the promise setup. It is called immediately on `callAsConstructor`.
-    let setup = runtime.createFunction { [resolveFunction, rejectFunction] this, arguments in
-      resolveFunction.reset(arguments[0])
-      rejectFunction.reset(arguments[1])
-      return .undefined()
+    let setup = runtime.createFunction { [weak resolveFunction, weak rejectFunction] this, arguments in
+      resolveFunction?.reset(arguments[0])
+      rejectFunction?.reset(arguments[1])
+      return .undefined
     }
 
-    self.object = try! runtime
+    self.object =
+      try runtime
       .global()
       .getPropertyAsFunction(.cached(runtime, "Promise"))
       .callAsConstructor(setup.asValue())
       .getObject()
 
-    try! setUpCallbacks()
+    try setUpCallbacks()
   }
 
   @JavaScriptActor
-  internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
-    self.init(runtime, JavaScriptObject(runtime, object))
+  internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) throws {
+    try self.init(runtime, JavaScriptObject(runtime, object))
   }
 
   public var isDeferred: Bool {
@@ -103,7 +101,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // `reject` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
       // Create a JS error from any (native) error.
-      let errorValue = JavaScriptError(runtime, message: error.localizedDescription).asValue()
+      let errorMessage = String(describing: error)
+      let errorValue = JavaScriptError(runtime, message: errorMessage).asValue()
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
@@ -119,19 +118,21 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    let onFulfilled = runtime.createFunction { [deferredPromise] this, arguments in
+    let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
+      guard let deferredPromise else { return .undefined }
       let value = arguments[0]
       Task.immediate_polyfill {
         await deferredPromise.resolve(value)
       }
-      return .undefined()
+      return .undefined
     }
-    let onRejected = runtime.createFunction { [deferredPromise] this, arguments in
+    let onRejected = runtime.createFunction { [weak deferredPromise] this, arguments in
+      guard let deferredPromise else { return .undefined }
       let error = arguments[0]
       Task.immediate_polyfill {
         await deferredPromise.reject(error)
       }
-      return .undefined()
+      return .undefined
     }
     try object.callFunction(.cached(runtime, "then"), arguments: onFulfilled.asValue(), onRejected.asValue())
   }

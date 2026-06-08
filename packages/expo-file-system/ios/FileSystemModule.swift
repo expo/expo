@@ -23,7 +23,7 @@ public final class FileSystemModule: Module {
       let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
       return nil
     }
-    return attributes[.systemFreeSize] as? Int64
+    return attributes[.systemSize] as? Int64
   }
 
   var availableDiskSpace: Int64? {
@@ -32,6 +32,26 @@ public final class FileSystemModule: Module {
       return nil
     }
     return attributes[.systemFreeSize] as? Int64
+  }
+
+  private func writeToFile(
+    _ file: FileSystemFile,
+    content: Either<String, TypedArray>,
+    options: WriteOptions?
+  ) throws {
+    let append = options?.append ?? false
+    if let content: String = content.get() {
+      if options?.encoding == WriteEncoding.base64 {
+        guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
+          throw UnableToWriteBase64DataException(file.url.absoluteString)
+        }
+        try file.write(data, append: append)
+      } else {
+        try file.write(content, append: append)
+      }
+    } else if let content: TypedArray = content.get() {
+      try file.write(content, append: append)
+    }
   }
 
   public func definition() -> ModuleDefinition {
@@ -174,21 +194,12 @@ public final class FileSystemModule: Module {
         return try file.info(options: options ?? InfoOptions())
       }
 
-      Function("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
-        let append = options?.append ?? false
-        if let content: String = content.get() {
-          if options?.encoding == WriteEncoding.base64 {
-            guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
-              throw UnableToWriteBase64DataException(file.url.absoluteString)
-            }
-            try file.write(data, append: append)
-          } else {
-            try file.write(content, append: append)
-          }
-        }
-        if let content: TypedArray = content.get() {
-          try file.write(content, append: append)
-        }
+      AsyncFunction("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+        try writeToFile(file, content: content, options: options)
+      }
+
+      Function("writeSync") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+        try writeToFile(file, content: content, options: options)
       }
 
       Property("size") { file in
@@ -253,11 +264,19 @@ public final class FileSystemModule: Module {
     }
 
     Class(FileSystemFileHandle.self) {
-      Function("readBytes") { (fileHandle, bytes: Int) in
+      AsyncFunction("readBytes") { (fileHandle, bytes: Int) in
         try fileHandle.read(bytes)
       }
 
-      Function("writeBytes") { (fileHandle, bytes: Data) in
+      Function("readBytesSync") { (fileHandle, bytes: Int) in
+        try fileHandle.read(bytes)
+      }
+
+      AsyncFunction("writeBytes") { (fileHandle, bytes: Data) in
+        try fileHandle.write(bytes)
+      }
+
+      Function("writeBytesSync") { (fileHandle, bytes: Data) in
         try fileHandle.write(bytes)
       }
 
@@ -348,6 +367,58 @@ public final class FileSystemModule: Module {
         return try? directory.size
       }
     }
+
+    Class(FileSystemUploadTask.self) {
+      Constructor {
+        return FileSystemUploadTask()
+      }
+
+      AsyncFunction("start") { (task: FileSystemUploadTask, url: URL, file: FileSystemFile, options: UploadTaskOptions, promise: Promise) in
+        task.start(url: url, file: file, options: options, promise: promise)
+      }
+
+      Function("cancel") { (task: FileSystemUploadTask) in
+        task.cancel()
+      }
+    }
+
+    Class(FileSystemDownloadTask.self) {
+      Constructor {
+        return FileSystemDownloadTask()
+      }
+
+      AsyncFunction("start") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) in
+        try to.validatePermission(.write)
+        task.start(url: url, to: to, options: options, promise: promise)
+      }
+
+      AsyncFunction("pause") { (task: FileSystemDownloadTask) -> [String: String?] in
+        return await task.pause()
+      }
+
+      AsyncFunction("resume") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?, promise: Promise) in
+        try to.validatePermission(.write)
+        task.resume(url: url, to: to, resumeData: resumeData, options: options, promise: promise)
+      }
+
+      Function("cancel") { (task: FileSystemDownloadTask) in
+        task.cancel()
+      }
+    }
+
+    Class(FileSystemWatcher.self) {
+      Constructor { (path: URL, options: WatchOptions?) in
+        try FileSystemWatcher(path: path, options: options)
+      }
+
+      Function("start") { watcher in
+        watcher.start()
+      }
+
+      Function("stop") { watcher in
+        watcher.stop()
+      }
+    }
   }
 
   private func getAppleSharedContainers() -> [String: String] {
@@ -363,4 +434,3 @@ public final class FileSystemModule: Module {
     return result
   }
 }
-

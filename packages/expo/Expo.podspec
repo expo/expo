@@ -49,6 +49,7 @@ Pod::Spec.new do |s|
   # Otherwise, `pod install` would fail because it's not linkable by the community CLI.
   if defined?(use_expo_modules!)
     s.dependency 'ExpoModulesCore'
+    s.dependency 'ExpoModulesJSI'
   elsif !$expo_warned_about_missing_autolinking
     puts <<~EOS
 

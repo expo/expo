@@ -25,6 +25,10 @@ const jestConfig = {
       '<rootDir>/node_modules/@expo/styleguide-cookie-consent/mock.js',
   },
   transform: {},
+  // next/jest's default `transform` runs SWC on `.mjs` and converts ESM
+  // exports to CJS-style `Object.defineProperty(exports, ...)`, which then
+  // links as zero named exports. Skip transforming native ESM files.
+  transformIgnorePatterns: ['\\.mjs$'],
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };
 

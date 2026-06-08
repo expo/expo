@@ -1,13 +1,13 @@
-import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
 
-import {
-  CameraType,
+import type {
   ImagePickerAsset,
   ImagePickerOptions,
   ImagePickerResult,
   MediaType,
   OpenFileBrowserOptions,
 } from './ImagePicker.types';
+import { CameraType } from './ImagePicker.types';
 import { parseMediaTypes } from './utils';
 
 const MediaTypeInput: Record<MediaType, string> = {
@@ -23,7 +23,7 @@ export default {
     base64 = false,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     // SSR guard
-    if (!Platform.isDOMAvailable) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
       return { canceled: true, assets: null };
     }
     return await openFileBrowserAsync({
@@ -40,7 +40,7 @@ export default {
     cameraType,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     // SSR guard
-    if (!Platform.isDOMAvailable) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
       return { canceled: true, assets: null };
     }
     return await openFileBrowserAsync({

@@ -1,6 +1,6 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
 
-import { MediaTypeObject, SortByObject } from './MediaLibrary';
+import type { MediaTypeObject, SortByObject } from './legacy/MediaLibrary';
 
 const noPermissionResponse: PermissionResponse = {
   status: PermissionStatus.UNDETERMINED,

@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import type { ProxyNativeModule } from 'expo-modules-core';
 /**
  * @platform android
  * */
@@ -54,6 +54,9 @@ export declare enum AndroidAudioUsage {
     ASSISTANCE_SONIFICATION = 13,
     GAME = 14
 }
+/**
+ * @platform android
+ */
 export interface AudioAttributes {
     usage: AndroidAudioUsage;
     contentType: AndroidAudioContentType;
@@ -62,6 +65,9 @@ export interface AudioAttributes {
         requestHardwareAudioVideoSynchronization: boolean;
     };
 }
+/**
+ * @platform android
+ */
 export type AudioAttributesInput = Partial<AudioAttributes>;
 /**
  * An object which represents a notification channel.

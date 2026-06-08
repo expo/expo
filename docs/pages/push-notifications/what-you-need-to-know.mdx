@@ -79,7 +79,7 @@ Headless Notification is a remote notification that doesn't directly specify pre
 
 > **info** We use the term "Headless Background Notification" to refer to the [Data Message](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type#data-messages) on Android and the [background notification](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#Create-a-background-notification) on iOS. Their key similarities are that both of these notification types allow sending only JSON data, and background processing by the app.
 
-Headless Background Notifications have the ability to run custom JavaScript in response to a notification _even when the app is terminated_. This is powerful but comes with a limitation: even when the notification is delivered to the device, the OS does not guarantee its delivery to your app. This may happen due to a variety of reasons, such as when [Doze mode](https://developer.android.com/training/monitoring-device-state/doze-standby) is enabled on Android, or when you send too many background notifications &mdash; Apple recommends not to [send more than two or three per hour](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#overview).
+Headless Background Notifications have the ability to run custom JavaScript in response to a notification _even when the app is terminated_. This is powerful but comes with a limitation: even when the notification is delivered to the device, the OS does not guarantee its delivery to your app. This may happen due to a variety of reasons, such as when [Doze mode](https://developer.android.com/training/monitoring-device-state/doze-standby) is enabled on Android, or when you send too many background notifications — Apple recommends not to [send more than two or three per hour](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#overview).
 
 When you use the Expo Push Service, and specify only `data` and `_contentAvailable: true` (and other non-interactive fields such as `ttl`), the resulting push notification request produces a Headless Background Notification.
 
@@ -95,7 +95,7 @@ The rule of thumb is to prefer a regular Notification Message if you don't requi
 
 Android has a concept of [Data Messages](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type#data-messages). iOS does not have exactly the same concept, but a close equivalent is [Headless Background Notifications](#headless-background-notifications).
 
-You may also come across the term "silent notification", which is yet another name for notifications that don't present anything to the user &mdash; we describe these as [Headless Background Notifications](#headless-background-notifications).
+You may also come across the term "silent notification", which is yet another name for notifications that don't present anything to the user — we describe these as [Headless Background Notifications](#headless-background-notifications).
 
 ## External references
 

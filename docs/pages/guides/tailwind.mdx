@@ -5,6 +5,7 @@ description: Learn how to configure and use Tailwind CSS in your Expo project.
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { FileTree } from '~/ui/components/FileTree';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
@@ -13,25 +14,26 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 [Tailwind CSS](https://tailwindcss.com/) is a utility-first CSS framework and can be used with Metro for web projects. This guide explains how to configure your Expo project to use the framework.
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="A project using Metro for web">
+    Ensure your project is using Metro for web. Verify this by checking that `web.bundler` is set to `metro` in **app.json**:
+
+    ```json app.json
+    {
+      "expo": {
+        "web": {
+          "bundler": "metro"
+        }
+      }
+    }
+    ```
+
+  </Requirement>
+</Prerequisites>
 
 The following files will be modified to set the Tailwind CSS configuration:
 
 <FileTree files={['app.json', 'package.json', 'global.css', 'index.js']} />
-
-Ensure that your project is using Metro for web. You can verify this by checking the `web.bundler` field which is set to `metro` in the **app.json** file.
-
-```json app.json
-{
-  "expo": {
-    "web": {
-      /* @info The <CODE>bundler</CODE> must be set to <CODE>metro</CODE>. */
-      "bundler": "metro"
-      /* @end */
-    }
-  }
-}
-```
 
 ## Configuration
 
@@ -46,13 +48,36 @@ Configure Tailwind CSS in your Expo project according to the [Tailwind PostCSS d
 Install `tailwindcss` and its required peer dependencies. Then, run the initialization command to create **tailwind.config.js** and **post.config.js** files in the root of your project.
 
 <Terminal
-  cmd={[
-    '# Install Tailwind and its peer dependencies',
-    '$ npx expo install tailwindcss@3 postcss autoprefixer --dev',
-    '',
-    '# Create a Tailwind config file',
-    '$ npx tailwindcss init -p',
-  ]}
+  cmd={{
+    npm: [
+      '# Install Tailwind and its peer dependencies',
+      '$ npx expo install tailwindcss@3 postcss autoprefixer --dev',
+      '',
+      '# Create a Tailwind config file',
+      '$ npx tailwindcss init -p',
+    ],
+    yarn: [
+      '# Install Tailwind and its peer dependencies',
+      '$ yarn expo install tailwindcss@3 postcss autoprefixer --dev',
+      '',
+      '# Create a Tailwind config file',
+      '$ yarn dlx tailwindcss init -p',
+    ],
+    pnpm: [
+      '# Install Tailwind and its peer dependencies',
+      '$ pnpm expo install tailwindcss@3 postcss autoprefixer --dev',
+      '',
+      '# Create a Tailwind config file',
+      '$ pnpm dlx tailwindcss init -p',
+    ],
+    bun: [
+      '# Install Tailwind and its peer dependencies',
+      '$ bun expo install tailwindcss@3 postcss autoprefixer --dev',
+      '',
+      '# Create a Tailwind config file',
+      '$ bunx tailwindcss init -p',
+    ],
+  }}
 />
 
 </Step>
@@ -121,7 +146,14 @@ import './global.css';
 
 You now start your project and use Tailwind CSS classes in your components.
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
@@ -134,10 +166,24 @@ You now start your project and use Tailwind CSS classes in your components.
 Install `tailwindcss` and its required peer dependencies:
 
 <Terminal
-  cmd={[
-    '# Install Tailwind and its peer dependencies',
-    '$ npx expo install tailwindcss @tailwindcss/postcss postcss --dev',
-  ]}
+  cmd={{
+    npm: [
+      '# Install Tailwind and its peer dependencies',
+      '$ npx expo install tailwindcss @tailwindcss/postcss postcss --dev',
+    ],
+    yarn: [
+      '# Install Tailwind and its peer dependencies',
+      '$ yarn expo install tailwindcss @tailwindcss/postcss postcss --dev',
+    ],
+    pnpm: [
+      '# Install Tailwind and its peer dependencies',
+      '$ pnpm expo install tailwindcss @tailwindcss/postcss postcss --dev',
+    ],
+    bun: [
+      '# Install Tailwind and its peer dependencies',
+      '$ bun expo install tailwindcss @tailwindcss/postcss postcss --dev',
+    ],
+  }}
 />
 
 </Step>
@@ -196,7 +242,14 @@ import './global.css';
 
 You now start your project and use Tailwind CSS classes in your components.
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 

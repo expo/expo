@@ -3,7 +3,7 @@ import { dirname, join } from 'path';
 
 import { SelfPath } from './Paths';
 import { Platform } from './Platform';
-import TemplateEvaluator from './TemplateEvaluator';
+import type TemplateEvaluator from './TemplateEvaluator';
 
 export interface ProjectFile {
   platform: Platform;

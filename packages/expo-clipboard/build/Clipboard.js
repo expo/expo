@@ -1,5 +1,4 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
-import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -52,6 +51,7 @@ export function hasStringAsync() {
  *
  * @returns A promise that fulfills to the URL in the clipboard, or null if no URL is present or permission was denied.
  * @platform ios
+ * @platform macos
  */
 export async function getUrlAsync() {
     if (!ExpoClipboard.getUrlAsync) {
@@ -68,6 +68,7 @@ export async function getUrlAsync() {
  *
  * @param url The URL to save to the clipboard.
  * @platform ios
+ * @platform macos
  */
 export async function setUrlAsync(url) {
     if (!ExpoClipboard.setUrlAsync) {
@@ -80,6 +81,7 @@ export async function setUrlAsync(url) {
  *
  * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
  * @platform ios
+ * @platform macos
  */
 export async function hasUrlAsync() {
     if (!ExpoClipboard.hasUrlAsync) {
@@ -148,7 +150,7 @@ export async function hasImageAsync() {
 }
 /**
  * Adds a listener that will fire whenever the content of the user's clipboard changes. This method
- * is a no-op on Web.
+ * is a no-op on Web and macOS.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
  * single argument that is an object containing information about clipboard contents.
@@ -185,5 +187,5 @@ export function removeClipboardListener(subscription) {
  */
 export const isPasteButtonAvailable = Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 export * from './Clipboard.types';
-export { ClipboardPasteButton };
+export { ClipboardPasteButton } from './ClipboardPasteButton';
 //# sourceMappingURL=Clipboard.js.map

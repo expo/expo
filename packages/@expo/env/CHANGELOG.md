@@ -10,6 +10,33 @@
 
 ### 💡 Others
 
+## 2.3.0 — 2026-05-20
+
+### 🎉 New features
+
+- Add `getOriginalEnv` and `getOriginalEnvValue` ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Exclude system environment variables from being loaded by `@expo/env`, bypassable using `$EXPO_UNSAFE_DOTENV_KEYS` ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Differentiate between personal environment variables for .local env files and system environment variables, which are both now blocked respectively when they're misused ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+- Add `REACT_NATIVE_OVERRIDE_HERMES_DIR` to local-only env vars ([#45847](https://github.com/expo/expo/pull/45847) by [@kitten](https://github.com/kitten))
+
+## 2.2.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.2 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
 ## 2.1.1 — 2026-02-16
 
 ### 🐛 Bug fixes

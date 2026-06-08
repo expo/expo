@@ -1,8 +1,10 @@
+import { getOriginalEnvValue } from '@expo/env';
 import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
-import { GatewayInfo, getGateway, getGatewayAsync } from '../../utils/ip';
+import type { GatewayInfo } from '../../utils/ip';
+import { getGateway, getGatewayAsync } from '../../utils/ip';
 
 const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
 
@@ -99,6 +101,11 @@ export class UrlCreator {
     return this.gatewayInfo.address;
   }
 
+  /** URL scheme configured for development-build deep links (e.g. `myapp`). `null` when unset. */
+  public getScheme(): string | null {
+    return this.defaults?.scheme ?? null;
+  }
+
   /** Get the URL components from the Ngrok server URL. */
   private getTunnelUrlComponents(options: Pick<CreateURLOptions, 'scheme'>): UrlComponents | null {
     const tunnelUrl = this.bundlerInfo.getTunnelUrl?.();
@@ -189,7 +196,9 @@ function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>)
 
 /** @deprecated */
 function getProxyUrl(): string | undefined {
-  return process.env.EXPO_PACKAGER_PROXY_URL;
+  // Read from the pre-dotenv env — overriding this would redirect connected dev
+  // clients through an attacker-controlled URL.
+  return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL');
 }
 
 // TODO: Drop the undocumented env variables:

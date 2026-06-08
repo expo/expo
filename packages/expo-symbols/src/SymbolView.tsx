@@ -1,8 +1,8 @@
-import { useFonts } from '@expo-google-fonts/material-symbols';
-import { useMemo, type JSX } from 'react';
+import { loadAsync, type FontSource } from 'expo-font';
+import { useState, useEffect, useMemo, type JSX } from 'react';
 import { Platform, PlatformColor, Text, View } from 'react-native';
 
-import { SymbolViewProps } from './SymbolModule.types';
+import type { SymbolViewProps } from './SymbolModule.types';
 import { androidSymbolToString } from './android';
 import { getFont } from './utils';
 
@@ -16,12 +16,19 @@ export function SymbolView(props: SymbolViewProps): JSX.Element {
     typeof props.name === 'object'
       ? props.name[Platform.OS === 'android' ? 'android' : 'web']
       : null;
-  const [loaded] = useFonts({
-    [font.name]: {
-      uri: font.font,
-      testString: name ? androidSymbolToString(name) : null,
-    },
-  });
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    loadAsync({
+      [font.name]: {
+        uri: font.font,
+        testString: name ? androidSymbolToString(name) : undefined,
+      } as FontSource,
+    })
+      .then(() => setLoaded(true))
+      .catch(() => {
+        /* noop */
+      });
+  }, []);
   if (!name) {
     return <>{props.fallback}</>;
   }

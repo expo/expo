@@ -1,4 +1,4 @@
-import { CameraType, CameraCapturedPicture, ImageSize, ImageType, WebCameraSettings, CameraPictureOptions } from '../Camera.types';
+import type { CameraType, CameraCapturedPicture, ImageSize, ImageType, WebCameraSettings, CameraPictureOptions } from '../Camera.types';
 interface ConstrainLongRange {
     max?: number;
     min?: number;

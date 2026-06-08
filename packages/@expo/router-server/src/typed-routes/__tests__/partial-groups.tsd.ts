@@ -1,6 +1,7 @@
 import { expectType, expectAssignable, expectNotAssignable } from 'tsd-lite';
 
-import { useRouter, Href, RouteParams } from './fixtures/partialGroups';
+import type { Href, RouteParams } from './fixtures/partialGroups';
+import { useRouter } from './fixtures/partialGroups';
 
 test('Partial Groups - Href', () => {
   // Partial route (missing first segment)

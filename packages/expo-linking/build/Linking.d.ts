@@ -1,8 +1,8 @@
-import { EmitterSubscription } from 'react-native';
-import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
+import type { EmitterSubscription } from 'react-native';
+import type { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
 /**
  * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
- * It is recommended to use the [`useURL()`](#useurl) hook instead.
+ * It is recommended to use the [`useLinkingURL()`](#uselinkingurl) hook instead.
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventtype).
@@ -39,6 +39,15 @@ export declare function getInitialURL(): Promise<string | null>;
  * @return The URL string that launched your app, or `null`.
  */
 export declare function getLinkingURL(): string | null;
+/**
+ * Clears the cached initial URL used to launch the app, subsequent
+ * calls to [`getLinkingURL()`] return `null` until a new deep link is received.
+ *
+ * On web this is a no-op.
+ * @platform android
+ * @platform ios
+ */
+export declare function clearInitialURL(): void;
 /**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
  * for more information.

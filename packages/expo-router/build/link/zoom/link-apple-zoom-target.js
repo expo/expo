@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkAppleZoomTarget = LinkAppleZoomTarget;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const zoom_transition_context_1 = require("./zoom-transition-context");
 const native_1 = require("../preview/native");
@@ -33,8 +34,6 @@ function LinkAppleZoomTarget({ children }) {
     if (!identifier) {
         return children;
     }
-    return (<native_1.LinkZoomTransitionAlignmentRectDetector identifier={identifier}>
-      {children}
-    </native_1.LinkZoomTransitionAlignmentRectDetector>);
+    return ((0, jsx_runtime_1.jsx)(native_1.LinkZoomTransitionAlignmentRectDetector, { identifier: identifier, children: children }));
 }
 //# sourceMappingURL=link-apple-zoom-target.js.map

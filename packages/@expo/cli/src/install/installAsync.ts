@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { applyPluginsAsync } from './applyPlugins';
 import { checkPackagesAsync } from './checkPackages';
 import { installExpoPackageAsync } from './installExpoPackage';
-import { Options } from './resolveOptions';
+import type { Options } from './resolveOptions';
 import * as Log from '../log';
 import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';

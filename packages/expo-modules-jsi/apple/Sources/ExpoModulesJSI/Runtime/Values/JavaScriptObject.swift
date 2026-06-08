@@ -1,42 +1,32 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-internal import jsi
 internal import ExpoModulesJSI_Cxx
+internal import jsi
 
-/**
- A Swift representation of a JavaScript object. Provides access to JavaScript object properties and methods,
- supporting property access, modification, enumeration, prototype manipulation, and function calling.
- */
+/// A Swift representation of a JavaScript object. Provides access to JavaScript object properties and methods,
+/// supporting property access, modification, enumeration, prototype manipulation, and function calling.
 public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   internal weak let runtime: JavaScriptRuntime?
   internal var pointee: facebook.jsi.Object
 
-  /**
-   Creates a new object in the given runtime.
-   */
+  /// Creates a new object in the given runtime.
   public init(_ runtime: JavaScriptRuntime) {
     self.init(runtime, facebook.jsi.Object(runtime.pointee))
   }
 
-  /**
-   Creates a new object from the dictionary whose values are representable in JS.
-   */
+  /// Creates a new object from the dictionary whose values are representable in JS.
   public init<DictValue: JavaScriptRepresentable>(_ runtime: JavaScriptRuntime, _ dictionary: [String: DictValue]) {
     self.runtime = runtime
     self.pointee = dictionary.toJavaScriptValue(in: runtime).getObject().pointee
   }
 
-  /**
-   Creates a new object from existing JSI object.
-   */
+  /// Creates a new object from existing JSI object.
   internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
     self.runtime = runtime
     self.pointee = object
   }
 
-  /**
-   Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
-   */
+  /// Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
   public func instanceOf(_ constructor: borrowing JavaScriptFunction) -> Bool {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -44,16 +34,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return pointee.instanceOf(runtime.pointee, constructor.pointee)
   }
 
-  /**
-   Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
-   */
+  /// Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
   public func instanceOf(_ constructor: JavaScriptValue) -> Bool {
     return instanceOf(constructor.getFunction())
   }
 
-  /**
-   Equivalent to `Array.isArray()` in JS. If it returns `true`, then `getArray()` will succeed.
-   */
+  /// Equivalent to `Array.isArray()` in JS. If it returns `true`, then `getArray()` will succeed.
   public func isArray() -> Bool {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -61,9 +47,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return pointee.isArray(runtime.pointee)
   }
 
-  /**
-   Returns `true` if the object is callable. If so, then `getFunction()` will succeed.
-   */
+  /// Returns `true` if the object is callable. If so, then `getFunction()` will succeed.
   public func isFunction() -> Bool {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -71,10 +55,14 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return pointee.isFunction(runtime.pointee)
   }
 
-// TODO: `isHostObject` is ambiguous for Swift as it's a template – we need specialization in C++
-//  public func isHostObject() -> Bool {
-//    return pointee.isHostObject(runtime.pointee)
-//  }
+  /// Returns `true` if the object is backed by a `jsi::HostObject`, including host objects
+  /// created via `JavaScriptRuntime.createHostObject` and ones produced by other native code.
+  public func isHostObject() -> Bool {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return expo.isHostObject(runtime.pointee, pointee)
+  }
 
   public func isArrayBuffer() -> Bool {
     guard let runtime else {
@@ -83,9 +71,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return pointee.isArrayBuffer(runtime.pointee)
   }
 
-  /**
-   Returns the object as an array buffer, or asserts if not an array buffer.
-   */
+  /// Returns the object as an array buffer, or asserts if not an array buffer.
   public func getArrayBuffer() -> JavaScriptArrayBuffer {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -94,9 +80,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptArrayBuffer(runtime, pointee.getArrayBuffer(runtime.pointee))
   }
 
-  /**
-   Returns the object as an array, or asserts if not an array.
-   */
+  /// Returns the object as an array, or asserts if not an array.
   public func getArray() -> JavaScriptArray {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -105,9 +89,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptArray(runtime, pointee.getArray(runtime.pointee))
   }
 
-  /**
-   Returns the object as a function, or asserts if not a function.
-   */
+  /// Returns the object as a function, or asserts if not a function.
   public func getFunction() -> JavaScriptFunction {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -118,9 +100,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Accessing object properties
 
-  /**
-   Checks whether the object has a property with the given name.
-   */
+  /// Checks whether the object has a property with the given name.
   public func hasProperty(_ name: String) -> Bool {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -128,10 +108,8 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return pointee.hasProperty(runtime.pointee, name)
   }
 
-  /**
-   Returns the property of the object with the given name,
-   or `undefined` value if the name is not a property of the object.
-   */
+  /// Returns the property of the object with the given name,
+  /// or `undefined` value if the name is not a property of the object.
   public func getProperty(_ name: String) -> JavaScriptValue {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -139,19 +117,26 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, name))
   }
 
-  /**
-   Accesses nested properties in a single subscript operation by traversing the object chain.
-   This subscript provides a convenient way to access deeply nested properties without
-   multiple chained calls to `getProperty()`. Each key in the chain is accessed sequentially,
-   treating intermediate values as objects.
+  /// Returns the property of the object with the given prop name id,
+  /// or `undefined` value if the name is not a property of the object.
+  public func getProperty(_ propName: JavaScriptPropNameID) -> JavaScriptValue {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, propName.pointee))
+  }
 
-   - Parameters:
-     - key: The first property name to access on this object
-     - nestedKeys: Variadic list of subsequent property names to access on nested objects
-   - Returns: The `JavaScriptValue` at the end of the property chain
-   - Note: Each intermediate value in the chain (except the last) must be an object.
-     If any intermediate value is not an object, the behavior is undefined and may crash.
-   */
+  /// Accesses nested properties in a single subscript operation by traversing the object chain.
+  /// This subscript provides a convenient way to access deeply nested properties without
+  /// multiple chained calls to `getProperty()`. Each key in the chain is accessed sequentially,
+  /// treating intermediate values as objects.
+  ///
+  /// - Parameters:
+  ///   - key: The first property name to access on this object
+  ///   - nestedKeys: Variadic list of subsequent property names to access on nested objects
+  /// - Returns: The `JavaScriptValue` at the end of the property chain
+  /// - Note: Each intermediate value in the chain (except the last) must be an object.
+  ///   If any intermediate value is not an object, the behavior is undefined and may crash.
   public subscript(_ key: String, _ nestedKeys: String...) -> JavaScriptValue {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -165,13 +150,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtime, value)
   }
 
-  /**
-   Returns an array of the object's own enumerable property names.
-   This method is equivalent to JavaScript's `Object.keys()`, returning only properties
-   that are enumerable and directly owned by the object (not inherited from the prototype chain).
-
-   - Returns: An array of property names as strings
-   */
+  /// Returns an array of the object's own enumerable property names.
+  /// This method is equivalent to JavaScript's `Object.keys()`, returning only properties
+  /// that are enumerable and directly owned by the object (not inherited from the prototype chain).
+  ///
+  /// - Returns: An array of property names as strings
   public func getPropertyNames() -> [String] {
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
@@ -184,50 +167,47 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     }
   }
 
-  /**
-   Same as `getProperty(name).getObject()`.
-   */
-  public func getPropertyAsObject(_ name: String) -> JavaScriptObject {
-    guard let runtime else {
-      FatalError.runtimeLost()
+  /// Same as `getProperty(name).getObject()`, but throws instead of aborting when the property is
+  /// not an object.
+  public func getPropertyAsObject(_ name: String) throws -> JavaScriptObject {
+    let property = getProperty(name)
+    guard property.isObject() else {
+      throw PropertyNotObjectError(name: name)
     }
-    return JavaScriptObject(runtime, pointee.getPropertyAsObject(runtime.pointee, name))
+    return property.getObject()
   }
 
-  /**
-   Same as `getProperty(propName).getObject()`.
-   */
-  public func getPropertyAsObject(_ propName: JavaScriptPropNameID) -> JavaScriptObject {
-    guard let runtime else {
-      FatalError.runtimeLost()
+  /// Same as `getProperty(propName).getObject()`, but throws instead of aborting when the property is
+  /// not an object.
+  public func getPropertyAsObject(_ propName: JavaScriptPropNameID) throws -> JavaScriptObject {
+    let property = getProperty(propName)
+    guard property.isObject() else {
+      throw PropertyNotObjectError(name: propName.utf8())
     }
-    return JavaScriptObject(runtime, pointee.getProperty(runtime.pointee, propName.pointee).getObject(runtime.pointee))
+    return property.getObject()
   }
 
-  /**
-   Same as `getProperty(name).getObject().getFunction()`.
-   */
-  public func getPropertyAsFunction(_ name: String) -> JavaScriptFunction {
-    guard let runtime else {
-      FatalError.runtimeLost()
+  /// Same as `getProperty(name).getObject().getFunction()`, but throws instead of aborting when the
+  /// property is missing or not callable.
+  public func getPropertyAsFunction(_ name: String) throws -> JavaScriptFunction {
+    let property = getProperty(name)
+    guard property.isFunction() else {
+      throw PropertyNotFunctionError(name: name)
     }
-    return JavaScriptFunction(runtime, pointee.getPropertyAsFunction(runtime.pointee, name))
+    return property.getFunction()
   }
 
-  /**
-   Same as `getProperty(propName).getObject().getFunction()`.
-   */
-  public func getPropertyAsFunction(_ propName: JavaScriptPropNameID) -> JavaScriptFunction {
-    guard let runtime else {
-      FatalError.runtimeLost()
+  /// Same as `getProperty(propName).getObject().getFunction()`, but throws instead of aborting when the
+  /// property is missing or not callable.
+  public func getPropertyAsFunction(_ propName: JavaScriptPropNameID) throws -> JavaScriptFunction {
+    let property = getProperty(propName)
+    guard property.isFunction() else {
+      throw PropertyNotFunctionError(name: propName.utf8())
     }
-    let jsiFunction = pointee.getProperty(runtime.pointee, propName.pointee).getObject(runtime.pointee).getFunction(runtime.pointee)
-    return JavaScriptFunction(runtime, jsiFunction)
+    return property.getFunction()
   }
 
-  /**
-   Returns a prototype of the object. Same as `Object.getPrototypeOf(object)` in JS.
-   */
+  /// Returns a prototype of the object. Same as `Object.getPrototypeOf(object)` in JS.
   public func getPrototype() -> JavaScriptValue {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -235,9 +215,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtime, pointee.getPrototype(runtime.pointee))
   }
 
-  /**
-   Sets a prototype of the object. Same as `Object.setPrototypeOf(object, prototype)` in JS.
-   */
+  /// Sets a prototype of the object. Same as `Object.setPrototypeOf(object, prototype)` in JS.
   public func setPrototype(_ prototype: JavaScriptValue) {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -278,16 +256,41 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     expo.setProperty(runtime.pointee, pointee, name, facebook.jsi.Value(runtime.pointee, object.pointee))
   }
 
-  /**
-   Deletes a property with the given name. After calling this function,
-   `hasProperty` will return `false`, and `getProperty` will return `undefined` value.
-   */
+  /// Sets a property to a synchronous host function created from the given closure. The function
+  /// is named after the property and runs the closure when called from JavaScript, returning its
+  /// result synchronously. Equivalent to `setProperty(name, runtime.createFunction(name) { … })`.
+  @JavaScriptActor
+  public func setProperty(_ name: String, function: sending @escaping JavaScriptRuntime.SyncFunctionClosure) {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    setProperty(name, value: runtime.createFunction(name, function))
+  }
+
+  /// Sets a property to an asynchronous host function created from the given closure. The function
+  /// is named after the property and runs the closure when called from JavaScript, returning a
+  /// promise that resolves with its result. Equivalent to
+  /// `setProperty(name, runtime.createAsyncFunction(name) { … })`. The `async` closure body
+  /// selects this overload over the synchronous `setProperty(_:_:)`.
+  @JavaScriptActor
+  public func setProperty(_ name: String, function: sending @escaping JavaScriptRuntime.AsyncFunctionClosure) {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    setProperty(name, value: runtime.createAsyncFunction(name, function))
+  }
+
+  /// Deletes a property with the given name. After calling this function,
+  /// `hasProperty` will return `false`, and `getProperty` will return `undefined` value.
+  #if !os(macOS)
+  // TODO: remove when bumping to react-native-macos 0.86
   public func deleteProperty(_ name: String) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
     pointee.deleteProperty(runtime.pointee, name)
   }
+  #endif
 
   public func defineProperty(_ name: String, descriptor: consuming JavaScriptObject) {
     guard let runtime else {
@@ -308,7 +311,9 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     defineProperty(name, descriptor: descriptorObject)
   }
 
-  public func defineProperty<T: JavaScriptRepresentable & ~Copyable>(_ name: String, value: borrowing T, options: PropertyOptions = []) {
+  public func defineProperty<T: JavaScriptRepresentable & ~Copyable>(
+    _ name: String, value: borrowing T, options: PropertyOptions = []
+  ) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
@@ -323,21 +328,21 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Calling owned functions
 
-  /**
-   Compact form of `object.getPropertyAsFunction(functionName).call(this: object, arguments: ...)`.
-   */
+  /// Compact form of `object.getPropertyAsFunction(functionName).call(this: object, arguments: ...)`.
   @discardableResult
   @JavaScriptActor
-  public func callFunction<each T: JavaScriptRepresentable>(_ functionName: String, arguments: repeat each T) throws -> JavaScriptValue {
+  public func callFunction<each T: JavaScriptRepresentable>(_ functionName: String, arguments: repeat each T) throws
+    -> JavaScriptValue
+  {
     return try getPropertyAsFunction(functionName).call(this: self, arguments: repeat each arguments)
   }
 
-  /**
-   Compact form of `object.getPropertyAsFunction(functionName).call(this: object, arguments: ...)`.
-   */
+  /// Compact form of `object.getPropertyAsFunction(functionName).call(this: object, arguments: ...)`.
   @discardableResult
   @JavaScriptActor
-  public func callFunction<each T: JavaScriptRepresentable>(_ functionName: JavaScriptPropNameID, arguments: repeat each T) throws -> JavaScriptValue {
+  public func callFunction<each T: JavaScriptRepresentable>(
+    _ functionName: JavaScriptPropNameID, arguments: repeat each T
+  ) throws -> JavaScriptValue {
     return try getPropertyAsFunction(functionName).call(this: self, arguments: repeat each arguments)
   }
 
@@ -350,9 +355,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtime, facebook.jsi.Value(runtime.pointee, pointee))
   }
 
-  /**
-   Returns the object as a `facebook.jsi.Value` instance.
-   */
+  /// Returns the object as a `facebook.jsi.Value` instance.
   internal func asJSIValue() -> facebook.jsi.Value {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -360,9 +363,23 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return facebook.jsi.Value(runtime.pointee, pointee)
   }
 
-  /**
-   Creates a weak reference to the object. If the only references to an object are these, the object is eligible for GC.
-   */
+  /// Provides scoped access to a raw pointer to the underlying `facebook.jsi.Object`.
+  /// The pointer is valid only for the duration of the closure and must not be stored or escaped.
+  public func withUnsafePointee<R>(_ body: (UnsafeRawPointer) throws -> R) rethrows -> R {
+    return try withUnsafeBytes(of: pointee) { bytes in
+      return try body(bytes.baseAddress!)
+    }
+  }
+
+  /// Provides scoped mutable access to a raw pointer to the underlying `facebook.jsi.Object`.
+  /// The pointer is valid only for the duration of the closure and must not be stored or escaped.
+  public mutating func withUnsafeMutablePointee<R>(_ body: (UnsafeMutableRawPointer) throws -> R) rethrows -> R {
+    return try withUnsafeMutableBytes(of: &pointee) { bytes in
+      return try body(bytes.baseAddress!)
+    }
+  }
+
+  /// Creates a weak reference to the object. If the only references to an object are these, the object is eligible for GC.
   public func createWeak() -> JavaScriptWeakObject {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -372,9 +389,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Native state
 
-  /**
-   Returns whether this object has native state previously set by `setNativeState`.
-   */
+  /// Returns whether this object carries an `expo::NativeState`-derived JSI native
+  /// state — either one attached from Swift via `setNativeState`, or one produced
+  /// C++-side (e.g. via `addListener`'s `EventEmitter::NativeState`). A `true`
+  /// result does not imply that `getNativeState()` will return a non-nil Swift
+  /// wrapper: C++-produced states carry a null context and are unrecoverable from
+  /// the Swift side by design.
   public func hasNativeState() -> Bool {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -382,38 +402,31 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return expo.hasNativeState(runtime.pointee, pointee)
   }
 
-  /**
-   Returns a native state previously set by `setNativeState`.
-   If `hasNativeState()` is false or object's native state is of unrelated type, this will return `nil`.
-   */
+  /// Returns the Swift `JavaScriptNativeState` wrapper attached to this object via
+  /// `setNativeState`, or `nil` if there is no native state, the state was
+  /// produced C++-side without a Swift back-pointer, or its concrete type doesn't
+  /// match `T`.
   public func getNativeState<T: JavaScriptNativeState>(as: T.Type = JavaScriptNativeState.self) -> T? {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    guard let cxxNativeState = expo.getNativeState(runtime.pointee, pointee) else {
+    guard let cxxNativeState = expo.getExpoNativeState(runtime.pointee, pointee) else {
       return nil
     }
     return T.from(cxx: cxxNativeState)
   }
 
-  /**
-   Sets the internal native state property of this object, overwriting any old value.
-   Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
-   - TODO: throw a type error if this object is a proxy or host object.
-   */
-  public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) throws(JavaScriptNativeState.NativeStateReleasedError) {
+  /// Sets the internal native state property of this object, overwriting any old value.
+  /// Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
+  /// - TODO: throw a type error if this object is a proxy or host object.
+  public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    guard let nativeStatePointee = nativeState.pointee else {
-      throw JavaScriptNativeState.NativeStateReleasedError()
-    }
-    expo.setNativeState(runtime.pointee, pointee, nativeStatePointee)
+    expo.setNativeState(runtime.pointee, self.pointee, nativeState.acquireShared())
   }
 
-  /**
-   Unsets the native state of this object.
-   */
+  /// Unsets the native state of this object.
   public func unsetNativeState() {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -432,9 +445,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Equality
 
-  /**
-   Compares whether the two `JavaScriptObject`s are pointing to the same underlying JS object.
-   */
+  /// Compares whether the two `JavaScriptObject`s are pointing to the same underlying JS object.
   public static func == (lhs: borrowing JavaScriptObject, rhs: borrowing JavaScriptObject) -> Bool {
     // Note that we implement comparison operator, but we don't add conformance to `Equatable` because it requires types to be copyable.
     // This proposal solves it: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0499-support-non-copyable-simple-protocols.md
@@ -443,55 +454,45 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Property options and descriptor
 
-  /**
-   Options for defining property attributes on JavaScript objects. These options correspond to the property
-   descriptor attributes in JavaScript's `Object.defineProperty()` method. They control how a property behaves when
-   accessed, enumerated, or modified.
-
-   - SeeAlso: `PropertyDescriptor` for more fine-grained control over property definitions
-   */
+  /// Options for defining property attributes on JavaScript objects. These options correspond to the property
+  /// descriptor attributes in JavaScript's `Object.defineProperty()` method. They control how a property behaves when
+  /// accessed, enumerated, or modified.
+  ///
+  /// - SeeAlso: `PropertyDescriptor` for more fine-grained control over property definitions
   public struct PropertyOptions: OptionSet, Sendable {
     public let rawValue: Int
 
     public init(rawValue: Int) {
       self.rawValue = rawValue
     }
-    /**
-     When `true`, the property descriptor may be changed and the property may be deleted.
-     Default is `false` when not specified.
-
-     Corresponds to JavaScript's `configurable` property attribute. A configurable property
-     can have its descriptor redefined or be deleted from the object.
-     */
+    /// When `true`, the property descriptor may be changed and the property may be deleted.
+    /// Default is `false` when not specified.
+    ///
+    /// Corresponds to JavaScript's `configurable` property attribute. A configurable property
+    /// can have its descriptor redefined or be deleted from the object.
     public static let configurable = PropertyOptions(rawValue: 1 << 0)
-    /**
-     When `true`, the property shows up during enumeration of properties.
-     Default is `false` when not specified.
-
-     Corresponds to JavaScript's `enumerable` property attribute. Enumerable properties
-     appear in `for...in` loops and `Object.keys()` results.
-     */
+    /// When `true`, the property shows up during enumeration of properties.
+    /// Default is `false` when not specified.
+    ///
+    /// Corresponds to JavaScript's `enumerable` property attribute. Enumerable properties
+    /// appear in `for...in` loops and `Object.keys()` results.
     public static let enumerable = PropertyOptions(rawValue: 1 << 1)
-    /**
-     When `true`, the property's value can be changed with an assignment operator.
-     Default is `false` when not specified.
-
-     Corresponds to JavaScript's `writable` property attribute. Writable properties
-     can be modified after they are defined.
-     */
+    /// When `true`, the property's value can be changed with an assignment operator.
+    /// Default is `false` when not specified.
+    ///
+    /// Corresponds to JavaScript's `writable` property attribute. Writable properties
+    /// can be modified after they are defined.
     public static let writable = PropertyOptions(rawValue: 1 << 2)
   }
-  /**
-   A descriptor that defines the characteristics of a property on a JavaScript object.
-   Property descriptors provide fine-grained control over how properties behave,
-   corresponding directly to JavaScript's property descriptor objects used with
-   `Object.defineProperty()`. Each descriptor specifies whether the property is
-   configurable, enumerable, writable, and what value it should hold.
-
-   - Note: All boolean properties default to `false`, matching JavaScript's behavior
-     when properties are defined via `Object.defineProperty()`.
-   - SeeAlso: `PropertyOptions` for a simpler option-set based approach
-   */
+  /// A descriptor that defines the characteristics of a property on a JavaScript object.
+  /// Property descriptors provide fine-grained control over how properties behave,
+  /// corresponding directly to JavaScript's property descriptor objects used with
+  /// `Object.defineProperty()`. Each descriptor specifies whether the property is
+  /// configurable, enumerable, writable, and what value it should hold.
+  ///
+  /// - Note: All boolean properties default to `false`, matching JavaScript's behavior
+  ///   when properties are defined via `Object.defineProperty()`.
+  /// - SeeAlso: `PropertyOptions` for a simpler option-set based approach
   public struct PropertyDescriptor: ~Copyable {
     /// When `true`, the property descriptor may be changed and the property may be deleted from the object.
     let configurable: Bool
@@ -505,32 +506,30 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     /// The value associated with the property. Can be any JavaScript value or `nil`.
     let value: JavaScriptValue?
 
-    /**
-     Creates a new property descriptor with the specified attributes.
-
-     - Parameters:
-       - configurable: Whether the property can be deleted or have its descriptor modified. Defaults to `false`.
-       - enumerable: Whether the property appears during enumeration. Defaults to `false`.
-       - writable: Whether the property's value can be changed. Defaults to `false`.
-       - value: The value to assign to the property. Defaults to `nil`.
-     - Note: When all parameters use their default values, this creates a non-configurable,
-       non-enumerable, non-writable property with no value (undefined in JavaScript).
-     */
-    public init(configurable: Bool = false, enumerable: Bool = false, writable: Bool = false, value: JavaScriptValue? = nil) {
+    /// Creates a new property descriptor with the specified attributes.
+    ///
+    /// - Parameters:
+    ///   - configurable: Whether the property can be deleted or have its descriptor modified. Defaults to `false`.
+    ///   - enumerable: Whether the property appears during enumeration. Defaults to `false`.
+    ///   - writable: Whether the property's value can be changed. Defaults to `false`.
+    ///   - value: The value to assign to the property. Defaults to `nil`.
+    /// - Note: When all parameters use their default values, this creates a non-configurable,
+    ///   non-enumerable, non-writable property with no value (undefined in JavaScript).
+    public init(
+      configurable: Bool = false, enumerable: Bool = false, writable: Bool = false, value: JavaScriptValue? = nil
+    ) {
       self.configurable = configurable
       self.enumerable = enumerable
       self.writable = writable
       self.value = value
     }
-    /**
-     Converts the descriptor to a JavaScript object that can be used with `Object.defineProperty()`.
-     This method creates a JavaScript object with the descriptor's attributes set as properties.
-     Only attributes that are `true` or non-nil are included in the resulting object,
-     following JavaScript conventions.
-
-     - Parameter runtime: The JavaScript runtime in which to create the descriptor object
-     - Returns: A JavaScript object representing this property descriptor
-     */
+    /// Converts the descriptor to a JavaScript object that can be used with `Object.defineProperty()`.
+    /// This method creates a JavaScript object with the descriptor's attributes set as properties.
+    /// Only attributes that are `true` or non-nil are included in the resulting object,
+    /// following JavaScript conventions.
+    ///
+    /// - Parameter runtime: The JavaScript runtime in which to create the descriptor object
+    /// - Returns: A JavaScript object representing this property descriptor
     public consuming func toObject(_ runtime: borrowing JavaScriptRuntime) -> JavaScriptObject {
       let object = runtime.createObject()
       if configurable {
@@ -561,11 +560,32 @@ extension JavaScriptObject: JavaScriptRepresentable {
 }
 
 extension JavaScriptObject: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> JavaScriptObject {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptObject
+  {
     FatalError.unimplemented()
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return asJSIValue()
+  }
+}
+
+// MARK: - Errors
+
+extension JavaScriptObject {
+  public struct PropertyNotFunctionError: Error, CustomStringConvertible {
+    let name: String
+
+    public var description: String {
+      return "Property '\(name)' is not a function"
+    }
+  }
+
+  public struct PropertyNotObjectError: Error, CustomStringConvertible {
+    let name: String
+
+    public var description: String {
+      return "Property '\(name)' is not an object"
+    }
   }
 }

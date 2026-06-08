@@ -1,4 +1,4 @@
-import { NativeModule } from 'expo-modules-core/types';
+import type { NativeModule } from 'expo-modules-core/types';
 /**
  * Options for requesting age range information from the user.
  *
@@ -53,7 +53,18 @@ export type AgeRangeResponse = {
      */
     mostRecentApprovalDate?: number | null;
 };
+/**
+ * A regulatory feature that your app may need to support for the current user.
+ *
+ * Mirrors [`AgeRangeService.RegulatoryFeature`](https://developer.apple.com/documentation/declaredagerange/agerangeservice/regulatoryfeature).
+ *
+ * @platform ios 26.4+
+ */
+export type AgeRangeRegulatoryFeature = 'declaredAgeRangeRequired' | 'significantAppChangeRequiresAdultNotification' | 'significantAppChangeRequiresParentalConsent';
 export interface ExpoAgeRangeModule extends NativeModule {
     requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
+    isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
+    showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
+    getRequiredRegulatoryFeaturesAsync(): Promise<AgeRangeRegulatoryFeature[] | null>;
 }
 //# sourceMappingURL=ExpoAgeRange.types.d.ts.map

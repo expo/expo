@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -132,14 +132,14 @@ struct JavaScriptArrayTests {
     let array = try runtime.eval("[1, 2, 3, 4, 5]").getArray()
     try array.set(value: JavaScriptValue(runtime, "hello"), at: 0)
     try array.set(value: JavaScriptValue(runtime, true), at: 1)
-    try array.set(value: JavaScriptValue.null(), at: 2)
-    try array.set(value: JavaScriptValue.undefined(), at: 3)
+    try array.set(value: JavaScriptValue.null, at: 2)
+    try array.set(value: JavaScriptValue.undefined, at: 3)
 
     #expect(try array.getValue(at: 0).getString() == "hello")
     #expect(try array.getValue(at: 1).getBool() == true)
     #expect(try array.getValue(at: 2).isNull() == true)
     #expect(try array.getValue(at: 3).isUndefined() == true)
-    #expect(try array.getValue(at: 4).getInt() == 5) // Unchanged
+    #expect(try array.getValue(at: 4).getInt() == 5)  // Unchanged
   }
 
   @Test
@@ -370,7 +370,7 @@ struct JavaScriptArrayTests {
   @Test
   func `array as value can be passed to functions`() throws {
     let array = try runtime.eval("[1, 2, 3]").getArray()
-    let stringify = runtime.global()
+    let stringify = try runtime.global()
       .getPropertyAsObject("JSON")
       .getPropertyAsFunction("stringify")
 
@@ -422,6 +422,59 @@ struct JavaScriptArrayTests {
       values.append(array[i].getString())
     }
     #expect(values == ["a", "b", "c", "d"])
+  }
+
+  // MARK: - Iteration Methods
+
+  @Test
+  func `iterate with enumerated`() throws {
+    let array = try runtime.eval("['a', 'b', 'c']").getArray()
+    var pairs: [(Int, String)] = []
+
+    for (index, value) in array.enumerated() {
+      pairs.append((index, value.getString()))
+    }
+    #expect(pairs.count == 3)
+    #expect(pairs[0] == (0, "a"))
+    #expect(pairs[1] == (1, "b"))
+    #expect(pairs[2] == (2, "c"))
+  }
+
+  @Test
+  func `filter elements`() throws {
+    let array = try runtime.eval("[1, 2, 3, 4, 5, 6]").getArray()
+    let evens = array.filter { $0.getInt() % 2 == 0 }
+    #expect(evens.count == 3)
+    #expect(evens[0].getInt() == 2)
+    #expect(evens[1].getInt() == 4)
+    #expect(evens[2].getInt() == 6)
+  }
+
+  @Test
+  func `reduce elements`() throws {
+    let array = try runtime.eval("[1, 2, 3, 4, 5]").getArray()
+    let sum = array.reduce(0) { $0 + $1.getInt() }
+    #expect(sum == 15)
+  }
+
+  @Test
+  func `forEach elements`() throws {
+    let array = try runtime.eval("[10, 20, 30]").getArray()
+    var values: [Int] = []
+
+    // swift-format-ignore: ReplaceForEachWithForLoop
+    array.forEach { values.append($0.getInt()) }
+    #expect(values == [10, 20, 30])
+  }
+
+  @Test
+  func `forEach empty array`() throws {
+    let array = try runtime.eval("[]").getArray()
+    var count = 0
+
+    // swift-format-ignore: ReplaceForEachWithForLoop
+    array.forEach { _ in count += 1 }
+    #expect(count == 0)
   }
 
   // MARK: - Edge Cases
@@ -512,7 +565,7 @@ struct JavaScriptArrayTests {
   @Test
   func `array instanceof Array`() throws {
     let array = try runtime.eval("[1, 2, 3]").getArray()
-    let arrayConstructor = runtime.global().getPropertyAsFunction("Array")
+    let arrayConstructor = try runtime.global().getPropertyAsFunction("Array")
     #expect(array.asValue().getObject().instanceOf(arrayConstructor) == true)
   }
 }

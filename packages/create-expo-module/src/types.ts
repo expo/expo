@@ -1,6 +1,7 @@
 import type { PromptObject } from 'prompts';
 
 import type { Feature } from './features';
+import type { PackageManagerName } from './packageManager';
 import type { Platform } from './prompts';
 
 export type { Feature };
@@ -23,9 +24,12 @@ export type CommandOptions = {
   authorEmail?: string;
   authorUrl?: string;
   repo?: string;
+  license?: string;
+  moduleVersion?: string;
   platform?: Platform[];
   features?: Feature[];
   fullExample?: boolean;
+  packageManager?: PackageManagerName;
 };
 
 /**
@@ -40,6 +44,10 @@ export type SubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    swiftUIViewName: string;
+    swiftUIModifierName: string;
+    composeViewName: string;
+    composeModifierName: string;
     sharedObjectName: string;
     platforms: Platform[];
     features: Feature[];
@@ -57,6 +65,10 @@ export type LocalSubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    swiftUIViewName: string;
+    swiftUIModifierName: string;
+    composeViewName: string;
+    composeModifierName: string;
     sharedObjectName: string;
     platforms: Platform[];
     features: Feature[];

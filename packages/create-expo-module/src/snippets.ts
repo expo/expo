@@ -13,6 +13,10 @@ const MODULE_LEVEL_FEATURES: Feature[] = [
   'AsyncFunction',
   'View',
   'SharedObject',
+  'SwiftUIView',
+  'SwiftUIModifier',
+  'ComposeView',
+  'ComposeModifier',
 ];
 
 const VIEW_LEVEL_FEATURES: Feature[] = ['ViewEvent'];
@@ -24,6 +28,10 @@ const APP_SNIPPET_FEATURES: Feature[] = [
   'Event',
   'View',
   'SharedObject',
+  'SwiftUIView',
+  'SwiftUIModifier',
+  'ComposeView',
+  'ComposeModifier',
 ];
 
 async function readSnippet(
@@ -190,23 +198,81 @@ const FILE_SNIPPET_SPECS: FileSnippetSpec[] = [
     source: 'sharedObject.ts.ejs',
     dest: (d) => path.join('src', `${d.project.sharedObjectName}.ts`),
   },
+  {
+    feature: 'SwiftUIView',
+    source: 'view.swift.ejs',
+    dest: (d) => path.join('ios', `${d.project.swiftUIViewName}.swift`),
+    platform: 'apple',
+  },
+  {
+    feature: 'SwiftUIView',
+    source: 'view.tsx.ejs',
+    dest: (d) => path.join('src', `${d.project.swiftUIViewName}.tsx`),
+  },
+  {
+    feature: 'SwiftUIModifier',
+    source: 'modifier.swift.ejs',
+    dest: (d) => path.join('ios', `${d.project.swiftUIModifierName}.swift`),
+    platform: 'apple',
+  },
+  {
+    feature: 'SwiftUIModifier',
+    source: 'modifiers.ts.ejs',
+    dest: (d) => path.join('src', `${d.project.swiftUIModifierName}.ts`),
+  },
+  {
+    feature: 'ComposeView',
+    source: 'view.kt.ejs',
+    dest: (d) =>
+      path.join(
+        'android',
+        'src',
+        'main',
+        'java',
+        ...d.project.package.split('.'),
+        `${d.project.composeViewName}.kt`
+      ),
+    platform: 'android',
+  },
+  {
+    feature: 'ComposeView',
+    source: 'view.tsx.ejs',
+    dest: (d) => path.join('src', `${d.project.composeViewName}.tsx`),
+  },
+  {
+    feature: 'ComposeModifier',
+    source: 'modifier.kt.ejs',
+    dest: (d) =>
+      path.join(
+        'android',
+        'src',
+        'main',
+        'java',
+        ...d.project.package.split('.'),
+        `${d.project.composeModifierName}.kt`
+      ),
+    platform: 'android',
+  },
+  {
+    feature: 'ComposeModifier',
+    source: 'modifiers.ts.ejs',
+    dest: (d) => path.join('src', `${d.project.composeModifierName}.ts`),
+  },
 ];
 
-/**
- * Copies whole-file snippets (view classes, SharedObject classes) to the target directory.
- */
-export async function copyFileSnippets(
+async function copySnippetsInternal(
   snippetsDir: string,
   features: string[],
   data: AnySubstitutionData,
-  targetDir: string
+  targetDir: string,
+  filter: (spec: (typeof FILE_SNIPPET_SPECS)[0]) => boolean
 ): Promise<void> {
   const selectedPlatforms: string[] = data.project.platforms;
 
   for (const spec of FILE_SNIPPET_SPECS) {
     if (!features.includes(spec.feature)) continue;
-    if (spec.platform === 'apple' && !selectedPlatforms.includes('apple')) continue;
-    if (spec.platform === 'android' && !selectedPlatforms.includes('android')) continue;
+    if (spec.platform && !selectedPlatforms.includes(spec.platform)) continue;
+    if (!filter(spec)) continue;
 
     const template = await readSnippet(snippetsDir, spec.feature, spec.source);
     if (!template) continue;
@@ -218,3 +284,27 @@ export async function copyFileSnippets(
     await fs.promises.writeFile(destPath, rendered, 'utf8');
   }
 }
+
+export const copyFileSnippets = (
+  snippetsDir: string,
+  features: string[],
+  data: AnySubstitutionData,
+  targetDir: string
+) => copySnippetsInternal(snippetsDir, features, data, targetDir, () => true);
+
+export const copyNativeFileSnippets = (
+  snippetsDir: string,
+  features: string[],
+  data: AnySubstitutionData,
+  targetDir: string
+) => copySnippetsInternal(snippetsDir, features, data, targetDir, (spec) => !!spec.platform);
+
+export const copyWebFileSnippets = (
+  snippetsDir: string,
+  features: string[],
+  data: AnySubstitutionData,
+  targetDir: string
+) =>
+  copySnippetsInternal(snippetsDir, features, data, targetDir, (spec) =>
+    spec.source.includes('.web.')
+  );

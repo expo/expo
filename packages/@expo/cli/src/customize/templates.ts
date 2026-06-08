@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import prompt, { ExpoChoice } from '../utils/prompts';
+import type { ExpoChoice } from '../utils/prompts';
+import prompt from '../utils/prompts';
 
 const debug = require('debug')('expo:customize:templates');
 
@@ -65,7 +66,7 @@ export const TEMPLATES: {
   },
   {
     id: 'metro.config.js',
-    dependencies: ['@expo/metro-config'],
+    dependencies: [],
     destination: () => 'metro.config.js',
     file: (projectRoot) => importFromVendor(projectRoot, 'metro.config.js'),
   },

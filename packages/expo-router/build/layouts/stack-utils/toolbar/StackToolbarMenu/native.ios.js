@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeToolbarMenuAction = exports.NativeToolbarMenu = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const elements_1 = require("../../../../link/elements");
@@ -10,13 +11,16 @@ const native_1 = require("../../../../link/preview/native");
  * Native toolbar menu component for bottom toolbar.
  * Renders as NativeLinkPreviewAction.
  */
-const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, subtitle, title, label, destructive, children, icon, xcassetName, image, imageRenderingMode, tintColor, variant, style, elementSize, }) => {
+const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, subtitle, title, label, destructive, children, icon, source, xcassetName, image, imageRenderingMode, tintColor, variant, style, elementSize, }) => {
     const identifier = (0, react_1.useId)();
     const titleStyle = react_native_1.StyleSheet.flatten(style);
     const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
-    return (<native_1.NativeLinkPreviewAction sharesBackground={!separateBackground} hidesSharedBackground={hidesSharedBackground} hidden={hidden} icon={icon} xcassetName={xcassetName} 
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    image={image} imageRenderingMode={renderingMode} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={title ?? ''} label={label} onSelected={() => { }} children={children} identifier={identifier}/>);
+    if (process.env.NODE_ENV !== 'production' && source) {
+        console.warn('Stack.Toolbar.Menu in placement="bottom" on iOS does not support image icons via the `icon` prop or <Stack.Toolbar.Icon src={...} />; the image will not render. Use the `icon` prop with a string SF Symbol name (e.g. "star.fill"), the `image` prop for a custom image, or <Stack.Toolbar.Icon xcasset="..." /> for an Xcode asset catalog image.');
+    }
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeLinkPreviewAction, { sharesBackground: !separateBackground, hidesSharedBackground: hidesSharedBackground, hidden: hidden, icon: icon, xcassetName: xcassetName, 
+        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+        image: image, imageRenderingMode: renderingMode, destructive: destructive, subtitle: subtitle, accessibilityLabel: accessibilityLabel, accessibilityHint: accessibilityHint, displayAsPalette: palette, displayInline: inline, preferredElementSize: elementSize, tintColor: tintColor, titleStyle: titleStyle, barButtonItemStyle: variant === 'done' ? 'prominent' : variant, title: title ?? '', label: label, onSelected: () => { }, children: children, identifier: identifier }));
 };
 exports.NativeToolbarMenu = NativeToolbarMenu;
 /**

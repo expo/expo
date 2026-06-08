@@ -1,4 +1,4 @@
-import { Notification, NotificationContent, NotificationRequest, NotificationResponse } from '../Notifications.types';
+import type { Notification, NotificationContent, NotificationRequest, NotificationResponse } from '../Notifications.types';
 /**
  * @hidden
  *

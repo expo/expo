@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { getBestSimulatorAsync } from './getBestSimulator';
-import { Device } from './simctl';
+import type { Device } from './simctl';
 import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 
 /**

@@ -4,17 +4,106 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.15 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- Fix `useHermesV1` reference to document its current default of `true` (Hermes V1 is the default engine since SDK 56) and that disabling it requires `buildReactNativeFromSource`. ([#46211](https://github.com/expo/expo/pull/46211) by [@yaminyassin](https://github.com/yaminyassin))
+
+## 56.0.14 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Default `ios.usePrecompiledModules` to `true` so the plugin matches the Podfile default (precompiled modules enabled) instead of silently disabling them. ([#46159](https://github.com/expo/expo/pull/46159) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
-### 🐛 Bug fixes
-
 ### 💡 Others
 
+- Mark `ios.deploymentTarget` as deprecated in favor of the built-in `ios.deploymentTarget` property (SDK 56 and greater). ([#43700](https://github.com/expo/expo/pull/43700) by [@EvanBacon](https://github.com/EvanBacon))
 - Update useHermesV1 to support React Native 0.84 ([#43625](https://github.com/expo/expo/pull/43625) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.9 — 2026-02-25
 

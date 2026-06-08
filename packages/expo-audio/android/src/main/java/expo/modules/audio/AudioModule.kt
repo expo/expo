@@ -44,7 +44,6 @@ import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
-@DelicateCoroutinesApi
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
   private lateinit var audioManager: AudioManager
@@ -200,6 +199,7 @@ class AudioModule : Module() {
     focusAcquired = false
   }
 
+  @OptIn(DelicateCoroutinesApi::class)
   override fun definition() = ModuleDefinition {
     Name("ExpoAudio")
 
@@ -626,6 +626,37 @@ class AudioModule : Module() {
         if (recorder.isPrepared) {
           recorder.startRecordingAtTime(seconds)
         }
+      }
+    }
+
+    Class(AudioStream::class) {
+      Constructor { options: AudioStreamOptions ->
+        AudioStream(appContext, options)
+      }
+
+      Property("id") { stream: AudioStream ->
+        stream.id
+      }
+
+      Property("sampleRate") { stream: AudioStream ->
+        stream.sampleRate
+      }
+
+      Property("channels") { stream: AudioStream ->
+        stream.channels
+      }
+
+      Property("isStreaming") { stream: AudioStream ->
+        stream.isStreaming
+      }
+
+      AsyncFunction("start") Coroutine { stream: AudioStream ->
+        checkRecordingPermission()
+        stream.start()
+      }
+
+      Function("stop") { stream: AudioStream ->
+        stream.stop()
       }
     }
 

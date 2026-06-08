@@ -4,15 +4,17 @@ exports.shouldRunMiddleware = shouldRunMiddleware;
 const matchers_1 = require("./matchers");
 /**
  * Determines whether middleware should run for a given request based on matcher configuration.
+ *
+ * When `effectivePathname` differs from the raw URL pathname (e.g. the route a
+ * `/_expo/loaders/...` request resolves to), patterns are checked against both
+ * so route-scoped middleware can't be bypassed via the loader endpoint.
  */
-function shouldRunMiddleware(request, middleware) {
+function shouldRunMiddleware(request, middleware, effectivePathname) {
     const matcher = middleware.unstable_settings?.matcher;
     // No matcher means middleware runs on all requests
     if (!matcher) {
         return true;
     }
-    const url = new URL(request.url);
-    const pathname = url.pathname;
     // Check HTTP methods, if specified
     if (matcher.methods) {
         const methods = matcher.methods.map((method) => method.toUpperCase());
@@ -26,7 +28,14 @@ function shouldRunMiddleware(request, middleware) {
         if (patterns.length === 0) {
             return false;
         }
-        return patterns.some((pattern) => matchesPattern(pathname, pattern));
+        const rawPathname = new URL(request.url).pathname;
+        if (patterns.some((pattern) => matchesPattern(rawPathname, pattern))) {
+            return true;
+        }
+        if (effectivePathname && effectivePathname !== rawPathname) {
+            return patterns.some((pattern) => matchesPattern(effectivePathname, pattern));
+        }
+        return false;
     }
     // If neither methods nor patterns are specified, run middleware on all requests
     return true;
@@ -48,6 +57,8 @@ function matchesPattern(pathname, pattern) {
         }
     }
     else if (pattern != null) {
+        // Prevent `g`/`y` flags from carrying `lastIndex` state across requests.
+        pattern.lastIndex = 0;
         return pattern.test(pathname);
     }
     return false;

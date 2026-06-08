@@ -8,6 +8,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -121,11 +122,21 @@ export default function HomeScreen() {
 
 For more complex keyboard interactions, such as larger scrollable entry forms with several text input fields, consider using the [`react-native-keyboard-controller` (Keyboard Controller)](https://kirillzyusko.github.io/react-native-keyboard-controller) library. It offers additional functionality beyond the built-in React Native keyboard APIs, providing consistency across Android and iOS with minimal configuration and offering the native feel users expect.
 
-### Prerequisites
-
-The following steps are described using a [development build](/develop/development-builds/introduction/) since the Keyboard Controller library is not included in Expo Go. See [Create a development build](/develop/development-builds/create-a-build/) for more information.
-
-[Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller) also requires `react-native-reanimated` to work correctly. To install it, follow these [installation instructions](/versions/latest/sdk/reanimated/#installation).
+<Prerequisites>
+  <Requirement title="A development build">
+    The Keyboard Controller library is not included in Expo Go. See [Create a development
+    build](/develop/development-builds/create-a-build/) for more information.
+  </Requirement>
+  <Requirement
+    title={
+      <>
+        <CODE>react-native-reanimated</CODE> installed
+      </>
+    }>
+    Keyboard Controller requires `react-native-reanimated` to work correctly. Follow the
+    [installation instructions](/versions/latest/sdk/reanimated/#installation).
+  </Requirement>
+</Prerequisites>
 
 ### Install
 

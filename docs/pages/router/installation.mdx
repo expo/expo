@@ -7,14 +7,17 @@ searchRank: 6
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 Follow the steps below if you have an existing project and want to add Expo Router. For new projects, see the [Quick start](/router/introduction/#quick-start) in the introduction guide.
 
-### Prerequisites
-
-Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
+<Prerequisites>
+  <Requirement title="Set up your development environment">
+    Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 
@@ -23,9 +26,20 @@ Make sure your computer is [set up for running an Expo app](/get-started/create-
 You'll need to install the following dependencies:
 
 <Terminal
-  cmd={[
-    '$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+    ],
+    yarn: [
+      '$ yarn expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+    ],
+    pnpm: [
+      '$ pnpm expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+    ],
+    bun: [
+      '$ bun expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+    ],
+  }}
 />
 
 The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
@@ -36,7 +50,7 @@ The above command will install versions of these libraries that are compatible w
 
 ### Setup entry point
 
-For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**src/app/\_layout.tsx**](/router/reference/src-directory/) (or [**app/\_layout.tsx**](/router/basics/layout/#root-layout) if not using the **src** directory).
+For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**src/app/\_layout.tsx**](/router/reference/src-directory/) (or [**app/\_layout.tsx**](/router/basics/navigation-layouts/#root-layout) if not using the **src** directory).
 
 ```json package.json
 {
@@ -87,23 +101,34 @@ Add a deep linking `scheme` and enable [typed routes](/router/reference/typed-ro
 
 ```json app.json
 {
-  "scheme": "your-app-scheme",
-  "experiments": {
-    "typedRoutes": true
+  "expo": {
+    "scheme": "your-app-scheme",
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
 ```
 
 If you are developing your app for web, install the following dependencies:
 
-<Terminal cmd={['$ npx expo install react-native-web react-dom']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-native-web react-dom'],
+    yarn: ['$ yarn expo install react-native-web react-dom'],
+    pnpm: ['$ pnpm expo install react-native-web react-dom'],
+    bun: ['$ bun expo install react-native-web react-dom'],
+  }}
+/>
 
 Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro) support by adding the following to your [app config](/workflow/configuration/):
 
 ```json app.json
 {
-  "web": {
-    "bundler": "metro"
+  "expo": {
+    "web": {
+      "bundler": "metro"
+    }
   }
 }
 ```
@@ -156,7 +181,14 @@ The `@/*` alias maps to the **src** directory in the above example.
 
 After updating the configuration, run the following command to clear the bundler cache:
 
-<Terminal cmd={['$ npx expo start --clear']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --clear'],
+    yarn: ['$ yarn expo start --clear'],
+    pnpm: ['$ pnpm expo start --clear'],
+    bun: ['$ bun expo start --clear'],
+  }}
+/>
 
 </Step>
 

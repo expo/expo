@@ -5,7 +5,7 @@
       "name": "ExpoBackgroundTask",
       "podName": "ExpoBackgroundTask",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -14,6 +14,26 @@
         "expo-modules-core/ExpoModulesCore"
       ],
       "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoBackgroundTask_ios_objc",
+          "moduleName": "ExpoBackgroundTask",
+          "path": "ios",
+          "pattern": "**/*.m",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": [
+            "Foundation"
+          ],
+          "includeDirectories": [
+            "."
+          ]
+        },
         {
           "type": "swift",
           "name": "ExpoBackgroundTask",
@@ -26,7 +46,8 @@
             "Hermes",
             "React",
             "ReactNativeDependencies",
-            "expo-modules-core/ExpoModulesCore"
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoBackgroundTask_ios_objc"
           ],
           "linkedFrameworks": [
             "Foundation",

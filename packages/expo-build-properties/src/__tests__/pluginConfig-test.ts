@@ -1,4 +1,5 @@
-import { validateConfig, resolveConfigValue, PluginConfigType } from '../pluginConfig';
+import type { PluginConfigType } from '../pluginConfig';
+import { validateConfig, resolveConfigValue } from '../pluginConfig';
 
 describe(validateConfig, () => {
   it('should throw error from invalid config type', () => {

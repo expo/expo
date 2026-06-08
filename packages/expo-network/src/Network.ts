@@ -2,9 +2,9 @@ import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
 import ExpoNetwork from './ExpoNetwork';
-import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
+import type { NetworkState, NetworkStateEvent } from './Network.types';
 
-export { NetworkState, NetworkStateEvent, NetworkStateType };
+export { type NetworkState, type NetworkStateEvent, NetworkStateType } from './Network.types';
 
 const onNetworkStateEventName = 'onNetworkStateChanged';
 

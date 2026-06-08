@@ -1,9 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { type ObservableState } from '../State/useNativeState';
-import { useWorkletProp } from '../State/useWorkletProp';
-import { getStateId } from '../State/utils';
+import { getStateId, type ObservableState, useWorkletProp } from '../../State';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 

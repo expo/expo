@@ -6,14 +6,16 @@ expo-ui is a library of native UI components for React Native, bridging SwiftUI 
 
 Bridge native components to JavaScript with as little abstraction as possible. Native views should be thin wrappers — no added logic, state management, or behavior beyond what the platform component provides. Everything that can be set or controlled from JavaScript should be controlled from JavaScript.
 
-Prefer controlled components: state lives in JS and is passed as props, not managed internally by the native view. Use a prop + callback pattern (e.g. `page` + `onPageChange`) instead of imperative ref methods (e.g. `setPage(index)`). This keeps the source of truth in React and makes components predictable and composable.
+Mirror the native API shape. If the underlying SwiftUI / Compose component exposes imperative methods (e.g. SwiftUI's `ScrollViewProxy.scrollTo`, Compose's `PagerState.animateScrollToPage`), expose them as imperative methods in JS — don't paper them over with a controlled prop + sync layer just for the sake of a "React-y" API.
 
 ## Naming
 
 - The JavaScript API must mirror the native APIs closely.
 - Exported components must have the same name as the underlying native component (e.g. SwiftUI `TabView` -> export `TabView`, Jetpack Compose `HorizontalPager` -> export `HorizontalPager`).
+- Don't turn native-layer modifiers into props in the JS layer — modifiers stay as modifiers.
 - Use `export function ComponentName` (the dominant pattern in this codebase). Use `export const` only for non-component values like modifiers or constants. Avoid the `export { LocalName as ExportName }` rename pattern unless the local name must differ.
 - Props, constants, and enum values must use the same names as the native API. If SwiftUI calls it `scrollEnabled`, the JS prop is `scrollEnabled`. If Compose calls it `userScrollEnabled`, the JS prop is `userScrollEnabled`.
+- Ensure components have the correct display name in React DevTools. Either name the function directly (e.g. `function TabView`) or set `.displayName`.
 
 ## Props and events
 
@@ -41,6 +43,7 @@ For every component added, create example screens in NCL (native-component-list)
 - `apps/native-component-list/src/screens/UI/<ComponentName>Screen.ios.tsx` — imports from `@expo/ui/swift-ui`
 - `apps/native-component-list/src/screens/UI/<ComponentName>Screen.android.tsx` — imports from `@expo/ui/jetpack-compose`
 - Register in both `UIScreen.ios.tsx` and `UIScreen.android.tsx`
+- Keep the minimum set of examples needed to cover available features.
 
 ## Before committing
 

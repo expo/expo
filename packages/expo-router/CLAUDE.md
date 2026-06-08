@@ -1,6 +1,6 @@
 # Expo Router
 
-File-based routing library for React Native and web applications. Built on top of React Navigation, it provides automatic route generation from file structure, deep linking, typed routes, and cross-platform navigation.
+File-based routing library for React Native and web applications. It provides automatic route generation from file structure, deep linking, typed routes, and cross-platform navigation. React Navigation's core code is vendored/forked into `src/react-navigation/` — there are no external `@react-navigation/*` dependencies.
 
 ## Structure
 
@@ -36,7 +36,8 @@ File-based routing library for React Native and web applications. Built on top o
 │   │   └── stack-utils/       # Stack utilities
 │   │       ├── Agents.md  # Read this file before modifying components in this directory
 │   │       ├── StackScreen.tsx, StackSearchBar.tsx  # Screen and search bar components
-│   │       ├── screen/        # Title (StackScreenTitle) and BackButton (StackScreenBackButton)
+│   │       ├── StackTitle.tsx # Stack.Title
+│   │       ├── screen/        # BackButton (StackScreenBackButton);
 │   │       └── toolbar/       # StackToolbar* components
 │   │
 │   ├── native-tabs/           # Native bottom tabs (iOS UITabBar, Android BottomNav)
@@ -70,7 +71,18 @@ File-based routing library for React Native and web applications. Built on top o
 │   │   ├── Sitemap.tsx        # Route introspection
 │   │   └── Unmatched.tsx      # 404 screen
 │   │
-│   ├── fork/                  # Forked React Navigation code
+│   ├── react-navigation/      # Vendored React Navigation source (replaces all @react-navigation/* deps)
+│   │   ├── core/              # @react-navigation/core internals
+│   │   ├── native/            # @react-navigation/native (linking, back-button)
+│   │   ├── native-stack/      # @react-navigation/native-stack
+│   │   ├── bottom-tabs/       # @react-navigation/bottom-tabs
+│   │   ├── stack/             # @react-navigation/stack
+│   │   ├── drawer/            # @react-navigation/drawer
+│   │   ├── material-top-tabs/ # @react-navigation/material-top-tabs
+│   │   ├── elements/          # @react-navigation/elements
+│   │   └── routers/           # @react-navigation/routers
+│   │
+│   ├── fork/                  # Expo-specific overrides on top of the vendored react-navigation code
 │   │   ├── NavigationContainer.tsx  # Custom NavigationContainer
 │   │   ├── getStateFromPath.ts      # URL → navigation state
 │   │   ├── getPathFromState.ts      # Navigation state → URL

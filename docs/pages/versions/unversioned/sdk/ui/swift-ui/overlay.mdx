@@ -3,13 +3,22 @@ title: Overlay
 description: A SwiftUI Overlay component for layering content on top of another view.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvOS']
+platforms: ['ios', 'tvOS', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Overlay matches the official SwiftUI [overlay](<https://developer.apple.com/documentation/swiftui/view/overlay(alignment:content:)>) modifier and provides a way to layer secondary content on top of a view, positioned with a specified alignment.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/overlay/ios-light.webp"
+  darkSrc="/static/images/expo-ui/overlay/ios-dark.webp"
+  alt="A bell icon with a red 3 notification badge overlaid at the top-trailing corner"
+/>
 
 ## Installation
 

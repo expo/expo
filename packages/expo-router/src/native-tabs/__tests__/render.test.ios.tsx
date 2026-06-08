@@ -12,11 +12,7 @@ import { act, fireEvent, renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
 import { BottomAccessoryPlacementContext } from '../hooks';
-import {
-  SUPPORTED_BLUR_EFFECTS,
-  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
-  SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
-} from '../types';
+import { SUPPORTED_BLUR_EFFECTS, SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -170,10 +166,10 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[0][0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[1][0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[1][0].tabKey).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/^second-[-\w]+/);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/^index-[-\w]+/);
   });
 
   it('index tab is focused when it is second tab', () => {
@@ -191,10 +187,10 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[0][0].tabKey).toMatch(/^second-[-\w]+/);
-    expect(TabsScreen.mock.calls[1][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[1][0].tabKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/^index-[-\w]+/);
   });
 
   describe('First tab is used, when index is hidden', () => {
@@ -276,10 +272,10 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[0][0].tabKey).toMatch(/^first-[-\w]+/);
-    expect(TabsScreen.mock.calls[1][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[1][0].tabKey).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/^first-[-\w]+/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/^second-[-\w]+/);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/^second-[-\w]+/);
   });
 
   it('Correct tab is shown, when index does not exist, redirect is set in layout and +not-found is specified', () => {
@@ -305,10 +301,10 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[0][0].tabKey).toMatch(/^first-[-\w]+/);
-    expect(TabsScreen.mock.calls[1][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[1][0].tabKey).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/^first-[-\w]+/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/^second-[-\w]+/);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/^second-[-\w]+/);
   });
 
   it('404 is shown, when index does not exist, redirect is set in layout and no +not-found is specified', () => {
@@ -364,23 +360,26 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[0][0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[1][0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[1][0].tabKey).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/^second-[-\w]+/);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/^index-[-\w]+/);
 
     TabsScreen.mockClear();
+    TabsHost.mockClear();
     act(() => router.navigate('/second'));
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[2][0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[3][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[3][0].tabKey).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[3][0].screenKey).toMatch(/^second-[-\w]+/);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toMatch(/^second-[-\w]+/);
 
     TabsScreen.mockClear();
+    TabsHost.mockClear();
     act(() => {
       fireEvent.press(screen.getByTestId('remove'));
     });
@@ -388,10 +387,11 @@ describe('First focused tab', () => {
     expect(screen.queryByTestId('second')).toBeNull();
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[0][0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[1][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[1][0].tabKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toMatch(/^index-[-\w]+/);
   });
 });
 
@@ -818,8 +818,8 @@ describe('Native props validation', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].standardAppearance?.tabBarBlurEffect).toBe(blurEffect);
-    expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
+    expect(TabsScreen.mock.calls[0][0].ios?.standardAppearance?.tabBarBlurEffect).toBe(blurEffect);
+    expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
   });
   it.each(['test', 'wrongValue', ...SUPPORTED_BLUR_EFFECTS.map((x) => x.toUpperCase())])(
     'warns when unsupported %s blur effect is used',
@@ -838,48 +838,10 @@ describe('Native props validation', () => {
         `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
       );
       expect(TabsScreen).toHaveBeenCalledTimes(1);
-      expect(TabsScreen.mock.calls[0][0].standardAppearance?.tabBarBlurEffect).toBe(undefined);
-      expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
+      expect(TabsScreen.mock.calls[0][0].ios?.standardAppearance?.tabBarBlurEffect).toBe(undefined);
+      expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
     }
   );
-  it.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(
-    'supports %s label visibility mode',
-    (labelVisibilityMode) => {
-      renderRouter({
-        _layout: () => (
-          <NativeTabs labelVisibilityMode={labelVisibilityMode}>
-            <NativeTabs.Trigger name="index" />
-          </NativeTabs>
-        ),
-        index: () => <View testID="index" />,
-      });
-
-      expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsHost).toHaveBeenCalledTimes(1);
-      expect(TabsHost.mock.calls[0][0].tabBarItemLabelVisibilityMode).toBe(labelVisibilityMode);
-    }
-  );
-  it.each([
-    'test',
-    'wrongValue',
-    ...SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((x) => x.toUpperCase()),
-  ])('warns when unsupported %s label visibility mode is used', (labelVisibilityMode) => {
-    renderRouter({
-      _layout: () => (
-        // @ts-expect-error
-        <NativeTabs labelVisibilityMode={labelVisibilityMode}>
-          <NativeTabs.Trigger name="index" />
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-    });
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith(
-      `Unsupported labelVisibilityMode: ${labelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((effect) => `"${effect}"`).join(', ')}`
-    );
-    expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].tabBarItemLabelVisibilityMode).toBe(undefined);
-  });
   it.each(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS)(
     'supports %s minimize behavior',
     (minimizeBehavior) => {
@@ -894,7 +856,7 @@ describe('Native props validation', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(TabsHost).toHaveBeenCalledTimes(1);
-      expect(TabsHost.mock.calls[0][0].tabBarMinimizeBehavior).toBe(minimizeBehavior);
+      expect(TabsHost.mock.calls[0][0].ios?.tabBarMinimizeBehavior).toBe(minimizeBehavior);
     }
   );
   it.each([
@@ -916,7 +878,7 @@ describe('Native props validation', () => {
       `Unsupported minimizeBehavior: ${minimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((effect) => `"${effect}"`).join(', ')}`
     );
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].tabBarMinimizeBehavior).toBe(undefined);
+    expect(TabsHost.mock.calls[0][0].ios?.tabBarMinimizeBehavior).toBe(undefined);
   });
 });
 
@@ -958,9 +920,9 @@ describe('Misc', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].bottomAccessory).toBeDefined();
+    expect(TabsHost.mock.calls[0][0].ios?.bottomAccessory).toBeDefined();
 
-    const bottomAccessoryFn = TabsHost.mock.calls[0][0].bottomAccessory!;
+    const bottomAccessoryFn = TabsHost.mock.calls[0][0].ios!.bottomAccessory!;
     const regularRender = bottomAccessoryFn('regular');
     const inlineRender = bottomAccessoryFn('inline');
 

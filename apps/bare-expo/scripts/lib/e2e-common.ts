@@ -65,13 +65,15 @@ jsEngine: graaljs
 - openLink: bareexpo://test-suite/run?tests=${testCase}
 # make sure we're running the right test
 - assertVisible:
+    id: "test_suite_selection_query_text"
     text: "${testCase}"
 - extendedWaitUntil:
     visible:
       id: "test_suite_text_results"
     timeout: 120000
 - assertVisible:
-    text: "Success!"
+    id: "test_suite_summary_result_text"
+    text: "All tests passed!"
 `);
   }
 
@@ -135,6 +137,27 @@ export function prettyPrintTestSuiteLogs(logs: string[]) {
     }
   });
   return result.join('\n');
+}
+
+export async function printImageComparisonServerLogs(): Promise<void> {
+  const dir = path.join(process.env.HOME || '', '.maestro', 'tests');
+  try {
+    const entries = await fs.readdir(dir);
+    const matches = entries.filter((name) => name.startsWith('screenshot-server-logs'));
+    if (matches.length === 0) {
+      return;
+    }
+    const stats = await Promise.all(
+      matches.map(async (name) => ({ name, mtime: (await fs.stat(path.join(dir, name))).mtimeMs }))
+    );
+    stats.sort((a, b) => b.mtime - a.mtime);
+    const latest = path.join(dir, stats[0].name);
+    const contents = await fs.readFile(latest, 'utf8');
+    console.log(`\n\n  📜 Image comparison server logs (${latest}):\n`);
+    console.log(contents);
+  } catch (e: any) {
+    console.warn(`\n  ⚠️  Could not read image comparison server logs: ${e?.message ?? e}`);
+  }
 }
 
 export function setupLogger(command: string, signal: AbortSignal): () => Promise<string[]> {

@@ -103,6 +103,17 @@ internal func performSynchronouslyOnMainActor<Result: Sendable>(_ closure: @Main
 }
 
 /**
+ Like `performSynchronouslyOnMainActor` but without the `Sendable` constraint on the result,
+ for cases where the returned value cannot satisfy `Sendable`.
+ */
+internal func performSynchronouslyOnMainThread<Result>(_ closure: () throws -> Result) rethrows -> Result {
+  if Thread.isMainThread {
+    return try closure()
+  }
+  return try DispatchQueue.main.sync(execute: closure)
+}
+
+/**
  A collection of utility functions for various Expo Modules common tasks.
  */
 public struct Utilities {

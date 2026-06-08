@@ -1,10 +1,9 @@
-import path from 'path';
 import send from 'send';
 import { parse } from 'url';
 
 import { parsePlatformHeader } from './resolvePlatform';
-import { ServerRequest, ServerResponse } from './server.types';
-import { env } from '../../../utils/env';
+import type { ServerRequest, ServerResponse } from './server.types';
+import { getPublicFolderPath } from '../../../export/publicFolder';
 
 const debug = require('debug')('expo:start:server:middleware:serveStatic') as typeof console.log;
 
@@ -14,7 +13,7 @@ const debug = require('debug')('expo:start:server:middleware:serveStatic') as ty
 export class ServeStaticMiddleware {
   constructor(private projectRoot: string) {}
   getHandler() {
-    const publicPath = path.join(this.projectRoot, env.EXPO_PUBLIC_FOLDER);
+    const publicPath = getPublicFolderPath(this.projectRoot);
 
     debug(`Serving static files from:`, publicPath);
     const opts = {

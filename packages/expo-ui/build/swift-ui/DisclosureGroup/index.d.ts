@@ -1,6 +1,9 @@
 import { type CommonViewModifierProps } from '../types';
 export interface DisclosureGroupProps extends CommonViewModifierProps {
-    label: string;
+    /**
+     * Text label for the disclosure group. Use `DisclosureGroup.Label` for custom label content.
+     */
+    label?: string;
     children: React.ReactNode;
     /**
      * Controls whether the disclosure group is expanded.
@@ -11,5 +14,11 @@ export interface DisclosureGroupProps extends CommonViewModifierProps {
      */
     onIsExpandedChange?: (isExpanded: boolean) => void;
 }
-export declare function DisclosureGroup(props: DisclosureGroupProps): import("react").JSX.Element;
+declare function DisclosureGroupComponent(props: DisclosureGroupProps): import("react/jsx-runtime").JSX.Element;
+declare namespace DisclosureGroupComponent {
+    var Label: ({ children }: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+}
+export { DisclosureGroupComponent as DisclosureGroup };
 //# sourceMappingURL=index.d.ts.map

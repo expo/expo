@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import ExpoModulesWorklets
+import SwiftUI
 
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
@@ -17,17 +17,15 @@ public final class ExpoUIModule: Module {
 
     // MARK: - Observable State
 
-    Class(WorkletCallback.self) {
-      Constructor { (worklet: Worklet) -> WorkletCallback in
-        let callback = WorkletCallback()
-        callback.worklet = worklet
-        return callback
-      }
-    }
+    makeWorkletCallbackClass()
 
     Class(ObservableState.self) {
       Constructor { (initial: [String: Any]) -> ObservableState in
         return ObservableState(value: initial["value"])
+      }
+
+      Property("__expo_ui_shared_object__") { (_: ObservableState) -> Bool in
+        true
       }
 
       Function("getValue") { (state: ObservableState) -> Any in
@@ -35,7 +33,19 @@ public final class ExpoUIModule: Module {
       }
 
       Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
-        state.value = wrapper["value"]
+        let newValue = wrapper["value"]
+        // Update state on the UI thread
+        if Thread.isMainThread {
+          state.value = newValue
+        } else {
+          DispatchQueue.main.async {
+            state.value = newValue
+          }
+        }
+      }
+
+      Function("setOnChange") { (state: ObservableState, callback: WorkletCallback?) in
+        state.onChange = callback
       }
     }
 
@@ -45,11 +55,41 @@ public final class ExpoUIModule: Module {
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
+    AsyncFunction("withAnimation") { (
+      animation: AnimationConfig?,
+      body: WorkletCallback,
+      completion: WorkletCallback?,
+      completionCriteria: AnimationCompletionCriteriaType?
+    ) in
+      let swiftUIAnimation = animation?.toSwiftUIAnimation()
+
+      if let completion {
+        if #available(iOS 17.0, tvOS 17.0, *) {
+          let criteria: SwiftUI.AnimationCompletionCriteria =
+            completionCriteria == .removed ? .removed : .logicallyComplete
+          withAnimation(swiftUIAnimation, completionCriteria: criteria) {
+            body.invoke()
+          } completion: {
+            completion.invoke()
+          }
+          return
+        }
+      }
+
+      withAnimation(swiftUIAnimation) {
+        body.invoke()
+      }
+    }
+    .runOnQueue(.main)
+
     // MARK: - Expo UI Views with AsyncFunctions
 
     ExpoUIView(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("clear") { (view: SecureFieldView) in
+        view.clear()
       }
       AsyncFunction("blur") { (view: SecureFieldView) in
         view.blur()
@@ -61,6 +101,9 @@ public final class ExpoUIModule: Module {
     ExpoUIView(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("clear") { (view: TextFieldView) in
+        view.clear()
       }
       AsyncFunction("blur") { (view: TextFieldView) in
         view.blur()
@@ -82,16 +125,20 @@ public final class ExpoUIModule: Module {
       }
     }
 
-    // MARK: - Views don't support common view modifiers
+    // MARK: - Views that apply common view modifiers internally
+
+    View(HostView.self)
+    View(TextView.self)
+
+    // MARK: - Views that don't support common view modifiers
 
     View(SlotView.self)
     View(NamespaceView.self)
     View(GridRowView.self)
-    View(HostView.self)
-    View(TextView.self)
 
     // MARK: - Expo UI Views
 
+    ExpoUIView(AlertView.self)
     ExpoUIView(BottomSheetView.self)
     ExpoUIView(ExpoUI.Button.self)
     ExpoUIView(ChartView.self)
@@ -110,6 +157,8 @@ public final class ExpoUIModule: Module {
     ExpoUIView(GaugeView.self)
     ExpoUIView(GroupView.self)
     ExpoUIView(HStackView.self)
+    ExpoUIView(LazyHStackView.self)
+    ExpoUIView(LazyVStackView.self)
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
@@ -130,6 +179,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(GlassEffectContainerView.self)
     ExpoUIView(LabeledContentView.self)
     ExpoUIView(ScrollViewComponent.self)
+    ExpoUIView(SwipeActionsView.self)
     ExpoUIView(RectangleView.self)
     ExpoUIView(RoundedRectangleView.self)
     ExpoUIView(EllipseView.self)
@@ -140,9 +190,12 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(OverlayView.self)
+    ExpoUIView(MaskView.self)
     ExpoUIView(GridView.self)
     ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
+    ExpoUIView(TabView.self)
+    ExpoUIView(Tab.self)
 
     // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
     ExpoUIView(SyncToggleView.self)

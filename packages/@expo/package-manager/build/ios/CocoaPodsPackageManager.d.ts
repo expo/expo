@@ -1,5 +1,6 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-import { Ora } from 'ora';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
+import type { Ora } from 'ora';
 export type CocoaPodsErrorCode = 'NON_INTERACTIVE' | 'NO_CLI' | 'COMMAND_FAILED';
 export declare class CocoaPodsError extends Error {
     code: CocoaPodsErrorCode;
@@ -10,36 +11,50 @@ export declare class CocoaPodsError extends Error {
 }
 export declare function extractMissingDependencyError(errorOutput: string): [string, string] | null;
 export declare class CocoaPodsPackageManager {
+    #private;
     options: SpawnOptions;
     private silent;
+    private cwd;
     static getPodProjectRoot(projectRoot: string): string | null;
     static isUsingPods(projectRoot: string): boolean;
+    /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
     static gemInstallCLIAsync(nonInteractive?: boolean, spawnOptions?: SpawnOptions): Promise<void>;
+    /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
     static brewLinkCLIAsync(spawnOptions?: SpawnOptions): Promise<void>;
+    /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
     static brewInstallCLIAsync(spawnOptions?: SpawnOptions): Promise<void>;
+    /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
     static installCLIAsync({ nonInteractive, spawnOptions, }: {
         nonInteractive?: boolean;
         spawnOptions?: SpawnOptions;
     }): Promise<boolean>;
     static isAvailable(projectRoot: string, silent: boolean): boolean;
-    static isCLIInstalledAsync(spawnOptions?: SpawnOptions): Promise<boolean>;
-    constructor({ cwd, silent }: {
+    /** @deprecated: Use `CocoaPodsPackageManager#isCLIInstalledAsync` instead */
+    static isCLIInstalledAsync(spawnOptions?: SpawnOptions, { useBundler }?: {
+        useBundler?: boolean;
+    }): Promise<boolean>;
+    constructor({ cwd, silent, useBundler, }: {
         cwd: string;
         silent?: boolean;
+        useBundler?: boolean;
     });
+    private _useBundler?;
     get name(): string;
     /** Runs `pod install` and attempts to automatically run known troubleshooting steps automatically. */
     installAsync({ spinner }?: {
         spinner?: Ora;
     }): Promise<void>;
     isCLIInstalledAsync(): Promise<boolean>;
-    installCLIAsync(): Promise<boolean>;
+    installCLIAsync({ nonInteractive, spawnOptions, }?: {
+        nonInteractive?: boolean;
+        spawnOptions?: spawnAsync.SpawnOptions;
+    }): Promise<boolean>;
     handleInstallErrorAsync({ error, shouldUpdate, updatedPackages, spinner, }: {
         error: any;
         spinner?: Ora;
         shouldUpdate?: boolean;
         updatedPackages?: string[];
-    }): Promise<spawnAsync.SpawnResult>;
+    }): Promise<SpawnResult>;
     private _installAsync;
     private runInstallTypeCommandAsync;
     addWithParametersAsync(names: string[], parameters: string[]): Promise<void>;
@@ -53,7 +68,6 @@ export declare class CocoaPodsPackageManager {
     configAsync(key: string): Promise<string>;
     removeLockfileAsync(): Promise<void>;
     uninstallAsync(): Promise<void>;
-    private podRepoUpdateAsync;
     _runAsync(args: string[]): Promise<SpawnResult>;
 }
 export declare function getPodUpdateMessage(output: string): {

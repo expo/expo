@@ -28,12 +28,14 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 import java.util.Calendar
 import java.util.Date
 import android.graphics.Color as AndroidColor
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class DatePickerResult(
   @Field
   val date: Long?
 ) : Record
-
 
 enum class DisplayedComponents(val value: String) : Enumerable {
   DATE("date"),
@@ -54,54 +56,93 @@ enum class Variant(val value: String) : Enumerable {
   }
 }
 
+@OptimizedRecord
 class DateTimePickerColorOverrides : Record {
   // DatePicker colors
   @Field val containerColor: AndroidColor? = null
+
   @Field val titleContentColor: AndroidColor? = null
+
   @Field val headlineContentColor: AndroidColor? = null
+
   @Field val weekdayContentColor: AndroidColor? = null
+
   @Field val subheadContentColor: AndroidColor? = null
+
   @Field val navigationContentColor: AndroidColor? = null
+
   @Field val yearContentColor: AndroidColor? = null
+
   @Field val disabledYearContentColor: AndroidColor? = null
+
   @Field val currentYearContentColor: AndroidColor? = null
+
   @Field val selectedYearContentColor: AndroidColor? = null
+
   @Field val disabledSelectedYearContentColor: AndroidColor? = null
+
   @Field val selectedYearContainerColor: AndroidColor? = null
+
   @Field val disabledSelectedYearContainerColor: AndroidColor? = null
+
   @Field val dayContentColor: AndroidColor? = null
+
   @Field val disabledDayContentColor: AndroidColor? = null
+
   @Field val selectedDayContentColor: AndroidColor? = null
+
   @Field val disabledSelectedDayContentColor: AndroidColor? = null
+
   @Field val selectedDayContainerColor: AndroidColor? = null
+
   @Field val disabledSelectedDayContainerColor: AndroidColor? = null
+
   @Field val todayContentColor: AndroidColor? = null
+
   @Field val todayDateBorderColor: AndroidColor? = null
+
   @Field val dayInSelectionRangeContentColor: AndroidColor? = null
+
   @Field val dayInSelectionRangeContainerColor: AndroidColor? = null
+
   @Field val dividerColor: AndroidColor? = null
 
   // TimePicker colors
   @Field val clockDialColor: AndroidColor? = null
+
   @Field val clockDialSelectedContentColor: AndroidColor? = null
+
   @Field val clockDialUnselectedContentColor: AndroidColor? = null
+
   @Field val selectorColor: AndroidColor? = null
+
   @Field val periodSelectorBorderColor: AndroidColor? = null
+
   @Field val periodSelectorSelectedContainerColor: AndroidColor? = null
+
   @Field val periodSelectorUnselectedContainerColor: AndroidColor? = null
+
   @Field val periodSelectorSelectedContentColor: AndroidColor? = null
+
   @Field val periodSelectorUnselectedContentColor: AndroidColor? = null
+
   @Field val timeSelectorSelectedContainerColor: AndroidColor? = null
+
   @Field val timeSelectorUnselectedContainerColor: AndroidColor? = null
+
   @Field val timeSelectorSelectedContentColor: AndroidColor? = null
+
   @Field val timeSelectorUnselectedContentColor: AndroidColor? = null
 }
 
+@OptimizedRecord
 class SelectableDatesRecord : Record {
   @Field val start: Long? = null
+
   @Field val end: Long? = null
 }
 
+@OptimizedComposeProps
 data class DateTimePickerProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
@@ -114,6 +155,7 @@ data class DateTimePickerProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
+@OptimizedComposeProps
 data class DatePickerDialogProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
@@ -122,16 +164,17 @@ data class DatePickerDialogProps(
   val dismissButtonLabel: String? = null,
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
-  val selectableDates: SelectableDatesRecord? = null,
+  val selectableDates: SelectableDatesRecord? = null
 ) : ComposeProps
 
+@OptimizedComposeProps
 data class TimePickerDialogProps(
   val initialDate: Long? = null,
   val is24Hour: Boolean = true,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
   val color: AndroidColor? = null,
-  val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
+  val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides()
 ) : ComposeProps
 
 private fun toUtcDayMillis(localMillis: Long): Long {

@@ -1,5 +1,6 @@
-import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { AndroidConfig } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type dpiMap = Record<DPIString, {
     folderName: string;
@@ -21,8 +22,9 @@ export declare function getAdaptiveIcon(config: ExpoConfig): {
  * their respective "mipmap" directories for <= Android 7, and creates a set of adaptive
  * icon files for > Android 7 from the adaptive icon files (if provided).
  */
-export declare function setIconAsync(projectRoot: string, { icon, backgroundColor, backgroundImage, monochromeImage, isAdaptive, }: {
+export declare function setIconAsync(projectRoot: string, { icon, foregroundImage, backgroundColor, backgroundImage, monochromeImage, isAdaptive, }: {
     icon: string | null;
+    foregroundImage?: string | null;
     backgroundColor: string | null;
     backgroundImage: string | null;
     monochromeImage: string | null;

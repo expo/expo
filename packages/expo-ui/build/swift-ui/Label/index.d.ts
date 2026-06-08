@@ -16,6 +16,11 @@ export type LabelProps = {
      */
     icon?: React.ReactNode;
     /**
+     * Custom title view. Accepts any React node (for example, a `VStack` with title and subtitle).
+     * When provided, this takes precedence over `title`.
+     */
+    children?: React.ReactNode;
+    /**
      * The color of the label icon.
      * @deprecated Use `foregroundStyle` modifier instead.
      */
@@ -27,5 +32,5 @@ export type LabelProps = {
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.
  */
-export declare function Label(props: LabelProps): import("react").JSX.Element;
+export declare function Label(props: LabelProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -27,5 +27,5 @@ export type BadgeProps = {
  *
  * @see [Jetpack Compose Badge](https://developer.android.com/develop/ui/compose/components/badges)
  */
-export declare function Badge(props: BadgeProps): import("react").JSX.Element;
+export declare function Badge(props: BadgeProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

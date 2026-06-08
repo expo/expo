@@ -16,54 +16,27 @@ exports.REQUEST_HEADERS = '__expo_requestHeaders';
 function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
     return { renderEntries, getBuildConfig, getSsrConfig };
 }
-// TODO(EvanBacon): This can leak between platforms and runs.
-// We need to share this module between the server action module and the renderer module, per platform, and invalidate on refreshes.
-function getGlobalCacheForPlatform() {
-    // HACK: This is a workaround for the shared middleware being shared between web and native.
-    // In production the shared middleware is web-only and that causes the first version of this module
-    // to be bound to web.
-    const platform = globalThis.__expo_platform_header ?? process.env.EXPO_OS;
-    if (!globalThis.__EXPO_RSC_CACHE__) {
-        globalThis.__EXPO_RSC_CACHE__ = new Map();
-    }
-    if (globalThis.__EXPO_RSC_CACHE__.has(platform)) {
-        return globalThis.__EXPO_RSC_CACHE__.get(platform);
-    }
-    const serverCache = new node_async_hooks_1.AsyncLocalStorage();
-    globalThis.__EXPO_RSC_CACHE__.set(platform, serverCache);
-    return serverCache;
+// Stashed on globalThis so separately-loaded copies of this module (e.g. the renderer and a
+// server-action module loaded via Metro's ssrLoadModule) share one storage instance.
+function getRenderStorage() {
+    return (globalThis.__EXPO_RSC_STORE__ ??= new node_async_hooks_1.AsyncLocalStorage());
 }
-let previousRenderStore;
-let currentRenderStore;
 /**
  * This is an internal function and not for public use.
  */
 const runWithRenderStore = (renderStore, fn) => {
-    const renderStorage = getGlobalCacheForPlatform();
-    if (renderStorage) {
-        return renderStorage.run(renderStore, fn);
-    }
-    previousRenderStore = currentRenderStore;
-    currentRenderStore = renderStore;
-    try {
-        return fn();
-    }
-    finally {
-        currentRenderStore = previousRenderStore;
-    }
+    return getRenderStorage().run(renderStore, fn);
 };
 exports.runWithRenderStore = runWithRenderStore;
 async function rerender(input, params) {
-    const renderStorage = getGlobalCacheForPlatform();
-    const renderStore = renderStorage.getStore() ?? currentRenderStore;
+    const renderStore = getRenderStorage().getStore();
     if (!renderStore) {
         throw new Error('Render store is not available for rerender');
     }
     renderStore.rerender(input, params);
 }
 function getContext() {
-    const renderStorage = getGlobalCacheForPlatform();
-    const renderStore = renderStorage.getStore() ?? currentRenderStore;
+    const renderStore = getRenderStorage().getStore();
     if (!renderStore) {
         throw new Error('Render store is not available for accessing context');
     }

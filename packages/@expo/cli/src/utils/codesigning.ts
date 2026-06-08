@@ -8,12 +8,14 @@ import {
   validateSelfSignedCertificate,
   signBufferRSASHA256AndVerify,
 } from '@expo/code-signing-certificates';
-import { ExpoConfig } from '@expo/config';
-import JsonFile, { JSONObject } from '@expo/json-file';
+import type { ExpoConfig } from '@expo/config';
+import type { JSONObject } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
 import { promises as fs } from 'fs';
-import { pki as PKI } from 'node-forge';
+import type { pki as PKI } from 'node-forge';
 import path from 'path';
-import { Dictionary, parseDictionary } from 'structured-headers';
+import type { Dictionary } from 'structured-headers';
+import { parseDictionary } from 'structured-headers';
 
 import { env } from './env';
 import { CommandError } from './errors';
@@ -23,7 +25,7 @@ import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/clie
 import { AppQuery, type App } from '../api/graphql/queries/AppQuery';
 import { getExpoHomeDirectory } from '../api/user/UserSettings';
 import { tryGetUserAsync } from '../api/user/actions';
-import { Actor } from '../api/user/user';
+import type { Actor } from '../api/user/user';
 import * as Log from '../log';
 import { learnMore } from '../utils/link';
 
@@ -61,8 +63,15 @@ export function getDevelopmentCodeSigningDirectory(): string {
   return path.join(getExpoHomeDirectory(), 'codesigning');
 }
 
+function assertBasenameValue(input: string): void {
+  if (!input || input === '.' || input === '..' || input !== path.basename(input)) {
+    throw new CommandError('Invalid EAS project ID for development code signing cache');
+  }
+}
+
 function getProjectDevelopmentCodeSigningInfoFile<T extends JSONObject>(defaults: T) {
   function getFile(easProjectId: string): JsonFile<T> {
+    assertBasenameValue(easProjectId);
     const filePath = path.join(
       getDevelopmentCodeSigningDirectory(),
       easProjectId,

@@ -73,6 +73,7 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 **How:**
 
+- Make sure Xcode 26.4.1 is installed in `/Applications` (it can coexist with newer Xcodes). `et publish-packages` automatically points the iOS prebuild step at it via `DEVELOPER_DIR` regardless of which Xcode is active, and fails fast with a clear error if 26.4.1 isn't found. This pin matters because the npm-bundled iOS xcframeworks embed the producing Swift compiler version in their `.swiftinterface` headers, and Swift refuses to consume an interface produced by a newer compiler — publishing on a newer Xcode would break every EAS Build worker and consumer on an older one.
 - Run `et publish-packages`. Talk to @tsapeta for more details/information.
 - Run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 
@@ -111,7 +112,7 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 - Do this step immediately before cutting the release branch.
 - Run `et generate-docs-api-data` to regenerate `unversioned` API data files before cutting new documentation version.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK.
-- Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
+- Run `pnpm schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to main.
 
@@ -163,6 +164,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
+- Make sure Xcode 26.4.1 is installed in `/Applications` (see [§0.6](#06-publish-next-packages) for why; `et publish-packages` will use it automatically).
 - From the main branch, run `et publish-packages` and publish all packages with changes.
 - From the main branch, run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 - If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on main in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.

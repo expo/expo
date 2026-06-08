@@ -19,10 +19,11 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { discoverExpoModuleConfigAsync, ExpoModuleConfig } from '../ExpoModuleConfig';
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { DependencyResolution } from '../dependencies';
 import {
-  DependencyResolution,
   filterMapResolutionResult,
   mergeResolutionResults,
   scanDependenciesFromRNProjectConfig,
@@ -30,6 +31,26 @@ import {
   scanDependenciesRecursively,
 } from '../dependencies';
 import { checkDependencyWebAsync } from './webResolver';
+import { getSupportPackageForPlatform } from '../platforms';
+
+const deepObjectMerge = (target: any, source: any): any => {
+  if (
+    source !== undefined &&
+    typeof target === 'object' &&
+    target != null &&
+    !Array.isArray(target) &&
+    (!target.constructor || target.constructor === Object) &&
+    typeof source === 'object' &&
+    !Array.isArray(source)
+  ) {
+    target = { ...target };
+    for (const key in source) {
+      target[key] = deepObjectMerge(target[key], source[key]);
+    }
+    return target;
+  }
+  return source !== undefined ? source : target;
+};
 
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
   const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
@@ -47,12 +68,16 @@ export async function resolveReactNativeModule(
   platform: SupportedPlatform,
   excludeNames: Set<string>
 ): Promise<RNConfigDependency | null> {
+  // The platform's support package is the react-native host (e.g. react-native-macos for macos,
+  // react-native-tvos for tvos), not a linkable module — filter it out alongside react-native.
+  // This is null for platforms without a host (web, apple), so only react-native is filtered.
+  const supportPackage = getSupportPackageForPlatform(platform);
   if (excludeNames.has(resolution.name)) {
     return null;
-  } else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
+  } else if (resolution.name === 'react-native' || resolution.name === supportPackage) {
     // Starting from version 0.76, the `react-native` package only defines platforms
     // when @react-native-community/cli-platform-android/ios is installed.
-    // Therefore, we need to manually filter it out.
+    // Therefore, we need to manually filter it (and the platform's support package) out.
     // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
     return null;
   }
@@ -66,15 +91,16 @@ export async function resolveReactNativeModule(
   const modulePath = shouldUseOriginPath ? resolution.originPath : resolution.path;
 
   const libraryConfig = (await loadConfigAsync(modulePath)) as RNConfigReactNativeLibraryConfig;
-  const reactNativeConfig = {
-    ...libraryConfig?.dependency,
-    ...projectConfig?.dependencies?.[resolution.name],
-  };
-
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
     return null;
+  }
+
+  let reactNativeConfig = libraryConfig?.dependency ?? {};
+  const projectDependencyOverride = projectConfig?.dependencies?.[resolution.name];
+  if (projectDependencyOverride != null) {
+    reactNativeConfig = deepObjectMerge(reactNativeConfig, projectDependencyOverride);
   }
 
   let maybeExpoModuleConfig: ExpoModuleConfig | null | undefined;
@@ -106,6 +132,19 @@ export async function resolveReactNativeModule(
     platformData = await resolveDependencyConfigImplIosAsync(
       resolution,
       reactNativeConfig.platforms?.ios,
+      maybeExpoModuleConfig
+    );
+  } else if (platform === 'tvos' || platform === 'macos') {
+    // tvos/macos build through the Apple toolchain, so they reuse the iOS autolinking resolver.
+    // Use the platform-specific `react-native.config` entry when it's set — including an explicit
+    // `null`, which disables autolinking for that platform — and only fall back to `platforms.ios`
+    // when it's unset (`undefined`). Results are reported under the platform's own key.
+    const platformConfig = reactNativeConfig.platforms?.[platform as 'tvos' | 'macos'];
+    const appleConfig =
+      platformConfig !== undefined ? platformConfig : reactNativeConfig.platforms?.ios;
+    platformData = await resolveDependencyConfigImplIosAsync(
+      resolution,
+      appleConfig,
       maybeExpoModuleConfig
     );
   } else if (platform === 'web') {
@@ -162,10 +201,17 @@ export async function createReactNativeConfigAsync({
     resolveReactNativeModule(resolution, projectConfig, autolinkingOptions.platform, excludeNames)
   );
 
+  // The support package is the platform's react-native host (react-native for ios/android,
+  // react-native-tvos / react-native-macos for the out-of-tree platforms). This replaces the
+  // npm-alias approach where the support package was installed under the `react-native` name.
+  // Native platforms always resolve a host package; fall back to react-native for safety.
+  const supportPackage =
+    getSupportPackageForPlatform(autolinkingOptions.platform) ?? 'react-native';
+
   // See: https://github.com/facebook/react-native/pull/53690
   // When we're building react-native from source without these generated files, we need to force them to be generated
   // Every published react-native version (or out-of-tree version) should have these files, but building from the raw repo won't (e.g. Expo Go)
-  const reactNativeResolution = resolutions['react-native'];
+  const reactNativeResolution = resolutions[supportPackage];
   if (
     reactNativeResolution &&
     autolinkingOptions.platform === 'ios' &&
@@ -187,12 +233,21 @@ export async function createReactNativeConfigAsync({
     };
   }
 
+  const reactNativePath = resolutions[supportPackage]?.path!;
   return {
     root: appRoot,
-    reactNativePath: resolutions['react-native']?.path!,
+    reactNativePath,
     dependencies,
     project: await resolveAppProjectConfigAsync(appRoot, autolinkingOptions.platform, sourceDir),
   };
+}
+
+function resolveAppleProjectSourceDir(projectRoot: string, platform: string): string {
+  const platformDir = path.join(projectRoot, platform);
+  if (fs.existsSync(path.join(platformDir, 'Podfile'))) {
+    return platformDir;
+  }
+  return path.join(projectRoot, 'ios');
 }
 
 export async function resolveAppProjectConfigAsync(
@@ -217,10 +272,11 @@ export async function resolveAppProjectConfigAsync(
     };
   }
 
-  if (platform === 'ios') {
+  if (platform === 'ios' || platform === 'tvos' || platform === 'macos') {
+    // tvos/macos may reuse the iOS (Apple) toolchain but are reported under their own platform key
     return {
-      ios: {
-        sourceDir: sourceDir ?? path.join(projectRoot, 'ios'),
+      [platform]: {
+        sourceDir: sourceDir ?? resolveAppleProjectSourceDir(projectRoot, platform),
       },
     };
   }

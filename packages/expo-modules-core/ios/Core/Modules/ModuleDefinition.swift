@@ -1,3 +1,5 @@
+import ExpoModulesJSI
+
 let DEFAULT_MODULE_VIEW = "DEFAULT_MODULE_VIEW"
 
 /**
@@ -27,10 +29,17 @@ public final class ModuleDefinition: ObjectDefinition {
 
   let eventObservers: [AnyEventObservingDefinition]
 
+  /// The raw list of definitions used to construct this module. Retained so
+  /// that `ModuleHolder` can merge in the entries synthesized by the
+  /// `@ExpoModule` macro without losing the user-authored ones.
+  let rawDefinitions: [AnyDefinition]
+
   /**
    Initializer that is called by the `ModuleDefinitionBuilder` results builder.
    */
   override init(definitions: [AnyDefinition]) {
+    self.rawDefinitions = definitions
+
     self.name = definitions
       .compactMap { $0 as? ModuleNameDefinition }
       .last?
@@ -72,7 +81,7 @@ public final class ModuleDefinition: ObjectDefinition {
   @JavaScriptActor
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     // Create an instance of `global.expo.NativeModule`
-    let object = JSUtils.createNativeModuleObject(try appContext.runtime)
+    let object = try appContext.runtime.createNativeModuleObject()
 
     try super.decorate(object: object, appContext: appContext)
 

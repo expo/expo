@@ -1,3 +1,4 @@
+import type { Platform } from '@expo/config';
 import type { ResolutionContext } from '@expo/metro/metro-resolver';
 import type { ResolutionResult as AutolinkingResolutionResult } from 'expo-modules-autolinking/exports';
 
@@ -38,8 +39,9 @@ const KNOWN_STICKY_DEPENDENCIES = [
   '@react-navigation/native',
 ];
 
-const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
-type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
+const AUTOLINKING_PLATFORMS: readonly Platform[] = ['android', 'ios', 'web', 'tvos', 'macos'];
+
+export type AutolinkingPlatform = Platform;
 
 const escapeDependencyName = (dependency: string) =>
   dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
@@ -55,11 +57,13 @@ interface PlatformModuleDescription {
   platform: AutolinkingPlatform;
   moduleTestRe: RegExp;
   resolvedModulePaths: Record<string, string>;
+  moduleNameRewrites: Record<string, string | undefined>;
 }
 
 const toPlatformModuleDescription = (
   dependencies: AutolinkingResolutionResult,
-  platform: AutolinkingPlatform
+  platform: AutolinkingPlatform,
+  supportPackage: string | null
 ): PlatformModuleDescription => {
   const resolvedModulePaths: Record<string, string> = {};
   const resolvedModuleNames: string[] = [];
@@ -70,6 +74,11 @@ const toPlatformModuleDescription = (
       resolvedModulePaths[dependency.name] = dependency.path;
     }
   }
+  // Redirect `react-native` to the platform's support package
+  const moduleNameRewrites: Record<string, string | undefined> = {};
+  if (supportPackage && supportPackage !== 'react-native' && resolvedModulePaths[supportPackage]) {
+    moduleNameRewrites['react-native'] = supportPackage;
+  }
   debug(
     `Sticky resolution for ${platform} registered ${resolvedModuleNames.length} resolutions:`,
     resolvedModuleNames
@@ -78,6 +87,7 @@ const toPlatformModuleDescription = (
     platform,
     moduleTestRe: _dependenciesToRegex(resolvedModuleNames),
     resolvedModulePaths,
+    moduleNameRewrites,
   };
 };
 
@@ -107,7 +117,12 @@ export async function createAutolinkingModuleResolverInput({
             platform,
             KNOWN_STICKY_DEPENDENCIES
           );
-          const moduleDescription = toPlatformModuleDescription(dependencies, platform);
+          const supportPackage = autolinking.getSupportPackageForPlatform(platform);
+          const moduleDescription = toPlatformModuleDescription(
+            dependencies,
+            platform,
+            supportPackage
+          );
           return [platform, moduleDescription] satisfies [
             AutolinkingPlatform,
             PlatformModuleDescription,
@@ -142,16 +157,22 @@ export function createAutolinkingModuleResolver(
     const moduleDescription = input[platform]!;
     const moduleMatch = moduleDescription.moduleTestRe.exec(moduleName);
     if (moduleMatch) {
+      const matchedName = moduleMatch[1]!;
+      const rewriteTarget = moduleDescription.moduleNameRewrites?.[matchedName];
+      const resolvedModuleName =
+        rewriteTarget != null ? rewriteTarget + moduleMatch[2]! : moduleName;
       const resolvedModulePath =
-        moduleDescription.resolvedModulePaths[moduleMatch[1]!] || moduleName;
-      // We instead resolve as if it was a dependency from within the module (self-require/import)
+        moduleDescription.resolvedModulePaths[rewriteTarget ?? matchedName] || resolvedModuleName;
+      // We instead resolve as if it was a dependency from within the (target) module
       const context: ResolutionContext = {
         ...immutableContext,
         nodeModulesPaths: [],
         originModulePath: resolvedModulePath,
       };
-      const res = getStrictResolver(context, platform)(moduleName);
-      debug(`Sticky resolution for ${platform}: ${moduleName} -> from: ${resolvedModulePath}`);
+      const res = getStrictResolver(context, platform)(resolvedModuleName);
+      debug(
+        `Sticky resolution for ${platform}: ${moduleName} -> ${resolvedModuleName} (from: ${resolvedModulePath})`
+      );
       return res;
     }
 

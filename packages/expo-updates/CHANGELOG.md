@@ -4,23 +4,165 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
+- [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
+
+### 💡 Others
+
+- [Android] Log purge completion errors via `android.util.Log.e` directly instead of `logger.error`, so the failure path doesn't re-enter the `PersistentFileLog` dispatch queue from inside one of its own tasks. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
+
+## 56.0.17 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.15 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.14 — 2026-05-20
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+- Added `zstd` decompression support for the `FileDownloader` on Android. ([#46052](https://github.com/expo/expo/pull/46052) by [@kudo](https://github.com/kudo))
+
+## 56.0.13 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- [cli] Write private key into owner-only permissions file ([#45880](https://github.com/expo/expo/pull/45880) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Enable bsdiff-based bundle patch downloads by default. ([#45928](https://github.com/expo/expo/pull/45928) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.12 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [Android] Fix app restart when not using `ReactApplication` ([#45660](https://github.com/expo/expo/pull/45660) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 56.0.10 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `picomatch@^4.0.4` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
+
+## 56.0.7 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-08
+
+### 💡 Others
+
+- Add runtime version header to asset requests. ([#45465](https://github.com/expo/expo/pull/45465) by [@douglowder](https://github.com/douglowder))
+
+## 56.0.5 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
-- Native interface access to state machine context. ([#44361](https://github.com/expo/expo/pull/44361) by [@douglowder](https://github.com/douglowder))
 - [ios] resolve Expo.plist lookup in brownfield xcframework builds ([#44645](https://github.com/expo/expo/pull/44645) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [ios] Support multiple root view creations in brownfield ([#44771](https://github.com/expo/expo/pull/44771) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Improve the error message thrown by `setUpdateRequestHeadersOverride` when an override key is not in `updates.requestHeaders`. ([#45044](https://github.com/expo/expo/pull/45044) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Fixed Updates E2E tests. ([#43995](https://github.com/expo/expo/pull/43995) by [@kudo](https://github.com/kudo))
+- [Android] Improved application startup performance by reducing reflection usage. ([#45023](https://github.com/expo/expo/pull/45023) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.20 - 2026-04-09
 
 ### 🐛 Bug fixes
 
 - Pass absolute path to CLI helpers when creating build manifest, since the underlying functions now handle entry file inputs properly, instead of applying `mainModuleName` semantics to them ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
 - [ios] Fix loading assets in brownfield ([#44724](https://github.com/expo/expo/pull/44724) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
+## 55.0.19 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.18 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.17 - 2026-04-02
+
+### 🎉 New features
+
+- Native interface access to state machine context. ([#44361](https://github.com/expo/expo/pull/44361) by [@douglowder](https://github.com/douglowder))
+
+## 55.0.16 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-03-19
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-02-26
+
 ### 💡 Others
 
 - Remove pin on `arg` dependency ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
-- Fixed Updates E2E tests. ([#43995](https://github.com/expo/expo/pull/43995) by [@kudo](https://github.com/kudo))
 
 ## 55.0.11 — 2026-02-25
 

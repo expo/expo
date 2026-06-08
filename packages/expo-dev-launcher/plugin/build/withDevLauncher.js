@@ -67,6 +67,16 @@ if [ "$CONFIGURATION" != "Debug" ]; then
 fi
 `,
         });
+        const targetPhases = project.pbxNativeTargetSection()[nativeTargetId]?.buildPhases ?? [];
+        const addedIdx = targetPhases.findIndex((p) => p.comment === buildPhaseName);
+        if (addedIdx >= 0) {
+            const [added] = targetPhases.splice(addedIdx, 1);
+            if (added) {
+                const firstEmbedIdx = targetPhases.findIndex((p) => /^Embed |^\[CP\] Embed /.test(p.comment ?? ''));
+                const insertIdx = firstEmbedIdx >= 0 ? firstEmbedIdx : targetPhases.length;
+                targetPhases.splice(insertIdx, 0, added);
+            }
+        }
         return config;
     });
 };
@@ -92,16 +102,21 @@ const withLocalNetworkPermission = (config) => {
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {}) => {
     (0, pluginConfig_1.validateConfig)(props);
+    const androidDefaultLaunchURL = props.android?.defaultLaunchURL ?? props.defaultLaunchURL;
+    const iosDefaultLaunchURL = props.ios?.defaultLaunchURL ?? props.defaultLaunchURL;
     const iOSLaunchMode = props.ios?.launchMode ??
         props.launchMode ??
         props.ios?.launchModeExperimental ??
         props.launchModeExperimental;
-    if (iOSLaunchMode === 'launcher') {
-        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+    config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+        if (iOSLaunchMode === 'launcher') {
             config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
-            return config;
-        });
-    }
+        }
+        if (iosDefaultLaunchURL) {
+            config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URL'] = iosDefaultLaunchURL;
+        }
+        return config;
+    });
     const iOSToolsButton = props.ios?.toolsButton ?? props.toolsButton;
     if (iOSToolsButton !== undefined) {
         config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
@@ -116,17 +131,34 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
             return config;
         });
     }
+    const iOSSkipOnboarding = props.ios?.skipOnboarding ?? props.skipOnboarding;
+    if (iOSSkipOnboarding !== undefined) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults['EXDevMenuIsOnboardingFinished'] = iOSSkipOnboarding;
+            return config;
+        });
+    }
+    const iOSShowMenuAtLaunch = props.ios?.showMenuAtLaunch ?? props.showMenuAtLaunch;
+    if (iOSShowMenuAtLaunch !== undefined) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults['EXDevMenuShowsAtLaunch'] = iOSShowMenuAtLaunch;
+            return config;
+        });
+    }
     const androidLaunchMode = props.android?.launchMode ??
         props.launchMode ??
         props.android?.launchModeExperimental ??
         props.launchModeExperimental;
-    if (androidLaunchMode === 'launcher') {
-        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
-            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+    config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+        if (androidLaunchMode === 'launcher') {
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE', false?.toString());
-            return config;
-        });
-    }
+        }
+        if (androidDefaultLaunchURL) {
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_DEFAULT_LAUNCHER_URL', androidDefaultLaunchURL);
+        }
+        return config;
+    });
     const androidToolsButton = props.android?.toolsButton ?? props.toolsButton;
     if (androidToolsButton !== undefined) {
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
@@ -140,6 +172,22 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
             const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevClientEmbeddedBundle', String(true));
+            return config;
+        });
+    }
+    const androidSkipOnboarding = props.android?.skipOnboarding ?? props.skipOnboarding;
+    if (androidSkipOnboarding !== undefined) {
+        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevMenuIsOnboardingFinished', String(androidSkipOnboarding));
+            return config;
+        });
+    }
+    const androidShowMenuAtLaunch = props.android?.showMenuAtLaunch ?? props.showMenuAtLaunch;
+    if (androidShowMenuAtLaunch !== undefined) {
+        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevMenuShowsAtLaunch', String(androidShowMenuAtLaunch));
             return config;
         });
     }

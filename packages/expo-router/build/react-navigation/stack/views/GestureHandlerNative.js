@@ -36,14 +36,13 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GestureState = exports.GestureHandlerRootView = void 0;
 exports.PanGestureHandler = PanGestureHandler;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_gesture_handler_1 = require("react-native-gesture-handler");
 const GestureHandlerRefContext_1 = require("../utils/GestureHandlerRefContext");
 function PanGestureHandler(props) {
     const gestureRef = React.useRef(null);
-    return (<GestureHandlerRefContext_1.GestureHandlerRefContext.Provider value={gestureRef}>
-      <react_native_gesture_handler_1.PanGestureHandler {...props} ref={gestureRef}/>
-    </GestureHandlerRefContext_1.GestureHandlerRefContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(GestureHandlerRefContext_1.GestureHandlerRefContext.Provider, { value: gestureRef, children: (0, jsx_runtime_1.jsx)(react_native_gesture_handler_1.PanGestureHandler, { ...props, ref: gestureRef }) }));
 }
 var react_native_gesture_handler_2 = require("react-native-gesture-handler");
 Object.defineProperty(exports, "GestureHandlerRootView", { enumerable: true, get: function () { return react_native_gesture_handler_2.GestureHandlerRootView; } });

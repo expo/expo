@@ -41,14 +41,21 @@ function getTarget(filename, data) {
     const hash = (0, node_crypto_1.createHash)('sha256').update(data).digest('base64url');
     return `${filename}.${hash}`;
 }
-function writeFileAtomicSync(filename, data) {
+function writeFileAtomicSync(filename, data, options = {}) {
     const tmpfile = getTarget(filename, data);
-    fs.writeFileSync(tmpfile, data);
+    fs.writeFileSync(tmpfile, data, options.mode !== undefined ? { mode: options.mode } : undefined);
     fs.renameSync(tmpfile, filename);
+    // rename preserves any pre-existing destination mode; chmod after to enforce the requested mode.
+    if (options.mode !== undefined) {
+        fs.chmodSync(filename, options.mode);
+    }
 }
-async function writeFileAtomic(filename, data) {
+async function writeFileAtomic(filename, data, options = {}) {
     const tmpfile = getTarget(filename, data);
-    await fs.promises.writeFile(tmpfile, data);
+    await fs.promises.writeFile(tmpfile, data, options.mode !== undefined ? { mode: options.mode } : undefined);
     await fs.promises.rename(tmpfile, filename);
+    if (options.mode !== undefined) {
+        await fs.promises.chmod(filename, options.mode);
+    }
 }
 //# sourceMappingURL=writeAtomic.js.map

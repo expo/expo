@@ -1,6 +1,8 @@
-import { ExpoConfig, getConfig, Platform } from '@expo/config';
+import type { Platform } from '@expo/config';
+import { getConfig, getPlatformsFromConfig } from '@expo/config';
 
-import { getPlatformBundlers, PlatformBundlers } from '../start/server/platformBundlers';
+import type { PlatformBundlers } from '../start/server/platformBundlers';
+import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { CommandError } from '../utils/errors';
 
 export type Options = {
@@ -20,13 +22,13 @@ export type Options = {
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
 export function resolvePlatformOption(
-  exp: ExpoConfig,
+  configPlatforms: Platform[],
   platformBundlers: PlatformBundlers,
   platform: string[] = ['all']
 ): Platform[] {
   const platformsAvailable: Partial<PlatformBundlers> = Object.fromEntries(
     Object.entries(platformBundlers).filter(
-      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+      ([platform, bundler]) => bundler === 'metro' && configPlatforms.includes(platform as Platform)
     )
   );
 
@@ -38,13 +40,13 @@ export function resolvePlatformOption(
 
   const assertPlatformBundler = (platform: Platform): Platform => {
     if (!platformsAvailable[platform]) {
-      if (!exp.platforms?.includes(platform) && platform === 'web') {
+      if (!configPlatforms.includes(platform) && platform === 'web') {
         // Pass through so the more robust error message is shown.
         return platform;
       }
       throw new CommandError(
         'BAD_ARGS',
-        `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${exp.platforms?.join(
+        `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${configPlatforms.join(
           ', '
         )}].`
       );
@@ -53,7 +55,7 @@ export function resolvePlatformOption(
     return platform;
   };
 
-  const knownPlatforms = ['android', 'ios', 'web'] as Platform[];
+  const knownPlatforms = ['android', 'ios', 'web', 'tvos', 'macos'] as Platform[];
   const assertPlatformIsKnown = (platform: string): Platform => {
     if (!knownPlatforms.includes(platform as Platform)) {
       throw new CommandError(
@@ -81,7 +83,12 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   const { exp } = getConfig(projectRoot, { skipPlugins: true, skipSDKVersionRequirement: true });
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
-  const platforms = resolvePlatformOption(exp, platformBundlers, args['--platform']);
+  const platformsFromConfig = getPlatformsFromConfig(projectRoot, exp);
+  const platforms = resolvePlatformOption(
+    platformsFromConfig,
+    platformBundlers,
+    args['--platform']
+  );
 
   // --source-maps can be true, "external", or "inline"
   const sourceMapsArg = args['--source-maps'];

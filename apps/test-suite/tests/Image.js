@@ -69,6 +69,29 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(image.scale).toBe(1);
         t.expect(image.isAnimated).toBe(false);
       });
+
+      t.it('loads a local SVG asset without crashing', async () => {
+        const image = await Image.loadAsync(require('../assets/expo.svg'));
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+      });
+
+      t.it('preserves the SVG aspect ratio when maxWidth/maxHeight are provided', async () => {
+        const image = await Image.loadAsync(require('../assets/expo.svg'), {
+          maxWidth: 64,
+          maxHeight: 64,
+        });
+
+        t.expect(image.width).toBe(64);
+        t.expect(image.height).toBeLessThan(64);
+        t.expect(image.height).toBeGreaterThan(0);
+        // Aspect ratio should match the viewBox within a small rounding tolerance.
+        const aspect = image.width / image.height;
+        t.expect(Math.abs(aspect - 24 / 22)).toBeLessThan(0.05);
+      });
     });
   }
 
@@ -173,7 +196,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('getCachePathAsync', async () => {
+    t.describe('getCachePathAsync', () => {
       t.it('returns path to cached image when it does exist in the cache', async () => {
         await mountAndWaitFor(
           <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
@@ -216,7 +239,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('prefetch', async () => {
+    t.describe('prefetch', () => {
       t.it('prefetches an image and resolves promise to true', async () => {
         await Image.clearDiskCache();
         const result = await Image.prefetch(REMOTE_SOURCE.uri);
@@ -256,7 +279,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     if (Platform.OS === 'ios') {
-      t.describe('generateBlurhashAsync', async () => {
+      t.describe('generateBlurhashAsync', () => {
         t.it('returns a correct blurhash for url', async () => {
           const result = await Image.generateBlurhashAsync(REMOTE_SOURCE.uri, [4, 3]);
           t.expect(result).toBe(REMOTE_SOURCE.blurhash);

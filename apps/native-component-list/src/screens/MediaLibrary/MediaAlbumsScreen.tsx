@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import React from 'react';
 import {
   FlatList,
@@ -7,11 +7,11 @@ import {
   Platform,
   StyleSheet,
   Switch,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import MonoText from '../../components/MonoText';
 
 interface State {
@@ -48,7 +48,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
       return await MediaLibrary.getAlbumsAsync({
         includeSmartAlbums,
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ERR_NO_ENOUGH_PERMISSIONS') {
         return [];
       } else {
@@ -67,8 +67,8 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
     return (
       <TouchableOpacity style={styles.album} onPress={() => this.openAlbum(item)}>
         <View style={styles.albumHeader}>
-          <Text>{item.title}</Text>
-          <Text>{item.assetCount}</Text>
+          <BodyText>{item.title}</BodyText>
+          <BodyText>{item.assetCount}</BodyText>
         </View>
         <MonoText>{JSON.stringify(item, null, 2)}</MonoText>
       </TouchableOpacity>
@@ -81,9 +81,9 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
     if (albums.length === 0) {
       return (
         <View style={styles.noAlbums}>
-          <Text>
+          <BodyText>
             You don't have any media albums! You can create one from asset details screen.
-          </Text>
+          </BodyText>
         </View>
       );
     }
@@ -101,7 +101,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
   renderSmartAlbumsToggle() {
     return (
       <View style={styles.includeSmartAlbumsRow}>
-        <Text style={styles.includeSmartAlbumsTitle}>Include smart albums</Text>
+        <BodyText style={styles.includeSmartAlbumsTitle}>Include smart albums</BodyText>
         <Switch
           value={this.state.includeSmartAlbums}
           onValueChange={() =>

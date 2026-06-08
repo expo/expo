@@ -20,7 +20,14 @@ To switch from Expo Go to a development build, you'll need to follow the steps b
 
 The Expo Dev Client library includes the launcher UI (shown in the screenshots below), dev menu, extensions to test over-the-air updates, and more. The Expo Go app has the dev menu built in, and that's why you need to install it separately for a development build.
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 
 <ContentSpotlight
   alt="expo-dev-client launcher and menu UIs on Android and iOS."
@@ -55,13 +62,27 @@ Once you have everything set up, run the following command:
 
 <Tab label="Build for Android">
 
-<Terminal cmd={['$ npx expo run:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Build for iOS">
 
-<Terminal cmd={['$ npx expo run:ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
 
 </Tab>
 </Tabs>
@@ -78,7 +99,7 @@ Building on EAS servers is useful when:
 
 <BoxLink
   title="Build on EAS"
-  description="How to create your Development Build on EAS"
+  description="How to create your Development Build on EAS."
   href="/develop/development-builds/create-a-build/"
   Icon={BookOpen02Icon}
 />
@@ -91,7 +112,14 @@ Building on EAS servers is useful when:
 
 After building locally, `npx expo run:android|ios` will start the bundler automatically. But if you closed the bundler or are working on a dev client you built earlier, (re)start the Metro bundler with:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 When your project has `expo-dev-client` installed, the bundler will print out **Using development build**, and the QR code it shows will link into the development build you created instead of Expo Go.
 
@@ -111,7 +139,14 @@ You will need to run prebuild locally if you are building via `npx expo run:andr
 
 In these cases, you'll want to rebuild the native directories with:
 
-<Terminal cmd={['$ npx expo prebuild --clean']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean'],
+    yarn: ['$ yarn expo prebuild --clean'],
+    pnpm: ['$ pnpm expo prebuild --clean'],
+    bun: ['$ bun expo prebuild --clean'],
+  }}
+/>
 
 Then, rebuild your app with the updated native code, with:
 
@@ -119,13 +154,27 @@ Then, rebuild your app with the updated native code, with:
 
 <Tab label="Build for Android">
 
-<Terminal cmd={['$ npx expo run:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Build for iOS">
 
-<Terminal cmd={['$ npx expo run:ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
 
 </Tab>
 </Tabs>
@@ -136,7 +185,7 @@ All Expo build tools (`npx expo run:android|ios` and `eas build`) will **prebuil
 
 <BoxLink
   title="Continuous Native Generation (CNG)"
-  description="Learn about the philosophy and benefits of Continuous Native Generation (CNG) and Prebuild"
+  description="Learn about the philosophy and benefits of Continuous Native Generation (CNG) and Prebuild."
   href="/workflow/continuous-native-generation/"
   Icon={BookOpen02Icon}
 />

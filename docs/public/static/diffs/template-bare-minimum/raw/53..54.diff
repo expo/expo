@@ -245,37 +245,6 @@ index 1b7513bd31b..8a390c764af 100644
  			);
  			name = "Bundle React Native code and images";
  			outputPaths = (
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
-new file mode 100644
-index 00000000000..255637e0fdb
---- /dev/null
-+++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
-@@ -0,0 +1,21 @@
-+{
-+  "images" : [
-+    {
-+      "filename" : "SplashScreenLegacy.png",
-+      "idiom" : "universal",
-+      "scale" : "1x"
-+    },
-+    {
-+      "idiom" : "universal",
-+      "scale" : "2x"
-+    },
-+    {
-+      "idiom" : "universal",
-+      "scale" : "3x"
-+    }
-+  ],
-+  "info" : {
-+    "author" : "xcode",
-+    "version" : 1
-+  }
-+}
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png
-new file mode 100644
-index 00000000000..bbf8e9e6016
-Binary files /dev/null and b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png differ
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
 index 447b4188985..58d21796e1d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
@@ -373,7 +342,7 @@ index 29503ff0cc1..9743535e7ad 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 661f6b6addf..0d90c6e603d 100644
+index 661f6b6addf..a1a026a23e1 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
@@ -381,7 +350,7 @@ index 661f6b6addf..0d90c6e603d 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
 -  "version": "53.0.42",
-+  "version": "54.0.50",
++  "version": "54.0.51",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -396,7 +365,7 @@ index 661f6b6addf..0d90c6e603d 100644
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~54.0.33",
++    "expo": "~54.0.34",
 +    "expo-status-bar": "~3.0.9",
 +    "react": "19.1.0",
 +    "react-native": "0.81.5"

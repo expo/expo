@@ -1,3 +1,4 @@
+import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -7,7 +8,7 @@ import resolveFrom from 'resolve-from';
 
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync } from './Utils';
+import { getFileBasedHashSourceAsync, maybeGetRealPathAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
 
@@ -90,7 +91,10 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
     return [];
   }
   try {
-    const { stdout } = await spawnAsync('npx', ['react-native', 'config'], { cwd: projectRoot });
+    const { stdout } = await spawnAsync('npx', ['react-native', 'config'], {
+      cwd: projectRoot,
+      env: getOriginalEnv(),
+    });
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
@@ -120,7 +124,10 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
     'android',
   ];
   try {
-    const { stdout } = await spawnAsync('node', args, { cwd: projectRoot });
+    const { stdout } = await spawnAsync('node', args, {
+      cwd: projectRoot,
+      env: getOriginalEnv(),
+    });
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
@@ -153,7 +160,7 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
         '--platform',
         'ios',
       ],
-      { cwd: projectRoot }
+      { cwd: projectRoot, env: getOriginalEnv() }
     );
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
@@ -184,7 +191,7 @@ async function parseCoreAutolinkingSourcesAsync({
     ? `react-native core autolinking dir for ${platform}`
     : 'react-native core autolinking dir';
   const results: HashSource[] = [];
-  const { root } = config;
+  const root = await maybeGetRealPathAsync(config.root);
   const autolinkingConfig: Record<string, any> = {};
   for (const [depName, depData] of Object.entries<any>(config.dependencies)) {
     try {

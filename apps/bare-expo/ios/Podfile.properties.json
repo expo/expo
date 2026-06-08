@@ -3,5 +3,6 @@
   "newArchEnabled": "true",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
   "expo.inlineModules.watchedDirectories": "[\"../native-component-list/src/screens/inlineModules/inlineModulesExamples\"]",
-  "ios.buildReactNativeFromSource": "false"
+  "ios.buildReactNativeFromSource": "false",
+  "EXPO_USE_PRECOMPILED_MODULES": "false"
 }

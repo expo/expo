@@ -1,4 +1,4 @@
-import { IOSConfig } from 'expo/config-plugins';
+import { IOSConfig } from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
@@ -21,7 +21,6 @@ export async function updateXcodeProject(
 
   const pbxProject = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
   const mainGroupUUID = pbxProject.getFirstProject().firstProject.mainGroup;
-  const mainTarget = pbxProject.getFirstProject().firstProject.targets[0];
   const objects = pbxProject.hash.project.objects;
   const projectRootRelativeToIos = '..';
 
@@ -61,8 +60,8 @@ export async function updateXcodeProject(
       sourceTree: 'SOURCE_ROOT',
     };
 
-    if (mainTarget) {
-      const nativeTargetGroup = objects.PBXNativeTarget[mainTarget.value];
+    for (const target of pbxProject.getFirstProject().firstProject.targets) {
+      const nativeTargetGroup = objects.PBXNativeTarget[target.value];
       if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
         nativeTargetGroup.fileSystemSynchronizedGroups = [];
       }

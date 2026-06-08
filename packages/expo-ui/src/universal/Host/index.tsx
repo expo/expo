@@ -1,0 +1,96 @@
+import { useMemo } from 'react';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+
+import { generatePrimaryColorScale, globalCss } from '../webUtils';
+import type { UniversalHostProps } from './types';
+
+const styles = StyleSheet.create({
+  matchContents: {
+    alignSelf: 'flex-start',
+  },
+  matchViewport: {
+    height: '100dvh',
+    width: '100dvw',
+  },
+  safeArea: {
+    paddingLeft: 'max(env(safe-area-inset-left, 0px), env(keyboard-inset-left, 0px))',
+    paddingRight: 'max(env(safe-area-inset-right, 0px), env(keyboard-inset-right, 0px))',
+    paddingTop: 'max(env(safe-area-inset-top, 0px), env(keyboard-inset-top, 0px))',
+    paddingBottom: 'max(env(safe-area-inset-bottom, 0px), env(keyboard-inset-bottom, 0px))',
+  },
+  safeAreaWithoutKeyboard: {
+    paddingLeft: 'env(safe-area-inset-left, 0px)',
+    paddingRight: 'env(safe-area-inset-right, 0px)',
+    paddingTop: 'env(safe-area-inset-top, 0px)',
+    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+  },
+});
+
+/**
+ * A bridging container that hosts SwiftUI views on iOS and Jetpack Compose views on Android.
+ * On platforms without a native UI-toolkit binding (web, RN fallback), renders a plain `View`.
+ */
+export function Host({
+  children,
+  colorScheme = 'unspecified',
+  seedColor,
+  ignoreSafeArea,
+  layoutDirection,
+  matchContents = false,
+  onLayout,
+  onLayoutContent,
+  style,
+  useViewportSizeMeasurement = false,
+  ...rest
+}: UniversalHostProps) {
+  const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
+  const primaryColorScale = useMemo(() => generatePrimaryColorScale(seedColor), [seedColor]);
+
+  const dir =
+    layoutDirection === 'leftToRight'
+      ? 'ltr'
+      : layoutDirection === 'rightToLeft'
+        ? 'rtl'
+        : undefined;
+
+  const shouldMatchContents =
+    typeof matchContents === 'object'
+      ? matchContents.horizontal || matchContents.vertical
+      : matchContents;
+
+  return (
+    <>
+      <style href="expo-ui-host" precedence="expo-ui">
+        {globalCss}
+      </style>
+
+      <View
+        dataSet={dataSet}
+        dir={dir}
+        onLayout={(event: LayoutChangeEvent) => {
+          onLayout?.(event);
+
+          onLayoutContent?.({
+            nativeEvent: {
+              width: event.nativeEvent.layout.width,
+              height: event.nativeEvent.layout.height,
+            },
+          });
+        }}
+        style={[
+          primaryColorScale,
+          ignoreSafeArea !== 'all' &&
+            (ignoreSafeArea === 'keyboard' ? styles.safeAreaWithoutKeyboard : styles.safeArea),
+          shouldMatchContents
+            ? styles.matchContents
+            : useViewportSizeMeasurement && styles.matchViewport,
+          style,
+        ]}
+        {...rest}>
+        {children}
+      </View>
+    </>
+  );
+}
+
+export type { UniversalHostProps } from './types';

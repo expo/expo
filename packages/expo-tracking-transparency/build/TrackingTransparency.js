@@ -1,4 +1,5 @@
-import { PermissionStatus, UnavailabilityError, createPermissionHook, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
 /**
@@ -27,7 +28,8 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  * advertising identifier.
  *
  * @return Returns either a UUID `string` or `null`. It returns null in the following cases:
- * - On Android, when `isLimitAdTrackingEnabled()` is `true`
+ * - On Android, when the system's [Limit Ad Tracking setting](https://support.google.com/googleplay/android-developer/answer/6048248)
+ * is enabled (the app user has opted out of ad personalization)
  * - In the iOS simulator, regardless of any settings
  * - On iOS if you haven't received permission using [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync)
  * - On iOS, if you've requested permission and the user declines
@@ -36,7 +38,7 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  *
  * @example
  * ```ts
- * TrackingTransparency.getAdvertisingId();
+ * ExpoTrackingTransparency.getAdvertisingId();
  * // "E9228286-4C4E-4789-9D95-15827DCB291B"
  * ```
  */
@@ -62,7 +64,7 @@ const androidAndWebPermissionsResponse = {
  * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
  * reinstalls the app on the device.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, this method always returns that the permission was granted.
  * @example
  * ```typescript
  * const { granted } = await requestTrackingPermissionsAsync();
@@ -85,7 +87,7 @@ export async function requestTrackingPermissionsAsync() {
  * Checks whether or not the user has authorized the app to access app-related data that can be used
  * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, this method always returns that the permission was granted.
  *
  * @example
  * ```typescript
@@ -114,7 +116,7 @@ export async function getTrackingPermissionsAsync() {
  * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
  * reinstalls the app on the device.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, this method always returns that the permission was granted.
  * @example
  * ```ts
  * const [status, requestPermission] = useTrackingPermissions();
@@ -133,5 +135,6 @@ export const useTrackingPermissions = createPermissionHook({
 export function isAvailable() {
     return Boolean(ExpoTrackingTransparency);
 }
-export { PermissionStatus };
+// TODO(@kitten): Remove re-exports from EMC
+export { PermissionStatus, };
 //# sourceMappingURL=TrackingTransparency.js.map

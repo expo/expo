@@ -92,6 +92,22 @@ export default function LocationScreen({
         title="watchHeadingAsync"
         subscribe={(setValue) => Location.watchHeadingAsync(setValue, setValue)}
       />
+      <SimpleActionDemo
+        title="getMotionActivityPermissionsAsync"
+        action={() => Location.getMotionActivityPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="requestMotionActivityPermissionsAsync"
+        action={() => Location.requestMotionActivityPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="getMotionActivityAsync"
+        action={() => Location.getMotionActivityAsync()}
+      />
+      <SubscriptionDemo
+        title="watchMotionActivityAsync"
+        subscribe={(setValue) => Location.watchMotionActivityAsync(setValue, setValue)}
+      />
 
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>
         <ListButton onPress={() => navigation.navigate('Geofencing')} title="Geofencing map" />

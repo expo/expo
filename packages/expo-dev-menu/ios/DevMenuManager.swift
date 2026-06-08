@@ -196,6 +196,16 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public func setShowsAtLaunch(_ enabled: Bool) {
+    DevMenuPreferences.showsAtLaunch = enabled
+  }
+
+  @objc
+  public func getShowsAtLaunch() -> Bool {
+    return DevMenuPreferences.showsAtLaunch
+  }
+
+  @objc
   public func setShowFloatingActionButton(_ enabled: Bool) {
     DevMenuPreferences.showFloatingActionButton = enabled
   }
@@ -212,6 +222,7 @@ open class DevMenuManager: NSObject {
     } else {
       isReactAppRunning = false
     }
+    updateAutoLaunchObserver()
   }
 
   @objc
@@ -228,6 +239,7 @@ open class DevMenuManager: NSObject {
 
     DispatchQueue.main.async {
       self.openMenu()
+      UserDefaults.standard.set(false, forKey: showsAtLaunchKey)
     }
   }
 

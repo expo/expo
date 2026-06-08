@@ -1,4 +1,4 @@
-import { DownloadOptions, DownloadPauseState, FileSystemNetworkTaskProgressCallback, DownloadProgressData, UploadProgressData, FileInfo, FileSystemDownloadResult, FileSystemRequestDirectoryPermissionsResult, FileSystemUploadOptions, FileSystemUploadResult, ReadingOptions, WritingOptions, DeletingOptions, InfoOptions, RelocatingOptions, MakeDirectoryOptions } from './FileSystem.types';
+import type { DownloadOptions, DownloadPauseState, FileSystemNetworkTaskProgressCallback, DownloadProgressData, UploadProgressData, FileInfo, FileSystemDownloadResult, FileSystemRequestDirectoryPermissionsResult, FileSystemUploadOptions, FileSystemUploadResult, ReadingOptions, WritingOptions, DeletingOptions, InfoOptions, RelocatingOptions, MakeDirectoryOptions } from './FileSystem.types';
 /**
  * `file://` URI pointing to the directory where user documents for this app will be stored.
  * Files stored here will remain until explicitly deleted by the app. Ends with a trailing `/`.
@@ -245,7 +245,7 @@ export declare class DownloadResumable extends FileSystemCancellableNetworkTask<
  * # Migrating an album
  *
  * ```ts
- * import * as MediaLibrary from 'expo-media-library';
+ * import * as MediaLibrary from 'expo-media-library/legacy';
  * import * as FileSystem from 'expo-file-system/legacy';
  * const { StorageAccessFramework } = FileSystem;
  *

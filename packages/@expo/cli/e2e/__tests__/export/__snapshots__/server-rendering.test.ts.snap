@@ -1,7 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`exports server expo serve requests injects \`generateMetadata()\` result into the initial server HTML <head> 1`] = `
+[
+  "<meta charSet="utf-8">",
+  "<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">",
+  "<meta http-equiv="X-UA-Compatible" content="IE=edge">",
+  "<meta name="custom-value" content="value">",
+  "<meta name="expo-e2e-pathname" content="/metadata">",
+  "<meta name="expo-e2e-public-env-var" content="foobar">",
+  "<meta name="expo-e2e-private-env-var" content="not-public-value">",
+  "<title>Metadata Page</title>",
+  "<meta name="description" content="Page with generateMetadata">",
+  "<meta name="keywords" content="metadata, e2e">",
+  "<meta property="og:title" content="Metadata OG Title">",
+  "<meta property="og:description" content="Metadata OG Description">",
+  "<meta name="twitter:card" content="summary">",
+  "<meta name="twitter:title" content="Metadata Twitter Title">",
+]
+`;
+
 exports[`exports server expo serve requests supports usePathname in +html files 1`] = `
-"<!DOCTYPE html><html  lang="en"><head><title data-rh="true"></title><meta data-rh="true" name="expo-nested-layout" content="TEST_VALUE"/><meta data-rh="true" name="expo-e2e-public-env-var-client" content="foobar"/><meta data-rh="true" name="expo-e2e-private-env-var-client" content="not-public-value"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="custom-value" content="value"/><meta name="expo-e2e-pathname" content="/"/><meta name="expo-e2e-public-env-var" content="foobar"/><meta name="expo-e2e-private-env-var" content="not-public-value"/><style id="expo-reset">#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
+"<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><link rel="preload" as="script" href="/_expo/static/js/web/[mock].js"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="custom-value" content="value"/><meta name="expo-e2e-pathname" content="/"/><meta name="expo-e2e-public-env-var" content="foobar"/><meta name="expo-e2e-private-env-var" content="not-public-value"/><link rel="icon" href="/favicon.ico"/><link rel="preload" href="/_expo/static/css/global-1f3e4578a1313411a410a9d3f593ae38.css" as="style"/><link rel="preload" href="/_expo/static/css/test.module-ebac9311dfba7117ea126f23f39e1627.css" as="style"/><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf" as="font" crossorigin=""/><style id="expo-reset">#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
 body{margin:0;}
 button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
 html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0);}
@@ -34,6 +53,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-1xfd6ze{border-bottom-left-radius:8px;border-bottom-right-radius:8px;border-top-left-radius:8px;border-top-right-radius:8px;}
 .r-4a18lf{border-bottom-color:rgba(255,0,0,1.00);border-left-color:rgba(255,0,0,1.00);border-right-color:rgba(255,0,0,1.00);border-top-color:rgba(255,0,0,1.00);}
 .r-60ke3l{border-bottom-color:rgba(0,128,0,1.00);border-left-color:rgba(0,128,0,1.00);border-right-color:rgba(0,128,0,1.00);border-top-color:rgba(0,128,0,1.00);}
+.r-6t2glc{border-bottom-left-radius:40px;border-bottom-right-radius:40px;border-top-left-radius:40px;border-top-right-radius:40px;}
 .r-9x6qib{border-bottom-color:rgba(204,214,221,1.00);border-left-color:rgba(204,214,221,1.00);border-right-color:rgba(204,214,221,1.00);border-top-color:rgba(204,214,221,1.00);}
 .r-crgep1{margin:0px;}
 .r-d045u9{border-bottom-width:2px;border-left-width:2px;border-right-width:2px;border-top-width:2px;}
@@ -68,6 +88,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-u9wvl5{padding-left:20px;padding-right:20px;}
 .r-ugi1tw{padding-left:5%;padding-right:5%;}
 .r-w7s2jr{padding-bottom:16px;padding-top:16px;}
+.r-ytbthy{padding-bottom:10px;padding-top:10px;}
 [stylesheet-group="2.2"]{}
 .r-10s2tm5{left:0%;}
 .r-16o8guy{right:100%;}
@@ -227,6 +248,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-7cikom{font-size:inherit;}
 .r-7q8q6z{cursor:default;}
 .r-8akbws{-webkit-box-orient:vertical;}
+.r-8ay8q1{letter-spacing:0.1px;}
 .r-97e31f{padding-bottom:env(safe-area-inset-bottom);}
 .r-9daxd3{animation-duration:250ms;}
 .r-adyw6z{font-size:20px;}
@@ -277,6 +299,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-qfi6ny{top:30000px;}
 .r-qklmqi{border-bottom-width:1px;}
 .r-qn3fzs{padding-bottom:24px;}
+.r-rjixqe{line-height:20px;}
 .r-rs94m5{background-image:url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgdmVyc2lvbj0iMS4xIgogICB2aWV3Qm94PSIwIDAgMSAxIgogICBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWluWU1pbiBtZWV0Ij4KICA8cGF0aAogICAgIGQ9Ik0gMC4wNDAzODA1OSwwLjYyNjc3NjcgMC4xNDY0NDY2MSwwLjUyMDcxMDY4IDAuNDI5Mjg5MzIsMC44MDM1NTMzOSAwLjMyMzIyMzMsMC45MDk2MTk0MSB6IE0gMC4yMTcxNTcyOSwwLjgwMzU1MzM5IDAuODUzNTUzMzksMC4xNjcxNTcyOSAwLjk1OTYxOTQxLDAuMjczMjIzMyAwLjMyMzIyMzMsMC45MDk2MTk0MSB6IgogICAgIGlkPSJyZWN0Mzc4MCIKICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lIiAvPgo8L3N2Zz4K");}
 .r-s62m2j{animation-timing-function:cubic-bezier(0.47, 0, 0.745, 0.715);}
 .r-sfbmgh{z-index:9999;}
@@ -312,16 +335,30 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 @keyframes r-1pzkwqh{0%{transform:translateY(100%);}100%{transform:translateY(0%);}}
 @keyframes r-imtty0{0%{opacity:0;}100%{opacity:1;}}
 @keyframes r-q67da2{0%{transform:translateX(-100%);}100%{transform:translateX(400%);}}
-@keyframes r-t2lo5v{0%{opacity:1;}100%{opacity:0;}}</style><style id="expo-generated-fonts">@font-face{font-family:"sweet";src:url("/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf");font-display:auto}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf" as="font" crossorigin="" /><link rel="preload" href="/_expo/static/css/global-1f3e4578a1313411a410a9d3f593ae38.css" as="style">
-<link rel="stylesheet" href="/_expo/static/css/global-1f3e4578a1313411a410a9d3f593ae38.css">
-<link rel="preload" href="/_expo/static/css/test.module-ebac9311dfba7117ea126f23f39e1627.css" as="style">
-<link rel="stylesheet" href="/_expo/static/css/test.module-ebac9311dfba7117ea126f23f39e1627.css">
-</head><body><div id="root"><div class="css-g5y9jx r-13awgt0"><!--$--><div style="position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;visibility:hidden"></div><div class="css-g5y9jx r-13awgt0"><div class="css-g5y9jx r-13awgt0 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af" style="background-color:rgba(242,242,242,1.00);display:flex"><div class="css-g5y9jx r-184en5c r-12vffkv"><div class="css-g5y9jx r-12vffkv" style="height:64px"><div class="css-g5y9jx r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-12vffkv"><div class="css-g5y9jx r-qklmqi r-13awgt0 r-105ug2t" style="background-color:rgba(255,255,255,1.00);border-bottom-color:rgba(216,216,216,1.00)"></div></div><div class="css-g5y9jx r-633pao" style="height:0px"></div><div class="css-g5y9jx r-1oszu61 r-13awgt0 r-18u37iz r-12vffkv"><div class="css-g5y9jx r-1awozwy r-18u37iz r-1h0z5md r-12vffkv" style="margin-left:0px"></div><div class="css-g5y9jx r-1777fci r-12vffkv" style="max-width:-32px;margin-right:16px;margin-left:16px"><h1 dir="auto" aria-level="1" role="heading" class="css-146c3p1 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-1iln25a r-1i10wst" style="color:rgba(28,28,30,1.00);font-family:system-ui, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-weight:500">index</h1></div><div class="css-g5y9jx r-1awozwy r-18u37iz r-17s6mgv r-1iusvr4 r-16y2uox r-12vffkv" style="margin-right:0px"></div></div></div></div><div class="css-g5y9jx r-13awgt0"><div class="css-g5y9jx r-13awgt0"><!--$--><div dir="auto" class="css-146c3p1" style="font-family:sweet" data-testid="index-text">Index</div><!--/$--></div></div></div></div><!--/$--></div></div><script src="/_expo/static/js/web/[mock].js" defer></script>
-</body></html>"
+@keyframes r-t2lo5v{0%{opacity:1;}100%{opacity:0;}}</style><link rel="stylesheet" href="/_expo/static/css/global-1f3e4578a1313411a410a9d3f593ae38.css"/><link rel="stylesheet" href="/_expo/static/css/test.module-ebac9311dfba7117ea126f23f39e1627.css"/></head><body><div id="root"><div class="css-g5y9jx r-13awgt0"><!--$--><div style="position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;visibility:hidden"></div><div class="css-g5y9jx r-13awgt0"><div class="css-g5y9jx r-13awgt0 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af" style="background-color:rgba(242,242,242,1.00);display:flex"><div class="css-g5y9jx r-12vffkv r-184en5c"><div class="css-g5y9jx r-12vffkv" style="height:64px"><div class="css-g5y9jx r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-12vffkv"><div class="css-g5y9jx r-qklmqi r-13awgt0" style="background-color:rgba(255,255,255,1.00);border-bottom-color:rgba(216,216,216,1.00);pointer-events:auto"></div></div><div class="css-g5y9jx r-633pao" style="height:0px"></div><div class="css-g5y9jx r-1oszu61 r-13awgt0 r-18u37iz r-12vffkv"><div class="css-g5y9jx r-1awozwy r-18u37iz r-1h0z5md r-12vffkv" style="margin-left:0px"></div><div class="css-g5y9jx r-1777fci r-12vffkv" style="max-width:-32px;margin-right:16px;margin-left:16px"><h1 dir="auto" aria-level="1" role="heading" class="css-146c3p1 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-1iln25a r-1i10wst" style="color:rgba(28,28,30,1.00);font-family:system-ui, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-weight:500">index</h1></div><div class="css-g5y9jx r-1awozwy r-18u37iz r-17s6mgv r-12vffkv r-1iusvr4 r-16y2uox" style="margin-right:0px"></div></div></div></div><div class="css-g5y9jx r-13awgt0"><div class="css-g5y9jx r-13awgt0"><!--$--><div dir="auto" class="css-146c3p1" style="font-family:sweet" data-testid="index-text">Index</div><!--/$--></div></div></div></div><!--/$--></div></div><style id="expo-generated-fonts">@font-face{font-family:"sweet";src:url("/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf");font-display:auto}</style><script id="_R_">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script><script src="/_expo/static/js/web/[mock].js" async=""></script></body></html>"
+`;
+
+exports[`exports server workerd requests injects \`generateMetadata()\` result into the initial server HTML <head> 1`] = `
+[
+  "<meta charSet="utf-8">",
+  "<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">",
+  "<meta http-equiv="X-UA-Compatible" content="IE=edge">",
+  "<meta name="custom-value" content="value">",
+  "<meta name="expo-e2e-pathname" content="/metadata">",
+  "<meta name="expo-e2e-public-env-var" content="foobar">",
+  "<meta name="expo-e2e-private-env-var" content="not-public-value">",
+  "<title>Metadata Page</title>",
+  "<meta name="description" content="Page with generateMetadata">",
+  "<meta name="keywords" content="metadata, e2e">",
+  "<meta property="og:title" content="Metadata OG Title">",
+  "<meta property="og:description" content="Metadata OG Description">",
+  "<meta name="twitter:card" content="summary">",
+  "<meta name="twitter:title" content="Metadata Twitter Title">",
+]
 `;
 
 exports[`exports server workerd requests supports usePathname in +html files 1`] = `
-"<!DOCTYPE html><html  lang="en"><head><title data-rh="true"></title><meta data-rh="true" name="expo-nested-layout" content="TEST_VALUE"/><meta data-rh="true" name="expo-e2e-public-env-var-client" content="foobar"/><meta data-rh="true" name="expo-e2e-private-env-var-client" content="not-public-value"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="custom-value" content="value"/><meta name="expo-e2e-pathname" content="/"/><meta name="expo-e2e-public-env-var" content="foobar"/><meta name="expo-e2e-private-env-var" content="not-public-value"/><style id="expo-reset">#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
+"<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><link rel="preload" as="script" href="/_expo/static/js/web/[mock].js"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="custom-value" content="value"/><meta name="expo-e2e-pathname" content="/"/><meta name="expo-e2e-public-env-var" content="foobar"/><meta name="expo-e2e-private-env-var" content="not-public-value"/><link rel="icon" href="/favicon.ico"/><link rel="preload" href="/_expo/static/css/global-1f3e4578a1313411a410a9d3f593ae38.css" as="style"/><link rel="preload" href="/_expo/static/css/test.module-ebac9311dfba7117ea126f23f39e1627.css" as="style"/><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf" as="font" crossorigin=""/><style id="expo-reset">#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
 body{margin:0;}
 button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
 html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0);}
@@ -354,6 +391,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-1xfd6ze{border-bottom-left-radius:8px;border-bottom-right-radius:8px;border-top-left-radius:8px;border-top-right-radius:8px;}
 .r-4a18lf{border-bottom-color:rgba(255,0,0,1.00);border-left-color:rgba(255,0,0,1.00);border-right-color:rgba(255,0,0,1.00);border-top-color:rgba(255,0,0,1.00);}
 .r-60ke3l{border-bottom-color:rgba(0,128,0,1.00);border-left-color:rgba(0,128,0,1.00);border-right-color:rgba(0,128,0,1.00);border-top-color:rgba(0,128,0,1.00);}
+.r-6t2glc{border-bottom-left-radius:40px;border-bottom-right-radius:40px;border-top-left-radius:40px;border-top-right-radius:40px;}
 .r-9x6qib{border-bottom-color:rgba(204,214,221,1.00);border-left-color:rgba(204,214,221,1.00);border-right-color:rgba(204,214,221,1.00);border-top-color:rgba(204,214,221,1.00);}
 .r-crgep1{margin:0px;}
 .r-d045u9{border-bottom-width:2px;border-left-width:2px;border-right-width:2px;border-top-width:2px;}
@@ -388,6 +426,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-u9wvl5{padding-left:20px;padding-right:20px;}
 .r-ugi1tw{padding-left:5%;padding-right:5%;}
 .r-w7s2jr{padding-bottom:16px;padding-top:16px;}
+.r-ytbthy{padding-bottom:10px;padding-top:10px;}
 [stylesheet-group="2.2"]{}
 .r-10s2tm5{left:0%;}
 .r-16o8guy{right:100%;}
@@ -547,6 +586,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-7cikom{font-size:inherit;}
 .r-7q8q6z{cursor:default;}
 .r-8akbws{-webkit-box-orient:vertical;}
+.r-8ay8q1{letter-spacing:0.1px;}
 .r-97e31f{padding-bottom:env(safe-area-inset-bottom);}
 .r-9daxd3{animation-duration:250ms;}
 .r-adyw6z{font-size:20px;}
@@ -597,6 +637,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-qfi6ny{top:30000px;}
 .r-qklmqi{border-bottom-width:1px;}
 .r-qn3fzs{padding-bottom:24px;}
+.r-rjixqe{line-height:20px;}
 .r-rs94m5{background-image:url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgdmVyc2lvbj0iMS4xIgogICB2aWV3Qm94PSIwIDAgMSAxIgogICBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWluWU1pbiBtZWV0Ij4KICA8cGF0aAogICAgIGQ9Ik0gMC4wNDAzODA1OSwwLjYyNjc3NjcgMC4xNDY0NDY2MSwwLjUyMDcxMDY4IDAuNDI5Mjg5MzIsMC44MDM1NTMzOSAwLjMyMzIyMzMsMC45MDk2MTk0MSB6IE0gMC4yMTcxNTcyOSwwLjgwMzU1MzM5IDAuODUzNTUzMzksMC4xNjcxNTcyOSAwLjk1OTYxOTQxLDAuMjczMjIzMyAwLjMyMzIyMzMsMC45MDk2MTk0MSB6IgogICAgIGlkPSJyZWN0Mzc4MCIKICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lIiAvPgo8L3N2Zz4K");}
 .r-s62m2j{animation-timing-function:cubic-bezier(0.47, 0, 0.745, 0.715);}
 .r-sfbmgh{z-index:9999;}
@@ -632,10 +673,5 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 @keyframes r-1pzkwqh{0%{transform:translateY(100%);}100%{transform:translateY(0%);}}
 @keyframes r-imtty0{0%{opacity:0;}100%{opacity:1;}}
 @keyframes r-q67da2{0%{transform:translateX(-100%);}100%{transform:translateX(400%);}}
-@keyframes r-t2lo5v{0%{opacity:1;}100%{opacity:0;}}</style><style id="expo-generated-fonts">@font-face{font-family:"sweet";src:url("/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf");font-display:auto}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf" as="font" crossorigin="" /><link rel="preload" href="/_expo/static/css/global-1f3e4578a1313411a410a9d3f593ae38.css" as="style">
-<link rel="stylesheet" href="/_expo/static/css/global-1f3e4578a1313411a410a9d3f593ae38.css">
-<link rel="preload" href="/_expo/static/css/test.module-ebac9311dfba7117ea126f23f39e1627.css" as="style">
-<link rel="stylesheet" href="/_expo/static/css/test.module-ebac9311dfba7117ea126f23f39e1627.css">
-</head><body><div id="root"><div class="css-g5y9jx r-13awgt0"><!--$--><div style="position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;visibility:hidden"></div><div class="css-g5y9jx r-13awgt0"><div class="css-g5y9jx r-13awgt0 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af" style="background-color:rgba(242,242,242,1.00);display:flex"><div class="css-g5y9jx r-184en5c r-12vffkv"><div class="css-g5y9jx r-12vffkv" style="height:64px"><div class="css-g5y9jx r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-12vffkv"><div class="css-g5y9jx r-qklmqi r-13awgt0 r-105ug2t" style="background-color:rgba(255,255,255,1.00);border-bottom-color:rgba(216,216,216,1.00)"></div></div><div class="css-g5y9jx r-633pao" style="height:0px"></div><div class="css-g5y9jx r-1oszu61 r-13awgt0 r-18u37iz r-12vffkv"><div class="css-g5y9jx r-1awozwy r-18u37iz r-1h0z5md r-12vffkv" style="margin-left:0px"></div><div class="css-g5y9jx r-1777fci r-12vffkv" style="max-width:-32px;margin-right:16px;margin-left:16px"><h1 dir="auto" aria-level="1" role="heading" class="css-146c3p1 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-1iln25a r-1i10wst" style="color:rgba(28,28,30,1.00);font-family:system-ui, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-weight:500">index</h1></div><div class="css-g5y9jx r-1awozwy r-18u37iz r-17s6mgv r-1iusvr4 r-16y2uox r-12vffkv" style="margin-right:0px"></div></div></div></div><div class="css-g5y9jx r-13awgt0"><div class="css-g5y9jx r-13awgt0"><!--$--><div dir="auto" class="css-146c3p1" style="font-family:sweet" data-testid="index-text">Index</div><!--/$--></div></div></div></div><!--/$--></div></div><script src="/_expo/static/js/web/[mock].js" defer></script>
-</body></html>"
+@keyframes r-t2lo5v{0%{opacity:1;}100%{opacity:0;}}</style><link rel="stylesheet" href="/_expo/static/css/global-1f3e4578a1313411a410a9d3f593ae38.css"/><link rel="stylesheet" href="/_expo/static/css/test.module-ebac9311dfba7117ea126f23f39e1627.css"/></head><body><div id="root"><div class="css-g5y9jx r-13awgt0"><!--$--><div style="position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;visibility:hidden"></div><div class="css-g5y9jx r-13awgt0"><div class="css-g5y9jx r-13awgt0 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af" style="background-color:rgba(242,242,242,1.00);display:flex"><div class="css-g5y9jx r-12vffkv r-184en5c"><div class="css-g5y9jx r-12vffkv" style="height:64px"><div class="css-g5y9jx r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-12vffkv"><div class="css-g5y9jx r-qklmqi r-13awgt0" style="background-color:rgba(255,255,255,1.00);border-bottom-color:rgba(216,216,216,1.00);pointer-events:auto"></div></div><div class="css-g5y9jx r-633pao" style="height:0px"></div><div class="css-g5y9jx r-1oszu61 r-13awgt0 r-18u37iz r-12vffkv"><div class="css-g5y9jx r-1awozwy r-18u37iz r-1h0z5md r-12vffkv" style="margin-left:0px"></div><div class="css-g5y9jx r-1777fci r-12vffkv" style="max-width:-32px;margin-right:16px;margin-left:16px"><h1 dir="auto" aria-level="1" role="heading" class="css-146c3p1 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-1iln25a r-1i10wst" style="color:rgba(28,28,30,1.00);font-family:system-ui, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;font-weight:500">index</h1></div><div class="css-g5y9jx r-1awozwy r-18u37iz r-17s6mgv r-12vffkv r-1iusvr4 r-16y2uox" style="margin-right:0px"></div></div></div></div><div class="css-g5y9jx r-13awgt0"><div class="css-g5y9jx r-13awgt0"><!--$--><div dir="auto" class="css-146c3p1" style="font-family:sweet" data-testid="index-text">Index</div><!--/$--></div></div></div></div><!--/$--></div></div><style id="expo-generated-fonts">@font-face{font-family:"sweet";src:url("/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf");font-display:auto}</style><script id="_R_">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script><script src="/_expo/static/js/web/[mock].js" async=""></script></body></html>"
 `;

@@ -3,7 +3,6 @@
  * https://github.com/react-native-segmented-control/segmented-control
  */
 
-import * as React from 'react';
 import { StyleSheet, View, useColorScheme } from 'react-native';
 
 export function SegmentsSeparators({
@@ -13,7 +12,8 @@ export function SegmentsSeparators({
   values: number;
   selectedIndex?: number;
 }) {
-  const colorScheme = useColorScheme();
+  const isDark = useColorScheme() === 'dark';
+
   const hide = (val: number) => {
     return selectedIndex === val || selectedIndex === val + 1;
   };
@@ -23,11 +23,7 @@ export function SegmentsSeparators({
       {[...Array(values - 1).keys()].map((val) => (
         <View
           key={val}
-          style={[
-            styles.separator,
-            colorScheme === 'dark' && styles.darkSeparator,
-            hide(val) && styles.hide,
-          ]}
+          style={[styles.separator, isDark && styles.darkSeparator, hide(val) && styles.hide]}
         />
       ))}
     </View>

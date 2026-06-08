@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { type ButtonProps } from '../Button';
 import { type CommonViewModifierProps } from '../types';
 /**

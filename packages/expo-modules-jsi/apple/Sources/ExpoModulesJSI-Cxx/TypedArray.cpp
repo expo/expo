@@ -23,39 +23,23 @@ TypedArrayKind getTypedArrayKindForName(const std::string &name) {
   return nameToKindMap.at(name);
 }
 
-TypedArray::TypedArray(jsi::Runtime &runtime, const jsi::Object &obj)
-    : jsi::Object(jsi::Value(runtime, obj).asObject(runtime)) {}
-
-TypedArrayKind TypedArray::getKind(jsi::Runtime &runtime) const {
-  auto constructorName = this->getPropertyAsObject(runtime, "constructor")
+TypedArrayKind getTypedArrayKind(jsi::IRuntime &runtime, const jsi::Object &jsObj) {
+  auto constructorName = jsObj.getPropertyAsObject(runtime, "constructor")
                              .getProperty(runtime, "name")
                              .asString(runtime)
                              .utf8(runtime);
   return getTypedArrayKindForName(constructorName);
-};
-
-size_t TypedArray::byteOffset(jsi::Runtime &runtime) const {
-  return static_cast<size_t>(getProperty(runtime, "byteOffset").asNumber());
 }
 
-size_t TypedArray::byteLength(jsi::Runtime &runtime) const {
-  return static_cast<size_t>(getProperty(runtime, "byteLength").asNumber());
-}
-
-jsi::ArrayBuffer TypedArray::getBuffer(jsi::Runtime &runtime) const {
-  auto buffer = getProperty(runtime, "buffer");
+jsi::ArrayBuffer getTypedArrayBuffer(jsi::IRuntime &runtime, const jsi::Object &jsObj) {
+  auto buffer = jsObj.getProperty(runtime, "buffer");
   if (buffer.isObject() && buffer.asObject(runtime).isArrayBuffer(runtime)) {
     return buffer.asObject(runtime).getArrayBuffer(runtime);
-  } else {
-    throw std::runtime_error("no ArrayBuffer attached");
   }
+  throw std::runtime_error("no ArrayBuffer attached");
 }
 
-void* TypedArray::getRawPointer(jsi::Runtime &runtime) const {
-  return reinterpret_cast<void *>(getBuffer(runtime).data(runtime) + byteOffset(runtime));
-}
-
-bool isTypedArray(jsi::Runtime &runtime, const jsi::Object &jsObj) {
+bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj) {
   jsi::Object ArrayBuffer = runtime
     .global()
     .getPropertyAsObject(runtime, "ArrayBuffer");

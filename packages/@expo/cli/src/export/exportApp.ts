@@ -1,11 +1,12 @@
 import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import assert from 'assert';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { createFaviconAsString } from '@expo/router-server/build/utils/html';
 import chalk from 'chalk';
-import fs from 'fs';
-import path from 'path';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
@@ -17,17 +18,12 @@ import {
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
 import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
-import { getVirtualFaviconAssetsAsync } from './favicon';
+import { generateFaviconAssetAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
-import { copyPublicFolderAsync } from './publicFolder';
-import { Options } from './resolveOptions';
-import {
-  ExportAssetMap,
-  BundleOutput,
-  getFilesFromSerialAssets,
-  persistMetroFilesAsync,
-  BundleAssetWithFileHashes,
-} from './saveAssets';
+import { copyPublicFolderAsync, getPublicFolderPath } from './publicFolder';
+import type { Options } from './resolveOptions';
+import type { ExportAssetMap, BundleOutput, BundleAssetWithFileHashes } from './saveAssets';
+import { getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap } from './writeContents';
 import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
@@ -96,7 +92,7 @@ export async function exportAppAsync(
 
   const baseUrl = getBaseUrlFromExpoConfig(exp);
 
-  if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
+  if (!bytecode && platforms.some((platform) => platform !== 'web')) {
     Log.warn(
       `Bytecode makes the app startup faster, disabling bytecode is highly discouraged and should only be used for debugging purposes.`
     );
@@ -115,7 +111,7 @@ export async function exportAppAsync(
   }
 
   const mode = dev ? 'development' : 'production';
-  const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+  const publicPath = getPublicFolderPath(projectRoot);
   const outputPath = path.resolve(projectRoot, outputDir);
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
@@ -271,29 +267,26 @@ export async function exportAppAsync(
           );
 
           if (platform === 'web') {
-            // TODO: Unify with exportStaticAsync
-            // TODO: Maybe move to the serializer.
-            let html = await serializeHtmlWithAssets({
-              isExporting: true,
-              resources: bundle.artifacts,
-              template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-                scripts: [],
-                cssLinks: [],
-                exp: projectConfig.exp,
-              }),
-              baseUrl,
-            });
-
-            // Add the favicon assets to the HTML.
-            const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
+            const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
               outputDir,
               baseUrl,
               files,
               exp: projectConfig.exp,
             });
-            if (modifyHtml) {
-              html = modifyHtml(html);
-            }
+
+            // TODO: Unify with exportStaticAsync
+            // TODO: Maybe move to the serializer.
+            const html = serializeHtmlWithAssets({
+              isExporting: true,
+              resources: bundle.artifacts,
+              template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+                scripts: [],
+                cssLinks: [],
+                extraHead: faviconAsset ? createFaviconAsString(faviconAsset.href) : undefined,
+                exp: projectConfig.exp,
+              }),
+              baseUrl,
+            });
 
             // HACK: This is used for adding SSR shims in React Server Components.
             templateHtml = html;

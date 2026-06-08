@@ -1,4 +1,4 @@
-import { ImageContentPositionObject } from '../Image.types';
+import type { ImageContentPositionObject } from '../Image.types';
 export declare function ensureValueIsWebUnits(value: string | number): string;
 export declare const absoluteFilledPosition: {
     readonly width: "100%";

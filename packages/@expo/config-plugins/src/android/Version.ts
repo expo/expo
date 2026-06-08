@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withAppBuildGradle, withProjectBuildGradle } from '../plugins/android-plugins';
 import { addWarningAndroid } from '../utils/warnings';
 

@@ -93,7 +93,7 @@ export default function ImageManipulatorScreen() {
       originX: 0,
       originY: 0,
       width: image.width! / 2,
-      height: image.height! / 2,
+      height: image.height!,
     });
     refreshImage();
   }

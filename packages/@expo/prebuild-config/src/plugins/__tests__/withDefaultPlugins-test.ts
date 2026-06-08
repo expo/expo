@@ -1,7 +1,7 @@
+import type { ExportedConfig } from '@expo/config-plugins';
 import {
   compileModsAsync,
   evalModsAsync,
-  ExportedConfig,
   IOSConfig,
   withGradleProperties,
   XML,
@@ -81,6 +81,7 @@ function getLargeConfig(): ExportedConfig {
     ios: {
       bundleIdentifier: 'com.bacon.tester.expoapp',
       buildNumber: '6.5.0',
+      deploymentTarget: '15.1',
       backgroundColor: '#ff0000',
       appStoreUrl: 'https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8',
       config: {
@@ -408,12 +409,12 @@ describe('built-in plugins', () => {
     const infoPlist = await plist.parse(
       fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/Info.plist'), 'utf8')
     );
-    expect(infoPlist.bar).toStrictEqual({ val: ['foo'] });
+    expect(infoPlist.bar).toEqual({ val: ['foo'] });
     // Ensure the entitlements object is merged correctly
     const entitlements = await plist.parse(
       fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/mycoolapp.entitlements'), 'utf8')
     );
-    expect(entitlements.foo).toStrictEqual('bar');
+    expect(entitlements.foo).toEqual('bar');
 
     // Ensure files are always written in the correct format
     for (const xmlPath of [

@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -11,7 +11,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testFn = function() { return 42; }")
 
-    let fn = runtime.global().getPropertyAsFunction("testFn")
+    let fn = try runtime.global().getPropertyAsFunction("testFn")
     let result = try fn.call()
 
     #expect(result.isNumber() == true)
@@ -23,7 +23,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.double = function(x) { return x * 2; }")
 
-    let fn = runtime.global().getPropertyAsFunction("double")
+    let fn = try runtime.global().getPropertyAsFunction("double")
     let result = try fn.call(arguments: 21)
 
     #expect(result.getInt() == 42)
@@ -34,7 +34,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.sum = function(a, b, c) { return a + b + c; }")
 
-    let fn = runtime.global().getPropertyAsFunction("sum")
+    let fn = try runtime.global().getPropertyAsFunction("sum")
     let result = try fn.call(arguments: 10, 20, 12)
 
     #expect(result.getInt() == 42)
@@ -48,8 +48,8 @@ struct JavaScriptFunctionTests {
       "globalThis.obj = { value: 42 };"
     )
 
-    let fn = runtime.global().getPropertyAsFunction("getValue")
-    let obj = runtime.global().getPropertyAsObject("obj")
+    let fn = try runtime.global().getPropertyAsFunction("getValue")
+    let obj = try runtime.global().getPropertyAsObject("obj")
     let result = try fn.call(this: obj)
 
     #expect(result.getInt() == 42)
@@ -63,8 +63,8 @@ struct JavaScriptFunctionTests {
       "globalThis.obj = { value: 40 };"
     )
 
-    let fn = runtime.global().getPropertyAsFunction("add")
-    let obj = runtime.global().getPropertyAsObject("obj")
+    let fn = try runtime.global().getPropertyAsFunction("add")
+    let obj = try runtime.global().getPropertyAsObject("obj")
     let result = try fn.call(this: obj, arguments: 2)
 
     #expect(result.getInt() == 42)
@@ -75,7 +75,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.concat = function(a, b) { return a + ' ' + b; };")
 
-    let fn = runtime.global().getPropertyAsFunction("concat")
+    let fn = try runtime.global().getPropertyAsFunction("concat")
     let result = try fn.call(arguments: "hello", "world")
 
     #expect(result.getString() == "hello world")
@@ -86,7 +86,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.format = function(name, age) { return name + ' is ' + age + ' years old'; };")
 
-    let fn = runtime.global().getPropertyAsFunction("format")
+    let fn = try runtime.global().getPropertyAsFunction("format")
     let result = try fn.call(arguments: "Alice", 30)
 
     #expect(result.getString() == "Alice is 30 years old")
@@ -97,7 +97,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.makeObj = function(x) { return { value: x }; };")
 
-    let fn = runtime.global().getPropertyAsFunction("makeObj")
+    let fn = try runtime.global().getPropertyAsFunction("makeObj")
     let result = try fn.call(arguments: 42)
 
     #expect(result.isObject() == true)
@@ -109,7 +109,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.makeArray = function(a, b) { return [a, b]; };")
 
-    let fn = runtime.global().getPropertyAsFunction("makeArray")
+    let fn = try runtime.global().getPropertyAsFunction("makeArray")
     let result = try fn.call(arguments: 1, 2)
 
     #expect(result.isObject() == true)
@@ -124,7 +124,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.throwError = function() { throw new Error('Test error'); };")
 
-    let fn = runtime.global().getPropertyAsFunction("throwError")
+    let fn = try runtime.global().getPropertyAsFunction("throwError")
 
     #expect(throws: Error.self) {
       try fn.call()
@@ -136,7 +136,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.Person = function(name) { this.name = name; };")
 
-    let constructor = runtime.global().getPropertyAsFunction("Person")
+    let constructor = try runtime.global().getPropertyAsFunction("Person")
     let result = try constructor.callAsConstructor("Alice")
 
     #expect(result.isObject() == true)
@@ -148,7 +148,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.Point = function(x, y) { this.x = x; this.y = y; };")
 
-    let constructor = runtime.global().getPropertyAsFunction("Point")
+    let constructor = try runtime.global().getPropertyAsFunction("Point")
     let result = try constructor.callAsConstructor(10, 20)
 
     #expect(result.isObject() == true)
@@ -161,7 +161,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.Empty = function() { this.initialized = true; };")
 
-    let constructor = runtime.global().getPropertyAsFunction("Empty")
+    let constructor = try runtime.global().getPropertyAsFunction("Empty")
     let result = try constructor.callAsConstructor()
 
     #expect(result.isObject() == true)
@@ -173,7 +173,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testFn = function() { return 1; }")
 
-    let fn = runtime.global().getPropertyAsFunction("testFn")
+    let fn = try runtime.global().getPropertyAsFunction("testFn")
     let value = fn.asValue()
 
     #expect(value.isObject() == true)
@@ -184,7 +184,7 @@ struct JavaScriptFunctionTests {
   func `asObject returns JavaScriptObject`() throws {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testFn = function testFn() { return 1; }")
-    let fn = runtime.global().getPropertyAsFunction("testFn")
+    let fn = try runtime.global().getPropertyAsFunction("testFn")
 
     // Functions are objects in JavaScript
     #expect(fn.asObject().getProperty("name").getString() == "testFn")
@@ -203,7 +203,7 @@ struct JavaScriptFunctionTests {
       "globalThis.counter = globalThis.makeCounter();"
     )
 
-    let counter = runtime.global().getPropertyAsFunction("counter")
+    let counter = try runtime.global().getPropertyAsFunction("counter")
 
     let result1 = try counter.call()
     #expect(result1.getInt() == 1)
@@ -220,7 +220,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.noReturn = function() { let x = 1 + 1; };")
 
-    let fn = runtime.global().getPropertyAsFunction("noReturn")
+    let fn = try runtime.global().getPropertyAsFunction("noReturn")
     let result = try fn.call()
 
     #expect(result.isUndefined() == true)
@@ -231,7 +231,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.arrow = (x, y) => x + y;")
 
-    let fn = runtime.global().getPropertyAsFunction("arrow")
+    let fn = try runtime.global().getPropertyAsFunction("arrow")
     let result = try fn.call(arguments: 20, 22)
 
     #expect(result.getInt() == 42)
@@ -242,7 +242,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.asyncFn = async function(x) { return x * 2; };")
 
-    let fn = runtime.global().getPropertyAsFunction("asyncFn")
+    let fn = try runtime.global().getPropertyAsFunction("asyncFn")
     let result = try fn.call(arguments: 21)
 
     #expect(result.isObject() == true)
@@ -265,7 +265,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testFn = function() { return 42; }")
 
-    let fn = runtime.global().getPropertyAsFunction("testFn")
+    let fn = try runtime.global().getPropertyAsFunction("testFn")
     let value = fn.toJavaScriptValue(in: runtime)
 
     #expect(value.isFunction() == true)
@@ -280,7 +280,7 @@ struct JavaScriptFunctionTests {
       "globalThis.myFunction.customProp = 'custom';"
     )
 
-    let fn = runtime.global().getPropertyAsFunction("myFunction")
+    let fn = try runtime.global().getPropertyAsFunction("myFunction")
     let obj = fn.asObject()
 
     // Functions have properties like 'name' and 'length'
@@ -293,7 +293,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testBool = function(a, b) { return a && !b; };")
 
-    let fn = runtime.global().getPropertyAsFunction("testBool")
+    let fn = try runtime.global().getPropertyAsFunction("testBool")
     let result = try fn.call(arguments: true, false)
 
     #expect(result.getBool() == true)
@@ -304,8 +304,8 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.checkArgs = function(a, b) { return [a === null, b === undefined]; };")
 
-    let fn = runtime.global().getPropertyAsFunction("checkArgs")
-    let result = try fn.call(arguments: JavaScriptValue.null(), JavaScriptValue.undefined())
+    let fn = try runtime.global().getPropertyAsFunction("checkArgs")
+    let result = try fn.call(arguments: JavaScriptValue.null, JavaScriptValue.undefined)
     let array = result.getArray()
 
     #expect(try array.getValue(at: 0).getBool() == true)

@@ -3,13 +3,24 @@ title: Toggle
 description: A SwiftUI Toggle component for displaying native toggles.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`Switch`](../universal/switch) — it renders the appropriate native component per platform.
 
 Expo UI Toggle matches the official SwiftUI [Toggle API](https://developer.apple.com/documentation/swiftui/toggle) and supports styling via the [`toggleStyle`](modifiers/#togglestylestyle) modifier.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/toggle/ios-light.webp"
+  darkSrc="/static/images/expo-ui/toggle/ios-dark.webp"
+  alt="Toggle rows inside a Form"
+/>
 
 ## Installation
 

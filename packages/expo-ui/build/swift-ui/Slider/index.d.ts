@@ -17,6 +17,16 @@ export type SliderProps = {
      */
     max?: number;
     /**
+     * Lower limit the user can drag the thumb to. The visible track still
+     * spans `min..max`, but the thumb stops at `lowerLimit` during drag.
+     */
+    lowerLimit?: number;
+    /**
+     * Upper limit the user can drag the thumb to. The visible track still
+     * spans `min..max`, but the thumb stops at `upperLimit` during drag.
+     */
+    upperLimit?: number;
+    /**
      * A label describing the slider's purpose.
      */
     label?: React.ReactNode;
@@ -37,5 +47,5 @@ export type SliderProps = {
      */
     onEditingChanged?: (isEditing: boolean) => void;
 } & CommonViewModifierProps;
-export declare function Slider(props: SliderProps): import("react").JSX.Element;
+export declare function Slider(props: SliderProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

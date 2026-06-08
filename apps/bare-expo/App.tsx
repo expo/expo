@@ -1,4 +1,6 @@
 import { ThemeProvider } from 'ThemeProvider';
+import BenchmarkHelper from 'benchmark-helper';
+import { Observe, ObserveRoot } from 'expo-observe';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
@@ -64,6 +66,14 @@ function useLoaded() {
   return isLoaded;
 }
 
+Observe.configure({
+  dispatchingEnabled: true,
+  sampleRate: 0.9,
+  integrations: {
+    'react-navigation': true,
+  },
+});
+
 export default function Main() {
   React.useEffect(() => {
     try {
@@ -86,5 +96,15 @@ export default function Main() {
 
   const isLoaded = useLoaded();
 
-  return <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>;
+  React.useEffect(() => {
+    if (isLoaded) {
+      BenchmarkHelper.reportFullyDrawn();
+    }
+  }, [isLoaded]);
+
+  return (
+    <ObserveRoot>
+      <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>
+    </ObserveRoot>
+  );
 }

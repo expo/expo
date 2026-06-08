@@ -6,11 +6,11 @@ import type {
 import fs from 'fs';
 import path from 'path';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
+import type { AutolinkingResolutionsCache } from '../utils/autolinkingResolutions';
 import {
   ExpoExportMissingError,
-  AutolinkingResolutionsCache,
   scanNativeModuleResolutions,
 } from '../utils/autolinkingResolutions';
 

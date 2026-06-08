@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "55.0.9",
+  "version": "56.0.4",
   "description": "A Jest preset to painlessly test your Expo / React Native apps.",
   "license": "MIT",
   "main": "src/index.js",
@@ -37,8 +37,6 @@
     "preset": "jest-expo/universal"
   },
   "dependencies": {
-    "@expo/config": "workspace:~55.0.8",
-    "@expo/json-file": "workspace:^10.0.12",
     "@jest/create-cache-key-function": "^29.2.1",
     "@jest/globals": "^29.2.1",
     "babel-jest": "^29.2.1",
@@ -53,16 +51,22 @@
     "stacktrace-js": "^2.0.2"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react-native": "*",
+    "@react-native/jest-preset": "^0.85.0",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
   "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    },
     "react-server-dom-webpack": {
       "optional": true
     }
   },
   "devDependencies": {
-    "react-server-dom-webpack": "~19.0.4"
+    "@react-native/jest-preset": "0.86.0-rc.3",
+    "@types/react": "~19.2.0",
+    "react-server-dom-webpack": "~19.0.6"
   }
 }

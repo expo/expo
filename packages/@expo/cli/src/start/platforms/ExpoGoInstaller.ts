@@ -6,6 +6,7 @@ import * as Log from '../../log';
 import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { isInteractive } from '../../utils/interactive';
 import { learnMore } from '../../utils/link';
 import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
@@ -79,15 +80,24 @@ export class ExpoGoInstaller<IDevice> {
         return false;
       }
 
+      const message = `Expo Go ${expectedExpoGoVersion} is recommended for SDK ${this.sdkVersion} (${
+        deviceManager.name
+      } is using ${installedExpoGoVersion}). ${learnMore(
+        'https://docs.expo.dev/develop/tools/#expo-go'
+      )}. Install the recommended Expo Go version?`;
+
       // Only prompt once per device, per run.
-      const confirm = await confirmAsync({
-        initial: true,
-        message: `Expo Go ${expectedExpoGoVersion} is recommended for SDK ${this.sdkVersion} (${
-          deviceManager.name
-        } is using ${installedExpoGoVersion}). ${learnMore(
-          'https://docs.expo.dev/develop/tools/#expo-go'
-        )}. Install the recommended Expo Go version?`,
-      });
+      let confirm: boolean;
+      if (isInteractive()) {
+        confirm = await confirmAsync({
+          initial: true,
+          message,
+        });
+      } else {
+        // Install best version automatically in non-interactive environments since we can't prompt the user, and it's better to have the correct version than not have Expo Go work at all.
+        Log.log(message);
+        confirm = true;
+      }
 
       if (confirm) {
         // Don't need to uninstall to update on iOS.

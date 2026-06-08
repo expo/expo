@@ -1,4 +1,4 @@
-import { ModPlatform } from '@expo/config-plugins';
+import type { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 import path from 'path';
 

@@ -1,6 +1,6 @@
 import { SharedObject } from 'expo';
-import { ReactNode } from 'react';
-import { after } from './Widgets';
+import type { ReactNode } from 'react';
+import type { after } from './Widgets';
 /**
  * The rendering mode of the widget as provided by WidgetKit.
  * - `fullColor` — Home screen widgets (default).
@@ -33,7 +33,7 @@ export type ActivityFamily = 'small' | 'medium';
  * - `accessoryInline` - Inline accessory widget for the Lock Screen.
  */
 export type WidgetFamily = 'systemSmall' | 'systemMedium' | 'systemLarge' | 'systemExtraLarge' | 'accessoryCircular' | 'accessoryRectangular' | 'accessoryInline';
-export type WidgetEnvironment = {
+export type WidgetEnvironment<T extends object | undefined = undefined> = {
     /**
      * The date of this timeline entry.
      */
@@ -79,6 +79,11 @@ export type WidgetEnvironment = {
      * @platform iOS 26+
      */
     levelOfDetail?: LevelOfDetail;
+    /**
+     * Widget configuration parameters.
+     * @platform iOS 17+
+     */
+    configuration: T;
 };
 export type LiveActivityEnvironment = {
     /**
@@ -247,11 +252,11 @@ export declare class NativeWidgetObject extends SharedObject {
 }
 export declare class NativeLiveActivityFactory extends SharedObject {
     constructor(name: string, layout: string);
-    start(props: string, url?: string): NativeLiveActivity;
+    start(props?: string, url?: string): NativeLiveActivity;
     getInstances(): NativeLiveActivity[];
 }
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
-    update(props: string): Promise<void>;
+    update(props?: string): Promise<void>;
     end(dismissalPolicy?: string, afterDate?: number, state?: string, contentDate?: number): Promise<void>;
     getPushToken(): Promise<string | null>;
 }

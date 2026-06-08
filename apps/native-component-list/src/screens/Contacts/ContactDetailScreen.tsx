@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
@@ -94,8 +94,8 @@ function ContactDetailView({
     try {
       await Contacts.removeContactAsync(id);
       navigation.goBack();
-    } catch ({ message }) {
-      console.error(message);
+    } catch (error: any) {
+      console.error(error.message);
     }
   };
 
@@ -238,8 +238,8 @@ function ContactDetailView({
         [Contacts.Fields.ID]: id,
         [Contacts.Fields.Image]: { uri },
       });
-    } catch ({ message }) {
-      console.error(message);
+    } catch (error: any) {
+      console.error(error.message);
     }
 
     loadAsync();

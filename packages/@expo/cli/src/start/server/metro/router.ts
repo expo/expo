@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import type { MiddlewareMatcher } from 'expo-server';
 import { sync as globSync } from 'glob';
@@ -6,7 +6,8 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
-import { directoryExistsSync } from '../../../utils/dir';
+import { directoryExistsSync, isPathInside } from '../../../utils/dir';
+import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { learnMore } from '../../../utils/link';
 
@@ -46,7 +47,18 @@ export function getRouterDirectoryModuleIdWithManifest(
   projectRoot: string,
   exp: ExpoConfig
 ): string {
-  return toPosixPath(exp.extra?.router?.root ?? getRouterDirectory(projectRoot));
+  const configured = exp.extra?.router?.root;
+  if (configured == null) {
+    return toPosixPath(getRouterDirectory(projectRoot));
+  }
+  const absolute = path.isAbsolute(configured) ? configured : path.resolve(projectRoot, configured);
+  if (!isPathInside(absolute, projectRoot)) {
+    throw new CommandError(
+      'INVALID_ROUTER_ROOT',
+      `The expo-router \`root\` (${configured}) resolves outside the project root. Set it to a path inside the project, or remove it to use the default.`
+    );
+  }
+  return toPosixPath(configured);
 }
 
 let hasWarnedAboutSrcDir = false;

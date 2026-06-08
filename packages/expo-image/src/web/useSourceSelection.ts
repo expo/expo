@@ -1,7 +1,7 @@
 import type { SharedRefType } from 'expo';
 import React, { useState } from 'react';
 
-import { ImageProps, ImageSource } from '../Image.types';
+import type { ImageProps, ImageSource } from '../Image.types';
 import { isImageRef } from '../utils';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 
@@ -46,8 +46,15 @@ export interface SrcSetSource extends ImageSource {
   type: 'srcset';
 }
 
-function getCSSMediaQueryForSource(source: ImageSource) {
-  return `(max-width: ${source.webMaxViewportWidth ?? source.width}px) ${source.width}px`;
+function getCSSMediaQueryForSource(source: ImageSource): string | null {
+  // Only emit a breakpoint when an explicit `webMaxViewportWidth` is provided.
+  // A source's intrinsic `width` is not a viewport breakpoint, so without
+  // `webMaxViewportWidth` we leave selection to `sizes="auto"` (and the `100vw`
+  // final fallback) instead of guessing one.
+  if (source.webMaxViewportWidth == null) {
+    return null;
+  }
+  return `(max-width: ${source.webMaxViewportWidth}px) ${source.width}px`;
 }
 
 function selectSource(
@@ -76,7 +83,7 @@ function selectSource(
 
   if (staticSupportedSources.length === 0) {
     console.warn(
-      "You've set the `static` responsivePolicy but none of the sources have the `width` properties set. Make sure you set both `width` and `webMaxViewportWidth` for best results when using static responsiveness. Falling back to the `initial` policy."
+      "You've set the `static` responsivePolicy but none of the sources have the `width` property set. Set `width` on each source so the browser can build a `srcset` for static responsiveness. Falling back to the `initial` policy."
     );
     return findBestSourceForSize(sources, size);
   }
@@ -84,9 +91,23 @@ function selectSource(
   const srcset = staticSupportedSources
     ?.map((source) => `${source.uri} ${source.width}w`)
     .join(', ');
-  const sizes = `${staticSupportedSources
-    ?.map(getCSSMediaQueryForSource)
-    .join(', ')}, ${staticSupportedSources[staticSupportedSources.length - 1]?.width}px`;
+  // `sizes` lets the browser pick the best `srcset` candidate for how the image
+  // is actually laid out:
+  // - `auto` (must be first per the HTML spec) makes supporting browsers measure
+  //   the element's rendered width and choose accordingly. It only applies to
+  //   lazily-loaded images, which is why the `static` policy defaults to lazy.
+  // - Per-source breakpoints are emitted only for sources that set the
+  //   (deprecated) `webMaxViewportWidth`, and serve as a fallback for browsers
+  //   without `sizes="auto"` support (and for eager-loaded images).
+  // - `100vw` is the final fallback when no breakpoint matches; it also matches
+  //   the browser default for an absent `sizes` value.
+  const sizes = [
+    'auto',
+    ...staticSupportedSources
+      .map(getCSSMediaQueryForSource)
+      .filter((query): query is string => query != null),
+    '100vw',
+  ].join(', ');
   return {
     srcset,
     sizes,

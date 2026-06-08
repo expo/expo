@@ -42,17 +42,17 @@ export function AskPageAIChatHeader({
   const headerAccentBackground = useMemo(() => ({ backgroundColor: 'rgba(255,255,255,0.1)' }), []);
 
   return (
-    <div className="border-default bg-palette-black text-palette-white flex flex-col gap-3 border-b px-4 py-2.5">
+    <div className="flex flex-col gap-3 border-b border-default bg-palette-black px-4 py-2.5 text-palette-white">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
             className={mergeClasses(
-              'bg-palette-white inline-flex size-8 items-center justify-center rounded-full shadow-xs'
+              'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
             )}
             style={headerAccentBackground}>
             <Star06Icon className="icon-sm text-palette-white" />
           </span>
-          <span className="text-palette-white text-sm leading-tight font-medium">
+          <span className="text-sm leading-tight font-medium text-palette-white">
             Expo AI Assistant
           </span>
         </div>
@@ -63,7 +63,7 @@ export function AskPageAIChatHeader({
               aria-label={isExpanded ? 'Restore Ask AI assistant size' : 'Expand Ask AI assistant'}
               theme="quaternary"
               size="xs"
-              className="text-palette-white! hover:text-palette-white! focus:text-palette-white! px-2"
+              className="px-2 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
               style={closeButtonThemeOverrides}
               aria-pressed={isExpanded}
               onClick={onToggleExpand}>
@@ -79,7 +79,7 @@ export function AskPageAIChatHeader({
             aria-label="Reset conversation"
             theme="quaternary"
             size="xs"
-            className="text-palette-white! hover:text-palette-white! focus:text-palette-white! px-2"
+            className="px-2 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onReset}>
             <RefreshCcw02Icon className="icon-xs text-palette-white" />
@@ -88,7 +88,7 @@ export function AskPageAIChatHeader({
             aria-label="Close Ask AI assistant"
             theme="quaternary"
             size="xs"
-            className="text-palette-white! hover:text-palette-white! focus:text-palette-white! px-2"
+            className="px-2 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onClose}>
             <XIcon className="icon-xs text-palette-white" />
@@ -108,10 +108,10 @@ export function AskPageAIChatHeader({
             type="button"
             theme="quaternary"
             size="xs"
-            className="text-palette-white! hover:text-palette-white! focus:text-palette-white! inline-flex items-center self-start px-2 py-1.5"
+            className="inline-flex items-center self-start px-2 py-1.5 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onSwitchToPageContext}>
-            <SwitchHorizontal01Icon className="icon-xs text-palette-white mr-2 self-center" />
+            <SwitchHorizontal01Icon className="mr-2 icon-xs self-center text-palette-white" />
             <span className="leading-snug">Switch back to {displayContextLabel} docs</span>
           </Button>
         ) : null}

@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
-import type { TabsScreenProps } from 'react-native-screens';
+import type { TabsHostProps, TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import type { DefaultRouterOptions, EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '../react-navigation/native';
 /**
@@ -15,37 +15,157 @@ export type NativeTabNavigationEventMap = {
         canPreventDefault: false;
     };
 };
-export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'tabKey' | 'isFocused'>>;
+export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'screenKey'>>;
+/**
+ * Props passed to the underlying tab host implementation in `react-native-screens`.
+ */
+export type NativeTabsHostNativeProps = Partial<Omit<TabsHostProps, 'navStateRequest' | 'onTabSelected' | 'children'>>;
 export interface NativeTabOptions extends DefaultRouterOptions {
+    /**
+     * @platform android
+     * @platform iOS
+     */
     icon?: SymbolOrImageSource;
+    /**
+     * @platform android
+     * @platform iOS
+     */
     selectedIcon?: SymbolOrImageSource;
+    /**
+     * @platform android
+     * @platform iOS
+     * @platform web
+     */
     title?: string;
+    /**
+     * @platform android
+     * @platform iOS
+     * @platform web
+     */
     badgeValue?: string;
+    /**
+     * @platform android
+     * @platform iOS
+     * @platform web
+     */
     selectedLabelStyle?: NativeTabsLabelStyle;
+    /**
+     * @platform android
+     * @platform iOS
+     * @platform web
+     */
     labelStyle?: NativeTabsLabelStyle;
+    /**
+     * @platform iOS
+     */
     role?: NativeTabsTabBarItemRole;
+    /**
+     * @platform android
+     * @platform iOS
+     */
     selectedIconColor?: ColorValue;
+    /**
+     * @platform iOS
+     */
     selectedBadgeBackgroundColor?: ColorValue;
+    /**
+     * @platform android
+     * @platform iOS
+     * @platform web
+     */
     badgeBackgroundColor?: ColorValue;
+    /**
+     * @platform android
+     * @platform web
+     */
     badgeTextColor?: ColorValue;
+    /**
+     * @platform android
+     * @platform iOS
+     * @platform web
+     */
     backgroundColor?: ColorValue;
+    /**
+     * @platform iOS
+     */
     blurEffect?: NativeTabsBlurEffect;
+    /**
+     * @platform iOS
+     */
     shadowColor?: ColorValue;
+    /**
+     * @platform android
+     * @platform iOS
+     */
     iconColor?: ColorValue;
+    /**
+     * @platform android
+     */
+    tintColor?: ColorValue;
+    /**
+     * @platform iOS
+     */
     disableTransparentOnScrollEdge?: boolean;
+    /**
+     * @platform iOS
+     */
     titlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
     };
+    /**
+     * @platform iOS
+     */
     selectedTitlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
     };
+    /**
+     * @platform android
+     * @platform web
+     */
     indicatorColor?: ColorValue;
+    /**
+     * @platform android
+     */
+    rippleColor?: ColorValue;
+    /**
+     * @platform android
+     */
+    disableIndicator?: boolean;
+    /**
+     * @platform android
+     */
+    labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
+    /**
+     * @platform android
+     * @platform iOS
+     * @platform web
+     */
     hidden?: boolean;
+    /**
+     * @platform android
+     * @platform iOS
+     */
+    disabled?: boolean;
+    /**
+     * @platform iOS
+     */
     specialEffects?: TabsScreenProps['specialEffects'];
+    /**
+     * @platform android
+     * @platform iOS
+     */
     nativeProps?: NativeScreenProps;
+    /**
+     * @platform android
+     * @platform iOS
+     */
     disableAutomaticContentInsets?: boolean;
+    /**
+     * @platform android
+     * @platform iOS
+     */
     contentStyle?: Pick<ViewStyle, 'backgroundColor' | 'experimental_backgroundImage' | 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingBlock' | 'paddingBlockEnd' | 'paddingBlockStart' | 'paddingInline' | 'paddingInlineEnd' | 'paddingInlineStart' | 'paddingEnd' | 'paddingHorizontal' | 'paddingVertical' | 'paddingStart' | 'alignContent' | 'alignItems' | 'justifyContent' | 'flexDirection' | 'gap'>;
 }
 export type SymbolOrImageSource = {
@@ -214,6 +334,15 @@ export interface NativeTabsProps extends PropsWithChildren {
      */
     badgeTextColor?: ColorValue;
     /**
+     * When `true`, the tab bar lifts above the keyboard (input method editor, or IME) instead of being overlaid by it. By default, the keyboard overlays the tab bar.
+     *
+     * Requires `windowSoftInputMode="adjustResize"`. Has no effect on Android API levels earlier than 30 (Android 11).
+     *
+     * @default false
+     * @platform android
+     */
+    tabBarRespectsIMEInsets?: boolean;
+    /**
      * Listeners for navigation events on all tabs.
      *
      * Supported events:
@@ -237,14 +366,44 @@ export interface NativeTabsProps extends PropsWithChildren {
     screenListeners?: ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap> | ((prop: {
         route: RouteProp<ParamListBase, string>;
     }) => ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>);
+    /**
+     * Props passed to the underlying native tab host implementation in `react-native-screens`.
+     * Use this to configure props that are not directly exposed by Expo Router.
+     *
+     * > **Note**: This is an unstable API and may change or be removed in minor versions.
+     *
+     * @platform android
+     * @platform ios
+     */
+    unstable_nativeProps?: NativeTabsHostNativeProps;
 }
 export interface InternalNativeTabsProps extends NativeTabsProps {
     nonTriggerChildren?: React.ReactNode;
 }
-export interface NativeTabsViewProps extends Omit<InternalNativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
+export interface OnTabChangeEventPayload {
+    /**
+     * The route key of the tab the native side has just selected.
+     */
+    selectedKey: string;
+    /**
+     * The provenance value reported by the native side for this selection.
+     *
+     * The navigator echoes this back via `navStateRequest.baseProvenance` on
+     * subsequent JS-driven updates so the native side can distinguish stale
+     * updates from fresh ones. See `TabsHostNavStateRequest` in
+     * `react-native-screens` for the full contract.
+     */
+    provenance: number;
+    isNativeAction: boolean;
+}
+export interface NativeTabsViewProps extends Omit<InternalNativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor' | 'rippleColor' | 'disableIndicator' | 'labelVisibilityMode'> {
     focusedIndex: number;
+    /**
+     * Provenance counter associated with the currently rendered `focusedIndex`.
+     */
+    provenance: number;
     tabs: NativeTabsViewTabItem[];
-    onTabChange: (tabKey: string) => void;
+    onTabChange: (event: OnTabChangeEventPayload) => void;
 }
 export interface NativeTabsViewTabItem {
     options: NativeTabOptions;
@@ -310,6 +469,23 @@ export interface NativeTabTriggerProps {
      */
     disableScrollToTop?: boolean;
     /**
+     * If `true`, the tab is shown but cannot be selected by tapping it in the
+     * tab bar.
+     *
+     * > **Note:** This only suppresses the native tap interaction. JavaScript
+     * > navigation such as  `router.push()` or `<Link />` still navigates to
+     * > the tab. Use this for tabs that should appear visible but be temporarily inert,
+     * > and gate navigation in your own code if you need to fully prevent access.
+     *
+     * Unlike `hidden`, the tab remains visible in the tab bar.
+     *
+     * @default false
+     *
+     * @platform android
+     * @platform ios
+     */
+    disabled?: boolean;
+    /**
      * The children of the trigger.
      *
      * Use `Icon`, `Label`, and `Badge` components to customize the tab.
@@ -358,6 +534,42 @@ export interface NativeTabTriggerProps {
      * @platform iOS
      */
     disableTransparentOnScrollEdge?: boolean;
+    /**
+     * The color of the ripple effect when this tab is selected - will be visible when other tabs are pressed.
+     *
+     * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+     *
+     * @platform android
+     */
+    rippleColor?: ColorValue;
+    /**
+     * The color of the active indicator for this tab.
+     *
+     * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+     *
+     * @platform android
+     */
+    indicatorColor?: ColorValue;
+    /**
+     * When set to `true`, disables the active indicator for this tab.
+     *
+     * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+     *
+     * @default false
+     *
+     * @platform android
+     */
+    disableIndicator?: boolean;
+    /**
+     * The visibility mode of the tab item label for this tab.
+     *
+     * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+     *
+     * @see [Material Components documentation](https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible)
+     *
+     * @platform android
+     */
+    labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
     /**
      * Listeners for navigation events on this tab.
      *

@@ -129,20 +129,20 @@ describe('NativeToolbarMenu', () => {
     });
 
     describe('tint color logic', () => {
-      it('sets tintColor to undefined when imageRenderingMode is original', () => {
+      it('sets source tint to null when imageRenderingMode is original', () => {
         render(<NativeToolbarMenu {...defaultProps} imageRenderingMode="original" />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBeUndefined();
+        expect(icon.props.tint).toBeNull();
       });
 
-      it('sets tintColor to undefined when imageRenderingMode is original even with tintColor prop', () => {
+      it('sets source tint to null when imageRenderingMode is original even with tintColor prop', () => {
         render(
           <NativeToolbarMenu {...defaultProps} imageRenderingMode="original" tintColor="red" />
         );
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBeUndefined();
+        expect(icon.props.tint).toBeNull();
       });
 
       it('uses provided tintColor when imageRenderingMode is template', () => {
@@ -247,6 +247,20 @@ describe('NativeToolbarMenu', () => {
         expect(icon.props.size).toBe(24);
       });
 
+      it('passes accessibilityLabel to root Icon as contentDescription', () => {
+        render(<NativeToolbarMenu {...defaultProps} accessibilityLabel="More options" />);
+
+        const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+        expect(icon.props.contentDescription).toBe('More options');
+      });
+
+      it('omits contentDescription when accessibilityLabel is not provided', () => {
+        render(<NativeToolbarMenu {...defaultProps} />);
+
+        const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+        expect(icon.props.contentDescription).toBeUndefined();
+      });
+
       it('renders DropdownMenu with IconButton trigger', () => {
         render(<NativeToolbarMenu {...defaultProps} />);
 
@@ -284,7 +298,7 @@ describe('NativeToolbarMenu', () => {
     it('renders nested DropdownMenu with DropdownMenuItem trigger', () => {
       renderNested();
 
-      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0];
+      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0]!;
       const nestedMenu = within(rootItems).getByTestId('DropdownMenu');
       const nestedTrigger = within(nestedMenu).getByTestId('DropdownMenu.Trigger');
       expect(within(nestedTrigger).getByTestId('DropdownMenuItem')).toBeDefined();
@@ -301,6 +315,15 @@ describe('NativeToolbarMenu', () => {
       expect(leadingIcon.props.source).toEqual({ uri: 'nested-icon' });
     });
 
+    it('uses null tint on leading icon when imageRenderingMode is original', () => {
+      renderNested({ source: { uri: 'nested-icon' }, imageRenderingMode: 'original' });
+
+      const leadingIcon = within(screen.getByTestId('DropdownMenuItem.LeadingIcon')).getByTestId(
+        'Icon'
+      );
+      expect(leadingIcon.props.tint).toBeNull();
+    });
+
     it('shows arrow-right trailing icon', () => {
       renderNested();
 
@@ -310,10 +333,19 @@ describe('NativeToolbarMenu', () => {
       expect(trailingIcon.props.source).toBe('mocked-arrow-right');
     });
 
+    it('still tints the trailing arrow when imageRenderingMode is original', () => {
+      renderNested({ imageRenderingMode: 'original' });
+
+      const trailingIcon = within(screen.getByTestId('DropdownMenuItem.TrailingIcon')).getByTestId(
+        'Icon'
+      );
+      expect(trailingIcon.props.tint).toBe('dynamic:onSurface');
+    });
+
     it('forwards disabled prop', () => {
       renderNested({ disabled: true });
 
-      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0];
+      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0]!;
       const nestedTrigger = within(rootItems).getByTestId('DropdownMenu.Trigger');
       const nestedMenuItem = within(nestedTrigger).getByTestId('DropdownMenuItem');
       expect(nestedMenuItem.props.enabled).toBe(false);

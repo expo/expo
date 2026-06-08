@@ -1,4 +1,4 @@
-import { SupportedPlatform } from '../types';
+import type { SupportedPlatform } from '../types';
 interface PlatformImplementations {
     ios: typeof import('./apple/apple');
     macos: typeof import('./apple/apple');
@@ -15,3 +15,4 @@ declare function getLinkingImplementationForPlatform(platform: 'devtools'): Plat
 declare function getLinkingImplementationForPlatform(platform: 'web'): PlatformImplementations['web'];
 declare function getLinkingImplementationForPlatform(platform: SupportedPlatform): PlatformImplementations[keyof PlatformImplementations];
 export { getLinkingImplementationForPlatform };
+export declare function getSupportPackageForPlatform(platform: SupportedPlatform): string | null;

@@ -38,7 +38,14 @@ You can configure development client launcher using its built-in [config plugin]
       [
         "expo-dev-client",
         {
-          "launchMode": "most-recent"
+          "launchMode": "most-recent",
+          "defaultLaunchURL": "http://localhost:8081",
+          "android": {
+            "defaultLaunchURL": "http://10.0.0.2:8081"
+          },
+          "toolsButton": "true",
+          "skipOnboarding": "false",
+          "showMenuAtLaunch": "true"
         }
       ]
     ]
@@ -67,24 +74,27 @@ You can configure development client launcher using its built-in [config plugin]
       default: 'true',
     },
     {
-      name: 'android.launchMode',
+      name: 'defaultLaunchURL',
       description: [
-        'Determines whether to launch the most recently opened project or navigate to the launcher screen on Android. Overrides the top-level `launchMode` setting for Android only.',
-        '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
-        '* `launcher` - Opens the launcher screen.',
+        'Launch directly into this URL instead of navigating to launcher screen.',
+        'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
       ].join('\n'),
-      default: '"most-recent"',
-      platform: 'android',
     },
     {
-      name: 'ios.launchMode',
-      description: [
-        'Determines whether to launch the most recently opened project or navigate to the launcher screen on iOS. Overrides the top-level `launchMode` setting for iOS only.',
-        '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
-        '* `launcher` - Opens the launcher screen.',
-      ].join('\n'),
-      default: '"most-recent"',
-      platform: 'ios',
+      name: 'toolsButton',
+      description: 'Whether to show the floating tools button.',
+      default: 'true',
+    },
+    {
+      name: 'skipOnboarding',
+      description:
+        'Skip the onboarding screen that shows in the dev menu on the first launch of the app.',
+      default: 'false',
+    },
+    {
+      name: 'showMenuAtLaunch',
+      description: 'Show the developer menu immediately after launching the app.',
+      default: 'true',
     },
   ]}
 />

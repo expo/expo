@@ -14,6 +14,7 @@ import {
   Capsule,
   Stepper,
   Spacer,
+  Image,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -30,12 +31,15 @@ import {
   rotationEffect,
   offset,
   listRowSeparator,
+  listRowSpacing,
   border,
   onTapGesture,
   onLongPressGesture,
   onAppear,
   onDisappear,
   accessibilityLabel,
+  accessibilityIdentifier,
+  accessibilityHidden,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -63,18 +67,22 @@ import {
   pickerStyle,
   tag,
   font,
+  dynamicTypeSize,
   lineLimit,
   contentShape,
   shapes,
+  resizable,
+  tint,
 } from '@expo/ui/swift-ui/modifiers';
+import { useAssets } from 'expo-asset';
 import { useState } from 'react';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text as RNText,
   View,
   useWindowDimensions,
-  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -103,6 +111,7 @@ export default function ModifiersScreen() {
   const [enabledSelection, setEnabledSelection] = useState(false);
 
   const [lineSpacingValue, setLineSpaceingValue] = useState(0);
+  const [listRowSpacingValue, setListRowSpacingValue] = useState(0);
 
   const [enableRowInsets, setEnableRowInsets] = useState({
     top: false,
@@ -123,13 +132,18 @@ export default function ModifiersScreen() {
 
   const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
   const [contentShapeButtonCounter, setcontentShapeButtonCounter] = useState(0);
+  const [assets] = useAssets([require('../../../assets/images/logo-wordmark.png')]);
+  const wordmarkUri = assets?.[0]?.localUri;
 
   return (
     <ScrollView>
-      <Host matchContents>
+      <Host
+        matchContents
+        modifiers={[tint('#FF6B6B'), font({ size: 16, weight: 'medium', design: 'rounded' })]}>
         <Form
           modifiers={[
             scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
+            listRowSpacing(listRowSpacingValue),
             background(backgroundFormColor),
             frame({
               height: dimensions.height - safeAreaInsets.top - safeAreaInsets.bottom,
@@ -219,6 +233,18 @@ export default function ModifiersScreen() {
             <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
           </Section>
 
+          <Section title="List row spacing">
+            <Text>Spacing row one</Text>
+            <Text>Spacing row two</Text>
+            <Text>Spacing row three</Text>
+            <Slider
+              min={0}
+              max={30}
+              value={listRowSpacingValue}
+              onValueChange={setListRowSpacingValue}
+            />
+          </Section>
+
           {/* Text modifiers */}
           <Section title="Text modifier">
             <Text
@@ -265,6 +291,36 @@ export default function ModifiersScreen() {
                 <Text modifiers={[font({ size: 20 }), monospacedDigit()]}>0000000000</Text>
               </VStack>
             </HStack>
+
+            {/* Dynamic Type */}
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>
+                Dynamic Type (try Settings &gt; Accessibility &gt; Larger Text)
+              </Text>
+              <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>
+                largeTitle scales
+              </Text>
+              <Text modifiers={[font({ textStyle: 'body' })]}>body scales</Text>
+              <Text modifiers={[font({ textStyle: 'caption' })]}>caption scales</Text>
+            </VStack>
+
+            {/* font on concatenated Text runs scales + keeps weight */}
+            <Text>
+              <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Big </Text>
+              <Text modifiers={[font({ textStyle: 'caption' })]}>and small, both scale</Text>
+            </Text>
+
+            {/* dynamicTypeSize: clamp how far Dynamic Type scales */}
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>dynamicTypeSize clamp</Text>
+              <Text modifiers={[font({ textStyle: 'body' })]}>body, unbounded</Text>
+              <Text modifiers={[font({ textStyle: 'body' }), dynamicTypeSize({ max: 'large' })]}>
+                body, capped at large
+              </Text>
+              <Text modifiers={[font({ textStyle: 'body' }), dynamicTypeSize('xSmall')]}>
+                body, fixed at xSmall
+              </Text>
+            </VStack>
 
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>
@@ -569,6 +625,48 @@ export default function ModifiersScreen() {
               📐 2:1 Aspect ratio blue card
             </Text>
 
+            {wordmarkUri && (
+              <HStack spacing={16}>
+                <VStack alignment="center" spacing={8}>
+                  <Text modifiers={[font({ size: 12 })]}>Forced 1:1</Text>
+                  <Image
+                    uiImage={wordmarkUri}
+                    modifiers={[
+                      resizable(),
+                      aspectRatio({ ratio: 1, contentMode: 'fit' }),
+                      frame({ width: 140, height: 90 }),
+                      background('#EAF4FF'),
+                      border({ color: '#3498DB', width: 1 }),
+                    ]}
+                  />
+                </VStack>
+
+                <VStack alignment="center" spacing={8}>
+                  <Text modifiers={[font({ size: 12 })]}>Intrinsic ratio</Text>
+                  <Image
+                    uiImage={wordmarkUri}
+                    modifiers={[
+                      resizable(),
+                      aspectRatio({ contentMode: 'fit' }),
+                      frame({ width: 140, height: 90 }),
+                      background('#E8F8F5'),
+                      border({ color: '#16A085', width: 1 }),
+                    ]}
+                  />
+                </VStack>
+              </HStack>
+            )}
+
+            {/* accessibilityHidden: decorative SF Symbol skipped by VoiceOver */}
+            <HStack spacing={6}>
+              <Image
+                systemName="exclamationmark.triangle"
+                size={17}
+                modifiers={[accessibilityHidden(true)]}
+              />
+              <Text>Something went wrong</Text>
+            </HStack>
+
             <Text
               modifiers={[
                 background('#E67E22'),
@@ -598,6 +696,7 @@ export default function ModifiersScreen() {
                 foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 border({ color: '#9B59B6', width: 1 }),
                 accessibilityLabel('Complex styled card with multiple effects'),
+                accessibilityIdentifier('complex-styled-card'),
                 onTapGesture(() => alert('Complex card with multiple modifiers tapped!')),
               ]}>
               ✨ Complex: All effects combined!

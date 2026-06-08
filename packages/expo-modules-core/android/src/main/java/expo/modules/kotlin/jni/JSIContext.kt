@@ -3,6 +3,7 @@ package expo.modules.kotlin.jni
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
@@ -54,6 +55,45 @@ class JSIContext @DoNotStrip internal constructor(
   external fun drainJSEventLoop()
 
   external fun setNativeStateForSharedObject(id: Int, js: JavaScriptObject)
+
+  /**
+   * Installs `SharedObject.__resolveInWorklet` in this runtime.
+   */
+  external fun installModuleClasses()
+
+  /**
+   * Called from C++ `__resolveInWorklet`, returns the Java class of a SharedObject by its ID.
+   */
+  @Suppress("unused")
+  @DoNotStrip
+  fun getNativeSharedObjectClass(objectId: Int): Class<*>? {
+    val appContext = runtimeHolder.get()?.appContext ?: return null
+    val mainRegistry = appContext.runtime.sharedObjectRegistry
+    val nativeObject = mainRegistry.toNativeObjectOrNull(SharedObjectId(objectId))
+    return nativeObject?.javaClass
+  }
+
+  /**
+   * Exports a single SharedObject class to this runtime.
+   */
+  @Suppress("unused")
+  @DoNotStrip
+  fun buildClassDecorator(nativeClass: Class<*>): JSDecoratorsBridgingObject? {
+    val runtime = runtimeHolder.get() ?: return null
+    val appContext = runtime.appContext ?: return null
+
+    val classDefinition = appContext.registry
+      .asSequence()
+      .flatMap { it.definition.classData }
+      .firstOrNull { it.constructor.ownerType?.jClass == nativeClass }
+      ?: return null
+
+    val decorator = JSDecoratorsBridgingObject(runtime.deallocator)
+    with(decorator) {
+      classDefinition.exportClass(appContext, runtime)
+    }
+    return decorator
+  }
 
   /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]

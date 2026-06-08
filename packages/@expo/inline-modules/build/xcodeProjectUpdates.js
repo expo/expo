@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateXcodeProject = updateXcodeProject;
-const config_plugins_1 = require("expo/config-plugins");
+const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 /**
@@ -18,7 +18,6 @@ async function updateXcodeProject(projectRoot, inlineModulesXcodeParams) {
     }
     const pbxProject = config_plugins_1.IOSConfig.XcodeUtils.getPbxproj(projectRoot);
     const mainGroupUUID = pbxProject.getFirstProject().firstProject.mainGroup;
-    const mainTarget = pbxProject.getFirstProject().firstProject.targets[0];
     const objects = pbxProject.hash.project.objects;
     const projectRootRelativeToIos = '..';
     const fsSynchronizedRootGroups = new Set();
@@ -53,8 +52,8 @@ async function updateXcodeProject(projectRoot, inlineModulesXcodeParams) {
             path: dirRelativeToIos,
             sourceTree: 'SOURCE_ROOT',
         };
-        if (mainTarget) {
-            const nativeTargetGroup = objects.PBXNativeTarget[mainTarget.value];
+        for (const target of pbxProject.getFirstProject().firstProject.targets) {
+            const nativeTargetGroup = objects.PBXNativeTarget[target.value];
             if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
                 nativeTargetGroup.fileSystemSynchronizedGroups = [];
             }
@@ -65,3 +64,4 @@ async function updateXcodeProject(projectRoot, inlineModulesXcodeParams) {
         await fs_1.default.promises.writeFile(pbxProject.filepath, pbxProject.writeSync());
     }
 }
+//# sourceMappingURL=xcodeProjectUpdates.js.map

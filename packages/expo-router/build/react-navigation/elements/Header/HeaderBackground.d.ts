@@ -4,6 +4,6 @@ type Props = Omit<ViewProps, 'style'> & {
     style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
     children?: React.ReactNode;
 };
-export declare function HeaderBackground({ style, ...rest }: Props): React.JSX.Element;
+export declare function HeaderBackground({ style, ...rest }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=HeaderBackground.d.ts.map

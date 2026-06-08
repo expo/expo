@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBundler = getBundler;
 exports.getPlatform = getPlatform;
+exports.getEngine = getEngine;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.getIsReactServer = getIsReactServer;
 exports.getIsDev = getIsDev;
@@ -13,9 +14,10 @@ exports.getIsProd = getIsProd;
 exports.getIsNodeModule = getIsNodeModule;
 exports.getBaseUrl = getBaseUrl;
 exports.getReactCompiler = getReactCompiler;
+exports.getStaticESM = getStaticESM;
 exports.getIsServer = getIsServer;
+exports.getIsDomComponent = getIsDomComponent;
 exports.getIsLoaderBundle = getIsLoaderBundle;
-exports.getIsHermesV1 = getIsHermesV1;
 exports.getMetroSourceType = getMetroSourceType;
 exports.getBabelRuntimeVersion = getBabelRuntimeVersion;
 exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
@@ -54,7 +56,11 @@ function getPlatform(caller) {
         return 'web';
     }
     // unknown
-    return caller.platform;
+    return caller.platform ?? null;
+}
+function getEngine(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.engine ?? 'default';
 }
 function getPossibleProjectRoot(caller) {
     assertExpoBabelCaller(caller);
@@ -104,17 +110,21 @@ function getReactCompiler(caller) {
     assertExpoBabelCaller(caller);
     return caller?.supportsReactCompiler ?? false;
 }
+function getStaticESM(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.supportsStaticESM;
+}
 function getIsServer(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isServer ?? false;
 }
+function getIsDomComponent(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.isDomComponent ?? false;
+}
 function getIsLoaderBundle(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isLoaderBundle ?? false;
-}
-function getIsHermesV1(caller) {
-    assertExpoBabelCaller(caller);
-    return caller?.isHermesV1 ?? false;
 }
 function getMetroSourceType(caller) {
     assertExpoBabelCaller(caller);
@@ -142,11 +152,19 @@ function getBabelRuntimeVersion(caller) {
 function getExpoRouterAbsoluteAppRoot(caller) {
     assertExpoBabelCaller(caller);
     const rootModuleId = caller?.routerRoot ?? './app';
-    if (node_path_1.default.isAbsolute(rootModuleId)) {
-        return rootModuleId;
+    const projectRoot = getPossibleProjectRoot(caller);
+    const resolved = node_path_1.default.isAbsolute(rootModuleId)
+        ? rootModuleId
+        : node_path_1.default.join(projectRoot || '/', rootModuleId);
+    // Silently fall back to the default if the configured router root escapes the project root, as a safety net
+    if (projectRoot && !isPathInside(resolved, projectRoot)) {
+        return node_path_1.default.join(projectRoot, 'app');
     }
-    const projectRoot = getPossibleProjectRoot(caller) || '/';
-    return node_path_1.default.join(projectRoot, rootModuleId);
+    return resolved;
+}
+function isPathInside(child, parent) {
+    const relative = node_path_1.default.relative(parent, child);
+    return !!relative && !relative.startsWith('..') && !node_path_1.default.isAbsolute(relative);
 }
 function getInlineEnvVarsEnabled(caller) {
     assertExpoBabelCaller(caller);
@@ -197,3 +215,4 @@ const REGEXP_REPLACE_SLASHES = /\\/g;
 function toPosixPath(filePath) {
     return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }
+//# sourceMappingURL=common.js.map

@@ -1,4 +1,8 @@
-import { requestPermissionsAsync, getAssetsAsync, getAssetInfoAsync } from 'expo-media-library';
+import {
+  requestPermissionsAsync,
+  getAssetsAsync,
+  getAssetInfoAsync,
+} from 'expo-media-library/legacy';
 import { VideoSource } from 'expo-video';
 const localVideoId: VideoSource = require('../../../assets/videos/ace.mp4') as number;
 const seekOptimizedVideoId: VideoSource =
@@ -124,6 +128,7 @@ const videoLabels: string[] = [
   'Elephants Dream',
   'For Bigger Blazes',
   'Tears Of Steel (HLS)',
+  'Tears Of Steel (DASH)',
   'Cute Doggo (local video)',
   'Null Source',
   'Audio Track',
@@ -133,6 +138,7 @@ const videoSources: VideoSource[] = [
   elephantsDreamSource,
   forBiggerBlazesSource,
   hlsSource,
+  dashSource,
   localVideoSource,
   nullSource,
   audioTrackSource,

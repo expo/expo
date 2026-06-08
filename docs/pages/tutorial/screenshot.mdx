@@ -29,7 +29,14 @@ In this chapter, we'll learn how to take a screenshot using a third-party librar
 
 To install `react-native-view-shot` and `expo-media-library`, run the following commands:
 
-<Terminal cmd={['$ npx expo install react-native-view-shot expo-media-library']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-native-view-shot expo-media-library'],
+    yarn: ['$ yarn expo install react-native-view-shot expo-media-library'],
+    pnpm: ['$ pnpm expo install react-native-view-shot expo-media-library'],
+    bun: ['$ bun expo install react-native-view-shot expo-media-library'],
+  }}
+/>
 
 </Step>
 
@@ -51,7 +58,7 @@ import * as ImagePicker from 'expo-image-picker';
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo Add this statement to import the permissions response and <CODE>requestPermission()</CODE> method from the hook. */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
+  /* @tutinfo Add this statement to import the permissions response and `requestPermission()` method from the hook. */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
   // ...rest of the code remains same
 
   /* @tutinfo Add an if statement to check the permission status. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
@@ -80,8 +87,8 @@ We'll use `react-native-view-shot` to allow the user to take a screenshot within
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import { useState, /* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */useRef/* @end */ } from 'react';
-/* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
+import { useState, /* @tutinfo Import `useRef` hook from `react`. */useRef/* @end */ } from 'react';
+/* @tutinfo Import `captureRef` from `react-native-view-shot`. */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
   /* @tutinfo Create an imageRef variable. */ const imageRef = useRef<View>(null);/* @end */
@@ -119,7 +126,7 @@ Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with t
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

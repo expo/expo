@@ -11,8 +11,11 @@ class CLIError {
         'ios-directory-not-found': 'Cannot find `ios` directory in the project',
         'ios-directory-unknown-error': 'Unknown error occurred while finding brownfield iOS scheme',
         'ios-hermes-framework-not-found': 'Could not find hermes framework in the project at path',
+        'ios-host-provided-without-prebuilds': 'ios.hostProvidedFrameworks is set but precompiled modules are not enabled. Without precompiled modules, third-party pods (like SDWebImage) are statically linked into the brownfield framework itself, so there is no separate xcframework to strip. Enable `ios.usePrecompiledModules: true` in expo-build-properties (run `pod install` afterwards), or remove ios.hostProvidedFrameworks from the expo-brownfield plugin config.',
+        'ios-pod-install-cancelled': 'Brownfield cannot be built without installing CocoaPods. Run `pod install` in the `ios/` and try again.',
+        'ios-prebuilds-spm-dep-missing': "Could not find a prebuilt xcframework for an SPM dependency declared by an Expo module. The brownfield Swift Package would ship without it, causing `Library not loaded: @rpath/...` at runtime in the host app. Either re-install the affected Expo module from a release published with bundled SPM deps (`bundleSharedDeps: true`), populate the monorepo's `packages/precompile/.build/.spm-deps/` cache, or set `EXPO_PRECOMPILED_MODULES_PATH` to a directory that contains `.spm-deps/<dep>/<flavor>/<dep>.xcframework`.",
         'ios-scheme-not-found': 'Could not find brownfield iOS scheme',
-        'ios-workspace-not-found': 'Could not find brownfield iOS workspace',
+        'ios-workspace-not-found': 'Could not find a brownfield iOS workspace (`.xcworkspace`) in the `ios/` directory. This usually means `pod install` has not been run yet. Run `pod install` and try again.',
         'ios-workspace-unknown-error': 'Unknown error occurred while finding brownfield iOS workspace',
         'package-not-installed': 'expo-brownfield is not installed in the project. Install it with `npx expo install expo-brownfield`',
         'plugin-not-configured': 'expo-brownfield is not configured as a plugin. Add it to the `plugins` array in your app config',
@@ -32,3 +35,4 @@ class CLIError {
     }
 }
 exports.default = CLIError;
+//# sourceMappingURL=error.js.map

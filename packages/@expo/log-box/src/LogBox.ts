@@ -1,6 +1,6 @@
 import type { IgnorePattern, LogData } from './Data/LogBoxData';
 import * as LogBoxData from './Data/LogBoxData';
-import { type ExtendedExceptionData } from './Data/parseLogBoxLog';
+import type { ExtendedExceptionData } from './Data/parseLogBoxLog';
 import { parseLogBoxLog } from './Data/parseLogBoxLog';
 
 export { ExtendedExceptionData, IgnorePattern, LogData };

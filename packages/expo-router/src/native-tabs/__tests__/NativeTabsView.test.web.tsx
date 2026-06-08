@@ -22,7 +22,7 @@ describe('Native Bottom Tabs Navigation', () => {
         contentRenderer: () => <div data-testid="about" />,
       },
     ];
-    render(<NativeTabsView tabs={tabs} focusedIndex={0} onTabChange={() => {}} />);
+    render(<NativeTabsView tabs={tabs} focusedIndex={0} provenance={0} onTabChange={() => {}} />);
     expect(screen.getByTestId('index')).toBeTruthy();
     // expect(screen.queryByTestId('about')).toBeNull();
     expect(screen.getByLabelText('Main')).toMatchSnapshot();
@@ -50,7 +50,7 @@ describe('Native Bottom Tabs Navigation', () => {
       },
     ];
 
-    render(<NativeTabsView tabs={tabs} focusedIndex={0} onTabChange={() => {}} />);
+    render(<NativeTabsView tabs={tabs} focusedIndex={0} provenance={0} onTabChange={() => {}} />);
     expect(screen.getAllByRole('tab')).toHaveLength(3); // Only two visible tabs
     expect(screen.getByText('Index')).toBeTruthy();
     expect(screen.getByText('Tab-3')).toBeTruthy();
@@ -103,7 +103,9 @@ describe('Native Bottom Tabs Navigation', () => {
         contentRenderer: () => <div data-testid="tab-6">Tab 6</div>,
       },
     ];
-    render(<NativeTabsView tabs={tabs} focusedIndex={index} onTabChange={() => {}} />);
+    render(
+      <NativeTabsView tabs={tabs} focusedIndex={index} provenance={0} onTabChange={() => {}} />
+    );
     expect(screen.getByTestId(activeTestId)).toBeTruthy();
   });
 });
@@ -135,7 +137,7 @@ describe('Focused tab handling', () => {
       },
     ];
 
-    render(<NativeTabsView tabs={tabs} focusedIndex={0} onTabChange={() => {}} />);
+    render(<NativeTabsView tabs={tabs} focusedIndex={0} provenance={0} onTabChange={() => {}} />);
 
     const IndexTab = screen.getByRole('tab', { name: 'Index-tab' });
     const AboutTab = screen.getByRole('tab', { name: 'About-tab' });

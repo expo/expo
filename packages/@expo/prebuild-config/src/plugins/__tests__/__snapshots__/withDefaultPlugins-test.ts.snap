@@ -108,6 +108,7 @@ exports[`built-in plugins compiles mods 1`] = `
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
+    "deploymentTarget": "15.1",
     "entitlements": {
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
@@ -625,6 +626,12 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
                     },
@@ -825,6 +832,7 @@ exports[`built-in plugins introspects mods 1`] = `
         },
         "expoPlist": {
           "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
           "EXUpdatesRuntimeVersion": "1.0",
@@ -887,6 +895,7 @@ exports[`built-in plugins introspects mods 1`] = `
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.inlineModules.watchedDirectories": "[]",
           "expo.jsEngine": "hermes",
+          "ios.deploymentTarget": "15.1",
         },
       },
     },
@@ -995,6 +1004,7 @@ exports[`built-in plugins introspects mods 1`] = `
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
+    "deploymentTarget": "15.1",
     "entitlements": {
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
@@ -1260,6 +1270,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
                     },
@@ -1440,6 +1456,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "expoPlist": {
           "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
           "EXUpdatesRuntimeVersion": "1.0",
@@ -1504,6 +1521,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.inlineModules.watchedDirectories": "[]",
+          "ios.deploymentTarget": "15.1",
         },
       },
     },
@@ -1612,6 +1630,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
+    "deploymentTarget": "15.1",
     "entitlements": {
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",

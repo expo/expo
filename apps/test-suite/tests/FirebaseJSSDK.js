@@ -48,8 +48,8 @@ export async function test({ describe, it, expect }) {
     auth = initializeAuth(getApp(), { persistence: getReactNativePersistence(AsyncStorage) });
   } catch {}
 
-  describe('FirebaseJSSDK', async () => {
-    describe('auth', async () => {
+  describe('FirebaseJSSDK', () => {
+    describe('auth', () => {
       it(`calls getAuth() succesfully`, () => {
         expect(auth).not.toBeNull();
       });
@@ -62,7 +62,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('database', async () => {
+    describe('database', () => {
       it(`calls getDatabase() succesfully`, () => {
         expect(getDatabase()).not.toBeNull();
       });
@@ -82,7 +82,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('firestore', async () => {
+    describe('firestore', () => {
       it(`calls getFirestore() succesfully`, () => {
         expect(getFirestore()).not.toBeNull();
       });
@@ -117,7 +117,7 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    describe('functions', async () => {
+    describe('functions', () => {
       it(`calls getFunctions() succesfully`, () => {
         expect(getFunctions()).not.toBeNull();
       });

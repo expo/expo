@@ -1,6 +1,6 @@
 ---
 title: Usage-based pricing
-description: Learn how Expo applies usage-based billing for customers who exceed their plan quotas and how to monitor your EAS Build usage.
+description: Learn how Expo applies usage-based billing for customers who exceed their plan quotas and how to monitor your EAS Build and EAS Update usage.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -19,7 +19,7 @@ For EAS Build, a flat fee is charged for an individual build executed at higher-
 
 [Starter, Production, Enterprise, and Legacy plans](/billing/plans/#plans) subscribers receive credits for EAS Build. These credits can be used to offset the cost of builds. They are reset at the start of the billing period and expire at the end of that billing period. Visit our [pricing page](https://expo.dev/pricing) for more information on the pricing schedule for supported build platforms and the available resource classes.
 
-#### Example: EAS Build credit usage
+#### Example: EAS Build credit usage (Production plan)
 
 Consider an account subscribed to the Production plan that has 15 medium Android builds, and 10 large iOS builds in a billing period:
 
@@ -32,7 +32,7 @@ Consider an account subscribed to the Production plan that has 15 medium Android
 
 Since the credit is included in the Production plan, the subscriber pays $0 for their 25 builds.
 
-#### Example: EAS Build credit exceeded
+#### Example: EAS Build credit exceeded (Production plan)
 
 Consider another example where the credit limit is exceeded:
 
@@ -57,9 +57,9 @@ The "updated users" reflect the number of unique users who download at least one
 
 > **Note**: A monthly active user counts only once per billing period, regardless of how many updates this user downloads. In the context of EAS Update, a "user" is considered a unique installation of your app on a device.
 
-Each plan has a number of monthly active users and global edge bandwidth included as part of the subscription. These differ for each plan and the most updated numbers. See our [pricing page](https://expo.dev/pricing), for more information.
+Each plan has a number of monthly active users and global edge bandwidth included as part of the subscription. These differ for each plan. For the most updated numbers, see our [pricing page](https://expo.dev/pricing).
 
-#### Example: EAS Update usage
+#### Example: EAS Update usage (Starter plan)
 
 Consider a subscriber to the Starter plan who deploys 20 updates of 5 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 3,000 monthly active users and 100 GiB per month. As a result, the subscriber's bill for extra usage will be:
 
@@ -105,7 +105,7 @@ If the same subscriber is on a Production plan, they will pay $0 as the Producti
 
 > **Note**: Billing estimates shown may be delayed by up to 24 hours (one day).
 
-To see the current billing period's usage summary, go to the [Billing](https://expo.dev/settings/billing) and under **Usage**, you will find a summary for both EAS Build and EAS Update usage.
+To see the current billing period's usage summary, go to [Billing > **Usage**](https://expo.dev/settings/billing). You will find a usage summary for EAS Build, EAS Update, and other services.
 
 <ContentSpotlight
   alt="Billing usage summary for EAS Build, EAS Update, and EAS Workflows in the EAS dashboard."
@@ -139,17 +139,14 @@ To see detailed EAS Update usage for a current or previous billing period:
   className="max-w-[600px]"
 />
 
-### Enable notifications for EAS Build usage
+### Usage notifications
 
-You can enable **Plan credit usage** notifications to closely monitor your EAS Build usage. It enables email notifications when 80% and 100% of your plan's EAS Build credit is used.
+Expo sends email notifications to account [Owners and Admins](/accounts/account-types/#manage-access) when your account reaches **80%** and **100%** of your plan's included EAS Build credits. This helps you anticipate overage charges before they occur.
 
-To enable EAS Build credit usage notification:
-
-- Click **Email notifications** in the navigation menu
-- Under **EAS Build notifications**, click **Subscribe** for **Plan credit usage notifications**
+These notifications are enabled by default. You can manage your notification preferences from the **Email notifications** page in your [EAS dashboard](https://expo.dev/settings/billing).
 
 <ContentSpotlight
-  alt="Enabling EAS Build plan credit usage notifications in the EAS dashboard."
+  alt="Email notification preferences in the EAS dashboard."
   src="/static/images/billing/usage-04.png"
   className="max-w-[720px]"
 />

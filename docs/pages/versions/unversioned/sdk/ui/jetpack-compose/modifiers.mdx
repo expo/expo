@@ -3,7 +3,7 @@ title: Modifiers
 description: Jetpack Compose layout modifiers for @expo/ui components.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -236,6 +236,57 @@ import { shadow } from '@expo/ui/jetpack-compose/modifiers';
 <Button modifiers={[shadow(8)]}>Elevated button</Button>;
 ```
 
+### `dropShadow(shape, config?)`
+
+Draws a shadow behind the component with control over the blur radius, spread, offset, and color. Unlike `shadow`, it does not require an elevation value.
+
+| Parameter        | Type     | Description                                               |
+| ---------------- | -------- | --------------------------------------------------------- |
+| `shape`          | `Shape`  | The shape of the shadow (see the shapes table below).     |
+| `config.radius`  | `number` | Blur radius in dp.                                        |
+| `config.spread`  | `number` | Amount to expand (positive) or contract (negative) in dp. |
+| `config.color`   | `string` | Shadow color (hex string). Defaults to black.             |
+| `config.offsetX` | `number` | Horizontal offset in dp.                                  |
+| `config.offsetY` | `number` | Vertical offset in dp.                                    |
+| `config.alpha`   | `number` | Shadow opacity (0.0–1.0).                                 |
+
+```tsx
+import { dropShadow, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button
+  modifiers={[
+    dropShadow(Shapes.RoundedCorner(24), { radius: 16, spread: 4, color: '#6200EE', offsetY: 8 }),
+  ]}>
+  Drop shadow
+</Button>;
+```
+
+### `innerShadow(shape, config?)`
+
+Draws a shadow inside the component to create an inset effect. Apply the `background` modifier before `innerShadow` so the shadow renders.
+
+| Parameter        | Type     | Description                                               |
+| ---------------- | -------- | --------------------------------------------------------- |
+| `shape`          | `Shape`  | The shape of the shadow (see the shapes table below).     |
+| `config.radius`  | `number` | Blur radius in dp.                                        |
+| `config.spread`  | `number` | Amount to expand (positive) or contract (negative) in dp. |
+| `config.color`   | `string` | Shadow color (hex string). Defaults to black.             |
+| `config.offsetX` | `number` | Horizontal offset in dp.                                  |
+| `config.offsetY` | `number` | Vertical offset in dp.                                    |
+| `config.alpha`   | `number` | Shadow opacity (0.0–1.0).                                 |
+
+```tsx
+import { innerShadow, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button
+  modifiers={[
+    background('#FFFFFF'),
+    innerShadow(Shapes.RoundedCorner(24), { radius: 16, spread: 2, offsetY: 6 }),
+  ]}>
+  Inner shadow
+</Button>;
+```
+
 ### `alpha(alpha)`
 
 Controls the opacity of the component.
@@ -263,6 +314,52 @@ import { blur } from '@expo/ui/jetpack-compose/modifiers';
 
 <Button modifiers={[blur(4)]}>Blurred button</Button>;
 ```
+
+## Shadow recipes
+
+Common shadow styles are combinations of the `dropShadow` and `innerShadow` modifiers rather than separate APIs. Because the `modifiers` prop takes an array, you stack and tune the shadow modifiers to build each style.
+
+### Neobrutalist shadow
+
+A neobrutalist shadow is a hard-edged drop shadow with no blur and a thick border. Set `radius` and `spread` to `0`, then offset the shadow.
+
+```tsx
+import { dropShadow, border, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+
+<Box
+  modifiers={[
+    dropShadow(Shapes.Rectangle, {
+      radius: 0,
+      spread: 0,
+      offsetX: 8,
+      offsetY: 8,
+      color: '#000000',
+    }),
+    border(8, '#000000'),
+    background('#FFFFFF'),
+  ]}
+/>;
+```
+
+### Neumorphic shadow
+
+A neumorphic shadow layers two drop shadows on a surface that shares its background color: a light shadow toward the light source and a darker shadow on the opposite side. Apply both before the `background`.
+
+```tsx
+import { dropShadow, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+
+const shape = Shapes.RoundedCorner(24);
+
+<Box
+  modifiers={[
+    dropShadow(shape, { radius: 15, offsetX: -10, offsetY: -10, color: '#FFFFFF' }),
+    dropShadow(shape, { radius: 15, offsetX: 10, offsetY: 10, color: '#B1B1B1' }),
+    background('#E0E0E0'),
+  ]}
+/>;
+```
+
+To create the pressed, recessed variant, use two `innerShadow` modifiers instead and place them after the `background`.
 
 ## Transform
 
@@ -370,6 +467,30 @@ Makes the component respond to click events.
 import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 
 <Button modifiers={[clickable(() => console.log('Clicked!'))]}>Clickable</Button>;
+```
+
+### `combinedClickable(handlers, options?)`
+
+Makes the component respond to both short-tap and long-press gestures. Wraps Compose's `Modifier.combinedClickable`. Useful for opening a [`DropdownMenu`](./dropdownmenu.mdx) on long-press while keeping a separate short-tap action on the same view.
+
+| Parameter              | Type         | Description                                              |
+| ---------------------- | ------------ | -------------------------------------------------------- |
+| `handlers.onClick`     | `() => void` | Optional callback invoked on a short tap.                |
+| `handlers.onLongClick` | `() => void` | Optional callback invoked on a long press.               |
+| `options.indication`   | `boolean`    | Whether to show a ripple indication. Defaults to `true`. |
+
+```tsx
+import { combinedClickable } from '@expo/ui/jetpack-compose/modifiers';
+
+<Text
+  modifiers={[
+    combinedClickable({
+      onClick: () => console.log('Tapped'),
+      onLongClick: () => setMenuExpanded(true),
+    }),
+  ]}>
+  Long-press me
+</Text>;
 ```
 
 ### `selectable(selected, handler)`

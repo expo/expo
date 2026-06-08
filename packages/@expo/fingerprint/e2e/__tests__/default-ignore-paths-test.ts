@@ -4,6 +4,7 @@ import os from 'os';
 import path from 'path';
 
 import { createFingerprintAsync } from '../../src/Fingerprint';
+import { E2E_EXPECTED_3RD_PARTY_MODULES, E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
@@ -22,15 +23,19 @@ describe('default template ignore paths', () => {
 
   beforeAll(async () => {
     await fs.rm(projectRoot, { force: true, recursive: true });
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'default', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `default@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
   });
 
   afterAll(async () => {
@@ -55,6 +60,11 @@ describe('default template ignore paths', () => {
       if (moduleName === 'expo' || moduleName === '@expo' || moduleName.startsWith('expo-')) {
         continue;
       }
+
+      if (E2E_EXPECTED_3RD_PARTY_MODULES.includes(moduleName)) {
+        continue;
+      }
+
       expect(moduleName).toMatch(/^(react-native-)/);
     }
   });
@@ -89,15 +99,19 @@ macosDescribe('CocoaPods generated files', () => {
 
   beforeAll(async () => {
     await fs.rm(projectRoot, { force: true, recursive: true });
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'default', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `default@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
     const appJsonPath = path.join(projectRoot, 'app.json');
     const config = JSON.parse(await fs.readFile(appJsonPath, 'utf8'));
     config.expo.ios.bundleIdentifier = 'com.example.test';

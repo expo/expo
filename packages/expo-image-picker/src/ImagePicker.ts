@@ -1,15 +1,14 @@
 import {
-  CodedError,
-  createPermissionHook,
-  PermissionExpiration,
-  PermissionHookOptions,
-  PermissionResponse,
   PermissionStatus,
-  UnavailabilityError,
-} from 'expo-modules-core';
+  createPermissionHook,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+  type PermissionResponse,
+} from 'expo';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import ExponentImagePicker from './ExponentImagePicker';
-import {
+import type {
   CameraPermissionResponse,
   ImagePickerErrorResult,
   ImagePickerOptions,

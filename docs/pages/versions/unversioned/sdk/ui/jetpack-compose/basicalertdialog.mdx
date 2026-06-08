@@ -3,13 +3,22 @@ title: BasicAlertDialog
 description: A Jetpack Compose BasicAlertDialog component for displaying dialogs with custom content.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog](https://developer.android.com/develop/ui/compose/components/dialog) API and displays a minimal dialog that accepts custom children as its content, giving you full control over the dialog layout.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/basicalertdialog/android-light.webp"
+  darkSrc="/static/images/expo-ui/basicalertdialog/android-dark.webp"
+  alt="Material 3 basic alert dialog with custom content"
+/>
 
 ## Installation
 

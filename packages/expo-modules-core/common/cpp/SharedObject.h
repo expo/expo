@@ -4,16 +4,10 @@
 
 #ifdef __cplusplus
 
-#ifdef __APPLE__
-#include <ExpoModulesJSI/JSIUtils.h>
-#include <ExpoModulesJSI/ObjectDeallocator.h>
-#else
-#include "JSIUtils.h"
-#include "ObjectDeallocator.h"
-#endif
-
 #include <jsi/jsi.h>
 
+#include "JSIUtils.h"
+#include "ObjectDeallocator.h"
 #include "EventEmitter.h"
 
 namespace jsi = facebook::jsi;
@@ -54,9 +48,15 @@ public:
   const ObjectReleaser releaser;
 
   /**
-   The default constructor that initializes a native state for the shared object with given ID.
+   Initializes a native state for the shared object with the given ID. The `context`
+   and `contextDeallocator` are forwarded to the base so the JS-side `getNativeState`
+   can round-trip back to a Swift wrapper on Apple; ignored on platforms without
+   ExpoModulesJSI.
    */
-  NativeState(ObjectId objectId, ObjectReleaser releaser);
+  NativeState(ObjectId objectId,
+              ObjectReleaser releaser,
+              void *context = nullptr,
+              void (*contextDeallocator)(void *) = nullptr);
 
   ~NativeState() override;
 }; // class NativeState

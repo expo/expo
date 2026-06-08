@@ -1,12 +1,12 @@
 'use client';
 
-import type { LoaderFunction } from 'expo-server';
+import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { type SuspenseFallbackProps } from './views/SuspenseFallback';
-import { type ErrorBoundaryProps } from './views/Try';
+import type { SuspenseFallbackProps } from './views/SuspenseFallback';
+import type { ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 
@@ -20,6 +20,7 @@ export type LoadedRoute = {
   getNavOptions?: (args: any) => any;
   generateStaticParams?: (props: { params?: Params }) => Params[];
   loader?: LoaderFunction;
+  generateMetadata?: GenerateMetadataFunction;
 };
 
 export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'>;

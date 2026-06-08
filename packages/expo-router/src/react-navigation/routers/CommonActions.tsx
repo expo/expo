@@ -7,13 +7,13 @@ type ResetState =
       routes: Omit<Route<string>, 'key'>[];
     });
 
-type GoBackAction = {
+export type GoBackAction = {
   type: 'GO_BACK';
   source?: string;
   target?: string;
 };
 
-type NavigateAction = {
+export type NavigateAction = {
   type: 'NAVIGATE';
   payload: {
     name: string;

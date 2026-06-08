@@ -1,5 +1,5 @@
-import { TriggerMap } from './common';
-import { CommonNavigationAction, ParamListBase, Router, TabActionType as RNTabActionType, TabNavigationState, TabRouterOptions as RNTabRouterOptions, type StackActionType } from '../react-navigation/native';
+import type { TriggerMap } from './common';
+import { type CommonNavigationAction, type ParamListBase, type Router, type TabActionType as RNTabActionType, type TabNavigationState, type TabRouterOptions as RNTabRouterOptions, type StackActionType } from '../react-navigation/native';
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
     triggerMap: TriggerMap;
 };
@@ -16,22 +16,7 @@ export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | Repla
         params?: object;
     };
 };
-export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {
-    type: "GO_BACK";
-    source?: string;
-    target?: string;
-} | {
-    type: "NAVIGATE";
-    payload: {
-        name: string;
-        params?: object;
-        path?: string;
-        merge?: boolean;
-        pop?: boolean;
-    };
-    source?: string;
-    target?: string;
-} | {
+export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, import("../react-navigation/routers/CommonActions").GoBackAction | import("../react-navigation/routers/CommonActions").NavigateAction | {
     type: "NAVIGATE_DEPRECATED";
     payload: {
         name: string;
@@ -47,15 +32,15 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }> | import("../react-navigation/native").PartialState<Readonly<{
+    }> | import("../react-navigation").PartialState<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>> | (Omit<Readonly<{
@@ -63,11 +48,11 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "routes"> & {
-        routes: Omit<import("../react-navigation/native").Route<string>, "key">[];
+        routes: Omit<import("../react-navigation").Route<string>, "key">[];
     })) | undefined;
     source?: string;
     target?: string;

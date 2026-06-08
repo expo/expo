@@ -9,6 +9,12 @@ import path from 'node:path';
 import { parentPort, workerData } from 'node:worker_threads';
 
 import {
+  buildAgentInstructions,
+  buildPageSpecificNote,
+  shouldAppendAgentInstructions,
+  urlPathFromHtmlPath,
+} from './agent-instructions.ts';
+import {
   checkMarkdownQuality,
   convertMdxInstructionToMarkdown,
   convertHtmlToMarkdown,
@@ -183,16 +189,28 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
       markdown = injectSceneVariants(markdown, sceneSections, defaultVariantHeading);
     }
 
-    // Prepend frontmatter from the MDX source file if available
-    const mdxPath = findMdxSource(htmlPath, outDir, pagesDir);
-    if (mdxPath) {
-      const frontmatter = extractFrontmatter(mdxPath);
-      if (frontmatter) {
-        markdown = frontmatter + '\n' + markdown;
-      }
-    }
-
     const warnings = checkMarkdownQuality(markdown, relHtmlPath);
+
+    const mdxPath = findMdxSource(htmlPath, outDir, pagesDir);
+    const frontmatter = mdxPath ? extractFrontmatter(mdxPath) : null;
+    const pathname = urlPathFromHtmlPath(relHtmlPath);
+    const agentBlock = shouldAppendAgentInstructions(markdown)
+      ? buildAgentInstructions(pathname)
+      : null;
+    const pageNote = buildPageSpecificNote(pathname);
+
+    const parts: string[] = [];
+    if (frontmatter) {
+      parts.push(frontmatter);
+    }
+    if (pageNote) {
+      parts.push(pageNote);
+    }
+    if (agentBlock) {
+      parts.push(agentBlock);
+    }
+    parts.push(markdown);
+    markdown = parts.join('\n');
 
     const mdPath = path.join(path.dirname(htmlPath), 'index.md');
     fs.writeFileSync(mdPath, markdown);

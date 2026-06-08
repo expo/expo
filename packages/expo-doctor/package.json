@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.18.8",
+  "version": "1.19.8",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -32,13 +32,16 @@
     "watch": "pnpm run build -w",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
+  "engines": {
+    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0"
+  },
   "devDependencies": {
     "@expo/config": "workspace:*",
     "@expo/env": "workspace:*",
     "@expo/json-file": "workspace:*",
-    "@expo/metro": "56.0.0-rc.0",
+    "@expo/metro": "~56.0.0",
     "@expo/schemer": "workspace:*",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@types/debug": "^4.1.8",
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",

@@ -9,8 +9,9 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { type EdgeInsets } from 'react-native-safe-area-context';
+import type { EdgeInsets } from 'react-native-safe-area-context';
 
+import { BottomTabItem } from './BottomTabItem';
 import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
 import {
   CommonActions,
@@ -22,7 +23,6 @@ import {
   useTheme,
 } from '../../native';
 import type { BottomTabBarProps, BottomTabDescriptorMap } from '../types';
-import { BottomTabItem } from './BottomTabItem';
 import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
 import { useIsKeyboardShown } from '../utils/useIsKeyboardShown';
 
@@ -36,7 +36,7 @@ const SPACING_UIKIT = 15;
 const SPACING_MATERIAL = 12;
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
 
-const useNativeDriver = Platform.OS !== 'web';
+const useNativeDriver = process.env.EXPO_OS !== 'web';
 
 type Options = {
   state: TabNavigationState<ParamListBase>;
@@ -45,7 +45,7 @@ type Options = {
 };
 
 const shouldUseHorizontalLabels = ({ state, descriptors, dimensions }: Options) => {
-  const { tabBarLabelPosition } = descriptors[state.routes[state.index].key].options;
+  const { tabBarLabelPosition } = descriptors[state.routes[state.index]!.key]!.options;
 
   if (tabBarLabelPosition) {
     switch (tabBarLabelPosition) {
@@ -59,7 +59,7 @@ const shouldUseHorizontalLabels = ({ state, descriptors, dimensions }: Options) 
   if (dimensions.width >= 768) {
     // Screen size matches a tablet
     const maxTabWidth = state.routes.reduce((acc, route) => {
-      const { tabBarItemStyle } = descriptors[route.key].options;
+      const { tabBarItemStyle } = descriptors[route.key]!.options;
       const flattenedStyle = StyleSheet.flatten(tabBarItemStyle);
 
       if (flattenedStyle) {
@@ -80,7 +80,7 @@ const shouldUseHorizontalLabels = ({ state, descriptors, dimensions }: Options) 
 };
 
 const isCompact = ({ state, descriptors, dimensions }: Options): boolean => {
-  const { tabBarPosition, tabBarVariant } = descriptors[state.routes[state.index].key].options;
+  const { tabBarPosition, tabBarVariant } = descriptors[state.routes[state.index]!.key]!.options;
 
   if (tabBarPosition === 'left' || tabBarPosition === 'right' || tabBarVariant === 'material') {
     return false;
@@ -110,7 +110,7 @@ export const getTabBarHeight = ({
   insets: EdgeInsets;
   style: Animated.WithAnimatedValue<StyleProp<ViewStyle>> | undefined;
 }) => {
-  const { tabBarPosition } = descriptors[state.routes[state.index].key].options;
+  const { tabBarPosition } = descriptors[state.routes[state.index]!.key]!.options;
 
   const flattenedStyle = StyleSheet.flatten(style);
   const customHeight =
@@ -134,8 +134,8 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();
 
-  const focusedRoute = state.routes[state.index];
-  const focusedDescriptor = descriptors[focusedRoute.key];
+  const focusedRoute = state.routes[state.index]!;
+  const focusedDescriptor = descriptors[focusedRoute.key]!;
   const focusedOptions = focusedDescriptor.options;
 
   const {
@@ -271,20 +271,21 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
   return (
     <Animated.View
       style={[
+        { pointerEvents: isTabBarHidden ? 'none' : 'auto' },
         tabBarPosition === 'left'
           ? styles.start
           : tabBarPosition === 'right'
             ? styles.end
             : styles.bottom,
         (
-          Platform.OS === 'web'
+          process.env.EXPO_OS === 'web'
             ? tabBarPosition === 'right'
             : (direction === 'rtl' && tabBarPosition === 'left') ||
               (direction !== 'rtl' && tabBarPosition === 'right')
         )
           ? { borderLeftWidth: StyleSheet.hairlineWidth }
           : (
-                Platform.OS === 'web'
+                process.env.EXPO_OS === 'web'
                   ? tabBarPosition === 'left'
                   : (direction === 'rtl' && tabBarPosition === 'right') ||
                     (direction !== 'rtl' && tabBarPosition === 'left')
@@ -333,15 +334,14 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
             ],
         tabBarStyle,
       ]}
-      pointerEvents={isTabBarHidden ? 'none' : 'auto'}
       onLayout={sidebar ? undefined : handleLayout}>
-      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <View style={[StyleSheet.absoluteFill, styles.pointerEventsNone]}>
         {tabBarBackgroundElement}
       </View>
       <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
         {routes.map((route, index) => {
           const focused = index === state.index;
-          const { options } = descriptors[route.key];
+          const { options } = descriptors[route.key]!;
 
           const onPress = () => {
             const event = navigation.emit({
@@ -373,7 +373,7 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
           const accessibilityLabel =
             options.tabBarAccessibilityLabel !== undefined
               ? options.tabBarAccessibilityLabel
-              : typeof label === 'string' && Platform.OS === 'ios'
+              : typeof label === 'string' && process.env.EXPO_OS === 'ios'
                 ? `${label}, tab, ${index + 1} of ${routes.length}`
                 : undefined;
 
@@ -381,11 +381,11 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
             <NavigationProvider
               key={route.key}
               route={route}
-              navigation={descriptors[route.key].navigation}>
+              navigation={descriptors[route.key]!.navigation}>
               <BottomTabItem
                 href={buildHref(route.name, route.params)}
                 route={route}
-                descriptor={descriptors[route.key]}
+                descriptor={descriptors[route.key]!}
                 focused={focused}
                 horizontal={hasHorizontalLabels}
                 compact={compact}
@@ -459,5 +459,8 @@ const styles = StyleSheet.create({
   },
   bottomItem: {
     flex: 1,
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none',
   },
 });

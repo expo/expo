@@ -7,10 +7,10 @@ import type {
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
-import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 
-export { EventSubscription as Subscription };
+// TODO(@kitten): Remove re-export from EMC
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -69,6 +69,7 @@ export function hasStringAsync(): Promise<boolean> {
  *
  * @returns A promise that fulfills to the URL in the clipboard, or null if no URL is present or permission was denied.
  * @platform ios
+ * @platform macos
  */
 export async function getUrlAsync(): Promise<string | null> {
   if (!ExpoClipboard.getUrlAsync) {
@@ -86,6 +87,7 @@ export async function getUrlAsync(): Promise<string | null> {
  *
  * @param url The URL to save to the clipboard.
  * @platform ios
+ * @platform macos
  */
 export async function setUrlAsync(url: string): Promise<void> {
   if (!ExpoClipboard.setUrlAsync) {
@@ -99,6 +101,7 @@ export async function setUrlAsync(url: string): Promise<void> {
  *
  * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
  * @platform ios
+ * @platform macos
  */
 export async function hasUrlAsync(): Promise<boolean> {
   if (!ExpoClipboard.hasUrlAsync) {
@@ -171,7 +174,7 @@ export async function hasImageAsync(): Promise<boolean> {
 
 /**
  * Adds a listener that will fire whenever the content of the user's clipboard changes. This method
- * is a no-op on Web.
+ * is a no-op on Web and macOS.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
  * single argument that is an object containing information about clipboard contents.
@@ -212,6 +215,5 @@ export const isPasteButtonAvailable: boolean =
   Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 
 export * from './Clipboard.types';
-export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
 
-export { ClipboardPasteButton };
+export { ClipboardPasteButton, type ClipboardPasteButtonProps } from './ClipboardPasteButton';

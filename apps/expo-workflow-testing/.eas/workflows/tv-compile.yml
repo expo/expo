@@ -21,6 +21,7 @@ on:
       - packages/expo-structured-headers/ios/**
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
+      - packages/expo-app-metrics/ios/**
       - packages/expo-audio/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
@@ -30,6 +31,7 @@ on:
       - packages/expo-localization/ios/**
       - packages/expo-media-library/ios/**
       - packages/expo-modules-core/ios/**
+      - packages/expo-observe/ios/**
       - packages/expo-network/ios/**
       - packages/expo-secure-store/ios/**
       - packages/expo-symbols/ios/**
@@ -52,6 +54,7 @@ on:
       - packages/expo-structured-headers/ios/**
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
+      - packages/expo-app-metrics/ios/**
       - packages/expo-audio/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
@@ -62,6 +65,7 @@ on:
       - packages/expo-media-library/ios/**
       - packages/expo-modules-core/ios/**
       - packages/expo-network/ios/**
+      - packages/expo-observe/ios/**
       - packages/expo-secure-store/ios/**
       - packages/expo-symbols/ios/**
       - packages/expo-system-ui/ios/**

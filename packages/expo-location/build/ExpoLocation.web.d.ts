@@ -1,5 +1,5 @@
-import { PermissionResponse } from 'expo-modules-core';
-import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
+import { type PermissionResponse } from 'expo';
+import type { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 declare const _default: {
     getProviderStatusAsync(): Promise<{
         locationServicesEnabled: boolean;
@@ -12,6 +12,9 @@ declare const _default: {
     geocodeAsync(): Promise<any[]>;
     reverseGeocodeAsync(): Promise<any[]>;
     watchPositionImplAsync(watchId: number, options: PositionOptions): Promise<number>;
+    watchMotionActivityImplAsync(_watchId: number): Promise<void>;
+    getMotionActivityPermissionsAsync(): Promise<PermissionResponse>;
+    requestMotionActivityPermissionsAsync(): Promise<PermissionResponse>;
     requestForegroundPermissionsAsync(): Promise<PermissionResponse>;
     requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
     getForegroundPermissionsAsync(): Promise<PermissionResponse>;

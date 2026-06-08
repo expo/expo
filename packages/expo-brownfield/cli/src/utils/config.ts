@@ -1,8 +1,10 @@
 import type { OptionValues } from 'commander';
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { buildPublishingTask, findBrownfieldLibrary } from './android';
 import { findScheme, findWorkspace } from './ios';
+import { enumeratePrecompiledModules } from './precompiled';
 import type {
   AndroidConfig,
   BuildConfiguration,
@@ -11,6 +13,7 @@ import type {
   IosConfig,
   TasksConfigAndroid,
 } from './types';
+import { HOST_PROVIDED_FRAMEWORKS_KEY } from '../../../shared/build';
 
 export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
   const variant = resolveVariant(options);
@@ -38,11 +41,19 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     buildProductsPath,
     `${buildConfiguration.toLowerCase()}-iphonesimulator`
   );
+  // Detect prebuilt Expo module xcframeworks dropped into ios/Pods/ when the project's
+  // expo-build-properties config sets `ios.usePrecompiledModules` (or the user ran
+  // `EXPO_USE_PRECOMPILED_MODULES=1 pod install` manually). When present we bundle every
+  // precompiled module into the SPM output and emit the aggregate-product Package.swift.
+  const usePrebuilds = enumeratePrecompiledModules(path.join(process.cwd(), 'ios')).length > 0;
 
-  const hermesFrameworkPath =
-    'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework';
-  const packageName =
+  const basePackageName =
     options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
+  // SPM .binaryTarget has no per-configuration overload, so when prebuilds are bundled we
+  // produce one flavored package per build configuration (e.g. "MyAppPackage-release").
+  const packageName = usePrebuilds
+    ? `${basePackageName}-${buildConfiguration.toLowerCase()}`
+    : basePackageName;
   const output = options.package
     ? {
         packageName,
@@ -56,10 +67,74 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     buildConfiguration,
     derivedDataPath,
     device,
+    hostProvidedFrameworks: resolveHostProvidedFrameworks(options),
     simulator,
     scheme: resolveScheme(options),
+    usePrebuilds,
     workspace: resolveWorkspace(options),
   };
+};
+
+/**
+ * Source order for `hostProvidedFrameworks`:
+ *  1. `--host-provided <names...>` from the CLI flag
+ *  2. `ios.brownfieldHostProvidedFrameworks` in `ios/Podfile.properties.json`
+ *
+ * Inputs are intentionally not merged. This is designed for CI smoke tests and quick repros.
+ */
+const resolveHostProvidedFrameworks = (options: OptionValues): string[] => {
+  const fromFlag = parseHostProvidedFlag(options.hostProvided);
+  if (fromFlag.length > 0) {
+    return fromFlag;
+  }
+  return readHostProvidedFromPodfileProperties(process.cwd());
+};
+
+const parseHostProvidedFlag = (value: unknown): string[] => {
+  if (value == null) {
+    return [];
+  }
+  const raw = Array.isArray(value) ? value : [value];
+  const names = raw
+    .flatMap((entry) => (typeof entry === 'string' ? entry.split(',') : []))
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+  return Array.from(new Set(names));
+};
+
+const readHostProvidedFromPodfileProperties = (cwd: string): string[] => {
+  const propertiesPath = path.join(cwd, 'ios', 'Podfile.properties.json');
+  if (!fs.existsSync(propertiesPath)) {
+    return [];
+  }
+  let properties: Record<string, unknown>;
+  try {
+    properties = JSON.parse(fs.readFileSync(propertiesPath, 'utf8'));
+  } catch {
+    // Malformed properties file — prebuild would normally repair it. Treat as "no host-provided"
+    // and let other parts of the CLI surface the actual problem.
+    return [];
+  }
+  const rawValue = properties[HOST_PROVIDED_FRAMEWORKS_KEY];
+  if (typeof rawValue !== 'string' || rawValue.length === 0) {
+    return [];
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawValue);
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+  return Array.from(
+    new Set(
+      parsed
+        .filter((entry): entry is string => typeof entry === 'string' && entry.trim().length > 0)
+        .map((entry) => entry.trim())
+    )
+  );
 };
 
 export const resolveTasksConfigAndroid = (options: OptionValues): TasksConfigAndroid => {

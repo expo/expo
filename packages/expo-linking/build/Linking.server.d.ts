@@ -1,4 +1,4 @@
-import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
+import type { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
 export declare function addEventListener(type: 'url', handler: URLListener): {
     remove(): void;
 };
@@ -7,6 +7,7 @@ export declare function sendIntent(action: string, extras?: SendIntentExtras[]):
 export declare function openSettings(): Promise<void>;
 export declare function getInitialURL(): Promise<string | null>;
 export declare function getLinkingURL(): string;
+export declare function clearInitialURL(): void;
 export declare function openURL(url: string): Promise<true>;
 export declare function canOpenURL(): Promise<boolean>;
 export declare function useURL(): string | null;

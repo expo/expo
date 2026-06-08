@@ -3,13 +3,24 @@ title: List
 description: A SwiftUI List component for displaying scrollable lists of items.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`List`](../universal/list) — it renders the appropriate native component per platform.
 
 Expo UI List matches the official SwiftUI [List API](https://developer.apple.com/documentation/swiftui/list) and supports styling via the [`listStyle`](modifiers/#liststylestyle) modifier, various row/section modifiers, as well as selection, reordering, and editing capabilities.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/list/ios-light.webp"
+  darkSrc="/static/images/expo-ui/list/ios-dark.webp"
+  alt="A List with Favorites and Recents sections, each row showing a colored SF Symbol icon and a label"
+/>
 
 ## Installation
 

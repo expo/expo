@@ -2,10 +2,9 @@
 
 'use client';
 
-import React from 'react';
 import { View } from 'react-native';
 
-import { GlassViewProps } from './GlassView.types';
+import type { GlassViewProps } from './GlassView.types';
 
 export default function GlassView(props: GlassViewProps) {
   return <View {...props} />;

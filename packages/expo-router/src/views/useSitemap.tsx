@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 
-import { RouteNode, sortRoutes } from '../Route';
+import type { RouteNode } from '../Route';
+import { sortRoutes } from '../Route';
 import { store } from '../global-state/router-store';
 import { matchDynamicName } from '../matchers';
-import { Href } from '../types';
+import type { Href } from '../types';
 
 const routeSegments = (route: RouteNode, parents: string[]) => [
   ...parents,

@@ -3,13 +3,22 @@ title: DockedSearchBar
 description: A Jetpack Compose DockedSearchBar component for displaying an inline search input.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI DockedSearchBar matches the official Jetpack Compose [SearchBar API](https://developer.android.com/develop/ui/compose/components/search-bar) and displays a search input that remains anchored in its parent layout rather than expanding to full screen.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/dockedsearchbar/android-light.webp"
+  darkSrc="/static/images/expo-ui/dockedsearchbar/android-dark.webp"
+  alt="Material 3 docked search bar with search icon and placeholder text"
+/>
 
 ## Installation
 

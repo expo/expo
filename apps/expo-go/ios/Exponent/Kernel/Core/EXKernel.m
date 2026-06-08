@@ -109,20 +109,16 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
 {
-  id host = appManager.reactHost;
-  
-  if (host) {
-    id module = [[host moduleRegistry] moduleForName:[moduleName UTF8String]];
+  if (appManager.reactHost) {
+    id module = [appManager.reactModuleRegistry moduleForName:[moduleName UTF8String]];
     if (module) {
       return module;
     }
   } else {
     // Host can be null if the record is in an error state and never created a host.
-    if (host) {
-      DDLogError(@"Host does not support the API");
-    }
+    DDLogError(@"Host does not support the API");
   }
-  
+
   return nil;
 }
 
@@ -144,6 +140,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)reloadVisibleApp
 {
+  // Hide FAB immediately to avoid jank during reload
+  [[DevMenuManager shared] hideFAB];
+
   if (_browserController) {
     [EXUtil performSynchronouslyOnMainThread:^{
       [self->_browserController reloadVisibleApp];
