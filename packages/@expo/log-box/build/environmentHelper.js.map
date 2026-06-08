@@ -1,0 +1,1 @@
+{"version":3,"file":"environmentHelper.js","sourceRoot":"","sources":["../src/environmentHelper.ts"],"names":[],"mappings":";;AAAA,0EAGC;AAHD,SAAgB,+BAA+B,CAAC,EAAE,YAAY,EAA6B;IACzF,UAAU,CAAC,OAAO,GAAG,UAAU,CAAC,OAAO,IAAI,EAAE,CAAC;IAC9C,UAAU,CAAC,OAAO,CAAC,GAAG,CAAC,sBAAsB,KAAK,YAAY,CAAC;AACjE,CAAC"}

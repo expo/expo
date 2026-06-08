@@ -42,7 +42,6 @@
     "watch": "run-p watch:lib watch:bundle",
     "watch:lib": "tsc -p tsconfig.lib.json --watch",
     "watch:bundle": "node ./scripts/watch-bundle.mjs",
-    "prepare": "pnpm run build:lib",
     "prepublishOnly": "run-s clean build:publish",
     "build": "run-s build:lib",
     "build:publish": "run-s build:lib build:bundle",

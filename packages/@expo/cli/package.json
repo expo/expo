@@ -29,7 +29,6 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "pretest:e2e": "pnpm --workspace-root --filter @expo/log-box-utils prepare && pnpm --workspace-root --filter @expo/log-box prepare",
     "test:e2e": "jest --config e2e/jest.config.js",
     "test:playwright": "playwright test --config e2e/playwright.config.ts",
     "expo-module": "expo-module"
