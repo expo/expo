@@ -393,16 +393,20 @@ describe('unsupported packages (no direct equivalent)', () => {
     );
   });
 
-  test('throws even when other react-navigation imports would otherwise be rewritten', () => {
+  test('reports the unsupported package but still migrates the supported import in the same file', () => {
     const input = [
       `import { useNavigation } from '@react-navigation/native';`,
       `import { createDrawerNavigator } from '@react-navigation/drawer';`,
     ].join('\n');
-    run(input);
+    const output = run(input);
+    // The unsupported package is reported for manual migration...
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
     const message = errorSpy.mock.calls[0][0] as string;
     expect(message).toContain('import from "@react-navigation/drawer" cannot be migrated');
+    // ...but the supported import is still migrated (rather than silently skipped).
+    expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);
+    expect(output).toContain(`import { createDrawerNavigator } from '@react-navigation/drawer'`);
   });
 });
 
@@ -567,5 +571,41 @@ describe('merging type and value imports', () => {
     expect(output).toBe(
       `import { useRouter, type NavigationProp } from "expo-router/react-navigation";`
     );
+  });
+});
+
+describe('mixed files: migratable imports are rewritten even alongside unsupported ones', () => {
+  test('rewrites named import when the file also imports from @react-navigation/native-stack', () => {
+    const input = [
+      `import { NavigationContainer } from '@react-navigation/native';`,
+      `import { createNativeStackNavigator } from '@react-navigation/native-stack';`,
+    ].join('\n');
+    const output = run(input);
+    // The migratable named import is rewritten...
+    expect(output).toContain(
+      `import { NavigationContainer } from "expo-router/react-navigation"`
+    );
+    // ...the unsupported package is reported for manual migration...
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls[0][0]).toContain('@react-navigation/native-stack');
+    // ...and left untouched for the user to migrate by hand.
+    expect(output).toContain(
+      `import { createNativeStackNavigator } from '@react-navigation/native-stack'`
+    );
+  });
+
+  test('rewrites a clean named import while leaving a default-style import in the same file', () => {
+    const input = [
+      `import { NavigationContainer } from '@react-navigation/native';`,
+      `import Stack from '@react-navigation/stack';`,
+    ].join('\n');
+    const output = run(input);
+    // Clean named import migrated...
+    expect(output).toContain(
+      `import { NavigationContainer } from "expo-router/react-navigation"`
+    );
+    // ...default-style import reported and left untouched.
+    expect(errorSpy).toHaveBeenCalled();
+    expect(output).toContain(`import Stack from '@react-navigation/stack'`);
   });
 });
