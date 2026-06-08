@@ -39,7 +39,7 @@ class SessionManagerTest {
   // region Session Uniqueness Tests
 
   @Test
-  fun `getAllSessions returns each session exactly once`() =
+  fun `getAll returns each session exactly once`() =
     runTest {
       // Arrange
       val session1Id = "session-1"
@@ -56,7 +56,7 @@ class SessionManagerTest {
       database.metricDao().insertAll(metrics)
 
       // Act
-      val result = sessionManager.getAllSessions()
+      val result = database.sessionDao().getAll()
 
       // Assert
       assertEquals(2, result.size)
@@ -100,7 +100,7 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, timestamp, metadata, environment = "production")
 
       // Assert
-      val sessions = sessionManager.getAllSessions()
+      val sessions = database.sessionDao().getAll()
       assertEquals(1, sessions.size)
 
       val session = sessions[0].session
@@ -134,7 +134,7 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z", metadata, environment = "production")
 
       // Assert
-      val sessions = sessionManager.getAllSessions()
+      val sessions = database.sessionDao().getAll()
       assertEquals("production", sessions[0].session.environment)
     }
 
@@ -148,7 +148,7 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
 
       // Assert
-      val sessions = sessionManager.getAllSessions()
+      val sessions = database.sessionDao().getAll()
       assertEquals(expected, sessions[0].session.environment)
     }
 
@@ -160,17 +160,17 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
 
       // Verify it starts as active
-      var sessions = sessionManager.getAllSessions().filter { it.session.isActive }
+      var sessions = database.sessionDao().getAll().filter { it.session.isActive }
       assertEquals(1, sessions.size)
 
       // Act
       sessionManager.stopSession(sessionId)
 
       // Assert
-      sessions = sessionManager.getAllSessions().filter { it.session.isActive }
+      sessions = database.sessionDao().getAll().filter { it.session.isActive }
       assertEquals(0, sessions.size)
 
-      val allSessions = sessionManager.getAllSessions()
+      val allSessions = database.sessionDao().getAll()
       assertEquals(1, allSessions.size)
       assertFalse(allSessions[0].session.isActive)
     }
@@ -186,7 +186,7 @@ class SessionManagerTest {
       sessionManager.stopSession(sessionId)
 
       // Assert
-      val stopped = sessionManager.getAllSessions().single()
+      val stopped = database.sessionDao().getAll().single()
       assertNotNull("endTimestamp should be set after stopSession", stopped.session.endTimestamp)
     }
 
@@ -203,7 +203,7 @@ class SessionManagerTest {
       sessionManager.deactivateAllSessionsBefore("2025-01-10T00:00:00.000Z")
 
       // Assert
-      val activeSessions = sessionManager.getAllSessions().filter { it.session.isActive }
+      val activeSessions = database.sessionDao().getAll().filter { it.session.isActive }
       assertEquals(1, activeSessions.size)
       assertEquals(newSession, activeSessions[0].session.id)
     }
@@ -222,7 +222,7 @@ class SessionManagerTest {
       sessionManager.deactivateAllSessionsBefore(cutoff)
 
       // Assert
-      val deactivated = sessionManager.getAllSessions().single { it.session.id == orphan }
+      val deactivated = database.sessionDao().getAll().single { it.session.id == orphan }
       assertFalse(deactivated.session.isActive)
       assertEquals(cutoff, deactivated.session.endTimestamp)
     }
@@ -235,7 +235,7 @@ class SessionManagerTest {
       val cleanlyStopped = "clean-session"
       sessionManager.startSessionWithIdAt(cleanlyStopped, "2025-01-01T00:00:00.000Z")
       sessionManager.stopSession(cleanlyStopped)
-      val originalEnd = sessionManager.getAllSessions()
+      val originalEnd = database.sessionDao().getAll()
         .single { it.session.id == cleanlyStopped }
         .session.endTimestamp
       assertNotNull("precondition: stopSession should have stamped endTimestamp", originalEnd)
@@ -244,7 +244,7 @@ class SessionManagerTest {
       sessionManager.deactivateAllSessionsBefore("2025-01-10T00:00:00.000Z")
 
       // Assert — the cleanly-stopped session keeps its original end time.
-      val preserved = sessionManager.getAllSessions().single { it.session.id == cleanlyStopped }
+      val preserved = database.sessionDao().getAll().single { it.session.id == cleanlyStopped }
       assertEquals(originalEnd, preserved.session.endTimestamp)
     }
 
@@ -262,7 +262,7 @@ class SessionManagerTest {
       sessionManager.updateEnvironmentForActiveSessions("production")
 
       // Assert
-      val allSessions = sessionManager.getAllSessions()
+      val allSessions = database.sessionDao().getAll()
       val active = allSessions.find { it.session.id == activeSession }
       val inactive = allSessions.find { it.session.id == inactiveSession }
 
@@ -296,7 +296,7 @@ class SessionManagerTest {
       sessionManager.addMetrics(metricsForSession2, session2Id)
 
       // Assert
-      val sessions = sessionManager.getAllSessions()
+      val sessions = database.sessionDao().getAll()
       val s1 = sessions.find { it.session.id == session1Id }
       val s2 = sessions.find { it.session.id == session2Id }
 
@@ -587,13 +587,13 @@ class SessionManagerTest {
       )
 
       // Verify data exists
-      assertEquals(2, sessionManager.getAllSessions().size)
+      assertEquals(2, database.sessionDao().getAll().size)
 
       // Act
       sessionManager.clearAllData()
 
       // Assert
-      assertEquals(0, sessionManager.getAllSessions().size)
+      assertEquals(0, database.sessionDao().getAll().size)
     }
 
   @Test
@@ -629,14 +629,14 @@ class SessionManagerTest {
       // Assert — only the stopped, stale session is gone. The active stale
       // session is preserved (we don't pull a session out from under a
       // long-running process), and the fresh stopped session is preserved.
-      val remaining = sessionManager.getAllSessions().map { it.session.id }.toSet()
+      val remaining = database.sessionDao().getAll().map { it.session.id }.toSet()
       assertFalse("stale stopped session should be cleaned up", remaining.contains(staleStoppedId))
       assertTrue("stale but active session should be preserved", remaining.contains(staleActiveId))
       assertTrue("fresh stopped session should be preserved", remaining.contains(freshStoppedId))
     }
 
   @Test
-  fun `getAllSessions populates the logs relation alongside metrics`() =
+  fun `getAll populates the logs relation alongside metrics`() =
     runTest {
       // Arrange — exercises the Room `@Relation` for `LogRecord` end-to-end.
       // Unit-level mapper tests construct `SessionWithMetrics` directly and
@@ -659,7 +659,7 @@ class SessionManagerTest {
       )
 
       // Act
-      val sessions = sessionManager.getAllSessions()
+      val sessions = database.sessionDao().getAll()
 
       // Assert
       val session = sessions.single { it.session.id == sessionId }
@@ -669,7 +669,7 @@ class SessionManagerTest {
     }
 
   @Test
-  fun `getAllSessions yields an empty logs list when no logs exist for the session`() =
+  fun `getAll yields an empty logs list when no logs exist for the session`() =
     runTest {
       // Arrange — a session with metrics but no logs. The relation should
       // populate as an empty list, not null.
@@ -678,7 +678,7 @@ class SessionManagerTest {
       database.metricDao().insertAll(listOf(createMetric("metric-1", sessionId)))
 
       // Act
-      val sessions = sessionManager.getAllSessions()
+      val sessions = database.sessionDao().getAll()
 
       // Assert
       val session = sessions.single { it.session.id == sessionId }

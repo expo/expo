@@ -234,6 +234,10 @@ interface SessionDao {
   suspend fun getAll(): List<SessionWithMetrics>
 
   @Transaction
+  @Query("SELECT * FROM sessions WHERE isActive = 0 ORDER BY startTimestamp DESC")
+  suspend fun getInactive(): List<SessionWithMetrics>
+
+  @Transaction
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getSessionWithMetricsBySessionId(id: String): SessionWithMetrics?
 

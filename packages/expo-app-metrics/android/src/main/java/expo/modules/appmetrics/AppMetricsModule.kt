@@ -119,7 +119,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         appSessionId = sessionManager.createSessionId()
 
         // Persist the session row eagerly so it's visible to readers
-        // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
+        // (`getInactiveSessions`, `addCustomMetricToSession`, …) before any startup
         // metrics arrive. Older app runs are deactivated in the same coroutine
         // to keep the order well-defined. The `Job` is captured so `OnDestroy`
         // can wait for the INSERT before stamping `endTimestamp`.
@@ -165,8 +165,11 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      AsyncFunction("getAllSessions") Coroutine { ->
-        sessionManager.getAllSessions().map { JsSession.fromSessionWithMetrics(it) }
+      // Debug-only: surfaces the inactive (ended) sessions for on-device
+      // inspection (e.g. the ObserveTester app) as plain eager `DebugSession`
+      // records — not shared objects — each carrying its metrics and logs inline.
+      AsyncFunction("getInactiveSessions") Coroutine { ->
+        sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithMetrics(it) }
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->

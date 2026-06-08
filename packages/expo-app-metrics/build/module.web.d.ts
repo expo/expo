@@ -8,7 +8,7 @@ declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetric
     logEvent(name: string, options?: LogEventOptions): void;
     setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null): void;
     clearStoredEntries(): Promise<void>;
-    getAllSessions(): Promise<never[]>;
+    getInactiveSessions(): Promise<never[]>;
     simulateCrashReport(): void;
     triggerCrash(): void;
     getMainSession(): Promise<null>;

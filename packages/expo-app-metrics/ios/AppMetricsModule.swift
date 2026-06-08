@@ -75,10 +75,12 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       // no-op
     }
 
-    AsyncFunction("getAllSessions") { () -> [StoredSession] in
+    // Debug-only: the inactive (ended) sessions as plain eager `DebugSession` records (decoded
+    // `StoredSession`s), newest first. The live session is excluded; reach it via `getMainSession()`.
+    AsyncFunction("getInactiveSessions") { () -> [StoredSession] in
       return try await AppMetricsActor.isolated {
         return try AppMetrics.database?
-          .getAllSessionsWithChildren()
+          .getInactiveSessionsWithChildren()
           .map { StoredSession(from: $0) } ?? []
       }.value
     }
