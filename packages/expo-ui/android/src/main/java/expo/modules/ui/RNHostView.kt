@@ -364,7 +364,7 @@ private class TouchDispatchingRootViewGroup(
   }
 
   // --- Child face: the wrapper's upstream voice. The parent hooks above relay through these. ---
-  // So we listen to ViewGroup nested scroll methods and call below methods from them, 
+  // So we listen to ViewGroup nested scroll methods and call below methods from them,
   // which essentially converts regular Nested scrolling methods to NestedScrollingChild3.
   override fun setNestedScrollingEnabled(enabled: Boolean) {
     childHelper.isNestedScrollingEnabled = enabled
