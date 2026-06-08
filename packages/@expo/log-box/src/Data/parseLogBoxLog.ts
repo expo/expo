@@ -14,7 +14,7 @@ import {
   parseBabelTransformError,
   type ParsedBuildError,
   parseMetroError,
-} from '../utils/metroBuildErrorsFormat';
+} from '@expo/log-box-utils';
 import { parseErrorStack } from '../utils/parseErrorStack';
 
 type ExceptionData = {

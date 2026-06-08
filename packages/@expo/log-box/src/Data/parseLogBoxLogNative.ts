@@ -7,9 +7,9 @@
 import type { MetroStackFrame as ExpoMetroStackFrame } from './Types';
 import type { ExtendedExceptionData as ExpoExtendedExceptionData } from './parseLogBoxLog';
 // End of web-specific imports
+import { withoutANSIColorStyles as withoutANSIColorStylesHelper } from '@expo/log-box-utils';
 import * as parseLogBoxLogWeb from './parseLogBoxLog';
 import { parseErrorStack } from '../utils/parseErrorStack';
-import { withoutANSIColorStyles as withoutANSIColorStylesHelper } from '../utils/withoutANSIStyles';
 
 interface ExceptionData {
   message: string;

@@ -1,1 +1,1 @@
-module.exports = require('./build/utils');
+module.exports = require('@expo/log-box-utils');

@@ -63,7 +63,7 @@ export function parseBabelCodeFrameError(message: string): ParsedBuildError | nu
   // Codeframe errors are thrown from any use of buildCodeFrameError.
   const [, fileName = '', content = '', codeFrame = ''] = e;
 
-  //TODO: In the future we should send metadata from @expo/cli, but at the moment
+  // TODO: In the future we should send metadata from @expo/cli, but at the moment
   // parsing the message is the only way that work across all LogBox scenarios
   // (build web, build ios, build android, hmr web, hmr native).
   const [, missingModule] = message.match(UNABLE_TO_RESOLVE_MODULE_ERROR_FORMAT) || [];

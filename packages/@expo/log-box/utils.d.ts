@@ -1,1 +1,1 @@
-export * from './build/utils';
+export * from '@expo/log-box-utils';

@@ -8,7 +8,7 @@
 
 import { parseErrorStack } from './parseErrorStack';
 import type { ExtendedExceptionData } from '../LogBox';
-import { withoutANSIColorStyles } from './withoutANSIStyles';
+import { withoutANSIColorStyles } from '@expo/log-box-utils';
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
