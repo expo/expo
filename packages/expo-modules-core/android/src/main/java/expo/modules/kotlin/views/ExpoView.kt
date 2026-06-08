@@ -18,9 +18,6 @@ abstract class ExpoView(
 
   var stateWrapper: StateWrapper? = null
 
-  // Stored by ViewManagerWrapperDelegate, lets events invocation resolve the event callback.
-  internal var viewDefinition: ViewManagerDefinition? = null
-
   val shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy(this)
 
   /**

@@ -9,8 +9,8 @@ import expo.modules.kotlin.getUnimoduleProxy
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.putGeneric
-import expo.modules.kotlin.views.ExpoView
-import expo.modules.kotlin.views.ViewManagerDefinition
+import expo.modules.kotlin.views.CallbacksDefinition
+import expo.modules.kotlin.views.ViewFunctionHolder
 
 fun interface ViewEventCallback<T> {
   operator fun invoke(arg: T)
@@ -29,20 +29,13 @@ open class ViewEvent<T>(
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
 
     if (!isValidated) {
-      val viewDefinition = resolveViewDefinition(view, appContext.registry)
-
-      if (viewDefinition == null) {
-        logger.warn("⚠️ Cannot find a view definition for ${view::class.java}")
-        return
-      }
-
-      val callbacks = viewDefinition.callbacksDefinition.ifNull {
-        logger.warn("⚠️ Cannot get callbacks for ${viewDefinition.name}")
+      val callbacks = resolveCallbacksDefinition(view, appContext.registry).ifNull {
+        logger.warn("⚠️ Cannot get callbacks for ${view::class.java}")
         return
       }
 
       if (!callbacks.names.any { it == name }) {
-        logger.warn("⚠️ Event $name wasn't exported from ${viewDefinition.name}")
+        logger.warn("⚠️ Event $name wasn't exported from ${view::class.java}")
         return
       }
 
@@ -71,10 +64,15 @@ open class ViewEvent<T>(
 }
 
 /**
- * Resolves the ViewManagerDefinition for view. ExpoViews carry their own, other views resolve by class. See https://github.com/expo/expo/issues/46623.
+ * Resolves the callbacks declared for [view]. Views that reuse a single class
+ * (e.g. ComposeFunctionHolder) carry their own [CallbacksDefinition] because they
+ * can't be matched by class; everything else is looked up by class in the registry.
+ * See https://github.com/expo/expo/issues/46623.
  */
-internal fun resolveViewDefinition(view: View, registry: ModuleRegistry): ViewManagerDefinition? {
-  (view as? ExpoView)?.viewDefinition?.let { return it }
+internal fun resolveCallbacksDefinition(view: View, registry: ModuleRegistry): CallbacksDefinition? {
+  if (view is ViewFunctionHolder) {
+    return view.callbacksDefinition
+  }
   val holder = registry.getModuleHolder(view::class.java) ?: return null
-  return registry.getViewDefinition(holder, view::class.java)
+  return registry.getViewDefinition(holder, view::class.java)?.callbacksDefinition
 }
