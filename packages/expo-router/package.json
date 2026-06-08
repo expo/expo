@@ -73,11 +73,11 @@
     },
     "./html": {
       "types": {
-        "source": "./src/static/html.tsx",
-        "default": "./build/static/html.d.ts"
+        "source": "./src/html.ts",
+        "default": "./build/html.d.ts"
       },
-      "source": "./src/static/html.tsx",
-      "default": "./build/static/html.js"
+      "source": "./src/html.ts",
+      "default": "./build/html.js"
     },
     "./js-stack": {
       "types": {
