@@ -1,36 +1,46 @@
-# `src/events/` — Structured JSONL Event Logger
+# Structured Event Logging (`@expo/event-log`)
 
-Structured JSONL logging for Expo CLI, activated via the `LOG_EVENTS` environment variable. Streams events to a file or file descriptor for automated tooling, debugging, and session documentation.
+Expo CLI emits structured JSONL events through [`@expo/event-log`](https://github.com/kitten/event-log). The package writes low-overhead session logs that automated tooling and agents can discover, replay, tail, and export. The CLI relies on the library directly — there is no in-tree wrapper.
 
 ## Activation
 
+Logging is installed once when a command starts. Most commands (`start`, `serve`, `export`, `run:*`) call `installEventLogger({ command, version })`, which creates a bounded session under the system temp directory. `bin/cli.ts` also calls `installEventLogger()` early so that the `LOG_EVENTS` environment variable and child-process IPC are honored before any output.
+
+The `LOG_EVENTS` environment variable overrides the destination:
+
 ```bash
-LOG_EVENTS=events.jsonl npx expo start    # Write to file
+LOG_EVENTS=events.jsonl npx expo start    # Write to a file
 LOG_EVENTS=1 npx expo start               # Write to stdout (redirects console to stderr)
 LOG_EVENTS=2 npx expo start               # Write to stderr (redirects console to stdout)
 ```
 
+The first activated destination wins; subsequent `installEventLogger` calls are no-ops.
+
 ## Defining events
 
-Create a typed event logger with `events(category, typeDefinition)`:
+Create a logger with `events(category)` and declare its event payloads by augmenting the `EventRegistry` interface from `@expo/event-log` via declaration merging:
 
 ```ts
-import { events } from '../events';
+import { events } from '@expo/event-log';
 
-export const event = events('my_module', (t) => [
-  t.event<'something_started', {
-    platform: string;
-  }>(),
-  t.event<'something_finished', {
-    platform: string;
-    duration: number;
-  }>(),
-]);
+declare module '@expo/event-log' {
+  interface EventRegistry {
+    'my_module:something_started': {
+      platform: string;
+    };
+    'my_module:something_finished': {
+      platform: string;
+      duration: number;
+    };
+  }
+}
+
+export const event = events('my_module');
 ```
 
-The type definition callback is never called at runtime — it exists purely for TypeScript inference. Event names and payloads are fully type-checked.
+Registry keys are fully-qualified `category:event_name` strings. Event names and payloads are type-checked against the merged registry — there is no central registry file to update.
 
-Payload fields must not use `_e` or `_t` — these are reserved for the event name and timestamp.
+Payload fields must not use the reserved keys `_e`, `_t`, `_d`, or `_w` (the event name, timestamp, span duration, and worker id).
 
 ## Emitting events
 
@@ -42,7 +52,17 @@ event('something_started', { wrong: true }); // TS error
 event('nonexistent', {});                     // TS error
 ```
 
-When the logger is inactive (`LOG_EVENTS` not set), `event()` is a no-op.
+When the logger is inactive, `event()` is a cheap no-op.
+
+## Spans
+
+Use `event.span()` to record a start/end pair with a measured duration (`_d`, in milliseconds):
+
+```ts
+const done = event.span('something_started', { platform: 'ios' });
+// ...work...
+done('something_finished', { platform: 'ios', duration: 500 });
+```
 
 ## Relative paths
 
@@ -53,36 +73,30 @@ event('file_changed', { file: event.path('/Users/me/project/src/App.tsx') });
 // logs: { "_e": "my_module:file_changed", "_t": 1713000000000, "file": "src/App.tsx" }
 ```
 
-## Registering event types
-
-After creating a new event logger, add it to `src/events/types.ts` to collect all event types:
-
-```ts
-import type { event as myModuleEvent } from '../path/to/module';
-
-export type Events = collectEventLoggers<[
-  // ... existing entries
-  typeof myModuleEvent,
-]>;
-```
-
 ## Output format
 
 Each event is a single JSON line:
 
 ```jsonl
 {"_e":"my_module:something_started","_t":1713000000000,"platform":"ios"}
-{"_e":"my_module:something_finished","_t":1713000000500,"platform":"ios","duration":500}
+{"_e":"my_module:something_finished","_t":1713000000500,"platform":"ios","duration":500,"_d":500}
 ```
 
 - `_e` — fully qualified event name (`category:event_name`)
-- `_t` — wall-clock timestamp (`Date.now()`) for cross-process correlation
+- `_t` — wall-clock timestamp for cross-process correlation
+- `_d` — span duration in milliseconds (only on span-end events)
+- `_w` — worker id (only on events emitted from worker threads/child processes)
 
-## Files
+## Inspecting logs
 
-| File | Role |
-|---|---|
-| `index.ts` | Public API: `events()` factory, `installEventLogger()`, `isEventLoggerActive()`, `shouldReduceLogs()` |
-| `stream.ts` | `LogStream` write stream and `writeEvent()` serializer |
-| `builder.ts` | TypeScript type definitions for the `events()` factory |
-| `types.ts` | Central registry of all event logger types |
+The package ships an `event-log` CLI to discover and read sessions:
+
+```sh
+event-log ps --json                                       # list sessions
+event-log tap "expo start" --filter metro:* --tail        # replay + follow live events
+event-log export "expo start" --format chrome-trace -o trace.json
+```
+
+## CLI helpers
+
+`src/utils/interactive.ts` adds `shouldReduceLogs()`, used across the CLI: it returns `true` when the logger is active and `EXPO_UNSTABLE_HEADLESS` is set, to quiet interactive/noisy terminal output in favour of the event log. It also backs `isInteractive()`.
