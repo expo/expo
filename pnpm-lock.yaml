@@ -1830,6 +1830,9 @@ importers:
       '@expo/env':
         specifier: workspace:~2.3.0
         version: link:../env
+      '@expo/event-log':
+        specifier: 0.0.1-canary-966313da986180a93e86de77d4212755231e20be
+        version: 0.0.1-canary-966313da986180a93e86de77d4212755231e20be(typescript@6.0.3)
       '@expo/image-utils':
         specifier: workspace:^0.10.1
         version: link:../image-utils
@@ -7558,6 +7561,15 @@ packages:
 
   '@expo/devcert@1.2.1':
     resolution: {integrity: sha512-qC4eaxmKMTmJC2ahwyui6ud8f3W60Ss7pMkpBq40Hu3zyiAaugPXnZ24145U7K36qO9UHdZUVxsCvIpz2RYYCA==}
+
+  '@expo/event-log@0.0.1-canary-966313da986180a93e86de77d4212755231e20be':
+    resolution: {integrity: sha512-fHGcVP/XF6FYyPslpd4sCwsiMwJFw/qASl4Vg/EJQe0GI+g83G3V9m/UG0OB3RdzjOHBBJUBAwCKs95p7E4cCg==}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=5.8.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   '@expo/expo-modules-macros-plugin@0.1.0':
     resolution: {integrity: sha512-ARl5U3PcwMdyPAb+r2Y9NXZBsGyfZx+oYNf4SHEuvTCp1gbluOPHTp4YIb0OeDcU/TimEeCXzcssov934SvueA==}
@@ -17409,6 +17421,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@expo/event-log@0.0.1-canary-966313da986180a93e86de77d4212755231e20be(typescript@6.0.3)':
+    optionalDependencies:
+      typescript: 6.0.3
+
   '@expo/expo-modules-macros-plugin@0.1.0': {}
 
   '@expo/material-symbols@0.1.1': {}
@@ -18962,9 +18978,7 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
