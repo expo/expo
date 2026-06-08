@@ -166,16 +166,6 @@ export type CommonNativeTextFieldProps = {
     action: string;
     value: string;
 }>;
-/**
- * Shared prop transform for the Compose text field variants. Resolves the
- * `value`/`selection` observables to ids, detects whether `onValueChange` is a
- * worklet (and routes it to `onValueChangeSync` if so), and adapts the public
- * callbacks to the native event shape. Variant-specific props (`variant`,
- * `shape`, `cursorColor`, the placeholder slot, ...) pass through untouched, so
- * each component layers its extras on the result. Keeping this in one place
- * stops the worklet detection and event plumbing from drifting between
- * `TextField` and `BasicTextField`.
- */
 export declare function useCommonTextFieldProps<T extends CommonTextFieldProperties>(props: T): CommonNativeTextFieldProps & Omit<T, TransformedKeys>;
 export {};
 //# sourceMappingURL=shared.d.ts.map
