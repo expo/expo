@@ -39,6 +39,7 @@ import java.lang.ref.WeakReference
 
 typealias GoHomeAction = () -> Unit
 typealias AppInfoProvider = (application: Application, reactHost: ReactHost) -> DevMenuState.AppInfo?
+typealias SwitchToComponentAction = (moduleName: String) -> Boolean
 
 @SuppressLint("ViewConstructor")
 class DevMenuFragment(
@@ -46,14 +47,16 @@ class DevMenuFragment(
   private val preferences: DevMenuPreferences,
   private val goToHomeAction: GoHomeAction?,
   private val reloadAction: (() -> Unit)?,
-  private val appInfoProvider: AppInfoProvider
+  private val appInfoProvider: AppInfoProvider,
+  private val switchToComponentAction: SwitchToComponentAction? = null
 ) : Fragment() {
   val viewModel by viewModels<DevMenuViewModel> {
     DevMenuViewModel.Factory(
       reactHostHolder,
       preferences,
       goToHomeAction,
-      reloadAction
+      reloadAction,
+      switchToComponentAction
     )
   }
   private val shakeDetector = ShakeDetector(this::onShakeDetected)
@@ -267,7 +270,8 @@ class DevMenuFragment(
       preferences: DevMenuPreferences,
       goToHomeAction: GoHomeAction?,
       reloadAction: (() -> Unit)?,
-      appInfoProvider: AppInfoProvider
+      appInfoProvider: AppInfoProvider,
+      switchToComponentAction: SwitchToComponentAction? = null
     ): ViewGroup {
       val layout = object : FrameLayout(activity) {
         init {
@@ -283,7 +287,8 @@ class DevMenuFragment(
         preferences,
         goToHomeAction,
         reloadAction,
-        appInfoProvider
+        appInfoProvider,
+        switchToComponentAction
       )
 
       return layout
@@ -296,7 +301,8 @@ class DevMenuFragment(
       preferences: DevMenuPreferences,
       goToHomeAction: GoHomeAction?,
       reloadAction: (() -> Unit)?,
-      appInfoProvider: AppInfoProvider
+      appInfoProvider: AppInfoProvider,
+      switchToComponentAction: SwitchToComponentAction? = null
     ) {
       val fragmentManager = (activity as FragmentActivity).supportFragmentManager
 
@@ -305,7 +311,8 @@ class DevMenuFragment(
         preferences,
         goToHomeAction,
         reloadAction,
-        appInfoProvider
+        appInfoProvider,
+        switchToComponentAction
       )
 
       fragmentManager.commit(true) {

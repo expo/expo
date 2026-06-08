@@ -7,6 +7,7 @@ import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuDevSettings
 import expo.modules.devmenu.DevMenuPreferences
 import expo.modules.devmenu.DevToolsSettings
+import expo.modules.devmenu.SwitchToComponentAction
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
@@ -15,7 +16,8 @@ class DevMenuViewModel(
   val reactHostHolder: WeakReference<ReactHost>,
   val menuPreferences: DevMenuPreferences,
   val goHomeAction: (() -> Unit)? = null,
-  val reloadAction: (() -> Unit)? = null
+  val reloadAction: (() -> Unit)? = null,
+  private val switchToComponentAction: SwitchToComponentAction? = null
 ) : ViewModel() {
   private val reactHost
     get() = reactHostHolder.get()
@@ -62,9 +64,14 @@ class DevMenuViewModel(
   }
 
   fun updateAppInfo(appInfo: DevMenuState.AppInfo) {
+    // Seed the active app key from the host the first time we receive app info.
+    // After that we trust state.currentAppKey, which is kept in sync by successful
+    // SwitchComponent actions.
+    val currentAppKey = _state.value.currentAppKey ?: appInfo.currentComponentName
     _state.value = _state.value.copy(
       appInfo = appInfo,
-      isOnboardingFinished = menuPreferences.isOnboardingFinished
+      isOnboardingFinished = menuPreferences.isOnboardingFinished,
+      currentAppKey = currentAppKey
     )
   }
 
@@ -84,16 +91,14 @@ class DevMenuViewModel(
   }
 
   private fun closeMenu() {
-    _state.value = _state.value.copy(isOpen = false)
+    _state.value = _state.value.copy(isOpen = false, openSubScreen = null)
   }
 
   private fun openMenu() {
     _state.value = _state.value.copy(
       isOpen = true,
       // Refresh dev tools settings when opening the menu
-      devToolsSettings = devSettings,
-      // The mounted component can change between opens, so re-read it every time the menu is shown.
-      currentAppKey = ComponentSwitcher.currentModuleName(reactHost?.currentReactContext)
+      devToolsSettings = devSettings
     )
   }
 
@@ -130,10 +135,13 @@ class DevMenuViewModel(
       is DevMenuAction.ToggleFab -> toggleFab()
       DevMenuAction.FinishOnboarding -> finishOnboarding()
       is DevMenuAction.TriggerCustomCallback -> action.item.fn.invoke()
-      is DevMenuAction.SwitchComponent -> ComponentSwitcher.switchToComponent(
-        reactHost?.currentReactContext,
-        action.name
-      )
+      is DevMenuAction.SwitchComponent -> {
+        if (switchToComponentAction?.invoke(action.name) == true) {
+          _state.value = _state.value.copy(currentAppKey = action.name)
+        }
+      }
+      is DevMenuAction.OpenSubScreen -> _state.value = _state.value.copy(openSubScreen = action.screen)
+      is DevMenuAction.CloseSubScreen -> _state.value = _state.value.copy(openSubScreen = null)
     }
   }
 
@@ -141,7 +149,8 @@ class DevMenuViewModel(
     private val reactHostHolder: WeakReference<ReactHost>,
     private val menuPreferences: DevMenuPreferences,
     private val goHomeAction: (() -> Unit)?,
-    private val reloadAction: (() -> Unit)?
+    private val reloadAction: (() -> Unit)?,
+    private val switchToComponentAction: SwitchToComponentAction? = null
   ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       @Suppress("UNCHECKED_CAST")
@@ -149,7 +158,8 @@ class DevMenuViewModel(
         reactHostHolder,
         menuPreferences,
         goHomeAction,
-        reloadAction
+        reloadAction,
+        switchToComponentAction
       ) as T
     }
   }
