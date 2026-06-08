@@ -46,10 +46,12 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@expo/*'
   - '@react-native/*'
+  - '@turbo/*'
   - 'react-native'
   - multitars
   - 'react-native-reanimated'
   - 'react-native-screens'
+  - turbo
   - 'whatwg-url-minimum'
   - 'expo'
   - 'expo-asset'
