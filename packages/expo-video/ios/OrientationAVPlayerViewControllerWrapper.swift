@@ -42,7 +42,15 @@ internal final class OrientationAVPlayerViewControllerWrapper: VideoPlayerObserv
       register(player)
     }
 
-    guard hasStalePlayerReference else {
+    // Don't rebuild the controller while it's presenting fullscreen or Picture in Picture,
+    // doing so would tear down the active session. Keep the flag set so the rebuild happens
+    // on the next inline `setPlayer`.
+    var isPresenting = controller.isInPictureInPicture
+    #if !os(tvOS)
+    isPresenting = isPresenting || controller.isFullscreen
+    #endif
+
+    guard hasStalePlayerReference, !isPresenting else {
       controller.player = player?.ref
       return false
     }
@@ -91,6 +99,7 @@ internal final class OrientationAVPlayerViewControllerWrapper: VideoPlayerObserv
   #endif
 
   private func register(_ player: VideoPlayer) {
+    registeredPlayers.removeAll { $0.value == nil }
     guard !registeredPlayers.contains(where: { $0.value === player }) else {
       return
     }
@@ -99,7 +108,9 @@ internal final class OrientationAVPlayerViewControllerWrapper: VideoPlayerObserv
   }
 
   func onPlayerDeinit(player: VideoPlayer) {
-    hasStalePlayerReference = true
+    DispatchQueue.main.async { [weak self] in
+      self?.hasStalePlayerReference = true
+    }
   }
 
   private func makeController(copying oldController: OrientationAVPlayerViewController) -> OrientationAVPlayerViewController {

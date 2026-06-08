@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
-- Fix VideoView holding a strong reference to VideoPlayer even after the player has been detached.
+- Fix VideoView holding a strong reference to VideoPlayer even after the player has been detached. ([#46453](https://github.com/expo/expo/pull/46453) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
