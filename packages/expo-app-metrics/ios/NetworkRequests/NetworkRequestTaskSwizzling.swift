@@ -58,14 +58,24 @@ import ExpoModulesCore
 
  - **WebSocket tasks.** `URLSessionWebSocketTask` extends `URLSessionTask` so the swizzles fire,
    but websockets don't produce meaningful HTTP metrics. We skip them inside the `resume` hook.
- - **Dev-builds with the expo-dev-launcher network inspector active.** When that inspector is on
-   (`EX_DEV_CLIENT_NETWORK_INSPECTOR` debug flag), `ExpoRequestInterceptorProtocol` installs a
-   `URLProtocol` that replays every request through its own inner `URLSession`. Our swizzle still
-   observes the outer (user-facing) task, but that task's `URLSessionTaskMetrics` carries only
-   the final replayed response — redirect chains and per-transaction byte splits are invisible
-   from the outer side. Production builds (release or dev without the inspector) get the full
-   chain. Tracking a clean fix that coordinates with expo-modules-core's interceptor instead of
-   reaching across packages would require a follow-up — left as a known dev-mode limitation.
+
+ ## Dev-launcher interop
+
+ When expo-dev-launcher's network inspector is active (`EX_DEV_CLIENT_NETWORK_INSPECTOR` debug
+ flag), `ExpoRequestInterceptorProtocol` runs every user-facing fetch through a replay on its
+ own private `URLSession`. The user-facing fetch produces two `__NSCFLocalSessionTask` instances:
+
+ - an **outer** task on the caller's `URLSession`, which fires `resume` first but whose metrics
+   are degraded (the URLProtocol short-circuits the real network).
+ - an **inner** task on dev-launcher's `URLSession`, which carries the real
+   `URLSessionTaskMetrics` (redirect chain, per-phase timings, byte splits).
+
+ We pair them up by request URL: the outer's `resume` creates an `ObservationContext` and adds
+ it to `pendingReplays`; the inner's `resume` (microseconds later) claims it via
+ `takePendingReplay`, attaches the same context to the inner task, and flags the outer's
+ setState/metrics paths to short-circuit. Recording happens once, from the inner task's
+ `didFinishCollectingMetrics:` callback, carrying the inner task's real metrics and the outer's
+ `requestStarted` event id. See `pendingReplays` for the data structure.
  */
 enum NetworkRequestTaskSwizzling {
   /**
@@ -82,16 +92,26 @@ enum NetworkRequestTaskSwizzling {
   /**
    Property key that expo-dev-launcher's `ExpoRequestInterceptorProtocol` stamps on the inner
    request it creates when replaying a request through its own `URLSession` (dev mode only, gated
-   on `EX_DEV_CLIENT_NETWORK_INSPECTOR`). We treat its presence as "this task is a dev-launcher
-   replay, not a user-initiated fetch" and skip observation, otherwise every request in a
-   dev-client build is recorded twice.
+   on `EX_DEV_CLIENT_NETWORK_INSPECTOR`).
+
+   When the dev-launcher inspector is active, every user-facing fetch produces two tasks:
+   - an **outer** task created against the user's `URLSession`, with no property — fires `resume`
+     first but the network never goes through it (the URLProtocol intercepts).
+   - an **inner** task on dev-launcher's private `URLSession`, carrying this property — does the
+     actual network work and carries the real `URLSessionTaskMetrics` (redirects, per-phase
+     timings, byte splits).
+
+   We want one observation per logical fetch, with the inner task's metrics. The resume swizzle
+   moves the outer's `ObservationContext` to the inner via `pendingReplays` (URL-keyed) so the
+   inner records into the same id the user-facing `requestStarted` event used. The outer task's
+   setState/metrics callbacks then short-circuit on `context.replayedByDevLauncher`.
 
    The literal must match `REQUEST_ID` in
    `packages/expo-modules-core/ios/DevTools/ExpoRequestInterceptorProtocol.swift`. The value
    is internal to that file (no public symbol); duplicating the string is the same trick the
    expo-observe header constant uses. Keep them in sync.
    */
-  private static let devLauncherRequestIdKey = "ExpoRequestInterceptorProtocol.requestId"
+  fileprivate static let devLauncherRequestIdKey = "ExpoRequestInterceptorProtocol.requestId"
 
   /// Installs the swizzles. Idempotent — guarded by `installed` so repeat calls are no-ops.
   static func install() {
@@ -137,6 +157,23 @@ enum NetworkRequestTaskSwizzling {
    */
   private static let setStateFallbackDelay: TimeInterval = 0.2
 
+  /// Outer-task `ObservationContext`s waiting for the corresponding dev-launcher inner replay
+  /// task to fire `resume`. Keyed by request URL because that's the only identifier shared
+  /// across the outer/inner pair (the inner request is a mutable copy of the outer and carries
+  /// a different `ExpoRequestInterceptorProtocol.requestId` that isn't visible from the outer
+  /// task's `originalRequest`).
+  ///
+  /// FIFO list per URL handles concurrent fetches to the same URL: the inner task that fires
+  /// first picks up the oldest entry. Entries are removed when claimed; any entry whose
+  /// `expiresAt` has passed (request denied by another URLProtocol, dev-launcher disabled
+  /// mid-flight, etc.) is pruned on the next access so the dictionary doesn't grow unbounded.
+  private static let pendingReplays = Mutex<[URL: [(context: ObservationContext, expiresAt: Date)]]>([:])
+
+  /// Maximum time we'll keep an unclaimed outer context in `pendingReplays`. Outer/inner
+  /// `resume` calls are typically microseconds apart; 5 seconds is well above the worst case
+  /// while still keeping the dictionary bounded.
+  private static let pendingReplayTimeout: TimeInterval = 5
+
   // MARK: - resume() swizzle
 
   private static func installResumeSwizzle() {
@@ -159,10 +196,23 @@ enum NetworkRequestTaskSwizzling {
     originalResumeImp.withLock { $0 = original }
   }
 
-  /**
-   Called from the swizzled `resume`. If the task is observable (HTTP, not a websocket, not
-   opted-out, not already observed), attaches an `ObservationContext` and emits `requestStarted`.
-   */
+  /// Called from the swizzled `resume`. Handles three cases:
+  ///
+  /// 1. **Dev-launcher inner replay task** (carries `devLauncherRequestIdKey` on its request):
+  ///    we already created an `ObservationContext` for the outer task. Pull it out of
+  ///    `pendingReplays` by URL, attach it to the inner task, and flag the original as
+  ///    `replayedByDevLauncher` so the outer's setState/metrics callbacks short-circuit. No new
+  ///    `requestStarted` is emitted — the outer already did that.
+  ///
+  /// 2. **Outer task under dev-launcher** (no property, but dev-launcher's protocol is
+  ///    installed): create the context, emit `requestStarted`, attach to the outer task as
+  ///    usual — and also add to `pendingReplays` so the inner replay task can pick it up when
+  ///    it `resume`s.
+  ///
+  /// 3. **Regular task** (no property, no dev-launcher): create context, attach, emit started.
+  ///
+  /// Plus the early-exit cases: websockets, internal opt-out header, non-HTTP schemes, and the
+  /// idempotency check against double-attaching on a re-resumed task.
   private static func observeStart(_ task: URLSessionTask) {
     if task is URLSessionWebSocketTask {
       return
@@ -178,18 +228,24 @@ enum NetworkRequestTaskSwizzling {
     if request.value(forHTTPHeaderField: internalHeaderName) != nil {
       return
     }
-    // expo-dev-launcher's `ExpoRequestInterceptorProtocol` (gated by EX_DEV_CLIENT_NETWORK_INSPECTOR
-    // in dev builds) intercepts a request and re-issues it through its own internal `URLSession`.
-    // That inner task is also an `__NSCFLocalSessionTask` and would otherwise be observed as a
-    // separate fetch, double-recording every request in the dev client. The dev-launcher stamps
-    // its inner request with the property key below; we treat the presence of that property as
-    // "this is a dev-launcher replay, not a user-initiated request" and skip observation.
-    if URLProtocol.property(forKey: devLauncherRequestIdKey, in: request) != nil {
-      return
-    }
     // Idempotent: a second `resume` on the same task — including the internal re-resume that
     // follows a 30x redirect — must not double-attach observation state.
     if objc_getAssociatedObject(task, &observationContextKey) != nil {
+      return
+    }
+
+    // Dev-launcher inner replay task. Adopt the outer's context (so the snapshot keeps the same
+    // id as the user-facing `requestStarted` event) and let the inner drive recording from its
+    // `didFinishCollectingMetrics:` callback. The outer task's setState/metrics paths
+    // short-circuit on `context.replayedByDevLauncher`.
+    if URLProtocol.property(forKey: devLauncherRequestIdKey, in: request) != nil {
+      guard let url = request.url, let outerContext = takePendingReplay(for: url) else {
+        // No matching outer context (request opted out, fired before our swizzles installed,
+        // etc.). Don't observe — recording independently would still double-count.
+        return
+      }
+      outerContext.replayedByDevLauncher = true
+      objc_setAssociatedObject(task, &observationContextKey, outerContext, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
       return
     }
 
@@ -200,6 +256,16 @@ enum NetworkRequestTaskSwizzling {
     )
     objc_setAssociatedObject(task, &observationContextKey, context, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 
+    // Always make the context discoverable by URL — if dev-launcher's interceptor protocol is
+    // in play, the inner replay task will claim it on its own `resume`. If not, the entry
+    // expires after `pendingReplayTimeout` and is pruned on the next access. We considered gating this on
+    // a lazy `URLSessionConfiguration.default.protocolClasses` lookup but the lazy resolves on
+    // the first request, which may fire before dev-launcher registers its protocol — locking
+    // in the wrong answer for the lifetime of the process.
+    if let url = request.url {
+      addPendingReplay(context: context, for: url)
+    }
+
     let started = NetworkRequestStarted(
       id: context.id,
       url: request.url ?? URL(string: "about:blank")!,
@@ -208,6 +274,38 @@ enum NetworkRequestTaskSwizzling {
     )
     context.startNotification = AppMetricsActor.isolated {
       NetworkRequestMonitor.shared.recordStart(started)
+    }
+  }
+
+  /// Adds an outer-task context to `pendingReplays` so the matching dev-launcher inner replay
+  /// task can pick it up. Prunes expired entries on the same URL key while we hold the lock.
+  private static func addPendingReplay(context: ObservationContext, for url: URL) {
+    let now = Date()
+    let expiresAt = now.addingTimeInterval(pendingReplayTimeout)
+    pendingReplays.withLock { pending in
+      var queue = pending[url] ?? []
+      queue.removeAll { $0.expiresAt < now }
+      queue.append((context, expiresAt))
+      pending[url] = queue
+    }
+  }
+
+  /// Removes and returns the oldest non-expired outer context for `url`, or `nil` if none.
+  /// Called from the inner replay task's `observeStart` to adopt the outer's context.
+  private static func takePendingReplay(for url: URL) -> ObservationContext? {
+    let now = Date()
+    return pendingReplays.withLock { pending in
+      guard var queue = pending[url] else {
+        return nil
+      }
+      queue.removeAll { $0.expiresAt < now }
+      guard !queue.isEmpty else {
+        pending[url] = nil
+        return nil
+      }
+      let head = queue.removeFirst()
+      pending[url] = queue.isEmpty ? nil : queue
+      return head.context
     }
   }
 
@@ -260,6 +358,16 @@ enum NetworkRequestTaskSwizzling {
       return
     }
     guard let context = objc_getAssociatedObject(task, &observationContextKey) as? ObservationContext else {
+      return
+    }
+    // Outer task under dev-launcher: the inner replay task will record from
+    // `didFinishCollectingMetrics:` with the real metrics chain. Skip the outer's fallback so we
+    // don't race the inner's recording. The inner task's setState fallback still runs (it has
+    // its own task identity); recordCompletion's `context.recorded` flag dedupes the two paths.
+    let isInnerReplayTask = task.originalRequest.flatMap {
+      URLProtocol.property(forKey: devLauncherRequestIdKey, in: $0)
+    } != nil
+    if context.replayedByDevLauncher && !isInnerReplayTask {
       return
     }
     // Defer to let the delegate proxy's `didFinishCollectingMetrics:` win when present. The
@@ -376,6 +484,11 @@ fileprivate final class ObservationContext {
   /// Set to `true` the first time the `setState:` swizzle records a completion snapshot. Guards
   /// against double-recording on rapid `.canceling` → `.completed` sequences.
   var recorded: Bool = false
+  /// `true` once this context has been claimed by a dev-launcher inner replay task. The outer
+  /// task's setState fallback and metrics callback short-circuit when this flips — the inner
+  /// task will record the snapshot from `didFinishCollectingMetrics:` with the real metrics
+  /// chain.
+  var replayedByDevLauncher: Bool = false
 
   init(id: UUID, request: URLRequest, startDate: Date) {
     self.id = id
@@ -446,8 +559,19 @@ private final class DelegateProxy: NSObject {
   @objc(URLSession:task:didFinishCollectingMetrics:)
   func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
     if let context = objc_getAssociatedObject(task, &NetworkRequestTaskSwizzling.observationContextKey) as? ObservationContext {
-      context.metrics = metrics
-      NetworkRequestTaskSwizzling.recordCompletion(task: task, context: context, error: task.error)
+      // The outer task under dev-launcher gets a degraded metrics callback (the URLProtocol
+      // short-circuits the real network). The inner replay task's callback is where the real
+      // chain lands. Skip the outer's metrics callback when its context was claimed by an inner
+      // task; the inner's own callback will record. The two tasks are told apart by the
+      // property dev-launcher stamps on the inner's request.
+      let isInnerReplayTask = task.originalRequest.flatMap {
+        URLProtocol.property(forKey: NetworkRequestTaskSwizzling.devLauncherRequestIdKey, in: $0)
+      } != nil
+      let skipDueToReplay = context.replayedByDevLauncher && !isInnerReplayTask
+      if !skipDueToReplay {
+        context.metrics = metrics
+        NetworkRequestTaskSwizzling.recordCompletion(task: task, context: context, error: task.error)
+      }
     }
     // After stashing the metrics and recording, forward to the wrapped delegate so it sees the
     // callback too.
