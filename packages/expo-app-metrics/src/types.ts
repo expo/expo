@@ -280,7 +280,7 @@ export type NetworkRequestStartedEvent = {
   url: string;
   /** HTTP method (`GET`, `POST`, …). */
   method: string;
-  /** ISO 8601 timestamp of when the request started. */
+  /** ISO 8601 timestamp of when the request started. Truncated to whole seconds. */
   startedAt: string;
 };
 
@@ -304,8 +304,11 @@ export type NetworkRequestRedirect = {
  * the corresponding `requestStarted` event so consumers can correlate the two.
  */
 export type NetworkRequestCompletedEvent = {
+  /** Stable identifier shared with the corresponding `requestStarted` event. */
   id: string;
+  /** Request URL as supplied to the native networking layer. May include query parameters and fragments. */
   url: string;
+  /** HTTP method (`GET`, `POST`, …). */
   method: string;
   /** Response status code, or `null` if the request failed before headers were received. */
   statusCode: number | null;
@@ -320,11 +323,14 @@ export type NetworkRequestCompletedEvent = {
   /** Short, human-readable error description if the request failed. */
   errorDescription: string | null;
   /**
-   * ISO 8601 timestamp of when the request started (matches `requestStarted.startedAt`). Truncated
-   * to whole seconds — use `totalDuration` for sub-second timing.
+   * ISO 8601 timestamp of when the request started (matches `requestStarted.startedAt`).
+   * Truncated to whole seconds — use `totalDuration` for sub-second timing.
    */
   startedAt: string | null;
-  /** ISO 8601 timestamp of when the response finished arriving. Truncated to whole seconds. */
+  /**
+   * ISO 8601 timestamp of when the response finished arriving. Truncated to whole seconds — use
+   * `totalDuration` for sub-second timing.
+   */
   completedAt: string | null;
   /** Total wall-clock duration of the request in seconds. */
   totalDuration: number;
