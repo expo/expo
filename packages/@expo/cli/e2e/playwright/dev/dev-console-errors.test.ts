@@ -12,15 +12,9 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
+const isWindows = platform === 'win32';
 
 test.describe('dev console errors', () => {
-  if (platform === 'win32') {
-    test.skip('skipping on windows', () => {
-      // On Windows, the code snippets are currently not rendering and project frames filtering is not working.
-    });
-    return;
-  }
-
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
@@ -55,8 +49,58 @@ test.describe('dev console errors', () => {
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('throw new Error()', { exact: true }).click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  [Error: unhandled-throw] 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: unhandled-throw]
+Call Stack
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  handleClick (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
+  executeDispatch (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  runWithFiberInDEV (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  processDispatchQueue (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  batchedUpdates$1$argument_0 (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  batchedUpdates$1 (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchEventForPluginEventSystem (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchDiscreteEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+Call Stack
+  div (<anonymous>)
+  createElement (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\createElement\\index.js)
+  React.forwardRef$argument_0 (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
+  BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  WrappedScreenComponent (packages\\expo-router\\build\\useScreens.js)
+  BaseRoute (packages\\expo-router\\build\\useScreens.js)
+  SceneView (packages\\expo-router\\build\\react-navigation\\core\\SceneView.js)
+  render (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  routes.reduce$argument_0 (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  Array.reduce (<anonymous>)
+  useDescriptors (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  useNavigationBuilder (packages\\expo-router\\build\\react-navigation\\core\\useNavigationBuilder.js)
+  SlotNavigator (packages\\expo-router\\build\\views\\Navigator.js)
+  DefaultNavigator (packages\\expo-router\\build\\views\\Navigator.js)
+  WrappedScreenComponent (packages\\expo-router\\build\\useScreens.js)
+  BaseRoute (packages\\expo-router\\build\\useScreens.js)
+  SceneView (packages\\expo-router\\build\\react-navigation\\core\\SceneView.js)
+  render (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  routes.reduce$argument_0 (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  Array.reduce (<anonymous>)
+  useDescriptors (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  useNavigationBuilder (packages\\expo-router\\build\\react-navigation\\core\\useNavigationBuilder.js)
+  Content (packages\\expo-router\\build\\ExpoRoot.js)
+  ContextNavigator (packages\\expo-router\\build\\ExpoRoot.js)
+  ExpoRoot (packages\\expo-router\\build\\ExpoRoot.js)
+  App (packages\\expo-router\\build\\qualified-entry.js)
+  WithDevTools (packages\\expo\\src\\launch\\withDevTools.web.tsx)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: unhandled-throw]
 
 Code: index.tsx
   42 |         title="throw new Error()"
@@ -67,7 +111,7 @@ Code: index.tsx
   46 |       />
   47 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:44:17) 
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:44:17)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -80,9 +124,9 @@ Code: index.tsx
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
   App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:41:7)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+        `.trim()
+      );
+    }
   });
 
   test('prints call stack of unhandled rejections', async ({ page }) => {
@@ -91,8 +135,30 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('async throw new Error()').click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  [Error: unhandled-async-throw] 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: unhandled-async-throw]
+Call Stack
+  throwAsyncError (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  handleClick (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
+  executeDispatch (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  runWithFiberInDEV (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  processDispatchQueue (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  batchedUpdates$1$argument_0 (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  batchedUpdates$1 (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchEventForPluginEventSystem (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchDiscreteEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: unhandled-async-throw]
 
 Code: index.tsx
   49 |         onPress={() => {
@@ -104,9 +170,9 @@ Code: index.tsx
   54 |         }}
 Call Stack
   throwAsyncError (apps/router-e2e/__e2e__/06-errors/app/index.tsx:51:19)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+        `.trim()
+      );
+    }
   });
 
   test('prints component stack of unhandled thrown non-Error values (strings)', async ({ page }) => {
@@ -115,8 +181,47 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('throw string').click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  unhandled-throw-string 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  unhandled-throw-string
+Call Stack
+  div (<anonymous>)
+  createElement (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\createElement\\index.js)
+  React.forwardRef$argument_0 (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
+  BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  WrappedScreenComponent (packages\\expo-router\\build\\useScreens.js)
+  BaseRoute (packages\\expo-router\\build\\useScreens.js)
+  SceneView (packages\\expo-router\\build\\react-navigation\\core\\SceneView.js)
+  render (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  routes.reduce$argument_0 (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  Array.reduce (<anonymous>)
+  useDescriptors (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  useNavigationBuilder (packages\\expo-router\\build\\react-navigation\\core\\useNavigationBuilder.js)
+  SlotNavigator (packages\\expo-router\\build\\views\\Navigator.js)
+  DefaultNavigator (packages\\expo-router\\build\\views\\Navigator.js)
+  WrappedScreenComponent (packages\\expo-router\\build\\useScreens.js)
+  BaseRoute (packages\\expo-router\\build\\useScreens.js)
+  SceneView (packages\\expo-router\\build\\react-navigation\\core\\SceneView.js)
+  render (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  routes.reduce$argument_0 (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  Array.reduce (<anonymous>)
+  useDescriptors (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  useNavigationBuilder (packages\\expo-router\\build\\react-navigation\\core\\useNavigationBuilder.js)
+  Content (packages\\expo-router\\build\\ExpoRoot.js)
+  ContextNavigator (packages\\expo-router\\build\\ExpoRoot.js)
+  ExpoRoot (packages\\expo-router\\build\\ExpoRoot.js)
+  App (packages\\expo-router\\build\\qualified-entry.js)
+  WithDevTools (packages\\expo\\src\\launch\\withDevTools.web.tsx)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  unhandled-throw-string
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -129,9 +234,9 @@ Code: index.tsx
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
   App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:56:7)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+        `.trim()
+      );
+    }
   });
 
   test('prints no stack for unhandled rejected non-Error values (strings)', async ({ page }) => {
@@ -150,8 +255,58 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('console.error(new Error())').click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  [Error: console-error-object] 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: console-error-object]
+Call Stack
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  handleClick (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
+  executeDispatch (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  runWithFiberInDEV (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  processDispatchQueue (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  batchedUpdates$1$argument_0 (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  batchedUpdates$1 (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchEventForPluginEventSystem (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchDiscreteEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+Call Stack
+  div (<anonymous>)
+  createElement (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\createElement\\index.js)
+  React.forwardRef$argument_0 (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
+  BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  WrappedScreenComponent (packages\\expo-router\\build\\useScreens.js)
+  BaseRoute (packages\\expo-router\\build\\useScreens.js)
+  SceneView (packages\\expo-router\\build\\react-navigation\\core\\SceneView.js)
+  render (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  routes.reduce$argument_0 (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  Array.reduce (<anonymous>)
+  useDescriptors (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  useNavigationBuilder (packages\\expo-router\\build\\react-navigation\\core\\useNavigationBuilder.js)
+  SlotNavigator (packages\\expo-router\\build\\views\\Navigator.js)
+  DefaultNavigator (packages\\expo-router\\build\\views\\Navigator.js)
+  WrappedScreenComponent (packages\\expo-router\\build\\useScreens.js)
+  BaseRoute (packages\\expo-router\\build\\useScreens.js)
+  SceneView (packages\\expo-router\\build\\react-navigation\\core\\SceneView.js)
+  render (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  routes.reduce$argument_0 (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  Array.reduce (<anonymous>)
+  useDescriptors (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  useNavigationBuilder (packages\\expo-router\\build\\react-navigation\\core\\useNavigationBuilder.js)
+  Content (packages\\expo-router\\build\\ExpoRoot.js)
+  ContextNavigator (packages\\expo-router\\build\\ExpoRoot.js)
+  ExpoRoot (packages\\expo-router\\build\\ExpoRoot.js)
+  App (packages\\expo-router\\build\\qualified-entry.js)
+  WithDevTools (packages\\expo\\src\\launch\\withDevTools.web.tsx)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: console-error-object]
 
 Code: index.tsx
   89 |         title="console.error(new Error())"
@@ -162,7 +317,7 @@ Code: index.tsx
   93 |       />
   94 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:91:25) 
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:91:25)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -175,9 +330,9 @@ Code: index.tsx
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
   App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:88:7)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+        `.trim()
+      );
+    }
   });
 
   test('prints call stack and component stack of console.error non-Error values (strings)', async ({ page }) => {
@@ -186,8 +341,63 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('console.error(string)').click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  console-error-string 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  console-error-string
+Call Stack
+  captureCurrentStack (packages\\expo\\src\\async-require\\setupHMR.ts)
+  addErrorStacks (packages\\expo\\src\\async-require\\setupHMR.ts)
+  console.level (packages\\expo\\src\\async-require\\setupHMR.ts)
+  consoleErrorMiddleware (packages\\@expo\\log-box\\src\\LogBox.ts)
+  console.error (packages\\@expo\\log-box\\src\\LogBox.ts)
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  handleClick (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
+  executeDispatch (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  runWithFiberInDEV (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  processDispatchQueue (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  batchedUpdates$1$argument_0 (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  batchedUpdates$1 (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchEventForPluginEventSystem (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+  dispatchDiscreteEvent (node_modules\\.pnpm\\react-dom@19.2.3_react@19.2.3\\node_modules\\react-dom\\cjs\\react-dom-client.development.js)
+Call Stack
+  div (<anonymous>)
+  createElement (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\createElement\\index.js)
+  React.forwardRef$argument_0 (node_modules\\.pnpm\\react-native-web@0.21.2_enc_ab4a5774e5e10a144754e0354bad928c\\node_modules\\react-native-web\\dist\\exports\\Text\\index.js)
+  BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx)
+  WrappedScreenComponent (packages\\expo-router\\build\\useScreens.js)
+  BaseRoute (packages\\expo-router\\build\\useScreens.js)
+  SceneView (packages\\expo-router\\build\\react-navigation\\core\\SceneView.js)
+  render (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  routes.reduce$argument_0 (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  Array.reduce (<anonymous>)
+  useDescriptors (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  useNavigationBuilder (packages\\expo-router\\build\\react-navigation\\core\\useNavigationBuilder.js)
+  SlotNavigator (packages\\expo-router\\build\\views\\Navigator.js)
+  DefaultNavigator (packages\\expo-router\\build\\views\\Navigator.js)
+  WrappedScreenComponent (packages\\expo-router\\build\\useScreens.js)
+  BaseRoute (packages\\expo-router\\build\\useScreens.js)
+  SceneView (packages\\expo-router\\build\\react-navigation\\core\\SceneView.js)
+  render (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  routes.reduce$argument_0 (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  Array.reduce (<anonymous>)
+  useDescriptors (packages\\expo-router\\build\\react-navigation\\core\\useDescriptors.js)
+  useNavigationBuilder (packages\\expo-router\\build\\react-navigation\\core\\useNavigationBuilder.js)
+  Content (packages\\expo-router\\build\\ExpoRoot.js)
+  ContextNavigator (packages\\expo-router\\build\\ExpoRoot.js)
+  ExpoRoot (packages\\expo-router\\build\\ExpoRoot.js)
+  App (packages\\expo-router\\build\\qualified-entry.js)
+  WithDevTools (packages\\expo\\src\\launch\\withDevTools.web.tsx)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  console-error-string
 
 Code: index.tsx
    95 |         title="console.error(string)"
@@ -198,7 +408,7 @@ Code: index.tsx
    99 |       />
   100 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:97:19) 
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:97:19)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -211,9 +421,9 @@ Code: index.tsx
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
   App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:94:7)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+        `.trim()
+      );
+    }
   });
 
   test('prints console.warn strings without stack traces', async ({ page }) => {
@@ -229,14 +439,22 @@ Call Stack
 
 async function expectOutput(output: { all: string }, expectedConsoleOutput: string) {
   await expect
-    .poll(() => stripVTControlCharacters(output.all), { timeout: 30_000 })
-    .toContain(expectedConsoleOutput);
+    .poll(() => normalizeConsoleOutput(output.all), { timeout: 30_000 })
+    .toContain(normalizeConsoleOutput(expectedConsoleOutput));
 }
 
 function expectNoStackTrace(output: { all: string }) {
-  const terminalOutput = stripVTControlCharacters(output.all);
+  const terminalOutput = normalizeConsoleOutput(output.all);
   // `http://localhost:8081/apps/router-e2e` would mean an unsymbolicated stack trace leaked.
   expect(terminalOutput).not.toContain('http://localhost:8081/apps/router-e2e');
   // `apps/router-e2e/__e2e__/06-errors/app/index.tsx` would mean a symbolicated stack trace leaked.
   expect(terminalOutput).not.toContain('apps/router-e2e/__e2e__/06-errors/app/index.tsx');
+  // `apps\router-e2e\__e2e__\06-errors\app\index.tsx` would mean a symbolicated stack trace leaked.
+  expect(terminalOutput).not.toContain('apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx');
+}
+
+function normalizeConsoleOutput(output: string) {
+  return stripVTControlCharacters(output)
+    // Remove trailing whitespace from each line.
+    .replace(/[ \t]+$/gm, '');
 }
