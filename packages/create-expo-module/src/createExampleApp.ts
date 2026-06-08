@@ -41,35 +41,16 @@ export async function createExampleApp(
     // Pin the example template to the same SDK as the module template (derived from the CLI's own
     // version), so `create-expo-module@sdk-XX` scaffolds an SDK XX example rather than always using
     // `latest`. Fall back to `latest` when the SDK can't be determined or its template isn't published.
-    const templateVersion = env.EXPO_BETA
-      ? 'next'
-      : getTemplateDistTag(require('../package.json').version);
-
-    const initExampleApp = async (templateVersion: string): Promise<void> => {
-      const template = `expo-template-blank-typescript@${templateVersion}`;
-      debug(`Using example template: ${template}`);
-      const command = createCommand(packageManager, exampleProjectSlug, template);
-
-      try {
-        await spawnAsync(packageManager, command, {
-          cwd: targetDir,
-        });
-      } catch (error: any) {
-        throw new Error(
-          `${command.join(' ')} failed with exit code: ${error?.status}.\n\nError stack:\n${error?.stderr}`
-        );
-      }
-    };
+    const distTag = env.EXPO_BETA ? 'next' : getTemplateDistTag(require('../package.json').version);
 
     try {
-      await initExampleApp(templateVersion);
+      await initExampleApp(packageManager, exampleProjectSlug, targetDir, distTag);
     } catch (error: any) {
-      if (templateVersion !== 'latest' && templateVersion !== 'next') {
-        debug(`Failed to use the "${templateVersion}" example template, falling back to "latest".`);
-        await initExampleApp('latest');
-      } else {
+      if (env.EXPO_BETA || distTag === 'latest') {
         throw error;
       }
+      debug(`Failed to use the "${distTag}" example template, falling back to "latest".`);
+      await initExampleApp(packageManager, exampleProjectSlug, targetDir, 'latest');
     }
 
     step.succeed('Initialized the example app');
@@ -122,6 +103,30 @@ async function installExpoUI(exampleAppPath: string): Promise<void> {
     cwd: exampleAppPath,
     stdio: ['ignore', 'ignore', 'pipe'],
   });
+}
+
+/**
+ * Initializes the example app from `expo-template-blank-typescript` at the given dist-tag.
+ */
+async function initExampleApp(
+  packageManager: PackageManagerName,
+  exampleProjectSlug: string,
+  targetDir: string,
+  distTag: string
+): Promise<void> {
+  const template = `expo-template-blank-typescript@${distTag}`;
+  debug(`Using example template: ${template}`);
+  const command = createCommand(packageManager, exampleProjectSlug, template);
+
+  try {
+    await spawnAsync(packageManager, command, {
+      cwd: targetDir,
+    });
+  } catch (error: any) {
+    throw new Error(
+      `${command.join(' ')} failed with exit code: ${error?.status}.\n\nError stack:\n${error?.stderr}`
+    );
+  }
 }
 
 function createCommand(
