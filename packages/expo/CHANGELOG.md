@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix iOS build against React Native 0.87+ where the legacy architecture (bridge) APIs were removed, by guarding the bridge-based `RCTRootViewFactoryConfiguration` setup behind `RCT_REMOVE_LEGACY_ARCH`. ([#46641](https://github.com/expo/expo/pull/46641) by [@zoontek](https://github.com/zoontek))
+- Fix iOS build against React Native 0.87+ by dropping the legacy architecture (bridge) `RCTRootViewFactoryConfiguration` setup, whose APIs were removed in RN 0.87+ and were already unused since the old architecture was dropped in SDK 55. ([#46641](https://github.com/expo/expo/pull/46641) by [@zoontek](https://github.com/zoontek))
 - Include JavaScript and React component stacks in web dev server error logs. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Decompress `gzip` / `br` / `zstd` `expo/fetch` responses on Android even when the caller sets their own `Accept-Encoding` header. ([#46398](https://github.com/expo/expo/pull/46398) by [@zoontek](https://github.com/zoontek))
 - Fix `bodyUsed` leaking across siblings when fetch Response is cloned twice ([#46397](https://github.com/expo/expo/pull/46397) by [@zoontek](https://github.com/zoontek))

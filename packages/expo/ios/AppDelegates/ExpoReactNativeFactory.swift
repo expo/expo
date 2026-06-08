@@ -39,52 +39,10 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       return weakDelegate?.bundleURL()
     }
 
-#if RCT_REMOVE_LEGACY_ARCH
-    // React Native 0.87+ removed the legacy architecture, so the New Architecture is always enabled
-    // and the bridge-based configuration below no longer exists on the delegate.
     let configuration = RCTRootViewFactoryConfiguration(
       bundleURLBlock: bundleUrlBlock,
       newArchEnabled: true
     )
-#else
-    let configuration = RCTRootViewFactoryConfiguration(
-      bundleURLBlock: bundleUrlBlock,
-      newArchEnabled: weakDelegate.newArchEnabled()
-    )
-
-    configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
-      return weakDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
-    }
-
-    configuration.createBridgeWithDelegate = { delegate, launchOptions in
-      weakDelegate.createBridge(with: delegate, launchOptions: launchOptions)
-    }
-
-    // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
-    configuration.sourceURLForBridge = nil
-
-    configuration.loadSourceForBridgeWithProgress = { bridge, onProgress, onComplete in
-      weakDelegate.loadSource(for: bridge, onProgress: onProgress, onComplete: onComplete)
-    }
-
-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraModules(for:))) {
-      configuration.extraModulesForBridge = { bridge in
-        weakDelegate.extraModules(for: bridge)
-      }
-    }
-
-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraLazyModuleClasses(for:))) {
-      configuration.extraLazyModuleClassesForBridge = { bridge in
-        weakDelegate.extraLazyModuleClasses(for: bridge)
-      }
-    }
-
-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.bridge(_:didNotFindModule:))) {
-      configuration.bridgeDidNotFindModule = { bridge, moduleName in
-        weakDelegate.bridge(bridge, didNotFindModule: moduleName)
-      }
-    }
-#endif
 
     configuration.jsRuntimeConfiguratorDelegate = delegate
 

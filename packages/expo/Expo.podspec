@@ -89,17 +89,8 @@ Pod::Spec.new do |s|
       # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
     ])
   end
-
-  # React Native 0.87+ removed the legacy architecture APIs. RN guards them with `RCT_REMOVE_LEGACY_ARCH`
-  # but only defines it for ObjC/C++, so we mirror the macro for Swift to stop referencing removed APIs.
-  swift_compilation_conditions = ['$(inherited)']
-  if reactNativeTargetVersion >= 87
-    swift_compilation_conditions << 'RCT_REMOVE_LEGACY_ARCH'
-  end
-
   s.pod_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
-    'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => swift_compilation_conditions.join(' '),
   }
   s.user_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => [
