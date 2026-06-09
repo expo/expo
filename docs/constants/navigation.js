@@ -20,6 +20,7 @@ const homeDirectories = [
   'deploy',
   'review',
   'monitoring',
+  'agents',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'additional-resources'];
