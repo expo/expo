@@ -36,11 +36,12 @@ async function writeMinimalWebTemplate(templateDir: string) {
 describe('getTemplateDistTag', () => {
   it('maps an SDK-aligned version to its `sdk-<major>` tag', () => {
     expect(getTemplateDistTag('56.0.3')).toBe('sdk-56');
-    expect(getTemplateDistTag('54.0.45')).toBe('sdk-54');
-    expect(getTemplateDistTag('50.0.0')).toBe('sdk-50');
+    expect(getTemplateDistTag('57.0.0')).toBe('sdk-57');
+    expect(getTemplateDistTag('60.1.2')).toBe('sdk-60');
   });
 
   it('falls back to `latest` for versions from the old, non-SDK-aligned scheme', () => {
+    expect(getTemplateDistTag('2.1.7')).toBe('latest');
     expect(getTemplateDistTag('1.0.15')).toBe('latest');
     expect(getTemplateDistTag('0.5.0')).toBe('latest');
   });
