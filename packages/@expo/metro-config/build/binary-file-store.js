@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileStore = void 0;
 const FileStore_1 = __importDefault(require("@expo/metro/metro-cache/stores/FileStore"));
-const msgpackr_1 = require("msgpackr");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
+const serializer_1 = require("./binary-file-store/serializer");
 const file_store_1 = require("./file-store");
 const { pid } = process;
 const debug = require('debug')('expo:metro:cache');
@@ -35,12 +35,6 @@ const getTmpName = (name) => `.tmp${pid}_${name}`;
 class BinaryFileStore extends FileStore_1.default {
     #root;
     #prepare;
-    #packr = new msgpackr_1.Packr({
-        useRecords: true,
-        moreTypes: true,
-        // NOTE(@kitten): Experimentally validated to help performance with our cache file format
-        bundleStrings: true,
-    });
     constructor(options) {
         super(options);
         this.#root = node_path_1.default.resolve(options.root);
@@ -64,7 +58,7 @@ class BinaryFileStore extends FileStore_1.default {
             throw err;
         }
         try {
-            return this.#packr.decode(data);
+            return (0, serializer_1.decode)(data);
         }
         catch (err) {
             node_fs_1.default.promises.unlink(filePath).catch(() => { });
@@ -77,7 +71,7 @@ class BinaryFileStore extends FileStore_1.default {
             debug('Skipping caching for CSS file:', value.path);
             return;
         }
-        const buffer = this.#packr.encode(value);
+        const buffer = (0, serializer_1.encode)(value);
         await this.prepare();
         const fileDir = this.#getFileDir(key);
         const fileName = this.#getFileName(key);

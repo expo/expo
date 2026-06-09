@@ -486,6 +486,18 @@ internal struct AccessibilityValueModifier: ViewModifier, Record {
   }
 }
 
+internal struct AccessibilityInputLabelsModifier: ViewModifier, Record {
+  @Field var inputLabels: [String]?
+
+  func body(content: Content) -> some View {
+    if let inputLabels = inputLabels {
+      content.accessibilityInputLabels(inputLabels.map { Text($0) })
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AccessibilityIdentifierModifier: ViewModifier, Record {
   @Field var identifier: String?
 
@@ -1562,6 +1574,10 @@ extension ViewModifierRegistry {
 
     register("accessibilityValue") { params, appContext, _ in
       return try AccessibilityValueModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityInputLabels") { params, appContext, _ in
+      return try AccessibilityInputLabelsModifier(from: params, appContext: appContext)
     }
 
     register("accessibilityIdentifier") { params, appContext, _ in

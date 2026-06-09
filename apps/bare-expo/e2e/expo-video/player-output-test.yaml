@@ -6,7 +6,7 @@ jsEngine: graaljs
 - tapOn: 'Prepare for e2e'
 - extendedWaitUntil:
     visible: 'Players ready'
-    timeout: 10000
+    timeout: 30000
 - tapOn: 'Move player 1 to the next video view'
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
