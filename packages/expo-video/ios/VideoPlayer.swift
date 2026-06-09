@@ -270,6 +270,56 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
+  /**
+   * Reloads the current source on the existing `AVPlayer`, preserving the playhead and play state.
+   * iOS can tear down the decode pipeline while the app is backgrounded or when the system resets
+   * media services, leaving the `AVPlayerItem` in a `.failed` state. A failed item makes
+   * `AVPlayerViewController` render its broken-playback placeholder, so we rebuild the item to recover.
+   */
+  func reloadCurrentSource() {
+    guard let videoSource = (ref.currentItem as? VideoPlayerItem)?.videoSource else {
+      return
+    }
+
+    let resumeTime = ref.currentTime().seconds
+    let wasPlaying = isPlaying
+
+    Task { [weak self] in
+      guard let self else {
+        return
+      }
+
+      // `replaceCurrentItem` re-applies the stored `currentTime` once the new item finishes loading.
+      if resumeTime.isFinite && resumeTime > 0 {
+        self.dangerousPropertiesStore.currentTime = resumeTime
+      }
+
+      do {
+        try await self.replaceCurrentItem(with: videoSource)
+      } catch {
+        log.warn("[expo-video] Failed to reload the video source while recovering a failed player: \(error.localizedDescription)")
+        return
+      }
+
+      if wasPlaying {
+        await MainActor.run {
+          self.ref.play()
+        }
+      }
+    }
+  }
+
+  /**
+   * Reloads the current source only when the player or its current item have entered the `.failed`
+   * state. Used on app foreground to clear the broken-playback placeholder without disrupting
+   * players that are still healthy.
+   */
+  func reloadIfFailed() {
+    if ref.status == .failed || ref.currentItem?.status == .failed {
+      reloadCurrentSource()
+    }
+  }
+
   private func clearCurrentItem() {
     videoSourceLoader.cancelCurrentTask()
 
