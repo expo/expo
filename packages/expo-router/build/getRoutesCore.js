@@ -238,6 +238,15 @@ function getDirectoryTree(contextModule, options) {
                 else {
                     routeModule = contextModule(filePath);
                 }
+                // See: expo/src/async-require/asyncRequireModule.ts
+                // The "lazy" async require function returns  a thenable that may carry
+                // a raw `_result` value that's either a promise or the synchronously resolved module
+                if (importMode === 'lazy' || importMode === 'lazy-once') {
+                    routeModule =
+                        '_result' in routeModule && routeModule._result != null
+                            ? routeModule._result
+                            : routeModule;
+                }
                 if (process.env.NODE_ENV === 'development' && importMode === 'sync') {
                     // In development mode, when async routes are disabled, add some extra error handling to improve the developer experience.
                     // This can be useful when you accidentally use an async function in a route file for the default export.
