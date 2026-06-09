@@ -1,7 +1,7 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import type { SymbolicatorConfigT } from '@expo/metro/metro-config';
-import { URL } from 'node:url';
 import { isAbsolute } from 'node:path';
+import { URL } from 'node:url';
 
 import { toPosixPath } from './utils/filePath';
 
