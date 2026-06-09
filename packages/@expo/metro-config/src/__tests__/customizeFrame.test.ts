@@ -60,12 +60,7 @@ describe(getDefaultCustomizeFrame, () => {
 
   it('collapses node_modules frames with Windows separators', () => {
     jest.isolateModules(() => {
-      const path = jest.requireActual<typeof import('node:path')>('node:path');
-
-      jest.doMock('node:path', () => ({
-        __esModule: true,
-        default: { ...path, sep: '\\' },
-      }));
+      mockWindowsPath();
 
       const { getDefaultCustomizeFrame } =
         require('../customizeFrame') as typeof import('../customizeFrame');
@@ -93,21 +88,41 @@ describe(getDefaultCustomizeFrame, () => {
     'D:/Users/app/src/index.tsx',
     'K:\\Users\\app\\src\\index.tsx',
   ])('does not treat Windows absolute path %s as a URL', (file) => {
-    const customizeFrame = getDefaultCustomizeFrame();
+    jest.isolateModules(() => {
+      mockWindowsPath();
 
-    expect(
-      customizeFrame({
+      const { getDefaultCustomizeFrame } =
+        require('../customizeFrame') as typeof import('../customizeFrame');
+      const customizeFrame = getDefaultCustomizeFrame();
+
+      expect(
+        customizeFrame({
+          file,
+          lineNumber: 10,
+          column: 20,
+          methodName: 'render',
+        })
+      ).toEqual({
         file,
         lineNumber: 10,
         column: 20,
         methodName: 'render',
-      })
-    ).toEqual({
-      file,
-      lineNumber: 10,
-      column: 20,
-      methodName: 'render',
-      collapse: false,
+        collapse: false,
+      });
     });
   });
 });
+
+function mockWindowsPath() {
+  const path = jest.requireActual<typeof import('node:path')>('node:path');
+  const windowsPath = {
+    __esModule: true,
+    ...path,
+    default: { ...path, sep: '\\', isAbsolute: path.win32.isAbsolute },
+    sep: '\\',
+    isAbsolute: path.win32.isAbsolute,
+  };
+
+  jest.doMock('node:path', () => windowsPath);
+  jest.doMock('path', () => windowsPath);
+}
