@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Bump to `@expo/ws-tunnel@^2.0.0` ([#46696](https://github.com/expo/expo/pull/46696) by [@kitten](https://github.com/kitten))
+
 ## 56.1.14 — 2026-06-05
 
 ### 🐛 Bug fixes
