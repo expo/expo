@@ -331,17 +331,13 @@ export function parseLogBoxLog(args: any[]): {
     error = new Error(message);
   }
 
-  // Use the official stack from componentDidCatch
-  if ('componentStack' in error) {
-    // @ts-expect-error
-    error.stack = error.componentStack;
-  } else {
-    // Try to capture owner stack now if missing.
-    error.stack = React.captureOwnerStack() || undefined;
-  }
+  const componentStack =
+    'componentStack' in error && typeof error.componentStack === 'string'
+      ? error.componentStack
+      : React.captureOwnerStack() || undefined;
 
   return {
-    componentStack: parseErrorStack(error.stack ?? ''),
+    componentStack: parseErrorStack(componentStack ?? ''),
     category: error.message,
     message: {
       content: message,

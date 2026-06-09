@@ -1,6 +1,7 @@
 import type { EventSubscription } from 'expo-modules-core';
 import type { ExpoWidgetsEvents, NativeLiveActivity, NativeLiveActivityFactory, NativeWidgetObject } from './Widgets.types';
 declare const ExpoWidgetsModule: {
+    widgetsDirectory: string;
     reloadAllWidgets(): void;
     Widget: typeof NativeWidgetObject;
     LiveActivityFactory: typeof NativeLiveActivityFactory;

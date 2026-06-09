@@ -9,6 +9,7 @@ import { Divider } from '@/components/Divider';
 import { GlobalAttributesSection } from '@/components/GlobalAttributesSection';
 import { JSAnimation } from '@/components/JSAnimation';
 import { LogEventsSection } from '@/components/LogEventsSection';
+import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
 import { useTheme } from '@/utils/theme';
 
 export default function Debug() {
@@ -29,6 +30,8 @@ export default function Debug() {
       contentContainerStyle={styles.container}>
       <LogEventsSection />
       <Divider />
+      <NetworkRequestObserverSection />
+      <Divider />
       <CrashReportsSection />
       {typeof AppMetrics.triggerCrash === 'function' ? <Divider /> : null}
       <GlobalAttributesSection />
@@ -41,7 +44,15 @@ export default function Debug() {
       {showAnimation && <JSAnimation />}
       <Button
         title="Log main session to console"
-        onPress={() => AppMetrics.getMainSession().then(JSON.stringify).then(console.log)}
+        onPress={async () => {
+          const session = await AppMetrics.getMainSession();
+
+          if (session) {
+            console.log(JSON.stringify(session, null, 2));
+          } else {
+            console.error('Main session is null');
+          }
+        }}
         theme="secondary"
       />
     </ScrollView>

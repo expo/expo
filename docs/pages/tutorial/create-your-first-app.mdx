@@ -50,19 +50,53 @@ This tutorial assumes you are familiar with TypeScript and React. If you are not
 We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. It is a command-line tool to create a new React Native project. Run the following command in your terminal:
 
 <Terminal
-  cmd={[
-    '# Create a project named StickerSmash',
-    '$ npx create-expo-app@latest StickerSmash',
-    '',
-    '# Navigate to the project directory',
-    '$ cd StickerSmash',
-  ]}
-  cmdCopy="npx create-expo-app@latest StickerSmash && cd StickerSmash"
+  cmd={{
+    npm: [
+      '# Create a project named StickerSmash',
+      '$ npx create-expo-app@latest StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    yarn: [
+      '# Create a project named StickerSmash',
+      '$ yarn create expo-app StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    pnpm: [
+      '# Create a project named StickerSmash',
+      '$ pnpm create expo-app StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    bun: [
+      '# Create a project named StickerSmash',
+      '$ bun create expo StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+  }}
 />
 
-This command will create a new project directory named StickerSmash, using the [default](/more/create-expo/#--template) template. This template has essential boilerplate code and libraries needed to build our app, including Expo Router. We'll continue to add more libraries throughout this tutorial as needed.
+> **info** `create-expo-app@latest` currently asks to select an Expo SDK template. This tutorial is designed for SDK 54, so make sure to select the SDK 54 template.
 
-> **info** `create-expo-app@latest` currently creates an SDK 54 project. This tutorial is designed for SDK 54, so no `--template` flag is needed.
+This command will create a new project directory named StickerSmash, using the [SDK 54's default](/more/create-expo/#--template) template. This template has essential boilerplate code and libraries needed to build our app, including Expo Router and allows us to test our app with Expo Go installed on our devices. We'll continue to add more libraries throughout this tutorial as needed.
 
 <Collapsible summary="Benefits of using the default template">
 
@@ -100,7 +134,14 @@ After downloading the archive:
 
 In this tutorial, we'll build our app from scratch and understand the fundamentals of adding a file-based navigation. Let's run the `reset-project` script to remove the boilerplate code:
 
-<Terminal cmd={['$ npm run reset-project']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run reset-project'],
+    yarn: ['$ yarn run reset-project'],
+    pnpm: ['$ pnpm run reset-project'],
+    bun: ['$ bun run reset-project'],
+  }}
+/>
 
 After running the above command, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **app** directory. The previous files from **app** and other directories (**components**, **constants**, and **hooks** — containing boilerplate code) are moved inside the **app-example** directory by the script. We'll create our own directories and component files as we go along.
 
@@ -118,7 +159,14 @@ After running the above command, there are two files (**index.tsx** and **\_layo
 
 In the project directory, run the following command to start the [development server](/more/glossary-of-terms/#development-server) from the terminal:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 After running the above command:
 

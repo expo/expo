@@ -11,7 +11,14 @@ On native, you can use the [`uri-scheme`](https://www.npmjs.com/package/uri-sche
 
 For example, if you want to launch the Expo Go app on iOS to the `/form-sheet` route, run:
 
-<Terminal cmd={['$ npx uri-scheme open exp://192.168.87.39:19000/--/form-sheet --ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx uri-scheme open exp://192.168.87.39:19000/--/form-sheet --ios'],
+    yarn: ['$ yarn dlx uri-scheme open exp://192.168.87.39:19000/--/form-sheet --ios'],
+    pnpm: ['$ pnpm dlx uri-scheme open exp://192.168.87.39:19000/--/form-sheet --ios'],
+    bun: ['$ bunx uri-scheme open exp://192.168.87.39:19000/--/form-sheet --ios'],
+  }}
+/>
 
 > Replace `192.168.87.39:19000` with the IP address shown when running `npx expo start`.
 

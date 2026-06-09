@@ -1,3 +1,5 @@
+import Foundation
+
 final class AppStartupMarkers: Sendable {
   let loadTime: TimeInterval = AppLoadTimeProvider.getLoadTime()
 
@@ -6,6 +8,14 @@ final class AppStartupMarkers: Sendable {
 
   @AppMetricsActor
   var finishedLaunching: TimeInterval?
+
+  /**
+   Wall-clock companion to `finishedLaunching`. `NetworkRequest.timings.fetchStart` uses `Date`
+   (not `CACurrentMediaTime`) so summarizing requests over the launch window needs an anchor in
+   the same domain.
+   */
+  @AppMetricsActor
+  var finishedLaunchingDate: Date?
 
   @AppMetricsActor
   var timeToFirstRender: TimeInterval?

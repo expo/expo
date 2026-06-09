@@ -98,7 +98,7 @@ fun ServerUrlInput(
       TextInput(
         placeholder = {
           NewText(
-            text = "exp://",
+            text = "http://",
             style = NewAppTheme.font.md,
             color = NewAppTheme.colors.text.secondary
           )

@@ -31,12 +31,16 @@ import {
   rotationEffect,
   offset,
   listRowSeparator,
+  listRowSpacing,
   border,
   onTapGesture,
   onLongPressGesture,
   onAppear,
   onDisappear,
   accessibilityLabel,
+  accessibilityIdentifier,
+  accessibilityHidden,
+  accessibilityInputLabels,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -64,6 +68,7 @@ import {
   pickerStyle,
   tag,
   font,
+  dynamicTypeSize,
   lineLimit,
   contentShape,
   shapes,
@@ -107,6 +112,7 @@ export default function ModifiersScreen() {
   const [enabledSelection, setEnabledSelection] = useState(false);
 
   const [lineSpacingValue, setLineSpaceingValue] = useState(0);
+  const [listRowSpacingValue, setListRowSpacingValue] = useState(0);
 
   const [enableRowInsets, setEnableRowInsets] = useState({
     top: false,
@@ -138,6 +144,7 @@ export default function ModifiersScreen() {
         <Form
           modifiers={[
             scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
+            listRowSpacing(listRowSpacingValue),
             background(backgroundFormColor),
             frame({
               height: dimensions.height - safeAreaInsets.top - safeAreaInsets.bottom,
@@ -227,6 +234,18 @@ export default function ModifiersScreen() {
             <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
           </Section>
 
+          <Section title="List row spacing">
+            <Text>Spacing row one</Text>
+            <Text>Spacing row two</Text>
+            <Text>Spacing row three</Text>
+            <Slider
+              min={0}
+              max={30}
+              value={listRowSpacingValue}
+              onValueChange={setListRowSpacingValue}
+            />
+          </Section>
+
           {/* Text modifiers */}
           <Section title="Text modifier">
             <Text
@@ -284,6 +303,24 @@ export default function ModifiersScreen() {
               </Text>
               <Text modifiers={[font({ textStyle: 'body' })]}>body scales</Text>
               <Text modifiers={[font({ textStyle: 'caption' })]}>caption scales</Text>
+            </VStack>
+
+            {/* font on concatenated Text runs scales + keeps weight */}
+            <Text>
+              <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Big </Text>
+              <Text modifiers={[font({ textStyle: 'caption' })]}>and small, both scale</Text>
+            </Text>
+
+            {/* dynamicTypeSize: clamp how far Dynamic Type scales */}
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>dynamicTypeSize clamp</Text>
+              <Text modifiers={[font({ textStyle: 'body' })]}>body, unbounded</Text>
+              <Text modifiers={[font({ textStyle: 'body' }), dynamicTypeSize({ max: 'large' })]}>
+                body, capped at large
+              </Text>
+              <Text modifiers={[font({ textStyle: 'body' }), dynamicTypeSize('xSmall')]}>
+                body, fixed at xSmall
+              </Text>
             </VStack>
 
             <HStack spacing={20}>
@@ -621,6 +658,29 @@ export default function ModifiersScreen() {
               </HStack>
             )}
 
+            {/* accessibilityHidden: decorative SF Symbol skipped by VoiceOver */}
+            <HStack spacing={6}>
+              <Image
+                systemName="exclamationmark.triangle"
+                size={17}
+                modifiers={[accessibilityHidden(true)]}
+              />
+              <Text>Something went wrong</Text>
+            </HStack>
+
+            {/* accessibilityInputLabels: Voice Control can target this by spoken phrase */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#1ABC9C'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityInputLabels(['Hang up', 'End call']),
+                ]}>
+                End
+              </Text>
+            </HStack>
+
             <Text
               modifiers={[
                 background('#E67E22'),
@@ -650,6 +710,7 @@ export default function ModifiersScreen() {
                 foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 border({ color: '#9B59B6', width: 1 }),
                 accessibilityLabel('Complex styled card with multiple effects'),
+                accessibilityIdentifier('complex-styled-card'),
                 onTapGesture(() => alert('Complex card with multiple modifiers tapped!')),
               ]}>
               ✨ Complex: All effects combined!

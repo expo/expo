@@ -19,9 +19,16 @@ We recommend starting with the default project created by `create-expo-app`. The
 
 To create a new project, run the following command:
 
-<Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-56']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
+    bun: ['$ bun create expo --template default@sdk-56'],
+  }}
+/>
 
-> **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 55 project. If you plan to use Expo Go on a physical device, use an SDK 55 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project. You can also choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+> **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project. You can also choose a different template by adding the [`--template` option](/more/create-expo/#--template).
 
 ## Next step
 

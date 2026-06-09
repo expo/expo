@@ -30,9 +30,6 @@ export type ObservableState<T> = SharedObject & {
      *     'worklet';
      *     console.log('changed to', value);
      *   };
-     *   return () => {
-     *     state.onChange = null;
-     *   };
      * }, []);
      * ```
      */

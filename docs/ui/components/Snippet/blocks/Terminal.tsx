@@ -22,7 +22,7 @@ import {
 } from './packageManagerStore';
 import type { PackageManagerKey } from './packageManagerStore';
 
-type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
+export type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
 
 type TerminalProps = {
   cmd: string[] | PackageManagerCommandSet;

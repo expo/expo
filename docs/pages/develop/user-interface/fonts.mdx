@@ -70,7 +70,14 @@ To embed a font in a project, follow the steps below:
 
 After adding a custom font file in your project, install the `expo-font` library.
 
-<Terminal cmd={['$ npx expo install expo-font']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font'],
+    yarn: ['$ yarn expo install expo-font'],
+    pnpm: ['$ pnpm expo install expo-font'],
+    bun: ['$ bun expo install expo-font'],
+  }}
+/>
 
 </Step>
 
@@ -179,7 +186,14 @@ It works with all Expo SDK versions and with Expo Go. To load a font in a projec
 
 After adding a custom font file in your project, install the `expo-font` and `expo-splash-screen` libraries.
 
-<Terminal cmd={['$ npx expo install expo-font expo-splash-screen']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font expo-splash-screen'],
+    yarn: ['$ yarn expo install expo-font expo-splash-screen'],
+    pnpm: ['$ pnpm expo install expo-font expo-splash-screen'],
+    bun: ['$ bun expo install expo-font expo-splash-screen'],
+  }}
+/>
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides `SplashScreen` component that you can use to prevent rendering the app until the font is loaded and ready.
 
@@ -252,7 +266,14 @@ Two ways to use a Google Font in your project:
 
 Install the font package. For example, to use Inter Black font, install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
 
-<Terminal cmd={['$ npx expo install expo-font @expo-google-fonts/inter']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font @expo-google-fonts/inter'],
+    yarn: ['$ yarn expo install expo-font @expo-google-fonts/inter'],
+    pnpm: ['$ pnpm expo install expo-font @expo-google-fonts/inter'],
+    bun: ['$ bun expo install expo-font @expo-google-fonts/inter'],
+  }}
+/>
 
 </Step>
 
@@ -313,7 +334,14 @@ Each Google Fonts package provides the `useFonts` hook to load the fonts asynchr
 
 Install the Google Fonts package, `expo-font` and `expo-splash-screen` libraries.
 
-<Terminal cmd={['$ npx expo install @expo-google-fonts/inter expo-font expo-splash-screen']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    yarn: ['$ yarn expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    pnpm: ['$ pnpm expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    bun: ['$ bun expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+  }}
+/>
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides `SplashScreen` component that you can use to prevent rendering the app until the font is loaded and ready.
 

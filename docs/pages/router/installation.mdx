@@ -26,9 +26,20 @@ Follow the steps below if you have an existing project and want to add Expo Rout
 You'll need to install the following dependencies:
 
 <Terminal
-  cmd={[
-    '$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+    ],
+    yarn: [
+      '$ yarn expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+    ],
+    pnpm: [
+      '$ pnpm expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+    ],
+    bun: [
+      '$ bun expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+    ],
+  }}
 />
 
 The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
@@ -101,7 +112,14 @@ Add a deep linking `scheme` and enable [typed routes](/router/reference/typed-ro
 
 If you are developing your app for web, install the following dependencies:
 
-<Terminal cmd={['$ npx expo install react-native-web react-dom']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-native-web react-dom'],
+    yarn: ['$ yarn expo install react-native-web react-dom'],
+    pnpm: ['$ pnpm expo install react-native-web react-dom'],
+    bun: ['$ bun expo install react-native-web react-dom'],
+  }}
+/>
 
 Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro) support by adding the following to your [app config](/workflow/configuration/):
 
@@ -163,7 +181,14 @@ The `@/*` alias maps to the **src** directory in the above example.
 
 After updating the configuration, run the following command to clear the bundler cache:
 
-<Terminal cmd={['$ npx expo start --clear']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --clear'],
+    yarn: ['$ yarn expo start --clear'],
+    pnpm: ['$ pnpm expo start --clear'],
+    bun: ['$ bun expo start --clear'],
+  }}
+/>
 
 </Step>
 

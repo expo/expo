@@ -236,5 +236,6 @@ function mergeAssets(topLevel?: AssetInfo, routeLevel?: AssetInfo): AssetInfo {
   return {
     css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
     js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
+    favicon: topLevel?.favicon,
   };
 }

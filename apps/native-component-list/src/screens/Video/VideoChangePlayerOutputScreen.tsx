@@ -12,7 +12,10 @@ import TitledSwitch from '../../components/TitledSwitch';
 const playerFactory = (player: VideoPlayer) => {
   player.loop = true;
   player.muted = true;
-  player.play();
+
+  // Don't auto-play: on iOS the Maestro driver waits for the app to be idle before each interaction,
+  // and continuously playing video never lets the screen settle, so the e2e taps hang for minutes.
+  // The players still load and the flow seeks them to a fixed frame via "Prepare for e2e".
 };
 
 export default function VideoChangePlayerOutputScreen() {

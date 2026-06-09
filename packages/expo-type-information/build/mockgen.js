@@ -219,7 +219,11 @@ async function generateMocks(files, outputLanguage = 'javascript') {
 async function getAllExpoModulesInWorkingDirectory() {
     const files = fs_1.default.globSync(swiftFilesGlob);
     return (await Promise.all(files.map((file) => (0, typeInformation_1.getFileTypeInformation)({
-        input: { type: 'file', inputFileAbsolutePaths: [fs_1.default.realpathSync(file)] },
+        input: {
+            type: 'file',
+            inputFileAbsolutePaths: [fs_1.default.realpathSync(file)],
+        },
+        mapUnicodeCharacters: true,
     })))).filter((f) => f);
 }
 //# sourceMappingURL=mockgen.js.map
