@@ -720,8 +720,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     // [0] When ExpoModulesCore is built as separated framework/module,
     // we should explicitly load main bundle's `ExpoModulesProvider` class.
     let mainBundleNames = [
-      Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
-      Bundle.main.object(forInfoDictionaryKey: "CFBundleExecutable")
+      Bundle.main.infoDictionary?["CFBundleName"],
+      Bundle.main.infoDictionary?["CFBundleExecutable"]
     ].compactMap { $0 as? String }
 
     for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: mainBundleNames) {
@@ -771,11 +771,11 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   private static func swiftModuleName(from bundleName: String) -> String {
     let sanitized = bundleName
       .map { character in
-        character.isLetter || character.isNumber || character == "_" ? character : "_"
+        character.isASCII && (character.isLetter || character.isNumber) || character == "_" ? character : "_"
       }
 
     let moduleName = String(sanitized)
-    if let firstCharacter = moduleName.first, firstCharacter.isNumber {
+    if let firstCharacter = moduleName.first, firstCharacter.isASCII && firstCharacter.isNumber {
       return "_\(moduleName)"
     }
 

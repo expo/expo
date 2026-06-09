@@ -274,4 +274,19 @@ extension AppContextTests {
       ])
     }
   }
+
+  @Test
+  func `module provider class names sanitize non-ASCII bundle names to ASCII`() {
+    // Non-ASCII letters (e.g. accented) are not valid Swift identifier characters
+    // and must be replaced with `_` to match the sanitization in the autolinking generator.
+    let classNames = AppContext.moduleProviderClassNames(
+      withName: "ExpoModulesProvider",
+      bundleNames: ["Café"]
+    )
+
+    #expect(classNames == [
+      "Café.ExpoModulesProvider",
+      "Caf_.ExpoModulesProvider"
+    ])
+  }
 }
