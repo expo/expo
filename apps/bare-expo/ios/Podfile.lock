@@ -576,6 +576,10 @@ PODS:
   - ExpoModulesWorklets (56.0.13):
     - ExpoModulesCore
     - ExpoModulesJSI
+  - ExpoModulesWorklets/Tests (56.0.13):
+    - ExpoModulesCore
+    - ExpoModulesJSI
+    - ExpoModulesTestCore
   - ExpoModulesWorkletsAdapter (56.0.13):
     - ExpoModulesCore
     - ExpoModulesJSI
@@ -699,6 +703,8 @@ PODS:
     - ExpoModulesWorklets
     - React-RCTFabric
   - ExpoVideo (56.1.2):
+    - ExpoModulesCore
+  - ExpoVideo/Tests (56.1.2):
     - ExpoModulesCore
   - ExpoVideoDashSupportModule (1.0.0):
     - ExpoModulesCore
@@ -3399,6 +3405,7 @@ DEPENDENCIES:
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
+  - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
@@ -3423,6 +3430,7 @@ DEPENDENCIES:
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
+  - ExpoVideo/Tests (from `../../../packages/expo-video/ios`)
   - ExpoVideoDashSupportModule (from `../modules/expo-video-dash-support-module/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
@@ -3433,7 +3441,7 @@ DEPENDENCIES:
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - "FBLazyVector (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/Libraries/FBLazyVector`)"
   - "hermes-engine (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)"
-  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.6_@lottiefiles+dotlottie-react@0.10.1_react-dom@19.2.3_react@19_ca2798bec26a08eda51142ca007a288d/node_modules/lottie-react-native`)"
+  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.6_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_0b2f49cf1f42909bfeaecd8476473a16/node_modules/lottie-react-native`)"
   - "RCTDeprecation (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)"
   - "RCTRequired (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/Libraries/Required`)"
   - "RCTSwiftUI (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/ReactApple/RCTSwiftUI`)"
@@ -3809,7 +3817,7 @@ EXTERNAL SOURCES:
     :podspec: "../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v250829098.0.14
   lottie-react-native:
-    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.6_@lottiefiles+dotlottie-react@0.10.1_react-dom@19.2.3_react@19_ca2798bec26a08eda51142ca007a288d/node_modules/lottie-react-native"
+    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.6_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_0b2f49cf1f42909bfeaecd8476473a16/node_modules/lottie-react-native"
   RCTDeprecation:
     :path: "../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   RCTRequired:
@@ -4058,12 +4066,12 @@ SPEC CHECKSUMS:
   ExpoMaps: 4cf2ea2eb8d9369fbfa4cc613fe2932619624d59
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
   ExpoMeshGradient: baf62012104fd9c1719de67f88c69958abcd2ed1
-  ExpoModulesCore: 282743e45a8da9844fac713bdb14427d584b6d6e
+  ExpoModulesCore: 7ee5c9715b287b20ec9caa7f2577007597adf25a
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
   ExpoModulesTestCore: 768a9a2b0401e87090bc7280cdb0607ab4cad382
-  ExpoModulesWorklets: c755176116ae553ede2268ca6837c31eb4081f8a
+  ExpoModulesWorklets: 874ceeb92a8da1dfa32adf197aa65f926e74b9c5
   ExpoModulesWorkletsAdapter: 678c6033e27c044148e7eb0ca192b13dcdf87ce9
-  ExpoNetwork: c9651806f67c5fe93d221f9b4533c98ae6833bb9
+  ExpoNetwork: d244aa406eb0aba7e36e5f009a061b2744ab11d7
   ExpoNotifications: 4f6324955cea640a65f40c67a8e42505a6a514b7
   ExpoObserve: ebc1555f8538f65727dfe9208ae39a3111077d4f
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0
@@ -4082,7 +4090,7 @@ SPEC CHECKSUMS:
   ExpoTaskManager: 806c27d7d9425bd65795e443cfdd216f3178203a
   ExpoTrackingTransparency: a5117d608c3abd938cd40ebcaa2f00049b886a8c
   ExpoUI: 649b8cbcccd23277afa83bf0d065bc40906b7e3a
-  ExpoVideo: 8ebbbf65778c5f986d65fc17bb60b79e9d7624e6
+  ExpoVideo: 4ddc693e7539b16846c6a31841e06757713ff5fc
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 116c2563d2bd3a1e98326a267020e25fea8af79e
   ExpoWebBrowser: 6e3d90e3fe1952d21a8494872b1e1a485cd50e2f
