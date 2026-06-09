@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Return thenable with sync-bailout for async require calls ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+
 ## 56.0.9 — 2026-06-05
 
 _This version does not introduce any user-facing changes._

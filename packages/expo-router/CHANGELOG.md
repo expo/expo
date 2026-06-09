@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow async routes to rehydrate synchronously by carrying through preloaded modules preventing FOUC in production output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.2.9 — 2026-06-05

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Place static entries last in serialized HTML output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.1.14 — 2026-06-05
