@@ -3,6 +3,7 @@ import type { ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { ViewEvent } from '../../types';
+import { font, foregroundStyle } from '../modifiers';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
@@ -53,10 +54,15 @@ type TapEvent = ViewEvent<'onTap', object> & {
 type NativeImageProps = Omit<ImageProps, 'onPress'> | TapEvent;
 
 function transformNativeProps(props: ImageProps): NativeImageProps {
-  const { onPress, modifiers, ...restProps } = props;
+  const { onPress, modifiers, size, color, ...restProps } = props;
+  const allModifiers = [
+    ...(modifiers ?? []),
+    font({ size: size ?? 24 }),
+    ...(color != null ? [foregroundStyle(color)] : []),
+  ];
   return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    modifiers: allModifiers,
+    ...createViewModifierEventListener(allModifiers),
     ...restProps,
     ...(onPress ? { useTapGesture: true, onTap: () => onPress() } : null),
   };

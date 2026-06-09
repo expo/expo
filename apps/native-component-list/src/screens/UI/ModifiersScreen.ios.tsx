@@ -473,6 +473,29 @@ export default function ModifiersScreen() {
             </HStack>
             <Slider min={0} max={20} onValueChange={setLineSpaceingValue} />
           </Section>
+          {/* Image modifiers */}
+          <Section title="Image modifier">
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>
+                font text style on a symbol scales with Dynamic Type
+              </Text>
+              <HStack alignment="center" spacing={16}>
+                <Image systemName="bell.fill" />
+                <Image systemName="bell.fill" modifiers={[font({ textStyle: 'largeTitle' })]} />
+                <Image systemName="bell.fill" modifiers={[font({ textStyle: 'caption' })]} />
+              </HStack>
+            </VStack>
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>resizable symbol scales to its frame</Text>
+              <HStack alignment="center" spacing={16}>
+                <Image systemName="star.fill" size={24} />
+                <Image
+                  systemName="star.fill"
+                  modifiers={[resizable(), frame({ width: 64, height: 64 })]}
+                />
+              </HStack>
+            </VStack>
+          </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
             <Toggle
