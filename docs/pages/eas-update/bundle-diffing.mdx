@@ -22,13 +22,13 @@ Bundle diffing has two modes. Update-to-update patches deliver a diff between tw
 
 ### Enable update-to-update patches
 
-Update-to-update patches are enabled by default in SDK 56 and later. To opt out, set `updates.enableBsdiffPatchSupport` to `false` in your project's [app config](/workflow/configuration/). On SDK 55, set it to `true` to opt in.
+Update-to-update patches are enabled by default in SDK 56 and later. On SDK 55, set `updates.enableBsdiffPatchSupport` to `true` in your project's [app config](/workflow/configuration/) to opt in.
 
 ```json app.json
 {
   "expo": {
     "updates": {
-      "enableBsdiffPatchSupport": false
+      "enableBsdiffPatchSupport": true
     }
   }
 }
@@ -59,11 +59,7 @@ If you don't use EAS Build, you can upload an embedded bundle yourself. Point `-
 <Terminal
   cmd={[
     '$ eas update:embedded:upload --platform [platform] --bundle [path] --manifest [path] --channel [name]',
-    '',
-    '# Example',
-    '$ eas update:embedded:upload --platform android --bundle android/app/src/main/assets/index.android.bundle --manifest android/app/src/main/assets/app.manifest --channel production',
   ]}
-  cmdCopy="eas update:embedded:upload --platform [platform] --bundle [path] --manifest [path] --channel [name]"
 />
 
 ## Manage uploaded embedded bundles
@@ -74,27 +70,11 @@ List the embedded bundles registered for your project:
 
 View a single embedded bundle:
 
-<Terminal
-  cmd={[
-    '$ eas update:embedded:view [id]',
-    '',
-    '# Example',
-    '$ eas update:embedded:view a1b2c3d4-1234-4000-8000-000000000000',
-  ]}
-  cmdCopy="eas update:embedded:view [id]"
-/>
+<Terminal cmd={['$ eas update:embedded:view [id]']} />
 
 Delete an embedded bundle:
 
-<Terminal
-  cmd={[
-    '$ eas update:embedded:delete [id]',
-    '',
-    '# Example',
-    '$ eas update:embedded:delete a1b2c3d4-1234-4000-8000-000000000000',
-  ]}
-  cmdCopy="eas update:embedded:delete [id]"
-/>
+<Terminal cmd={['$ eas update:embedded:delete [id]']} />
 
 Deleting an unknown ID succeeds, so the command is safe to retry.
 
