@@ -305,11 +305,6 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
-  /**
-   * Reloads the current source only when the player or its current item have entered the `.failed`
-   * state. Used on app foreground to clear the broken-playback placeholder without disrupting
-   * players that are still healthy.
-   */
   func reloadIfFailed() {
     if ref.status == .failed || ref.currentItem?.status == .failed {
       reloadCurrentSource()
