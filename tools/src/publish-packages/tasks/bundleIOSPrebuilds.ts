@@ -111,7 +111,6 @@ const IOS_PREBUILD_PACKAGES = [
   'expo-media-library',
   'expo-modules-core',
   'expo-print',
-  'expo-sensors',
   'expo-ui',
   'expo-video',
 ];
