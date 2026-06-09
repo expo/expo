@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Vendor `msgpackr` dependency to remove `msgpackr-extract` postinstall warning ([#46676](https://github.com/expo/expo/pull/46676) by [@kitten](https://github.com/kitten))
+
 ## 56.0.13 — 2026-05-26
 
 ### 🐛 Bug fixes
