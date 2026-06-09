@@ -732,6 +732,16 @@ export const accessibilityValue = (value: string) =>
   createModifier('accessibilityValue', { value });
 
 /**
+ * Sets alternative spoken phrases that Voice Control uses to refer to the view.
+ * Each label is read as a `Text` element on iOS. For example, an "End" button
+ * might offer "Hang up" so users can trigger it by saying that phrase.
+ * @param inputLabels - The spoken phrases that select the view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityinputlabels(_:)).
+ */
+export const accessibilityInputLabels = (inputLabels: string[]) =>
+  createModifier('accessibilityInputLabels', { inputLabels });
+
+/**
  * Sets an accessibility identifier for the view.
  *
  * Unlike `accessibilityLabel`, this value is for UI testing and is not visible
@@ -742,6 +752,17 @@ export const accessibilityValue = (value: string) =>
  */
 export const accessibilityIdentifier = (identifier: string) =>
   createModifier('accessibilityIdentifier', { identifier });
+
+/**
+ * Marks the view as decoratively-named so VoiceOver and other assistive
+ * technologies skip it during element traversal. Useful for hero icons or
+ * presentational imagery that's already described by adjacent text.
+ *
+ * @param hidden - Whether the view should be hidden from accessibility. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityhidden(_:)).
+ */
+export const accessibilityHidden = (hidden: boolean = true) =>
+  createModifier('accessibilityHidden', { hidden });
 
 /**
  * Sets layout priority for the view.
@@ -1424,7 +1445,9 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
+  | ReturnType<typeof accessibilityInputLabels>
   | ReturnType<typeof accessibilityIdentifier>
+  | ReturnType<typeof accessibilityHidden>
   | ReturnType<typeof layoutPriority>
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>

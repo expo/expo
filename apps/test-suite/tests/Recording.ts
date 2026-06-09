@@ -9,7 +9,9 @@ import {
   AudioRecorder,
   AudioQuality,
   IOSOutputFormat,
+  RecordingOptions,
 } from 'expo-audio';
+import { File, Paths } from 'expo-file-system';
 import { isMatch } from 'lodash';
 import { Platform } from 'react-native';
 
@@ -19,6 +21,14 @@ import * as TestUtils from '../TestUtils';
 export const name = 'Recording';
 
 const defaultRecordingDurationMillis = 500;
+
+const recordAndStop = async (recorder: AudioRecorder) => {
+  recorder.record();
+  await waitFor(defaultRecordingDurationMillis);
+  await recorder.stop();
+};
+
+const normalizeFileUriForComparison = (uri: string) => uri.replace('file:///private/', 'file:///');
 
 const retryForStatus = (recorder: AudioRecorder, status: Partial<RecorderState>) =>
   asyncRetry(
@@ -237,6 +247,61 @@ export async function test(t) {
         }
         await recorder.stop();
       });
+
+      if (Platform.OS !== 'web') {
+        const recordWithOptionsAndExpectUri = async (
+          options: RecordingOptions,
+          expectedRootUri: string
+        ) => {
+          const currentRecorder = recorder!;
+          let recordingUri: string | null = null;
+
+          try {
+            await currentRecorder.prepareToRecordAsync(options);
+
+            recordingUri = currentRecorder.uri;
+            if (!recordingUri) {
+              throw new Error('Expected recorder.uri to be set after preparing a recording');
+            }
+            t.expect(recordingUri).toContain('file:///');
+            t.expect(
+              normalizeFileUriForComparison(recordingUri).startsWith(
+                normalizeFileUriForComparison(expectedRootUri)
+              )
+            ).toBe(true);
+
+            await recordAndStop(currentRecorder);
+
+            t.expect(new File(recordingUri).exists).toBe(true);
+          } finally {
+            if (recordingUri) {
+              const recordingFile = new File(recordingUri);
+              if (recordingFile.exists) {
+                recordingFile.delete();
+              }
+            }
+          }
+        };
+
+        t.it('stores recordings in the cache directory by default', async () => {
+          await recordWithOptionsAndExpectUri(
+            {
+              ...RecordingPresets.LOW_QUALITY,
+            },
+            Paths.cache.uri
+          );
+        });
+
+        t.it('stores recordings in the document directory when requested', async () => {
+          await recordWithOptionsAndExpectUri(
+            {
+              ...RecordingPresets.LOW_QUALITY,
+              directory: 'document',
+            },
+            Paths.document.uri
+          );
+        });
+      }
     });
   });
 }

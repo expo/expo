@@ -21,14 +21,52 @@ public protocol Record: Convertible {
   init(from: Dict, appContext: AppContext) throws
 
   /**
+   Reads the record's members off a `JavaScriptObject`. The `@Field`-based default goes through
+   reflection (`init()` + `update(withObject:)`); the `@Record` macro overrides it with a direct,
+   factory that reads each stored property by its declared type.
+   */
+  @JavaScriptActor
+  static func from(object: borrowing JavaScriptObject, appContext: AppContext) throws -> Self
+
+  /**
+   Reads the record's members from a `[String: Any]` dictionary. The `@Field`-based default goes
+   through reflection (`init()` + `update(withDict:)`); the `@Record` macro overrides it with a
+   direct, statically-typed factory.
+   */
+  static func from(dictionary: Dict, appContext: AppContext) throws -> Self
+
+  /**
    Converts the record back to the dictionary. Only members wrapped by `@Field` will be set in the dictionary.
    */
   func toDictionary(appContext: AppContext?) -> Dict
+
+  /**
+   Converts the record to a `JavaScriptObject`. The `@Field`-based default builds the object via
+   reflection; the `@Record` macro overrides it with a direct, statically-typed conversion.
+   */
+  @JavaScriptActor
+  func toObject(appContext: AppContext) throws -> JavaScriptObject
 }
 
-internal protocol RecordJavaScriptValueConvertible {
+/**
+ Adopted by record-like types that produce a `JavaScriptObject` directly but aren't themselves a
+ `Record` — currently just `FormattedRecord`. Lets `DynamicConvertibleType` take the direct
+ object-building path for them, same as for records.
+ */
+internal protocol RecordObjectConvertible {
   @JavaScriptActor
-  func toJSValue(appContext: AppContext) throws -> JavaScriptValue
+  func toObject(appContext: AppContext) throws -> JavaScriptObject
+}
+
+/**
+ Thrown by a synthesized record's factories when a required property is missing from the source.
+ Public because the `@Record`-generated code lives in user modules and references it directly.
+ The `@Field`-based path has its own internal `FieldRequiredException`.
+ */
+public final class RecordPropertyRequiredException: GenericException<String>, @unchecked Sendable {
+  override public var reason: String {
+    return "Value for property '\(param)' is required, got nil"
+  }
 }
 
 /**
@@ -37,7 +75,9 @@ internal protocol RecordJavaScriptValueConvertible {
 public extension Record {
   static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     if let value = value as? Dict {
-      return try Self(from: value, appContext: appContext)
+      // `from(dictionary:)` dispatches dynamically — reflection for `@Field` records, the
+      // synthesized factory for `@Record` ones — so both read correctly off a dictionary.
+      return try Self.from(dictionary: value, appContext: appContext)
     }
     // It's possible that the current implementation tries to convert a value that is already of the desired type.
     // Handle that gracefully instead of throwing an exception.
@@ -50,6 +90,22 @@ public extension Record {
   init(from dict: Dict, appContext: AppContext) throws {
     self.init()
     try update(withDict: dict, appContext: appContext)
+  }
+
+  @JavaScriptActor
+  static func from(object: borrowing JavaScriptObject, appContext: AppContext) throws -> Self {
+    // Reflection-based default for `@Field` records. The `@Record` macro synthesizes a direct,
+    // statically-typed override that takes precedence over this.
+    let record = Self()
+    try record.update(withObject: object, appContext: appContext)
+    return record
+  }
+
+  static func from(dictionary: Dict, appContext: AppContext) throws -> Self {
+    // Reflection-based default for `@Field` records. The `@Record` macro synthesizes a direct,
+    // statically-typed override that takes precedence over this. Delegates to `init(from:appContext:)`
+    // so any custom dictionary initializer a record provides still runs.
+    return try Self(from: dictionary, appContext: appContext)
   }
 
   func update(withDict dict: Dict, appContext: AppContext) throws {
@@ -107,7 +163,7 @@ public extension Record {
   }
 
   @JavaScriptActor
-  func toJSValue(appContext: AppContext) throws -> JavaScriptValue {
+  func toObject(appContext: AppContext) throws -> JavaScriptObject {
     let object = try appContext.runtime.createObject()
 
     for field in fieldsOf(self) {
@@ -117,7 +173,7 @@ public extension Record {
       let value = try recordFieldValueToJSValue(field.get(), dynamicType: field.fieldType, appContext: appContext)
       object.setProperty(key, value: value)
     }
-    return object.asValue()
+    return object
   }
 }
 

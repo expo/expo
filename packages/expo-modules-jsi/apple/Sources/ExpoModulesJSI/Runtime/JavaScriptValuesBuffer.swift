@@ -61,6 +61,17 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     return JavaScriptValue(runtime, bufferPointer[index])
   }
 
+  /// Returns a non-owning, non-copyable value borrowing the element at `index` for the zero-copy decode
+  /// path. It borrows the `jsi::Value` this buffer owns, so it is valid only while the buffer is alive
+  /// and must not be stored or escaped — see ``JavaScriptUnownedValue``.
+  ///
+  /// Unlike `subscript(_:)`, this is unchecked: `index` must be in `0..<count`. The accessor force-unwraps
+  /// `baseAddress`, so passing any index into an empty buffer crashes, and an out-of-range index reads past
+  /// the buffer. The caller is responsible for the bounds check.
+  public func unownedValue(at index: Int) -> JavaScriptUnownedValue {
+    return JavaScriptUnownedValue(runtime, bufferPointer.baseAddress! + index)
+  }
+
   @discardableResult
   internal consuming func set<T: JSIRepresentable>(value: borrowing T, atIndex index: Int) -> JavaScriptValuesBuffer
   where T: ~Copyable {

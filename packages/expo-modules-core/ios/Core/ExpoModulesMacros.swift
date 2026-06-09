@@ -84,3 +84,29 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
 @attached(member, names: named(_exposedClassDefinition))
 public macro SharedObject(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "SharedObjectMacro")
+
+/// Member + extension macro applied to a record `struct` or `class`. Every non-`static`,
+/// non-`private`/`fileprivate`, non-`lazy`, non-computed stored property is part of the record — no
+/// `@Field` wrapper needed — and the macro synthesizes the whole conversion surface from each
+/// property's static type: a memberwise `init`, the `from(object:appContext:)` /
+/// `from(dictionary:appContext:)` factories, and the `toDictionary(appContext:)` /
+/// `toObject(appContext:)` write side. The type is auto-conformed to `Record`; the synthesized
+/// methods override `Record`'s reflection-based defaults, so it stays usable anywhere a `Record`
+/// argument is expected.
+///
+/// Requiredness is inferred from each property: a default value makes it optional, an optional type
+/// makes it nullable and optional, and a non-optional property without a default is required (the
+/// factories throw `RecordPropertyRequiredException` when the source omits it).
+///
+/// Usage:
+///
+///     @Record
+///     struct Options {
+///       var name: String          // required
+///       var count: Int = 0        // optional (has default)
+///       var note: String?         // nullable + optional
+///     }
+@attached(member, names: named(init), named(from), named(toDictionary), named(toObject))
+@attached(extension, conformances: Record)
+public macro Record() =
+  #externalMacro(module: "ExpoModulesMacros", type: "RecordMacro")

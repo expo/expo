@@ -36,6 +36,15 @@ import expo.modules.ui.menu.DropdownMenuItemProps
 import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.ui.state.ObservableState
 import expo.modules.ui.state.WorkletCallback
+import expo.modules.ui.textfield.BasicTextFieldContent
+import expo.modules.ui.textfield.BasicTextFieldProps
+import expo.modules.ui.textfield.InnerTextFieldView
+import expo.modules.ui.textfield.KeyboardActionEvent
+import expo.modules.ui.textfield.PlaceholderView
+import expo.modules.ui.textfield.TextFieldContent
+import expo.modules.ui.textfield.TextFieldProps
+import expo.modules.ui.textfield.TextFieldSelectionPayload
+import expo.modules.ui.textfield.TextFieldValuePayload
 import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
 import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
 import expo.modules.ui.menu.ExposedDropdownMenuContent
@@ -151,6 +160,8 @@ class ExpoUIModule : Module() {
     View(SlotView::class) {
       Events("onSlotEvent")
     }
+    View(InnerTextFieldView::class)
+    View(PlaceholderView::class)
     View(IconView::class)
     View(LazyColumnView::class)
     View(LazyRowView::class)
@@ -679,6 +690,33 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         TextFieldContent(
+          props,
+          setText,
+          setSelection,
+          clear,
+          focus,
+          blur,
+          onValueChanged = { onValueChange(it) },
+          onFocusChange = { onFocusChanged(it) },
+          onKeyboardActionTriggered = { onKeyboardAction(it) },
+          onSelectionChanged = { onSelectionChange(it) }
+        )
+      }
+    }
+
+    ExpoUIView<BasicTextFieldProps>("BasicTextFieldView") {
+      val setText by AsyncFunction<String>()
+      val setSelection by AsyncFunction<Int, Int>()
+      val clear by AsyncFunction()
+      val focus by AsyncFunction()
+      val blur by AsyncFunction()
+      val onValueChange by Event<TextFieldValuePayload>()
+      val onFocusChanged by Event<GenericEventPayload1<Boolean>>()
+      val onKeyboardAction by Event<KeyboardActionEvent>()
+      val onSelectionChange by Event<TextFieldSelectionPayload>()
+
+      Content { props ->
+        BasicTextFieldContent(
           props,
           setText,
           setSelection,

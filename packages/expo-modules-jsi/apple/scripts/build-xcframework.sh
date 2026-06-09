@@ -281,7 +281,40 @@ build_slice() {
   local headers_dir="${content_root}/Headers"
   mkdir -p "$headers_dir"
   cp "${generated_maps}/${PACKAGE_NAME}-Swift.h" "$headers_dir/"
-  cp "${generated_maps}/${PACKAGE_NAME}.modulemap" "$headers_dir/module.modulemap"
+
+  # Public C++ headers — every file under `Sources/${PACKAGE_NAME}-Cxx/include/Public/`
+  # is shipped in the framework's `Headers/` directory and consumable from external
+  # ObjC++ via `#import <${PACKAGE_NAME}/Header.h>`. They live in a `requires cplusplus`
+  # submodule so Swift consumers don't try to import them.
+  local public_cxx_dir="${PACKAGE_DIR}/Sources/${PACKAGE_NAME}-Cxx/include/Public"
+  local public_cxx_headers=()
+  while IFS= read -r -d '' file; do
+    public_cxx_headers+=("$(basename "$file")")
+  done < <(find "$public_cxx_dir" -maxdepth 1 -name '*.h' -print0)
+  if (( ${#public_cxx_headers[@]} )); then
+    for header in "${public_cxx_headers[@]}"; do
+      cp "${public_cxx_dir}/${header}" "$headers_dir/"
+    done
+  fi
+
+  # Custom modulemap: keeps the Swift-generated header as the main module and
+  # exposes the public C++ headers as a `requires cplusplus` submodule.
+  {
+    echo "module ${PACKAGE_NAME} {"
+    echo "  header \"${PACKAGE_NAME}-Swift.h\""
+    echo "  export *"
+    echo ""
+    echo "  explicit module Cxx {"
+    echo "    requires cplusplus"
+    if (( ${#public_cxx_headers[@]} )); then
+      for header in "${public_cxx_headers[@]}"; do
+        echo "    header \"${header}\""
+      done
+    fi
+    echo "    export *"
+    echo "  }"
+    echo "}"
+  } > "${headers_dir}/module.modulemap"
 
   # Add the top-level Headers/Modules symlinks expected on versioned macOS
   # frameworks. xcodebuild already set up ExpoModulesJSI -> Versions/Current/...
@@ -394,6 +427,16 @@ if [[ ${#platforms_to_build[@]} -eq 0 ]]; then
 fi
 
 PLATFORMS=("${platforms_to_build[@]}")
+
+# Wipe stale intermediates before compiling: DerivedData's module cache and the
+# SwiftPM workspace/.build tree carry over from earlier runs and can reference
+# headers or module layouts that no longer match (e.g. after switching branches).
+# Only runs when a slice needs rebuilding, so the up-to-date fast path is unaffected.
+# Products/ is preserved. build_slice replaces only the slice it rebuilds. The
+# generated modulemap is left intact — it was already regenerated above for the
+# cache hash, so wiping it here would just force a redundant rebuild.
+log "Clearing stale build state (DerivedData, SwiftPM) before rebuild"
+rm -rf "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
 
 SECONDS=0
 

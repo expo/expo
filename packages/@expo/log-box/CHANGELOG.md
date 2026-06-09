@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Preserve Error call stacks when capturing component stacks. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 ## 56.0.12 — 2026-05-20

@@ -5,7 +5,7 @@ import {
   createReactNavigationIntegrationStorage,
   type ReactNavigationIntegrationStorage,
 } from '../storage';
-import type { GetPathname, NavigationRouteLike, NavigationStateLike } from '../types';
+import type { NavigationStateLike } from '../types';
 
 jest.mock('expo-app-metrics', () => {
   const addCustomMetricToSession = jest.fn();
@@ -22,20 +22,6 @@ jest.mock('expo-app-metrics', () => {
 
 const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
 const mockSessionId = 'session-1';
-
-const getPathname: GetPathname = (state) => {
-  if (!state) return undefined;
-  let current: NavigationStateLike | undefined = state;
-  while (current) {
-    const route: NavigationRouteLike | undefined = current.routes[
-      current.index ?? 0
-    ] as NavigationRouteLike;
-    if (!route) return undefined;
-    if (!route.state) return `/${route.name}`;
-    current = route.state;
-  }
-  return undefined;
-};
 
 function stackState(
   routes: { key: string; name?: string; params?: object }[],
@@ -78,7 +64,7 @@ beforeEach(() => {
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   storage = createReactNavigationIntegrationStorage();
   appLaunchTime = performance.now();
-  handle = createStateChangeHandler(storage, getPathname, appLaunchTime);
+  handle = createStateChangeHandler(storage, appLaunchTime);
 });
 
 afterEach(() => {
@@ -139,6 +125,30 @@ describe('createStateChangeHandler', () => {
     expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
     expect(mockAddCustomMetric.mock.calls[1][0].params.isAppLaunch).toBe(false);
     expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
+  });
+
+  it('joins the focused route-name chain of nested navigators into the routeName', async () => {
+    const nested: NavigationStateLike = {
+      type: 'stack',
+      index: 0,
+      routes: [
+        {
+          key: 'group',
+          name: 'Group',
+          state: stackState([
+            { key: 'list', name: 'List' },
+            { key: 'details', name: 'Details' },
+          ]),
+        },
+      ],
+      routeNames: [],
+      stale: false,
+      key: 'root',
+    };
+    handle(nested);
+    await flushAsync();
+
+    expect(mockAddCustomMetric.mock.calls[0][0].routeName).toBe('/Group/Details');
   });
 
   it('does not emit when the focused key is unchanged (param-only state update)', async () => {

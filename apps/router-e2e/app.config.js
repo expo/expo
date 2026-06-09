@@ -40,6 +40,7 @@ module.exports = {
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',
     bundler: 'metro',
+    favicon: process.env.E2E_FAVICON || undefined,
   },
   plugins: [
     [
