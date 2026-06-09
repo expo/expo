@@ -78,7 +78,7 @@ export const home = [
     makePage('agents/index.mdx'),
     makePage('skills.mdx'),
     makePage('mcp.mdx'),
-    makeGroup('AI agents', [makePage('agents/claude.mdx')], {
+    makeGroup('AI agents', [makePage('agents/claude.mdx'), makePage('agents/codex.mdx')], {
       expanded: false,
     }),
     makePage('llms.mdx'),

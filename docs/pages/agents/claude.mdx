@@ -1,0 +1,130 @@
+---
+title: Claude Code and Expo
+sidebar_title: Claude Code
+description: Use Claude Code to build, upgrade, debug, and deploy your Expo and React Native projects.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+Claude Code is Anthropic's terminal-based AI coding agent. It can understand your entire codebase, propose edits, run terminal commands, and manage git operations. Expo projects created with `create-expo-app` are scaffolded with files for Claude Code through **CLAUDE.md** and **.claude/settings.json**. It can also check EAS and Expo CLI logs, fetch documentation from the Expo MCP Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
+
+## Quick start
+
+<Step label="1">
+
+### Install Claude Code
+
+Install Claude Code globally, then start it from any project. For other install methods, see the [Claude Code documentation](https://code.claude.com/docs).
+
+<Terminal cmd={['$ curl -fsSL https://claude.ai/install.sh | bash']} />
+
+</Step>
+
+<Step label="2">
+
+### Create a new Expo project
+
+Create a project with the following command or ensure your existing project has the latest expo package installed.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
+    bun: ['$ bun create expo --template default@sdk-56'],
+  }}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Set up Expo Skills and the Expo MCP Server
+
+Install Expo Skills and connect the Expo MCP Server so Claude Code knows Expo conventions and can reach your EAS data.
+
+<BoxLink
+  title="Expo Skills"
+  description="Install the plugin that teaches agents known-good Expo patterns, and browse the full list of available skills."
+  href="/skills/#install-expo-skills"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Expo MCP Server"
+  description="Connect the remote MCP server to give agents live access to Expo documentation and EAS."
+  href="/mcp/#installation-and-setup"
+  Icon={BookOpen02Icon}
+/>
+
+</Step>
+
+<Step label="4">
+
+### Open your project and start prompting
+
+Run Claude Code from your project root, then describe what you want to do.
+
+<Terminal cmd={['$ cd my-app', '', '$ claude']} />
+
+</Step>
+
+<Step label="5">
+
+### Verify setup
+
+Paste the following prompt in your Claude Code session to confirm it's reading your project context:
+
+```text Example prompt
+Open AGENTS.md and tell me which Expo SDK version this project targets.
+```
+
+If the agent replies with the SDK version pinned in **AGENTS.md**, the project context is loading correctly.
+
+</Step>
+
+## How Claude Code reads your Expo project
+
+When you start Claude Code in your project, it reads two of the scaffolded files:
+
+- **CLAUDE.md** contains a single line: `@AGENTS.md`. This line imports **AGENTS.md** into Claude Code's context. **AGENTS.md** pins Claude Code to the documentation for your project's Expo SDK version. Add project-level instructions to **AGENTS.md**, not **CLAUDE.md**, so they stay in one place.
+- **.claude/settings.json** enables the official Expo plugin ([`expo@claude-plugins-official`](https://claude.com/plugins/expo)) from the Claude Code plugin marketplace.
+
+Both files are committed to your project, so a developer's Claude Code session starts from the same context.
+
+## Example prompts
+
+After setup, describe Expo tasks in plain language. For example:
+
+| Task              | Example prompt                                                                    |
+| ----------------- | --------------------------------------------------------------------------------- |
+| Upgrade the SDK   | Upgrade this project to the latest Expo SDK and fix any breaking changes.         |
+| Add navigation    | Add a tab navigator with Expo Router and a new settings screen.                   |
+| Automate builds   | Create an EAS Workflow that builds the app on every pull request.                 |
+| Debug a build     | My latest iOS build failed. Read the EAS Build logs and tell me what went wrong.  |
+| Add notifications | Configure expo-notifications and show a local notification when the app launches. |
+| Set up CI/CD      | Create a CI/CD workflow that builds on every PR.                                  |
+| Add native UI     | Add a SwiftUI picker component to my Expo app.                                    |
+| Check feedback    | Show TestFlight feedback for my app.                                              |
+| Verify the UI     | Take a screenshot and verify the blue circle view.                                |
+
+For more examples, see the Example prompts sections of [Expo Skills](/skills/#example-prompts) and [Expo MCP Server](/mcp/#what-does-expo-mcp-server-do).
+
+## Troubleshooting
+
+<Collapsible summary="Plugin 'expo' is enabled in project settings but isn't installed here.">
+
+If you see this error in your Claude Code session, then you need to install the official [Expo plugin](https://claude.com/plugins/expo) on your developer machine. To install it, run the following command in the terminal window and then restart your Claude Code session:
+
+<Terminal cmd={['$ claude plugin install expo@claude-plugins-official']} />
+
+The above command installs the Expo plugin globally. If you want to install it just for this project, add `--scope project` to the command:
+
+<Terminal cmd={['$ claude plugin install expo@claude-plugins-official --scope project']} />
+
+</Collapsible>
