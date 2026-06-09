@@ -40,6 +40,7 @@ import {
   accessibilityLabel,
   accessibilityIdentifier,
   accessibilityHidden,
+  accessibilityInputLabels,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -665,6 +666,19 @@ export default function ModifiersScreen() {
                 modifiers={[accessibilityHidden(true)]}
               />
               <Text>Something went wrong</Text>
+            </HStack>
+
+            {/* accessibilityInputLabels: Voice Control can target this by spoken phrase */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#1ABC9C'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityInputLabels(['Hang up', 'End call']),
+                ]}>
+                End
+              </Text>
             </HStack>
 
             <Text
