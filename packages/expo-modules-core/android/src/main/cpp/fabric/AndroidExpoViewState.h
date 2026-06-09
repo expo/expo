@@ -15,12 +15,6 @@ class AndroidExpoViewState : public ExpoViewState {
 public:
   using ExpoViewState::ExpoViewState;
 
-  // Declaring the merge constructor below suppresses the implicit default
-  // constructor, and `using` never inherits a base default constructor. We need
-  // a no-arg constructor for the synchronous size updates (see
-  // NativeStatePropsGetter::update*Immediate), so request one explicitly.
-  AndroidExpoViewState() = default;
-
   AndroidExpoViewState(
     AndroidExpoViewState const &previousState,
     folly::dynamic data
