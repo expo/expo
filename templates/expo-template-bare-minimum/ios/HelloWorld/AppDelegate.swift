@@ -9,6 +9,9 @@ class AppDelegate: ExpoAppDelegate {
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
 
+  // Retained so the scene delegate can start React Native once its window connects.
+  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+
   public override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -19,16 +22,23 @@ class AppDelegate: ExpoAppDelegate {
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
-
-#if os(iOS) || os(tvOS)
-    window = UIWindow(frame: UIScreen.main.bounds)
-    factory.startReactNative(
-      withModuleName: "main",
-      in: window,
-      launchOptions: launchOptions)
-#endif
+    self.launchOptions = launchOptions
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // The UIKit scene-based life cycle is required by the iOS SDK shipped with Xcode 27
+  // and later. The root window is created in the scene delegate (see SceneDelegate.swift).
+  public override func application(
+    _ application: UIApplication,
+    configurationForConnectingSceneSession connectingSceneSession: UISceneSession,
+    options: UIScene.ConnectionOptions
+  ) -> UISceneConfiguration {
+    let configuration = UISceneConfiguration(
+      name: nil,
+      sessionRole: connectingSceneSession.role)
+    configuration.delegateClass = SceneDelegate.self
+    return configuration
   }
 
   // Linking API
