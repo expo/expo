@@ -732,6 +732,16 @@ export const accessibilityValue = (value: string) =>
   createModifier('accessibilityValue', { value });
 
 /**
+ * Sets alternative spoken phrases that Voice Control uses to refer to the view.
+ * Each label is read as a `Text` element on iOS. For example, an "End" button
+ * might offer "Hang up" so users can trigger it by saying that phrase.
+ * @param inputLabels - The spoken phrases that select the view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityinputlabels(_:)).
+ */
+export const accessibilityInputLabels = (inputLabels: string[]) =>
+  createModifier('accessibilityInputLabels', { inputLabels });
+
+/**
  * Sets an accessibility identifier for the view.
  *
  * Unlike `accessibilityLabel`, this value is for UI testing and is not visible
@@ -1435,6 +1445,7 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
+  | ReturnType<typeof accessibilityInputLabels>
   | ReturnType<typeof accessibilityIdentifier>
   | ReturnType<typeof accessibilityHidden>
   | ReturnType<typeof layoutPriority>
