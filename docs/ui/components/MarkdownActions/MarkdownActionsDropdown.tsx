@@ -4,13 +4,17 @@ import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
 import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
 
-import { ClaudeLogoIcon, OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
+import {
+  ClaudeLogoIcon,
+  CursorLogoIcon,
+  OpenAILogoIcon,
+} from '~/ui/components/CustomIcons/AIProviderIcons';
 import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 const getPrompt = (url: string) =>
-  encodeURIComponent(`Read from ${url} so I can ask questions about it.`);
+  encodeURIComponent(`Read this documentation page, so I can ask questions about it:\n\n${url}`);
 
 export function MarkdownActionsDropdown() {
   const router = useRouter();
@@ -56,31 +60,38 @@ export function MarkdownActionsDropdown() {
     }
   }, [markdownViewUrl]);
 
-  const pageUrl = useMemo(() => {
-    if (!pagePath) {
+  const markdownUrl = useMemo(() => {
+    if (!markdownViewUrl) {
       return null;
     }
 
     if (typeof window !== 'undefined' && window.location?.origin) {
-      return `${window.location.origin}${pagePath}`;
+      return `${window.location.origin}${markdownViewUrl}`;
     }
 
-    return `https://docs.expo.dev${pagePath}`;
-  }, [pagePath]);
+    return `https://docs.expo.dev${markdownViewUrl}`;
+  }, [markdownViewUrl]);
 
   const chatGptUrl = useMemo(() => {
-    if (!pageUrl) {
+    if (!markdownUrl) {
       return null;
     }
-    return `https://chat.openai.com/?q=${getPrompt(pageUrl)}`;
-  }, [pageUrl]);
+    return `https://chat.openai.com/?q=${getPrompt(markdownUrl)}`;
+  }, [markdownUrl]);
 
   const claudeUrl = useMemo(() => {
-    if (!pageUrl) {
+    if (!markdownUrl) {
       return null;
     }
-    return `https://claude.ai/new?q=${getPrompt(pageUrl)}`;
-  }, [pageUrl]);
+    return `https://claude.ai/new?q=${getPrompt(markdownUrl)}`;
+  }, [markdownUrl]);
+
+  const cursorUrl = useMemo(() => {
+    if (!markdownUrl) {
+      return null;
+    }
+    return `https://cursor.com/link/prompt?text=${getPrompt(markdownUrl)}`;
+  }, [markdownUrl]);
 
   const dropdownItems = [];
 
@@ -126,6 +137,18 @@ export function MarkdownActionsDropdown() {
         label="Open in Claude"
         Icon={ClaudeLogoIcon}
         href={claudeUrl}
+        openInNewTab
+      />
+    );
+  }
+
+  if (cursorUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="open-cursor"
+        label="Open in Cursor"
+        Icon={CursorLogoIcon}
+        href={cursorUrl}
         openInNewTab
       />
     );
