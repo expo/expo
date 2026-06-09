@@ -278,7 +278,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
-    let resumeTime = ref.currentTime().seconds
+    let resumeTime = currentTime
     let wasPlaying = isPlaying
 
     Task { [weak self] in
