@@ -286,7 +286,6 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
 
-      // `replaceCurrentItem` re-applies the stored `currentTime` once the new item finishes loading.
       if resumeTime.isFinite && resumeTime > 0 {
         self.dangerousPropertiesStore.currentTime = resumeTime
       }
