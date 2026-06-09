@@ -18,7 +18,11 @@ With bundle diffing, EAS Update delivers a **bundle patch** when possible. When 
 
 ## Enable bundle diffing
 
-Bundle diffing is enabled by default in SDK 56 and later. To opt out, set `updates.enableBsdiffPatchSupport` to `false` in your project's [app config](/workflow/configuration/). On SDK 55, set it to `true` to opt in.
+Bundle diffing has two modes. Update-to-update patches deliver a diff between two published updates, so devices already running a published update receive a patch when they check for a newer one. Embedded-bundle-to-update patches (experimental) deliver a diff between a build's embedded JavaScript bundle and a published update, so devices on a fresh install receive a patch on their first update check instead of the full bundle.
+
+### Enable update-to-update patches
+
+Update-to-update patches are enabled by default in SDK 56 and later. To opt out, set `updates.enableBsdiffPatchSupport` to `false` in your project's [app config](/workflow/configuration/). On SDK 55, set it to `true` to opt in.
 
 ```json app.json
 {
@@ -30,11 +34,11 @@ Bundle diffing is enabled by default in SDK 56 and later. To opt out, set `updat
 }
 ```
 
-## Use the embedded bundle as a patch base
+### Enable embedded-bundle-to-update patches
 
-> **info** This is an experimental opt-in. The behavior may change.
+> **info** This mode is experimental and opt-in. The flag and behavior may change.
 
-On a fresh install, devices boot from the embedded JavaScript bundle. These devices aren't eligible for patches by default. To make the embedded bundle a patch base for future updates, set the `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment variable in the `env` object of a build profile in **eas.json**:
+To enable, set the `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment variable under `env` in a build profile in **eas.json**:
 
 ```json eas.json
 {
@@ -48,20 +52,21 @@ On a fresh install, devices boot from the embedded JavaScript bundle. These devi
 }
 ```
 
-When the build completes, EAS uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it. Uploading is best effort, so if the upload fails, the build still succeeds.
+When the build completes, EAS uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it. Uploading is best-effort. If the upload fails, the build still succeeds.
 
-
-### Upload a bundle manually
-
-If you don't use EAS Build, you can upload an embedded bundle yourself. Point `--bundle` and `--manifest` at the JavaScript bundle and **app.manifest** produced by the native build (for example, **android/app/src/main/assets/index.android.bundle** on Android or **ios/build/App.app/main.jsbundle** on iOS):
+If you don't use EAS Build, you can upload an embedded bundle yourself. Point `--bundle` and `--manifest` at the JavaScript bundle and **app.manifest** produced by the native build (for example, **android/app/src/main/assets/index.android.bundle** on Android and **ios/build/App.app/main.jsbundle** on iOS):
 
 <Terminal
   cmd={[
     '$ eas update:embedded:upload --platform [platform] --bundle [path] --manifest [path] --channel [name]',
+    '',
+    '# Example',
+    '$ eas update:embedded:upload --platform android --bundle android/app/src/main/assets/index.android.bundle --manifest android/app/src/main/assets/app.manifest --channel production',
   ]}
+  cmdCopy="eas update:embedded:upload --platform [platform] --bundle [path] --manifest [path] --channel [name]"
 />
 
-### Inspect or delete uploaded bundles
+## Manage uploaded embedded bundles
 
 List the embedded bundles registered for your project:
 
@@ -69,11 +74,27 @@ List the embedded bundles registered for your project:
 
 View a single embedded bundle:
 
-<Terminal cmd={['$ eas update:embedded:view [id]']} />
+<Terminal
+  cmd={[
+    '$ eas update:embedded:view [id]',
+    '',
+    '# Example',
+    '$ eas update:embedded:view a1b2c3d4-1234-4000-8000-000000000000',
+  ]}
+  cmdCopy="eas update:embedded:view [id]"
+/>
 
 Delete an embedded bundle:
 
-<Terminal cmd={['$ eas update:embedded:delete [id]']} />
+<Terminal
+  cmd={[
+    '$ eas update:embedded:delete [id]',
+    '',
+    '# Example',
+    '$ eas update:embedded:delete a1b2c3d4-1234-4000-8000-000000000000',
+  ]}
+  cmdCopy="eas update:embedded:delete [id]"
+/>
 
 Deleting an unknown ID succeeds, so the command is safe to retry.
 
