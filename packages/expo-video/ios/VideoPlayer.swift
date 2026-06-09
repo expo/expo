@@ -272,9 +272,6 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   /**
    * Reloads the current source on the existing `AVPlayer`, preserving the playhead and play state.
-   * iOS can tear down the decode pipeline while the app is backgrounded or when the system resets
-   * media services, leaving the `AVPlayerItem` in a `.failed` state. A failed item makes
-   * `AVPlayerViewController` render its broken-playback placeholder, so we rebuild the item to recover.
    */
   func reloadCurrentSource() {
     guard let videoSource = (ref.currentItem as? VideoPlayerItem)?.videoSource else {
