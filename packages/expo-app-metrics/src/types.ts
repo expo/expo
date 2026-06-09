@@ -296,13 +296,16 @@ export interface ExpoAppMetricsModuleType {
   setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null): void;
   clearStoredEntries(): Promise<void>;
   /**
-   * Returns all sessions across the current and historical entries,
-   * ordered with the current launch first.
+   * Returns the recorded sessions as plain `Session` records, ordered with
+   * the most recent first. Each record eagerly includes its metrics, logs, and
+   * crash report.
+   *
+   * Debug-only: intended for inspecting on-device history (e.g. the
+   * ObserveTester app), not for production use.
    *
    * @private This API is unstable and may change without notice.
-   * @platform ios
    */
-  getAllSessions(): Promise<Session[]>;
+  getInactiveSessions(): Promise<Session[]>;
 
   /**
    * Simulates a crash report, attributing it to the current main session.

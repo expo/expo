@@ -19,7 +19,7 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   logEvent(name: string, options?: LogEventOptions) {}
   setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null) {}
   async clearStoredEntries() {}
-  async getAllSessions() {
+  async getInactiveSessions() {
     return [];
   }
   simulateCrashReport() {}

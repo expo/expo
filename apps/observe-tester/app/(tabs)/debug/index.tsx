@@ -41,7 +41,15 @@ export default function Debug() {
       {showAnimation && <JSAnimation />}
       <Button
         title="Log main session to console"
-        onPress={() => AppMetrics.getMainSession().then(JSON.stringify).then(console.log)}
+        onPress={async () => {
+          const session = await AppMetrics.getMainSession();
+
+          if (session) {
+            console.log(JSON.stringify(session, null, 2));
+          } else {
+            console.error('Main session is null');
+          }
+        }}
         theme="secondary"
       />
     </ScrollView>
