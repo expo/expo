@@ -66,8 +66,7 @@ class VideoManager {
 
   func onAppForegrounded() {
     // While the app is backgrounded iOS can release the decode pipeline, leaving items in a
-    // `.failed` state once we come back. Reload only the failed players so the broken-playback
-    // placeholder is replaced with the recovered video, without disrupting healthy players.
+    // `.failed` state once we come back.
     reloadPlayers { $0.reloadIfFailed() }
   }
 
