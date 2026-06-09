@@ -286,7 +286,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
 
-      if resumeTime.isFinite && resumeTime > 0 {
+      if resumeTime > 0 {
         self.dangerousPropertiesStore.currentTime = resumeTime
       }
 
