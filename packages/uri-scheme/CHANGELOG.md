@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `open` double-escaping special characters in URI search parameters (e.g. `@` becoming `%2540` instead of `%40`). ([#46685](https://github.com/expo/expo/issues/46685) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 ## 2.1.0 — 2026-05-20
