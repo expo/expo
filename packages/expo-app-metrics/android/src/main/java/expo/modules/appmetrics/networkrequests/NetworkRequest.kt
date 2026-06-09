@@ -6,12 +6,12 @@ import java.util.Date
 import java.util.UUID
 
 /**
- * Snapshot of a single HTTP request observed by `NetworkRequestInterceptor`. Mirrors the iOS
- * `NetworkRequest` struct field-for-field so the JS payload is symmetric across platforms.
+ * Snapshot of an HTTP request seen by `NetworkRequestInterceptor`.
+ * Matches the iOS `NetworkRequest` struct so request data is consistent across platforms.
  *
- * The URL is recorded verbatim - including the query string - because callers asked for it. Any
- * redaction (tokens in query parameters, auth headers, etc.) is the responsibility of whatever
- * downstream layer converts these snapshots into stored metrics.
+ * The URL is stored as-is, including query parameters. Any redaction of sensitive data
+ * (for example, query parameter tokens or auth headers) must be handled by downstream code
+ * before the request is stored or reported.
  */
 data class NetworkRequest(
   /** Stable identifier for this observation. */

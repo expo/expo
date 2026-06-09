@@ -10,13 +10,10 @@ import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Protocol
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.Buffer
-import okio.BufferedSink
 import okio.BufferedSource
-import okio.ForwardingSink
 import okio.ForwardingSource
 import okio.buffer
 import java.io.IOException
@@ -48,13 +45,15 @@ private object AlreadyObservedMarker
  * response after OkHttp follows redirects — emits one `requestStarted` and one `requestCompleted`
  * per logical fetch.
  *
- * Phase timings (`dnsStart`, `connectStart`, etc.) are stitched in from `NetworkRequestEventListener`
- * via the shared `inFlightTimings` map; the interceptor reads the map when finalizing the snapshot
- * and removes the entry to avoid leaks.
+ * Phase timings (`dnsStart`, `connectStart`, etc.) and body byte counts are captured by
+ * `NetworkRequestEventListener` on the network layer (below `BridgeInterceptor` and
+ * `GzipSource`) so they reflect real on-the-wire bytes rather than the gunzipped, app-level
+ * view our interceptor sees. The interceptor reads (and removes) the per-call timings entry
+ * when finalizing the snapshot.
  *
- * Byte counts come from counting `Source`/`Sink` wrappers around the request and response bodies,
- * giving wire-byte accuracy that survives gzip and chunked encoding. Falls back to declared
- * `contentLength()` only when no body is present (HEAD, 304, etc.).
+ * Response-body completion is signaled via a thin `BodyCloseSignal` wrapper so finalization
+ * waits for the caller to drain the response — by the time the wrapper fires, the listener's
+ * `responseBodyEnd` byte count is stable.
  */
 class NetworkRequestInterceptor private constructor(
   private val monitor: NetworkRequestMonitor
@@ -79,33 +78,27 @@ class NetworkRequestInterceptor private constructor(
     val startedAt = Date()
     val startNanos = System.nanoTime()
 
-    // Wrap the request body so we can count bytes actually written to the wire (chunked uploads,
-    // gzipped payloads, etc.) instead of trusting `contentLength()`.
-    val countingRequestBody = originalRequest.body?.let { CountingRequestBody(it) }
     val request = originalRequest.newBuilder()
       .tag(AlreadyObservedMarker::class.java, AlreadyObservedMarker)
-      .let { builder -> countingRequestBody?.let { builder.method(originalRequest.method, it) } ?: builder }
       .build()
 
     monitor.recordStart(NetworkRequestStarted(observationId, originalRequest.url.toString(), originalRequest.method, startedAt))
 
     var response: Response? = null
     var error: IOException? = null
-    var countingResponseBody: CountingResponseBody? = null
+    var bodySignalingWrapper: BodyCloseSignal? = null
     try {
       val raw = chain.proceed(request)
-      // Wrap the response body so we count bytes pulled off the wire. Replacing the body is safe:
-      // OkHttp delivers our wrapper to the caller verbatim. We can only finalize the snapshot
-      // *after* the caller drains the body — so the wrapper carries an `onComplete` callback that
-      // fires from `close()` (or first EOF) with the final byte count.
+      // Wrap the response body purely for completion signaling — the wrapper doesn't count
+      // bytes (those come from `EventListener.responseBodyEnd`, which fires below `GzipSource`
+      // on the real network layer). It just lets us defer `finalizeAndRecord` until the caller
+      // drains the body, so the snapshot's byte counts are populated by the time we read them.
       val wrapped = raw.body?.let { rawBody ->
-        CountingResponseBody(rawBody) { bytesRead ->
+        BodyCloseSignal(rawBody) {
           finalizeAndRecord(
             observationId = observationId,
             originalRequest = originalRequest,
             response = raw,
-            requestBodyBytes = countingRequestBody?.bytesWritten,
-            responseBodyBytes = bytesRead,
             call = chain.call(),
             startedAt = startedAt,
             startNanos = startNanos,
@@ -118,20 +111,18 @@ class NetworkRequestInterceptor private constructor(
       } else {
         raw
       }
-      countingResponseBody = wrapped
+      bodySignalingWrapper = wrapped
     } catch (e: IOException) {
       error = e
     }
 
     // Two paths land here without a streaming body to wait on: an error before headers, and a
     // response with no body (HEAD, 204, 304, ...). Both finalize the snapshot inline.
-    if (error != null || countingResponseBody == null) {
+    if (error != null || bodySignalingWrapper == null) {
       finalizeAndRecord(
         observationId = observationId,
         originalRequest = originalRequest,
         response = response,
-        requestBodyBytes = countingRequestBody?.bytesWritten,
-        responseBodyBytes = null,
         call = chain.call(),
         startedAt = startedAt,
         startNanos = startNanos,
@@ -149,8 +140,6 @@ class NetworkRequestInterceptor private constructor(
     observationId: UUID,
     originalRequest: Request,
     response: Response?,
-    requestBodyBytes: Long?,
-    responseBodyBytes: Long?,
     call: Call,
     startedAt: Date,
     startNanos: Long,
@@ -166,8 +155,6 @@ class NetworkRequestInterceptor private constructor(
       id = observationId,
       originalRequest = originalRequest,
       response = response,
-      requestBodyBytes = requestBodyBytes,
-      responseBodyBytes = responseBodyBytes,
       phases = phases,
       fallbackStart = startedAt,
       fallbackEnd = endDate,
@@ -193,13 +180,19 @@ class NetworkRequestInterceptor private constructor(
 /**
  * Builds a `NetworkRequest` snapshot from interceptor outputs. Pulled out so tests can exercise
  * the field-population logic without spinning up a full OkHttp chain.
+ *
+ * Byte counts come from `EventListener.requestBodyEnd` / `responseBodyEnd` (carried on
+ * `phases.requestBodyBytes` / `responseBodyBytes`) — those fire on the network layer and
+ * report on-the-wire bytes (including chunked framing and gzip compression). The app-layer
+ * `originalRequest.body.contentLength()` and `response.body.contentLength()` are only used as
+ * a fallback when the listener didn't fire (no request body, response not consumed, errors
+ * before headers). Header bytes are an HTTP/1.1 framing estimate — see
+ * `requestHeaderByteCount` / `responseHeaderByteCount` for the caveats.
  */
 internal fun buildSnapshot(
   id: UUID,
   originalRequest: Request,
   response: Response?,
-  requestBodyBytes: Long?,
-  responseBodyBytes: Long?,
   phases: NetworkRequestEventListener.PhaseTimings?,
   fallbackStart: Date,
   fallbackEnd: Date,
@@ -210,18 +203,19 @@ internal fun buildSnapshot(
 
   val requestHeaderBytes = requestHeaderByteCount(originalRequest)
   val responseHeaderBytes = response?.let { responseHeaderByteCount(it) } ?: 0L
-  // Prefer the counted bytes (truth on the wire) but fall back to declared `contentLength()` so a
-  // request the caller never wrote past zero bytes still reports the declared payload size. Zero
-  // counts when there's no body are normal and pass through; the takeIf guards against the case
-  // where Content-Length itself was missing or sentinel `-1`.
+  // Prefer the on-the-wire body count reported by `EventListener.{request,response}BodyEnd` —
+  // those callbacks fire on the network layer (below `BridgeInterceptor` and `GzipSource`) so
+  // they're the truth. Fall back to declared `contentLength()` for callers that never streamed
+  // the body and zero otherwise. The `takeIf { it > 0 }` guards `contentLength()`'s sentinel
+  // `-1` for unknown sizes.
   val requestBytesSent: Long? = if (response != null || error != null) {
-    val body = requestBodyBytes?.takeIf { it > 0 }
+    val body = phases?.requestBodyBytes?.takeIf { it > 0 }
       ?: originalRequest.body?.contentLength()?.takeIf { it > 0 }
       ?: 0L
     requestHeaderBytes + body
   } else null
   val responseBytesReceived: Long? = response?.let {
-    val body = responseBodyBytes?.takeIf { it > 0 }
+    val body = phases?.responseBodyBytes?.takeIf { it > 0 }
       ?: it.body?.contentLength()?.takeIf { it > 0 }
       ?: 0L
     responseHeaderBytes + body
@@ -334,6 +328,7 @@ class NetworkRequestEventListener : EventListener() {
 
   override fun requestBodyEnd(call: Call, byteCount: Long) {
     builder.requestBodyEnd = Date()
+    builder.requestBodyBytes = byteCount
   }
 
   override fun responseHeadersStart(call: Call) {
@@ -346,6 +341,7 @@ class NetworkRequestEventListener : EventListener() {
 
   override fun responseBodyEnd(call: Call, byteCount: Long) {
     builder.responseBodyEnd = Date()
+    builder.responseBodyBytes = byteCount
   }
 
   override fun callEnd(call: Call) {
@@ -384,7 +380,9 @@ class NetworkRequestEventListener : EventListener() {
     @Volatile var requestBodyEnd: Date? = null,
     @Volatile var responseHeadersStart: Date? = null,
     @Volatile var responseHeadersEnd: Date? = null,
-    @Volatile var responseBodyEnd: Date? = null
+    @Volatile var responseBodyEnd: Date? = null,
+    @Volatile var requestBodyBytes: Long? = null,
+    @Volatile var responseBodyBytes: Long? = null
   ) {
     fun snapshot() = PhaseTimings(
       fetchStart, dnsStart, dnsEnd,
@@ -393,7 +391,8 @@ class NetworkRequestEventListener : EventListener() {
       requestHeadersStart, requestHeadersEnd,
       requestBodyStart, requestBodyEnd,
       responseHeadersStart, responseHeadersEnd,
-      responseBodyEnd
+      responseBodyEnd,
+      requestBodyBytes, responseBodyBytes
     )
   }
 
@@ -401,6 +400,12 @@ class NetworkRequestEventListener : EventListener() {
    * Per-phase wire timestamps captured from OkHttp's `EventListener` callbacks. The interceptor
    * folds these into the broader `NetworkRequest.Timings` at finalize time; the latter is the
    * iOS-mirrored snapshot shape and the only one JS ever sees.
+   *
+   * `requestBodyBytes` and `responseBodyBytes` come from `EventListener.requestBodyEnd` /
+   * `responseBodyEnd`, which fire on the *network* layer — below `BridgeInterceptor` and
+   * `GzipSource`. They report the bytes actually on the wire, not the (gunzipped, app-layer)
+   * view that the interceptor sees. `null` means the corresponding body-end callback never
+   * fired (no request body / response not fully consumed / error before headers).
    */
   data class PhaseTimings(
     val fetchStart: Date?,
@@ -416,7 +421,9 @@ class NetworkRequestEventListener : EventListener() {
     val requestBodyEnd: Date?,
     val responseHeadersStart: Date?,
     val responseHeadersEnd: Date?,
-    val responseBodyEnd: Date?
+    val responseBodyEnd: Date?,
+    val requestBodyBytes: Long?,
+    val responseBodyBytes: Long?
   )
 
   companion object {
@@ -447,56 +454,26 @@ class NetworkRequestEventListener : EventListener() {
 }
 
 /**
- * Counting wrapper for the request body. Decorates the `BufferedSink` OkHttp hands the body so we
- * see every byte actually written to the wire, including chunked-encoding framing and gzip
- * overhead applied by upstream interceptors.
+ * Wraps the response body to signal when the caller finishes draining it. Doesn't count bytes
+ * — those come from `EventListener.responseBodyEnd` (the network layer, below `GzipSource`),
+ * which fires before the caller's close/EOF on the app layer. This wrapper exists purely so
+ * the interceptor can defer `finalizeAndRecord` until the byte counters on `PhaseTimings` are
+ * stable.
  */
-private class CountingRequestBody(private val delegate: RequestBody) : RequestBody() {
-  @Volatile
-  var bytesWritten: Long = 0
-    private set
-
-  override fun contentType(): MediaType? = delegate.contentType()
-  override fun contentLength(): Long = delegate.contentLength()
-  override fun isOneShot(): Boolean = delegate.isOneShot()
-  override fun isDuplex(): Boolean = delegate.isDuplex()
-
-  override fun writeTo(sink: BufferedSink) {
-    val countingSink = object : ForwardingSink(sink) {
-      override fun write(source: Buffer, byteCount: Long) {
-        super.write(source, byteCount)
-        bytesWritten += byteCount
-      }
-    }.buffer()
-    delegate.writeTo(countingSink)
-    countingSink.flush()
-  }
-}
-
-/**
- * Counting wrapper for the response body. Wraps the upstream `Source` so we see every byte the
- * caller actually pulls off the wire - counting at the source survives gzip and other cases
- * where servers return a body without a matching `Content-Length`.
- */
-private class CountingResponseBody(
+private class BodyCloseSignal(
   private val delegate: ResponseBody,
-  private val onComplete: (bytesRead: Long) -> Unit
+  private val onComplete: () -> Unit
 ) : ResponseBody() {
-  @Volatile
-  private var bytesRead: Long = 0
-
   @Volatile
   private var completed: Boolean = false
 
-  // OkHttp's contract returns the same `BufferedSource` on repeated `source()` calls, so we cache
-  // ours too — wrapping twice would double-count.
-  private val countingSource: BufferedSource by lazy {
+  // OkHttp's contract returns the same `BufferedSource` on repeated `source()` calls, so we
+  // cache ours too — wrapping twice would fire the completion callback twice.
+  private val signalingSource: BufferedSource by lazy {
     object : ForwardingSource(delegate.source()) {
       override fun read(sink: Buffer, byteCount: Long): Long {
         val read = super.read(sink, byteCount)
-        if (read > 0) {
-          bytesRead += read
-        } else if (read == -1L) {
+        if (read == -1L) {
           // Body fully drained — fire the completion callback exactly once. Callers that close
           // the stream without reaching EOF still trigger completion via the `close()` override.
           fireCompleteOnce()
@@ -513,14 +490,14 @@ private class CountingResponseBody(
 
   override fun contentType(): MediaType? = delegate.contentType()
   override fun contentLength(): Long = delegate.contentLength()
-  override fun source(): BufferedSource = countingSource
+  override fun source(): BufferedSource = signalingSource
 
   private fun fireCompleteOnce() {
     if (completed) {
       return
     }
     completed = true
-    onComplete(bytesRead)
+    onComplete()
   }
 }
 
@@ -530,10 +507,15 @@ private class CountingResponseBody(
  * header and the trailing CRLF that terminates the block).
  *
  * iOS gets exact numbers from `URLSessionTaskTransactionMetrics.countOfRequestHeaderBytesSent`.
- * We don't have that on Android, so this is a best-effort match against HTTP/1.1 wire framing.
+ * Android has no equivalent — `EventListener.requestHeadersEnd` carries a `Request` object, but
+ * it's the application-layer view (the one our interceptor receives), not the post-
+ * `BridgeInterceptor` request that's actually sent. Headers OkHttp adds below us
+ * (`Host`, `Accept-Encoding`, `User-Agent`, `Connection`, `Content-Length`) are missing from
+ * this count, so we undercount by roughly 80–150 bytes per request on HTTP/1.1.
+ *
  * HTTP/2 and HTTP/3 use HPACK/QPACK header compression and a binary framing layer; on those
- * protocols we'll overcount by a small fixed amount (~10-30 bytes per request) but we cannot
- * reconstruct the on-the-wire HPACK frame sizes from OkHttp's API.
+ * protocols the comparison to "wire bytes" is fundamentally fuzzy regardless. We accept the
+ * imprecision rather than reach into OkHttp internals.
  */
 private fun requestHeaderByteCount(request: Request): Long {
   // "METHOD " + encodedPathQuery + " HTTP/1.1\r\n"

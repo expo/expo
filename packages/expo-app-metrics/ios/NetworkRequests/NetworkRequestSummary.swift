@@ -89,7 +89,13 @@ public struct NetworkRequestSummary: Sendable, Equatable {
 }
 
 extension NetworkRequest {
-  /** A request is treated as failed if it errored or returned a non-2xx status. */
+  /**
+   A request is treated as failed if it errored, or returned a 4xx (client error) or 5xx (server
+   error) status. 1xx (informational), 2xx (success), and 3xx (redirection — usually followed
+   transparently by URLSession, but the unfollowed case is still a successful response from the
+   origin's perspective) are not failures. A missing status code (the request failed before
+   headers arrived) counts as failed.
+   */
   var isFailed: Bool {
     if errorDescription != nil {
       return true
@@ -97,6 +103,6 @@ extension NetworkRequest {
     guard let statusCode else {
       return true
     }
-    return !(200..<300).contains(statusCode)
+    return statusCode >= 400
   }
 }

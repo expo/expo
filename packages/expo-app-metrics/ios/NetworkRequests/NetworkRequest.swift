@@ -116,12 +116,18 @@ extension NetworkRequest {
    Builds a snapshot from the data we have at task completion. The metrics argument may be `nil`
    for cache-only responses or in tests; in that case, callers fall back to wall-clock timestamps
    on the request/response pair.
+
+   `taskBytesSent` / `taskBytesReceived` are the task's wall-clock byte counters
+   (`URLSessionTask.countOfBytesSent` / `countOfBytesReceived`). Pass `nil` when no task is
+   available (tests). They're used as a fallback when `metrics`'s per-transaction counters are
+   zero — see the body for the cache-hit / Simulator quirks that hit that case.
    */
   static func from(
     id: UUID,
     request: URLRequest,
     response: HTTPURLResponse?,
-    task: URLSessionTask?,
+    taskBytesSent: Int64?,
+    taskBytesReceived: Int64?,
     metrics: URLSessionTaskMetrics?,
     fallbackStart: Date,
     fallbackEnd: Date,
@@ -162,7 +168,7 @@ extension NetworkRequest {
           return fromTransaction
         }
       }
-      return task?.countOfBytesSent
+      return taskBytesSent
     }()
     let responseBytesReceived: Int64? = {
       if let transaction {
@@ -171,7 +177,7 @@ extension NetworkRequest {
           return fromTransaction
         }
       }
-      return task?.countOfBytesReceived
+      return taskBytesReceived
     }()
 
     // Each redirect entry pairs the 3xx status from one transaction with the URLs on either side

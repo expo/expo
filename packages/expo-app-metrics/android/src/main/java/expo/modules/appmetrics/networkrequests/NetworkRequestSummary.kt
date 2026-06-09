@@ -87,12 +87,18 @@ data class NetworkRequestSummary(
   }
 }
 
-/** A request is treated as failed if it errored or returned a non-2xx status. */
+/**
+ * A request is treated as failed if it errored, or returned a 4xx (client error) or 5xx (server
+ * error) status. 1xx (informational), 2xx (success), and 3xx (redirection — usually followed
+ * transparently by OkHttp, but the unfollowed case is still a successful response from the
+ * origin's perspective) are not failures. A missing status code (the request failed before
+ * headers arrived) counts as failed.
+ */
 internal val NetworkRequest.isFailed: Boolean
   get() {
     if (errorDescription != null) {
       return true
     }
     val code = statusCode ?: return true
-    return code !in 200..299
+    return code >= 400
   }

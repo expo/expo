@@ -114,7 +114,7 @@ class NetworkRequestInterceptorTest {
   }
 
   @Test
-  fun `counts request body bytes via the counting wrapper`() {
+  fun `records request bytes that include the body payload`() {
     server.enqueue(MockResponse().setResponseCode(200))
 
     val payload = "{\"hello\":\"world\"}"
@@ -133,7 +133,7 @@ class NetworkRequestInterceptorTest {
   }
 
   @Test
-  fun `counts response body bytes via the counting wrapper`() {
+  fun `records response bytes that include the body length`() {
     val body = "x".repeat(1024)
     server.enqueue(MockResponse().setResponseCode(200).setBody(body))
 

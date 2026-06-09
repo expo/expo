@@ -2,12 +2,9 @@
 
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
 /** Event names emitted by `NetworkRequestObserver`, matching the keys in the JS `NetworkRequestObserverEvents` type. */
 internal const val REQUEST_STARTED_EVENT = "requestStarted"
@@ -53,7 +50,7 @@ class NetworkRequestObserver(appContext: AppContext) :
       "id" to request.id.toString(),
       "url" to request.url,
       "method" to request.method,
-      "startedAt" to formatIsoUtc(request.startedAt)
+      "startedAt" to TimeUtils.dateToIsoUtcSeconds(request.startedAt)
     )
 
     internal fun completedPayload(request: NetworkRequest): Map<String, Any?> = mapOf(
@@ -65,8 +62,8 @@ class NetworkRequestObserver(appContext: AppContext) :
       "requestBytesSent" to request.requestBytesSent,
       "responseBytesReceived" to request.responseBytesReceived,
       "errorDescription" to request.errorDescription,
-      "startedAt" to request.timings.fetchStart?.let { formatIsoUtc(it) },
-      "completedAt" to request.timings.responseEnd?.let { formatIsoUtc(it) },
+      "startedAt" to request.timings.fetchStart?.let { TimeUtils.dateToIsoUtcSeconds(it) },
+      "completedAt" to request.timings.responseEnd?.let { TimeUtils.dateToIsoUtcSeconds(it) },
       "totalDuration" to request.timings.totalDuration,
       "redirects" to request.redirects.map { redirect ->
         mapOf(
@@ -76,23 +73,5 @@ class NetworkRequestObserver(appContext: AppContext) :
         )
       }
     )
-
-    /**
-     * ISO-8601 in UTC - matches the format iOS's `ISO8601Format()` produces with the default
-     * options, so JS receives the same string shape from both platforms.
-     *
-     * `SimpleDateFormat` isn't thread-safe and OkHttp drives the interceptor from a pool of
-     * dispatcher threads, so we stash one formatter per thread. (`java.time.DateTimeFormatter`
-     * would be the cleaner choice, but the package targets minSdk 24 and `java.time` requires
-     * 26+ without core-library desugaring - which the rest of the package also avoids; see
-     * `TimeUtils.kt`.)
-     */
-    private val isoFormatter = ThreadLocal.withInitial {
-      SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
-        timeZone = TimeZone.getTimeZone("UTC")
-      }
-    }
-
-    private fun formatIsoUtc(date: Date): String = requireNotNull(isoFormatter.get()).format(date)
   }
 }

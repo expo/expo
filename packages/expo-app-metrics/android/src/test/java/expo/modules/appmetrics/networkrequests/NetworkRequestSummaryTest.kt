@@ -21,15 +21,18 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
-  fun `counts failed entries by error and by non-2xx status`() {
+  fun `counts failed entries by error, 4xx, and 5xx status`() {
     val requests = listOf(
       makeRequest(statusCode = 200, totalDuration = 0.1),
+      // 304 is a successful conditional-GET cache hit — must not count as failed.
+      makeRequest(statusCode = 304, totalDuration = 0.1),
       makeRequest(statusCode = 404, totalDuration = 0.2),
+      makeRequest(statusCode = 503, totalDuration = 0.2),
       makeRequest(statusCode = null, errorDescription = "timed out", totalDuration = 0.3)
     )
     val summary = NetworkRequestSummary.from(requests)
-    assertEquals(3, summary.count)
-    assertEquals(2, summary.failed)
+    assertEquals(5, summary.count)
+    assertEquals(3, summary.failed)
   }
 
   @Test

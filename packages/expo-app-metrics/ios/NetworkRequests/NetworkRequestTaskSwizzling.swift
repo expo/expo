@@ -28,9 +28,9 @@ import ExpoModulesCore
     task via `objc_setAssociatedObject` so observation state travels with it across delegate
     callbacks and threads, and emit `requestStarted`.
 
- 2. **`-setState:`** — fires on every state transition. On `.completed` / `.canceling`, we read
-    `task.error`, `task.response`, and the task's wall-clock byte counters, build a
-    `NetworkRequest` snapshot, and emit `requestCompleted`.
+ 2. **`-setState:`** — fires on every state transition. On `.completed` we read `task.error`,
+    `task.response`, and the task's wall-clock byte counters, build a `NetworkRequest`
+    snapshot, and emit `requestCompleted`.
 
  The `setState:` hook is the universal completion seam: it fires for tasks created with a
  completion handler (no public delegate path), tasks running on `URLSession.shared` (Apple's
@@ -80,12 +80,16 @@ import ExpoModulesCore
 enum NetworkRequestTaskSwizzling {
   /**
    Header name any caller can set to opt a request out of observation. Outgoing telemetry uploads
-   in expo-observe set this so they don't recursively observe themselves. The header is forwarded
-   to the server as-is — pick a value that's safe to leak to the endpoint.
+   in expo-observe set this so they don't recursively observe themselves.
+
+   The header is forwarded to the destination verbatim — once a `URLSessionTask` is created we
+   can't safely mutate `originalRequest`, so we read it but don't strip it. The intended use is
+   on requests to endpoints we control (o.expo.dev); setting it on a request to a third party
+   leaks `Expo-AppMetrics-Skip: 1` to that host.
 
    No `X-` prefix per RFC 6648. Callers that can't import this constant (expo-observe must not
-   depend on app-metrics internals) hardcode the same literal — keep the two in sync if this ever
-   changes.
+   depend on app-metrics internals) hardcode the same literal — keep the two in sync if this
+   ever changes.
    */
   static let internalHeaderName = "Expo-AppMetrics-Skip"
 
@@ -252,17 +256,18 @@ enum NetworkRequestTaskSwizzling {
     let context = ObservationContext(
       id: UUID(),
       request: request,
-      startDate: Date()
+      startDate: Date(),
+      outerUrl: request.url
     )
     objc_setAssociatedObject(task, &observationContextKey, context, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 
     // Always make the context discoverable by URL — if dev-launcher's interceptor protocol is
-    // in play, the inner replay task will claim it on its own `resume`. If not, the entry
-    // expires after `pendingReplayTimeout` and is pruned on the next access. We considered gating this on
-    // a lazy `URLSessionConfiguration.default.protocolClasses` lookup but the lazy resolves on
-    // the first request, which may fire before dev-launcher registers its protocol — locking
-    // in the wrong answer for the lifetime of the process.
-    if let url = request.url {
+    // in play, the inner replay task will claim it on its own `resume`. If not, the entry is
+    // removed when this request terminates (see `recordCompletion` → `removePendingReplay`).
+    // We considered gating this on a lazy `URLSessionConfiguration.default.protocolClasses`
+    // lookup but the lazy resolves on the first request, which may fire before dev-launcher
+    // registers its protocol — locking in the wrong answer for the lifetime of the process.
+    if let url = context.outerUrl {
       addPendingReplay(context: context, for: url)
     }
 
@@ -309,6 +314,20 @@ enum NetworkRequestTaskSwizzling {
     }
   }
 
+  /// Removes `context` from `pendingReplays[url]` if it's still there. Called from
+  /// `recordCompletion` so production traffic (no dev-launcher inspector, no inner task ever
+  /// claims the entry) doesn't accumulate one parked `ObservationContext` per observed
+  /// request. No-op when the entry was already consumed by a `takePendingReplay`.
+  private static func removePendingReplay(context: ObservationContext, for url: URL) {
+    pendingReplays.withLock { pending in
+      guard var queue = pending[url] else {
+        return
+      }
+      queue.removeAll { $0.context === context }
+      pending[url] = queue.isEmpty ? nil : queue
+    }
+  }
+
   // MARK: - setState: swizzle (fallback recording for delegate-less sessions)
 
   /**
@@ -351,10 +370,13 @@ enum NetworkRequestTaskSwizzling {
   }
 
   private static let stateCompleted = URLSessionTask.State.completed.rawValue
-  private static let stateCanceling = URLSessionTask.State.canceling.rawValue
 
   private static func observeStateChange(task: URLSessionTask, newState: Int) {
-    guard newState == stateCompleted || newState == stateCanceling else {
+    // Only observe `.completed` — at `.canceling` time `task.error` is still `nil` (the
+    // `NSURLErrorCancelled` lands on `.completed`), so capturing the error here would race the
+    // metrics callback and snapshot a cancelled request as if it succeeded. Every task reaches
+    // `.completed` regardless, so this is strictly safer and carries the real error.
+    guard newState == stateCompleted else {
       return
     }
     guard let context = objc_getAssociatedObject(task, &observationContextKey) as? ObservationContext else {
@@ -381,38 +403,54 @@ enum NetworkRequestTaskSwizzling {
     }
   }
 
-  /**
-   Records a completion snapshot. Called from two paths:
-
-   - `DelegateProxy.urlSession(_:task:didFinishCollecting:)` (preferred) — fires on the session's
-     delegate queue after the task is fully complete and metrics are populated. The snapshot
-     carries the full `URLSessionTaskMetrics` chain.
-   - The `setState:` fallback (`observeStateChange`) — fires `setStateFallbackDelay` after the
-     state transition to `.completed`/`.canceling`, used only for tasks whose session doesn't
-     have our delegate proxy. The snapshot has no metrics; `NetworkRequest.from(...)` falls back
-     to wall-clock timings.
-
-   The `recorded` flag makes whichever path runs first the winner; the loser short-circuits.
-   */
+  /// Records a completion snapshot. Called from two paths:
+  ///
+  /// - `DelegateProxy.urlSession(_:task:didFinishCollecting:)` (preferred) — fires on the
+  ///   session's delegate queue after the task is fully complete and metrics are populated.
+  ///   The snapshot carries the full `URLSessionTaskMetrics` chain.
+  /// - The `setState:` fallback (`observeStateChange`) — fires `setStateFallbackDelay` after
+  ///   the state transition to `.completed`, used only for tasks whose session doesn't have
+  ///   our delegate proxy. The snapshot has no metrics; `NetworkRequest.from(...)` falls back
+  ///   to wall-clock timings.
+  ///
+  /// The check-set on `context.recorded` happens on `AppMetricsActor` to serialize the two
+  /// paths — without the actor hop, the metrics callback (on the session's delegate queue) and
+  /// the setState fallback (on a global queue) race on a plain `var Bool` and can both pass
+  /// the check, double-recording the request. The actor also serializes `pendingReplays`
+  /// cleanup so a context can't be claimed by an inner task while we're removing it.
   fileprivate static func recordCompletion(task: URLSessionTask, context: ObservationContext, error: Error?) {
-    if context.recorded {
-      return
-    }
-    context.recorded = true
+    // Snapshot all task state on the calling thread — `URLSessionTask` isn't `Sendable`, so we
+    // can't reach `task.response` / `task.countOfBytes*` after the actor hop.
+    let response = task.response as? HTTPURLResponse
+    let bytesSent = task.countOfBytesSent
+    let bytesReceived = task.countOfBytesReceived
+    let metrics = context.metrics
+    let outerUrl = context.outerUrl
 
-    let snapshot = NetworkRequest.from(
-      id: context.id,
-      request: context.request,
-      response: task.response as? HTTPURLResponse,
-      task: task,
-      metrics: context.metrics,
-      fallbackStart: context.startDate,
-      fallbackEnd: Date(),
-      error: error
-    )
-    let startNotification = context.startNotification
     AppMetricsActor.isolated {
-      _ = try? await startNotification?.value
+      if context.recorded {
+        return
+      }
+      context.recorded = true
+      // Drain the pending-replay entry now that this request is terminal — `pendingReplays`
+      // would otherwise leak one context per request when dev-launcher is off (no inner task
+      // ever claims them). Safe to call when no entry exists.
+      if let outerUrl {
+        removePendingReplay(context: context, for: outerUrl)
+      }
+
+      let snapshot = NetworkRequest.from(
+        id: context.id,
+        request: context.request,
+        response: response,
+        taskBytesSent: bytesSent,
+        taskBytesReceived: bytesReceived,
+        metrics: metrics,
+        fallbackStart: context.startDate,
+        fallbackEnd: Date(),
+        error: error
+      )
+      _ = try? await context.startNotification?.value
       NetworkRequestMonitor.shared.record(snapshot)
     }
   }
@@ -469,11 +507,26 @@ enum NetworkRequestTaskSwizzling {
  Per-task observation state. Stored on the task via `objc_setAssociatedObject` so it travels with
  the task across delegate callbacks, redirects, and threads without us maintaining a separate
  task→state map. Released automatically when the task or our slot is cleared.
+
+ `@unchecked Sendable` because we cross isolation boundaries by passing the context to
+ `AppMetricsActor` from `recordCompletion`. The mutable fields (`recorded`, `metrics`,
+ `replayedByDevLauncher`, `startNotification`) are written from at most two places each, and
+ the writes that matter for correctness — flipping `recorded`, updating the pending-replays
+ dictionary, building the snapshot — all run on `AppMetricsActor`. The early
+ `replayedByDevLauncher = true` write in `observeStart` happens on the resume thread before
+ any actor work picks the context up, so there's no read-write race in practice.
  */
-fileprivate final class ObservationContext {
+fileprivate final class ObservationContext: @unchecked Sendable {
   let id: UUID
   let request: URLRequest
   let startDate: Date
+  /// URL used as the `pendingReplays` key when this context was first enqueued, or `nil` if the
+  /// outer request had no URL (shouldn't happen for HTTP tasks but defended against). Kept
+  /// explicit so `recordCompletion` can drain the matching `pendingReplays` entry without
+  /// guessing — covers the production case where dev-launcher's inspector is off and no inner
+  /// task ever consumes the entry. Without this cleanup the dictionary would accumulate one
+  /// `ObservationContext` per observed request forever.
+  let outerUrl: URL?
   /// `Task` that fans the `requestStarted` notification out on `AppMetricsActor`. The `setState:`
   /// hook awaits it before recording completion so the two events can't arrive out of order.
   var startNotification: Task<Void, Error>?
@@ -481,8 +534,10 @@ fileprivate final class ObservationContext {
   /// is present. `nil` for delegate-less sessions (including `URLSession.shared`); the snapshot
   /// builder falls back to wall-clock timings in that case.
   var metrics: URLSessionTaskMetrics?
-  /// Set to `true` the first time the `setState:` swizzle records a completion snapshot. Guards
-  /// against double-recording on rapid `.canceling` → `.completed` sequences.
+  /// Set to `true` once `recordCompletion` has emitted the snapshot for this context. Guards
+  /// against double-recording when both the metrics callback (on the session's delegate queue)
+  /// and the `setState:` fallback (on a global queue) reach `recordCompletion` for the same
+  /// task. The check-and-set runs on `AppMetricsActor` to serialize the two paths.
   var recorded: Bool = false
   /// `true` once this context has been claimed by a dev-launcher inner replay task. The outer
   /// task's setState fallback and metrics callback short-circuit when this flips — the inner
@@ -490,10 +545,11 @@ fileprivate final class ObservationContext {
   /// chain.
   var replayedByDevLauncher: Bool = false
 
-  init(id: UUID, request: URLRequest, startDate: Date) {
+  init(id: UUID, request: URLRequest, startDate: Date, outerUrl: URL?) {
     self.id = id
     self.request = request
     self.startDate = startDate
+    self.outerUrl = outerUrl
   }
 }
 
