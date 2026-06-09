@@ -50,7 +50,6 @@ On a fresh install, devices boot from the embedded JavaScript bundle. These devi
 
 When the build completes, EAS uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it. Uploading is best effort, so if the upload fails, the build still succeeds.
 
-Devices apply patches only when `enableBsdiffPatchSupport` is enabled in your [app config](/workflow/configuration/). It's on by default in SDK 56 and later.
 
 ### Upload a bundle manually
 
