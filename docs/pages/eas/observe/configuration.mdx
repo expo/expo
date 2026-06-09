@@ -97,6 +97,8 @@ If you need to change the endpoint for the observability API, set the `endpointU
 
 The endpoint URL is baked into the native layer of the app at build time, so changing it requires regenerating native code. After updating your app config, run `npx expo prebuild` and create a new build to apply the change.
 
+EAS Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your EAS project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
+
 ## Environments
 
 All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset). To override it, use [`configure({ environment })`](#configure).
