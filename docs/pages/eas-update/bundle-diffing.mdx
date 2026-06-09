@@ -54,7 +54,7 @@ To enable, set the `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment 
 }
 ```
 
-When the build completes, EAS uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it. Uploads are best-effort; if EAS Build can't upload, or you don't use EAS Build, you can upload an embedded bundle yourself. Point `--bundle` at the JavaScript bundle and `--manifest` at the **app.manifest** produced by the native build:
+When the build completes, EAS uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it. If you don't use EAS Build, you can upload an embedded bundle yourself. Point `--bundle` at the JavaScript bundle and `--manifest` at the **app.manifest** produced by the native build:
 
 <Terminal
   cmd={[
