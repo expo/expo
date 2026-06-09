@@ -15,5 +15,8 @@ public class AppDelegatesLoaderDelegate: NSObject {
     ExpoAppDelegateSubscriberRepository.registerSubscriber(legacySubscriber)
     ExpoAppDelegateSubscriberRepository.registerSubscribersFrom(modulesProvider: modulesProvider)
     ExpoAppDelegateSubscriberRepository.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
+#if os(iOS) || os(tvOS)
+    ExpoAppDelegateSubscriberRepository.registerSceneSubscribersFrom(modulesProvider: modulesProvider)
+#endif
   }
 }

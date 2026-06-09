@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `sceneDelegateSubscribers` module config option and generate `getSceneDelegateSubscribers()` in the modules provider. ([#46681](https://github.com/expo/expo/pull/46681) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))

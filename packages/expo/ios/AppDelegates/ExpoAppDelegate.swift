@@ -1,6 +1,11 @@
 import Foundation
 import ExpoModulesCore
 
+#if os(iOS) || os(tvOS)
+import React
+import ReactAppDependencyProvider
+#endif
+
 /**
  Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate
  by forwarding `UIApplicationDelegate` events to the subscribers.
@@ -9,6 +14,16 @@ import ExpoModulesCore
  */
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
+  open var window: UIWindow?
+
+#if os(iOS) || os(tvOS)
+  public var reactNativeFactory: RCTReactNativeFactory?
+  public var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+
+  // Stored so the scene delegate can start React Native once its window connects.
+  public var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+#endif
+
   override public init() {
     // The subscribers are initializing and registering before the main code starts executing.
     // Here we're letting them know when the `AppDelegate` is being created,

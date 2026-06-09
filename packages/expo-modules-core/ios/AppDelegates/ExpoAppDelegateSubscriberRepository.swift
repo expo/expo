@@ -3,6 +3,10 @@
 @MainActor private var _subscribers = [ExpoAppDelegateSubscriberProtocol]()
 @MainActor private var _reactDelegateHandlers = [ExpoReactDelegateHandler]()
 
+#if os(iOS) || os(tvOS)
+@MainActor private var _sceneSubscribers = [ExpoSceneDelegateSubscriberProtocol]()
+#endif
+
 /**
  Class responsible for managing access to app delegate subscribers and react delegates.
  It should be used to access subscribers without depending on the `Expo` package where they are registered.
@@ -41,6 +45,32 @@ public class ExpoAppDelegateSubscriberRepository: NSObject {
   public static func getSubscriber(_ name: String) -> ExpoAppDelegateSubscriberProtocol? {
     return _subscribers.first { String(describing: $0) == name }
   }
+
+#if os(iOS) || os(tvOS)
+  @objc
+  public static var sceneSubscribers: [ExpoSceneDelegateSubscriberProtocol] {
+    return _sceneSubscribers
+  }
+
+  @objc
+  public static func registerSceneSubscribersFrom(modulesProvider: ModulesProvider) {
+    modulesProvider.getSceneDelegateSubscribers().forEach { subscriberType in
+      registerSceneSubscriber(subscriberType.init())
+    }
+  }
+
+  @objc
+  public static func registerSceneSubscriber(_ subscriber: ExpoSceneDelegateSubscriberProtocol) {
+    if _sceneSubscribers.contains(where: { $0 === subscriber }) {
+      fatalError("Given scene delegate subscriber `\(String(describing: subscriber))` is already registered.")
+    }
+    _sceneSubscribers.append(subscriber)
+  }
+
+  public static func getSceneSubscriberOfType<Subscriber>(_ type: Subscriber.Type) -> Subscriber? {
+    return _sceneSubscribers.first { $0 is Subscriber } as? Subscriber
+  }
+#endif // os(iOS) || os(tvOS)
 
   public static func getSubscriberOfType<Subscriber>(_ type: Subscriber.Type) -> Subscriber? {
     return _subscribers.first { $0 is Subscriber } as? Subscriber

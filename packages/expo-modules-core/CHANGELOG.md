@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added scene delegate subscribers (`ExpoSceneDelegateSubscriber`) so modules can hook into the UIKit scene-based life cycle, mirroring app delegate subscribers. ([#46681](https://github.com/expo/expo/pull/46681) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

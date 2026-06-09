@@ -80,6 +80,7 @@ export async function resolveModuleAsync(
         .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ??
       [],
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
+    sceneDelegateSubscribers: revision.config?.appleSceneDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
     ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
@@ -150,6 +151,7 @@ async function generatePackageListFileContentAsync(
     (module) =>
       module.modules.length ||
       module.appDelegateSubscribers.length ||
+      module.sceneDelegateSubscribers.length ||
       module.reactDelegateHandlers.length
   );
 
@@ -184,6 +186,14 @@ async function generatePackageListFileContentAsync(
     ...debugOnlyModules.map((module) => module.appDelegateSubscribers)
   );
 
+  const sceneDelegateSubscribers = ([] as string[]).concat(
+    ...modulesToImport.map((module) => module.sceneDelegateSubscribers)
+  );
+
+  const debugOnlySceneDelegateSubscribers = ([] as string[]).concat(
+    ...debugOnlyModules.map((module) => module.sceneDelegateSubscribers)
+  );
+
   const reactDelegateHandlerModules = modulesToImport.filter(
     (module) => !!module.reactDelegateHandlers.length
   );
@@ -211,6 +221,12 @@ ${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
   public override func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
 ${generateClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)}
   }
+
+#if os(iOS) || os(tvOS)
+  public override func getSceneDelegateSubscribers() -> [ExpoSceneDelegateSubscriber.Type] {
+${generateClasses(sceneDelegateSubscribers, debugOnlySceneDelegateSubscribers)}
+  }
+#endif
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
 ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDelegateHandlerModules)}

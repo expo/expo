@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `ExpoSceneDelegate`, a `UIWindowSceneDelegate` base class that adopts the UIKit scene-based life cycle required by the Xcode 27 / iOS 27 SDK and forwards events to scene delegate subscribers. ([#46681](https://github.com/expo/expo/pull/46681) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - Fix iOS build against React Native 0.87+ by dropping the legacy architecture (bridge) `RCTRootViewFactoryConfiguration` setup. ([#46641](https://github.com/expo/expo/pull/46641) by [@zoontek](https://github.com/zoontek))
