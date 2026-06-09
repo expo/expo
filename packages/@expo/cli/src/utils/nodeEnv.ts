@@ -1,7 +1,8 @@
 import * as env from '@expo/env';
+import { events } from '@expo/event-log';
 import path from 'node:path';
 
-import { events, shouldReduceLogs } from '../events';
+import { shouldReduceLogs } from './interactive';
 
 type EnvOutput = Record<string, string | undefined>;
 
@@ -11,19 +12,22 @@ declare namespace globalThis {
   let __DEV__: boolean | undefined;
 }
 
-// prettier-ignore
-export const event = events('env', (t) => [
-  t.event<'mode', {
-    nodeEnv: string;
-    babelEnv: string;
-    mode: 'development' | 'production';
-  }>(),
-  t.event<'load', {
-    mode: string | undefined;
-    files: string[];
-    env: Record<string, string | undefined>;
-  }>(),
-]);
+declare module '@expo/event-log' {
+  interface EventRegistry {
+    'env:mode': {
+      nodeEnv: string;
+      babelEnv: string;
+      mode: 'development' | 'production';
+    };
+    'env:load': {
+      mode: string | undefined;
+      files: string[];
+      env: Record<string, string | undefined>;
+    };
+  }
+}
+
+export const event = events('env');
 
 /**
  * Set the environment to production or development

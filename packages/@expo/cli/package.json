@@ -54,6 +54,7 @@
     "@expo/config-plugins": "workspace:~56.0.8",
     "@expo/devcert": "^1.2.1",
     "@expo/env": "workspace:~2.3.0",
+    "@expo/event-log": "0.0.1-canary-966313da986180a93e86de77d4212755231e20be",
     "@expo/image-utils": "workspace:^0.10.1",
     "@expo/inline-modules": "workspace:^0.0.10",
     "@expo/json-file": "workspace:^10.2.0",

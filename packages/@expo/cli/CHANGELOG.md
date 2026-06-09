@@ -20,6 +20,7 @@
 
 - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 - [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
+- [Internal] Migrate structured event logging to the `@expo/event-log` package
 
 ## 56.1.12 — 2026-05-26
 

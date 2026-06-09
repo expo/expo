@@ -7,6 +7,7 @@
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
+import { events } from '@expo/event-log';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import type { DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types';
 import type {
@@ -56,7 +57,6 @@ import {
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { events } from '../../../events';
 import type {
   BundleAssetWithFileHashes,
   ExportAssetDescriptor,
@@ -158,21 +158,24 @@ const EXPO_GO_METRO_PORT = 8081;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
-// prettier-ignore
-export const event = events('devserver', (t) => [
-  t.event<'start', {
-    mode: 'production' | 'development';
-    web: boolean;
-    baseUrl: string;
-    asyncRoutes: boolean;
-    routerRoot: string;
-    serverComponents: boolean;
-    serverActions: boolean;
-    serverRendering: boolean;
-    apiRoutes: boolean;
-    exporting: boolean;
-  }>(),
-]);
+declare module '@expo/event-log' {
+  interface EventRegistry {
+    'devserver:start': {
+      mode: 'production' | 'development';
+      web: boolean;
+      baseUrl: string;
+      asyncRoutes: boolean;
+      routerRoot: string;
+      serverComponents: boolean;
+      serverActions: boolean;
+      serverRendering: boolean;
+      apiRoutes: boolean;
+      exporting: boolean;
+    };
+  }
+}
+
+export const event = events('devserver');
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;

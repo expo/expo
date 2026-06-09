@@ -82,8 +82,8 @@ export const expoStart: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
-  const { installEventLogger, getWellKnownTemporaryLogFile } = await import('../events/index.js');
-  installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'start'));
+  const { installEventLogger } = await import('@expo/event-log');
+  installEventLogger({ command: 'expo start', version: process.env.__EXPO_VERSION });
 
   // NOTE(cedric): `./resolveOptions` loads the expo config when using dev clients, this needs to be initialized before that
   const { setNodeEnv, loadEnvFiles } = await import('../utils/nodeEnv.js');
