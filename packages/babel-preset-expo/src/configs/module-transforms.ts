@@ -16,12 +16,15 @@ module.exports = function (_api: ConfigAPI, options: ModuleTransformOptions) {
   // Runtime transform (no regenerator for hermes-v0)
   if (options.enableBabelRuntime !== false) {
     const isVersion = typeof options.enableBabelRuntime === 'string';
+    const fallbackVersion = require('@babel/runtime/package.json').version;
+    const version = isVersion ? options.enableBabelRuntime : fallbackVersion;
+
     plugins.push([
       require('@babel/plugin-transform-runtime'),
       {
         helpers: true,
         regenerator: true,
-        ...(isVersion && { version: options.enableBabelRuntime }),
+        version,
       },
     ]);
   }
