@@ -57,6 +57,8 @@ export const withIosExpoPlugins: ConfigPlugin<{
     // Dangerous
     withIosIcons,
     IOSConfig.PrivacyInfo.withPrivacyInfo,
+    // Adopt the UIScene life cycle required by the Xcode 27 / iOS 27 SDK (TN3187).
+    IOSConfig.SceneDelegate.withSceneDelegate,
   ]);
 };
 

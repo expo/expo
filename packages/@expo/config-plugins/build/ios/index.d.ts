@@ -17,6 +17,7 @@ export * as PrivacyInfo from './PrivacyInfo';
 export * as ProvisioningProfile from './ProvisioningProfile';
 export * as RequiresFullScreen from './RequiresFullScreen';
 export * as Scheme from './Scheme';
+export * as SceneDelegate from './SceneDelegate';
 export * as Target from './Target';
 export * as Updates from './Updates';
 export * as UsesNonExemptEncryption from './UsesNonExemptEncryption';

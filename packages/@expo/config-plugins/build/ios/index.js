@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = exports.Google = exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.DeploymentTarget = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
+exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Scheme = exports.SceneDelegate = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = exports.Google = exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.DeploymentTarget = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
 function _Bitcode() {
   const data = _interopRequireWildcard(require("./Bitcode"));
   _Bitcode = function () {
@@ -249,6 +249,19 @@ Object.defineProperty(exports, "Scheme", {
   enumerable: true,
   get: function () {
     return _Scheme();
+  }
+});
+function _SceneDelegate() {
+  const data = _interopRequireWildcard(require("./SceneDelegate"));
+  _SceneDelegate = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "SceneDelegate", {
+  enumerable: true,
+  get: function () {
+    return _SceneDelegate();
   }
 });
 function _Target() {

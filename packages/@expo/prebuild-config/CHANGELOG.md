@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Adopt the UIKit scene-based life cycle during prebuild so apps launch on the Xcode 27 / iOS 27 SDK. ([#46681](https://github.com/expo/expo/pull/46681) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -151,6 +151,17 @@ exports[`built-in plugins compiles mods 1`] = `
         "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "arm64",
@@ -871,6 +882,17 @@ exports[`built-in plugins introspects mods 1`] = `
             "NSAllowsLocalNetworking": true,
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+          "UIApplicationSceneManifest": {
+            "UIApplicationSupportsMultipleScenes": false,
+            "UISceneConfigurations": {
+              "UIWindowSceneSessionRoleApplication": [
+                {
+                  "UISceneConfigurationName": "Default Configuration",
+                  "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+                },
+              ],
+            },
+          },
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "arm64",
@@ -1047,6 +1069,17 @@ exports[`built-in plugins introspects mods 1`] = `
         "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "arm64",
@@ -1499,6 +1532,17 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+          "UIApplicationSceneManifest": {
+            "UIApplicationSupportsMultipleScenes": false,
+            "UISceneConfigurations": {
+              "UIWindowSceneSessionRoleApplication": [
+                {
+                  "UISceneConfigurationName": "Default Configuration",
+                  "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+                },
+              ],
+            },
+          },
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "armv7",
@@ -1677,6 +1721,17 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",

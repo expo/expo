@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `IOSConfig.SceneDelegate.withSceneDelegate` plugin that adopts the UIKit scene-based life cycle required by the Xcode 27 / iOS 27 SDK. ([#46681](https://github.com/expo/expo/pull/46681) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
