@@ -16,10 +16,6 @@
       "types": "./build/LogBox.d.ts",
       "default": "./build/LogBox.js"
     },
-    "./utils": {
-      "types": "./utils.d.ts",
-      "default": "./utils.js"
-    },
     "./swap-rn-logbox.js": "./swap-rn-logbox.js",
     "./swap-rn-logbox-parser.js": "./swap-rn-logbox-parser.js",
     "./logbox-web-polyfill": {
