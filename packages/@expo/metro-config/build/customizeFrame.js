@@ -1,8 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.INTERNAL_CALLSITES_REGEX = void 0;
 exports.getDefaultCustomizeFrame = getDefaultCustomizeFrame;
-const node_path_1 = require("node:path");
+const node_path_1 = __importDefault(require("node:path"));
 const node_url_1 = require("node:url");
 const filePath_1 = require("./utils/filePath");
 // Import only the types here, the values will be imported from the project, at runtime.
@@ -67,7 +70,7 @@ function isUrl(value) {
     // Windows absolute paths (e.g. `C:\path\to\file.js`) are parsed as a URL with a
     // single-letter (drive) protocol by `new URL`. Treat those as file paths, not URLs,
     // otherwise every Windows frame is incorrectly collapsed and stripped of its location.
-    if ((0, node_path_1.isAbsolute)(value)) {
+    if (node_path_1.default.isAbsolute(value)) {
         return false;
     }
     try {

@@ -117,10 +117,8 @@ function mockWindowsPath() {
   const path = jest.requireActual<typeof import('node:path')>('node:path');
   const windowsPath = {
     __esModule: true,
-    ...path,
-    default: { ...path, sep: '\\', isAbsolute: path.win32.isAbsolute },
-    sep: '\\',
-    isAbsolute: path.win32.isAbsolute,
+    ...path.win32,
+    default: path.win32,
   };
 
   jest.doMock('node:path', () => windowsPath);

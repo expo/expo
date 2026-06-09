@@ -1,6 +1,6 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import type { SymbolicatorConfigT } from '@expo/metro/metro-config';
-import { isAbsolute } from 'node:path';
+import path from 'node:path';
 import { URL } from 'node:url';
 
 import { toPosixPath } from './utils/filePath';
@@ -74,7 +74,7 @@ function isUrl(value: string): boolean {
   // Windows absolute paths (e.g. `C:\path\to\file.js`) are parsed as a URL with a
   // single-letter (drive) protocol by `new URL`. Treat those as file paths, not URLs,
   // otherwise every Windows frame is incorrectly collapsed and stripped of its location.
-  if (isAbsolute(value)) {
+  if (path.isAbsolute(value)) {
     return false;
   }
   try {
