@@ -5,7 +5,6 @@ description: A set of components that allow you to build UIs directly with Jetpa
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
 packageName: '@expo/ui'
 platforms: ['android', 'ios', 'tvos', 'expo-go']
-hideTOC: true
 ---
 
 `@expo/ui` is a set of native input components that allows you to build fully native interfaces with Jetpack Compose and SwiftUI. It aims to provide the commonly used features and components that a typical app will need.
@@ -21,3 +20,141 @@ Components are available for the following platforms:
 ## Drop-in replacements
 
 See **[Drop-in replacements](drop-in-replacements)** for API-compatible replacements for popular React Native community libraries.
+
+## Available components
+
+{/* @generated:ui-component-table. Do not edit by hand. Run `pnpm generate-ui-component-tables`. */}
+
+### Jetpack Compose
+
+| Component                                                                | Description                                                                                                      |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| [`AlertDialog`](jetpack-compose/alertdialog)                             | AlertDialog component for displaying native alert dialogs.                                                       |
+| [`Badge`](jetpack-compose/badge)                                         | Badge component for displaying status indicators and counts.                                                     |
+| [`BadgedBox`](jetpack-compose/badgedbox)                                 | BadgedBox component for overlaying badges on content.                                                            |
+| [`BasicAlertDialog`](jetpack-compose/basicalertdialog)                   | BasicAlertDialog component for displaying dialogs with custom content.                                           |
+| [`Box`](jetpack-compose/box)                                             | Box component for stacking child elements.                                                                       |
+| [`Button`](jetpack-compose/button)                                       | Button components for displaying native Material3 buttons.                                                       |
+| [`Card`](jetpack-compose/card)                                           | Card component for displaying content in a styled container.                                                     |
+| [`Carousel`](jetpack-compose/carousel)                                   | Carousel components for displaying scrollable collections of items.                                              |
+| [`Checkbox`](jetpack-compose/checkbox)                                   | Checkbox component for selection controls.                                                                       |
+| [`Chip`](jetpack-compose/chip)                                           | Chip components for displaying compact elements.                                                                 |
+| [`Column`](jetpack-compose/column)                                       | Column component for placing children vertically.                                                                |
+| [`DateTimePicker`](jetpack-compose/datetimepicker)                       | DateTimePicker component for selecting dates and times.                                                          |
+| [`Divider`](jetpack-compose/divider)                                     | Divider components for creating visual separators.                                                               |
+| [`DockedSearchBar`](jetpack-compose/dockedsearchbar)                     | DockedSearchBar component for displaying an inline search input.                                                 |
+| [`DropdownMenu`](jetpack-compose/dropdownmenu)                           | DropdownMenu component for displaying dropdown menus.                                                            |
+| [`ExposedDropdownMenuBox`](jetpack-compose/exposeddropdownmenubox)       | ExposedDropdownMenuBox component for displaying a dropdown menu with a customizable anchor.                      |
+| [`FloatingActionButton`](jetpack-compose/floatingactionbutton)           | FloatingActionButton components following Material Design 3.                                                     |
+| [`FlowRow`](jetpack-compose/flowrow)                                     | FlowRow component for wrapping children horizontally.                                                            |
+| [`HorizontalFloatingToolbar`](jetpack-compose/horizontalfloatingtoolbar) | HorizontalFloatingToolbar component for displaying a floating action bar.                                        |
+| [`HorizontalPager`](jetpack-compose/horizontalpager)                     | HorizontalPager component for swipeable pages.                                                                   |
+| [`Host`](jetpack-compose/host)                                           | Host component for bridging React Native and Jetpack Compose.                                                    |
+| [`Icon`](jetpack-compose/icon)                                           | Icon component for displaying icons.                                                                             |
+| [`IconButton`](jetpack-compose/iconbutton)                               | IconButton components for displaying native Material3 icon buttons.                                              |
+| [`LazyColumn`](jetpack-compose/lazycolumn)                               | LazyColumn component for displaying scrollable lists.                                                            |
+| [`LazyRow`](jetpack-compose/lazyrow)                                     | LazyRow component for displaying horizontally scrolling lists.                                                   |
+| [`ListItem`](jetpack-compose/listitem)                                   | ListItem component for displaying structured list entries.                                                       |
+| [`ModalBottomSheet`](jetpack-compose/bottomsheet)                        | ModalBottomSheet component that presents content from the bottom of the screen.                                  |
+| [`NavigationBar`](jetpack-compose/navigationbar)                         | NavigationBar component for Material 3 bottom navigation.                                                        |
+| [`Progress Indicators`](jetpack-compose/progress)                        | Progress indicator components for displaying operation status.                                                   |
+| [`PullToRefreshBox`](jetpack-compose/pulltorefreshbox)                   | PullToRefreshBox component for pull-to-refresh interactions.                                                     |
+| [`RadioButton`](jetpack-compose/radiobutton)                             | RadioButton component for single-selection controls.                                                             |
+| [`RNHostView`](jetpack-compose/rnhostview)                               | A component that enables React Native views inside Jetpack Compose.                                              |
+| [`Row`](jetpack-compose/row)                                             | Row component for placing children horizontally.                                                                 |
+| [`SearchBar`](jetpack-compose/searchbar)                                 | SearchBar component for search input functionality.                                                              |
+| [`SegmentedButton`](jetpack-compose/segmentedbutton)                     | Segmented Button components for single or multi-choice selection.                                                |
+| [`Shape`](jetpack-compose/shape)                                         | Shape component for drawing geometric shapes.                                                                    |
+| [`Slider`](jetpack-compose/slider)                                       | Slider component for selecting values from a range.                                                              |
+| [`Snackbar`](jetpack-compose/snackbar)                                   | A brief notification that appears at the bottom of the screen to provide feedback without interrupting the user. |
+| [`Spacer`](jetpack-compose/spacer)                                       | Spacer component for adding flexible space between elements.                                                     |
+| [`Surface`](jetpack-compose/surface)                                     | Surface component for styled content containers.                                                                 |
+| [`Switch`](jetpack-compose/switch)                                       | Switch component for toggle controls.                                                                            |
+| [`Text`](jetpack-compose/text)                                           | Text component for displaying styled text.                                                                       |
+| [`TextField`](jetpack-compose/textfield)                                 | TextField components for native Material3 text input.                                                            |
+| [`ToggleButton`](jetpack-compose/togglebutton)                           | ToggleButton components for displaying native Material3 toggle buttons.                                          |
+| [`Tooltip`](jetpack-compose/tooltip)                                     | Tooltip components for displaying contextual information on long-press.                                          |
+
+### SwiftUI
+
+| Component                                                         | Description                                                                                         |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| [`AccessoryWidgetBackground`](swift-ui/accessorywidgetbackground) | Adaptive background view that provides a standard appearance based on the the widget's environment. |
+| [`Alert`](swift-ui/alert)                                         | Alert component for presenting native iOS alert dialogs.                                            |
+| [`BottomSheet`](swift-ui/bottomsheet)                             | BottomSheet component that presents content from the bottom of the screen.                          |
+| [`Button`](swift-ui/button)                                       | Button component for displaying native buttons.                                                     |
+| [`ColorPicker`](swift-ui/colorpicker)                             | ColorPicker component for selecting colors.                                                         |
+| [`ConfirmationDialog`](swift-ui/confirmationdialog)               | ConfirmationDialog component for presenting confirmation prompts.                                   |
+| [`ContextMenu`](swift-ui/contextmenu)                             | ContextMenu component for displaying context menus.                                                 |
+| [`ControlGroup`](swift-ui/controlgroup)                           | ControlGroup component for grouping interactive controls.                                           |
+| [`DatePicker`](swift-ui/datepicker)                               | DatePicker component for selecting dates and times.                                                 |
+| [`DisclosureGroup`](swift-ui/disclosuregroup)                     | DisclosureGroup component for displaying expandable content.                                        |
+| [`Divider`](swift-ui/divider)                                     | Divider component for creating visual separators.                                                   |
+| [`Form`](swift-ui/form)                                           | Form component for collecting user input in a structured layout.                                    |
+| [`Gauge`](swift-ui/gauge)                                         | Gauge component for displaying progress with visual indicators.                                     |
+| [`Group`](swift-ui/group)                                         | Group component for grouping views without affecting layout.                                        |
+| [`Host`](swift-ui/host)                                           | Host component that enables SwiftUI components in React Native.                                     |
+| [`HStack`](swift-ui/hstack)                                       | HStack component for horizontal layouts.                                                            |
+| [`Image`](swift-ui/image)                                         | Image component for displaying SF Symbols.                                                          |
+| [`Label`](swift-ui/label)                                         | Label component for displaying text with an icon.                                                   |
+| [`LazyHStack`](swift-ui/lazyhstack)                               | LazyHStack component for lazy horizontal layouts.                                                   |
+| [`LazyVStack`](swift-ui/lazyvstack)                               | LazyVStack component for lazy vertical layouts.                                                     |
+| [`Link`](swift-ui/link)                                           | Link component for displaying clickable links.                                                      |
+| [`List`](swift-ui/list)                                           | List component for displaying scrollable lists of items.                                            |
+| [`Menu`](swift-ui/menu)                                           | Menu component for displaying dropdown menus.                                                       |
+| [`Namespace`](swift-ui/namespace)                                 | A Namespace component that allows you create Namespaces in SwiftUI                                  |
+| [`Overlay`](swift-ui/overlay)                                     | Overlay component for layering content on top of another view.                                      |
+| [`Picker`](swift-ui/picker)                                       | Picker component for selecting options from a list.                                                 |
+| [`Popover`](swift-ui/popover)                                     | Popover component for displaying content in a floating overlay.                                     |
+| [`ProgressView`](swift-ui/progressview)                           | ProgressView component for displaying progress indicators.                                          |
+| [`RNHostView`](swift-ui/rnhostview)                               | A component that enables React Native views inside SwiftUI.                                         |
+| [`ScrollView`](swift-ui/scrollview)                               | ScrollView component for scrollable content.                                                        |
+| [`Section`](swift-ui/section)                                     | Section component for grouping content within lists and forms.                                      |
+| [`SecureField`](swift-ui/securefield)                             | SecureField component for password input.                                                           |
+| [`Slider`](swift-ui/slider)                                       | Slider component for selecting values from a range.                                                 |
+| [`Spacer`](swift-ui/spacer)                                       | Spacer component for flexible spacing.                                                              |
+| [`SwipeActions`](swift-ui/swipeactions)                           | SwipeActions component for adding leading and trailing swipe actions to row content.                |
+| [`TabView`](swift-ui/tabview)                                     | TabView component for paged or tabbed content.                                                      |
+| [`Text`](swift-ui/text)                                           | Text component for displaying styled text with support for nested texts.                            |
+| [`TextField`](swift-ui/textfield)                                 | TextField component for text input.                                                                 |
+| [`Toggle`](swift-ui/toggle)                                       | Toggle component for displaying native toggles.                                                     |
+| [`VStack`](swift-ui/vstack)                                       | VStack component for vertical layouts.                                                              |
+| [`ZStack`](swift-ui/zstack)                                       | ZStack component for overlapping layouts.                                                           |
+
+### Universal
+
+| Component                              | Description                                                                                               |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| [`BottomSheet`](universal/bottomsheet) | A modal sheet that slides up from the bottom of the screen.                                               |
+| [`Button`](universal/button)           | A pressable button with multiple visual variants.                                                         |
+| [`Checkbox`](universal/checkbox)       | A toggle control that represents a checked or unchecked state.                                            |
+| [`Collapsible`](universal/collapsible) | A labelled tappable header that toggles visibility of its content.                                        |
+| [`Column`](universal/column)           | A vertical layout container for universal @expo/ui components.                                            |
+| [`FieldGroup`](universal/fieldgroup)   | A scrollable container of grouped settings-style rows.                                                    |
+| [`Host`](universal/host)               | A cross-platform Host component that wraps universal @expo/ui content.                                    |
+| [`Icon`](universal/icon)               | A platform-native icon — SF Symbol on iOS, Material Symbol on Android.                                    |
+| [`List`](universal/list)               | A virtualized vertical container of rows, paired with a tappable ListItem primitive.                      |
+| [`Picker`](universal/picker)           | A single-selection input with menu and wheel appearances.                                                 |
+| [`RNHostView`](universal/rnhostview)   | A cross-platform component for hosting React Native views inside @expo/ui views.                          |
+| [`Row`](universal/row)                 | A horizontal layout container for universal @expo/ui components.                                          |
+| [`ScrollView`](universal/scrollview)   | A scrollable container that supports vertical or horizontal scrolling.                                    |
+| [`Slider`](universal/slider)           | A control for selecting a value from a continuous or stepped range.                                       |
+| [`Spacer`](universal/spacer)           | A layout spacer that produces empty space between siblings.                                               |
+| [`Switch`](universal/switch)           | A toggle control that switches between on and off states.                                                 |
+| [`Text`](universal/text)               | A component for displaying styled text content.                                                           |
+| [`TextInput`](universal/textinput)     | A text input backed by native SwiftUI and Jetpack Compose components, with a React Native-compatible API. |
+
+### Drop-in replacements
+
+| Component                                                   | Description                                                                            |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [`BottomSheet`](drop-in-replacements/bottomsheet)           | A bottom sheet compatible with @gorhom/bottom-sheet.                                   |
+| [`DateTimePicker`](drop-in-replacements/datetimepicker)     | A date and time picker compatible with @react-native-community/datetimepicker.         |
+| [`MaskedView`](drop-in-replacements/maskedview)             | A masked view compatible with @react-native-masked-view/masked-view.                   |
+| [`Menu`](drop-in-replacements/menu)                         | A menu compatible with @react-native-menu/menu.                                        |
+| [`PagerView`](drop-in-replacements/pagerview)               | A horizontally paged view compatible with react-native-pager-view.                     |
+| [`Picker`](drop-in-replacements/picker)                     | A picker compatible with @react-native-picker/picker.                                  |
+| [`SegmentedControl`](drop-in-replacements/segmentedcontrol) | A segmented control compatible with @react-native-segmented-control/segmented-control. |
+| [`Slider`](drop-in-replacements/slider)                     | A slider compatible with @react-native-community/slider.                               |
+
+{/* @generated:ui-component-table:end */}

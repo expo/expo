@@ -21,6 +21,7 @@
     "copy-latest": "node ./scripts/copy-latest.js",
     "generate-llms": "node --experimental-strip-types ./scripts/generate-llms/index.js",
     "generate-markdown-pages": "node --experimental-strip-types ./scripts/generate-markdown-pages.ts",
+    "generate-ui-component-tables": "node --experimental-strip-types ./scripts/generate-ui-component-tables.ts",
     "check-markdown-pages": "node --experimental-strip-types ./scripts/check-markdown-pages.ts",
     "generate-static-resources": "node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
