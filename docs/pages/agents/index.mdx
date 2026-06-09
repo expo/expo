@@ -1,5 +1,5 @@
 ---
-title: AI agents
+title: AI agents and Expo overview
 sidebar_title: Overview
 description: Build and publish Expo and React Native apps with AI coding agents such as Claude Code, Codex, and Cursor.
 ---
@@ -7,6 +7,7 @@ description: Build and publish Expo and React Native apps with AI coding agents 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { ClaudeLogoIcon, CursorLogoIcon, OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 
 Claude Code, Codex, Cursor, and other AI coding agents can help you build, upgrade, debug, and deploy your Expo and React Native projects. When you use [`create-expo-app`](/more/create-expo/) to create a new project, that new project is already set up with the configuration files required by an AI agent. This setup is also committed to your project, so everyone on your team starts from the same pinned SDK version and project instructions, and their agents read the same project context.
 
@@ -44,21 +45,21 @@ Each per-agent guide covers install, setup, and example prompts for that agent:
   title="Claude Code"
   description="Set up Anthropic's terminal agent with Expo, including project context and example prompts."
   href="/agents/claude/"
-  Icon={BookOpen02Icon}
+  Icon={ClaudeLogoIcon}
 />
 
 <BoxLink
   title="Codex"
   description="Set up OpenAI's terminal agent with Expo, including project context and example prompts."
   href="/agents/codex/"
-  Icon={BookOpen02Icon}
+  Icon={OpenAILogoIcon}
 />
 
 <BoxLink
   title="Cursor"
   description="Set up the AI-first code editor with Expo, including project context and example prompts."
   href="/agents/cursor/"
-  Icon={BookOpen02Icon}
+  Icon={CursorLogoIcon}
 />
 
 ## Project context files for agents
