@@ -25,7 +25,6 @@ function getNativeTargetSynchronizedGroupsMap(pbxProject) {
 function prepareSynchronizedRootGroups(pbxProject) {
     const objects = pbxProject.hash.project.objects;
     const fsSynchronizedRootGroups = new Map();
-    const fsSynchronizedRootGroupsUUIDs = new Set();
     if (objects.PBXFileSystemSynchronizedRootGroup) {
         for (const key of Object.keys(objects.PBXFileSystemSynchronizedRootGroup)) {
             if (key.endsWith('_comment')) {
@@ -33,13 +32,12 @@ function prepareSynchronizedRootGroups(pbxProject) {
             }
             const groupObject = objects.PBXFileSystemSynchronizedRootGroup[key];
             fsSynchronizedRootGroups.set(groupObject.path, key);
-            fsSynchronizedRootGroupsUUIDs.add(key);
         }
     }
     else {
         objects.PBXFileSystemSynchronizedRootGroup = {};
     }
-    return { fsSynchronizedRootGroups, fsSynchronizedRootGroupsUUIDs };
+    return { fsSynchronizedRootGroups };
 }
 /**
  * Add watched directories as PBXFileSystemSynchronizedRootGroups to pbxproj file in the project and save the changes.
@@ -58,25 +56,23 @@ async function updateXcodeProject(projectRoot, inlineModulesXcodeParams) {
     const objects = pbxProject.hash.project.objects;
     const projectRootRelativeToIos = '..';
     const pbxNativeTarget = pbxProject.hash.project.objects.PBXNativeTarget;
-    const { fsSynchronizedRootGroups, fsSynchronizedRootGroupsUUIDs } = prepareSynchronizedRootGroups(pbxProject);
     const nativeTargetSynchronizedGroups = getNativeTargetSynchronizedGroupsMap(pbxProject);
-    const removeWatchedDirectoriesFromTarget = (nativeTargetGroup) => {
-        if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
-            return;
-        }
-        nativeTargetGroup.fileSystemSynchronizedGroups =
-            nativeTargetGroup.fileSystemSynchronizedGroups.filter((group) => !fsSynchronizedRootGroupsUUIDs.has(group.value));
-    };
     const addWatchedDirectoryToTarget = (targetUUID, nativeTargetGroup, dir, dirUUID) => {
-        if (nativeTargetSynchronizedGroups.get(targetUUID)?.has(dirUUID)) {
+        if (!nativeTargetSynchronizedGroups.has(targetUUID)) {
+            nativeTargetSynchronizedGroups.set(targetUUID, new Set());
+        }
+        const targetSynchronizedGroups = nativeTargetSynchronizedGroups.get(targetUUID);
+        if (targetSynchronizedGroups.has(dirUUID)) {
             return;
         }
         if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
             nativeTargetGroup.fileSystemSynchronizedGroups = [];
         }
         nativeTargetGroup.fileSystemSynchronizedGroups.push({ value: dirUUID, comment: dir });
+        targetSynchronizedGroups.add(dirUUID);
     };
-    const getOrCreateWatchedDirUUID = (dir) => {
+    const { fsSynchronizedRootGroups } = prepareSynchronizedRootGroups(pbxProject);
+    const getOrCreateWatchedDirectoryUUID = (dir) => {
         const dirRelativeToIos = path_1.default.join(projectRootRelativeToIos, dir);
         if (fsSynchronizedRootGroups.has(dirRelativeToIos)) {
             return fsSynchronizedRootGroups.get(dirRelativeToIos);
@@ -96,17 +92,18 @@ async function updateXcodeProject(projectRoot, inlineModulesXcodeParams) {
         };
         return newUUID;
     };
-    for (const target of pbxProject.getFirstProject().firstProject.targets) {
+    const targetsToUpdate = pbxProject
+        .getFirstProject()
+        .firstProject.targets.filter((target) => {
         const targetUuid = target.value;
         const targetName = pbxNativeTarget[targetUuid].name;
-        const nativeTargetGroup = objects.PBXNativeTarget[target.value];
-        if (xcodeProjectTargets && !xcodeProjectTargets.has(targetName)) {
-            removeWatchedDirectoriesFromTarget(nativeTargetGroup);
-            continue;
-        }
-        for (const dir of swiftWatchedDirectories) {
-            const dirUUID = getOrCreateWatchedDirUUID(dir);
-            addWatchedDirectoryToTarget(target.value, nativeTargetGroup, dir, dirUUID);
+        return !xcodeProjectTargets || xcodeProjectTargets.has(targetName);
+    });
+    for (const watchedDirectory of swiftWatchedDirectories) {
+        const dirUUID = getOrCreateWatchedDirectoryUUID(watchedDirectory);
+        for (const target of targetsToUpdate) {
+            const nativeTargetGroup = objects.PBXNativeTarget[target.value];
+            addWatchedDirectoryToTarget(target.value, nativeTargetGroup, watchedDirectory, dirUUID);
         }
     }
     await fs_1.default.promises.writeFile(pbxProject.filepath, pbxProject.writeSync());

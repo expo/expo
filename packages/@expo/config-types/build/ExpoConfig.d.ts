@@ -270,6 +270,10 @@ export interface ExpoConfig {
              * List of directories watched for inline modules.
              */
             watchedDirectories: string[];
+            /**
+             * List of targets to which inline modules files are added. If undefined defaults to all targets.
+             */
+            xcodeProjectTargets?: string[];
         };
     };
     /**

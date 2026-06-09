@@ -31,6 +31,16 @@ export const withInlineModules = (config: ExpoConfig, props: any) => {
           return JSON.stringify(conf.experiments?.inlineModules?.watchedDirectories ?? []);
         },
       },
+      {
+        propName: 'expo.inlineModules.xcodeProjectTargets',
+        propValueGetter: (conf) => {
+          const xcodeProjectTargets = conf.experiments?.inlineModules?.xcodeProjectTargets;
+          if (!xcodeProjectTargets) {
+            return JSON.stringify({ all: true, targets: [] });
+          }
+          return JSON.stringify({ all: false, targets: xcodeProjectTargets });
+        },
+      },
     ],
     'withIosInlineModules'
   )(config);

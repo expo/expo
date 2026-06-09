@@ -3,7 +3,10 @@ import fs from 'fs';
 import path from 'path';
 
 import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
-import { getIosInlineModulesClassNames } from '../../inlineModules/iosInlineModules';
+import {
+  getIosInlineModulesClassNames,
+  isTargetInInlineModulesTargets,
+} from '../../inlineModules/iosInlineModules';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
@@ -104,6 +107,8 @@ export async function resolveExtraBuildDependenciesAsync(
 
 interface GenerateModulesProviderParams {
   watchedDirectories: string[];
+  inlineModulesTargets: { all: boolean; targets: string[] };
+  targetPath: string;
   appRoot: string;
 }
 /**
@@ -168,9 +173,11 @@ async function generatePackageListFileContentAsync(
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
 
-  modulesClassNames = modulesClassNames.concat(
-    await getIosInlineModulesClassNames(params.watchedDirectories, params.appRoot)
-  );
+  if (isTargetInInlineModulesTargets(params)) {
+    modulesClassNames = modulesClassNames.concat(
+      await getIosInlineModulesClassNames(params.watchedDirectories, params.appRoot)
+    );
+  }
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
     .concat(...debugOnlyModules.map((module) => module.modules))
