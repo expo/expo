@@ -94,6 +94,7 @@ export const query = (() => {
     const headersKey = stringifySorted(headers);
     if (!cacheKey || cacheKey !== headersKey) {
       resetCache();
+      cacheKey = headersKey;
     }
 
     // Retrieve a cached result, if we have any via a `query => variables => Result` cache key
