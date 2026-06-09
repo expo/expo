@@ -11,8 +11,8 @@ class ShadowNodeProxy(expoView: ExpoView) {
   private var pendingFlush: ((stateWrapper: Any) -> Unit)? = null
   private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
 
-  // Schecule in predraw listener to avoid early return in re-entrancy 
-  // We have a proper fix [here](https://github.com/facebook/react-native/pull/56311) 
+  // Schedule in predraw listener to avoid early return in re-entrancy
+  // We have a proper fix [here](https://github.com/facebook/react-native/pull/56311)
   // but it needs to be merged in RN
   // TODO: Remove the workaround when RN PR gets merged.
   fun setViewSize(width: Double, height: Double) {
