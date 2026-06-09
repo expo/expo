@@ -1876,8 +1876,8 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0
       '@expo/ws-tunnel':
-        specifier: ^1.0.1
-        version: 1.0.6
+        specifier: ^2.0.0
+        version: 2.0.0(ws@8.19.0)
       '@expo/xcpretty':
         specifier: ^4.4.4
         version: 4.4.4
@@ -7683,8 +7683,10 @@ packages:
       react: '*'
       react-native: 0.86.0-rc.3
 
-  '@expo/ws-tunnel@1.0.6':
-    resolution: {integrity: sha512-nDRbLmSrJar7abvUjp3smDwH8HcbZcoOEa5jVPUv9/9CajgmWw20JNRwTuBRzWIWIkEJDkz20GoNA+tSwUqk0Q==}
+  '@expo/ws-tunnel@2.0.0':
+    resolution: {integrity: sha512-j+JfTRdCk820J9dU0sA2SqshQIKFOMo7ED84w9MJFcebfbNQgsLztEY/SABDkGnjatrW4xGqnUhVRxSBVyCkXw==}
+    peerDependencies:
+      ws: ^8.0.0
 
   '@expo/xcpretty@4.4.4':
     resolution: {integrity: sha512-4aQzz9vgxcNXFfo/iyNgDDYfsU5XGKKxWxZopw0cVotHiW+U8IJbIxMaxsINs6bHhtkG3StKNPcOrn3eBuxKPw==}
@@ -17557,7 +17559,9 @@ snapshots:
       react: 19.2.3
       react-native: 0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
 
-  '@expo/ws-tunnel@1.0.6': {}
+  '@expo/ws-tunnel@2.0.0(ws@8.19.0)':
+    dependencies:
+      ws: 8.19.0
 
   '@expo/xcpretty@4.4.4':
     dependencies:
