@@ -20,6 +20,7 @@
     "@react-navigation/stack": "^7.8.5",
     "async-retry": "^1.1.4",
     "expo": "workspace:*",
+    "expo-app-metrics": "workspace:*",
     "expo-application": "workspace:*",
     "expo-asset": "workspace:*",
     "expo-audio": "workspace:*",

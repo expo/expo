@@ -116,6 +116,12 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       case .stackOverflow: CrashTriggers.stackOverflow()
       }
     }
+
+    Class(NetworkRequestObserver.self) {
+      Constructor {
+        return NetworkRequestObserver()
+      }
+    }
   }
 
   public func updatesStateDidChange(_ event: [String : Any]) {

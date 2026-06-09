@@ -1,3 +1,4 @@
+import type { SharedObject } from 'expo';
 export type AppStartupTimes = {
     /**
      * Time from when the user taps the app to the moment the app starts executing the main code.
@@ -237,6 +238,106 @@ export type CrashReport = {
     timestampEnd: string;
     ingestedAt: string;
 };
+/**
+ * Snapshot emitted at the moment a request begins. Carries enough information to render the
+ * request in an "in-flight" debug UI; the matching completion event arrives later with the
+ * same `id`.
+ */
+export type NetworkRequestStartedEvent = {
+    /** Stable identifier shared with the corresponding `requestCompleted` event. */
+    id: string;
+    /** Request URL as supplied to the native networking layer. May include query parameters and fragments. */
+    url: string;
+    /** HTTP method (`GET`, `POST`, …). */
+    method: string;
+    /** ISO 8601 timestamp of when the request started. Truncated to whole seconds. */
+    startedAt: string;
+};
+/**
+ * One hop in a redirect chain. `fromUrl` issued the 3xx response, `toUrl` is where it pointed.
+ * For a complete chain the first entry's `fromUrl` matches the parent
+ * `NetworkRequestCompletedEvent.url`, and the last entry's `toUrl` is where the request
+ * actually landed.
+ */
+export type NetworkRequestRedirect = {
+    /** The URL that returned the redirect. */
+    fromUrl: string;
+    /** The URL the request was redirected to. */
+    toUrl: string;
+    /** The 3xx status code (301, 302, 307, 308, …) returned by `fromUrl`. */
+    statusCode: number;
+};
+/**
+ * Snapshot emitted when a request completes (successfully or otherwise). Shares its `id` with
+ * the corresponding `requestStarted` event so consumers can correlate the two.
+ */
+export type NetworkRequestCompletedEvent = {
+    /** Stable identifier shared with the corresponding `requestStarted` event. */
+    id: string;
+    /** Request URL as supplied to the native networking layer. May include query parameters and fragments. */
+    url: string;
+    /** HTTP method (`GET`, `POST`, …). */
+    method: string;
+    /** Response status code, or `null` if the request failed before headers were received. */
+    statusCode: number | null;
+    /**
+     * Negotiated wire protocol (`http/1.1`, `h2`, `h3`), or `null` when the OS didn't report one.
+     */
+    networkProtocol: string | null;
+    /** Total request bytes on the wire (headers + body), or `null` if unavailable. */
+    requestBytesSent: number | null;
+    /** Total response bytes on the wire (headers + body), or `null` if unavailable. */
+    responseBytesReceived: number | null;
+    /** Short, human-readable error description if the request failed. */
+    errorDescription: string | null;
+    /**
+     * ISO 8601 timestamp of when the request started (matches `requestStarted.startedAt`).
+     * Truncated to whole seconds — use `totalDuration` for sub-second timing.
+     */
+    startedAt: string | null;
+    /**
+     * ISO 8601 timestamp of when the response finished arriving. Truncated to whole seconds — use
+     * `totalDuration` for sub-second timing.
+     */
+    completedAt: string | null;
+    /** Total wall-clock duration of the request in seconds. */
+    totalDuration: number;
+    /**
+     * Ordered list of redirect hops that preceded the final response. Empty when the request
+     * completed without any 3xx redirects.
+     */
+    redirects: NetworkRequestRedirect[];
+};
+/**
+ * Map of events emitted by `NetworkRequestObserver`. Used by the underlying `SharedObject`
+ * event-emitter to type listener callbacks.
+ */
+export type NetworkRequestObserverEvents = {
+    requestStarted(event: NetworkRequestStartedEvent): void;
+    requestCompleted(event: NetworkRequestCompletedEvent): void;
+};
+/**
+ * Per-instance handle to the network-request stream. Each `new NetworkRequestObserver()` allocates
+ * its own SharedObject and registers as a delegate on the native singleton; when JS releases the
+ * instance the delegate slot is automatically reclaimed.
+ *
+ * Subscribe to events via `addListener`/`removeListener` (inherited from the SharedObject base).
+ *
+ * @example
+ * ```ts
+ * import AppMetrics from 'expo-app-metrics';
+ *
+ * const observer = new AppMetrics.NetworkRequestObserver();
+ * const sub = observer.addListener('requestCompleted', event => {
+ *   console.log(event.url, event.totalDuration);
+ * });
+ * // later
+ * sub.remove();
+ * ```
+ */
+export declare class NetworkRequestObserver extends SharedObject<NetworkRequestObserverEvents> {
+    constructor();
+}
 export interface ExpoAppMetricsModuleType {
     markFirstRender(): void;
     markInteractive(attributes?: MetricAttributes): void;
@@ -303,6 +404,12 @@ export interface ExpoAppMetricsModuleType {
      * @private This API is unstable and may change without notice.
      */
     getMainSession(): Promise<MainSession | null>;
+    /**
+     * Class for subscribing to HTTP requests observed by the native networking interceptor.
+     * Construct an instance to begin receiving `requestStarted`/`requestCompleted` events;
+     * release the instance (drop all references) to stop.
+     */
+    NetworkRequestObserver: typeof NetworkRequestObserver;
 }
 export {};
 //# sourceMappingURL=types.d.ts.map

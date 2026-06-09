@@ -2,6 +2,7 @@ import { NativeModule } from 'expo';
 import type { ExpoAppMetricsModuleType, LogAttributeValue, LogEventOptions, Metric, MetricAttributes } from './types';
 export * from './types';
 declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleType {
+    NetworkRequestObserver: ExpoAppMetricsModuleType["NetworkRequestObserver"];
     addCustomMetricToSession(metric: Metric): Promise<void>;
     markFirstRender(): Promise<void>;
     markInteractive(attributes?: MetricAttributes): Promise<void>;
