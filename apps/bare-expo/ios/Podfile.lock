@@ -794,7 +794,7 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - lottie-ios (4.6.0)
-  - lottie-react-native (7.3.6):
+  - lottie-react-native (7.3.8):
     - hermes-engine
     - lottie-ios (= 4.6.0)
     - RCTRequired
@@ -3438,7 +3438,7 @@ DEPENDENCIES:
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - "FBLazyVector (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/Libraries/FBLazyVector`)"
   - "hermes-engine (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)"
-  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.6_@lottiefiles+dotlottie-react@0.10.1_react-dom@19.2.3_react@19_ca2798bec26a08eda51142ca007a288d/node_modules/lottie-react-native`)"
+  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.10.1_react-dom@19.2.3_react@19_c44a6e98144daffdb79a5e416247f914/node_modules/lottie-react-native`)"
   - "RCTDeprecation (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)"
   - "RCTRequired (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/Libraries/Required`)"
   - "RCTSwiftUI (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/ReactApple/RCTSwiftUI`)"
@@ -3814,7 +3814,7 @@ EXTERNAL SOURCES:
     :podspec: "../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v250829098.0.14
   lottie-react-native:
-    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.6_@lottiefiles+dotlottie-react@0.10.1_react-dom@19.2.3_react@19_ca2798bec26a08eda51142ca007a288d/node_modules/lottie-react-native"
+    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.10.1_react-dom@19.2.3_react@19_c44a6e98144daffdb79a5e416247f914/node_modules/lottie-react-native"
   RCTDeprecation:
     :path: "../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   RCTRequired:
@@ -4100,7 +4100,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: 8f959969761e9c45d70353667d00af0e5b9cadb3
-  lottie-react-native: 615e5f4651bee144ea991ad8e900630b6b3daf5d
+  lottie-react-native: ee142214581f3bb68fbda7efcf07b835a189eeda
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 83e25bf349dd84f894b024f48033274512d6129b

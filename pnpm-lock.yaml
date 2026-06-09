@@ -206,8 +206,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser
       lottie-react-native:
-        specifier: ^7.3.4
-        version: 7.3.6(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        specifier: ^7.3.8
+        version: 7.3.8(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       native-component-list:
         specifier: workspace:*
         version: link:../native-component-list
@@ -645,8 +645,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser
       lottie-react-native:
-        specifier: ^7.3.4
-        version: 7.3.6(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        specifier: ^7.3.8
+        version: 7.3.8(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -1086,8 +1086,8 @@ importers:
         specifier: ^3.1.0
         version: 3.9.2
       lottie-react-native:
-        specifier: ^7.3.4
-        version: 7.3.6(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        specifier: ^7.3.8
+        version: 7.3.8(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       moment:
         specifier: ^2.29.4
         version: 2.30.1
@@ -13013,8 +13013,8 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
-  lottie-react-native@7.3.6:
-    resolution: {integrity: sha512-TevFHRvFURh6GlaqLKrSNXuKAxvBvFCiXfS7FXQI1K/ikOStgAwWLFPGjW0i1qB2/VzPACKmRs+535VjHUZZZQ==}
+  lottie-react-native@7.3.8:
+    resolution: {integrity: sha512-GAOl99TKi0c6xCcB1AJ+o70mgOPIAI/7K2G+Gs+o4po/qBhgvWijPNCKH8h6yNmlwFTg+RN3DmzRvHNFGxZMKQ==}
     peerDependencies:
       '@lottiefiles/dotlottie-react': ^0.13.5
       react: 19.2.3
@@ -18885,7 +18885,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -23835,7 +23837,7 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
-  lottie-react-native@7.3.6(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3):
+  lottie-react-native@7.3.8(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3):
     dependencies:
       react: 19.2.3
       react-native: 0.86.0-rc.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0-rc.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0-rc.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
