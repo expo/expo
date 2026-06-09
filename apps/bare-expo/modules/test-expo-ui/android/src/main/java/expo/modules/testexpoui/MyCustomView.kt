@@ -19,14 +19,14 @@ data class MyCustomViewProps(
 ) : ComposeProps
 
 @Composable
-fun FunctionalComposableScope.MyCustomViewContent(props: MyCustomViewProps, onTap: () -> Unit = {}) {
+fun FunctionalComposableScope.MyCustomViewContent(props: MyCustomViewProps, onCustomTap: () -> Unit = {}) {
   Column(
     modifier = ModifierRegistry.applyModifiers(
       props.modifiers,
       appContext,
       composableScope,
       globalEventDispatcher
-    ).clickable { onTap() }
+    ).clickable { onCustomTap() }
   ) {
     Text(text = props.title, style = MaterialTheme.typography.titleMedium)
     Children(UIComposableScope())
