@@ -158,10 +158,10 @@ async function getLocalSdkMajorVersion(): Promise<string | null> {
   return version?.split('.')[0] ?? null;
 }
 
-// The first SDK that `create-expo-module` is versioned in lockstep with. Earlier releases used
-// an independent `0.x`/`1.x` scheme whose major doesn't map to an SDK, so we treat anything below
-// this as "not SDK-aligned" and fall back to `latest`.
-const FIRST_SDK_ALIGNED_MAJOR = 50;
+// The first SDK the CLI is versioned in lockstep with (CLI major == SDK major). Earlier releases
+// used an independent scheme (e.g. `1.x` for sdk-54, `2.x` for sdk-55) whose major doesn't map to
+// an SDK, so anything below this falls back to `latest`.
+const FIRST_SDK_ALIGNED_MAJOR = 56;
 
 /**
  * Resolves the template dist-tag targeted by a `create-expo-module` release from its own package
