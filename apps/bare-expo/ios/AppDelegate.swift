@@ -5,11 +5,6 @@ import ReactAppDependencyProvider
 
 @main
 class AppDelegate: ExpoAppDelegate {
-  var window: UIWindow?
-
-  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
-  var reactNativeFactory: RCTReactNativeFactory?
-
   public override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -23,15 +18,9 @@ class AppDelegate: ExpoAppDelegate {
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
+    self.launchOptions = launchOptions
 
-#if os(iOS) || os(tvOS)
-    window = UIWindow(frame: UIScreen.main.bounds)
-    factory.startReactNative(
-      withModuleName: "main",
-      in: window,
-      launchOptions: launchOptions)
-#endif
-
+    // React Native is started in SceneDelegate.swift, once the window scene connects.
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
