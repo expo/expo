@@ -1,7 +1,7 @@
 ---
-title: Codex and Expo
-sidebar_title: Codex
-description: Use Codex to build, upgrade, debug, and deploy your Expo and React Native projects.
+title: Cursor and Expo
+sidebar_title: Cursor
+description: Use Cursor to build, upgrade, debug, and deploy your Expo and React Native projects.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -10,17 +10,15 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-Codex is OpenAI's terminal-based AI coding agent. It can read and write files across your project, run terminal commands, and browse the web. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Codex reads directly. It can also check EAS and Expo CLI logs, fetch documentation from the Expo MCP Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
+Cursor is an AI-first code editor built on VS Code. It can edit across multiple files, run terminal commands, and work autonomously with its agent. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Cursor reads directly. It can also check EAS and Expo CLI logs, fetch documentation from the Expo MCP Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
 
 ## Quick start
 
 <Step label="1">
 
-### Install Codex
+### Download Cursor
 
-Install Codex, then start it from any project. For other install methods, see the [Codex CLI documentation](https://developers.openai.com/codex/cli).
-
-<Terminal cmd={['$ curl -fsSL https://chatgpt.com/codex/install.sh | sh']} />
+Download and install Cursor from the [Cursor website](https://cursor.com). For setup details, see the [Cursor documentation](https://cursor.com/docs).
 
 </Step>
 
@@ -45,7 +43,7 @@ Create a project with the following command or ensure your existing project has 
 
 ### Set up Expo Skills and the Expo MCP Server
 
-Install Expo Skills and connect the Expo MCP Server so Codex knows Expo conventions and can reach your EAS.
+Install Expo Skills and connect the Expo MCP Server so Cursor knows Expo conventions and can reach your EAS.
 
 <BoxLink
   title="Expo Skills"
@@ -67,9 +65,7 @@ Install Expo Skills and connect the Expo MCP Server so Codex knows Expo conventi
 
 ### Open your project and start prompting
 
-Run Codex from your project root, then describe what you want to do.
-
-<Terminal cmd={['$ cd my-app', '', '$ codex']} />
+Open your project in Cursor, then open the Agent panel and describe what you want to do.
 
 </Step>
 
@@ -77,7 +73,7 @@ Run Codex from your project root, then describe what you want to do.
 
 ### Verify setup
 
-Paste the following prompt in your Codex session to confirm it's reading your project context:
+In Cursor's Agent panel, enter the following prompt to confirm it's reading your project context:
 
 ```text Example prompt
 Open AGENTS.md and tell me which Expo SDK version this project targets.
@@ -87,11 +83,11 @@ If the agent replies with the SDK version pinned in **AGENTS.md**, the project c
 
 </Step>
 
-## How Codex reads your Expo project
+## How Cursor reads your Expo project
 
-When you start Codex in your project, it reads the scaffolded **AGENTS.md** file. This file pins Codex to the documentation for your project's Expo SDK version and holds any project-level instructions you add.
+When you open your project in Cursor, it reads the scaffolded **AGENTS.md** file at the project root, along with any nested **AGENTS.md** files in subdirectories. **AGENTS.md** pins Cursor to the documentation for your project's Expo SDK version and holds any project-level instructions you add. **AGENTS.md** is committed to your project, so a developer's session starts from the same context inside Cursor.
 
-**AGENTS.md** is committed to your project, so a developer's Codex session starts from the same context.
+You can also add Cursor-specific rules under **.cursor/rules/**.
 
 ## Example prompts
 
