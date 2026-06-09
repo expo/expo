@@ -16,13 +16,24 @@ export type ReleasingSharedObjectLifecycle<TSharedObject extends SharedObject> =
      */
     factory: () => TSharedObject;
     /**
-     * Return `true` to release the current object and create a new one after the dependencies change.
-     * When omitted, dependency changes recreate the object, matching `useReleasingSharedObject`.
+     * Called during render when dependencies change to decide whether to replace the object.
+     * Return `false` to keep the current object and handle the dependency change with the `update` function.
+     * When omitted or `true`, dependency changes recreate the object, matching `useReleasingSharedObject`.
+     *
+     * Must be a pure function with no side effects — it is called during the render phase and
+     * React may invoke it more than once with the same inputs.
      */
     shouldRecreate?: (object: TSharedObject, context: ReleasingSharedObjectLifecycleContext) => boolean;
     /**
-     * Updates the current object after commit when dependencies changed and `shouldRecreate`
-     * returned `false`.
+     * Called after commit when dependencies changed and `shouldRecreate` returned `false`.
+     * Has no effect unless `shouldRecreate` is provided and returns `false` for the changed
+     * dependencies.
+     *
+     * If the returned `Promise` rejects, the error is logged with `console.error`. Handle errors
+     * inside `update` if specific error handling is needed.
+     *
+     * If a subsequent dependency change or unmount requires the object to be released while an
+     * async update is still in-flight, the release is deferred until the update settles.
      */
     update?: (object: TSharedObject, context: ReleasingSharedObjectLifecycleContext) => void | Promise<void>;
     /**

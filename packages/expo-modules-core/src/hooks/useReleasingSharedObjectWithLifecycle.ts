@@ -24,8 +24,12 @@ export type ReleasingSharedObjectLifecycle<TSharedObject extends SharedObject> =
   factory: () => TSharedObject;
 
   /**
-   * Return `true` to release the current object and create a new one after the dependencies change.
-   * When omitted, dependency changes recreate the object, matching `useReleasingSharedObject`.
+   * Called during render when dependencies change to decide whether to replace the object.
+   * Return `false` to keep the current object and handle the dependency change with the `update` function.
+   * When omitted or `true`, dependency changes recreate the object, matching `useReleasingSharedObject`.
+   *
+   * Must be a pure function with no side effects — it is called during the render phase and
+   * React may invoke it more than once with the same inputs.
    */
   shouldRecreate?: (
     object: TSharedObject,
@@ -33,8 +37,15 @@ export type ReleasingSharedObjectLifecycle<TSharedObject extends SharedObject> =
   ) => boolean;
 
   /**
-   * Updates the current object after commit when dependencies changed and `shouldRecreate`
-   * returned `false`.
+   * Called after commit when dependencies changed and `shouldRecreate` returned `false`.
+   * Has no effect unless `shouldRecreate` is provided and returns `false` for the changed
+   * dependencies.
+   *
+   * If the returned `Promise` rejects, the error is logged with `console.error`. Handle errors
+   * inside `update` if specific error handling is needed.
+   *
+   * If a subsequent dependency change or unmount requires the object to be released while an
+   * async update is still in-flight, the release is deferred until the update settles.
    */
   update?: (
     object: TSharedObject,
@@ -70,6 +81,7 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
   const objectRef = useRef<TSharedObject | null>(null);
   const objectRefToRelease = useRef<TSharedObject | null>(null);
   const pendingUpdateRef = useRef<PendingUpdate<TSharedObject> | null>(null);
+  const pendingUpdatePromiseRef = useRef<Promise<void> | null>(null);
   const isFastRefresh = useRef(false);
   const previousDependencies = useRef<DependencyList>(dependencies);
   const lifecycleRef = useRef(lifecycle);
@@ -107,20 +119,40 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
     return newObject;
   }, dependencies);
 
+  function releaseObject(obj: TSharedObject) {
+    (lifecycleRef.current.release ?? ((o: TSharedObject) => o.release()))(obj);
+  }
+
   useEffect(() => {
     // When the object changes, release the previous one - it is important to do this in a useEffect, so that we don't release
-    // the object during render.
+    // the object during render. If an async update is still in-flight, defer the release until it settles.
     if (objectRefToRelease.current) {
-      (lifecycleRef.current.release ?? ((object: TSharedObject) => object.release()))(
-        objectRefToRelease.current
-      );
+      const toRelease = objectRefToRelease.current;
       objectRefToRelease.current = null;
+      const doRelease = () => releaseObject(toRelease);
+      if (pendingUpdatePromiseRef.current) {
+        pendingUpdatePromiseRef.current.then(doRelease, doRelease);
+      } else {
+        doRelease();
+      }
     }
 
     if (pendingUpdateRef.current) {
       const pendingUpdate = pendingUpdateRef.current;
       pendingUpdateRef.current = null;
-      lifecycleRef.current.update?.(pendingUpdate.object, pendingUpdate.context);
+      const result = lifecycleRef.current.update?.(pendingUpdate.object, pendingUpdate.context);
+      if (result instanceof Promise) {
+        pendingUpdatePromiseRef.current = result;
+        result.then(
+          () => {
+            pendingUpdatePromiseRef.current = null;
+          },
+          (error) => {
+            pendingUpdatePromiseRef.current = null;
+            console.error(error);
+          }
+        );
+      }
     }
   }, dependencies);
 
@@ -134,9 +166,13 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
     return () => {
       // This will be called on every fast refresh and on unmount, but we only want to release the object on unmount.
       if (!isFastRefresh.current && objectRef.current) {
-        (lifecycleRef.current.release ?? ((object: TSharedObject) => object.release()))(
-          objectRef.current
-        );
+        const obj = objectRef.current;
+        const doRelease = () => releaseObject(obj);
+        if (pendingUpdatePromiseRef.current) {
+          pendingUpdatePromiseRef.current.then(doRelease, doRelease);
+        } else {
+          doRelease();
+        }
       }
     };
   }, []);
