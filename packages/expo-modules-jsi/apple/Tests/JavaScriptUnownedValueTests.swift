@@ -61,7 +61,7 @@ struct JavaScriptUnownedValueTests {
   @Test
   func `copied materializes an owning value`() throws {
     let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: "owned")
-    let owning = buffer.unownedValue(at: 0).copied()
+    let owning = buffer.unownedValue(at: 0).copied(in: runtime)
 
     #expect(try owning.asString() == "owned")
   }
