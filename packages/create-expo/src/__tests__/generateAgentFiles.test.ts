@@ -108,13 +108,4 @@ describe(generateAgentFiles, () => {
     expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(true);
     expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
   });
-
-  it('generates Claude files when project .claude directory exists', () => {
-    fs.mkdirSync(path.join(tmpDir, '.claude'));
-
-    generateAgentFiles(tmpDir);
-
-    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(true);
-    expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
-  });
 });

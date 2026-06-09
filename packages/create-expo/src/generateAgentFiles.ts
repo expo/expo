@@ -34,12 +34,11 @@ const CLAUDE_SETTINGS_CONTENT = `{
 }
 `;
 
-function isClaudeCodeInstalled(root: string): boolean {
+function isClaudeCodeInstalled(): boolean {
   const home = os.homedir();
   return (
-    fs.existsSync(path.join(root, '.claude')) ||
-    (!!home &&
-      (fs.existsSync(path.join(home, '.claude.json')) || fs.existsSync(path.join(home, '.claude'))))
+    !!home &&
+    (fs.existsSync(path.join(home, '.claude.json')) || fs.existsSync(path.join(home, '.claude')))
   );
 }
 
@@ -50,7 +49,7 @@ export function generateAgentFiles(root: string): void {
     { filePath: path.join(root, 'AGENTS.md'), content: getAgentsMdContent(sdkVersion) },
   ];
 
-  if (isClaudeCodeInstalled(root)) {
+  if (isClaudeCodeInstalled()) {
     files.push(
       { filePath: path.join(root, 'CLAUDE.md'), content: CLAUDE_MD_CONTENT },
       { filePath: path.join(root, '.claude', 'settings.json'), content: CLAUDE_SETTINGS_CONTENT }
