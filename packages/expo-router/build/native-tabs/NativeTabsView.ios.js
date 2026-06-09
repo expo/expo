@@ -52,15 +52,17 @@ function Screen(props) {
     const iosSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.selectedIcon ?? shared.icon, standardAppearance?.stacked?.selected?.tabBarItemIconColor);
     const content = (0, jsx_runtime_1.jsx)(NativeTabsView_shared_1.ScreenContent, { options: options, contentRenderer: contentRenderer });
     const wrappedContent = (0, react_1.useMemo)(() => (0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaProvider, { children: content }), [content]);
-    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...shared.options, pointerEvents: shared.pointerEvents, ios: {
-            icon: iosIcon,
-            selectedIcon: iosSelectedIcon,
-            standardAppearance,
-            scrollEdgeAppearance,
-            systemItem: options.role,
-            overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
-            ...shared.nativeIosOverrides,
-        }, title: shared.title, preventNativeSelection: options.disabled, ...shared.nativeRestOverrides, screenKey: shared.screenKey, children: wrappedContent }));
+    const iosProps = {
+        icon: iosIcon,
+        selectedIcon: iosSelectedIcon,
+        standardAppearance,
+        scrollEdgeAppearance,
+        systemItem: options.role,
+        toolbarItems: options.toolbarItems,
+        overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
+        ...shared.nativeIosOverrides,
+    };
+    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...shared.options, pointerEvents: shared.pointerEvents, ios: iosProps, title: shared.title, preventNativeSelection: options.disabled, ...shared.nativeRestOverrides, screenKey: shared.screenKey, children: wrappedContent }));
 }
 const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
 function TabsHostWrapper(props) {

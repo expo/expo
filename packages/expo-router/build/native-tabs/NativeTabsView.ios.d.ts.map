@@ -1,1 +1,1 @@
-{"version":3,"file":"NativeTabsView.ios.d.ts","sourceRoot":"","sources":["../../src/native-tabs/NativeTabsView.ios.tsx"],"names":[],"mappings":"AAgBA,OAAO,EAAwC,KAAK,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAKzF,wBAAgB,cAAc,CAAC,KAAK,EAAE,mBAAmB,kDA0ExD"}
+{"version":3,"file":"NativeTabsView.ios.d.ts","sourceRoot":"","sources":["../../src/native-tabs/NativeTabsView.ios.tsx"],"names":[],"mappings":"AAqBA,OAAO,EAGL,KAAK,mBAAmB,EACzB,MAAM,SAAS,CAAC;AAKjB,wBAAgB,cAAc,CAAC,KAAK,EAAE,mBAAmB,kDA0ExD"}

@@ -60,6 +60,12 @@ export interface NativeTabOptions extends DefaultRouterOptions {
      */
     role?: NativeTabsTabBarItemRole;
     /**
+     * Native toolbar items displayed next to the integrated search control when this tab uses `role="search"`.
+     *
+     * @platform iOS 26+
+     */
+    toolbarItems?: NativeTabsToolbarItem[];
+    /**
      * @platform android
      * @platform iOS
      */
@@ -195,6 +201,20 @@ export type SymbolOrImageSource = {
      * @default 'template'
      */
     renderingMode?: 'template' | 'original';
+};
+export type NativeTabsToolbarItem = {
+    type: 'button';
+    icon: {
+        type: 'sfSymbol';
+        name: SFSymbol;
+    };
+    accessibilityLabel: string;
+    accessibilityHint?: string;
+    badge?: {
+        value: string;
+    };
+    disabled?: boolean;
+    onPress: () => void;
 };
 export type NativeTabsLabelStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'color'>;
 export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", "extraLight", "light", "dark", "regular", "prominent", "systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial", "systemUltraThinMaterialLight", "systemThinMaterialLight", "systemMaterialLight", "systemThickMaterialLight", "systemChromeMaterialLight", "systemUltraThinMaterialDark", "systemThinMaterialDark", "systemMaterialDark", "systemThickMaterialDark", "systemChromeMaterialDark"];

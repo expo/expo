@@ -22,6 +22,7 @@ export declare const NativeTabs: ((props: NativeTabsProps) => import("react/jsx-
         Icon: import("react").FC<import(".").NativeTabsTriggerIconProps>;
         Badge: import("react").FC<import(".").NativeTabsTriggerBadgeProps>;
         VectorIcon: typeof import("..").VectorIcon;
+        ToolbarItem: import("react").FC<import(".").NativeTabsTriggerToolbarItemProps>;
     };
     BottomAccessory: import("react").FC<import(".").NativeTabsBottomAccessoryProps> & {
         usePlacement: () => "regular" | "inline";

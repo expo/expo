@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-native-screens';
+import {
+  Tabs,
+  type TabsHostProps,
+  type TabsScreenAppearanceIOS,
+  type TabsScreenProps,
+} from 'react-native-screens';
 
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
@@ -14,7 +19,11 @@ import {
   createStandardAppearanceFromOptions,
 } from './appearance';
 import { NativeTabsBottomAccessory } from './common/elements';
-import { SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS, type NativeTabsViewProps } from './types';
+import {
+  SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
+  type NativeTabOptions,
+  type NativeTabsViewProps,
+} from './types';
 import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
 import { convertOptionsIconToScreensPropsIcon } from './utils/optionsIconConverter';
 import { getFirstChildOfType } from '../utils/children';
@@ -116,20 +125,22 @@ function Screen(props: InternalTabScreenProps) {
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
+  const iosProps = {
+    icon: iosIcon,
+    selectedIcon: iosSelectedIcon,
+    standardAppearance,
+    scrollEdgeAppearance,
+    systemItem: options.role,
+    toolbarItems: options.toolbarItems,
+    overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
+    ...shared.nativeIosOverrides,
+  } as NonNullable<TabsScreenProps['ios']> & Pick<NativeTabOptions, 'toolbarItems'>;
 
   return (
     <Tabs.Screen
       {...shared.options}
       pointerEvents={shared.pointerEvents}
-      ios={{
-        icon: iosIcon,
-        selectedIcon: iosSelectedIcon,
-        standardAppearance,
-        scrollEdgeAppearance,
-        systemItem: options.role,
-        overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
-        ...shared.nativeIosOverrides,
-      }}
+      ios={iosProps}
       title={shared.title}
       preventNativeSelection={options.disabled}
       {...shared.nativeRestOverrides}

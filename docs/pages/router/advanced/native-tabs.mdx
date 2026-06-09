@@ -857,6 +857,66 @@ export default function SearchIndex() {
 }
 ```
 
+#### Search toolbar items
+
+> **info** This feature is available on iOS 26 and later.
+
+When a native tab uses `role="search"` and the screen renders a native search bar that can integrate with the toolbar, you can add native toolbar items next to the system search control. These items use UIKit rendering, preserve the native search expansion and tab bar minimize animations, and do not replace the native tab bar with a custom JavaScript bar.
+
+Use `NativeTabs.Trigger.ToolbarItem` inside the search tab trigger. The item supports SF Symbols, accessibility labels and hints, disabled state, badge values, and press handlers.
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  const activeFilterCount = 2;
+
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search" role="search">
+        <NativeTabs.Trigger.Icon sf="magnifyingglass" />
+        <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.ToolbarItem
+          placement="trailing"
+          sf="line.3.horizontal.decrease"
+          accessibilityLabel="Filters"
+          accessibilityHint="Opens search filters"
+          badgeValue={activeFilterCount}
+          onPress={() => {
+            // Open your filters UI.
+          }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+```tsx src/app/search/index.tsx
+import { ScrollView } from 'react-native';
+import { Stack } from 'expo-router';
+
+export default function SearchIndex() {
+  return (
+    <>
+      <Stack.Title>Search</Stack.Title>
+      <Stack.SearchBar
+        placement="automatic"
+        allowToolbarIntegration
+        placeholder="Search"
+        onChangeText={() => {}}
+      />
+      <ScrollView>{/* Screen content */}</ScrollView>
+    </>
+  );
+}
+```
+
+Set `badgeValue` to `null` or `undefined` to hide the badge. A value of `0` displays a badge with `0`.
+
 #### Tab bar minimize behavior
 
 <ContentSpotlight

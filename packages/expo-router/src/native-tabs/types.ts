@@ -76,6 +76,12 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   role?: NativeTabsTabBarItemRole;
   /**
+   * Native toolbar items displayed next to the integrated search control when this tab uses `role="search"`.
+   *
+   * @platform iOS 26+
+   */
+  toolbarItems?: NativeTabsToolbarItem[];
+  /**
    * @platform android
    * @platform iOS
    */
@@ -239,6 +245,21 @@ export type SymbolOrImageSource =
        */
       renderingMode?: 'template' | 'original';
     };
+
+export type NativeTabsToolbarItem = {
+  type: 'button';
+  icon: {
+    type: 'sfSymbol';
+    name: SFSymbol;
+  };
+  accessibilityLabel: string;
+  accessibilityHint?: string;
+  badge?: {
+    value: string;
+  };
+  disabled?: boolean;
+  onPress: () => void;
+};
 
 export type NativeTabsLabelStyle = Pick<
   TextStyle,
