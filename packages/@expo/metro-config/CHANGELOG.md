@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix stack frame collapsing for Windows paths. ([#46645](https://github.com/expo/expo/pull/46645) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 - Vendor `msgpackr` dependency to remove `msgpackr-extract` postinstall warning ([#46676](https://github.com/expo/expo/pull/46676) by [@kitten](https://github.com/kitten))
