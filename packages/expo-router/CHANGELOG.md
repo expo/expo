@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))
+- Re-export drawer content components and types (`DrawerContentScrollView`, `DrawerItem`, `DrawerItemList`, `DrawerContentComponentProps`, `DrawerNavigationProp`, and more) from `expo-router/drawer` ([#46635](https://github.com/expo/expo/pull/46635) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
