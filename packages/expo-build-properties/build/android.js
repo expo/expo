@@ -274,10 +274,16 @@ const withAndroidSettingsGradle = (config, props) => {
 };
 exports.withAndroidSettingsGradle = withAndroidSettingsGradle;
 function updateAndroidSettingsGradle({ contents, buildFromSource, }) {
-    let newContents = contents;
+    const sectionOptions = {
+        tag: 'expo-build-properties-react-native-source',
+        commentPrefix: '//',
+    };
+    // Always purge any previously generated block first so repeated prebuilds stay idempotent
+    // (instead of appending another `includeBuild` block every run) and toggling
+    // `buildReactNativeFromSource` back off removes the block.
+    let newContents = (0, fileContentsUtils_1.purgeContents)(contents, sectionOptions);
     if (buildFromSource === true) {
         const addCodeBlock = [
-            '', // new line
             'includeBuild(expoAutolinking.reactNative) {',
             '  dependencySubstitution {',
             '    substitute(module("com.facebook.react:react-android")).using(project(":packages:react-native:ReactAndroid"))',
@@ -286,9 +292,8 @@ function updateAndroidSettingsGradle({ contents, buildFromSource, }) {
             '    substitute(module("com.facebook.react:hermes-engine")).using(project(":packages:react-native:ReactAndroid:hermes-engine"))',
             '  }',
             '}',
-            '', // new line
         ];
-        newContents += addCodeBlock.join('\n');
+        newContents = (0, fileContentsUtils_1.appendContents)(newContents, addCodeBlock.join('\n'), sectionOptions);
     }
     return newContents;
 }

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Make `buildReactNativeFromSource` idempotent so repeated prebuilds no longer append a duplicate `includeBuild(expoAutolinking.reactNative)` block to `settings.gradle` (and toggling it off removes the block). ([#46713](https://github.com/expo/expo/pull/46713) by [@ahmdshrif](https://github.com/ahmdshrif))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26

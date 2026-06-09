@@ -1,4 +1,4 @@
-import { updateAndroidProguardRules } from '../android';
+import { updateAndroidProguardRules, updateAndroidSettingsGradle } from '../android';
 
 jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
@@ -72,5 +72,52 @@ describe(updateAndroidProguardRules, () => {
       -printmapping mapping.txt
       # @generated end expo-build-properties"
     `);
+  });
+});
+
+describe(updateAndroidSettingsGradle, () => {
+  const TEMPLATE_SETTINGS_GRADLE = `\
+pluginManagement { includeBuild(expoAutolinking.reactNativeGradlePlugin) }
+plugins { id("com.facebook.react.settings") }
+rootProject.name = 'helloworld'
+`;
+
+  it('should append the includeBuild block when buildFromSource is true', () => {
+    const result = updateAndroidSettingsGradle({
+      contents: TEMPLATE_SETTINGS_GRADLE,
+      buildFromSource: true,
+    });
+    expect(result).toContain('includeBuild(expoAutolinking.reactNative) {');
+    expect(result).toContain('// @generated begin expo-build-properties-react-native-source');
+    expect(result).toContain('// @generated end expo-build-properties-react-native-source');
+  });
+
+  it('should not append the includeBuild block when buildFromSource is falsy', () => {
+    expect(
+      updateAndroidSettingsGradle({ contents: TEMPLATE_SETTINGS_GRADLE, buildFromSource: false })
+    ).toBe(TEMPLATE_SETTINGS_GRADLE);
+    expect(
+      updateAndroidSettingsGradle({ contents: TEMPLATE_SETTINGS_GRADLE, buildFromSource: undefined })
+    ).toBe(TEMPLATE_SETTINGS_GRADLE);
+  });
+
+  it('should be idempotent across repeated prebuilds', () => {
+    const once = updateAndroidSettingsGradle({
+      contents: TEMPLATE_SETTINGS_GRADLE,
+      buildFromSource: true,
+    });
+    const twice = updateAndroidSettingsGradle({ contents: once, buildFromSource: true });
+    expect(twice).toEqual(once);
+    expect((twice.match(/includeBuild\(expoAutolinking\.reactNative\) \{/g) ?? []).length).toBe(1);
+  });
+
+  it('should remove a previously generated block when buildFromSource is toggled off', () => {
+    const added = updateAndroidSettingsGradle({
+      contents: TEMPLATE_SETTINGS_GRADLE,
+      buildFromSource: true,
+    });
+    const removed = updateAndroidSettingsGradle({ contents: added, buildFromSource: false });
+    expect(removed).toBe(TEMPLATE_SETTINGS_GRADLE);
+    expect(removed).not.toContain('includeBuild(expoAutolinking.reactNative) {');
   });
 });
