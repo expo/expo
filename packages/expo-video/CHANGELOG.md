@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Removed `play()` call from `VideoPlayer.replace()` to prevent unintended playback behavior and uncaught errors. ([#46042](https://github.com/expo/expo/pull/46042))
+
 ## 56.1.2 — 2026-05-21
 
 ### 🐛 Bug fixes
