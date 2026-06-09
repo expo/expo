@@ -26,6 +26,9 @@ const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as
 
 const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 
+/** Bundle identifier of DeviceHub.app, which replaced the standalone Simulator.app in Xcode 27. */
+const DEVICE_HUB_BUNDLE_IDENTIFIER = 'com.apple.dt.Devices';
+
 /**
  * Ensure a simulator is booted and the Simulator app is opened.
  * This is where any timeout related error handling should live.
@@ -216,7 +219,14 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     // In non-interactive mode, we should assume this is an agent and not attempt to focus the Simulator app since it doesn't need focus.
     if (isInteractive()) {
       // TODO: Focus the individual window
-      await osascript.execAsync(`tell application "Simulator" to activate`);
+      // Xcode 27 replaced Simulator.app with DeviceHub.app; activate it by bundle id and fall back.
+      try {
+        await osascript.execAsync(
+          `tell application id "${DEVICE_HUB_BUNDLE_IDENTIFIER}" to activate`
+        );
+      } catch {
+        await osascript.execAsync(`tell application "Simulator" to activate`);
+      }
     }
   }
 

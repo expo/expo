@@ -15,12 +15,27 @@ it('should do nothing when the Simulator.app is running', async () => {
   expect(Log.log).not.toHaveBeenCalled();
 });
 
-it('should activate the window when Simulator.app is not running', async () => {
+it('should open DeviceHub.app when the simulator host is not running', async () => {
   jest.mocked(execAsync).mockResolvedValueOnce('0').mockResolvedValueOnce('1');
 
   await ensureSimulatorAppRunningAsync({ udid: '123' });
 
   expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening the iOS simulator/));
+  expect(spawnAsync).toHaveBeenCalledWith('open', ['-b', 'com.apple.dt.Devices']);
+});
+
+it('falls back to Simulator.app when DeviceHub.app is unavailable', async () => {
+  jest.mocked(execAsync).mockResolvedValueOnce('0').mockResolvedValueOnce('1');
+  jest
+    .mocked(spawnAsync)
+    // open -b com.apple.dt.Devices — DeviceHub not installed on Xcode < 27
+    .mockRejectedValueOnce(new Error('Unable to find application'))
+    // open -a Simulator
+    .mockResolvedValueOnce({} as any);
+
+  await ensureSimulatorAppRunningAsync({ udid: '123' });
+
+  expect(spawnAsync).toHaveBeenCalledWith('open', ['-b', 'com.apple.dt.Devices']);
   expect(spawnAsync).toHaveBeenCalledWith('open', [
     '-a',
     'Simulator',

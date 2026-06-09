@@ -22,6 +22,46 @@ it(`detects that Simulator.app is installed`, async () => {
   expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
 });
 
+it(`detects DeviceHub.app on Xcode 27`, async () => {
+  // Xcode 27 dropped the standalone Simulator.app in favor of DeviceHub.app.
+  jest
+    .mocked(execAsync)
+    // id of app "Simulator" — no longer registered on Xcode 27
+    .mockRejectedValueOnce(new Error('not registered'))
+    // id of app "DeviceHub"
+    .mockResolvedValueOnce('com.apple.dt.Devices');
+  jest.mocked(spawnAsync).mockResolvedValueOnce({} as any);
+
+  await SimulatorAppPrerequisite.instance.assertImplementation();
+
+  expect(execAsync).toHaveBeenCalledWith('id of app "DeviceHub"');
+  expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
+});
+
+it(`falls back to reading DeviceHub.app Info.plist on Xcode 27`, async () => {
+  // Neither app is registered in LaunchServices and Simulator.app no longer exists.
+  jest.mocked(execAsync).mockRejectedValue(new Error('not registered'));
+  jest
+    .mocked(spawnAsync)
+    // xcode-select --print-path
+    .mockResolvedValueOnce({ stdout: '/Applications/Xcode.app/Contents/Developer\n' } as any)
+    // defaults read … Simulator.app (gone on Xcode 27)
+    .mockRejectedValueOnce(new Error('does not exist'))
+    // defaults read … DeviceHub.app
+    .mockResolvedValueOnce({ stdout: 'com.apple.dt.Devices\n' } as any)
+    // xcrun simctl help
+    .mockResolvedValueOnce({} as any);
+
+  await SimulatorAppPrerequisite.instance.assertImplementation();
+
+  expect(spawnAsync).toHaveBeenCalledWith('defaults', [
+    'read',
+    expect.stringContaining('DeviceHub.app'),
+    'CFBundleIdentifier',
+  ]);
+  expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
+});
+
 it(`falls back to reading Info.plist when LaunchServices lookup fails`, async () => {
   // Simulate LaunchServices not having Simulator.app registered (e.g. Xcode on external volume).
   jest.mocked(execAsync).mockRejectedValueOnce(new Error('not registered'));

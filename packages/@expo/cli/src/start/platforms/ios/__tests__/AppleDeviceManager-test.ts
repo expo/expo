@@ -1,4 +1,7 @@
+import { execAsync } from '@expo/osascript';
+
 import { CommandError } from '../../../../utils/errors';
+import { isInteractive } from '../../../../utils/interactive';
 import { AppleDeviceManager } from '../AppleDeviceManager';
 import type { Device } from '../simctl';
 import { getInfoPlistValueAsync, openAppIdAsync, openUrlAsync } from '../simctl';
@@ -8,6 +11,8 @@ jest.mock('../simctl', () => ({
   openUrlAsync: jest.fn(),
   getInfoPlistValueAsync: jest.fn(),
 }));
+jest.mock('../ensureSimulatorAppRunning');
+jest.mock('../../../../utils/interactive');
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 
@@ -106,5 +111,38 @@ describe('openUrlAsync', () => {
     device.launchApplicationIdAsync = jest.fn(async () => {});
     await device.openUrlAsync('@foobar');
     expect(device.launchApplicationIdAsync).toHaveBeenCalledWith('@foobar');
+  });
+});
+
+describe('activateWindowAsync', () => {
+  it('activates DeviceHub.app by bundle id in interactive mode', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    const device = createDevice();
+
+    await device.activateWindowAsync();
+
+    expect(execAsync).toHaveBeenCalledWith(
+      'tell application id "com.apple.dt.Devices" to activate'
+    );
+  });
+
+  it('falls back to activating Simulator.app when DeviceHub.app is unavailable', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    // DeviceHub.app isn't registered on Xcode < 27.
+    jest.mocked(execAsync).mockRejectedValueOnce(new Error('not running'));
+    const device = createDevice();
+
+    await device.activateWindowAsync();
+
+    expect(execAsync).toHaveBeenCalledWith('tell application "Simulator" to activate');
+  });
+
+  it('does not attempt to focus the window in non-interactive mode', async () => {
+    jest.mocked(isInteractive).mockReturnValue(false);
+    const device = createDevice();
+
+    await device.activateWindowAsync();
+
+    expect(execAsync).not.toHaveBeenCalled();
   });
 });

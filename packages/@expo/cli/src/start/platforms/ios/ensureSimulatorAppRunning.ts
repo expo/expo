@@ -6,7 +6,10 @@ import * as Log from '../../../log';
 import { waitForActionAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 
-/** Open the Simulator.app and return when the system registers it as 'open'. */
+/** Bundle identifier of DeviceHub.app, which replaced the standalone Simulator.app in Xcode 27. */
+const DEVICE_HUB_BUNDLE_IDENTIFIER = 'com.apple.dt.Devices';
+
+/** Open the simulator host app and return when the system registers it as 'open'. */
 export async function ensureSimulatorAppRunningAsync(
   device: Partial<Pick<Device, 'udid'>>,
   {
@@ -48,7 +51,7 @@ async function isSimulatorAppRunningAsync(): Promise<boolean> {
   try {
     const zeroMeansNo = (
       await osascript.execAsync(
-        'tell app "System Events" to count processes whose name is "Simulator"'
+        'tell app "System Events" to count (processes whose name is "Simulator" or name is "DeviceHub")'
       )
     ).trim();
     if (zeroMeansNo === '0') {
@@ -65,6 +68,15 @@ async function isSimulatorAppRunningAsync(): Promise<boolean> {
 }
 
 async function openSimulatorAppAsync(device: { udid?: string }) {
+  // Xcode 27 removed the standalone Simulator.app in favor of DeviceHub.app. Prefer opening
+  // DeviceHub by its bundle identifier and fall back to the legacy Simulator.app on older Xcode.
+  try {
+    await spawnAsync('open', ['-b', DEVICE_HUB_BUNDLE_IDENTIFIER]);
+    return;
+  } catch {
+    // DeviceHub.app is unavailable (Xcode < 27); fall back to Simulator.app below.
+  }
+
   const args = ['-a', 'Simulator'];
   if (device.udid) {
     // This has no effect if the app is already running.
