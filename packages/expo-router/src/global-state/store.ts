@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
-import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
+import { getCachedRouteInfo, notifyRouteInfoSubscribers } from './routeInfoCache';
 import type {
   FocusedRouteState,
   LinkToOptions,
@@ -124,9 +124,7 @@ export const store = {
 
     storeRef.current.routeInfo = getCachedRouteInfo(newState);
 
-    for (const callback of routeInfoSubscribers) {
-      callback();
-    }
+    notifyRouteInfoSubscribers();
   },
   assertIsReady() {
     if (!storeRef.current.navigationRef.isReady()) {

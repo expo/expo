@@ -26,7 +26,7 @@ export declare function useNavigationHelpers<State extends NavigationState, Acti
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import(".").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>>) => Readonly<{
@@ -58,15 +58,15 @@ export declare function useNavigationHelpers<State extends NavigationState, Acti
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import(".").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }> | import(".").PartialState<Readonly<{
+    }> | import("..").PartialState<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import(".").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>>): void;
@@ -80,7 +80,7 @@ export declare function useNavigationHelpers<State extends NavigationState, Acti
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import(".").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>;

@@ -12,6 +12,7 @@ import {
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
+import { getRootNavigationStore } from '../../global-state/navigation-store';
 
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -51,10 +52,23 @@ export function useNavigationHelpers<
     const dispatch = (op: Action | ((state: State) => Action)) => {
       const action = typeof op === 'function' ? op(getState()) : op;
 
-      const handled = onAction(action);
+      const run = () => {
+        const handled = onAction(action);
 
-      if (!handled) {
-        onUnhandledAction?.(action);
+        if (!handled) {
+          onUnhandledAction?.(action);
+        }
+      };
+
+      // Batch the whole synchronous cascade (the handling navigator's setState plus the ancestor
+      // focus cascade) into one committed tree. This covers direct dispatches — native back, swipe
+      // gesture, tab press, JUMP_TO — that don't go through the imperative drain (which batches on
+      // its own). Nested batches coalesce: only the outermost flushes.
+      const store = getRootNavigationStore();
+      if (store) {
+        store.batch(run);
+      } else {
+        run();
       }
     };
 

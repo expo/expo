@@ -14,8 +14,9 @@ const useClientLayoutEffect_1 = require("./useClientLayoutEffect");
  */
 function useScheduleUpdate(callback) {
     const { scheduleUpdate, flushUpdates } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
-    // FIXME: This is potentially unsafe
-    // However, since we are using sync store, it might be fine
+    // The callback is buffered during render and run in a layout effect via `flushUpdates`, which
+    // wraps it in the navigation store's `batch` so all scheduled writes in this commit coalesce into
+    // a single committed tree. (Previously this relied on the now-removed `useSyncState` batchUpdates.)
     scheduleUpdate(callback);
     (0, useClientLayoutEffect_1.useClientLayoutEffect)(flushUpdates);
 }

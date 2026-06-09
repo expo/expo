@@ -4,4 +4,5 @@ export declare function getCachedRouteInfo(state: ReactNavigationState): UrlObje
 export declare function setCachedRouteInfo(state: FocusedRouteState | ReactNavigationState, routeInfo: UrlObject): void;
 export declare const routeInfoSubscribers: Set<() => void>;
 export declare const routeInfoSubscribe: (callback: () => void) => () => void;
+export declare const notifyRouteInfoSubscribers: () => void;
 //# sourceMappingURL=routeInfoCache.d.ts.map

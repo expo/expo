@@ -32,6 +32,8 @@ export declare function useSharedScreenProps(props: InternalTabScreenProps): {
         onWillAppear?: import("react-native-screens").TabsScreenEventHandler<import("react-native-screens/lib/typescript/components/tabs/screen").EmptyObject> | undefined;
         onWillDisappear?: import("react-native-screens").TabsScreenEventHandler<import("react-native-screens/lib/typescript/components/tabs/screen").EmptyObject> | undefined;
         orientation?: import("react-native-screens").TabsScreenOrientation | undefined;
+        onDidAppear?: import("react-native-screens").TabsScreenEventHandler<import("react-native-screens/lib/typescript/components/tabs/screen").EmptyObject> | undefined;
+        onDidDisappear?: import("react-native-screens").TabsScreenEventHandler<import("react-native-screens/lib/typescript/components/tabs/screen").EmptyObject> | undefined;
         preventNativeSelection?: boolean | undefined | undefined;
         badgeValue?: string | undefined | undefined;
         specialEffects?: {
@@ -42,8 +44,6 @@ export declare function useSharedScreenProps(props: InternalTabScreenProps): {
         } | undefined | undefined;
         tabBarItemTestID?: string | undefined | undefined;
         tabBarItemAccessibilityLabel?: string | undefined | undefined;
-        onDidAppear?: import("react-native-screens").TabsScreenEventHandler<import("react-native-screens/lib/typescript/components/tabs/screen").EmptyObject> | undefined;
-        onDidDisappear?: import("react-native-screens").TabsScreenEventHandler<import("react-native-screens/lib/typescript/components/tabs/screen").EmptyObject> | undefined;
     };
     screenKey: string;
     icon: {

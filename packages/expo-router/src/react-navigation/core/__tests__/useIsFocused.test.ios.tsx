@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import type { ParamListBase } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
+import { NavigationContext } from '../NavigationContext';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useIsFocused } from '../useIsFocused';
@@ -106,4 +107,47 @@ test('returns correct focus state after conditional rendering', () => {
   act(() => update(true));
 
   expect(element).toMatchInlineSnapshot(`"bar, focused"`);
+});
+
+// The event-driven fallback runs only when there is no IsFocusedContext above (e.g. useIsFocused
+// called between a NavigationContainer and the first navigator). This exercises the off-uSES path
+// added in this commit: read navigation.isFocused() in render + re-render on focus/blur events.
+test('event-driven fallback re-renders on focus/blur when no IsFocusedContext is present', () => {
+  const listeners: Record<'focus' | 'blur', Set<() => void>> = {
+    focus: new Set(),
+    blur: new Set(),
+  };
+  let focused = false;
+  const navigation = {
+    isFocused: () => focused,
+    addListener: (type: 'focus' | 'blur', cb: () => void) => {
+      listeners[type].add(cb);
+      return () => listeners[type].delete(cb);
+    },
+  };
+  const emit = (type: 'focus' | 'blur') => {
+    for (const cb of listeners[type]) cb();
+  };
+
+  const Test = () => <>{useIsFocused() ? 'focused' : 'unfocused'}</>;
+
+  const root = render(
+    <NavigationContext.Provider value={navigation as any}>
+      <Test />
+    </NavigationContext.Provider>
+  );
+
+  expect(root).toMatchInlineSnapshot(`"unfocused"`);
+
+  act(() => {
+    focused = true;
+    emit('focus');
+  });
+  expect(root).toMatchInlineSnapshot(`"focused"`);
+
+  act(() => {
+    focused = false;
+    emit('blur');
+  });
+  expect(root).toMatchInlineSnapshot(`"unfocused"`);
 });

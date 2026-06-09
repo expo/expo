@@ -60,7 +60,9 @@ const useEventEmitter_1 = require("./useEventEmitter");
 const useKeyedChildListeners_1 = require("./useKeyedChildListeners");
 const useNavigationIndependentTree_1 = require("./useNavigationIndependentTree");
 const useOptionsGetters_1 = require("./useOptionsGetters");
-const useSyncState_1 = require("./useSyncState");
+const contexts_1 = require("../../global-state/navigation-store/contexts");
+const navReducer_1 = require("../../global-state/navigation-store/navReducer");
+const navigationStore_1 = require("../../global-state/navigation-store/navigationStore");
 const serializableWarnings = [];
 const duplicateNameWarnings = [];
 /**
@@ -103,7 +105,56 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
     if (!parent.isDefault && !independent) {
         throw new Error("Looks like you have nested a 'NavigationContainer' inside another. Normally you need only one container at the root of the app, so this was probably an error. If this was intentional, wrap the container in 'NavigationIndependentTree' explicitly. Note that this will make the child navigators disconnected from the parent and you won't be able to navigate between them.");
     }
-    const { state, getState, setState, scheduleUpdate, flushUpdates } = (0, useSyncState_1.useSyncState)(() => getPartialState(initialState == null ? undefined : initialState));
+    // Root navigation state now lives in a single `useReducer` flowed via context, not `useSyncState`.
+    // `store` is the synchronous staging buffer that preserves react-navigation's read-your-writes
+    // cascade (getState reads the live tree); the committed tree is published into React via dispatch.
+    const storeRef = React.useRef(null);
+    if (storeRef.current === null) {
+        storeRef.current = (0, navigationStore_1.createNavigationStore)(getPartialState(initialState == null ? undefined : initialState));
+    }
+    const store = storeRef.current;
+    // Expose to the imperative drain (which lives above this container and can't read its context).
+    // Only the root (non-independent) container registers — independent nested trees keep their own
+    // store but are not the imperative `router`'s target, so they must not clobber the singleton.
+    if (!independent) {
+        (0, navigationStore_1.setRootNavigationStore)(store);
+    }
+    const [state, dispatchTree] = React.useReducer(navReducer_1.navReducer, store, (s) => s.getState());
+    // The reducer dispatch is referentially stable; wiring it during render is idempotent and makes it
+    // available before effects run (the imperative drain may flush from the first commit).
+    store.setDispatch(dispatchTree);
+    React.useEffect(() => {
+        return () => {
+            store.setDispatch(null);
+            if ((0, navigationStore_1.getRootNavigationStore)() === store) {
+                (0, navigationStore_1.setRootNavigationStore)(null);
+            }
+        };
+    }, [store]);
+    // `getState` reads the live tree (read-your-writes), NOT the committed `state`, so the synchronous
+    // focus cascade observes each ancestor's write. `setState` stages into the live tree and dispatches
+    // (unless inside a `flushUpdates` batch). This replaces useSyncState's getState/setState.
+    const getState = store.getState;
+    const pendingUpdatesRef = React.useRef([]);
+    const setState = (0, useLatestCallback_1.default)((newState) => {
+        store.stageRootState(newState);
+    });
+    const scheduleUpdate = (0, useLatestCallback_1.default)((callback) => {
+        pendingUpdatesRef.current.push(callback);
+    });
+    const flushUpdates = (0, useLatestCallback_1.default)(() => {
+        const pending = pendingUpdatesRef.current;
+        pendingUpdatesRef.current = [];
+        if (pending.length === 0) {
+            return;
+        }
+        // Coalesce all scheduled render-phase writes into a single commit (the batchUpdates analogue).
+        store.batch(() => {
+            for (const update of pending) {
+                update();
+            }
+        });
+    });
     const isFirstMountRef = React.useRef(true);
     const navigatorKeyRef = React.useRef(undefined);
     const getKey = React.useCallback(() => navigatorKeyRef.current, []);
@@ -341,6 +392,6 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
         message += `\n\nThis is a development-only warning and won't be shown in production.`;
         console.error(message);
     });
-    return ((0, jsx_runtime_1.jsx)(NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider, { value: false, children: (0, jsx_runtime_1.jsx)(NavigationContainerRefContext_1.NavigationContainerRefContext.Provider, { value: navigation, children: (0, jsx_runtime_1.jsx)(NavigationBuilderContext_1.NavigationBuilderContext.Provider, { value: builderContext, children: (0, jsx_runtime_1.jsx)(NavigationStateContext_1.NavigationStateContext.Provider, { value: context, children: (0, jsx_runtime_1.jsx)(UnhandledActionContext_1.UnhandledActionContext.Provider, { value: onUnhandledAction ?? defaultOnUnhandledAction, children: (0, jsx_runtime_1.jsx)(DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext.Provider, { value: navigationInChildEnabled, children: (0, jsx_runtime_1.jsx)(EnsureSingleNavigator_1.EnsureSingleNavigator, { children: (0, jsx_runtime_1.jsx)(ThemeProvider_1.ThemeProvider, { value: theme, children: children }) }) }) }) }) }) }) }));
+    return ((0, jsx_runtime_1.jsx)(contexts_1.NavigationStoreContext.Provider, { value: store, children: (0, jsx_runtime_1.jsx)(contexts_1.RootTreeContext.Provider, { value: state, children: (0, jsx_runtime_1.jsx)(NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider, { value: false, children: (0, jsx_runtime_1.jsx)(NavigationContainerRefContext_1.NavigationContainerRefContext.Provider, { value: navigation, children: (0, jsx_runtime_1.jsx)(NavigationBuilderContext_1.NavigationBuilderContext.Provider, { value: builderContext, children: (0, jsx_runtime_1.jsx)(NavigationStateContext_1.NavigationStateContext.Provider, { value: context, children: (0, jsx_runtime_1.jsx)(UnhandledActionContext_1.UnhandledActionContext.Provider, { value: onUnhandledAction ?? defaultOnUnhandledAction, children: (0, jsx_runtime_1.jsx)(DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext.Provider, { value: navigationInChildEnabled, children: (0, jsx_runtime_1.jsx)(EnsureSingleNavigator_1.EnsureSingleNavigator, { children: (0, jsx_runtime_1.jsx)(ThemeProvider_1.ThemeProvider, { value: theme, children: children }) }) }) }) }) }) }) }) }) }));
 }
 //# sourceMappingURL=BaseNavigationContainer.js.map

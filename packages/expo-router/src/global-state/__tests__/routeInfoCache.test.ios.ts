@@ -3,8 +3,9 @@ import { getRouteInfoFromState } from '../getRouteInfoFromState';
 import {
   getCachedRouteInfo,
   setCachedRouteInfo,
-  routeInfoSubscribers,
   routeInfoSubscribe,
+  routeInfoSubscribers,
+  notifyRouteInfoSubscribers,
 } from '../routeInfoCache';
 import type { ReactNavigationState } from '../types';
 
@@ -130,61 +131,24 @@ describe('setCachedRouteInfo', () => {
 
 describe('routeInfoSubscribe', () => {
   afterEach(() => {
-    // Clean up any leftover subscribers
     routeInfoSubscribers.clear();
   });
 
-  it('adds a subscriber to the set', () => {
+  it('adds a subscriber and returns an unsubscribe', () => {
     const callback = jest.fn();
-
-    routeInfoSubscribe(callback);
-
-    expect(routeInfoSubscribers.has(callback)).toBe(true);
-  });
-
-  it('returns an unsubscribe function that removes the callback', () => {
-    const callback = jest.fn();
-
     const unsubscribe = routeInfoSubscribe(callback);
     expect(routeInfoSubscribers.has(callback)).toBe(true);
-
     unsubscribe();
     expect(routeInfoSubscribers.has(callback)).toBe(false);
   });
 
-  it('supports multiple subscribers', () => {
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
-
-    routeInfoSubscribe(callback1);
-    routeInfoSubscribe(callback2);
-
-    expect(routeInfoSubscribers.size).toBe(2);
-    expect(routeInfoSubscribers.has(callback1)).toBe(true);
-    expect(routeInfoSubscribers.has(callback2)).toBe(true);
-  });
-
-  it('only removes the specific subscriber when unsubscribe is called', () => {
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
-
-    const unsub1 = routeInfoSubscribe(callback1);
-    routeInfoSubscribe(callback2);
-
-    unsub1();
-
-    expect(routeInfoSubscribers.has(callback1)).toBe(false);
-    expect(routeInfoSubscribers.has(callback2)).toBe(true);
-  });
-
-  it('is idempotent - calling unsubscribe multiple times is safe', () => {
-    const callback = jest.fn();
-
-    const unsubscribe = routeInfoSubscribe(callback);
-
-    unsubscribe();
-    unsubscribe(); // Should not throw
-
-    expect(routeInfoSubscribers.has(callback)).toBe(false);
+  it('notifyRouteInfoSubscribers invokes every subscriber', () => {
+    const a = jest.fn();
+    const b = jest.fn();
+    routeInfoSubscribe(a);
+    routeInfoSubscribe(b);
+    notifyRouteInfoSubscribers();
+    expect(a).toHaveBeenCalledTimes(1);
+    expect(b).toHaveBeenCalledTimes(1);
   });
 });

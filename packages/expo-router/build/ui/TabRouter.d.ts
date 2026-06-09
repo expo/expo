@@ -78,7 +78,7 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
     };
     source?: string;
     target?: string;
-} | RNTabActionType | {
+} | {
     type: "REPLACE";
     payload: {
         name: string;
@@ -86,7 +86,7 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
     };
     source?: string;
     target?: string;
-} | {
+} | RNTabActionType | {
     type: "JUMP_TO";
     source?: string;
     target?: string;

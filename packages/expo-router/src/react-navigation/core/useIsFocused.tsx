@@ -18,28 +18,39 @@ export function useIsFocused(): boolean {
 
   const isFocusedAvailable = isFocused !== undefined;
 
-  const subscribe = React.useCallback(
-    (callback: () => void) => {
-      if (isFocusedAvailable) {
-        // If `isFocused` is available in context
-        // We don't need to subscribe to focus and blur events
-        return () => {};
+  // Backward-compatible path (no IsFocusedContext, i.e. outside NavigationProvider): derive focus
+  // from navigation focus/blur events. Read the current value during render and force a re-render
+  // only when it actually changed — the off-`useSyncExternalStore` convention used across this
+  // package (see global-state/useRouteInfo). Hooks run unconditionally (React Compiler friendly);
+  // only the effect body is gated on whether we need the event subscription.
+  const value = navigation.isFocused();
+  const lastValueRef = React.useRef(value);
+  lastValueRef.current = value;
+
+  const [, forceUpdate] = React.useReducer((count: number) => count + 1, 0);
+  React.useEffect(() => {
+    if (isFocusedAvailable) {
+      // Focus comes from context; no event subscription needed.
+      return;
+    }
+
+    const checkForChange = () => {
+      if (navigation.isFocused() !== lastValueRef.current) {
+        forceUpdate();
       }
+    };
+    const unsubscribeFocus = navigation.addListener('focus', checkForChange);
+    const unsubscribeBlur = navigation.addListener('blur', checkForChange);
+    // Safety net: focus may have changed between the render-phase read and this subscribe.
+    checkForChange();
 
-      const unsubscribeFocus = navigation.addListener('focus', callback);
-      const unsubscribeBlur = navigation.addListener('blur', callback);
+    return () => {
+      unsubscribeFocus();
+      unsubscribeBlur();
+    };
+  }, [isFocusedAvailable, navigation]);
 
-      return () => {
-        unsubscribeFocus();
-        unsubscribeBlur();
-      };
-    },
-    [isFocusedAvailable, navigation]
-  );
-
-  // isFocused from context only works with NavigationProvider
-  // So this is kept for backward compatibility
-  const value = React.useSyncExternalStore(subscribe, navigation.isFocused, navigation.isFocused);
-
+  // `isFocused` from context only works with NavigationProvider; the event-derived `value` is the
+  // backward-compatible fallback.
   return isFocused ?? value;
 }
