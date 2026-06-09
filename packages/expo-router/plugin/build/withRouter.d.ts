@@ -47,7 +47,7 @@ export type Props = {
     headers?: Record<string, string | string[]>;
     /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */
     unstable_useServerMiddleware?: boolean;
-    /** Enable experimental data loader support. This is only supported for `web.output: 'static'` outputs at the moment. */
+    /** Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config. */
     unstable_useServerDataLoaders?: boolean;
     /** Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time. */
     unstable_useServerRendering?: boolean;
