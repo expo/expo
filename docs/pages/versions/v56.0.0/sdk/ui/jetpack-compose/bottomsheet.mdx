@@ -68,6 +68,49 @@ export default function BasicBottomSheetExample() {
 }
 ```
 
+### Skip partially expanded state
+
+When `skipPartiallyExpanded` is set, the sheet opens directly in the fully expanded state instead of stopping at the half-height position first.
+
+```tsx SkipPartiallyExpandedExample.tsx
+import { useRef, useState } from 'react';
+import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import { paddingAll, height } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function SkipPartiallyExpandedExample() {
+  const [visible, setVisible] = useState(false);
+  const sheetRef = useRef<ModalBottomSheetRef>(null);
+
+  const hideSheet = async () => {
+    await sheetRef.current?.hide();
+    setVisible(false);
+  };
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Sheet</Text>
+      </Button>
+      {visible && (
+        <ModalBottomSheet
+          ref={sheetRef}
+          onDismissRequest={() => setVisible(false)}
+          skipPartiallyExpanded>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24), height(600)]}>
+            <Text>This sheet skips the partially expanded state.</Text>
+            <Text>It opens directly in the fully expanded position.</Text>
+            <Button onClick={hideSheet}>
+              <Text>Close</Text>
+            </Button>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
 ### Custom colors
 
 Use `containerColor`, `contentColor`, and `scrimColor` to customize the sheet's appearance.
@@ -302,7 +345,7 @@ export default function ScrollableContentBottomSheetExample() {
                 nestedScrollEnabled
                 style={{ flex: 1 }}
                 data={DATA}
-                keyExtractor={item => item}
+                keyExtractor={(item) => item}
                 renderItem={({ item }) => <RNText style={{ paddingVertical: 16 }}>{item}</RNText>}
               />
             </RNHostView>
