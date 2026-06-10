@@ -217,11 +217,11 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     if (isInteractive()) {
       // TODO: Focus the individual window
       await spawnAppleScriptAsync([
-        `try`,
+        `if application "Simulator" is running then`,
         `tell application "Simulator" to activate`,
-        `on error`,
+        `else if application "DeviceHub" is running then`,
         `tell application "DeviceHub" to activate`,
-        `end try`,
+        `end if`,
       ]);
     }
   }
