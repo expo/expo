@@ -29,6 +29,7 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix React Native touchables (e.g. `Pressable`) on `community/pager-view` pages not responding, or triggering the wrong page's handler, after navigating between pages. ([#46778](https://github.com/expo/expo/pull/46778) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Fix React Native `ScrollView` nested scrolling inside `BottomSheet`. ([#46544](https://github.com/expo/expo/pull/46544) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Fix layout shift when `Host` with `matchContents` is used inside React Native Screens. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `PagerView` offsetting `ScrollView` by safe area insets. ([#46637](https://github.com/expo/expo/pull/46637) by [@nishan](https://github.com/intergalacticspacehighway))
