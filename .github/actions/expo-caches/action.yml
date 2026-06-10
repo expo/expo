@@ -160,7 +160,7 @@ runs:
         path: ${{ runner.temp }}/.ccache
         # It is necessary to include Xcode version in the cache key, because each Xcode version introduces changes to clang compiler,
         # which is a part of ccache hashes. After an Xcode version change the hit rate would drop to 0% until a new cache is built.
-        key: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('**/Podfile.lock', 'pnpm-lock.yaml', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/*.mm', 'packages/**/*.m') }}
+        key: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('apps/*/ios/Podfile.lock', 'apps/*/macos/Podfile.lock', 'apps/*/*/ios/Podfile.lock', 'pnpm-lock.yaml', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/*.mm', 'packages/**/*.m') }}
         restore-keys: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-
 
     - name: ♻️ Restore ccache (Android)
