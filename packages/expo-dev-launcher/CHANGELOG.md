@@ -14,6 +14,7 @@
 - [Android] Discover packagers across all connected networks on Android 33+. ([#46487](https://github.com/expo/expo/pull/46487) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Present Local Network permission as a status row instead of a toggle, and make the Settings debug actions native, full-row-tappable list rows.
 - [iOS] Improve the Updates tab empty state with clearer guidance on how to publish an update.
+- [iOS] Present the development server info dialog as a native sheet.
 
 ### 💡 Others
 

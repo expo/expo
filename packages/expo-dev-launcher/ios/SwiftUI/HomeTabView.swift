@@ -59,9 +59,9 @@ struct HomeTabView: View {
     #if os(tvOS)
     .background()
     #endif
-    .overlay(
-      DevServerInfoModal(showingInfoDialog: $showingInfoDialog)
-    )
+    .sheet(isPresented: $showingInfoDialog) {
+      DevServerInfoModal()
+    }
   }
 
   private var crashReportBanner: some View {
