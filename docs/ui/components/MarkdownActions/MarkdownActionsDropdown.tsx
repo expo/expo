@@ -93,6 +93,13 @@ export function MarkdownActionsDropdown() {
     return `https://cursor.com/link/prompt?text=${getPrompt(markdownUrl)}`;
   }, [markdownUrl]);
 
+  const claudeCodeUrl = useMemo(() => {
+    if (!markdownUrl) {
+      return null;
+    }
+    return `claude-cli://open?q=${getPrompt(markdownUrl)}`;
+  }, [markdownUrl]);
+
   const dropdownItems = [];
 
   if (markdownViewUrl) {
@@ -150,6 +157,18 @@ export function MarkdownActionsDropdown() {
         Icon={CursorLogoIcon}
         href={cursorUrl}
         openInNewTab
+      />
+    );
+  }
+
+  if (claudeCodeUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="open-claude-code"
+        label="Open in Claude Code"
+        Icon={ClaudeLogoIcon}
+        href={claudeCodeUrl}
+        openInNewTab={false}
       />
     );
   }
