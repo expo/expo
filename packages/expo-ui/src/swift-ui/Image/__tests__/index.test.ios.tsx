@@ -60,6 +60,13 @@ describe('Image', () => {
     expect(nativeModifiers()).toEqual([{ $type: 'font', textStyle: 'largeTitle' }]);
   });
 
+  it('attaches the global event listener only when the user passes modifiers', () => {
+    render(<Image systemName="bell.fill" size={30} color="red" />);
+    render(<Image systemName="bell.fill" modifiers={[opacity(0.5)]} />);
+    expect(mockNativeViewFn.mock.calls[0][0].onGlobalEvent).toBeUndefined();
+    expect(mockNativeViewFn.mock.calls[1][0].onGlobalEvent).toBeInstanceOf(Function);
+  });
+
   it('keeps user modifiers ahead of the injected ones', () => {
     render(<Image systemName="bell.fill" color="red" modifiers={[opacity(0.5)]} />);
     expect(nativeModifiers()).toEqual([
