@@ -13,9 +13,10 @@ export declare class Ansi extends React.Component<{
         hasError: boolean;
     };
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void;
-    render(): React.JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export declare function AnsiUnsafe({ text, style }: {
     text: string;
     style: React.CSSProperties;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
+//# sourceMappingURL=AnsiHighlight.d.ts.map

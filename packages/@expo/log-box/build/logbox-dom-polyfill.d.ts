@@ -1,4 +1,3 @@
-import React from 'react';
 import type { FetchTextAsync } from './fetchHelper';
 type LogBoxDOMProps = Record<string, unknown>;
 export default function LogBoxPolyfillDOM({ onCopyText, onMinimize, fetchTextAsync, onReload, ...props }: {
@@ -19,5 +18,6 @@ export default function LogBoxPolyfillDOM({ onCopyText, onMinimize, fetchTextAsy
     nativeLogs?: any[];
     selectedIndex?: number;
     dom?: LogBoxDOMProps;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export {};
+//# sourceMappingURL=logbox-dom-polyfill.d.ts.map

@@ -39,3 +39,4 @@ export declare function parseLogBoxLog(args: any[]): {
     message: Message;
 };
 export {};
+//# sourceMappingURL=parseLogBoxLog.d.ts.map

@@ -8,6 +8,7 @@ interface ActionsContextType {
 export declare const ActionsContext: React.FC<{
     children: ReactNode;
 } & ActionsContextType>;
-export declare const withActions: (Component: React.FC, actions: ActionsContextType) => (props: any) => React.JSX.Element;
+export declare const withActions: (Component: React.FC, actions: ActionsContextType) => (props: any) => import("react/jsx-runtime").JSX.Element;
 export declare const useActions: () => ActionsContextType;
 export {};
+//# sourceMappingURL=ContextActions.d.ts.map

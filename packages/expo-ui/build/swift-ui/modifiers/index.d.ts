@@ -703,6 +703,18 @@ export declare const truncationMode: (mode: "head" | "middle" | "tail") => Modif
  */
 export declare const allowsTightening: (value: boolean) => ModifierConfig;
 /**
+ * Sets the minimum amount that text in this view scales down to fit in the available space.
+ *
+ * Use this modifier if the text you place in a view doesn't fit and it's okay if the text shrinks
+ * to accommodate. For example, a label with a minimum scale factor of `0.5` draws its text in a
+ * font size as small as half of the actual font if needed.
+ * @param factor - A fraction between `0` and `1` (including `0` and `1`) that specifies the amount
+ * of text to draw. For example, a value of `0.5` draws the text in a font size as small as half the
+ * actual font if needed.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/minimumscalefactor(_:)).
+ */
+export declare const minimumScaleFactor: (factor: number) => ModifierConfig;
+/**
  * Sets the spacing, or kerning, between characters for the text in this view.
  * @default 0
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/kerning(_:)).

@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -6,22 +5,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseInterpolation = parseInterpolation;
-exports.parseLogBoxException = parseLogBoxException;
-exports.isError = isError;
-exports.parseLogBoxLog = parseLogBoxLog;
-const log_box_utils_1 = require("@expo/log-box-utils");
-const react_1 = __importDefault(require("react"));
-const parseErrorStack_1 = require("../utils/parseErrorStack");
+import { parseBabelCodeFrameError, parseBabelTransformError, parseMetroError, } from '@expo/log-box-utils';
+import React from 'react';
+import { parseErrorStack } from '../utils/parseErrorStack';
 const SUBSTITUTION = '\ufeff%s';
 // https://github.com/krystofwoldrich/react-native/blob/7db31e2fca0f828aa6bf489ae6dc4adef9b7b7c3/packages/react-native/Libraries/LogBox/Data/parseLogBoxLog.js#L130
 // In RN the original is not used outside of this file.
 // TODO: Get rid of this. The substitution logic is wild.
-function parseInterpolation(args) {
+export function parseInterpolation(args) {
     const categoryParts = [];
     const contentParts = [];
     const substitutionOffsets = [];
@@ -82,10 +73,10 @@ function parseInterpolation(args) {
         },
     };
 }
-function parseLogBoxException(error) {
+export function parseLogBoxException(error) {
     const message = error.originalMessage != null ? error.originalMessage : 'Unknown';
     let parsed = null;
-    if ((parsed = (0, log_box_utils_1.parseMetroError)(message))) {
+    if ((parsed = parseMetroError(message))) {
         const { content, fileName, row, column, codeFrame } = parsed;
         return {
             level: 'fatal',
@@ -111,7 +102,7 @@ function parseLogBoxException(error) {
             extraData: error.extraData,
         };
     }
-    if ((parsed = (0, log_box_utils_1.parseBabelTransformError)(message))) {
+    if ((parsed = parseBabelTransformError(message))) {
         // Transform errors are thrown from inside the Babel transformer.
         const { fileName, content, row, column, codeFrame } = parsed;
         return {
@@ -137,7 +128,7 @@ function parseLogBoxException(error) {
             extraData: error.extraData,
         };
     }
-    if ((parsed = (0, log_box_utils_1.parseBabelCodeFrameError)(message))) {
+    if ((parsed = parseBabelCodeFrameError(message))) {
         const { fileName, content, codeFrame } = parsed;
         return {
             level: 'syntax',
@@ -181,7 +172,7 @@ function parseLogBoxException(error) {
             stack: error.stack,
             codeFrame: {},
             isComponentError: error.isComponentError,
-            componentStack: componentStack != null ? (0, parseErrorStack_1.parseErrorStack)(componentStack) : [],
+            componentStack: componentStack != null ? parseErrorStack(componentStack) : [],
             extraData: error.extraData,
             ...parseInterpolation([message]),
         };
@@ -193,7 +184,7 @@ function parseLogBoxException(error) {
             stack: error.stack,
             codeFrame: {},
             isComponentError: error.isComponentError,
-            componentStack: (0, parseErrorStack_1.parseErrorStack)(componentStack),
+            componentStack: parseErrorStack(componentStack),
             extraData: error.extraData,
             ...parseInterpolation([message]),
         };
@@ -253,10 +244,10 @@ function interpolateLikeConsole(...args) {
     }
     return output;
 }
-function isError(err) {
+export function isError(err) {
     return typeof err === 'object' && err !== null && 'name' in err && 'message' in err;
 }
-function parseLogBoxLog(args) {
+export function parseLogBoxLog(args) {
     // React will pass a full error object to the console.error function.
     // https://github.com/facebook/react/blob/c44e4a250557e53b120e40db8b01fb5fd93f1e35/packages/react-reconciler/src/ReactFiberErrorLogger.js#L105
     // But we can't be sure at which order, so we'll check all arguments.
@@ -275,9 +266,9 @@ function parseLogBoxLog(args) {
     }
     const componentStack = 'componentStack' in error && typeof error.componentStack === 'string'
         ? error.componentStack
-        : react_1.default.captureOwnerStack() || undefined;
+        : React.captureOwnerStack() || undefined;
     return {
-        componentStack: (0, parseErrorStack_1.parseErrorStack)(componentStack ?? ''),
+        componentStack: parseErrorStack(componentStack ?? ''),
         category: error.message,
         message: {
             content: message,

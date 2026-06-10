@@ -1,57 +1,20 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const expo_modules_core_1 = require("expo-modules-core");
-const react_1 = __importStar(require("react"));
-const react_native_1 = require("react-native");
+import { jsx as _jsx, Fragment as _Fragment } from "react/jsx-runtime";
+import { requireNativeModule } from 'expo-modules-core';
+import React, { useMemo } from 'react';
+import { View, DevSettings, Platform, Clipboard } from 'react-native';
 // @ts-ignore
-const LogBoxData = __importStar(require("react-native/Libraries/LogBox/Data/LogBoxData"));
+import * as LogBoxData from 'react-native/Libraries/LogBox/Data/LogBoxData';
 // @ts-ignore
-const RCTModalHostViewNativeComponent_1 = __importDefault(require("react-native/Libraries/Modal/RCTModalHostViewNativeComponent"));
-const logbox_dom_polyfill_1 = __importDefault(require("./logbox-dom-polyfill"));
-const devServerEndpoints_1 = require("./utils/devServerEndpoints");
-const Modal = RCTModalHostViewNativeComponent_1.default;
+import RCTModalHostView from 'react-native/Libraries/Modal/RCTModalHostViewNativeComponent';
+import LogBoxPolyfillDOM from './logbox-dom-polyfill';
+import { getBaseUrl } from './utils/devServerEndpoints';
+const Modal = RCTModalHostView;
 const Colors = {
     background: '#111113',
 };
 const NativeExpoGoModule = (() => {
     try {
-        return (0, expo_modules_core_1.requireNativeModule)('ExpoGo');
+        return requireNativeModule('ExpoGo');
     }
     catch {
         return null;
@@ -61,7 +24,7 @@ function isRunningInExpoGo() {
     return NativeExpoGoModule != null;
 }
 function LogBoxRNPolyfill(props) {
-    const logs = react_1.default.useMemo(() => {
+    const logs = React.useMemo(() => {
         return props.logs.map((log) => {
             return {
                 symbolicated: log.symbolicated,
@@ -81,34 +44,32 @@ function LogBoxRNPolyfill(props) {
             };
         });
     }, [props.logs]);
-    const [open, setOpen] = react_1.default.useState(true);
+    const [open, setOpen] = React.useState(true);
     const bundledLogBoxUrl = getBundledLogBoxURL();
     const closeModal = (cb) => {
         setOpen(false);
-        setTimeout(cb, react_native_1.Platform.select({
+        setTimeout(cb, Platform.select({
             ios: 500, // To allow the native modal to slide away before unmounting
             default: 0, // Android has no animation, Web has css animation which doesn't require the delay
         }));
     };
     const onMinimize = () => closeModal(props.onMinimize);
     const onDismiss = props.onDismiss;
-    const LogBoxWrapper = (0, react_1.useMemo)(() => react_native_1.Platform.OS === 'ios'
+    const LogBoxWrapper = useMemo(() => Platform.OS === 'ios'
         ? ({ children, open }) => {
-            return (react_1.default.createElement(Modal, { animationType: "slide", presentationStyle: "pageSheet", visible: open, onRequestClose: onMinimize }, children));
+            return (_jsx(Modal, { animationType: "slide", presentationStyle: "pageSheet", visible: open, onRequestClose: onMinimize, children: children }));
         }
-        : ({ children }) => react_1.default.createElement(react_1.default.Fragment, null, children), []);
-    return (react_1.default.createElement(LogBoxWrapper, { open: open },
-        react_1.default.createElement(react_native_1.View, { style: {
-                backgroundColor: react_native_1.Platform.select({ default: undefined, ios: Colors.background }),
+        : ({ children }) => _jsx(_Fragment, { children: children }), []);
+    return (_jsx(LogBoxWrapper, { open: open, children: _jsx(View, { style: {
+                backgroundColor: Platform.select({ default: undefined, ios: Colors.background }),
                 pointerEvents: 'box-none',
                 top: 0,
                 flex: 1,
-            }, collapsable: false },
-            react_1.default.createElement(logbox_dom_polyfill_1.default, { selectedIndex: props.selectedIndex, logs: logs, 
+            }, collapsable: false, children: _jsx(LogBoxPolyfillDOM, { selectedIndex: props.selectedIndex, logs: logs, 
                 // LogBoxData actions props
                 onDismiss: onDismiss, onChangeSelectedIndex: props.onChangeSelectedIndex, 
                 // Environment polyfill props
-                devServerUrl: (0, devServerEndpoints_1.getBaseUrl)(), 
+                devServerUrl: getBaseUrl(), 
                 // Common actions props
                 fetchTextAsync: async (input, init) => {
                     const res = await fetch(input, init);
@@ -119,10 +80,10 @@ function LogBoxRNPolyfill(props) {
                     // NOTE: For iOS only the reload is enough, but on Android the app gets stuck on an empty black screen
                     onMinimize();
                     setTimeout(() => {
-                        react_native_1.DevSettings.reload();
+                        DevSettings.reload();
                     }, 100);
                 }, onCopyText: (text) => {
-                    react_native_1.Clipboard.setString(text);
+                    Clipboard.setString(text);
                 }, 
                 // DOM props
                 dom: {
@@ -143,7 +104,7 @@ function LogBoxRNPolyfill(props) {
                     suppressMenuItems: ['underline', 'lookup', 'translate'],
                     bounces: true,
                     overScrollMode: 'never',
-                } }))));
+                } }) }) }));
 }
 function LogBoxInspectorContainer({ selectedLogIndex, logs, }) {
     const handleDismiss = (index) => {
@@ -158,7 +119,7 @@ function LogBoxInspectorContainer({ selectedLogIndex, logs, }) {
     if (selectedLogIndex < 0) {
         return null;
     }
-    return (react_1.default.createElement(LogBoxRNPolyfill, { onDismiss: handleDismiss, onMinimize: handleMinimize, onChangeSelectedIndex: handleSetSelectedLog, logs: logs, selectedIndex: selectedLogIndex }));
+    return (_jsx(LogBoxRNPolyfill, { onDismiss: handleDismiss, onMinimize: handleMinimize, onChangeSelectedIndex: handleSetSelectedLog, logs: logs, selectedIndex: selectedLogIndex }));
 }
 let cachedBundledLogBoxUrl = undefined;
 /**
@@ -186,5 +147,5 @@ function getBundledLogBoxURL() {
     }
     return cachedBundledLogBoxUrl;
 }
-exports.default = LogBoxData.withSubscription(LogBoxInspectorContainer);
+export default LogBoxData.withSubscription(LogBoxInspectorContainer);
 //# sourceMappingURL=logbox-rn-polyfill.js.map

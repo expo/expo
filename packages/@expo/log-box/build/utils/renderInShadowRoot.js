@@ -1,11 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderInShadowRoot = renderInShadowRoot;
-const client_1 = __importDefault(require("react-dom/client"));
-function renderInShadowRoot(id, element) {
+import ReactDOM from 'react-dom/client';
+export function renderInShadowRoot(id, element) {
     const div = document.createElement('div');
     div.id = id;
     // Position absolute removes element from document flow, preventing layout impact
@@ -33,7 +27,7 @@ function renderInShadowRoot(id, element) {
     });
     const shadowContainer = document.createElement('div');
     shadowRoot.appendChild(shadowContainer);
-    let currentRoot = client_1.default.createRoot(shadowContainer);
+    let currentRoot = ReactDOM.createRoot(shadowContainer);
     currentRoot.render(element);
     return {
         unmount: () => {
