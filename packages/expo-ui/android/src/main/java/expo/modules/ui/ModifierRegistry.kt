@@ -57,8 +57,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.onVisibilityChanged
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentType
@@ -686,6 +688,24 @@ object ModifierRegistry {
             mapOf(
               "width" to size.width.toDp().value,
               "height" to size.height.toDp().value
+            )
+          )
+        }
+      }
+    }
+
+    register("onGloballyPositioned") { _, _, _, eventDispatcher ->
+      val density = LocalDensity.current
+      Modifier.onGloballyPositioned { coordinates ->
+        val position = coordinates.positionInWindow()
+        with(density) {
+          eventDispatcher(
+            "onGloballyPositioned",
+            mapOf(
+              "x" to position.x.toDp().value,
+              "y" to position.y.toDp().value,
+              "width" to coordinates.size.width.toDp().value,
+              "height" to coordinates.size.height.toDp().value
             )
           )
         }
