@@ -582,9 +582,7 @@ describe('mixed files: migratable imports are rewritten even alongside unsupport
     ].join('\n');
     const output = run(input);
     // The migratable named import is rewritten...
-    expect(output).toContain(
-      `import { NavigationContainer } from "expo-router/react-navigation"`
-    );
+    expect(output).toContain(`import { NavigationContainer } from "expo-router/react-navigation"`);
     // ...the unsupported package is reported for manual migration...
     expect(errorSpy).toHaveBeenCalled();
     expect(errorSpy.mock.calls[0][0]).toContain('@react-navigation/native-stack');
@@ -601,9 +599,7 @@ describe('mixed files: migratable imports are rewritten even alongside unsupport
     ].join('\n');
     const output = run(input);
     // Clean named import migrated...
-    expect(output).toContain(
-      `import { NavigationContainer } from "expo-router/react-navigation"`
-    );
+    expect(output).toContain(`import { NavigationContainer } from "expo-router/react-navigation"`);
     // ...default-style import reported and left untouched.
     expect(errorSpy).toHaveBeenCalled();
     expect(output).toContain(`import Stack from '@react-navigation/stack'`);
