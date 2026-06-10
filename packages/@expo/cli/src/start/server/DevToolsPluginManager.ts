@@ -19,9 +19,13 @@ export default class DevToolsPluginManager {
     return this.plugins;
   }
 
-  public async queryPluginWebpageRootAsync(pluginName: string): Promise<string | null> {
+  public async queryPluginAsync(pluginName: string): Promise<DevToolsPlugin | null> {
     const plugins = await this.queryPluginsAsync();
-    const plugin = plugins.find((p) => p.packageName === pluginName);
+    return plugins.find((p) => p.packageName === pluginName) ?? null;
+  }
+
+  public async queryPluginWebpageRootAsync(pluginName: string): Promise<string | null> {
+    const plugin = await this.queryPluginAsync(pluginName);
     return plugin?.webpageRoot ?? null;
   }
 

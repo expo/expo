@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { DevToolsPlugin } from '../DevToolsPlugin';
 
 describe('DevToolsPlugin', () => {
@@ -80,6 +82,79 @@ describe('DevToolsPlugin', () => {
     expect(plugin.description).toBe('An example extension');
     expect(plugin.cliExtensions?.commands).toEqual(commands);
     expect(plugin.cliExtensions?.entryPoint).toBe('index.js');
+  });
+
+  it('should create an instance from a plugin with only the serverEntryPoint configuration set', () => {
+    const pluginDescriptor = {
+      packageName: 'example-plugin',
+      packageRoot: '/path/to/example-plugin',
+      serverEntryPoint: '/path/to/example-plugin/dist/server.js',
+    };
+    const plugin = new DevToolsPlugin(pluginDescriptor, '/path/to/project');
+
+    expect(plugin.serverEntryPoint).toBe('/path/to/example-plugin/dist/server.js');
+    expect(plugin.webpageRoot).toBeUndefined();
+    // Plugins serving their page dynamically should still get an endpoint URL.
+    expect(plugin.webpageEndpoint).toBe('/_expo/plugins/example-plugin');
+  });
+
+  it('should reject a serverEntryPoint that escapes the package directory', () => {
+    expect(
+      () =>
+        new DevToolsPlugin(
+          {
+            packageName: 'malicious-plugin',
+            packageRoot: '/path/to/project/node_modules/malicious-plugin',
+            serverEntryPoint: '/path/to/project/evil.js',
+          },
+          '/path/to/project'
+        )
+    ).toThrow(/is not inside packageRoot/);
+  });
+
+  describe('requestHandler', () => {
+    const fixturesRoot = path.join(__dirname, 'fixtures');
+
+    it('should be undefined when no serverEntryPoint is set', () => {
+      const plugin = new DevToolsPlugin(
+        { packageName: 'example-plugin', packageRoot: '/path/to/example-plugin' },
+        '/path/to/project'
+      );
+      expect(plugin.requestHandler).toBeUndefined();
+    });
+
+    it('should load the handler default-exported by the server entry point', async () => {
+      const plugin = new DevToolsPlugin(
+        {
+          packageName: 'example-plugin',
+          packageRoot: fixturesRoot,
+          serverEntryPoint: path.join(fixturesRoot, 'devtools-plugin-server.js'),
+        },
+        '/path/to/project'
+      );
+      const handler = plugin.requestHandler;
+      expect(typeof handler).toBe('function');
+
+      const response = await handler!(new Request('http://localhost:8081/api/hello'));
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(200);
+      expect(await response!.json()).toEqual({ message: 'hello' });
+
+      const passthrough = await handler!(new Request('http://localhost:8081/unknown'));
+      expect(passthrough).toBeNull();
+    });
+
+    it('should throw when the server entry point does not default-export a function', () => {
+      const plugin = new DevToolsPlugin(
+        {
+          packageName: 'example-plugin',
+          packageRoot: fixturesRoot,
+          serverEntryPoint: path.join(fixturesRoot, 'devtools-plugin-server-invalid.js'),
+        },
+        '/path/to/project'
+      );
+      expect(() => plugin.requestHandler).toThrow(/must default-export a handler function/);
+    });
   });
 
   it("should validate the schema using and throw if the schema doesn't match", () => {

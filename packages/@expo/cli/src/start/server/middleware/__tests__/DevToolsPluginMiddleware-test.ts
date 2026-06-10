@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import { Writable } from 'stream';
 
 import DevToolsPluginManager from '../../DevToolsPluginManager';
 import { DevToolsPluginMiddleware } from '../DevToolsPluginMiddleware';
@@ -31,6 +32,35 @@ function createMockResponse() {
 
 async function delayAsync(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** A writable response mock that supports streaming Response bodies from the plugin server. */
+function createStreamingResponse() {
+  const chunks: Buffer[] = [];
+  const res = new Writable({
+    write(chunk, _encoding, callback) {
+      chunks.push(Buffer.from(chunk));
+      callback();
+    },
+  });
+  Object.assign(res, {
+    getHeader: jest.fn(),
+    setHeader: jest.fn(),
+    statusCode: 200,
+    body: () => Buffer.concat(chunks).toString(),
+  });
+  return res as unknown as ServerResponse & { body(): string };
+}
+
+function createServerRequest(url: string): ServerRequest {
+  return asReq({
+    url,
+    method: 'GET',
+    headers: { host: 'localhost:8081' },
+    rawHeaders: ['host', 'localhost:8081'],
+    socket: {} as any,
+    once: jest.fn() as any,
+  });
 }
 
 describe(DevToolsPluginMiddleware, () => {
@@ -189,6 +219,112 @@ describe(DevToolsPluginMiddleware, () => {
     );
     await delayAsync(0);
     expect(response.statusCode).toBe(404);
+  });
+
+  describe('serverEntryPoint', () => {
+    function createPluginManager(plugin: object) {
+      const devToolsPluginManager = new MockDevToolsPluginManager('/');
+      devToolsPluginManager.queryPluginsAsync.mockResolvedValue([plugin]);
+      return devToolsPluginManager;
+    }
+
+    it('should respond using the plugin request handler', async () => {
+      const requestHandler = jest.fn(async (request: Request) => {
+        const url = new URL(request.url);
+        return new Response(JSON.stringify({ pathname: url.pathname, query: url.search }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      });
+      const middleware = createMiddleware(
+        createPluginManager({
+          packageName: 'hello-plugin',
+          packageRoot: '/root/packages/hello-plugin',
+          serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
+          requestHandler,
+        })
+      );
+
+      const response = createStreamingResponse();
+      await middleware.handleRequestAsync(
+        createServerRequest(
+          'http://localhost:8081/_expo/plugins/hello-plugin/api/hello?name=world'
+        ),
+        response
+      );
+
+      expect(response.statusCode).toBe(200);
+      // The plugin prefix is stripped so handlers see package-relative URLs.
+      expect(JSON.parse(response.body())).toEqual({
+        pathname: '/api/hello',
+        query: '?name=world',
+      });
+      expect(requestHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should fall back to static serving when the handler returns null', async () => {
+      const requestHandler = jest.fn(async () => null);
+      const middleware = createMiddleware(
+        createPluginManager({
+          packageName: 'hello-plugin',
+          packageRoot: '/root/packages/hello-plugin',
+          webpageRoot: '/root/packages/hello-plugin/dist',
+          serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
+          requestHandler,
+        })
+      );
+      vol.fromJSON({
+        '/root/packages/hello-plugin/dist/index.html': '<html></html>',
+      });
+
+      const response = createMockResponse();
+      await middleware.handleRequestAsync(
+        createServerRequest('http://localhost:8081/_expo/plugins/hello-plugin'),
+        response
+      );
+      await delayAsync(0);
+      expect(requestHandler).toHaveBeenCalledTimes(1);
+      expect(response.statusCode).toBe(200);
+    });
+
+    it('should return 404 when the handler returns null and no webpageRoot is set', async () => {
+      const middleware = createMiddleware(
+        createPluginManager({
+          packageName: 'hello-plugin',
+          packageRoot: '/root/packages/hello-plugin',
+          serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
+          requestHandler: jest.fn(async () => null),
+        })
+      );
+
+      const response = createStreamingResponse();
+      await middleware.handleRequestAsync(
+        createServerRequest('http://localhost:8081/_expo/plugins/hello-plugin/missing'),
+        response
+      );
+      expect(response.statusCode).toBe(404);
+    });
+
+    it('should return 500 when the handler throws', async () => {
+      const middleware = createMiddleware(
+        createPluginManager({
+          packageName: 'hello-plugin',
+          packageRoot: '/root/packages/hello-plugin',
+          serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
+          requestHandler: jest.fn(async () => {
+            throw new Error('boom');
+          }),
+        })
+      );
+
+      const response = createStreamingResponse();
+      await middleware.handleRequestAsync(
+        createServerRequest('http://localhost:8081/_expo/plugins/hello-plugin/api/hello'),
+        response
+      );
+      expect(response.statusCode).toBe(500);
+      expect(response.body()).toContain('boom');
+    });
   });
 
   it('handleRequestAsync should throw from invalid request', async () => {

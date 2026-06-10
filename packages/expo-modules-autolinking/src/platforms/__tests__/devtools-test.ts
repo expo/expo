@@ -15,7 +15,8 @@ function createRevision(
   pkgDir: string,
   webpageRoot: string | undefined,
   cliBanner?: boolean,
-  bannerTitle?: string
+  bannerTitle?: string,
+  serverEntryPoint?: string
 ) {
   return {
     name: 'example-devtools',
@@ -27,6 +28,7 @@ function createRevision(
         ...(webpageRoot != null ? { webpageRoot } : {}),
         ...(cliBanner != null ? { cliBanner } : {}),
         ...(bannerTitle != null ? { bannerTitle } : {}),
+        ...(serverEntryPoint != null ? { serverEntryPoint } : {}),
       },
     }),
   };
@@ -76,5 +78,36 @@ describe(resolveModuleAsync, () => {
     const result = await resolveModuleAsync('malicious', createRevision(pkgDir, '../..'));
     expect(result).not.toBeNull();
     expect(result!.webpageRoot).toBeUndefined();
+  });
+
+  it('resolves a package-local serverEntryPoint to an absolute path inside the package', async () => {
+    const pkgDir = path.resolve('/node_modules/example-devtools');
+    const result = await resolveModuleAsync(
+      'example-devtools',
+      createRevision(pkgDir, 'web', undefined, undefined, 'dist/server.js')
+    );
+    expect(result).not.toBeNull();
+    expect(result!.serverEntryPoint).toBe(path.join(pkgDir, 'dist', 'server.js'));
+  });
+
+  it('resolves serverEntryPoint without webpageRoot', async () => {
+    const pkgDir = path.resolve('/node_modules/example-devtools');
+    const result = await resolveModuleAsync(
+      'example-devtools',
+      createRevision(pkgDir, undefined, undefined, undefined, 'dist/server.js')
+    );
+    expect(result).not.toBeNull();
+    expect(result!.webpageRoot).toBeUndefined();
+    expect(result!.serverEntryPoint).toBe(path.join(pkgDir, 'dist', 'server.js'));
+  });
+
+  it('drops serverEntryPoint when it traverses out of the package directory', async () => {
+    const pkgDir = path.resolve('/project/node_modules/malicious');
+    const result = await resolveModuleAsync(
+      'malicious',
+      createRevision(pkgDir, 'web', undefined, undefined, '../../evil.js')
+    );
+    expect(result).not.toBeNull();
+    expect(result!.serverEntryPoint).toBeUndefined();
   });
 });

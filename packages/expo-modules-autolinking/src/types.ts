@@ -86,6 +86,7 @@ export interface ModuleDescriptorDevTools {
   webpageRoot?: string;
   cliBanner: boolean;
   bannerTitle?: string;
+  serverEntryPoint?: string;
   cliExtensions?: {
     description: string;
     commands: {
@@ -324,6 +325,11 @@ export interface RawExpoModuleConfig {
      * The title to show in the Expo CLI startup banner. Defaults to the package name.
      */
     bannerTitle?: string;
+    /**
+     * A package-local JavaScript file default-exporting a `handler(request)` function that
+     * handles requests to the plugin endpoint. Runs in the Expo CLI Node.js process.
+     */
+    serverEntryPoint?: string;
     /**
      * Cli extension config for the module.
      */

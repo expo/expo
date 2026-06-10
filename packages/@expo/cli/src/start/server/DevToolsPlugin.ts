@@ -15,6 +15,15 @@ const maybeRealpath = (target: string): string => {
 };
 
 /**
+ * Handler default-exported by a plugin's `serverEntryPoint`. Receives a fetch API `Request`
+ * with the plugin endpoint prefix stripped from the URL. Returning `null`/`undefined` falls
+ * through to static `webpageRoot` serving.
+ */
+export type DevToolsPluginRequestHandler = (
+  request: Request
+) => Response | null | undefined | Promise<Response | null | undefined>;
+
+/**
  * Class that represents a DevTools plugin with CLI and/or web extensions
  *
  * Responsibilities:
@@ -45,9 +54,19 @@ export class DevToolsPlugin {
         );
       }
     }
+
+    if (plugin.serverEntryPoint != null) {
+      const serverEntryPoint = maybeRealpath(plugin.serverEntryPoint);
+      if (!isPathInside(serverEntryPoint, plugin.packageRoot)) {
+        throw new Error(
+          `serverEntryPoint (${plugin.serverEntryPoint}) is not inside packageRoot (${plugin.packageRoot}).`
+        );
+      }
+    }
   }
 
   private _executor: DevToolsPluginCliExtensionExecutor | undefined = undefined;
+  private _requestHandler: DevToolsPluginRequestHandler | undefined = undefined;
 
   get packageName(): string {
     return this.plugin.packageName;
@@ -58,13 +77,44 @@ export class DevToolsPlugin {
   }
 
   get webpageEndpoint(): string | undefined {
-    return this.plugin?.webpageRoot
+    return this.plugin?.webpageRoot || this.plugin?.serverEntryPoint
       ? `${DevToolsPluginEndpoint}/${this.plugin?.packageName}`
       : undefined;
   }
 
   get webpageRoot(): string | undefined {
     return this.plugin?.webpageRoot;
+  }
+
+  get serverEntryPoint(): string | undefined {
+    return this.plugin?.serverEntryPoint;
+  }
+
+  /**
+   * Lazily loads the request handler from the plugin's `serverEntryPoint`.
+   * The entry point must default-export a handler function
+   * (`export default function handler(request) {}` or `module.exports = function handler(request) {}`).
+   */
+  get requestHandler(): DevToolsPluginRequestHandler | undefined {
+    if (!this.plugin.serverEntryPoint) {
+      return undefined;
+    }
+
+    if (!this._requestHandler) {
+      const serverModule = require(maybeRealpath(this.plugin.serverEntryPoint));
+      const handler = typeof serverModule === 'function' ? serverModule : serverModule?.default;
+      if (typeof handler !== 'function') {
+        throw new Error(
+          `The serverEntryPoint (${this.plugin.serverEntryPoint}) of plugin ${this.plugin.packageName} ` +
+            `must default-export a handler function that takes a Request and returns a Response. ` +
+            `Export it as \`export default function handler(request) {}\` ` +
+            `or \`module.exports = function handler(request) {}\`.`
+        );
+      }
+      this._requestHandler = handler;
+    }
+
+    return this._requestHandler;
   }
 
   get cliBanner(): boolean {
