@@ -161,6 +161,10 @@ jobs:
   playwright-ubuntu:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -208,13 +212,13 @@ jobs:
 
       - name: 🧪 E2E (playwright) Test CLI
         working-directory: packages/@expo/cli
-        run: pnpm test:playwright
+        run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-ubuntu-${{ matrix.shard }}
           path: packages/@expo/cli/playwright-report/
           retention-days: 30
 
@@ -297,6 +301,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-windows-${{ matrix.shard }}
           path: packages/@expo/cli/playwright-report/
           retention-days: 30
