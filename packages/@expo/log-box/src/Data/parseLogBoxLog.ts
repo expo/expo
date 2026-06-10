@@ -6,15 +6,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from 'react';
-
-import type { Category, LogBoxLogData, Message, MetroStackFrame } from './Types';
 import {
   parseBabelCodeFrameError,
   parseBabelTransformError,
   type ParsedBuildError,
   parseMetroError,
-} from '../utils/metroBuildErrorsFormat';
+} from '@expo/log-box-utils';
+import React from 'react';
+
+import type { Category, LogBoxLogData, Message, MetroStackFrame } from './Types';
 import { parseErrorStack } from '../utils/parseErrorStack';
 
 type ExceptionData = {

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
-import { parseWebBuildErrors } from '@expo/log-box/utils';
+import { parseWebBuildErrors } from '@expo/log-box-utils';
 import chalk from 'chalk';
 import { stripVTControlCharacters } from 'node:util';
 import path from 'path';

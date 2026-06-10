@@ -1845,6 +1845,9 @@ importers:
       '@expo/log-box':
         specifier: workspace:^56.0.12
         version: link:../log-box
+      '@expo/log-box-utils':
+        specifier: workspace:^56.0.0
+        version: link:../log-box-utils
       '@expo/metro':
         specifier: ~56.0.0
         version: 56.0.0
@@ -2501,9 +2504,15 @@ importers:
       '@expo/dom-webview':
         specifier: workspace:^56.0.5
         version: link:../dom-webview
+      '@expo/log-box-utils':
+        specifier: workspace:^56.0.0
+        version: link:../log-box-utils
       anser:
         specifier: ^1.4.9
         version: 1.4.10
+      expo-modules-core:
+        specifier: workspace:~56.0.13
+        version: link:../../expo-modules-core
       stacktrace-parser:
         specifier: ^0.1.10
         version: 0.1.11
@@ -2550,6 +2559,18 @@ importers:
       typescript-plugin-css-modules:
         specifier: ^5.2.0
         version: 5.2.0(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))(typescript@6.0.3)
+
+  packages/@expo/log-box-utils:
+    devDependencies:
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../../expo-module-scripts
+      npm-run-all2:
+        specifier: ^8.0.4
+        version: 8.0.4
+      rimraf:
+        specifier: ^6.1.2
+        version: 6.1.3
 
   packages/@expo/metro-config:
     dependencies:
@@ -3502,6 +3523,9 @@ importers:
       '@expo/log-box':
         specifier: workspace:^56.0.12
         version: link:../@expo/log-box
+      '@expo/log-box-utils':
+        specifier: workspace:^56.0.0
+        version: link:../@expo/log-box-utils
       '@expo/metro':
         specifier: ~56.0.0
         version: 56.0.0
