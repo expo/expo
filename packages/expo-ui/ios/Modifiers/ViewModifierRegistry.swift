@@ -805,6 +805,14 @@ internal struct TextAllowsTightening: ViewModifier, Record {
   }
 }
 
+internal struct MinimumScaleFactorModifier: ViewModifier, Record {
+  @Field var factor: CGFloat = 1.0
+
+  func body(content: Content) -> some View {
+    content.minimumScaleFactor(factor)
+  }
+}
+
 internal enum TextCaseTypes: String, Enumerable {
   case lowercase
   case uppercase
@@ -1698,6 +1706,10 @@ extension ViewModifierRegistry {
 
     register("allowsTightening") { params, appContext, _ in
       return try TextAllowsTightening(from: params, appContext: appContext)
+    }
+
+    register("minimumScaleFactor") { params, appContext, _ in
+      return try MinimumScaleFactorModifier(from: params, appContext: appContext)
     }
 
     register("textCase") { params, appContext, _ in
