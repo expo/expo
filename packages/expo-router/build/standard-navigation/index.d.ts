@@ -1,7 +1,7 @@
 import { type ComponentType } from 'react';
-import type { IntegrateWithRouterOptions, StandardNavigator, StandardNavigatorContentProps, StandardNavigatorEventMapBase, StandardRouterNavigatorProps } from './types';
+import type { IntegrateWithRouterOptions, NavigatorContentProps, StandardNavigator, StandardNavigatorEventMapBase, StandardRouterNavigatorProps } from './types';
 import { type DefaultRouterOptions, type EventMapBase, type NavigationAction, type NavigationState, type RouterFactory } from '../react-navigation/native';
-export type { IntegrateWithRouterOptions, StandardUseNavigationBuilderOptions } from './types';
+export type { IntegrateWithRouterOptions, NavigatorContentProps, StandardNavigatorEventMapBase, StandardUseNavigationBuilderOptions, } from './types';
 /**
  * > **warning** This API is unstable and may change between minor releases.
  *
@@ -21,7 +21,7 @@ export type { IntegrateWithRouterOptions, StandardUseNavigationBuilderOptions } 
  * export const Tabs = unstable_createStandardRouterNavigator(MyTabsContent, TabRouter);
  * ```
  */
-export declare function unstable_createStandardRouterNavigator<NavigatorOptions extends object, State extends NavigationState, EventMap extends StandardNavigatorEventMapBase, NavigatorProps extends object, RouterOptions extends DefaultRouterOptions>(NavigatorContent: ComponentType<StandardNavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>>, router: RouterFactory<State, NavigationAction, RouterOptions>, options?: IntegrateWithRouterOptions<State, NavigatorProps>): import("react").ForwardRefExoticComponent<import("react").PropsWithoutRef<import("..").PickPartial<StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>, "children">> & import("react").RefAttributes<unknown>> & {
+export declare function unstable_createStandardRouterNavigator<NavigatorOptions extends object, State extends NavigationState, EventMap extends StandardNavigatorEventMapBase, NavigatorProps extends object, RouterOptions extends DefaultRouterOptions>(NavigatorContent: ComponentType<NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>>, router: RouterFactory<State, NavigationAction, RouterOptions>, options?: IntegrateWithRouterOptions<State, NavigatorProps>): import("react").ForwardRefExoticComponent<import("react").PropsWithoutRef<import("..").PickPartial<StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>, "children">> & import("react").RefAttributes<unknown>> & {
     Screen: (props: import("..").ScreenProps<NavigatorOptions, State, EventMap & EventMapBase>) => null;
     Protected: typeof import("../views/Protected").Protected;
 };

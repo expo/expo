@@ -31,7 +31,7 @@ export type { SingularOptions } from './useScreens';
 export type * from './types';
 export { Badge, type BadgeProps, Icon, type IconProps, Label, type LabelProps, VectorIcon, type VectorIconProps, } from './primitives';
 export { unstable_createStandardRouterNavigator, unstable_integrateWithRouter, } from './standard-navigation';
-export type { IntegrateWithRouterOptions, StandardUseNavigationBuilderOptions, } from './standard-navigation';
+export type { IntegrateWithRouterOptions, NavigatorContentProps, StandardNavigatorEventMapBase, StandardUseNavigationBuilderOptions, } from './standard-navigation';
 export { StackRouter, TabRouter } from './react-navigation/routers';
 export type { StackNavigationState, StackRouterOptions, TabNavigationState, TabRouterOptions, } from './react-navigation/routers';
 export { unstable_navigationEvents } from './navigationEvents';
