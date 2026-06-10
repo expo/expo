@@ -45,6 +45,26 @@ export function useOnTabSelectedHandler(
   );
 }
 
+export function useOnTabSelectionPreventedHandler(
+  onTabChange: NativeTabsViewProps['onTabChange']
+): NonNullable<TabsHostProps['onTabSelectionPrevented']> {
+  return useCallback<NonNullable<TabsHostProps['onTabSelectionPrevented']>>(
+    ({ nativeEvent: { preventedScreenKey, provenance } }) => {
+      // Forward the disabled tab the user tapped (`preventedScreenKey`), not the
+      // still-active `selectedScreenKey`. `isNativeAction` is required by the payload
+      // and is always `true` here, since programmatic JS navigation bypasses
+      // `preventNativeSelection` and therefore never reaches this callback.
+      onTabChange({
+        selectedKey: preventedScreenKey,
+        provenance,
+        isNativeAction: true,
+        isPrevented: true,
+      });
+    },
+    [onTabChange]
+  );
+}
+
 /**
  * Cross-platform fields used to render a single tab screen. Each platform
  * extends this with its own appearance fields.

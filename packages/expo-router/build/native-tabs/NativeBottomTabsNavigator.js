@@ -107,7 +107,21 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     }
     const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
     const provenanceRef = (0, react_2.useRef)(0);
-    const onTabChange = (0, react_2.useCallback)(({ selectedKey, provenance, isNativeAction }) => {
+    const onTabChange = (0, react_2.useCallback)(({ selectedKey, provenance, isNativeAction, isPrevented = false }) => {
+        if (isPrevented) {
+            // The native side blocked selecting a disabled tab. Notify listeners, but
+            // don't advance navigation or acknowledge a (non-existent) state transition,
+            // so the provenance counter is left untouched.
+            navigation.emit({
+                type: 'tabPress',
+                target: selectedKey,
+                data: {
+                    __internalTabsType: 'native',
+                    isPrevented: true,
+                },
+            });
+            return;
+        }
         // We should always send the last provenance we got from native side
         provenanceRef.current = provenance;
         if (isNativeAction) {
@@ -117,6 +131,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
                 target: selectedKey,
                 data: {
                     __internalTabsType: 'native',
+                    isPrevented: false,
                 },
             });
             navigation.dispatch({
