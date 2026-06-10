@@ -1,33 +1,23 @@
-name: Android Unit Tests
+name: Expo Go Android Lint
 
 on:
   workflow_dispatch: {}
   push:
     branches: [main]
     paths:
-      - .github/workflows/android-unit-tests.yml
-      - fastlane/**
-      - packages/**/android/**
-      - tools/**
-      - pnpm-lock.yaml
-      - '!packages/@expo/cli/**'
-      - '!tools/src/commands/GenerateDocsAPIData.ts'
+      - .github/workflows/expo-go-android-lint.yml
+      - apps/expo-go/android/**
   pull_request:
     paths:
-      - .github/workflows/android-unit-tests.yml
-      - fastlane/**
-      - packages/**/android/**
-      - tools/**
-      - pnpm-lock.yaml
-      - '!packages/@expo/cli/**'
-      - '!tools/src/commands/GenerateDocsAPIData.ts'
+      - .github/workflows/expo-go-android-lint.yml
+      - apps/expo-go/android/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  spotless:
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     env:
@@ -36,6 +26,8 @@ jobs:
     steps:
       - name: 👀 Check out repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          submodules: true
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
@@ -62,13 +54,9 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
-      - name: 🎸 Run native Android unit tests
-        if: always()
-        timeout-minutes: 30
-        run: pnpm expotools native-unit-tests --platform android
-      - name: 💾 Save test results
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: test-results
-          path: packages/*/android/build/test-results/**/*xml
+      - name: 📦 Install react-native submodule dependencies
+        run: yarn install
+        working-directory: react-native-lab/react-native
+      - name: 💅 Run Spotless lint check
+        working-directory: apps/expo-go/android
+        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/expo-go/android` to automatically fix formatting.' && exit 1; }
