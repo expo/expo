@@ -71,7 +71,7 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
@@ -88,7 +88,6 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -130,7 +129,7 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
@@ -147,7 +146,6 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -175,7 +173,7 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
@@ -256,7 +254,7 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
@@ -273,7 +271,6 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🎭 Get Playwright information
         id: playwright-info

@@ -42,7 +42,7 @@ jobs:
           bundler-cache: true
           ruby-version: 3.2.2
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: 🔨 Setup Node
@@ -117,7 +117,7 @@ jobs:
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: 🔨 Setup Node
@@ -173,7 +173,7 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: 🔨 Setup Node
@@ -239,7 +239,7 @@ jobs:
           curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.4.0 bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: 🔨 Setup Node
