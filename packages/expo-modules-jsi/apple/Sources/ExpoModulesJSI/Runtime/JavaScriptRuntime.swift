@@ -603,13 +603,25 @@ private func createFunctionClosure(
     guard let runtime = context.runtime else {
       FatalError.runtimeLost()
     }
-    let this = UnsafeMutablePointer(mutating: thisPtr).move()
-    let argumentsRef = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount).ref()
+
+    // `assumeIsolated` runs `operation` synchronously, in this very scope — it never escapes and never
+    // hops threads (see `JavaScriptActor.assumeIsolated`). So rather than materializing the move-only
+    // `JavaScriptValuesBuffer` out here and smuggling it across the closure boundary through a
+    // heap-allocated `JavaScriptRef` (Swift 6.2 rejects capturing/consuming a `~Copyable` value in the
+    // escaping closure that `withoutActuallyEscaping` synthesizes), the closure constructs the buffer
+    // locally from the raw pointer + count. Those are read-only call-scoped inputs that never outlive the
+    // synchronous call, so the `nonisolated(unsafe)` capture is sound. This removes a per-call class
+    // allocation + retain/release + dealloc that profiling showed dominating the no-op `@JS` host-call
+    // floor.
+    nonisolated(unsafe) let thisPtr = thisPtr
+    nonisolated(unsafe) let argumentsPtr = argumentsPtr
 
     return JavaScriptActor.assumeIsolated {
       return forwardingSwiftErrorsToJS(runtime: runtime) {
+        let this = UnsafeMutablePointer(mutating: thisPtr).move()
+        let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
         let thisValue = JavaScriptValue(runtime, this)
-        return try context.call(thisValue, argumentsRef.take()).asJSIValue()
+        return try context.call(thisValue, consume arguments).asJSIValue()
       }
     }
   }
