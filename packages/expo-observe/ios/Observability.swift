@@ -119,11 +119,9 @@ internal struct ObservabilityManager {
     }
   }
 
-  /**
-   Groups `metrics` by `sessionId`, hydrates the matching session rows, and emits one `Event` per
-   session in the same shape Android dispatches: each event carries the session's metadata and only
-   the metrics that belong to it.
-   */
+  /// Groups `metrics` by `sessionId`, hydrates the matching session rows, and emits one `Event` per
+  /// session in the same shape Android dispatches: each event carries the session's metadata and only
+  /// the metrics that belong to it.
   private static func buildEvents(forMetrics metrics: [MetricRow]) throws -> [Event] {
     let metricsBySession = Dictionary(grouping: metrics, by: \.sessionId)
     let sessionIds = Array(metricsBySession.keys)
@@ -158,7 +156,7 @@ internal struct ObservabilityManager {
       // (we control that endpoint, so the harmless overhead is fine). The name is duplicated here
       // rather than imported: expo-observe must not depend on expo-app-metrics internals. Keep it
       // in sync with `NetworkRequestURLProtocol.internalHeaderName` in expo-app-metrics.
-      "Expo-AppMetrics-Skip": "1"
+      "Expo-AppMetrics-Skip": "1",
     ]
     request.httpBody = try body.toJSONData([])
 
@@ -175,10 +173,14 @@ internal struct ObservabilityManager {
       return false
     }
     guard (200...299).contains(urlResponse.statusCode) else {
-      observeLogger.warn("[EAS Observe] Server responded with \(urlResponse.statusCode) status code and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")")
+      observeLogger.warn(
+        "[EAS Observe] Server responded with \(urlResponse.statusCode) status code and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
+      )
       return false
     }
-    observeLogger.debug("[EAS Observe] Server responded successfully with \(urlResponse.statusCode) status code and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")")
+    observeLogger.debug(
+      "[EAS Observe] Server responded successfully with \(urlResponse.statusCode) status code and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
+    )
     return true
   }
 
@@ -233,4 +235,3 @@ internal struct ObservabilityManager {
     return EASClientID.deterministicUniformValue(EASClientID.uuid()) < clamped
   }
 }
-

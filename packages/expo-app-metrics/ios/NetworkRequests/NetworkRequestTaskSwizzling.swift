@@ -1,120 +1,114 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
 import Foundation
 import ObjectiveC
-import ExpoModulesCore
 
-/**
- Process-wide observation of every `URLSessionTask` that runs on any `URLSession` the app creates.
-
- ## Why method swizzling instead of `URLProtocol`
-
- An earlier draft of this module used a `URLProtocol` subclass plus configuration swizzling. That
- has a fundamental flaw: a `URLProtocol` only sees the `URLRequest`, not the originating
- `URLSession`. To actually run the request we replayed it through a singleton inner session,
- which silently dropped per-session state — cookies, proxy, TLS settings, `httpAdditionalHeaders`,
- cache policy — and broke the very isolation guarantees ephemeral sessions are picked for.
-
- The established observability SDKs (Sentry, Datadog, Bugsnag, New Relic) all converged on method
- swizzling at the `URLSessionTask` level. We do the same here.
-
- ## What we swizzle
-
- Two methods on `__NSCFLocalSessionTask`, the private concrete class that backs every public
- `URLSessionTask` on iOS 12+. The class name has been stable across iOS versions; the same
- approach is used in production by Datadog and Bugsnag.
-
- 1. **`-resume`** — fires once per task at start time. We attach an `ObservationContext` to the
-    task via `objc_setAssociatedObject` so observation state travels with it across delegate
-    callbacks and threads, and emit `requestStarted`.
-
- 2. **`-setState:`** — fires on every state transition. On `.completed` we read `task.error`,
-    `task.response`, and the task's wall-clock byte counters, build a `NetworkRequest`
-    snapshot, and emit `requestCompleted`.
-
- The `setState:` hook is the universal completion seam: it fires for tasks created with a
- completion handler (no public delegate path), tasks running on `URLSession.shared` (Apple's
- private delegate), and tasks awaited via `async`/`await`. Delegate-based completion handlers
- alone would miss all three.
-
- ## Per-phase metrics via delegate proxy
-
- `URLSessionTaskMetrics` (redirect chain, DNS/connect/TLS timestamps) is only available through
- `urlSession(_:task:didFinishCollecting:)`, which requires a session delegate. We swizzle
- `+sessionWithConfiguration:delegate:delegateQueue:` to wrap the caller's delegate in a
- `DelegateProxy` that captures metrics into the task's `ObservationContext` while forwarding
- every other selector to the caller's original delegate via Objective-C method forwarding.
-
- Tasks without a delegate (the shared session, completion-handler tasks) still get observed via
- the `setState:` hook — they just won't carry per-phase metric detail.
-
- ## Recursion safety
-
- expo-observe sets `Expo-AppMetrics-Skip: 1` on outgoing telemetry uploads. The `resume` swizzle
- checks for this header on `task.originalRequest` and skips attaching observation state. The
- header is forwarded to the server as-is — it lands on o.expo.dev, which we control.
-
- ## What we don't catch
-
- - **WebSocket tasks.** `URLSessionWebSocketTask` extends `URLSessionTask` so the swizzles fire,
-   but websockets don't produce meaningful HTTP metrics. We skip them inside the `resume` hook.
-
- ## Dev-launcher interop
-
- When expo-dev-launcher's network inspector is active (`EX_DEV_CLIENT_NETWORK_INSPECTOR` debug
- flag), `ExpoRequestInterceptorProtocol` runs every user-facing fetch through a replay on its
- own private `URLSession`. The user-facing fetch produces two `__NSCFLocalSessionTask` instances:
-
- - an **outer** task on the caller's `URLSession`, which fires `resume` first but whose metrics
-   are degraded (the URLProtocol short-circuits the real network).
- - an **inner** task on dev-launcher's `URLSession`, which carries the real
-   `URLSessionTaskMetrics` (redirect chain, per-phase timings, byte splits).
-
- We pair them up by request URL: the outer's `resume` creates an `ObservationContext` and adds
- it to `pendingReplays`; the inner's `resume` (microseconds later) claims it via
- `takePendingReplay`, attaches the same context to the inner task, and flags the outer's
- setState/metrics paths to short-circuit. Recording happens once, from the inner task's
- `didFinishCollectingMetrics:` callback, carrying the inner task's real metrics and the outer's
- `requestStarted` event id. See `pendingReplays` for the data structure.
- */
+/// Process-wide observation of every `URLSessionTask` that runs on any `URLSession` the app creates.
+///
+/// ## Why method swizzling instead of `URLProtocol`
+///
+/// An earlier draft of this module used a `URLProtocol` subclass plus configuration swizzling. That
+/// has a fundamental flaw: a `URLProtocol` only sees the `URLRequest`, not the originating
+/// `URLSession`. To actually run the request we replayed it through a singleton inner session,
+/// which silently dropped per-session state — cookies, proxy, TLS settings, `httpAdditionalHeaders`,
+/// cache policy — and broke the very isolation guarantees ephemeral sessions are picked for.
+///
+/// The established observability SDKs (Sentry, Datadog, Bugsnag, New Relic) all converged on method
+/// swizzling at the `URLSessionTask` level. We do the same here.
+///
+/// ## What we swizzle
+///
+/// Two methods on `__NSCFLocalSessionTask`, the private concrete class that backs every public
+/// `URLSessionTask` on iOS 12+. The class name has been stable across iOS versions; the same
+/// approach is used in production by Datadog and Bugsnag.
+///
+/// 1. **`-resume`** — fires once per task at start time. We attach an `ObservationContext` to the
+///    task via `objc_setAssociatedObject` so observation state travels with it across delegate
+///    callbacks and threads, and emit `requestStarted`.
+///
+/// 2. **`-setState:`** — fires on every state transition. On `.completed` we read `task.error`,
+///    `task.response`, and the task's wall-clock byte counters, build a `NetworkRequest`
+///    snapshot, and emit `requestCompleted`.
+///
+/// The `setState:` hook is the universal completion seam: it fires for tasks created with a
+/// completion handler (no public delegate path), tasks running on `URLSession.shared` (Apple's
+/// private delegate), and tasks awaited via `async`/`await`. Delegate-based completion handlers
+/// alone would miss all three.
+///
+/// ## Per-phase metrics via delegate proxy
+///
+/// `URLSessionTaskMetrics` (redirect chain, DNS/connect/TLS timestamps) is only available through
+/// `urlSession(_:task:didFinishCollecting:)`, which requires a session delegate. We swizzle
+/// `+sessionWithConfiguration:delegate:delegateQueue:` to wrap the caller's delegate in a
+/// `DelegateProxy` that captures metrics into the task's `ObservationContext` while forwarding
+/// every other selector to the caller's original delegate via Objective-C method forwarding.
+///
+/// Tasks without a delegate (the shared session, completion-handler tasks) still get observed via
+/// the `setState:` hook — they just won't carry per-phase metric detail.
+///
+/// ## Recursion safety
+///
+/// expo-observe sets `Expo-AppMetrics-Skip: 1` on outgoing telemetry uploads. The `resume` swizzle
+/// checks for this header on `task.originalRequest` and skips attaching observation state. The
+/// header is forwarded to the server as-is — it lands on o.expo.dev, which we control.
+///
+/// ## What we don't catch
+///
+/// - **WebSocket tasks.** `URLSessionWebSocketTask` extends `URLSessionTask` so the swizzles fire,
+///   but websockets don't produce meaningful HTTP metrics. We skip them inside the `resume` hook.
+///
+/// ## Dev-launcher interop
+///
+/// When expo-dev-launcher's network inspector is active (`EX_DEV_CLIENT_NETWORK_INSPECTOR` debug
+/// flag), `ExpoRequestInterceptorProtocol` runs every user-facing fetch through a replay on its
+/// own private `URLSession`. The user-facing fetch produces two `__NSCFLocalSessionTask` instances:
+///
+/// - an **outer** task on the caller's `URLSession`, which fires `resume` first but whose metrics
+///   are degraded (the URLProtocol short-circuits the real network).
+/// - an **inner** task on dev-launcher's `URLSession`, which carries the real
+///   `URLSessionTaskMetrics` (redirect chain, per-phase timings, byte splits).
+///
+/// We pair them up by request URL: the outer's `resume` creates an `ObservationContext` and adds
+/// it to `pendingReplays`; the inner's `resume` (microseconds later) claims it via
+/// `takePendingReplay`, attaches the same context to the inner task, and flags the outer's
+/// setState/metrics paths to short-circuit. Recording happens once, from the inner task's
+/// `didFinishCollectingMetrics:` callback, carrying the inner task's real metrics and the outer's
+/// `requestStarted` event id. See `pendingReplays` for the data structure.
 enum NetworkRequestTaskSwizzling {
-  /**
-   Header name any caller can set to opt a request out of observation. Outgoing telemetry uploads
-   in expo-observe set this so they don't recursively observe themselves.
-
-   The header is forwarded to the destination verbatim — once a `URLSessionTask` is created we
-   can't safely mutate `originalRequest`, so we read it but don't strip it. The intended use is
-   on requests to endpoints we control (o.expo.dev); setting it on a request to a third party
-   leaks `Expo-AppMetrics-Skip: 1` to that host.
-
-   No `X-` prefix per RFC 6648. Callers that can't import this constant (expo-observe must not
-   depend on app-metrics internals) hardcode the same literal — keep the two in sync if this
-   ever changes.
-   */
+  /// Header name any caller can set to opt a request out of observation. Outgoing telemetry uploads
+  /// in expo-observe set this so they don't recursively observe themselves.
+  ///
+  /// The header is forwarded to the destination verbatim — once a `URLSessionTask` is created we
+  /// can't safely mutate `originalRequest`, so we read it but don't strip it. The intended use is
+  /// on requests to endpoints we control (o.expo.dev); setting it on a request to a third party
+  /// leaks `Expo-AppMetrics-Skip: 1` to that host.
+  ///
+  /// No `X-` prefix per RFC 6648. Callers that can't import this constant (expo-observe must not
+  /// depend on app-metrics internals) hardcode the same literal — keep the two in sync if this
+  /// ever changes.
   static let internalHeaderName = "Expo-AppMetrics-Skip"
 
-  /**
-   Property key that expo-dev-launcher's `ExpoRequestInterceptorProtocol` stamps on the inner
-   request it creates when replaying a request through its own `URLSession` (dev mode only, gated
-   on `EX_DEV_CLIENT_NETWORK_INSPECTOR`).
-
-   When the dev-launcher inspector is active, every user-facing fetch produces two tasks:
-   - an **outer** task created against the user's `URLSession`, with no property — fires `resume`
-     first but the network never goes through it (the URLProtocol intercepts).
-   - an **inner** task on dev-launcher's private `URLSession`, carrying this property — does the
-     actual network work and carries the real `URLSessionTaskMetrics` (redirects, per-phase
-     timings, byte splits).
-
-   We want one observation per logical fetch, with the inner task's metrics. The resume swizzle
-   moves the outer's `ObservationContext` to the inner via `pendingReplays` (URL-keyed) so the
-   inner records into the same id the user-facing `requestStarted` event used. The outer task's
-   setState/metrics callbacks then short-circuit on `context.replayedByDevLauncher`.
-
-   The literal must match `REQUEST_ID` in
-   `packages/expo-modules-core/ios/DevTools/ExpoRequestInterceptorProtocol.swift`. The value
-   is internal to that file (no public symbol); duplicating the string is the same trick the
-   expo-observe header constant uses. Keep them in sync.
-   */
+  /// Property key that expo-dev-launcher's `ExpoRequestInterceptorProtocol` stamps on the inner
+  /// request it creates when replaying a request through its own `URLSession` (dev mode only, gated
+  /// on `EX_DEV_CLIENT_NETWORK_INSPECTOR`).
+  ///
+  /// When the dev-launcher inspector is active, every user-facing fetch produces two tasks:
+  /// - an **outer** task created against the user's `URLSession`, with no property — fires `resume`
+  /// first but the network never goes through it (the URLProtocol intercepts).
+  /// - an **inner** task on dev-launcher's private `URLSession`, carrying this property — does the
+  /// actual network work and carries the real `URLSessionTaskMetrics` (redirects, per-phase
+  /// timings, byte splits).
+  ///
+  /// We want one observation per logical fetch, with the inner task's metrics. The resume swizzle
+  /// moves the outer's `ObservationContext` to the inner via `pendingReplays` (URL-keyed) so the
+  /// inner records into the same id the user-facing `requestStarted` event used. The outer task's
+  /// setState/metrics callbacks then short-circuit on `context.replayedByDevLauncher`.
+  ///
+  /// The literal must match `REQUEST_ID` in
+  /// `packages/expo-modules-core/ios/DevTools/ExpoRequestInterceptorProtocol.swift`. The value
+  /// is internal to that file (no public symbol); duplicating the string is the same trick the
+  /// expo-observe header constant uses. Keep them in sync.
   fileprivate static let devLauncherRequestIdKey = "ExpoRequestInterceptorProtocol.requestId"
 
   /// Installs the swizzles. Idempotent — guarded by `installed` so repeat calls are no-ops.
@@ -148,17 +142,15 @@ enum NetworkRequestTaskSwizzling {
   private static let originalSetStateImp = Mutex<IMP?>(nil)
   private static let originalSessionInitImp = Mutex<IMP?>(nil)
 
-  /**
-   How long the `setState:` fallback waits before recording. Tasks observed via the delegate
-   proxy record from `didFinishCollectingMetrics:` first (with metrics) and flip `recorded=true`;
-   the fallback that fires after this delay sees the flag and skips. Delegate-less sessions
-   (`URLSession.shared`, completion-handler tasks) never get a metrics callback, so the fallback
-   wins and records without metrics — degraded but better than nothing.
-
-   200ms is comfortably above the observed inter-callback latency on real devices (typically a
-   few ms). The cost is a small latency before the `requestCompleted` event fires for delegate-
-   less traffic; acceptable for a passive observer.
-   */
+  /// How long the `setState:` fallback waits before recording. Tasks observed via the delegate
+  /// proxy record from `didFinishCollectingMetrics:` first (with metrics) and flip `recorded=true`;
+  /// the fallback that fires after this delay sees the flag and skips. Delegate-less sessions
+  /// (`URLSession.shared`, completion-handler tasks) never get a metrics callback, so the fallback
+  /// wins and records without metrics — degraded but better than nothing.
+  ///
+  /// 200ms is comfortably above the observed inter-callback latency on real devices (typically a
+  /// few ms). The cost is a small latency before the `requestCompleted` event fires for delegate-
+  /// less traffic; acceptable for a passive observer.
   private static let setStateFallbackDelay: TimeInterval = 0.2
 
   /// Outer-task `ObservationContext`s waiting for the corresponding dev-launcher inner replay
@@ -330,18 +322,16 @@ enum NetworkRequestTaskSwizzling {
 
   // MARK: - setState: swizzle (fallback recording for delegate-less sessions)
 
-  /**
-   `__NSCFLocalSessionTask.setState:` fires on every state transition for every task in the
-   process. We use it as a fallback recorder for tasks whose session doesn't have our
-   `DelegateProxy` installed: `URLSession.shared`, sessions created via paths that bypassed our
-   session-init swizzle, and async/await consumers that go through Apple's internal delegate.
-
-   For delegate-based sessions the `DelegateProxy.urlSession(_:task:didFinishCollecting:)`
-   callback records first (with metrics) and flips `context.recorded`. This fallback fires later
-   and short-circuits on the flag. For delegate-less sessions metrics never arrive, the fallback
-   wins after `setStateFallbackDelay`, and the snapshot lands without per-phase metrics — same
-   degraded shape as a cache hit or an error before headers.
-   */
+  /// `__NSCFLocalSessionTask.setState:` fires on every state transition for every task in the
+  /// process. We use it as a fallback recorder for tasks whose session doesn't have our
+  /// `DelegateProxy` installed: `URLSession.shared`, sessions created via paths that bypassed our
+  /// session-init swizzle, and async/await consumers that go through Apple's internal delegate.
+  ///
+  /// For delegate-based sessions the `DelegateProxy.urlSession(_:task:didFinishCollecting:)`
+  /// callback records first (with metrics) and flips `context.recorded`. This fallback fires later
+  /// and short-circuits on the flag. For delegate-less sessions metrics never arrive, the fallback
+  /// wins after `setStateFallbackDelay`, and the snapshot lands without per-phase metrics — same
+  /// degraded shape as a cache hit or an error before headers.
   private static func installSetStateSwizzle() {
     guard let taskClass = NSClassFromString("__NSCFLocalSessionTask") else {
       return
@@ -386,9 +376,10 @@ enum NetworkRequestTaskSwizzling {
     // `didFinishCollectingMetrics:` with the real metrics chain. Skip the outer's fallback so we
     // don't race the inner's recording. The inner task's setState fallback still runs (it has
     // its own task identity); recordCompletion's `context.recorded` flag dedupes the two paths.
-    let isInnerReplayTask = task.originalRequest.flatMap {
-      URLProtocol.property(forKey: devLauncherRequestIdKey, in: $0)
-    } != nil
+    let isInnerReplayTask =
+      task.originalRequest.flatMap {
+        URLProtocol.property(forKey: devLauncherRequestIdKey, in: $0)
+      } != nil
     if context.replayedByDevLauncher && !isInnerReplayTask {
       return
     }
@@ -457,44 +448,44 @@ enum NetworkRequestTaskSwizzling {
 
   // MARK: - Session initializer swizzle (for URLSessionTaskMetrics)
 
-  /**
-   Swizzles `+[URLSession sessionWithConfiguration:delegate:delegateQueue:]` so we can wrap the
-   caller's delegate in a `DelegateProxy`. The proxy captures `didFinishCollecting` metrics into
-   the task's `ObservationContext` while forwarding every other selector to the original.
-
-   Sessions created without a delegate (and `URLSession.shared`) skip this path entirely — they
-   still get observed by `resume`/`setState:`, just without per-phase metrics.
-   */
+  /// Swizzles `+[URLSession sessionWithConfiguration:delegate:delegateQueue:]` so we can wrap the
+  /// caller's delegate in a `DelegateProxy`. The proxy captures `didFinishCollecting` metrics into
+  /// the task's `ObservationContext` while forwarding every other selector to the original.
+  ///
+  /// Sessions created without a delegate (and `URLSession.shared`) skip this path entirely — they
+  /// still get observed by `resume`/`setState:`, just without per-phase metrics.
   private static func installSessionInitSwizzle() {
     let target: AnyClass = URLSession.self
     let selector = NSSelectorFromString("sessionWithConfiguration:delegate:delegateQueue:")
     guard let method = class_getClassMethod(target, selector) else {
       return
     }
-    let block: @convention(block) (
-      AnyObject,
-      URLSessionConfiguration,
-      URLSessionDelegate?,
-      OperationQueue?
-    ) -> URLSession? = { cls, config, delegate, queue in
-      // Wrap whatever the caller passed (including nil) so we always see the metrics callback.
-      // Apple's docs say a nil delegate puts the session in "completion handler" mode; in that
-      // mode the metrics callback never fires anyway, but wrapping nil is still safe — the
-      // proxy responds only to the two selectors it handles.
-      let wrapped = DelegateProxy(wrapping: delegate)
-      guard let imp = originalSessionInitImp.withLock({ $0 }) else {
-        return nil
+    let block:
+      @convention(block) (
+        AnyObject,
+        URLSessionConfiguration,
+        URLSessionDelegate?,
+        OperationQueue?
+      ) -> URLSession? = { cls, config, delegate, queue in
+        // Wrap whatever the caller passed (including nil) so we always see the metrics callback.
+        // Apple's docs say a nil delegate puts the session in "completion handler" mode; in that
+        // mode the metrics callback never fires anyway, but wrapping nil is still safe — the
+        // proxy responds only to the two selectors it handles.
+        let wrapped = DelegateProxy(wrapping: delegate)
+        guard let imp = originalSessionInitImp.withLock({ $0 }) else {
+          return nil
+        }
+        // The delegate slot in the IMP signature is `AnyObject?` rather than `URLSessionDelegate?`
+        // because `DelegateProxy` deliberately doesn't declare Swift `URLSessionDelegate` conformance
+        // (see the class doc for why). At the Obj-C ABI level the slot is `id<NSURLSessionDelegate>?`,
+        // which accepts any `NSObject` — `URLSession` only checks selector responses at runtime.
+        let fn = unsafeBitCast(
+          imp,
+          to: (@convention(c) (AnyObject, Selector, URLSessionConfiguration, AnyObject?, OperationQueue?) -> URLSession?)
+            .self
+        )
+        return fn(cls, selector, config, wrapped, queue)
       }
-      // The delegate slot in the IMP signature is `AnyObject?` rather than `URLSessionDelegate?`
-      // because `DelegateProxy` deliberately doesn't declare Swift `URLSessionDelegate` conformance
-      // (see the class doc for why). At the Obj-C ABI level the slot is `id<NSURLSessionDelegate>?`,
-      // which accepts any `NSObject` — `URLSession` only checks selector responses at runtime.
-      let fn = unsafeBitCast(
-        imp,
-        to: (@convention(c) (AnyObject, Selector, URLSessionConfiguration, AnyObject?, OperationQueue?) -> URLSession?).self
-      )
-      return fn(cls, selector, config, wrapped, queue)
-    }
     let newImp = imp_implementationWithBlock(block as Any)
     let original = method_setImplementation(method, newImp)
     originalSessionInitImp.withLock { $0 = original }
@@ -503,20 +494,18 @@ enum NetworkRequestTaskSwizzling {
 
 // MARK: - ObservationContext
 
-/**
- Per-task observation state. Stored on the task via `objc_setAssociatedObject` so it travels with
- the task across delegate callbacks, redirects, and threads without us maintaining a separate
- task→state map. Released automatically when the task or our slot is cleared.
-
- `@unchecked Sendable` because we cross isolation boundaries by passing the context to
- `AppMetricsActor` from `recordCompletion`. The mutable fields (`recorded`, `metrics`,
- `replayedByDevLauncher`, `startNotification`) are written from at most two places each, and
- the writes that matter for correctness — flipping `recorded`, updating the pending-replays
- dictionary, building the snapshot — all run on `AppMetricsActor`. The early
- `replayedByDevLauncher = true` write in `observeStart` happens on the resume thread before
- any actor work picks the context up, so there's no read-write race in practice.
- */
-fileprivate final class ObservationContext: @unchecked Sendable {
+/// Per-task observation state. Stored on the task via `objc_setAssociatedObject` so it travels with
+/// the task across delegate callbacks, redirects, and threads without us maintaining a separate
+/// task→state map. Released automatically when the task or our slot is cleared.
+///
+/// `@unchecked Sendable` because we cross isolation boundaries by passing the context to
+/// `AppMetricsActor` from `recordCompletion`. The mutable fields (`recorded`, `metrics`,
+/// `replayedByDevLauncher`, `startNotification`) are written from at most two places each, and
+/// the writes that matter for correctness — flipping `recorded`, updating the pending-replays
+/// dictionary, building the snapshot — all run on `AppMetricsActor`. The early
+/// `replayedByDevLauncher = true` write in `observeStart` happens on the resume thread before
+/// any actor work picks the context up, so there's no read-write race in practice.
+private final class ObservationContext: @unchecked Sendable {
   let id: UUID
   let request: URLRequest
   let startDate: Date
@@ -555,22 +544,20 @@ fileprivate final class ObservationContext: @unchecked Sendable {
 
 // MARK: - DelegateProxy
 
-/**
- `NSObject` subclass that captures `didFinishCollectingMetrics` for our observation context while
- transparently forwarding every other selector to the caller's original delegate.
-
- **Why we don't declare `URLSessionTaskDelegate` conformance in Swift.** `URLSession` introspects
- its delegate via `conformsToProtocol:(URLSessionDataDelegate)`, `conformsToProtocol:(URLSessionDownloadDelegate)`,
- etc., to decide which optional callbacks it should emit. If we conformed to `URLSessionTaskDelegate`
- in Swift, the Obj-C runtime would advertise that conformance for the proxy unconditionally — even
- when the wrapped delegate is actually a `URLSessionDataDelegate`. That could change which callbacks
- fire and break the caller. We instead reflect the wrapped delegate's `responds(to:)` results, plus
- `true` for the metrics selector we intercept. This is the same pattern Bugsnag's
- `BSGURLSessionPerformanceProxy` uses.
-
- The metrics callback is implemented as an `@objc` method so the Obj-C runtime can dispatch it via
- `responds(to:)` without us declaring formal protocol conformance.
- */
+/// `NSObject` subclass that captures `didFinishCollectingMetrics` for our observation context while
+/// transparently forwarding every other selector to the caller's original delegate.
+///
+/// **Why we don't declare `URLSessionTaskDelegate` conformance in Swift.** `URLSession` introspects
+/// its delegate via `conformsToProtocol:(URLSessionDataDelegate)`, `conformsToProtocol:(URLSessionDownloadDelegate)`,
+/// etc., to decide which optional callbacks it should emit. If we conformed to `URLSessionTaskDelegate`
+/// in Swift, the Obj-C runtime would advertise that conformance for the proxy unconditionally — even
+/// when the wrapped delegate is actually a `URLSessionDataDelegate`. That could change which callbacks
+/// fire and break the caller. We instead reflect the wrapped delegate's `responds(to:)` results, plus
+/// `true` for the metrics selector we intercept. This is the same pattern Bugsnag's
+/// `BSGURLSessionPerformanceProxy` uses.
+///
+/// The metrics callback is implemented as an `@objc` method so the Obj-C runtime can dispatch it via
+/// `responds(to:)` without us declaring formal protocol conformance.
 private final class DelegateProxy: NSObject {
   fileprivate let wrapped: URLSessionDelegate?
 
@@ -598,31 +585,32 @@ private final class DelegateProxy: NSObject {
     return nil
   }
 
-  /**
-   Canonical recording site. `didFinishCollectingMetrics:` is Apple's "task is fully done" signal
-   — by the time it fires, the last byte has been transferred and `task.error` / `task.response`
-   are stable. We capture metrics, record the snapshot, then forward to the wrapped delegate.
-
-   The explicit `@objc` selector matches Apple's mangling exactly. Without it Swift would emit
-   `urlSession:task:didFinishCollecting:` (the argument-label form), but `URLSession` dispatches
-   `URLSession:task:didFinishCollectingMetrics:`. We can't inherit the right name from a protocol
-   because we deliberately don't conform to `URLSessionTaskDelegate` in Swift (see class comment).
-
-   This mirrors Bugsnag's `BSGURLSessionPerformanceDelegate` approach. Sentry takes a different
-   path (record from `setState:` without metrics) and explicitly trades away redirect-chain
-   detail; we keep the chain by recording here.
-   */
+  /// Canonical recording site. `didFinishCollectingMetrics:` is Apple's "task is fully done" signal
+  /// — by the time it fires, the last byte has been transferred and `task.error` / `task.response`
+  /// are stable. We capture metrics, record the snapshot, then forward to the wrapped delegate.
+  ///
+  /// The explicit `@objc` selector matches Apple's mangling exactly. Without it Swift would emit
+  /// `urlSession:task:didFinishCollecting:` (the argument-label form), but `URLSession` dispatches
+  /// `URLSession:task:didFinishCollectingMetrics:`. We can't inherit the right name from a protocol
+  /// because we deliberately don't conform to `URLSessionTaskDelegate` in Swift (see class comment).
+  ///
+  /// This mirrors Bugsnag's `BSGURLSessionPerformanceDelegate` approach. Sentry takes a different
+  /// path (record from `setState:` without metrics) and explicitly trades away redirect-chain
+  /// detail; we keep the chain by recording here.
   @objc(URLSession:task:didFinishCollectingMetrics:)
   func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
-    if let context = objc_getAssociatedObject(task, &NetworkRequestTaskSwizzling.observationContextKey) as? ObservationContext {
+    if let context = objc_getAssociatedObject(task, &NetworkRequestTaskSwizzling.observationContextKey)
+      as? ObservationContext
+    {
       // The outer task under dev-launcher gets a degraded metrics callback (the URLProtocol
       // short-circuits the real network). The inner replay task's callback is where the real
       // chain lands. Skip the outer's metrics callback when its context was claimed by an inner
       // task; the inner's own callback will record. The two tasks are told apart by the
       // property dev-launcher stamps on the inner's request.
-      let isInnerReplayTask = task.originalRequest.flatMap {
-        URLProtocol.property(forKey: NetworkRequestTaskSwizzling.devLauncherRequestIdKey, in: $0)
-      } != nil
+      let isInnerReplayTask =
+        task.originalRequest.flatMap {
+          URLProtocol.property(forKey: NetworkRequestTaskSwizzling.devLauncherRequestIdKey, in: $0)
+        } != nil
       let skipDueToReplay = context.replayedByDevLauncher && !isInnerReplayTask
       if !skipDueToReplay {
         context.metrics = metrics

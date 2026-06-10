@@ -2,12 +2,10 @@
 
 import Foundation
 
-/**
- Public, JSON-friendly snapshot of a persisted session. Built from a `SessionWithChildren` row
- batch and composed from the same domain types (`AppInfo`, `DeviceInfo`, `Metric`, `LogRecord`,
- `CrashReport`) that the rest of the module already exposes — so consumers see one consistent
- vocabulary instead of separate row and domain shapes.
- */
+/// Public, JSON-friendly snapshot of a persisted session. Built from a `SessionWithChildren` row
+/// batch and composed from the same domain types (`AppInfo`, `DeviceInfo`, `Metric`, `LogRecord`,
+/// `CrashReport`) that the rest of the module already exposes — so consumers see one consistent
+/// vocabulary instead of separate row and domain shapes.
 public struct StoredSession: Codable, Sendable {
   public let id: String
   public let type: Session.SessionType
@@ -21,12 +19,10 @@ public struct StoredSession: Codable, Sendable {
   public let logs: [LogRecord]
   public let crashReport: CrashReport?
 
-  /**
-   Projects a row + child batch from the database into the public `StoredSession` shape. JSON-encoded
-   blobs (request headers, metric params, log attributes, crash report payload) are decoded back into
-   their typed counterparts; rows with malformed blobs degrade gracefully (the offending field becomes
-   nil) rather than failing the whole conversion.
-   */
+  /// Projects a row + child batch from the database into the public `StoredSession` shape. JSON-encoded
+  /// blobs (request headers, metric params, log attributes, crash report payload) are decoded back into
+  /// their typed counterparts; rows with malformed blobs degrade gracefully (the offending field becomes
+  /// nil) rather than failing the whole conversion.
   init(from row: SessionWithChildren) {
     let session = row.session
     self.id = session.id
@@ -62,11 +58,9 @@ public struct StoredSession: Codable, Sendable {
   }
 }
 
-/**
- Projects metric rows into the public `Metric` domain shape, decoding the JSON-encoded `params`
- blob back into a dictionary. Shared by `StoredSession` and the `Session`/`DebugSession` shared
- objects' lazy `getMetrics()` readers.
- */
+/// Projects metric rows into the public `Metric` domain shape, decoding the JSON-encoded `params`
+/// blob back into a dictionary. Shared by `StoredSession` and the `Session`/`DebugSession` shared
+/// objects' lazy `getMetrics()` readers.
 func decodeMetrics(from rows: [MetricRow]) -> [Metric] {
   return rows.map { metric in
     return Metric(
@@ -82,11 +76,9 @@ func decodeMetrics(from rows: [MetricRow]) -> [Metric] {
   }
 }
 
-/**
- Projects log rows into the public `LogRecord` domain shape, decoding the JSON-encoded `attributes`
- blob back into a dictionary. Shared by `StoredSession` and the `Session`/`DebugSession` shared
- objects' lazy `getLogs()` readers.
- */
+/// Projects log rows into the public `LogRecord` domain shape, decoding the JSON-encoded `attributes`
+/// blob back into a dictionary. Shared by `StoredSession` and the `Session`/`DebugSession` shared
+/// objects' lazy `getLogs()` readers.
 func decodeLogs(from rows: [LogRow]) -> [LogRecord] {
   return rows.map { log in
     return LogRecord(

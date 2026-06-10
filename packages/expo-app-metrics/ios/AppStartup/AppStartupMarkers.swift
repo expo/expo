@@ -9,11 +9,9 @@ final class AppStartupMarkers: Sendable {
   @AppMetricsActor
   var finishedLaunching: TimeInterval?
 
-  /**
-   Wall-clock companion to `finishedLaunching`. `NetworkRequest.timings.fetchStart` uses `Date`
-   (not `CACurrentMediaTime`) so summarizing requests over the launch window needs an anchor in
-   the same domain.
-   */
+  /// Wall-clock companion to `finishedLaunching`. `NetworkRequest.timings.fetchStart` uses `Date`
+  /// (not `CACurrentMediaTime`) so summarizing requests over the launch window needs an anchor in
+  /// the same domain.
   @AppMetricsActor
   var finishedLaunchingDate: Date?
 
@@ -23,23 +21,19 @@ final class AppStartupMarkers: Sendable {
   @AppMetricsActor
   var timeToInteractive: TimeInterval?
 
-  /**
-   Time of loading dylibs and executing static initializers such as Objective-C `load`/`initialize` methods.
-   This is what happens before the `main` application's function is called.
-   */
+  /// Time of loading dylibs and executing static initializers such as Objective-C `load`/`initialize` methods.
+  /// This is what happens before the `main` application's function is called.
   @AppMetricsActor
   func getLoadTime() -> TimeInterval? {
     return loadTime
   }
 
-  /**
-   The launch time consists of:
-   - load time (see `getLoadTime`)
-   - `main` function
-   - creation of application's window or scene (`application:didFinishLaunchingWithOptions:`)
-   - initialization of the React Native instance
-   - execution of some lifecycle events from the AppDelegate subscribers
-   */
+  /// The launch time consists of:
+  /// - load time (see `getLoadTime`)
+  /// - `main` function
+  /// - creation of application's window or scene (`application:didFinishLaunchingWithOptions:`)
+  /// - initialization of the React Native instance
+  /// - execution of some lifecycle events from the AppDelegate subscribers
   @AppMetricsActor
   func getLaunchTime() -> TimeInterval? {
     if let main, let finishedLaunching {

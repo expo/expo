@@ -9,12 +9,16 @@ on:
       - .swift-format
       - scripts/swift-format.sh
       - packages/expo-modules-jsi/**/*.swift
+      - packages/expo-app-metrics/**/*.swift
+      - packages/expo-observe/**/*.swift
   pull_request:
     paths:
       - .github/workflows/swift-format.yml
       - .swift-format
       - scripts/swift-format.sh
       - packages/expo-modules-jsi/**/*.swift
+      - packages/expo-app-metrics/**/*.swift
+      - packages/expo-observe/**/*.swift
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -70,3 +74,9 @@ jobs:
       - name: 🧹 Lint expo-modules-jsi
         run: ../../scripts/swift-format.sh --lint
         working-directory: packages/expo-modules-jsi
+      - name: 🧹 Lint expo-app-metrics
+        run: ../../scripts/swift-format.sh --lint
+        working-directory: packages/expo-app-metrics
+      - name: 🧹 Lint expo-observe
+        run: ../../scripts/swift-format.sh --lint
+        working-directory: packages/expo-observe
