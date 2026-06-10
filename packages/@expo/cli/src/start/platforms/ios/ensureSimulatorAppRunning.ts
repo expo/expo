@@ -71,6 +71,9 @@ async function openSimulatorAppAsync(device: { udid?: string }) {
     }
     await spawnAsync('open', args);
   } catch {
-    // This is now a noop, device hub does not have the ability to open and focus a specific simulator
+    // DevieHub does not allow us to focus to the right device
+    await spawnAsync('open', ['-a', 'DeviceHub']).catch(() => {
+      // Noop - we can't do much more here
+    });
   }
 }
