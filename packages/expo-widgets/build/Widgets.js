@@ -53,7 +53,7 @@ export class LiveActivity {
      * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
      */
     update(props, staleDate) {
-        return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime() ?? undefined);
+        return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime());
     }
     /**
      * Ends the Live Activity.
@@ -105,7 +105,7 @@ export class LiveActivityFactory {
      * @returns The new Live Activity instance.
      */
     start(props, url, staleDate) {
-        return new LiveActivity(this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime() ?? undefined));
+        return new LiveActivity(this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime()));
     }
     /**
      * Returns all currently active instances of this Live Activity type.

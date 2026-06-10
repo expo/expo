@@ -88,8 +88,8 @@ export class LiveActivity<T extends object = object> {
    * @param props The updated content properties.
    * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
    */
-  update(props: T, staleDate?: Date | null): Promise<void> {
-    return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime() ?? undefined);
+  update(props: T, staleDate?: Date): Promise<void> {
+    return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime());
   }
 
   /**
@@ -160,13 +160,9 @@ export class LiveActivityFactory<T extends object = object> {
    * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
    * @returns The new Live Activity instance.
    */
-  start(props: T, url?: string, staleDate?: Date | null) {
+  start(props: T, url?: string, staleDate?: Date) {
     return new LiveActivity<T>(
-      this.nativeLiveActivityFactory.start(
-        JSON.stringify(props),
-        url,
-        staleDate?.getTime() ?? undefined
-      )
+      this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime())
     );
   }
 
