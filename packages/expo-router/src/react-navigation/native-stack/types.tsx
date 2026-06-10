@@ -54,7 +54,7 @@ export type NativeStackNavigationEventMap = {
    * listener on the navigator receives it, including listeners registered by a route that has
    * already been popped.
    */
-  finishTransitioning: { data: undefined };
+  unstable_finishTransitioning: { data: undefined };
 };
 
 export type NativeStackNavigationProp<

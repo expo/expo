@@ -24,15 +24,15 @@ const { ScreenStack } = jest.requireMock(
 ) as typeof import('react-native-screens');
 const MockedScreenStack = ScreenStack as jest.MockedFunction<typeof ScreenStack>;
 
-it('emits finishTransitioning to navigator listeners when the stack settles', () => {
+it('emits unstable_finishTransitioning to navigator listeners when the stack settles', () => {
   const events: string[] = [];
 
   function HomeScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     useEffect(
       () =>
-        navigation.addListener('finishTransitioning', () => {
-          events.push('finishTransitioning');
+        navigation.addListener('unstable_finishTransitioning', () => {
+          events.push('unstable_finishTransitioning');
         }),
       [navigation]
     );
@@ -53,5 +53,5 @@ it('emits finishTransitioning to navigator listeners when the stack settles', ()
     onFinishTransitioning!({ nativeEvent: { target: 1 } } as NativeSyntheticEvent<TargetedEvent>);
   });
 
-  expect(events).toEqual(['finishTransitioning']);
+  expect(events).toEqual(['unstable_finishTransitioning']);
 });

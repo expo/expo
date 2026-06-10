@@ -476,7 +476,7 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
       <ScreenStack
         style={styles.container}
         onFinishTransitioning={() => {
-          navigation.emit({ type: 'finishTransitioning' });
+          navigation.emit({ type: 'unstable_finishTransitioning' });
         }}>
         {state.routes.concat(state.preloadedRoutes).map((route, index) => {
           const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
