@@ -49,9 +49,15 @@ final class MetricsDatabase: Sendable {
   }
 
   private static func defaultDirectoryUrl() throws -> URL {
+    #if os(tvOS)
+    return try FileManager.default
+      .url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+      .appendingPathComponent("ExpoAppMetrics")
+    #else
     return try FileManager.default
       .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
       .appendingPathComponent("ExpoAppMetrics")
+    #endif
   }
 
   /**
