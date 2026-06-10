@@ -267,6 +267,25 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     setProperty(name, value: runtime.createFunction(name, function))
   }
 
+  /// Sets a property to a synchronous host function whose closure receives `this` as a borrowed
+  /// ``JavaScriptUnownedValue`` instead of an owning ``JavaScriptValue`` (see
+  /// ``JavaScriptRuntime/UnownedThisSyncFunctionClosure``). Used by the `@JS` synthesized bindings,
+  /// which usually ignore `this`, to skip the per-call owning-value allocation and `weak`-runtime churn.
+  ///
+  /// `@_disfavoredOverload` for the same reason as ``JavaScriptRuntime/createFunction(_:_:)-(String,_)``:
+  /// an untyped closure parameter stays on the owning overload; only an explicit `borrowing
+  /// JavaScriptUnownedValue` first parameter selects this one.
+  @_disfavoredOverload
+  @JavaScriptActor
+  public func setProperty(
+    _ name: String, function: sending @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
+  ) {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    setProperty(name, value: runtime.createFunction(name, function))
+  }
+
   /// Sets a property to an asynchronous host function created from the given closure. The function
   /// is named after the property and runs the closure when called from JavaScript, returning a
   /// promise that resolves with its result. Equivalent to
