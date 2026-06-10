@@ -55,9 +55,10 @@ type NativeImageProps = Omit<ImageProps, 'onPress'> | TapEvent;
 
 function transformNativeProps(props: ImageProps): NativeImageProps {
   const { onPress, modifiers, size, color, ...restProps } = props;
+  const hasFontModifier = modifiers?.some((modifier) => modifier.$type === 'font');
   const allModifiers = [
     ...(modifiers ?? []),
-    font({ size: size ?? 24 }),
+    ...(hasFontModifier ? [] : [font({ size: size ?? 24 })]),
     ...(color != null ? [foregroundStyle(color)] : []),
   ];
   return {
