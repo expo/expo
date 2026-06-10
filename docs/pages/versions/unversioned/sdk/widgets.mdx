@@ -12,7 +12,7 @@ import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/Con
 
 > **important** This library is not available in the Expo Go app — use [development builds](/develop/development-builds/introduction) to try it out.
 
-`expo-widgets` enables the creation of iOS home screen widgets and Live Activities using Expo UI components, without writing native code. It provides a simple API for creating and updating widgets timeline, as well as starting and managing Live Activities. Layout can be built using [`expo/ui`](/versions/latest/sdk/ui/swift-ui/) components and modifiers.
+`expo-widgets` enables the creation of iOS home screen widgets and Live Activities using Expo UI components, without writing native code. It provides a simple API for creating and updating widgets timeline, as well as starting and managing Live Activities. Layout can be built using [`expo/ui`](./ui/swift-ui/) components and modifiers.
 
 ## Installation
 
@@ -107,6 +107,42 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
         '* `accessoryInline` - Inline text widget for Lock Screen',
       ].join('\n'),
     },
+    {
+      name: 'widgets[].configuration',
+      description:
+        'Optional widget gallery configuration. When provided, the widget is generated with `AppIntentConfiguration` and the selected values are available on `environment.configuration`. Configurable widgets require iOS 17 or later.',
+    },
+    {
+      name: 'widgets[].configuration.title',
+      description: 'The title for the widget configuration intent.',
+      default: '<widgets[].name> Configuration',
+    },
+    {
+      name: 'widgets[].configuration.description',
+      description: 'An optional description for the widget configuration intent.',
+    },
+    {
+      name: 'widgets[].configuration.parameters',
+      description:
+        'A map of configuration parameter names to parameter definitions. Supported parameter types are `string`, `number`, `boolean`, and `enum`.',
+    },
+    {
+      name: 'widgets[].configuration.parameters[name].title',
+      description: 'The user-facing title for the configuration parameter.',
+    },
+    {
+      name: 'widgets[].configuration.parameters[name].type',
+      description: 'The parameter type: `string`, `number`, `boolean`, or `enum`.',
+    },
+    {
+      name: 'widgets[].configuration.parameters[name].default',
+      description: 'The default value for the configuration parameter.',
+    },
+    {
+      name: 'widgets[].configuration.parameters[name].values',
+      description:
+        'For `enum` parameters, the available options as `{ "name": string, "value": string }` objects.',
+    },
   ]}
 />
 
@@ -134,7 +170,27 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
               "name": "DetailWidget",
               "displayName": "Details",
               "description": "Shows detailed information",
-              "supportedFamilies": ["systemMedium", "systemLarge"]
+              "supportedFamilies": ["systemMedium", "systemLarge"],
+              "configuration": {
+                "title": "Details",
+                "description": "Choose the detail level to show.",
+                "parameters": {
+                  "detailLevel": {
+                    "title": "Detail Level",
+                    "type": "enum",
+                    "values": [
+                      { "name": "Summary", "value": "summary" },
+                      { "name": "Full", "value": "full" }
+                    ],
+                    "default": "summary"
+                  },
+                  "showTimestamp": {
+                    "title": "Show Timestamp",
+                    "type": "boolean",
+                    "default": true
+                  }
+                }
+              }
             },
             {
               "name": "LockScreenWidget",
@@ -266,6 +322,165 @@ Widget.updateSnapshot({
 });
 ```
 
+#### Deep linking from widgets
+
+Use the `widgetURL` modifier from `@expo/ui/swift-ui/modifiers` to make the widget open a single URL when tapped. If you need multiple tappable links, use [`Link`](./ui/swift-ui/link.mdx) inside the widget layout.
+
+```tsx
+import { Text, VStack } from '@expo/ui/swift-ui';
+import { widgetURL } from '@expo/ui/swift-ui/modifiers';
+import { createWidget } from 'expo-widgets';
+
+type OrderWidgetProps = {
+  orderId: string;
+  status: string;
+};
+
+const OrderWidget = (props: OrderWidgetProps) => {
+  'widget';
+  return (
+    <VStack modifiers={[widgetURL(`myapp://orders/${props.orderId}`)]}>
+      <Text>Order #{props.orderId}</Text>
+      <Text>{props.status}</Text>
+    </VStack>
+  );
+};
+
+export default createWidget('OrderWidget', OrderWidget);
+```
+
+#### Content margins and appearance
+
+System adds content margins by default. Keep the default margins for most widgets so the layout matches the platform. Set `contentMarginsDisabled` to `true` in the widget configuration only when you want edge-to-edge content, such as a custom background, and then add your own padding in the widget layout.
+
+On iOS 17 and later, `environment.widgetContentMargins` contains the current system margins. Use it when you need to align custom content with the system-provided inset.
+
+Use `environment.colorScheme` to render different colors for light and dark appearances. For Lock Screen and tinted widgets, also check `environment.widgetRenderingMode` and use Expo UI widget helpers such as [`AccessoryWidgetBackground`](./ui/swift-ui/accessorywidgetbackground.mdx) and [`widgetAccentedRenderingMode`](./ui/swift-ui/modifiers/#widgetaccentedrenderingmoderenderingmode).
+
+```tsx
+import { Image, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  containerBackground,
+  foregroundStyle,
+  padding,
+  widgetAccentedRenderingMode,
+} from '@expo/ui/swift-ui/modifiers';
+import { createWidget, type WidgetEnvironment } from 'expo-widgets';
+
+type ThemeWidgetProps = {
+  title: string;
+};
+
+const ThemeWidget = (props: ThemeWidgetProps, environment: WidgetEnvironment) => {
+  'widget';
+  const textColor = environment.colorScheme === 'dark' ? '#FFFFFF' : '#111111';
+  const backgroundColor = environment.colorScheme === 'dark' ? '#111111' : '#FFFFFF';
+  const margins = environment.widgetContentMargins;
+
+  return (
+    <VStack
+      modifiers={[
+        padding({
+          top: margins?.top ?? 12,
+          bottom: margins?.bottom ?? 12,
+          leading: margins?.leading ?? 12,
+          trailing: margins?.trailing ?? 12,
+        }),
+        containerBackground(backgroundColor, 'widget'),
+      ]}>
+      <Image
+        systemName="star.fill"
+        color={textColor}
+        modifiers={[widgetAccentedRenderingMode('accented')]}
+      />
+      <Text modifiers={[foregroundStyle(textColor)]}>{props.title}</Text>
+    </VStack>
+  );
+};
+
+export default createWidget('ThemeWidget', ThemeWidget);
+```
+
+#### Configurable widgets
+
+Add a `configuration` object to a widget in your app config to expose options in the widget gallery. The selected values are passed to the widget component in [`WidgetEnvironment`](#widgetenvironment).
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "widgets": [
+            {
+              "name": "GreetingWidget",
+              "displayName": "Greeting",
+              "description": "Shows a configurable greeting",
+              "supportedFamilies": ["systemSmall", "systemMedium"],
+              "configuration": {
+                "title": "Greeting",
+                "parameters": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "default": "Expo"
+                  },
+                  "style": {
+                    "title": "Style",
+                    "type": "enum",
+                    "values": [
+                      { "name": "Short", "value": "short" },
+                      { "name": "Detailed", "value": "detailed" }
+                    ],
+                    "default": "short"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}
+```
+
+```tsx
+import { Text, VStack } from '@expo/ui/swift-ui';
+import { createWidget, type WidgetEnvironment } from 'expo-widgets';
+
+type GreetingProps = {
+  count: number;
+};
+
+type GreetingConfiguration = {
+  name: string;
+  style: 'short' | 'detailed';
+};
+
+const GreetingWidget = (
+  props: GreetingProps,
+  environment: WidgetEnvironment<GreetingConfiguration>
+) => {
+  'widget';
+  const name = environment.configuration.name;
+
+  return (
+    <VStack>
+      <Text>Hello, {name}</Text>
+      {environment.configuration.style === 'detailed' && (
+        <Text>You have opened this {props.count} times.</Text>
+      )}
+    </VStack>
+  );
+};
+
+export default createWidget('GreetingWidget', GreetingWidget);
+```
+
+Configurable widgets are available on iOS 17 and later.
+
 ### Live Activities
 
 Live Activities display real-time information on the Lock Screen and in the Dynamic Island on supported devices.
@@ -279,7 +494,7 @@ import { Image, Text, VStack } from '@expo/ui/swift-ui';
 import { font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
 import { createLiveActivity, type LiveActivityEnvironment } from 'expo-widgets';
 
-type DeliveryActivityProps = {
+export type DeliveryActivityProps = {
   etaMinutes: number;
   status: string;
 };
@@ -360,6 +575,7 @@ The example below continues from [Starting a Live Activity](#starting-a-live-act
 
 ```tsx
 import { LiveActivity } from 'expo-widgets';
+import { type DeliveryActivityProps } from './DeliveryActivity';
 
 function updateDelivery(instance: LiveActivity<DeliveryActivityProps>) {
   instance.update({
@@ -375,6 +591,7 @@ Use `end` to finish a Live Activity. You can choose the dismissal policy, option
 
 ```tsx
 import { after, type LiveActivity } from 'expo-widgets';
+import { type DeliveryActivityProps } from '../widgets/DeliveryActivity';
 
 async function completeDelivery(instance: LiveActivity<DeliveryActivityProps>) {
   await instance.end(
@@ -422,6 +639,88 @@ async function startDeliveryTracking() {
 // Later, when you no longer need updates:
 pushToStartSubscription.remove();
 ```
+
+The push-to-start token and per-activity push token are APNs tokens, not Expo push tokens. Send them to your server and use Apple's ActivityKit APNs endpoint to start, update, or end Live Activities remotely. `expo-widgets` exposes the tokens and renders the content state and it does not send APNs requests for you.
+
+Use these APNs headers for ActivityKit pushes:
+
+```text
+apns-push-type: liveactivity
+apns-topic: <your app bundle identifier>.push-type.liveactivity
+apns-priority: 10
+```
+
+Use `apns-priority: 10` for immediate updates and `apns-priority: 5` for lower-priority updates. The `timestamp`, `dismissal-date`, and other APNs date fields are Unix timestamps in seconds.
+
+The payload's `content-state` must match the internal content state used by `expo-widgets`. Set `name` to the name you passed to `createLiveActivity`, and set `props` to a JSON string containing the props for that Live Activity.
+
+To start a Live Activity remotely, send a push to the push-to-start token received from `addPushToStartTokenListener`:
+
+```json
+{
+  "aps": {
+    "timestamp": 1778832000,
+    "event": "start",
+    "attributes-type": "LiveActivityAttributes",
+    "attributes": {},
+    "content-state": {
+      "name": "DeliveryActivity",
+      "props": "{\"etaMinutes\":15,\"status\":\"Your delivery is on the way\"}"
+    },
+    "alert": {
+      "title": "Delivery started",
+      "body": "Your delivery is on the way"
+    }
+  }
+}
+```
+
+Remote start requires iOS 17.2 or later. Include `input-push-token: 1` in the `aps` payload on iOS 18 or later if you want APNs to provide a new per-activity token for future updates.
+
+To update a Live Activity remotely, send a push to that Live Activity's per-activity token:
+
+```json
+{
+  "aps": {
+    "timestamp": 1778832300,
+    "event": "update",
+    "content-state": {
+      "name": "DeliveryActivity",
+      "props": "{\"etaMinutes\":2,\"status\":\"Delivery arriving soon!\"}"
+    }
+  }
+}
+```
+
+To end a Live Activity remotely, send an `end` event with the final content state:
+
+```json
+{
+  "aps": {
+    "timestamp": 1778832600,
+    "event": "end",
+    "content-state": {
+      "name": "DeliveryActivity",
+      "props": "{\"etaMinutes\":0,\"status\":\"Delivered\"}"
+    },
+    "dismissal-date": 1778833200
+  }
+}
+```
+
+For locally started activities, pass a URL as the second argument to `start` to associate a deep link with the Live Activity tap target:
+
+```tsx
+DeliveryActivity.start(
+  {
+    etaMinutes: 15,
+    status: 'Your delivery is on the way',
+  },
+  'myapp://deliveries/12345'
+);
+```
+
+This URL path is separate from normal widget navigation. For home screen widgets, use `widgetURL` or `Link` as shown in [Deep linking from widgets](#deep-linking-from-widgets).
 
 ## API
 
