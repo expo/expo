@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Replace `TimeoutID` typing on `_timeUpdateLoop` ([#46730](https://github.com/expo/expo/pull/46730) by [@kitten](https://github.com/kitten))
+
 ## 56.1.2 — 2026-05-21
 
 ### 🐛 Bug fixes
