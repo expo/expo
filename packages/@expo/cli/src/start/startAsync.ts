@@ -7,8 +7,7 @@ import {
   printDependencyCheckResult,
   type DependencyCheckRef,
 } from './checkDependenciesOnStart';
-import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
-import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
+import { XcodeSimulatorPrerequisite } from './doctor/apple/XcodeSimulatorPrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
 import type { Options } from './resolveOptions';
@@ -93,10 +92,7 @@ export async function startAsync(
   }
 
   if (exp.platforms?.includes('ios') && process.platform !== 'win32') {
-    // If Xcode could potentially be used, then we should eagerly perform the
-    // assertions since they can take a while on cold boots.
-    getXcodeVersionAsync({ silent: true });
-    SimulatorAppPrerequisite.instance.assertAsync().catch(() => {
+    XcodeSimulatorPrerequisite.instance.assertAsync().catch(() => {
       // noop -- this will be thrown again when the user attempts to open the project.
     });
   }

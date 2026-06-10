@@ -1,6 +1,6 @@
 import { profile } from '../../../utils/profile';
-import { SimulatorAppPrerequisite } from '../../doctor/apple/SimulatorAppPrerequisite';
 import { XcodePrerequisite } from '../../doctor/apple/XcodePrerequisite';
+import { XcodeSimulatorPrerequisite } from '../../doctor/apple/XcodeSimulatorPrerequisite';
 import { XcrunPrerequisite } from '../../doctor/apple/XcrunPrerequisite';
 
 export async function assertSystemRequirementsAsync() {
@@ -14,7 +14,7 @@ export async function assertSystemRequirementsAsync() {
     'XcrunPrerequisite'
   )();
   await profile(
-    SimulatorAppPrerequisite.instance.assertAsync.bind(SimulatorAppPrerequisite.instance),
+    XcodeSimulatorPrerequisite.instance.assertAsync.bind(XcodeSimulatorPrerequisite.instance),
     'SimulatorAppPrerequisite'
   )();
 }
