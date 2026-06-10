@@ -26,9 +26,9 @@ export class SimulatorAppPrerequisite extends Prerequisite {
       const xcodePath = await getXcodeSelectPath();
       debug('Xcode select path: %s', xcodePath);
       if (xcodePath) {
-        appId = await getXcodeInfoPlistBundlId(path.join(xcodePath, XCODE_SIMULATOR_PATH)).then(
+        appId = await getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_SIMULATOR_PATH)).then(
           (appId) => {
-            return appId || getXcodeInfoPlistBundlId(path.join(xcodePath, XCODE_DEVICE_HUB_PATH));
+            return appId || getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_DEVICE_HUB_PATH));
           }
         );
       }
@@ -80,7 +80,7 @@ async function getXcodeSelectPath() {
  * Read the Info.plist of an app within Xcode and return the bundle ID.
  * This uses `defaults read <path>/Info.plist CFBundleIdentifier`.
  */
-async function getXcodeInfoPlistBundlId(infoPlistPath: string) {
+async function getXcodeInfoPlistBundleId(infoPlistPath: string) {
   try {
     const result = await spawnAsync('defaults', ['read', infoPlistPath, 'CFBundleIdentifier']);
     return result.stdout.trim() || null;
