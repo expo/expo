@@ -6,6 +6,8 @@ import path from 'node:path';
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 
+import { rewriteDocsLinksToMarkdown } from './markdown-link-utils.ts';
+
 /**
  * Find the MDX source file corresponding to an output HTML path.
  * Returns the absolute path to the .mdx file, or null if not found.
@@ -976,7 +978,9 @@ export function convertHtmlToMarkdown(html: string): string {
     const match = refreshMeta.match(/url=(\S+)/i);
     if (match) {
       const target = match[1];
-      return `This page redirects to [${target}](https://docs.expo.dev${target}).\n`;
+      return rewriteDocsLinksToMarkdown(
+        `This page redirects to [${target}](https://docs.expo.dev${target}).`
+      ) + '\n';
     }
   }
 
@@ -994,6 +998,7 @@ export function convertHtmlToMarkdown(html: string): string {
 
   let markdown = turndown.turndown(mainHtml);
   markdown = cleanMarkdown(markdown);
+  markdown = rewriteDocsLinksToMarkdown(markdown);
 
   return markdown ? markdown + '\n' : NO_CONTENT_FALLBACK;
 }
