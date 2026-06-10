@@ -37,6 +37,7 @@ import {
   onLongPressGesture,
   onAppear,
   onDisappear,
+  onGeometryChange,
   accessibilityLabel,
   accessibilityIdentifier,
   accessibilityHidden,
@@ -810,6 +811,8 @@ export default function ModifiersScreen() {
 
           <AppearSection />
 
+          <GeometrySection />
+
           {/* Container Shape Modifier */}
           <Section title="Content Shape Modifier">
             <Text>Try tapping the empty space between texts:</Text>
@@ -968,6 +971,29 @@ function AppearSection() {
           ]}
         />
       </DisclosureGroup>
+    </Section>
+  );
+}
+
+function GeometrySection() {
+  const [frame, setFrame] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  return (
+    <Section title="onGeometryChange (position + size)">
+      <Text
+        modifiers={[
+          background('#5856D6'),
+          cornerRadius(12),
+          padding({ all: 16 }),
+          foregroundStyle({ type: 'color', color: '#FFFFFF' }),
+          onGeometryChange(setFrame),
+        ]}>
+        Track my frame
+      </Text>
+      <Text modifiers={[font({ size: 13 }), monospacedDigit()]}>
+        {`global x: ${frame.x.toFixed(0)}  y: ${frame.y.toFixed(0)}  •  size ${frame.width.toFixed(
+          0
+        )} × ${frame.height.toFixed(0)} (pt)`}
+      </Text>
     </Section>
   );
 }

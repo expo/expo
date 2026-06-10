@@ -190,13 +190,17 @@ export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
 
 /**
- * Calls the handler whenever the view's geometry changes. Sizes are in points.
- * @param handler - Function called with the new size.
+ * Calls the handler whenever the view's geometry changes, with its position and size.
+ * `x` and `y` are in the global coordinate space (relative to the window); all values are in points.
+ * @param handler - Function called with the new frame.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
  */
-export const onGeometryChange = (handler: (size: { width: number; height: number }) => void) =>
-  createModifierWithEventListener('onGeometryChange', (size: { width: number; height: number }) =>
-    handler(size)
+export const onGeometryChange = (
+  handler: (frame: { x: number; y: number; width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onGeometryChange',
+    (frame: { x: number; y: number; width: number; height: number }) => handler(frame)
   );
 
 /**

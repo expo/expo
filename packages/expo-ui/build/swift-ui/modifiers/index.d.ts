@@ -135,11 +135,14 @@ export declare const onAppear: (handler: () => void) => ModifierConfig;
  */
 export declare const onDisappear: (handler: () => void) => ModifierConfig;
 /**
- * Calls the handler whenever the view's geometry changes. Sizes are in points.
- * @param handler - Function called with the new size.
+ * Calls the handler whenever the view's geometry changes, with its position and size.
+ * `x` and `y` are in the global coordinate space (relative to the window); all values are in points.
+ * @param handler - Function called with the new frame.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
  */
-export declare const onGeometryChange: (handler: (size: {
+export declare const onGeometryChange: (handler: (frame: {
+    x: number;
+    y: number;
     width: number;
     height: number;
 }) => void) => ModifierConfig;
