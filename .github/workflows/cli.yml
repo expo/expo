@@ -213,7 +213,7 @@ jobs:
         run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()
         with:
           name: playwright-report-ubuntu-${{ matrix.shard }}
@@ -295,7 +295,7 @@ jobs:
         run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()
         with:
           name: playwright-report-windows-${{ matrix.shard }}

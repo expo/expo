@@ -73,7 +73,7 @@ jobs:
           EXPO_DEBUG: 1
           NODE_ENV: production
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -135,7 +135,7 @@ jobs:
         working-directory: apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: bare-expo-artifacts-ios
           path: |
@@ -200,7 +200,7 @@ jobs:
         run: ./scripts/start-android-e2e-test.ts --build
         working-directory: apps/bare-expo
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
@@ -261,7 +261,7 @@ jobs:
           working-directory: ./apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: bare-expo-artifacts-android
           path: |
