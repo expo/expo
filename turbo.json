@@ -20,5 +20,11 @@
     "test": {
       "cache": false
     }
+  },
+  "remoteCache": {
+    "preflight": true,
+    "apiUrl": "https://turbo.exp.host",
+    "teamId": "team_expo",
+    "teamSlug": "expo"
   }
 }
