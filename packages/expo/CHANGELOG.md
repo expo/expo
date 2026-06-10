@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Adopted the UIKit scene-based life cycle on iOS so apps built with the iOS 27 SDK launch correctly. ([#46733](https://github.com/expo/expo/pull/46733) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 57.0.22 — 2026-09-11
