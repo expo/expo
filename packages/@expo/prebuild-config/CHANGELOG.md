@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Generated iOS projects now include a `SceneDelegate` and `UIApplicationSceneManifest` for the scene-based life cycle. ([#46734](https://github.com/expo/expo/pull/46734) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 57.0.16 — 2026-09-11
