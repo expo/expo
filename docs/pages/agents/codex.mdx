@@ -77,19 +77,19 @@ Run Codex from your project root, then describe what you want to do.
 
 ### Verify setup
 
-Paste the following prompt in your Codex session to confirm it's reading your project context:
+Paste the following prompt in your Codex session to confirm it can read your project:
 
 ```text Example prompt
-Open AGENTS.md and tell me which Expo SDK version this project targets.
+Open package.json and tell me which Expo SDK version this project targets.
 ```
 
-If the agent replies with the SDK version pinned in **AGENTS.md**, the project context is loading correctly.
+If the agent replies with the SDK version from **package.json**, the agent is reading your project correctly.
 
 </Step>
 
 ## How Codex reads your Expo project
 
-When you start Codex in your project, it reads the scaffolded **AGENTS.md** file. This file pins Codex to the documentation for your project's Expo SDK version and holds any project-level instructions you add.
+When you start Codex in your project, it reads the scaffolded **AGENTS.md** file. This file points Codex to the documentation for your project's Expo SDK version and holds any project-level instructions you add.
 
 **AGENTS.md** is committed to your project, so a developer's Codex session starts from the same context.
 
