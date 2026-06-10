@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Reset the iOS app icon build setting when switching from a `.icon` package back to a PNG icon.
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-26
