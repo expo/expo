@@ -17,7 +17,10 @@ it('should do nothing when the Simulator.app is running', async () => {
 });
 
 it('should activate the window when Simulator.app is not running', async () => {
-  jest.mocked(spawnAppleScriptAsync).mockResolvedValueOnce({ stdout: '0\n' } as any).mockResolvedValueOnce({ stdout: '1\n' } as any);
+  jest
+    .mocked(spawnAppleScriptAsync)
+    .mockResolvedValueOnce({ stdout: '0\n' } as any)
+    .mockResolvedValueOnce({ stdout: '1\n' } as any);
 
   await ensureSimulatorAppRunningAsync({ udid: '123' });
 
