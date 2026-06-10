@@ -1,4 +1,9 @@
-const widgetLayouts: Record<string, string> = {};
+type WidgetRegistryEntry = {
+  layout: string;
+  initialProps?: Record<string, unknown>;
+};
+
+const widgets: Record<string, WidgetRegistryEntry> = {};
 const noopWidget = {
   reload() {},
   updateTimeline() {},
@@ -16,8 +21,11 @@ const noopLiveActivityFactory = {
   },
 };
 
-export function createWidget(name: string, layout: string) {
-  widgetLayouts[name] = layout;
+export function createWidget(name: string, layout: string, initialProps?: Record<string, unknown>) {
+  widgets[name] = { layout };
+  if (initialProps != null) {
+    widgets[name].initialProps = initialProps;
+  }
   return noopWidget;
 }
 
@@ -38,5 +46,7 @@ export function after(date: Date) {
 }
 
 export function __expoWidgetsGetLayoutRegistry() {
-  return { ...widgetLayouts };
+  return {
+    widgets: { ...widgets },
+  };
 }

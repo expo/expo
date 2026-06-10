@@ -184,10 +184,11 @@ const MyWidget = (props: MyWidgetProps, environment: WidgetEnvironment) => {
   );
 };
 
-export default createWidget('MyWidget', MyWidget);
+export default createWidget('MyWidget', MyWidget, { count: 0 });
 ```
 
 The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in the [app config](/workflow/configuration/).
+The optional third argument provides the initial props used before the widget timeline is updated.
 
 #### Basic widget
 

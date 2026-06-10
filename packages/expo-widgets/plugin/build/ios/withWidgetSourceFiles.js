@@ -284,12 +284,12 @@ struct ${widget.name}TimelineEntry: TimelineEntry {
 
 struct ${widget.name}TimelineProvider: AppIntentTimelineProvider {
   func placeholder(in context: Context) -> ${widget.name}TimelineEntry {
-    ${widget.name}TimelineEntry(date: Date(), name: "${widget.name}", props: nil, entryIndex: nil, configuration: ${widget.name}ConfigurationAppIntent())
+    ${widget.name}TimelineEntry(date: Date(), name: "${widget.name}", props: WidgetsLayoutRegistry.initialProps(for: "${widget.name}"), entryIndex: nil, configuration: ${widget.name}ConfigurationAppIntent())
   }
 
   func snapshot(for configuration: ${widget.name}ConfigurationAppIntent, in context: Context) async -> ${widget.name}TimelineEntry {
     let entries = parseTimeline(configuration: configuration)
-    return entries.first ?? ${widget.name}TimelineEntry(date: Date(), name: "${widget.name}", props: nil, entryIndex: nil, configuration: configuration)
+    return entries.first ?? ${widget.name}TimelineEntry(date: Date(), name: "${widget.name}", props: WidgetsLayoutRegistry.initialProps(for: "${widget.name}"), entryIndex: nil, configuration: configuration)
   }
 
   func timeline(for configuration: ${widget.name}ConfigurationAppIntent, in context: Context) async -> Timeline<${widget.name}TimelineEntry> {
@@ -300,7 +300,7 @@ struct ${widget.name}TimelineProvider: AppIntentTimelineProvider {
   
   func parseTimeline(configuration: ${widget.name}ConfigurationAppIntent) -> [${widget.name}TimelineEntry] {
     guard let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_${widget.name}_timeline") else {
-      return [${widget.name}TimelineEntry(date: Date(), name: "${widget.name}", props: nil, entryIndex: nil, configuration: configuration)]
+      return [${widget.name}TimelineEntry(date: Date(), name: "${widget.name}", props: WidgetsLayoutRegistry.initialProps(for: "${widget.name}"), entryIndex: nil, configuration: configuration)]
     }
     let entries: [${widget.name}TimelineEntry?] = timeline.enumerated().map { index, entry in
       guard let entry = entry as? [String: Any], let timestamp = entry["timestamp"] as? Int, let props = entry["props"] as? [String: Any] else {
