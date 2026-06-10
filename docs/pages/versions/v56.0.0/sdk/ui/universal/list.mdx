@@ -9,7 +9,9 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-`List` provides a virtualized vertical container of rows, typically populated with [`ListItem`](#listitem) children. It provides the platform-native chrome (separators, inset styling, pull-to-refresh).`ListItem` is a tappable row with `leading`/`trailing`/`supportingText` slots.
+`List` provides a virtualized vertical container of rows, typically populated with [`ListItem`](#listitem) children. It provides the platform-native chrome (separators, inset styling, pull-to-refresh). `ListItem` is a tappable row with `leading`/`trailing`/`supportingText` slots.
+
+> **info** `List` does not lazily render rows yet: React creates every row up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
 
 ## Installation
 
