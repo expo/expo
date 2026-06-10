@@ -4906,8 +4906,8 @@ importers:
   packages/expo-modules-core:
     dependencies:
       '@expo/expo-modules-macros-plugin':
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: 0.2.2
+        version: 0.2.2
       expo-modules-jsi:
         specifier: workspace:~56.0.8
         version: link:../expo-modules-jsi
@@ -7556,8 +7556,8 @@ packages:
   '@expo/devcert@1.2.1':
     resolution: {integrity: sha512-qC4eaxmKMTmJC2ahwyui6ud8f3W60Ss7pMkpBq40Hu3zyiAaugPXnZ24145U7K36qO9UHdZUVxsCvIpz2RYYCA==}
 
-  '@expo/expo-modules-macros-plugin@0.1.0':
-    resolution: {integrity: sha512-ARl5U3PcwMdyPAb+r2Y9NXZBsGyfZx+oYNf4SHEuvTCp1gbluOPHTp4YIb0OeDcU/TimEeCXzcssov934SvueA==}
+  '@expo/expo-modules-macros-plugin@0.2.2':
+    resolution: {integrity: sha512-4IMzPDIo/VOXREQjsJtliSfqYVZvfzU2SLFS/9sKMWF848S8CHx+e/E+Vf0TcMvpWCCKX5umyqxb13KJJ+YUzg==}
 
   '@expo/material-symbols@0.1.1':
     resolution: {integrity: sha512-ruA6hZATOPKxo1qSd1NE3HI9FrmEDwcMDhsvzTAdMkP9AapdHfJ/0tKmBMWFJir85voxs1twYxLVrGW9OLGaOg==}
@@ -17381,7 +17381,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@expo/expo-modules-macros-plugin@0.1.0': {}
+  '@expo/expo-modules-macros-plugin@0.2.2': {}
 
   '@expo/material-symbols@0.1.1': {}
 

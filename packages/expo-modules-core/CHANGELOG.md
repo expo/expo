@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- [iOS] `@ExpoModule` now synthesizes a `_decorateModule` that binds the module's `@JS` functions directly onto the JS object, letting the module holder skip the dynamic definition path for synthesized modules. ([#46612](https://github.com/expo/expo/pull/46612) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.15 — 2026-06-05
 
 ### 🐛 Bug fixes
