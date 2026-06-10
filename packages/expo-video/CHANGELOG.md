@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- When `source` of `useVideoPlayer` changes use `replaceAsync` instead of re-creating the player.
+
 ## 56.1.2 — 2026-05-21
 
 ### 🐛 Bug fixes

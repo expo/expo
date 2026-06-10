@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import type {
   BufferOptions,
   PlayerError,
@@ -16,18 +14,31 @@ import type {
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import type { VideoThumbnail } from './VideoThumbnail';
 import resolveAssetSource from './resolveAssetSource';
+import { useReleasingSharedObjectWithLifecycle } from './useReleasingSharedObjectWithLifecycle';
 
 export function useVideoPlayer(
   source: VideoSource,
   setup?: (player: VideoPlayer) => void
 ): VideoPlayer {
   const parsedSource = typeof source === 'string' ? { uri: source } : source;
+  const sourceKey = JSON.stringify(source);
 
-  return useMemo(() => {
-    const player = new VideoPlayerWeb(parsedSource);
-    setup?.(player);
-    return player;
-  }, [JSON.stringify(source)]);
+  return useReleasingSharedObjectWithLifecycle<VideoPlayer>(
+    {
+      factory: () => {
+        const player = new VideoPlayerWeb(parsedSource);
+        setup?.(player);
+        return player;
+      },
+      shouldRecreate: () => false,
+      update: (player) => {
+        player.replaceAsync(parsedSource).catch((error) => {
+          console.error('expo-video: Failed to replace video source:', error);
+        });
+      },
+    },
+    [sourceKey]
+  );
 }
 
 export function getSourceUri(source?: VideoSource): string | null {
