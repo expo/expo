@@ -10,7 +10,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
 
-The app works — now make it feel finished. In this chapter, you'll polish the details users notice without realizing it: the status bar, the splash screen, and the app icon.
+The app works. Now make it feel finished. In this chapter, you'll polish the details users notice without realizing it: the status bar, the splash screen, and the app icon.
 
 <Step label="1">
 
@@ -42,9 +42,9 @@ The asset pack you downloaded earlier includes an app icon and a splash screen i
 Set the app's icon to assets/images/icon.png, and configure the splash screen using the expo-splash-screen config plugin so it shows assets/images/splash-icon.png centered on a #25292e background on Android, iOS, and web.
 ```
 
-**What you should see**: these settings live in the app's configuration, so restart the development server to apply them — press <kbd>Ctrl</kbd> + <kbd>C</kbd> in the terminal, run `npx expo start` again, and reopen the app from Expo Go. You'll briefly see the splash screen while the project loads.
+**What you should see**: these settings live in the app's configuration, so restart the development server to apply them: press <kbd>Ctrl</kbd> + <kbd>C</kbd> in the terminal, run `npx expo start` again, and reopen the app from Expo Go. You'll briefly see the splash screen while the project loads.
 
-One caveat: the app icon on your home screen won't change, because you're running your project inside Expo Go, which is its own app with its own icon. Your icon takes over when you create a standalone build of your app — see [development builds](/develop/development-builds/introduction/) when you're ready for that step.
+One caveat: the app icon on your home screen won't change, because you're running your project inside Expo Go, which is its own app with its own icon. Your icon takes over when you create a standalone build of your app. See [development builds](/develop/development-builds/introduction/) when you're ready for that step.
 
 </Step>
 
@@ -52,7 +52,7 @@ One caveat: the app icon on your home screen won't change, because you're runnin
 
 ## You built an app
 
-Take a second to appreciate what happened here: you set up a development environment from nothing, then directed an AI agent to build a real app with navigation, photo picking, gesture-driven stickers, and saving — for Android, iOS, and the web — without writing code.
+Take a second to appreciate what happened here: you set up a development environment from nothing, then directed an AI agent to build a real app with navigation, photo picking, gesture-driven stickers, and saving (for Android, iOS, and the web) without writing code.
 
 More importantly, you learned the loop: prompt, build, verify, re-prompt. That loop doesn't end with this tutorial. Try it on your own ideas right now:
 
