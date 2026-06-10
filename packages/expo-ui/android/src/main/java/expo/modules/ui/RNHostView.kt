@@ -171,7 +171,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
  * A thin FrameLayout that intercepts touch events and dispatches them to JS via
  * JSTouchDispatcher/JSPointerDispatcher, replicating the pattern from React Native's
  * DialogRootViewGroup in ReactModalHostView.
- * Implements NestedScrollingChild3 to forward scroll events to the parent compose. Since compose can only listen to NestedScrollingChild3 events
+ * Implements NestedScrollingChild3 to forward scroll events up to the parent Compose view, because Compose only listens for NestedScrollingChild3 nested-scroll events.
  */
 private class TouchDispatchingRootViewGroup(
   context: Context
