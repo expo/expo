@@ -7,7 +7,6 @@
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <stdexcept>
 #include <string>
 #include <unordered_map>
 
@@ -25,19 +24,6 @@ namespace expo::widgets {
 
   void throwRuntimeException(const std::string &message) {
     jni::throwNewJavaException("java/lang/RuntimeException", message.c_str());
-  }
-
-  jsi::Value parseJson(jsi::Runtime &rt, const std::string &json) {
-    auto jsonObject = rt.global().getPropertyAsObject(rt, "JSON");
-    auto parse = jsonObject.getPropertyAsFunction(rt, "parse");
-    return parse.call(rt, jsi::String::createFromUtf8(rt, json));
-  }
-
-  jsi::Value parseJsonOrUndefined(jsi::Runtime &rt, const std::optional<std::string> &json) {
-    if (!json.has_value()) {
-      return jsi::Value::undefined();
-    }
-    return parseJson(rt, *json);
   }
 
   jsi::Value readableMapToValue(
@@ -66,8 +52,8 @@ namespace expo::widgets {
       runtime = facebook::hermes::makeHermesRuntime(config);
     }
 
-    static jobject initHybrid(JNIEnv *, jclass) {
-      return makeCxxInstance().release();
+    static jni::local_ref<WidgetsHermesRuntime::jhybriddata> initHybrid(jni::alias_ref<jhybridobject> clazz) {
+      return makeCxxInstance();
     }
 
     static void registerNatives() {
@@ -94,14 +80,14 @@ namespace expo::widgets {
 
     jni::local_ref<react::ReadableNativeMap::jhybridobject> nativeRender(
       const jni::alias_ref<jstring> &layout,
-      const jni::alias_ref<jstring> &propsJson,
+      const jni::alias_ref<react::ReadableNativeMap::javaobject> &props,
       const jni::alias_ref<react::ReadableNativeMap::javaobject> &environment
     ) {
       try {
         std::scoped_lock lock(mutex);
         return renderWithFunction(
           layout->toStdString(),
-          jstringToOptionalString(propsJson),
+          props,
           environment
         );
       } catch (const jsi::JSError &error) {
@@ -132,7 +118,7 @@ namespace expo::widgets {
 
     jni::local_ref<react::ReadableNativeMap::jhybridobject> renderWithFunction(
       const std::string &layout,
-      const std::optional<std::string> &propsJson,
+      const jni::alias_ref<react::ReadableNativeMap::javaobject> &propsMap,
       const jni::alias_ref<react::ReadableNativeMap::javaobject> &environmentMap
     ) {
       auto &rt = *runtime;
@@ -140,7 +126,7 @@ namespace expo::widgets {
 
       rt.global().setProperty(rt, "__expoWidgetLayout", jsi::Value(rt, *layoutCache.at(layout)));
 
-      auto props = parseJsonOrUndefined(rt, propsJson);
+      auto props = readableMapToValue(rt, propsMap);
       auto environment = readableMapToValue(rt, environmentMap);
       jsi::Value args[] = {std::move(props), std::move(environment)};
       const jsi::Value *argsPtr = args;

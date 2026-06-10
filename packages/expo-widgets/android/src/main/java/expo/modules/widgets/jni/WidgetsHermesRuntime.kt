@@ -14,18 +14,16 @@ internal class WidgetsHermesRuntime : Closeable {
     nativeEvaluateBundle(script, "ExpoWidgets.bundle")
   }
 
-  fun render(layout: String, propsJson: String?, environment: ReadableNativeMap): ReadableNativeMap {
-    return nativeRender(layout, propsJson, environment)
+  fun render(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap {
+    return nativeRender(layout, props, environment)
   }
 
   override fun close() {
-    if (mHybridData.isValid) {
-      mHybridData.resetNative()
-    }
+    mHybridData.resetNative()
   }
 
   private external fun nativeEvaluateBundle(script: String, sourceUrl: String)
-  private external fun nativeRender(layout: String, propsJson: String?, environment: ReadableNativeMap): ReadableNativeMap
+  private external fun nativeRender(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap
 
   companion object {
     init {

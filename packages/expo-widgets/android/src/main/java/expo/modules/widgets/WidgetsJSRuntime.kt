@@ -9,8 +9,17 @@ internal object WidgetsJSRuntime {
   private var runtime: WidgetsHermesRuntime? = null
 
   @Synchronized
-  fun render(context: Context, layout: String): ReadableMap {
-    return getRuntime(context).render(layout, null, Arguments.makeNativeMap(emptyMap()))
+  fun render(
+    context: Context,
+    layout: String,
+    props: Map<String, Any?>?,
+    environment: Map<String, Any?>
+  ): ReadableMap {
+    return getRuntime(context).render(
+      layout,
+      Arguments.makeNativeMap(props),
+      Arguments.makeNativeMap(environment)
+    )
   }
 
   private fun getRuntime(context: Context): WidgetsHermesRuntime {

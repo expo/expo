@@ -1,18 +1,10 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-buildscript {
-  repositories {
-    google()
-    mavenCentral()
-  }
-  dependencies {
-    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
-  }
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+  id 'org.jetbrains.kotlin.plugin.compose' version "$kotlinVersion"
 }
-
-apply plugin: 'com.android.library'
-apply plugin: 'expo-module-gradle-plugin'
-apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'expo.modules.widgets'
 version = '56.0.15'
@@ -47,8 +39,13 @@ android {
 
     externalNativeBuild {
       cmake {
+        def cppArguments = [
+          "-DANDROID_STL=c++_shared",
+          "-DREACT_NATIVE_DIR=${expoModule.reactNativeDir}",
+        ]
+
         abiFilters(*reactNativeArchitectures())
-        arguments "-DANDROID_STL=c++_shared"
+        arguments(*cppArguments)
       }
     }
   }

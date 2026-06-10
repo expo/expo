@@ -5,22 +5,11 @@ project(expo-widgets)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(
-  folly_FLAGS
-  -DFOLLY_NO_CONFIG=1
-  -DFOLLY_HAVE_CLOCK_GETTIME=1
-  -DFOLLY_USE_LIBCPP=1
-  -DFOLLY_CFG_NO_COROUTINES=1
-  -DFOLLY_MOBILE=1
-  -DFOLLY_HAVE_RECVMMSG=1
-  -DFOLLY_HAVE_PTHREAD=1
-  -DFOLLY_HAVE_XSI_STRERROR_R=1
-)
+include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
 
 find_package(ReactAndroid REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
 find_package(hermes-engine REQUIRED CONFIG)
-find_library(LOG_LIB log)
 
 add_library(
   expo-widgets
@@ -34,6 +23,10 @@ target_compile_options(
   ${folly_FLAGS}
   -frtti
   -fexceptions
+  --std=c++20
+  -O2
+  -Wall
+  -fstack-protector-all
 )
 
 target_link_libraries(
@@ -42,5 +35,4 @@ target_link_libraries(
   ReactAndroid::reactnative
   fbjni::fbjni
   hermes-engine::hermesvm
-  ${LOG_LIB}
 )
