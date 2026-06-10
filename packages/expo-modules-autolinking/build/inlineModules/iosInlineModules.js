@@ -21,6 +21,6 @@ function isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets, }) {
         return false;
     }
     const targetName = match[1];
-    return inlineModulesTargets.targets.find((t) => t === targetName) !== undefined;
+    return targetName !== undefined && inlineModulesTargets.targets.includes(targetName);
 }
 //# sourceMappingURL=iosInlineModules.js.map

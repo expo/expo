@@ -13,6 +13,7 @@ import {
   getKotlinFileNameWithItsPackage,
   inlineModuleFileNameInformation,
 } from '../inlineModules/inlineModules';
+import { isTargetInInlineModulesTargets } from '../inlineModules/iosInlineModules';
 
 jest.mock('fs', () => require('memfs').fs);
 jest.mock('fs/promises', () => require('memfs').fs.promises);
@@ -263,5 +264,73 @@ describe('androidInlineModules.ts', () => {
       expect(content).toContain('some.simple.package.SimpleModule.class, "SimpleModule"');
       expect(content).toContain('other.package.SimpleView.class, "SimpleView"');
     });
+  });
+});
+
+describe('iosInlineModules.ts', () => {
+  it('should return true if inlineModulesTargets.all is true, regardless of the path', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-expo56c/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { all: true, targets: [] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(true);
+  });
+
+  it('should return true if all is false but the extracted target is in the targets array', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-ExpoWidgetsTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = {
+      all: false,
+      targets: ['SomeOtherTarget', 'ExpoWidgetsTarget'],
+    };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(true);
+  });
+
+  it('should return false if all is false and the targets array is empty', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-expo56c/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { all: false, targets: [] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
+  });
+
+  it('should return false if the targets array contains items but not the extracted target name', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-ExpoWidgetsTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { all: false, targets: ['expo56c', 'SomeOtherTarget'] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
+  });
+
+  it('should return false if the path format does not match the expected Pods layout', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/MyTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { all: false, targets: ['MyTarget'] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
+  });
+
+  it("should return false if the path doesn't end with ExpoModulesProvider.swift", () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-ExpoWidgetsTarget/SomeOtherFile.swift';
+    const inlineModulesTargets = { all: false, targets: ['ExpoWidgetsTarget'] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
+  });
+
+  it('should return false if the target matches but has a different casing structure', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-ExpoWidgetsTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { all: false, targets: ['expowidgetstarget'] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
   });
 });

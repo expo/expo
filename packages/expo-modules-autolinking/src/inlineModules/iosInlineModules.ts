@@ -31,5 +31,5 @@ export function isTargetInInlineModulesTargets({
     return false;
   }
   const targetName = match[1];
-  return inlineModulesTargets.targets.find((t) => t === targetName) !== undefined;
+  return targetName !== undefined && inlineModulesTargets.targets.includes(targetName);
 }
