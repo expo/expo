@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - fix race condition between db inserts ([#46702](https://github.com/expo/expo/pull/46702) by [@Ubax](https://github.com/Ubax))
+- [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
