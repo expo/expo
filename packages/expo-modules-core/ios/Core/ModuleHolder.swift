@@ -78,6 +78,19 @@ public final class ModuleHolder {
   }
 
   @JavaScriptActor
+  func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
+    if javaScriptObject == nil {
+      javaScriptObject = createJavaScriptModuleObject()
+    }
+    // Creating the object can still fail (e.g. the app context has been destroyed), in which case
+    // there is nothing to emit to and we behave like `getJavaScriptValue()` by returning `nil`.
+    if javaScriptObject == nil {
+      return nil
+    }
+    return try body(javaScriptObject!)
+  }
+
+  @JavaScriptActor
   func getJavaScriptValue() -> JavaScriptValue? {
     if javaScriptObject == nil {
       javaScriptObject = createJavaScriptModuleObject()
