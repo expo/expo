@@ -58,6 +58,10 @@ function validateWidget(widget) {
     for (const family of supportedFamilies) {
         assertWidgetFamily(family);
     }
+    const initialLayout = widget.ios?.initialLayout;
+    if (initialLayout != null && path.isAbsolute(initialLayout)) {
+        throw new Error(`Invalid initialLayout for ${JSON.stringify(widget.name)}: must be relative to the project root.`);
+    }
     const configuration = widget.ios?.configuration ?? widget.configuration;
     if (configuration) {
         for (const [paramName, param] of Object.entries(configuration.parameters)) {
@@ -100,9 +104,16 @@ const withWidgetSourceFiles = (config, { widgets, targetName, onFilesGenerated, 
             };
             fs.writeFileSync(entitlementsPath, plist_1.default.build(entitlementsContent));
             const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory, config.ios?.version ?? config.version ?? '1.0', config.ios?.buildNumber ?? '1', existingInfoPlist);
+            const layoutRegistryConfigPath = createLayoutRegistryConfig(widgets, targetDirectory);
             const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
             const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(widget, targetDirectory));
-            onFilesGenerated([entitlementsPath, infoPlistPath, indexSwiftPath, ...widgetSwiftPaths]);
+            onFilesGenerated([
+                entitlementsPath,
+                infoPlistPath,
+                layoutRegistryConfigPath,
+                indexSwiftPath,
+                ...widgetSwiftPaths,
+            ]);
             return config;
         },
     ]);
@@ -134,6 +145,19 @@ const createWidgetSwift = (widget, targetPath) => {
     const widgetFilePath = path.join(targetPath, `${widget.name}.swift`);
     fs.writeFileSync(widgetFilePath, widgetSwift(widget));
     return widgetFilePath;
+};
+const createLayoutRegistryConfig = (widgets, targetPath) => {
+    const configPath = path.join(targetPath, 'ExpoWidgetsLayoutRegistry.config.json');
+    const config = {
+        widgets: widgets
+            .filter((widget) => widget.ios?.initialLayout != null)
+            .map((widget) => ({
+            name: widget.name,
+            initialLayout: widget.ios?.initialLayout,
+        })),
+    };
+    fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
+    return configPath;
 };
 const createInfoPlist = (groupIdentifier, targetPath, marketingVersion, bundleVersion, existingInfoPlist) => {
     const infoPlistPath = `${targetPath}/Info.plist`;
@@ -325,8 +349,7 @@ ${Object.entries(configuration?.parameters ?? {})
   }
 
   public var body: some View {
-    if let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\\(entry.name)_layout"),
-       !layout.isEmpty {
+    if let layout = WidgetsLayoutRegistry.layout(for: entry.name) {
       let node = evaluateLayout(layout: layout, props: entry.props, environment: widgetEnvironment)
       WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
     } else {
