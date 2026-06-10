@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
+import { type AppleAutolinkContext, appleAutolinkConditionMet } from './autolinkCondition';
 import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { getIosInlineModulesClassNames } from '../../inlineModules/iosInlineModules';
 import type {
@@ -29,11 +30,22 @@ export function getConfiguration(
 
 const indent = '  ';
 
-/** Find all *.podspec files in top-level directories */
-async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
-  const configPodspecPaths = revision.config?.applePodspecPaths();
-  if (configPodspecPaths && configPodspecPaths.length) {
-    return configPodspecPaths;
+/**
+ * Returns the podspec paths to link for a module. When the module declares podspec
+ * entries, conditional entries (`autolinkWhen`) are filtered out unless their condition
+ * is met; otherwise all *.podspec files in the top-level directories are returned.
+ */
+async function findPodspecFiles(
+  revision: PackageRevision,
+  context: AppleAutolinkContext
+): Promise<string[]> {
+  const podspecEntries = revision.config?.applePodspecEntries();
+  if (podspecEntries && podspecEntries.length) {
+    return podspecEntries
+      .filter(
+        (entry) => !entry.autolinkWhen || appleAutolinkConditionMet(entry.autolinkWhen, context)
+      )
+      .map((entry) => entry.path);
   } else {
     return await listFilesInDirectories(revision.path, (basename) => basename.endsWith('.podspec'));
   }
@@ -54,9 +66,16 @@ export function getSwiftModuleNames(
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
-  extraOutput: { flags?: Record<string, any> }
+  extraOutput: {
+    flags?: Record<string, any>;
+    resolvedDependencyNames?: Set<string>;
+    commandRoot?: string;
+  }
 ): Promise<ModuleDescriptorIos | null> {
-  const podspecFiles = await findPodspecFiles(revision);
+  const podspecFiles = await findPodspecFiles(revision, {
+    resolvedDependencyNames: extraOutput.resolvedDependencyNames,
+    commandRoot: extraOutput.commandRoot,
+  });
   if (!podspecFiles.length) {
     return null;
   }

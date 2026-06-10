@@ -138,7 +138,6 @@ module Expo
       }
 
       Expo::PrecompiledModules.register_external_pods(@podfile, @target_definition, project_directory)
-      Expo::PrecompiledModules.register_companion_pods(@podfile, @target_definition, project_directory, tests_only: tests_only)
 
       self
     end

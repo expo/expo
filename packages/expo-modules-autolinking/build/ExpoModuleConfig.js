@@ -106,10 +106,20 @@ class ExpoModuleConfig {
         return this.getAppleConfig()?.reactDelegateHandlers ?? [];
     }
     /**
-     * Returns podspec paths defined by the module author.
+     * Returns podspec entries defined by the module author, normalizing bare string paths
+     * into `{ path }` objects. Entries may carry an `autolinkWhen` condition that gates
+     * whether the podspec is linked.
+     */
+    applePodspecEntries() {
+        return arrayize(this.getAppleConfig()?.podspecPath).map((entry) => typeof entry === 'string' ? { path: entry } : entry);
+    }
+    /**
+     * Returns all podspec paths defined by the module author, regardless of any
+     * `autolinkWhen` condition. Conditional filtering happens at resolve time; this getter
+     * intentionally returns every declared path (e.g. for overlap detection).
      */
     applePodspecPaths() {
-        return arrayize(this.getAppleConfig()?.podspecPath);
+        return this.applePodspecEntries().map((entry) => entry.path);
     }
     /**
      * Returns the product module names, if defined by the module author.

@@ -12,6 +12,7 @@ exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const autolinkCondition_1 = require("./autolinkCondition");
 const iosInlineModules_1 = require("../../inlineModules/iosInlineModules");
 const utils_1 = require("../../utils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
@@ -20,11 +21,17 @@ function getConfiguration(options) {
     return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
 }
 const indent = '  ';
-/** Find all *.podspec files in top-level directories */
-async function findPodspecFiles(revision) {
-    const configPodspecPaths = revision.config?.applePodspecPaths();
-    if (configPodspecPaths && configPodspecPaths.length) {
-        return configPodspecPaths;
+/**
+ * Returns the podspec paths to link for a module. When the module declares podspec
+ * entries, conditional entries (`autolinkWhen`) are filtered out unless their condition
+ * is met; otherwise all *.podspec files in the top-level directories are returned.
+ */
+async function findPodspecFiles(revision, context) {
+    const podspecEntries = revision.config?.applePodspecEntries();
+    if (podspecEntries && podspecEntries.length) {
+        return podspecEntries
+            .filter((entry) => !entry.autolinkWhen || (0, autolinkCondition_1.appleAutolinkConditionMet)(entry.autolinkWhen, context))
+            .map((entry) => entry.path);
     }
     else {
         return await (0, utils_1.listFilesInDirectories)(revision.path, (basename) => basename.endsWith('.podspec'));
@@ -39,7 +46,10 @@ function getSwiftModuleNames(pods, swiftModuleNames) {
 }
 /** Resolves module search result with additional details required for iOS platform. */
 async function resolveModuleAsync(packageName, revision, extraOutput) {
-    const podspecFiles = await findPodspecFiles(revision);
+    const podspecFiles = await findPodspecFiles(revision, {
+        resolvedDependencyNames: extraOutput.resolvedDependencyNames,
+        commandRoot: extraOutput.commandRoot,
+    });
     if (!podspecFiles.length) {
         return null;
     }

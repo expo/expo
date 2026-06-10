@@ -8,14 +8,26 @@ import type {
   SupportedPlatform,
 } from '../types';
 
+interface ResolveModulesContext {
+  /** Resolved native-module dependency names, used to gate conditional (`autolinkWhen`) podspecs. */
+  resolvedDependencyNames?: Set<string>;
+  /** Native project directory (e.g. `ios/`) where `Podfile.properties.json` lives. */
+  commandRoot?: string;
+}
+
 /** Resolves search results to a list of platform-specific configuration. */
 export async function resolveModulesAsync(
   searchResults: SearchResults,
-  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform }
+  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform },
+  context: ResolveModulesContext = {}
 ): Promise<ModuleDescriptor[]> {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
-  // Additional output property for Cocoapods flags
-  const extraOutput = { flags: autolinkingOptions.flags };
+  // Additional output property for Cocoapods flags and conditional-podspec resolution.
+  const extraOutput = {
+    flags: autolinkingOptions.flags,
+    resolvedDependencyNames: context.resolvedDependencyNames,
+    commandRoot: context.commandRoot,
+  };
 
   const moduleDescriptorList = await taskAll(
     Object.entries(searchResults),

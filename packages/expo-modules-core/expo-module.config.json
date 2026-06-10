@@ -6,7 +6,13 @@
   "apple": {
     "podspecPath": [
       "./ExpoModulesCore.podspec",
-      "./ExpoModulesWorklets.podspec"
+      "./ExpoModulesWorklets.podspec",
+      {
+        "path": "./ExpoModulesWorkletsAdapter.podspec",
+        "autolinkWhen": {
+          "npmPackage": "react-native-worklets"
+        }
+      }
     ]
   },
   "android": {
