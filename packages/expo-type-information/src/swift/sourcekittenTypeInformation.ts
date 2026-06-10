@@ -1345,6 +1345,7 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): Expressi
 type SourceKittenPreprocessingOptions = {
   preprocessReturns?: boolean;
   mapUnicodeCharacters?: boolean;
+  runOnQueue: boolean;
 };
 
 function getSpaceIndentationCount(fileContent: string, index: number): number {
@@ -1356,6 +1357,23 @@ function getSpaceIndentationCount(fileContent: string, index: number): number {
     i += 1;
   }
   return spaceCount;
+}
+
+export function preprocessSwiftFile(
+  originalFileContent: string,
+  { preprocessReturns, runOnQueue, mapUnicodeCharacters }: SourceKittenPreprocessingOptions
+): string {
+  let fileContent = removeComments(originalFileContent);
+  if (preprocessReturns) {
+    fileContent = preprocessReturnStatements(fileContent);
+  }
+  if (runOnQueue) {
+    fileContent = preprocessRunOnQueue(fileContent);
+  }
+  if (mapUnicodeCharacters) {
+    fileContent = preprocessUnicodeCharacters(fileContent);
+  }
+  return fileContent;
 }
 
 // Preprocessing to help sourcekitten functions
@@ -1416,16 +1434,8 @@ function preprocessUnicodeCharacters(fileConent: string): string {
   });
 }
 
-export function preprocessSwiftFile(
-  originalFileContent: string,
-  { preprocessReturns, mapUnicodeCharacters }: SourceKittenPreprocessingOptions
-): string {
-  let fileContent = originalFileContent;
-  if (preprocessReturns) {
-    fileContent = preprocessReturnStatements(fileContent);
-  }
-  if (mapUnicodeCharacters) {
-    fileContent = preprocessUnicodeCharacters(fileContent);
-  }
-  return fileContent;
+function preprocessRunOnQueue(originalFileContent: string): string {
+  const regex = /\.runOnQueue\s*\([^)]*\)/g;
+  // Note that this won't work if there are nested parentheses inside the runOnQueue, e.g. .runOnQueue(function1()) won't work
+  return originalFileContent.replace(regex, '');
 }
