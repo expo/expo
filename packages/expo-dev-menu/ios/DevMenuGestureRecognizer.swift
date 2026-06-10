@@ -43,7 +43,33 @@ class DevMenuGestureRecognizer: UILongPressGestureRecognizer {
     minimumPressDuration = 0.5
     #endif
     allowableMovement = 30
+    cancelsTouchesInView = false
+    delaysTouchesBegan = false
+    delaysTouchesEnded = false
   }
+
+  // Never prevent other gesture recognizers from recognizing.
+  override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return false
+  }
+
+  override func canBePrevented(by preventingGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return false
+  }
+
+  #if !os(tvOS)
+  // Fail immediately when the initial touch count is below the required
+  // threshold. This removes the recognizer from UIKit's gesture resolution
+  // pipeline for single- and double-finger interactions (like the zoom
+  // dismiss transition), preventing it from interfering with their animations.
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+    super.touchesBegan(touches, with: event)
+    let touchCount = event.allTouches?.count ?? touches.count
+    if touchCount < numberOfTouchesRequired {
+      state = .failed
+    }
+  }
+  #endif
 }
 
 #endif
