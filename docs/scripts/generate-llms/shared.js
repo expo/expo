@@ -7,6 +7,7 @@ export const OUTPUT_DIRECTORY_NAME = 'public';
 export const BUILD_OUTPUT_DIR = 'out';
 export const DOCS_BASE_URL = 'https://docs.expo.dev';
 
+const DOCS_BASE_URL_WITH_SLASH = `${DOCS_BASE_URL}/`;
 const LLMS_FILES = [
   { filename: 'llms.txt', description: 'A list of all available documentation files' },
   {
@@ -46,6 +47,79 @@ const AGENT_INSTRUCTIONS_BLOCK_REGEX = /<AgentInstructions>[\S\s]*?<\/AgentInstr
 
 const DOC_INDEX_BLOCKQUOTE =
   '> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.';
+
+function splitUrlSuffix(url) {
+  const suffixIndex = url.search(/[?#]/);
+  if (suffixIndex === -1) {
+    return { pathname: url, suffix: '' };
+  }
+
+  return {
+    pathname: url.slice(0, suffixIndex),
+    suffix: url.slice(suffixIndex),
+  };
+}
+
+function hasFileExtension(pathname) {
+  return /\.[^/]+$/.test(pathname);
+}
+
+export function getMarkdownHref(href) {
+  if (!href || href.startsWith('#')) {
+    return href;
+  }
+
+  const { pathname, suffix } = splitUrlSuffix(href);
+  if (!pathname || hasFileExtension(pathname)) {
+    return href;
+  }
+
+  const normalizedPathname =
+    pathname === '/' ? '/index' : pathname.replace(/\/+$/g, '').replace(/^([^/])/, '/$1');
+
+  return `${normalizedPathname}.md${suffix}`;
+}
+
+export function getMarkdownUrl(href) {
+  return `${DOCS_BASE_URL}${getMarkdownHref(href)}`;
+}
+
+export function rewriteDocsLinksToMarkdown(content) {
+  let inFencedCodeBlock = false;
+
+  return content
+    .split('\n')
+    .map(line => {
+      if (/^```/.test(line)) {
+        inFencedCodeBlock = !inFencedCodeBlock;
+        return line;
+      }
+
+      if (inFencedCodeBlock) {
+        return line;
+      }
+
+      return line.replace(
+        /(!?\[[^\]\n]+\]\()([^)\s]+)((?:\s+["'][^)\n]*["'])?\))/g,
+        (match, prefix, url, suffix) => {
+          if (prefix.startsWith('!')) {
+            return match;
+          }
+
+          if (url.startsWith(DOCS_BASE_URL_WITH_SLASH)) {
+            return `${prefix}${getMarkdownUrl(url.slice(DOCS_BASE_URL.length))}${suffix}`;
+          }
+
+          if (url.startsWith('/') && !url.startsWith('//')) {
+            return `${prefix}${getMarkdownHref(url)}${suffix}`;
+          }
+
+          return match;
+        }
+      );
+    })
+    .join('\n');
+}
 
 export function stripAgentInstructions(content) {
   return content.replace(AGENT_INSTRUCTIONS_BLOCK_REGEX, '');
@@ -144,7 +218,9 @@ export function readUniqueMarkdownContent(markdownPaths, { warnOnMissing = false
       continue;
     }
 
-    const content = stripDocIndexBlockquote(stripAgentInstructions(rawContent)).trim();
+    const content = rewriteDocsLinksToMarkdown(
+      stripDocIndexBlockquote(stripAgentInstructions(rawContent))
+    ).trim();
     if (!content) {
       continue;
     }
