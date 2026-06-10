@@ -12,6 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  *   @react-navigation/bottom-tabs   → expo-router/js-tabs
  *   @react-navigation/material-top-tabs → expo-router/js-top-tabs
  *
+ * Rewritten site types: named imports, named re-exports
+ * (`export { A } from '...'`), and `jest.mock(...)`/`jest.requireActual(...)`
+ * calls with a literal module name.
+ *
  * Unsupported (no direct equivalent — throws to surface the migration step):
  *   @react-navigation/native-stack  → use the `Stack` layout from expo-router
  *   @react-navigation/drawer        → use the `Drawer` layout from expo-router
@@ -53,21 +57,24 @@ const markAsInlineType = (spec) => {
     clone.importKind = 'type';
     return clone;
 };
+const getDeclarationSite = (path, kind) => ({
+    sourceModule: path.node.source?.value,
+    line: path.node.loc?.start.line ?? '?',
+    kind,
+});
 /**
- * Collects errors for imports from packages that have no direct expo-router
- * equivalent (e.g. `@react-navigation/native-stack`, `@react-navigation/drawer`).
- * These require a structural migration to the file-based `Stack`/`Drawer`
- * layouts and cannot be rewritten automatically.
+ * Collects errors for sites referencing packages that have no direct
+ * expo-router equivalent (e.g. `@react-navigation/native-stack`,
+ * `@react-navigation/drawer`). These require a structural migration to the
+ * file-based `Stack`/`Drawer` layouts and cannot be rewritten automatically.
  */
-const collectUnsupportedPackageErrors = (filePath, paths) => {
+const collectUnsupportedPackageErrors = (filePath, sites) => {
     const errors = [];
-    for (const declarationPath of paths) {
-        const sourceModule = declarationPath.node.source.value;
-        const message = UNSUPPORTED_PACKAGES[sourceModule];
+    for (const site of sites) {
+        const message = UNSUPPORTED_PACKAGES[site.sourceModule];
         if (!message)
             continue;
-        const line = declarationPath.node.loc?.start.line ?? '?';
-        errors.push(`${filePath}:${line} - import from "${sourceModule}" cannot be migrated. ${message}`);
+        errors.push(`${filePath}:${site.line} - ${site.kind} from "${site.sourceModule}" cannot be migrated. ${message}`);
     }
     return errors;
 };
@@ -128,24 +135,75 @@ const mergeGroup = (j, groupPaths) => {
     for (const declarationPath of declarationsToRemove)
         j(declarationPath).remove();
 };
+// Module names referenced by `jest.mock('...')` / `jest.requireActual('...')`
+// must follow the rewritten imports, otherwise tests keep mocking the old
+// `@react-navigation/*` module while the code under test imports the
+// `expo-router/*` one.
+const JEST_MODULE_METHODS = new Set(['mock', 'doMock', 'requireActual', 'unmock']);
+const findJestModuleCalls = (j, root) => root
+    .find(j.CallExpression)
+    .filter((path) => {
+    const { callee } = path.node;
+    if (callee.type !== 'MemberExpression' ||
+        callee.object.type !== 'Identifier' ||
+        callee.object.name !== 'jest' ||
+        callee.property.type !== 'Identifier' ||
+        !JEST_MODULE_METHODS.has(callee.property.name)) {
+        return false;
+    }
+    const [firstArg] = path.node.arguments;
+    return (firstArg != null &&
+        (firstArg.type === 'StringLiteral' || firstArg.type === 'Literal') &&
+        typeof firstArg.value === 'string');
+})
+    .paths();
+const getCallSite = (path) => ({
+    sourceModule: path.node.arguments[0].value,
+    line: path.node.loc?.start.line ?? '?',
+    kind: 'call',
+});
+// `export { A } from '...'` can be rewritten exactly like a named import.
+// `export v from '...'` (export-default-from) cannot — same reason default
+// imports are unsupported.
+const isNamedReExport = (path) => path.node.source != null &&
+    (path.node.specifiers ?? []).every((spec) => spec.type === 'ExportSpecifier');
 const transform = (fileInfo, api) => {
     const j = api.jscodeshift;
     const root = j(fileInfo.source);
-    const unsupportedPackagePaths = root
-        .find(j.ImportDeclaration)
-        .filter((path) => path.node.source.value in UNSUPPORTED_PACKAGES)
+    const importPaths = root.find(j.ImportDeclaration).paths();
+    const reExportPaths = root
+        .find(j.ExportNamedDeclaration)
+        .filter((path) => path.node.source != null)
         .paths();
-    const unsupportedPackageErrors = collectUnsupportedPackageErrors(fileInfo.path, unsupportedPackagePaths);
+    const exportAllPaths = root.find(j.ExportAllDeclaration).paths();
+    const jestCallPaths = findJestModuleCalls(j, root);
+    const allSites = [
+        ...importPaths.map((path) => getDeclarationSite(path, 'import')),
+        ...reExportPaths.map((path) => getDeclarationSite(path, 'export')),
+        ...exportAllPaths.map((path) => getDeclarationSite(path, 'export')),
+        ...jestCallPaths.map(getCallSite),
+    ];
+    const unsupportedPackageErrors = collectUnsupportedPackageErrors(fileInfo.path, allSites);
     if (unsupportedPackageErrors.length) {
         printErrorBlock('Migration required — manual change needed', unsupportedPackageErrors);
     }
-    const mappablePaths = root
-        .find(j.ImportDeclaration)
-        .filter((path) => path.node.source.value in IMPORT_MAP)
-        .paths();
-    if (mappablePaths.length === 0)
+    if (!allSites.some((site) => site.sourceModule in IMPORT_MAP))
         return undefined;
+    const mappablePaths = importPaths.filter((path) => path.node.source.value in IMPORT_MAP);
     const errors = collectUnsupportedImportStyleErrors(fileInfo.path, mappablePaths);
+    // `export * from '...'` re-exports the source module's full namespace, which
+    // may not match the expo-router entry point shape — same reason namespace
+    // imports are unsupported.
+    for (const path of exportAllPaths) {
+        const sourceModule = path.node.source.value;
+        if (!(sourceModule in IMPORT_MAP))
+            continue;
+        errors.push([
+            `${fileInfo.path}:${path.node.loc?.start.line ?? '?'} - namespace re-export (export * from "${sourceModule}") is not supported.`,
+            'Only named imports and named re-exports can be rewritten by this codemod.',
+            'Replace it with named re-exports and re-run the codemod.',
+        ].join('\n'));
+    }
     if (errors.length) {
         printErrorBlock('Unsupported import style — manual change needed', errors);
     }
@@ -165,6 +223,24 @@ const transform = (fileInfo, api) => {
         }
         const sourceModule = path.node.source.value;
         path.node.source.value = IMPORT_MAP[sourceModule];
+        didRewrite = true;
+    }
+    for (const path of reExportPaths) {
+        const source = path.node.source;
+        if (source == null)
+            continue;
+        const sourceModule = source.value;
+        if (!(sourceModule in IMPORT_MAP) || !isNamedReExport(path))
+            continue;
+        source.value = IMPORT_MAP[sourceModule];
+        didRewrite = true;
+    }
+    for (const path of jestCallPaths) {
+        const firstArg = path.node.arguments[0];
+        const replacement = IMPORT_MAP[firstArg.value];
+        if (replacement == null)
+            continue;
+        firstArg.value = replacement;
         didRewrite = true;
     }
     if (!didRewrite) {

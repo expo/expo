@@ -605,3 +605,98 @@ describe('mixed files: migratable imports are rewritten even alongside unsupport
     expect(output).toContain(`import Stack from '@react-navigation/stack'`);
   });
 });
+
+describe('re-exports', () => {
+  test('rewrites a named re-export', () => {
+    const output = run(`export { NavigationContainer } from '@react-navigation/native';`);
+    expect(output).toBe(`export { NavigationContainer } from "expo-router/react-navigation";`);
+  });
+
+  test('rewrites a type-only named re-export', () => {
+    const output = runTS(`export type { NavigationProp } from '@react-navigation/native';`);
+    expect(output).toBe(`export type { NavigationProp } from "expo-router/react-navigation";`);
+  });
+
+  test('rewrites a named re-export alongside a named import of the same module', () => {
+    const input = [
+      `import { useNavigation } from '@react-navigation/native';`,
+      `export { NavigationContainer } from '@react-navigation/native';`,
+    ].join('\n');
+    const output = run(input);
+    expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);
+    expect(output).toContain(`export { NavigationContainer } from "expo-router/react-navigation"`);
+    expect(output).not.toContain('@react-navigation');
+  });
+
+  test('reports a namespace re-export (export *) and leaves it untouched', () => {
+    const input = [
+      `import { useNavigation } from '@react-navigation/native';`,
+      `export * from '@react-navigation/native';`,
+    ].join('\n');
+    const output = run(input);
+    expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);
+    expect(output).toContain(`export * from '@react-navigation/native'`);
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls[0][0]).toContain('namespace re-export');
+  });
+
+  test('reports a re-export from an unsupported package and leaves it untouched', () => {
+    const input = [
+      `import { useNavigation } from '@react-navigation/native';`,
+      `export { createNativeStackNavigator } from '@react-navigation/native-stack';`,
+    ].join('\n');
+    const output = run(input);
+    expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);
+    expect(output).toContain(
+      `export { createNativeStackNavigator } from '@react-navigation/native-stack'`
+    );
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls[0][0]).toContain('@react-navigation/native-stack');
+  });
+});
+
+describe('jest module calls', () => {
+  test('rewrites jest.mock with a factory', () => {
+    const input = [
+      `import { useNavigation } from '@react-navigation/native';`,
+      `jest.mock('@react-navigation/native', () => ({ useNavigation: jest.fn() }));`,
+    ].join('\n');
+    const output = run(input);
+    expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);
+    expect(output).toContain(`jest.mock("expo-router/react-navigation"`);
+    expect(output).not.toContain('@react-navigation');
+  });
+
+  test('rewrites jest.requireActual inside a mock factory', () => {
+    const input = [
+      `jest.mock('@react-navigation/native', () => ({`,
+      `  ...jest.requireActual('@react-navigation/native'),`,
+      `  useNavigation: jest.fn(),`,
+      `}));`,
+    ].join('\n');
+    const output = run(input);
+    expect(output).toContain(`jest.mock("expo-router/react-navigation"`);
+    expect(output).toContain(`jest.requireActual("expo-router/react-navigation")`);
+  });
+
+  test('reports jest.mock of an unsupported package and leaves it untouched', () => {
+    const input = [
+      `import { useNavigation } from '@react-navigation/native';`,
+      `jest.mock('@react-navigation/native-stack', () => ({}));`,
+    ].join('\n');
+    const output = run(input);
+    expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);
+    expect(output).toContain(`jest.mock('@react-navigation/native-stack'`);
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls[0][0]).toContain('@react-navigation/native-stack');
+  });
+
+  test('leaves unrelated jest.mock calls untouched', () => {
+    const input = [
+      `import { useNavigation } from '@react-navigation/native';`,
+      `jest.mock('./my-local-module', () => ({}));`,
+    ].join('\n');
+    const output = run(input);
+    expect(output).toContain(`jest.mock('./my-local-module'`);
+  });
+});

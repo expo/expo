@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `sdk-56-expo-router-react-navigation-replace` silently skipping migratable `@react-navigation/*` imports when a file also contained an unsupported import (e.g. `@react-navigation/native-stack`). Supported named imports are now migrated while unsupported ones are still reported for manual migration. ([#46679](https://github.com/expo/expo/pull/46679) by [@ahmdshrif](https://github.com/ahmdshrif))
+- Fix `sdk-56-expo-router-react-navigation-replace` silently skipping named re-exports (`export { A } from '@react-navigation/...'`) and `jest.mock`/`jest.requireActual` calls referencing `@react-navigation/*` modules. These are now rewritten like named imports; `export *` re-exports are reported for manual migration. ([#46679](https://github.com/expo/expo/pull/46679) by [@ahmdshrif](https://github.com/ahmdshrif))
 
 ### 💡 Others
 
