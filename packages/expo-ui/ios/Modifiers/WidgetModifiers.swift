@@ -61,7 +61,7 @@ internal struct ActivityBackgroundTintModifier: ViewModifier, Record {
   @Field var color: Color?
 
   func body(content: Content) -> some View {
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
     content.activityBackgroundTint(color)
 #else
     content
