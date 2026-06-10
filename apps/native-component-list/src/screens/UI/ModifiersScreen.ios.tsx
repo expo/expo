@@ -70,6 +70,7 @@ import {
   tag,
   font,
   dynamicTypeSize,
+  imageScale,
   lineLimit,
   contentShape,
   shapes,
@@ -493,6 +494,23 @@ export default function ModifiersScreen() {
                   systemName="star.fill"
                   modifiers={[resizable(), frame({ width: 64, height: 64 })]}
                 />
+              </HStack>
+            </VStack>
+          </Section>
+          {/* Image scale */}
+          <Section title="Image scale">
+            <VStack alignment="leading" spacing={8}>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('small')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>small</Text>
+              </HStack>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('medium')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>medium</Text>
+              </HStack>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('large')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>large</Text>
               </HStack>
             </VStack>
           </Section>
