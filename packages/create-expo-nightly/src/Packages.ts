@@ -1,10 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { mergeJsonFilesAsync, readJsonFileAsync } from './JsonFile.js';
+import { readJsonFileAsync } from './JsonFile.js';
 import { runAsync } from './Processes.js';
-
-const cachedPackages: Package[] | null = null;
 
 const EXCLUDE_PACKAGES = [
   '@expo/fingerprint',
