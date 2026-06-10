@@ -1,42 +1,4 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorToastContainer = ErrorToastContainer;
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -44,26 +6,26 @@ exports.ErrorToastContainer = ErrorToastContainer;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const react_1 = __importStar(require("react"));
-const ErrorToast_module_css_1 = __importDefault(require("./ErrorToast.module.css"));
-const LogBoxData = __importStar(require("../Data/LogBoxData"));
-const LogBoxLog_1 = require("../Data/LogBoxLog");
-const Message_1 = require("../overlay/Message");
-const parseUnexpectedThrownValue_1 = require("../utils/parseUnexpectedThrownValue");
-require("../overlay/Overlay.module.css");
-function ErrorToastContainer() {
+import React, { useEffect, useCallback, useMemo } from 'react';
+import styles from './ErrorToast.module.css';
+import * as LogBoxData from '../Data/LogBoxData';
+import { useLogs } from '../Data/LogBoxLog';
+import { LogBoxMessage } from '../overlay/Message';
+import { parseUnexpectedThrownValue } from '../utils/parseUnexpectedThrownValue';
+import '../overlay/Overlay.module.css';
+export function ErrorToastContainer() {
     useRejectionHandler();
-    const { logs, isDisabled } = (0, LogBoxLog_1.useLogs)();
+    const { logs, isDisabled } = useLogs();
     if (!logs.length || isDisabled) {
         return null;
     }
-    return react_1.default.createElement(ErrorToastStack, { logs: logs });
+    return _jsx(ErrorToastStack, { logs: logs });
 }
 function ErrorToastStack({ logs }) {
-    const onDismissErrors = (0, react_1.useCallback)(() => {
+    const onDismissErrors = useCallback(() => {
         LogBoxData.clearErrors();
     }, []);
-    const setSelectedLog = (0, react_1.useCallback)((index) => {
+    const setSelectedLog = useCallback((index) => {
         LogBoxData.setSelectedLog(index);
     }, []);
     function openLog(log) {
@@ -73,13 +35,13 @@ function ErrorToastStack({ logs }) {
         }
         setSelectedLog(index);
     }
-    const errors = (0, react_1.useMemo)(() => logs.filter((log) => log.level === 'error' || log.level === 'fatal'), [logs]);
+    const errors = useMemo(() => logs.filter((log) => log.level === 'error' || log.level === 'fatal'), [logs]);
     const lastError = errors[errors.length - 1];
-    return (react_1.default.createElement("div", { className: ErrorToast_module_css_1.default.container }, lastError != null && (react_1.default.createElement(ErrorToast, { log: lastError, level: "error", totalLogCount: errors.length, onPressOpen: () => openLog(lastError), onPressDismiss: onDismissErrors }))));
+    return (_jsx("div", { className: styles.container, children: lastError != null && (_jsx(ErrorToast, { log: lastError, level: "error", totalLogCount: errors.length, onPressOpen: () => openLog(lastError), onPressDismiss: onDismissErrors })) }));
 }
 function useSymbolicatedLog(log) {
     // Eagerly symbolicate so the stack is available when pressing to inspect.
-    (0, react_1.useEffect)(() => {
+    useEffect(() => {
         LogBoxData.symbolicateLogLazy('stack', log);
         LogBoxData.symbolicateLogLazy('component', log);
     }, [log]);
@@ -87,27 +49,20 @@ function useSymbolicatedLog(log) {
 function ErrorToast(props) {
     const { totalLogCount, log } = props;
     useSymbolicatedLog(log);
-    return (react_1.default.createElement("div", { className: ErrorToast_module_css_1.default.toast, onClick: props.onPressOpen, role: "button", tabIndex: 0 },
-        react_1.default.createElement(Count, { count: totalLogCount }),
-        react_1.default.createElement("span", { className: ErrorToast_module_css_1.default.message }, log.message && react_1.default.createElement(Message_1.LogBoxMessage, { maxLength: 40, message: log.message })),
-        react_1.default.createElement(Dismiss, { onPress: props.onPressDismiss })));
+    return (_jsxs("div", { className: styles.toast, onClick: props.onPressOpen, role: "button", tabIndex: 0, children: [_jsx(Count, { count: totalLogCount }), _jsx("span", { className: styles.message, children: log.message && _jsx(LogBoxMessage, { maxLength: 40, message: log.message }) }), _jsx(Dismiss, { onPress: props.onPressDismiss })] }));
 }
 function Count({ count }) {
-    return (react_1.default.createElement("div", { className: ErrorToast_module_css_1.default.count },
-        react_1.default.createElement("span", { className: ErrorToast_module_css_1.default.countText }, count <= 1 ? '!' : count)));
+    return (_jsx("div", { className: styles.count, children: _jsx("span", { className: styles.countText, children: count <= 1 ? '!' : count }) }));
 }
 function Dismiss({ onPress }) {
-    return (react_1.default.createElement("button", { className: ErrorToast_module_css_1.default.dismissButton, onClick: (e) => {
+    return (_jsx("button", { className: styles.dismissButton, onClick: (e) => {
             e.stopPropagation();
             onPress();
-        } },
-        react_1.default.createElement("div", { className: ErrorToast_module_css_1.default.dismissContent },
-            react_1.default.createElement("svg", { className: ErrorToast_module_css_1.default.dismissIcon, fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" },
-                react_1.default.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M17 7L7 17M7 7L17 17" })))));
+        }, children: _jsx("div", { className: styles.dismissContent, children: _jsx("svg", { className: styles.dismissIcon, fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: _jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M17 7L7 17M7 7L17 17" }) }) }) }));
 }
 function useStackTraceLimit(limit) {
-    const current = react_1.default.useRef(0);
-    react_1.default.useEffect(() => {
+    const current = React.useRef(0);
+    React.useEffect(() => {
         try {
             // @ts-ignore: StackTraceLimit is not defined in the Error type
             const currentLimit = Error.stackTraceLimit;
@@ -126,9 +81,9 @@ function useStackTraceLimit(limit) {
     }, [limit]);
 }
 function useRejectionHandler() {
-    const hasError = react_1.default.useRef(false);
+    const hasError = React.useRef(false);
     useStackTraceLimit(35);
-    react_1.default.useEffect(() => {
+    React.useEffect(() => {
         function onUnhandledError(ev) {
             hasError.current = true;
             const error = ev?.error;
@@ -136,8 +91,8 @@ function useRejectionHandler() {
                 // TODO: Handle non-Error objects?
                 return;
             }
-            error.componentStack = react_1.default.captureOwnerStack();
-            LogBoxData.addException((0, parseUnexpectedThrownValue_1.parseUnexpectedThrownValue)(error));
+            error.componentStack = React.captureOwnerStack();
+            LogBoxData.addException(parseUnexpectedThrownValue(error));
         }
         function onUnhandledRejection(ev) {
             hasError.current = true;
@@ -146,7 +101,7 @@ function useRejectionHandler() {
                 // TODO: Handle non-Error objects?
                 return;
             }
-            LogBoxData.addException((0, parseUnexpectedThrownValue_1.parseUnexpectedThrownValue)(reason));
+            LogBoxData.addException(parseUnexpectedThrownValue(reason));
         }
         window.addEventListener('unhandledrejection', onUnhandledRejection);
         window.addEventListener('error', onUnhandledError);
@@ -157,5 +112,5 @@ function useRejectionHandler() {
     }, []);
     return hasError;
 }
-exports.default = LogBoxData.withSubscription(ErrorToastContainer);
+export default LogBoxData.withSubscription(ErrorToastContainer);
 //# sourceMappingURL=ErrorToast.js.map

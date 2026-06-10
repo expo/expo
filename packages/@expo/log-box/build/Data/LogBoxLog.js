@@ -1,10 +1,3 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogContext = exports.LogBoxLog = void 0;
-exports.useLogs = useLogs;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -12,9 +5,9 @@ exports.useLogs = useLogs;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const react_1 = __importDefault(require("react"));
-const devServerEndpoints_1 = require("../utils/devServerEndpoints");
-class LogBoxLog {
+import React from 'react';
+import { symbolicateStackAndCacheAsync, invalidateCachedStack } from '../utils/devServerEndpoints';
+export class LogBoxLog {
     message;
     type;
     category;
@@ -96,7 +89,7 @@ class LogBoxLog {
             return this.flushCallbacks(type);
         }
         if (retry) {
-            (0, devServerEndpoints_1.invalidateCachedStack)(this.getStack(type));
+            invalidateCachedStack(this.getStack(type));
             this.handleSymbolicate(type);
         }
         else {
@@ -116,7 +109,7 @@ class LogBoxLog {
             return;
         }
         this.updateStatus(type, null, null, null);
-        (0, devServerEndpoints_1.symbolicateStackAndCacheAsync)(this.getStack(type)).then((data) => {
+        symbolicateStackAndCacheAsync(this.getStack(type)).then((data) => {
             this.updateStatus(type, null, data?.stack, data?.codeFrame);
         }, (error) => {
             this.updateStatus(type, error, null, null);
@@ -156,10 +149,9 @@ class LogBoxLog {
         }
     }
 }
-exports.LogBoxLog = LogBoxLog;
-exports.LogContext = react_1.default.createContext(null);
-function useLogs() {
-    const logs = react_1.default.use(exports.LogContext);
+export const LogContext = React.createContext(null);
+export function useLogs() {
+    const logs = React.use(LogContext);
     if (!logs) {
         throw new Error('useLogs must be used within a LogContext.Provider');
     }

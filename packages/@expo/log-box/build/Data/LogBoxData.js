@@ -6,67 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 'use client';
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setWarningFilter = setWarningFilter;
-exports.checkWarningFilter = checkWarningFilter;
-exports.reportUnexpectedLogBoxError = reportUnexpectedLogBoxError;
-exports.isLogBoxErrorMessage = isLogBoxErrorMessage;
-exports.isMessageIgnored = isMessageIgnored;
-exports._appendNewLog = _appendNewLog;
-exports.addLog = addLog;
-exports.addException = addException;
-exports.symbolicateLogNow = symbolicateLogNow;
-exports.retrySymbolicateLogNow = retrySymbolicateLogNow;
-exports.symbolicateLogLazy = symbolicateLogLazy;
-exports.clear = clear;
-exports.setSelectedLog = setSelectedLog;
-exports.clearErrors = clearErrors;
-exports.dismiss = dismiss;
-exports.getIgnorePatterns = getIgnorePatterns;
-exports.addIgnorePatterns = addIgnorePatterns;
-exports.setDisabled = setDisabled;
-exports.isDisabled = isDisabled;
-exports.observe = observe;
-exports.withSubscription = withSubscription;
-const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const LogBoxLog_1 = require("./LogBoxLog");
-const parseLogBoxLog_1 = require("./parseLogBoxLog");
-const parseErrorStack_1 = require("../utils/parseErrorStack");
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import * as React from 'react';
+import { NativeEventEmitter } from 'react-native';
+import { LogBoxLog, LogContext } from './LogBoxLog';
+import { isError, parseLogBoxException, parseLogBoxLog } from './parseLogBoxLog';
+import { parseErrorStack } from '../utils/parseErrorStack';
 let warningFilter = function (format) {
     return {
         finalFormat: format,
@@ -78,10 +23,10 @@ let warningFilter = function (format) {
         monitorSampleRate: 1,
     };
 };
-function setWarningFilter(filter) {
+export function setWarningFilter(filter) {
     warningFilter = filter;
 }
-function checkWarningFilter(format) {
+export function checkWarningFilter(format) {
     return warningFilter(format);
 }
 const observers = new Set();
@@ -98,16 +43,16 @@ function getNextState() {
         selectedLogIndex: _selectedIndex,
     };
 }
-function reportUnexpectedLogBoxError(error) {
-    if ((0, parseLogBoxLog_1.isError)(error)) {
+export function reportUnexpectedLogBoxError(error) {
+    if (isError(error)) {
         error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
     }
     addException(error);
 }
-function isLogBoxErrorMessage(message) {
+export function isLogBoxErrorMessage(message) {
     return typeof message === 'string' && message.includes(LOGBOX_ERROR_MESSAGE);
 }
-function isMessageIgnored(message) {
+export function isMessageIgnored(message) {
     for (const pattern of ignorePatterns) {
         if ((pattern instanceof RegExp && pattern.test(message)) ||
             (typeof pattern === 'string' && message.includes(pattern))) {
@@ -126,7 +71,7 @@ function handleUpdate() {
     }
 }
 /** Exposed for debugging */
-function _appendNewLog(newLog) {
+export function _appendNewLog(newLog) {
     // Don't want store these logs because they trigger a
     // state update when we add them to the store.
     if (isMessageIgnored(newLog.message.content)) {
@@ -194,14 +139,14 @@ function _appendNewLog(newLog) {
         handleUpdate();
     }
 }
-function addLog(log) {
+export function addLog(log) {
     const errorForStackTrace = new Error();
     // Parsing logs are expensive so we schedule this
     // otherwise spammy logs would pause rendering.
     setTimeout(() => {
         try {
-            const stack = (0, parseErrorStack_1.parseErrorStack)(errorForStackTrace?.stack);
-            _appendNewLog(new LogBoxLog_1.LogBoxLog({
+            const stack = parseErrorStack(errorForStackTrace?.stack);
+            _appendNewLog(new LogBoxLog({
                 level: log.level,
                 message: log.message,
                 isComponentError: !!log.componentStack?.length,
@@ -216,38 +161,38 @@ function addLog(log) {
         }
     }, 0);
 }
-function addException(error) {
+export function addException(error) {
     // Parsing logs are expensive so we schedule this
     // otherwise spammy logs would pause rendering.
     setTimeout(() => {
         try {
-            _appendNewLog(new LogBoxLog_1.LogBoxLog((0, parseLogBoxLog_1.parseLogBoxException)(error)));
+            _appendNewLog(new LogBoxLog(parseLogBoxException(error)));
         }
         catch (unexpectedError) {
             reportUnexpectedLogBoxError(unexpectedError);
         }
     }, 0);
 }
-function symbolicateLogNow(type, log) {
+export function symbolicateLogNow(type, log) {
     log.symbolicate(type, () => {
         handleUpdate();
     });
 }
-function retrySymbolicateLogNow(type, log) {
+export function retrySymbolicateLogNow(type, log) {
     log.retrySymbolicate(type, () => {
         handleUpdate();
     });
 }
-function symbolicateLogLazy(type, log) {
+export function symbolicateLogLazy(type, log) {
     log.symbolicate(type);
 }
-function clear() {
+export function clear() {
     if (logs.size > 0) {
         logs = new Set();
         setSelectedLog(-1);
     }
 }
-function setSelectedLog(proposedNewIndex) {
+export function setSelectedLog(proposedNewIndex) {
     const oldIndex = _selectedIndex;
     let newIndex = proposedNewIndex;
     const logArray = Array.from(logs);
@@ -273,14 +218,14 @@ function setSelectedLog(proposedNewIndex) {
         }, 0);
     }
 }
-function clearErrors() {
+export function clearErrors() {
     const newLogs = Array.from(logs).filter((log) => log.level !== 'error' && log.level !== 'fatal');
     if (newLogs.length !== logs.size) {
         logs = new Set(newLogs);
         setSelectedLog(-1);
     }
 }
-function dismiss(log) {
+export function dismiss(log) {
     if (logs.has(log)) {
         logs.delete(log);
         handleUpdate();
@@ -298,10 +243,10 @@ function dismiss(log) {
         }
     }
 }
-function getIgnorePatterns() {
+export function getIgnorePatterns() {
     return Array.from(ignorePatterns);
 }
-function addIgnorePatterns(patterns) {
+export function addIgnorePatterns(patterns) {
     const existingSize = ignorePatterns.size;
     // The same pattern may be added multiple times, but adding a new pattern
     // can be expensive so let's find only the ones that are new.
@@ -327,17 +272,17 @@ function addIgnorePatterns(patterns) {
     logs = new Set(Array.from(logs).filter((log) => !isMessageIgnored(log.message.content)));
     handleUpdate();
 }
-function setDisabled(value) {
+export function setDisabled(value) {
     if (value === _isDisabled) {
         return;
     }
     _isDisabled = value;
     handleUpdate();
 }
-function isDisabled() {
+export function isDisabled() {
     return _isDisabled;
 }
-function observe(observer) {
+export function observe(observer) {
     const subscription = { observer };
     observers.add(subscription);
     observer(getNextState());
@@ -347,11 +292,11 @@ function observe(observer) {
         },
     };
 }
-const emitter = new react_native_1.NativeEventEmitter({
+const emitter = new NativeEventEmitter({
     addListener() { },
     removeListeners() { },
 });
-function withSubscription(WrappedComponent) {
+export function withSubscription(WrappedComponent) {
     class RootDevErrorBoundary extends React.Component {
         static getDerivedStateFromError() {
             return { hasError: true };
@@ -370,7 +315,7 @@ function withSubscription(WrappedComponent) {
             // TODO: Won't this catch all React errors and make them appear as unexpected rendering errors?
             err.componentStack ??= errorInfo.componentStack;
             // TODO: Make the error appear more like the React console.error, appending the "The above error occurred" line.
-            const { category, message, componentStack } = (0, parseLogBoxLog_1.parseLogBoxLog)([err]);
+            const { category, message, componentStack } = parseLogBoxLog([err]);
             if (!isMessageIgnored(message.content)) {
                 addLog({
                     // Always show the static rendering issues as full screen since they
@@ -397,13 +342,11 @@ function withSubscription(WrappedComponent) {
             });
         };
         render() {
-            return (React.createElement(LogBoxLog_1.LogContext.Provider, { value: {
+            return (_jsxs(LogContext.Provider, { value: {
                     selectedLogIndex: this.state.selectedLogIndex,
                     isDisabled: this.state.isDisabled,
                     logs: Array.from(this.state.logs),
-                } },
-                this.props.children,
-                React.createElement(WrappedComponent, null)));
+                }, children: [this.props.children, _jsx(WrappedComponent, {})] }));
         }
         componentDidMount() {
             this._subscription = observe((data) => {

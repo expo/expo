@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -6,10 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseUnexpectedThrownValue = parseUnexpectedThrownValue;
-const log_box_utils_1 = require("@expo/log-box-utils");
-const parseErrorStack_1 = require("./parseErrorStack");
+import { withoutANSIColorStyles } from '@expo/log-box-utils';
+import { parseErrorStack } from './parseErrorStack';
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
@@ -17,7 +14,7 @@ let exceptionID = 0;
 /**
  * Logs exceptions to the (native) console and displays them
  */
-function parseUnexpectedThrownValue(error) {
+export function parseUnexpectedThrownValue(error) {
     let e;
     if (error instanceof Error) {
         e = error;
@@ -29,12 +26,12 @@ function parseUnexpectedThrownValue(error) {
         // `throw '<error message>'` somewhere in your codebase.
         e = new Error(error);
     }
-    const stack = (0, parseErrorStack_1.parseErrorStack)(e?.stack);
+    const stack = parseErrorStack(e?.stack);
     const currentExceptionID = ++exceptionID;
     // Keep the ansi error formatting to the message for CLI/Bundler errors such as missing imports.
     const originalMessage = e.originalMessage || e.message || '';
     // This ensures the console.error has ansi stripped.
-    let message = (0, log_box_utils_1.withoutANSIColorStyles)(originalMessage);
+    let message = withoutANSIColorStyles(originalMessage);
     if (e.componentStack != null) {
         message += `\n\nThis error is located at:${e.componentStack}`;
     }

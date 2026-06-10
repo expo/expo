@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -6,8 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-const parseErrorStack_1 = require("../utils/parseErrorStack");
+import { parseErrorStack } from '../utils/parseErrorStack';
 class SyntheticError extends Error {
     name = '';
 }
@@ -16,7 +14,7 @@ class SyntheticError extends Error {
  */
 let exceptionID = 0;
 function parseException(e, isFatal) {
-    const stack = (0, parseErrorStack_1.parseErrorStack)(e?.stack);
+    const stack = parseErrorStack(e?.stack);
     const currentExceptionID = ++exceptionID;
     const originalMessage = e.message || '';
     let message = originalMessage;
@@ -68,5 +66,5 @@ const ErrorUtils = {
     handleException,
     SyntheticError,
 };
-exports.default = ErrorUtils;
+export default ErrorUtils;
 //# sourceMappingURL=index.js.map

@@ -11,3 +11,4 @@ export declare function LogBoxMessage(props: {
     message: Message;
     maxLength?: number;
 }): React.ReactElement;
+//# sourceMappingURL=Message.d.ts.map

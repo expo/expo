@@ -1,46 +1,11 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useDevServer = exports.DevServerContext = void 0;
-const react_1 = __importStar(require("react"));
-const devServerEndpoints_1 = require("./utils/devServerEndpoints");
+import { jsx as _jsx } from "react/jsx-runtime";
+import React, { useEffect, useState, createContext, use } from 'react';
+import { fetchProjectMetadataAsync } from './utils/devServerEndpoints';
 // Dev Server implementation https://github.com/expo/expo/blob/f29b9f3715e42dca87bf3eebf11f7e7dd1ff73c1/packages/%40expo/cli/src/start/server/metro/MetroBundlerDevServer.ts#L1145
 function useProjectMetadataFromServer() {
-    const [meta, setMeta] = (0, react_1.useState)(null);
-    (0, react_1.useEffect)(() => {
-        (0, devServerEndpoints_1.fetchProjectMetadataAsync)()
+    const [meta, setMeta] = useState(null);
+    useEffect(() => {
+        fetchProjectMetadataAsync()
             .then(setMeta)
             .catch((error) => {
             console.warn(`Failed to fetch project metadata. Some debugging features may not work as expected: ${error}`);
@@ -48,22 +13,20 @@ function useProjectMetadataFromServer() {
     }, []);
     return meta;
 }
-const DevServerContextProvider = (0, react_1.createContext)(undefined);
-const DevServerContext = ({ children }) => {
+const DevServerContextProvider = createContext(undefined);
+export const DevServerContext = ({ children }) => {
     const meta = useProjectMetadataFromServer();
-    return (react_1.default.createElement(DevServerContextProvider, { value: {
+    return (_jsx(DevServerContextProvider, { value: {
             projectRoot: meta?.projectRoot,
             serverRoot: meta?.serverRoot,
             sdkVersion: meta?.sdkVersion,
-        } }, children));
+        }, children: children }));
 };
-exports.DevServerContext = DevServerContext;
-const useDevServer = () => {
-    const context = (0, react_1.use)(DevServerContextProvider);
+export const useDevServer = () => {
+    const context = use(DevServerContextProvider);
     if (context === undefined) {
         throw new Error('useDevServer must be used within a DevServerProvider');
     }
     return context;
 };
-exports.useDevServer = useDevServer;
 //# sourceMappingURL=ContextDevServer.js.map

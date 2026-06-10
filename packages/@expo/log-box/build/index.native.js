@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupLogBox = setupLogBox;
-function setupLogBox(Comp) {
+export function setupLogBox(Comp) {
     return Comp;
 }
 //# sourceMappingURL=index.native.js.map
