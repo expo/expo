@@ -1,0 +1,59 @@
+---
+title: Save your creation
+description: In this chapter, direct your AI agent to save the decorated photo to your phone, and optionally make it work in the browser too.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Step } from '~/ui/components/Step';
+
+In this chapter, you'll add the final core feature: saving the photo, sticker and all, to your phone's photo library.
+
+<Step label="1">
+
+## Save to your photo library
+
+Paste the following prompt into your agent:
+
+```text Prompt
+Add a "Save" option to the row of options, with a download icon. When I tap it, capture just the photo with the sticker on it (not the whole screen) using the react-native-view-shot library, and save the result to my phone's photo library using the expo-media-library library. Ask for permission the first time if needed, and show an alert confirming that the image was saved.
+```
+
+**What you should see**: tapping **Save** asks for permission to save to your photos the first time — tap **Allow** — and then shows a confirmation. Open your phone's photo gallery: your photo is there with the sticker baked in, ready to share anywhere.
+
+</Step>
+
+<Step label="2">
+
+## Make it work on the web (optional)
+
+Your app isn't only a phone app — the same project runs in a web browser. In the terminal window running the development server, press <kbd>W</kbd> and the app opens in your browser. Everything works, except **Save**: the library that captures the image on phones doesn't work on the web.
+
+<Collapsible summary="Want to fix the Save option on the web?">
+
+Paste the following prompt into your agent:
+
+```text Prompt
+Make the Save option also work when the app runs in a web browser. The react-native-view-shot library doesn't support the web, so when the platform is web, use the dom-to-image library to capture the image and download it as a file instead.
+```
+
+**What you should see**: in the browser, pick a photo, add a sticker, and click **Save** — the image downloads as a file. This is how platform differences are handled in Expo apps: one app, with small platform-specific branches where needed.
+
+</Collapsible>
+
+</Step>
+
+> If a result doesn't match what you expected, tell the agent what you see — the [When something looks wrong](/tutorial/build-with-ai/create-your-first-app/#when-something-looks-wrong) section has the playbook.
+
+## Summary
+
+StickerSmash is feature-complete: pick a photo, smash a sticker on it, and save the result — on your phone and even in the browser. One chapter to go.
+
+<BoxLink
+  title="Next: Finishing touches"
+  Icon={BookOpen02Icon}
+  description="Polish the status bar, splash screen, and app icon, and take your next steps."
+  href="/tutorial/build-with-ai/finishing-touches/"
+/>
