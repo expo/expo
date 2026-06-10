@@ -653,6 +653,19 @@ export const learn = [
     { expanded: true }
   ),
   makeSection(
+    'Build with AI tutorial',
+    [
+      makePage('tutorial/build-with-ai/introduction.mdx'),
+      makePage('tutorial/build-with-ai/set-up-your-tools.mdx'),
+      makePage('tutorial/build-with-ai/create-your-first-app.mdx'),
+      makePage('tutorial/build-with-ai/build-the-home-screen.mdx'),
+      makePage('tutorial/build-with-ai/add-stickers.mdx'),
+      makePage('tutorial/build-with-ai/save-your-creation.mdx'),
+      makePage('tutorial/build-with-ai/finishing-touches.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
     'EAS tutorial',
     [
       makePage('tutorial/eas/introduction.mdx'),

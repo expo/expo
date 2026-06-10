@@ -26,67 +26,31 @@ export function ProgressTracker({
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
-  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
-    useTutorialChapterCompletion();
-  const isGetStartedTutorial = name === 'GET_STARTED';
-  const currentChapter = isGetStartedTutorial
-    ? getStartedChapters[currentChapterIndex]
-    : chapters[currentChapterIndex];
+  const {
+    chapters,
+    setChapters,
+    getStartedChapters,
+    setGetStartedChapters,
+    buildWithAiChapters,
+    setBuildWithAiChapters,
+  } = useTutorialChapterCompletion();
 
-  const handleChapterComplete = () => {
-    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setChapters(updatedChapters);
+  const tracks: Record<string, [Chapter[], (chapters: Chapter[]) => void]> = {
+    EAS_TUTORIAL: [chapters, setChapters],
+    GET_STARTED: [getStartedChapters, setGetStartedChapters],
+    BUILD_WITH_AI: [buildWithAiChapters, setBuildWithAiChapters],
   };
-
-  const handleGetStartedChapterComplete = () => {
-    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setGetStartedChapters(updatedChapters);
-  };
-
-  const handleChapterIncomplete = () => {
-    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setChapters(updatedChapters);
-  };
-
-  const handleGetStartedChapterIncomplete = () => {
-    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setGetStartedChapters(updatedChapters);
-  };
+  const [trackChapters, setTrackChapters] = tracks[name] ?? tracks.EAS_TUTORIAL;
+  const currentChapter = trackChapters[currentChapterIndex];
 
   const handleCheckboxChange = () => {
-    if (currentChapter.completed) {
-      handleChapterIncomplete();
-    } else {
-      handleChapterComplete();
-    }
-  };
-
-  const handleCheckboxChangeForGetStarted = () => {
-    if (currentChapter.completed) {
-      handleGetStartedChapterIncomplete();
-    } else {
-      handleGetStartedChapterComplete();
-    }
+    const updatedChapters = trackChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: !currentChapter.completed };
+      }
+      return chapter;
+    });
+    setTrackChapters(updatedChapters);
   };
 
   return (
@@ -113,9 +77,7 @@ export function ProgressTracker({
             label={
               currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
             }
-            onChange={
-              isGetStartedTutorial ? handleCheckboxChangeForGetStarted : handleCheckboxChange
-            }
+            onChange={handleCheckboxChange}
           />
         </div>
       </div>
