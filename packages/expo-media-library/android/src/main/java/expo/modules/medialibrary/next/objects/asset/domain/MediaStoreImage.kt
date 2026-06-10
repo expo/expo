@@ -7,7 +7,7 @@ import expo.modules.medialibrary.next.extensions.getNullableInt
 import expo.modules.medialibrary.next.extensions.getNullableLong
 import expo.modules.medialibrary.next.extensions.getNullableString
 
-data class MediaStoreImageAsset(
+data class MediaStoreImage(
   val id: Long,
   val displayName: String?,
   val dateTaken: Long?,
@@ -20,9 +20,9 @@ data class MediaStoreImageAsset(
   companion object {
     fun from(
       cursor: Cursor,
-      columnIndexes: MediaStoreImageAssetColumnIndexes = MediaStoreImageAssetColumnIndexes.from(cursor)
+      columnIndexes: MediaStoreImageColumnIndexes = MediaStoreImageColumnIndexes.from(cursor)
     ) = with(cursor) {
-      MediaStoreImageAsset(
+      MediaStoreImage(
         id = getLong(columnIndexes.id),
         displayName = getNullableString(columnIndexes.displayName),
         dateTaken = getNullableLong(columnIndexes.dateTaken),
@@ -49,7 +49,7 @@ data class MediaStoreImageAsset(
   }
 }
 
-data class MediaStoreImageAssetColumnIndexes(
+data class MediaStoreImageColumnIndexes(
   val id: Int,
   val displayName: Int,
   val dateTaken: Int,
@@ -61,7 +61,7 @@ data class MediaStoreImageAssetColumnIndexes(
 ) {
   companion object {
     fun from(cursor: Cursor) = with(cursor) {
-      MediaStoreImageAssetColumnIndexes(
+      MediaStoreImageColumnIndexes(
         id = getColumnIndexOrThrow(_ID),
         displayName = getColumnIndexOrThrow(DISPLAY_NAME),
         dateTaken = getColumnIndexOrThrow(DATE_TAKEN),

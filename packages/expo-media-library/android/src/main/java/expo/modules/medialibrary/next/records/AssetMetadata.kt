@@ -11,7 +11,7 @@ data class AssetMetadata(
   @Field val id: Uri,
   @Field val creationTime: Long?,
   @Field val duration: Long?,
-  @Field val filename: String,
+  @Field val filename: String?,
   @Field val height: Int?,
   @Field val width: Int?,
   @Field val mediaType: MediaType,

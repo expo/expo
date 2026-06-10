@@ -13,9 +13,9 @@ import expo.modules.medialibrary.next.extensions.getNullableInt
 import expo.modules.medialibrary.next.extensions.getNullableLong
 import expo.modules.medialibrary.next.extensions.getNullableString
 import expo.modules.medialibrary.next.objects.asset.domain.AssetMediaStoreItem
-import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreAudioAsset
-import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreImageAsset
-import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreVideoAsset
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreAudio
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreImage
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreVideo
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
@@ -59,19 +59,19 @@ suspend fun ContentResolver.queryAssetMediaStoreItem(contentUri: Uri): AssetMedi
   }
 }
 
-suspend fun ContentResolver.queryMediaStoreImageAsset(contentUri: Uri): MediaStoreImageAsset? =
-  querySingleMediaStoreAsset(contentUri, MediaStoreImageAsset.projection) {
-    MediaStoreImageAsset.from(this)
+suspend fun ContentResolver.queryMediaStoreImageAsset(contentUri: Uri): MediaStoreImage? =
+  querySingleMediaStoreAsset(contentUri, MediaStoreImage.projection) {
+    MediaStoreImage.from(this)
   }
 
-suspend fun ContentResolver.queryMediaStoreVideoAsset(contentUri: Uri): MediaStoreVideoAsset? =
-  querySingleMediaStoreAsset(contentUri, MediaStoreVideoAsset.projection) {
-    MediaStoreVideoAsset.from(this)
+suspend fun ContentResolver.queryMediaStoreVideoAsset(contentUri: Uri): MediaStoreVideo? =
+  querySingleMediaStoreAsset(contentUri, MediaStoreVideo.projection) {
+    MediaStoreVideo.from(this)
   }
 
-suspend fun ContentResolver.queryMediaStoreAudioAsset(contentUri: Uri): MediaStoreAudioAsset? =
-  querySingleMediaStoreAsset(contentUri, MediaStoreAudioAsset.projection) {
-    MediaStoreAudioAsset.from(this)
+suspend fun ContentResolver.queryMediaStoreAudioAsset(contentUri: Uri): MediaStoreAudio? =
+  querySingleMediaStoreAsset(contentUri, MediaStoreAudio.projection) {
+    MediaStoreAudio.from(this)
   }
 
 private suspend fun <T> ContentResolver.querySingleMediaStoreAsset(

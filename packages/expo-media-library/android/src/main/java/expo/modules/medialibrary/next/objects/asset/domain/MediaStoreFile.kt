@@ -2,12 +2,12 @@ package expo.modules.medialibrary.next.objects.asset.domain
 
 import android.database.Cursor
 import android.os.Build
-import android.provider.MediaStore.Video.Media.*
+import android.provider.MediaStore
 import expo.modules.medialibrary.next.extensions.getNullableInt
 import expo.modules.medialibrary.next.extensions.getNullableLong
 import expo.modules.medialibrary.next.extensions.getNullableString
 
-data class MediaStoreVideoAsset(
+data class MediaStoreFile(
   val id: Long,
   val displayName: String?,
   val dateTaken: Long?,
@@ -15,15 +15,15 @@ data class MediaStoreVideoAsset(
   val width: Int?,
   val height: Int?,
   val duration: Long?,
-  val data: String?,
+  val mediaType: Int?,
   val isFavorite: Int?
 ) {
   companion object {
     fun from(
       cursor: Cursor,
-      columnIndexes: MediaStoreVideoAssetColumnIndexes = MediaStoreVideoAssetColumnIndexes.from(cursor)
+      columnIndexes: MediaStoreFileColumnIndexes = MediaStoreFileColumnIndexes.from(cursor)
     ) = with(cursor) {
-      MediaStoreVideoAsset(
+      MediaStoreFile(
         id = getLong(columnIndexes.id),
         displayName = getNullableString(columnIndexes.displayName),
         dateTaken = getNullableLong(columnIndexes.dateTaken),
@@ -31,30 +31,31 @@ data class MediaStoreVideoAsset(
         width = getNullableInt(columnIndexes.width),
         height = getNullableInt(columnIndexes.height),
         duration = columnIndexes.duration?.let { getNullableLong(it) },
-        data = getNullableString(columnIndexes.data),
+        mediaType = getNullableInt(columnIndexes.mediaType),
         isFavorite = columnIndexes.isFavorite?.let { getNullableInt(it) }
       )
     }
 
     val projection = buildList {
-      add(_ID)
-      add(DISPLAY_NAME)
-      add(DATE_TAKEN)
-      add(DATE_MODIFIED)
-      add(WIDTH)
-      add(HEIGHT)
-      add(DATA)
+      add(MediaStore.Files.FileColumns.MEDIA_TYPE)
+      add(MediaStore.Files.FileColumns._ID)
+      add(MediaStore.Files.FileColumns.DISPLAY_NAME)
+      add(MediaStore.Files.FileColumns.DATE_TAKEN)
+      add(MediaStore.Files.FileColumns.DATE_MODIFIED)
+      add(MediaStore.Files.FileColumns.WIDTH)
+      add(MediaStore.Files.FileColumns.HEIGHT)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        add(DURATION)
+        add(MediaStore.Files.FileColumns.DURATION)
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        add(IS_FAVORITE)
+        add(MediaStore.Files.FileColumns.IS_FAVORITE)
       }
     }.toTypedArray()
   }
 }
 
-data class MediaStoreVideoAssetColumnIndexes(
+data class MediaStoreFileColumnIndexes(
+  val mediaType: Int,
   val id: Int,
   val displayName: Int,
   val dateTaken: Int,
@@ -62,26 +63,25 @@ data class MediaStoreVideoAssetColumnIndexes(
   val width: Int,
   val height: Int,
   val duration: Int?,
-  val data: Int,
   val isFavorite: Int?
 ) {
   companion object {
     fun from(cursor: Cursor) = with(cursor) {
-      MediaStoreVideoAssetColumnIndexes(
-        id = getColumnIndexOrThrow(_ID),
-        displayName = getColumnIndexOrThrow(DISPLAY_NAME),
-        dateTaken = getColumnIndexOrThrow(DATE_TAKEN),
-        dateModified = getColumnIndexOrThrow(DATE_MODIFIED),
-        width = getColumnIndexOrThrow(WIDTH),
-        height = getColumnIndexOrThrow(HEIGHT),
+      MediaStoreFileColumnIndexes(
+        mediaType = getColumnIndexOrThrow(MediaStore.Files.FileColumns.MEDIA_TYPE),
+        id = getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID),
+        displayName = getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME),
+        dateTaken = getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_TAKEN),
+        dateModified = getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED),
+        width = getColumnIndexOrThrow(MediaStore.Files.FileColumns.WIDTH),
+        height = getColumnIndexOrThrow(MediaStore.Files.FileColumns.HEIGHT),
         duration = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          getColumnIndexOrThrow(DURATION)
+          getColumnIndexOrThrow(MediaStore.Files.FileColumns.DURATION)
         } else {
           null
         },
-        data = getColumnIndexOrThrow(DATA),
         isFavorite = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-          getColumnIndexOrThrow(IS_FAVORITE)
+          getColumnIndexOrThrow(MediaStore.Files.FileColumns.IS_FAVORITE)
         } else {
           null
         }

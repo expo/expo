@@ -4,7 +4,7 @@ struct AssetMetadata: Record {
   @Field var id: String
   @Field var creationTime: Int?
   @Field var duration: Int?
-  @Field var filename: String
+  @Field var filename: String?
   @Field var height: Int?
   @Field var width: Int?
   @Field var mediaType: MediaTypeNext = .UNKNOWN
@@ -17,7 +17,7 @@ struct AssetMetadata: Record {
     id: String,
     creationTime: Int? = nil,
     duration: Int? = nil,
-    filename: String,
+    filename: String?,
     height: Int?,
     width: Int?,
     mediaType: MediaTypeNext,

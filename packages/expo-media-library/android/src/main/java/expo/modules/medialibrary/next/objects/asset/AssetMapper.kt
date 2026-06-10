@@ -9,9 +9,10 @@ import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.extensions.resolver.extractAssetContentUri
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
 import expo.modules.medialibrary.next.objects.asset.domain.AssetMediaStoreItem
-import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreAudioAsset
-import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreImageAsset
-import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreVideoAsset
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreAudio
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreFile
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreImage
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreVideo
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.records.AssetInfo
 import expo.modules.medialibrary.next.records.AssetMetadata
@@ -29,7 +30,7 @@ class AssetMapper(private val contentResolver: ContentResolver) {
       is AssetMediaStoreItem.Audio -> toDto(mediaStoreItem.asset)
     }
 
-  private suspend fun toDto(imageAsset: MediaStoreImageAsset): AssetInfo {
+  private suspend fun toDto(imageAsset: MediaStoreImage): AssetInfo {
     val contentUri = extractAssetContentUri(
       imageAsset.id,
       MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
@@ -37,19 +38,23 @@ class AssetMapper(private val contentResolver: ContentResolver) {
 
     return AssetInfo(
       id = contentUri,
-      uri = mapUri(imageAsset.data) ?: contentUri,
+      uri = mapUri(imageAsset.data)
+        ?: throw AssetPropertyNotFoundException("Uri"),
       mediaType = MediaType.IMAGE,
-      width = mapWidth(imageAsset.width, contentUri) ?: 0,
-      height = mapHeight(imageAsset.height, contentUri) ?: 0,
+      width = mapWidth(imageAsset.width, contentUri)
+        ?: throw AssetPropertyNotFoundException("Width"),
+      height = mapHeight(imageAsset.height, contentUri)
+        ?: throw AssetPropertyNotFoundException("Height"),
       creationTime = mapCreationTime(imageAsset.dateTaken),
       modificationTime = mapModificationTime(imageAsset.dateModified),
       duration = null,
-      filename = imageAsset.displayName ?: throw AssetPropertyNotFoundException("Filename"),
+      filename = imageAsset.displayName
+        ?: throw AssetPropertyNotFoundException("Filename"),
       isFavorite = mapIsFavorite(imageAsset.isFavorite)
     )
   }
 
-  private suspend fun toDto(videoAsset: MediaStoreVideoAsset): AssetInfo {
+  private suspend fun toDto(videoAsset: MediaStoreVideo): AssetInfo {
     val contentUri = extractAssetContentUri(
       videoAsset.id,
       MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
@@ -57,19 +62,23 @@ class AssetMapper(private val contentResolver: ContentResolver) {
 
     return AssetInfo(
       id = contentUri,
-      uri = mapUri(videoAsset.data) ?: contentUri,
+      uri = mapUri(videoAsset.data)
+        ?: throw AssetPropertyNotFoundException("Uri"),
       mediaType = MediaType.VIDEO,
-      width = mapWidth(videoAsset.width, contentUri) ?: 0,
-      height = mapHeight(videoAsset.height, contentUri) ?: 0,
+      width = mapWidth(videoAsset.width, contentUri)
+        ?: throw AssetPropertyNotFoundException("Width"),
+      height = mapHeight(videoAsset.height, contentUri)
+        ?: throw AssetPropertyNotFoundException("Height"),
       creationTime = mapCreationTime(videoAsset.dateTaken),
       modificationTime = mapModificationTime(videoAsset.dateModified),
       duration = mapDuration(videoAsset.duration),
-      filename = videoAsset.displayName ?: throw AssetPropertyNotFoundException("Filename"),
+      filename = videoAsset.displayName
+        ?: throw AssetPropertyNotFoundException("Filename"),
       isFavorite = mapIsFavorite(videoAsset.isFavorite)
     )
   }
 
-  private fun toDto(audioAsset: MediaStoreAudioAsset): AssetInfo {
+  private fun toDto(audioAsset: MediaStoreAudio): AssetInfo {
     val contentUri = extractAssetContentUri(
       audioAsset.id,
       MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO
@@ -77,63 +86,34 @@ class AssetMapper(private val contentResolver: ContentResolver) {
 
     return AssetInfo(
       id = contentUri,
-      uri = mapUri(audioAsset.data) ?: contentUri,
+      uri = mapUri(audioAsset.data)
+        ?: throw AssetPropertyNotFoundException("Uri"),
       mediaType = MediaType.AUDIO,
       width = 0,
       height = 0,
       creationTime = mapCreationTime(audioAsset.dateTaken),
       modificationTime = mapModificationTime(audioAsset.dateModified),
       duration = mapDuration(audioAsset.duration),
-      filename = audioAsset.displayName ?: throw AssetPropertyNotFoundException("Filename"),
+      filename = audioAsset.displayName
+        ?: throw AssetPropertyNotFoundException("Filename"),
       isFavorite = mapIsFavorite(audioAsset.isFavorite)
     )
   }
 
-  fun toMetadata(mediaStoreItem: AssetMediaStoreItem): AssetMetadata =
-    when (mediaStoreItem) {
-      is AssetMediaStoreItem.Image -> toMetadata(mediaStoreItem.asset)
-      is AssetMediaStoreItem.Video -> toMetadata(mediaStoreItem.asset)
-      is AssetMediaStoreItem.Audio -> toMetadata(mediaStoreItem.asset)
-    }
-
-  private fun toMetadata(imageAsset: MediaStoreImageAsset) =
-    AssetMetadata(
-      id = extractAssetContentUri(imageAsset.id, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
-      mediaType = MediaType.IMAGE,
-      width = imageAsset.width,
-      height = imageAsset.height,
-      creationTime = mapCreationTime(imageAsset.dateTaken),
-      modificationTime = mapModificationTime(imageAsset.dateModified),
-      duration = null,
-      filename = imageAsset.displayName ?: throw AssetPropertyNotFoundException("Filename"),
-      isFavorite = mapIsFavorite(imageAsset.isFavorite)
+  fun toMetadata(fileAsset: MediaStoreFile): AssetMetadata {
+    return AssetMetadata(
+      id = extractAssetContentUri(fileAsset.id, fileAsset.mediaType),
+      mediaType = fileAsset.mediaType?.let { MediaType.fromMediaStoreValue(it) }
+        ?: MediaType.UNKNOWN,
+      width = fileAsset.width,
+      height = fileAsset.height,
+      creationTime = mapCreationTime(fileAsset.dateTaken),
+      modificationTime = mapModificationTime(fileAsset.dateModified),
+      duration = mapDuration(fileAsset.duration),
+      filename = fileAsset.displayName,
+      isFavorite = mapIsFavorite(fileAsset.isFavorite)
     )
-
-  private fun toMetadata(videoAsset: MediaStoreVideoAsset) =
-    AssetMetadata(
-      id = extractAssetContentUri(videoAsset.id, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
-      mediaType = MediaType.VIDEO,
-      width = videoAsset.width,
-      height = videoAsset.height,
-      creationTime = mapCreationTime(videoAsset.dateTaken),
-      modificationTime = mapModificationTime(videoAsset.dateModified),
-      duration = mapDuration(videoAsset.duration),
-      filename = videoAsset.displayName ?: throw AssetPropertyNotFoundException("Filename"),
-      isFavorite = mapIsFavorite(videoAsset.isFavorite)
-    )
-
-  private fun toMetadata(audioAsset: MediaStoreAudioAsset) =
-    AssetMetadata(
-      id = extractAssetContentUri(audioAsset.id, MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO),
-      mediaType = MediaType.AUDIO,
-      width = null,
-      height = null,
-      creationTime = mapCreationTime(audioAsset.dateTaken),
-      modificationTime = mapModificationTime(audioAsset.dateModified),
-      duration = mapDuration(audioAsset.duration),
-      filename = audioAsset.displayName ?: throw AssetPropertyNotFoundException("Filename"),
-      isFavorite = mapIsFavorite(audioAsset.isFavorite)
-    )
+  }
 
   suspend fun mapHeight(mediaStoreHeight: Int?, contentUri: Uri): Int? {
     return transformDimension(mediaStoreHeight, contentUri) {

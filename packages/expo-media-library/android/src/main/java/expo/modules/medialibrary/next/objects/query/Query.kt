@@ -11,8 +11,8 @@ import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
-import expo.modules.medialibrary.next.objects.asset.domain.AssetMediaStoreItem
-import expo.modules.medialibrary.next.objects.asset.domain.AssetMediaStoreItemColumnIndexes
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreFile
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreFileColumnIndexes
 import expo.modules.medialibrary.next.objects.query.builder.QueryLegacyExecutor
 import expo.modules.medialibrary.next.objects.query.builder.QueryModernExecutor
 import expo.modules.medialibrary.next.records.AssetField
@@ -113,12 +113,12 @@ class Query(
       QueryLegacyExecutor(clauses, args, orderBy, limit, offset)
     }
 
-    queryExecutor.exe(AssetMediaStoreItem.projection, contentResolver).use {
+    queryExecutor.exe(MediaStoreFile.projection, contentResolver).use {
       ensureActive()
-      val columnIndexes = AssetMediaStoreItemColumnIndexes.from(it)
+      val columnIndexes = MediaStoreFileColumnIndexes.from(it)
       it.asSequence()
-        .mapNotNull { row -> AssetMediaStoreItem.from(row, columnIndexes) }
-        .map { assetMediaStoreItem -> assetMapper.toMetadata(assetMediaStoreItem) }
+        .map { row -> MediaStoreFile.from(row, columnIndexes) }
+        .map { fileAsset -> assetMapper.toMetadata(fileAsset) }
         .toList()
     }
   }

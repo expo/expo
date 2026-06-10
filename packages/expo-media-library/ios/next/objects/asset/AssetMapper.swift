@@ -17,12 +17,12 @@ class AssetMapper {
     )
   }
 
-  func toMetadata(_ phAsset: PHAsset) throws -> AssetMetadata {
+  func toMetadata(_ phAsset: PHAsset) -> AssetMetadata {
     return AssetMetadata(
       id: "ph://\(phAsset.localIdentifier)",
       creationTime: mapCreationTime(phAsset.creationDate),
       duration: mapDuration(phAsset.duration),
-      filename: try mapFilename(phAsset),
+      filename: phAsset.value(forKey: "filename") as? String,
       height: phAsset.pixelHeight,
       width: phAsset.pixelWidth,
       mediaType: mapMediaType(phAsset.mediaType),

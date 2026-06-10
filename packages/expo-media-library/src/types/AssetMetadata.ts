@@ -10,7 +10,7 @@ import type { MediaType } from './MediaType';
  */
 export type AssetMetadata = {
   id: string;
-  filename: string;
+  filename: string | null;
   mediaType: MediaType;
   width: number | null;
   height: number | null;

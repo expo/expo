@@ -107,7 +107,7 @@ class Query: SharedObject {
 
   func exeForMetadata() async throws -> [AssetMetadata] {
     return try await fetchMatchingPHAssets().map {
-      try assetMapper.toMetadata($0)
+      assetMapper.toMetadata($0)
     }
   }
 
