@@ -1,5 +1,4 @@
-import type { EventsMap } from './ts-declarations/EventEmitter';
-import type { ExpoGlobal } from './ts-declarations/global';
+import type { EventsMap, EventEmitter as ExpoEventEmitter } from './ts-declarations/EventEmitter';
 /**
  * A subscription object that allows to conveniently remove an event listener from the emitter.
  */
@@ -10,6 +9,6 @@ export interface EventSubscription {
      */
     remove(): void;
 }
-export type EventEmitter<TEventsMap extends EventsMap = Record<never, never>> = typeof ExpoGlobal.EventEmitter<TEventsMap>;
-export declare const EventEmitter: typeof ExpoGlobal.EventEmitter;
+export type EventEmitter<TEventsMap extends EventsMap = Record<never, never>> = ExpoEventEmitter<TEventsMap>;
+export declare const EventEmitter: typeof ExpoEventEmitter;
 //# sourceMappingURL=EventEmitter.d.ts.map
