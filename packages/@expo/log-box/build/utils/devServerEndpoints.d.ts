@@ -16,3 +16,4 @@ export declare function isStackFileAnonymous(frame: Pick<MetroStackFrame, 'colum
 export declare function getStackFormattedLocation(projectRoot: string | undefined, frame: Pick<MetroStackFrame, 'column' | 'file' | 'lineNumber'>): string;
 export declare function invalidateCachedStack(stack: MetroStackFrame[]): void;
 export declare function symbolicateStackAndCacheAsync(stack: MetroStackFrame[]): Promise<SymbolicatedStackTrace>;
+//# sourceMappingURL=devServerEndpoints.d.ts.map

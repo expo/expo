@@ -63,3 +63,4 @@ export declare function useLogs(): {
     logs: LogBoxLog[];
 };
 export {};
+//# sourceMappingURL=LogBoxLog.d.ts.map

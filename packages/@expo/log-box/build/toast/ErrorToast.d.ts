@@ -9,7 +9,7 @@ import React from 'react';
 import * as LogBoxData from '../Data/LogBoxData';
 import type { LogBoxLog } from '../Data/LogBoxLog';
 import '../overlay/Overlay.module.css';
-export declare function ErrorToastContainer(): React.JSX.Element | null;
+export declare function ErrorToastContainer(): import("react/jsx-runtime").JSX.Element | null;
 declare const _default: {
     new (props: object): {
         componentDidCatch(err: Error & {
@@ -25,7 +25,7 @@ declare const _default: {
             selectedLogIndex: number;
         };
         retry: () => Promise<void>;
-        render(): React.JSX.Element;
+        render(): import("react/jsx-runtime").JSX.Element;
         componentDidMount(): void;
         componentWillUnmount(): void;
         context: unknown;
@@ -104,3 +104,4 @@ declare const _default: {
     propTypes?: any;
 };
 export default _default;
+//# sourceMappingURL=ErrorToast.d.ts.map

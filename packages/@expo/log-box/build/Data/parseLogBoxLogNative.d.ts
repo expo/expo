@@ -63,3 +63,4 @@ export declare function parseComponentStack(message: string): {
     stack: readonly CodeFrame[];
 };
 export declare function hasComponentStack(args: any[]): boolean;
+//# sourceMappingURL=parseLogBoxLogNative.d.ts.map

@@ -1,10 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertToExpoLogBoxLog = convertToExpoLogBoxLog;
-exports.convertNativeToExpoLogBoxLog = convertNativeToExpoLogBoxLog;
-const LogBoxLog_1 = require("../Data/LogBoxLog");
-const parseLogBoxLog_1 = require("../Data/parseLogBoxLog");
-function convertToExpoLogBoxLog({ symbolicated, symbolicatedComponentStack, codeFrame, componentCodeFrame, ...log }) {
+import { LogBoxLog } from '../Data/LogBoxLog';
+import { parseLogBoxException } from '../Data/parseLogBoxLog';
+export function convertToExpoLogBoxLog({ symbolicated, symbolicatedComponentStack, codeFrame, componentCodeFrame, ...log }) {
     const outputCodeFrame = {};
     if (codeFrame) {
         outputCodeFrame.stack = codeFrame;
@@ -49,13 +45,13 @@ function convertToExpoLogBoxLog({ symbolicated, symbolicatedComponentStack, code
             status: symbolicatedComponentStack.status,
         };
     }
-    return new LogBoxLog_1.LogBoxLog({
+    return new LogBoxLog({
         ...log,
         codeFrame: outputCodeFrame,
         symbolicated: outputSymbolicated,
     });
 }
-function convertNativeToExpoLogBoxLog({ message, stack }) {
+export function convertNativeToExpoLogBoxLog({ message, stack }) {
     let processedMessage = message;
     let processedStack = stack || [];
     if (processedMessage.startsWith('Unable to load script.')) {
@@ -77,7 +73,7 @@ function convertNativeToExpoLogBoxLog({ message, stack }) {
             // Ignore JSON parse errors
         }
     }
-    const log = new LogBoxLog_1.LogBoxLog((0, parseLogBoxLog_1.parseLogBoxException)({
+    const log = new LogBoxLog(parseLogBoxException({
         message: processedMessage,
         originalMessage: processedMessage,
         stack: processedStack,

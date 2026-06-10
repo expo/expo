@@ -77,7 +77,7 @@ export declare function withSubscription(WrappedComponent: React.FC<any>): {
             selectedLogIndex: number;
         };
         retry: () => Promise<void>;
-        render(): React.JSX.Element;
+        render(): import("react/jsx-runtime").JSX.Element;
         componentDidMount(): void;
         componentWillUnmount(): void;
         context: unknown;
@@ -101,3 +101,4 @@ export declare function withSubscription(WrappedComponent: React.FC<any>): {
     propTypes?: any;
 };
 export {};
+//# sourceMappingURL=LogBoxData.d.ts.map

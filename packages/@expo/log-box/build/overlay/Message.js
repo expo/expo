@@ -1,9 +1,4 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogBoxMessage = LogBoxMessage;
+import { jsx as _jsx, Fragment as _Fragment } from "react/jsx-runtime";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -11,8 +6,8 @@ exports.LogBoxMessage = LogBoxMessage;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const react_1 = __importDefault(require("react"));
-function LogBoxMessage(props) {
+import React from 'react';
+export function LogBoxMessage(props) {
     const { content, substitutions } = props.message;
     const maxLength = props.maxLength != null ? props.maxLength : Infinity;
     const substitutionStyle = { opacity: 0.6 };
@@ -24,7 +19,7 @@ function LogBoxMessage(props) {
             cleanMessage = cleanMessage.slice(0, props.maxLength - length);
         }
         if (length < maxLength) {
-            elements.push(react_1.default.createElement("span", { key: key, style: style }, cleanMessage));
+            elements.push(_jsx("span", { style: style, children: cleanMessage }, key));
         }
         length += cleanMessage.length;
     };
@@ -42,6 +37,6 @@ function LogBoxMessage(props) {
         const lastPart = content.substr(lastOffset);
         createUnderLength('-1', lastPart);
     }
-    return react_1.default.createElement(react_1.default.Fragment, null, elements);
+    return _jsx(_Fragment, { children: elements });
 }
 //# sourceMappingURL=Message.js.map

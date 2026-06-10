@@ -1,17 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBaseUrl = getBaseUrl;
-exports.openFileInEditor = openFileInEditor;
-exports.fetchProjectMetadataAsync = fetchProjectMetadataAsync;
-exports.formatProjectFilePath = formatProjectFilePath;
-exports.getFormattedStackTrace = getFormattedStackTrace;
-exports.isStackFileAnonymous = isStackFileAnonymous;
-exports.getStackFormattedLocation = getStackFormattedLocation;
-exports.invalidateCachedStack = invalidateCachedStack;
-exports.symbolicateStackAndCacheAsync = symbolicateStackAndCacheAsync;
-const fetchHelper_1 = require("../fetchHelper");
+import { fetchTextAsync } from '../fetchHelper';
 const cache = new Map();
-function getBaseUrl() {
+export function getBaseUrl() {
     const devServerOverride = process.env.EXPO_DEV_SERVER_ORIGIN;
     if (devServerOverride) {
         return devServerOverride;
@@ -28,9 +17,9 @@ function getBaseUrl() {
 }
 function fetchTextAsyncWithBase(url, init) {
     const fullUrl = new URL(url, getBaseUrl()).href;
-    return (0, fetchHelper_1.fetchTextAsync)(fullUrl, init);
+    return fetchTextAsync(fullUrl, init);
 }
-function openFileInEditor(file, lineNumber) {
+export function openFileInEditor(file, lineNumber) {
     fetchTextAsyncWithBase('/open-stack-frame', {
         method: 'POST',
         headers: {
@@ -39,7 +28,7 @@ function openFileInEditor(file, lineNumber) {
         body: JSON.stringify({ file, lineNumber }),
     });
 }
-async function fetchProjectMetadataAsync() {
+export async function fetchProjectMetadataAsync() {
     // Dev Server implementation https://github.com/expo/expo/blob/f29b9f3715e42dca87bf3eebf11f7e7dd1ff73c1/packages/%40expo/cli/src/start/server/metro/MetroBundlerDevServer.ts#L1145
     const response = await fetchTextAsyncWithBase('/_expo/error-overlay-meta', {
         method: 'GET',
@@ -56,13 +45,13 @@ async function symbolicateStackTrace(stack) {
     });
     return JSON.parse(response);
 }
-function formatProjectFilePath(projectRoot = '', file = null) {
+export function formatProjectFilePath(projectRoot = '', file = null) {
     if (file == null) {
         return '<unknown>';
     }
     return pathRelativeToPath(file.replace(/\\/g, '/'), projectRoot.replace(/\\/g, '/')).replace(/\?.*$/, '');
 }
-function getFormattedStackTrace(stack, projectRoot = '') {
+export function getFormattedStackTrace(stack, projectRoot = '') {
     return stack
         .map((frame) => {
         let stack = `  at `;
@@ -84,10 +73,10 @@ function pathRelativeToPath(path, relativeTo, sep = '/') {
     }
     return pathParts.slice(i).join(sep);
 }
-function isStackFileAnonymous(frame) {
+export function isStackFileAnonymous(frame) {
     return !frame.file || frame.file === '<unknown>' || frame.file === '<anonymous>';
 }
-function getStackFormattedLocation(projectRoot, frame) {
+export function getStackFormattedLocation(projectRoot, frame) {
     const column = frame.column != null && parseInt(String(frame.column), 10);
     let location = formatProjectFilePath(projectRoot, frame.file);
     if (frame.lineNumber != null && frame.lineNumber >= 0) {
@@ -124,10 +113,10 @@ function normalizeMetroSymbolicatedStackResults({ stack: maybeStack, codeFrame, 
     });
     return { stack, codeFrame };
 }
-function invalidateCachedStack(stack) {
+export function invalidateCachedStack(stack) {
     cache.delete(stack);
 }
-function symbolicateStackAndCacheAsync(stack) {
+export function symbolicateStackAndCacheAsync(stack) {
     let promise = cache.get(stack);
     if (promise == null) {
         promise = symbolicateStackTrace(ensureStackFilesHaveParams(stack)).then(normalizeMetroSymbolicatedStackResults);

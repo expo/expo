@@ -1,10 +1,4 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Ansi = void 0;
-exports.AnsiUnsafe = AnsiUnsafe;
+import { jsx as _jsx, Fragment as _Fragment } from "react/jsx-runtime";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -12,9 +6,9 @@ exports.AnsiUnsafe = AnsiUnsafe;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const anser_1 = __importDefault(require("anser"));
-const react_1 = __importDefault(require("react"));
-const AnsiHighlight_module_css_1 = __importDefault(require("./AnsiHighlight.module.css"));
+import Anser from 'anser';
+import React from 'react';
+import styles from './AnsiHighlight.module.css';
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS = {
     'ansi-black': 'rgb(27, 27, 27)',
@@ -35,7 +29,7 @@ const COLORS = {
     'ansi-bright-cyan': 'rgb(140, 220, 216)',
     'ansi-bright-white': 'rgb(247, 247, 247)',
 };
-class Ansi extends react_1.default.Component {
+export class Ansi extends React.Component {
     constructor(props) {
         super(props);
         this.state = { hasError: false };
@@ -48,19 +42,18 @@ class Ansi extends react_1.default.Component {
     }
     render() {
         if (this.state.hasError) {
-            return (react_1.default.createElement("span", { className: AnsiHighlight_module_css_1.default.text, style: this.props.style }, "Error rendering ANSI text."));
+            return (_jsx("span", { className: styles.text, style: this.props.style, children: "Error rendering ANSI text." }));
         }
-        return react_1.default.createElement(AnsiUnsafe, { text: this.props.text || '', style: this.props.style });
+        return _jsx(AnsiUnsafe, { text: this.props.text || '', style: this.props.style });
     }
 }
-exports.Ansi = Ansi;
-function AnsiUnsafe({ text, style }) {
+export function AnsiUnsafe({ text, style }) {
     // TMP
     if (!text) {
-        return (react_1.default.createElement("span", { className: AnsiHighlight_module_css_1.default.text, style: style }, "Text not provided to Ansi component."));
+        return (_jsx("span", { className: styles.text, style: style, children: "Text not provided to Ansi component." }));
     }
     let commonWhitespaceLength = Infinity;
-    const parsedLines = text.split(/\n/).map((line) => anser_1.default.ansiToJson(line, {
+    const parsedLines = text.split(/\n/).map((line) => Anser.ansiToJson(line, {
         json: true,
         remove_empty: true,
         use_classes: true,
@@ -88,16 +81,16 @@ function AnsiUnsafe({ text, style }) {
             return content;
         }
     };
-    return (react_1.default.createElement(react_1.default.Fragment, null, parsedLines.map((items, i) => (react_1.default.createElement("div", { className: AnsiHighlight_module_css_1.default.line, key: i }, items.map((bundle, key) => {
-        const textStyle = bundle.fg && COLORS[bundle.fg]
-            ? {
-                backgroundColor: bundle.bg && COLORS[bundle.bg],
-                color: bundle.fg && COLORS[bundle.fg],
-            }
-            : {
-                backgroundColor: bundle.bg && COLORS[bundle.bg],
-            };
-        return (react_1.default.createElement("span", { className: AnsiHighlight_module_css_1.default.text, style: { ...style, ...textStyle }, key: key }, getText(bundle.content, key)));
-    }))))));
+    return (_jsx(_Fragment, { children: parsedLines.map((items, i) => (_jsx("div", { className: styles.line, children: items.map((bundle, key) => {
+                const textStyle = bundle.fg && COLORS[bundle.fg]
+                    ? {
+                        backgroundColor: bundle.bg && COLORS[bundle.bg],
+                        color: bundle.fg && COLORS[bundle.fg],
+                    }
+                    : {
+                        backgroundColor: bundle.bg && COLORS[bundle.bg],
+                    };
+                return (_jsx("span", { className: styles.text, style: { ...style, ...textStyle }, children: getText(bundle.content, key) }, key));
+            }) }, i))) }));
 }
 //# sourceMappingURL=AnsiHighlight.js.map

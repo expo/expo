@@ -10,3 +10,4 @@ import type { ExtendedExceptionData } from '../LogBox';
  * Logs exceptions to the (native) console and displays them
  */
 export declare function parseUnexpectedThrownValue(error: Error | string): ExtendedExceptionData;
+//# sourceMappingURL=parseUnexpectedThrownValue.d.ts.map

@@ -1,6 +1,7 @@
 import type { IgnorePattern, LogData } from './Data/LogBoxData';
 import type { ExtendedExceptionData } from './Data/parseLogBoxLog';
-export { ExtendedExceptionData, IgnorePattern, LogData };
+export type { ExtendedExceptionData } from './Data/parseLogBoxLog';
+export type { IgnorePattern, LogData } from './Data/LogBoxData';
 declare const LogBox: {
     install(): void;
     uninstall(): void;
@@ -11,3 +12,4 @@ declare const LogBox: {
     addException(error: ExtendedExceptionData): void;
 };
 export default LogBox;
+//# sourceMappingURL=LogBox.d.ts.map

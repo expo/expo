@@ -1,3 +1,3 @@
-import React from 'react';
-declare const _default: () => React.JSX.Element;
+declare const _default: () => import("react/jsx-runtime").JSX.Element;
 export default _default;
+//# sourceMappingURL=logbox-web-polyfill.d.ts.map

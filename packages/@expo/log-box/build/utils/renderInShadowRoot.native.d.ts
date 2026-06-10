@@ -9,3 +9,4 @@ import type React from 'react';
 export declare function renderInShadowRoot(_id: string, _element: React.ReactNode): {
     unmount: () => void;
 };
+//# sourceMappingURL=renderInShadowRoot.native.d.ts.map

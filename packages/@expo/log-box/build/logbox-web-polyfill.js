@@ -1,14 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const react_1 = __importDefault(require("react"));
-const LogBoxLog_1 = require("./Data/LogBoxLog");
-const logbox_dom_polyfill_1 = __importDefault(require("./logbox-dom-polyfill"));
-exports.default = () => {
+import { jsx as _jsx } from "react/jsx-runtime";
+import { LogBoxLog } from './Data/LogBoxLog';
+import LogBoxInspectorContainer from './logbox-dom-polyfill';
+export default () => {
     const { logs, selectedLogIndex } = useLogsFromExpoStaticError();
-    return (react_1.default.createElement(logbox_dom_polyfill_1.default, { logs: logs, selectedIndex: selectedLogIndex, 
+    return (_jsx(LogBoxInspectorContainer, { logs: logs, selectedIndex: selectedLogIndex, 
         // LogBoxData actions props
         onDismiss: undefined, onChangeSelectedIndex: undefined, 
         // Environment polyfill props
@@ -26,7 +21,7 @@ function useLogsFromExpoStaticError() {
             const raw = JSON.parse(expoCliStaticErrorElement.textContent);
             return {
                 ...raw,
-                logs: raw.logs.map((raw) => new LogBoxLog_1.LogBoxLog(raw)),
+                logs: raw.logs.map((raw) => new LogBoxLog(raw)),
             };
         }
     }

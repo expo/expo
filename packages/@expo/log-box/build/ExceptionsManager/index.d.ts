@@ -33,3 +33,4 @@ declare const ErrorUtils: {
     SyntheticError: typeof SyntheticError;
 };
 export default ErrorUtils;
+//# sourceMappingURL=index.d.ts.map

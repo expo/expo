@@ -1,4 +1,3 @@
-import React from 'react';
 import type { LogLevel } from '../Data/Types';
 export declare function ErrorOverlayHeader({ selectedIndex, total, sdkVersion, ...props }: {
     onSelectIndex: (selectedIndex: number) => void;
@@ -11,4 +10,5 @@ export declare function ErrorOverlayHeader({ selectedIndex, total, sdkVersion, .
     selectedIndex: number;
     sdkVersion?: string;
     total: number;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
+//# sourceMappingURL=Header.d.ts.map
