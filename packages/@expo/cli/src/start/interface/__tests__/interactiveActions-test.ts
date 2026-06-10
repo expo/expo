@@ -1,17 +1,18 @@
 import { DevToolsPlugin } from '../../server/DevToolsPlugin';
-import { getDevToolsPluginWebpageBannerItems } from '../interactiveActions';
+import { getDevToolsPluginCliBannerItems } from '../interactiveActions';
 
 const DEFAULT_SERVER_URL = 'http://localhost:8081';
 const DEFAULT_PROJECT_ROOT = '/path/to/project';
 
-describe(getDevToolsPluginWebpageBannerItems, () => {
+describe(getDevToolsPluginCliBannerItems, () => {
   it('returns banner items for opted-in webpage plugins only', () => {
     const visiblePlugin = new DevToolsPlugin(
       {
         packageName: 'visible-plugin',
         packageRoot: '/path/to/visible-plugin',
         webpageRoot: '/path/to/visible-plugin/web',
-        webpageBanner: true,
+        cliBanner: true,
+        bannerTitle: 'Visible Plugin',
       },
       DEFAULT_PROJECT_ROOT
     );
@@ -27,7 +28,7 @@ describe(getDevToolsPluginWebpageBannerItems, () => {
       {
         packageName: 'cli-plugin',
         packageRoot: '/path/to/cli-plugin',
-        webpageBanner: true,
+        cliBanner: true,
         cliExtensions: {
           description: 'CLI only',
           entryPoint: 'index.js',
@@ -38,13 +39,13 @@ describe(getDevToolsPluginWebpageBannerItems, () => {
     );
 
     expect(
-      getDevToolsPluginWebpageBannerItems(
+      getDevToolsPluginCliBannerItems(
         [visiblePlugin, hiddenPlugin, cliOnlyPlugin],
         DEFAULT_SERVER_URL
       )
     ).toEqual([
       {
-        packageName: 'visible-plugin',
+        title: 'Visible Plugin',
         url: 'http://localhost:8081/_expo/plugins/visible-plugin',
       },
     ]);

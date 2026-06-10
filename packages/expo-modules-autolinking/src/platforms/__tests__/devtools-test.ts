@@ -11,7 +11,12 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-function createRevision(pkgDir: string, webpageRoot: string | undefined, webpageBanner?: boolean) {
+function createRevision(
+  pkgDir: string,
+  webpageRoot: string | undefined,
+  cliBanner?: boolean,
+  bannerTitle?: string
+) {
   return {
     name: 'example-devtools',
     path: pkgDir,
@@ -20,7 +25,8 @@ function createRevision(pkgDir: string, webpageRoot: string | undefined, webpage
       platforms: ['devtools'],
       devtools: {
         ...(webpageRoot != null ? { webpageRoot } : {}),
-        ...(webpageBanner != null ? { webpageBanner } : {}),
+        ...(cliBanner != null ? { cliBanner } : {}),
+        ...(bannerTitle != null ? { bannerTitle } : {}),
       },
     }),
   };
@@ -42,17 +48,27 @@ describe(resolveModuleAsync, () => {
     const result = await resolveModuleAsync('example-devtools', createRevision(pkgDir, 'web'));
     expect(result).not.toBeNull();
     expect(result!.webpageRoot).toBe(path.join(pkgDir, 'web'));
-    expect(result!.webpageBanner).toBe(false);
+    expect(result!.cliBanner).toBe(false);
   });
 
-  it('resolves webpageBanner option', async () => {
+  it('resolves cliBanner option', async () => {
     const pkgDir = path.resolve('/node_modules/example-devtools');
     const result = await resolveModuleAsync(
       'example-devtools',
       createRevision(pkgDir, 'web', true)
     );
     expect(result).not.toBeNull();
-    expect(result!.webpageBanner).toBe(true);
+    expect(result!.cliBanner).toBe(true);
+  });
+
+  it('resolves bannerTitle option', async () => {
+    const pkgDir = path.resolve('/node_modules/example-devtools');
+    const result = await resolveModuleAsync(
+      'example-devtools',
+      createRevision(pkgDir, 'web', true, 'Example DevTools')
+    );
+    expect(result).not.toBeNull();
+    expect(result!.bannerTitle).toBe('Example DevTools');
   });
 
   it('drops webpageRoot when it traverses out of the package directory', async () => {

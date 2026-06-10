@@ -12,3 +12,7 @@ Expo modules are configured in **expo-module.config.json**. This file currently 
   - `appDelegateSubscribers` — Names of Swift classes that hook into `ExpoAppDelegate` to receive AppDelegate lifecycle events.
 - `android` — Config with options specific to Android platform
   - `modules` — Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
+- `devtools` — Config with options specific to Expo CLI DevTools plugins
+  - `webpageRoot` — The package-local directory for Expo CLI to serve as the plugin web interface.
+  - `cliBanner` — Whether to show the plugin web interface URL in the Expo CLI startup banner. Defaults to `false`.
+  - `bannerTitle` — The title to show in the Expo CLI startup banner. Defaults to the package name.

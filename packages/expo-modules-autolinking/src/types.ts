@@ -84,7 +84,8 @@ export interface ModuleDescriptorDevTools {
   packageName: string;
   packageRoot: string;
   webpageRoot?: string;
-  webpageBanner: boolean;
+  cliBanner: boolean;
+  bannerTitle?: string;
   cliExtensions?: {
     description: string;
     commands: {
@@ -318,7 +319,11 @@ export interface RawExpoModuleConfig {
      * Whether to show the DevTools plugin URL in the Expo CLI startup banner.
      * Defaults to false.
      */
-    webpageBanner?: boolean;
+    cliBanner?: boolean;
+    /**
+     * The title to show in the Expo CLI startup banner. Defaults to the package name.
+     */
+    bannerTitle?: string;
     /**
      * Cli extension config for the module.
      */

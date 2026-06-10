@@ -24,14 +24,14 @@ interface MoreToolMenuItem extends ExpoChoice<string> {
   action?: () => unknown;
 }
 
-export function getDevToolsPluginWebpageBannerItems(
+export function getDevToolsPluginCliBannerItems(
   plugins: DevToolsPlugin[],
   defaultServerUrl: string
-): { packageName: string; url: string }[] {
+): { title: string; url: string }[] {
   return plugins
-    .filter((plugin) => plugin.webpageBanner && plugin.webpageEndpoint != null)
+    .filter((plugin) => plugin.cliBanner && plugin.webpageEndpoint != null)
     .map((plugin) => ({
-      packageName: plugin.packageName,
+      title: plugin.bannerTitle,
       url: new URL(plugin.webpageEndpoint!, defaultServerUrl).toString(),
     }));
 }
@@ -94,9 +94,6 @@ export class DevServerManagerActions {
 
         rows--;
         Log.log(printItem(chalk`Metro: {underline ${nativeRuntimeUrl}}`));
-        rows -= await this.printDevToolsPluginWebpageBannersAsync(
-          devServer.getUrlCreator().constructUrl({ scheme: 'http' })
-        );
       } catch (error) {
         console.log('err', error);
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
@@ -106,9 +103,6 @@ export class DevServerManagerActions {
           const serverUrl = devServer.getDevServerUrl();
           Log.log(printItem(chalk`Metro: {underline ${serverUrl}}`));
           rows--;
-          rows -= await this.printDevToolsPluginWebpageBannersAsync(
-            devServer.getUrlCreator().constructUrl({ scheme: 'http' })
-          );
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
           rows--;
         }
@@ -124,6 +118,8 @@ export class DevServerManagerActions {
       }
     }
 
+    rows -= await this.printDevToolsPluginCliBannersAsync();
+
     const dependencyCheckLines = getDependencyCheckMessage(options.dependencyCheckRef?.result);
     rows -= dependencyCheckLines.length;
 
@@ -136,18 +132,25 @@ export class DevServerManagerActions {
     }
   }
 
-  private async printDevToolsPluginWebpageBannersAsync(defaultServerUrl: string): Promise<number> {
+  private async printDevToolsPluginCliBannersAsync(): Promise<number> {
+    if (!this.devServerManager.getNativeDevServerPort()) {
+      return 0;
+    }
+
     try {
       const plugins = await this.devServerManager.devtoolsPluginManager.queryPluginsAsync();
-      const bannerItems = getDevToolsPluginWebpageBannerItems(plugins, defaultServerUrl);
+      const bannerItems = getDevToolsPluginCliBannerItems(
+        plugins,
+        this.devServerManager.getDefaultDevServer().getUrlCreator().constructUrl({ scheme: 'http' })
+      );
 
-      for (const { packageName, url } of bannerItems) {
-        Log.log(printItem(chalk`${packageName}: {underline ${url}}`));
+      for (const { title, url } of bannerItems) {
+        Log.log(printItem(chalk`${title}: {underline ${url}}`));
       }
 
       return bannerItems.length;
     } catch (error: any) {
-      debug(`Failed to print DevTools plugin webpage banners: ${error.toString()}`);
+      debug(`Failed to print DevTools plugin CLI banners: ${error.toString()}`);
       return 0;
     }
   }
