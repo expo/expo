@@ -21,8 +21,9 @@ class TestExpoUiModule : Module() {
     }
 
     ExpoUIView<MyCustomViewProps>("MyCustomView") {
+      val onCustomTap by Event<Unit>()
       Content { props ->
-        MyCustomViewContent(props)
+        MyCustomViewContent(props) { onCustomTap(Unit) }
       }
     }
   }

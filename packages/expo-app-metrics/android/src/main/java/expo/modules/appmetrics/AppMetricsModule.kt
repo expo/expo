@@ -3,6 +3,7 @@ package expo.modules.appmetrics
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.logevents.LogEventOptions
+import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateEventBody
@@ -119,7 +120,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         appSessionId = sessionManager.createSessionId()
 
         // Persist the session row eagerly so it's visible to readers
-        // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
+        // (`getMainSession`, `addCustomMetricToSession`, …) before any startup
         // metrics arrive. Older app runs are deactivated in the same coroutine
         // to keep the order well-defined. The `Job` is captured so `OnDestroy`
         // can wait for the INSERT before stamping `endTimestamp`.
@@ -165,8 +166,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      AsyncFunction("getAllSessions") Coroutine { ->
-        sessionManager.getAllSessions().map { JsSession.fromSessionWithMetrics(it) }
+      // Debug-only: surfaces the inactive (ended) sessions for on-device
+      // inspection (e.g. the ObserveTester app)
+      AsyncFunction("getInactiveSessions") Coroutine { ->
+        sessionManager.getInactiveSessions().map { JsSession.fromSessionWithMetrics(it) }
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
@@ -181,6 +184,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("getMainSession") Coroutine { ->
         sessionManager.getSessionById(appSessionId)?.let { JsSession.fromSessionWithMetrics(it) }
+      }
+
+      Class(NetworkRequestObserver::class) {
+        Constructor {
+          NetworkRequestObserver(appContext)
+        }
       }
     }
 

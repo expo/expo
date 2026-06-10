@@ -10,10 +10,14 @@
 
 ### 🐛 Bug fixes
 
-- [android] Fix nested `Host` double-composing children. ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Add a synchronous shadow node size update path, fixing a layout shift for `Host` `matchContents` views. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Accept JS `Double` timestamps in `Date` Convertible. JS numbers arrive across the JSI bridge as Swift `Double`; the prior `as? Int` branch never matched, throwing `ConvertingException<Date>` whenever a JS caller passed `someDate.getTime()` to a `Date` / `Date?` argument. ([#46340](https://github.com/expo/expo/pull/46340) by [@kyleasaff](https://github.com/kyleasaff))
+- [Android] Fix events being silently dropped for Compose views in custom modules. ([#46623](https://github.com/expo/expo/issues/46623) by [@benjaminkomen](https://github.com/benjaminkomen)) ([#46624](https://github.com/expo/expo/pull/46624) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix nested `Host` double-composing children. ([#46282](https://github.com/expo/expo/issues/46282) by [@sadbytes](https://github.com/sadbytes)) ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong))
 - [iOS] Read iPad-specific supported orientations from `UISupportedInterfaceOrientations~ipad`. ([#46281](https://github.com/expo/expo/issues/46281) by [@bryandent](https://github.com/bryandent)) ([#46306](https://github.com/expo/expo/pull/46306) by [@mvincentong](https://github.com/mvincentong))
 - [iOS] Throw an actionable error when a worklet is used but `react-native-worklets`'s native adapter isn't linked, instead of a misleading "not an instance of Worklet" failure. ([#46571](https://github.com/expo/expo/pull/46571) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Fix `canAskAgain` returning `false` for re-requestable permissions in the "Ask every time" state. ([#46683](https://github.com/expo/expo/pull/46683) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

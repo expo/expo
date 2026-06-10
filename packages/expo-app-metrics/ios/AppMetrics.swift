@@ -134,7 +134,7 @@ public struct AppMetrics {
   internal static func startNewForegroundSession() {
     AppMetricsActor.isolated {
       if let foregroundSession = Self.foregroundSession {
-        log.warn("[AppMetrics] New foreground session started while one was already active. Stopping the old session.")
+        logger.warn("[AppMetrics] New foreground session started while one was already active. Stopping the old session.")
         foregroundSession.stop()
       }
       foregroundSession = ForegroundSession()

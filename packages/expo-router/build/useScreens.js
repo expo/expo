@@ -168,12 +168,6 @@ function fromImport(value, { ErrorBoundary, SuspenseFallback, ...component }) {
     }
     return { default: component.default, SuspenseFallback };
 }
-function fromLoadedRoute(value, res) {
-    if (!(res instanceof Promise)) {
-        return fromImport(value, res);
-    }
-    return res.then(fromImport.bind(null, value));
-}
 // TODO: Maybe there's a more React-y way to do this?
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap();
@@ -186,9 +180,22 @@ function getQualifiedRouteComponent(value) {
     let LayoutSuspenseFallback;
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
     if (import_mode_1.default === 'lazy') {
-        ScreenComponent = react_2.default.lazy(async () => {
+        ScreenComponent = react_2.default.lazy(() => {
             const res = value.loadRoute();
-            return fromLoadedRoute(value, res);
+            // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
+            // the route is synchronously available, if the `loadRoute` method returns a loaded route
+            // synchronously
+            if (!('then' in res)) {
+                return {
+                    then(resolve) {
+                        const ret = fromImport(value, res);
+                        return Promise.resolve(resolve ? resolve(ret) : ret);
+                    },
+                };
+            }
+            else {
+                return res.then(fromImport.bind(null, value));
+            }
         });
         if (__DEV__) {
             ScreenComponent.displayName = `AsyncRoute(${value.route})`;
