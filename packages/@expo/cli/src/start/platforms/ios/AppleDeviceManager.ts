@@ -1,4 +1,4 @@
-import * as osascript from '@expo/osascript';
+import { spawnAsync as spawnAppleScriptAsync } from '@expo/osascript';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -216,7 +216,13 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     // In non-interactive mode, we should assume this is an agent and not attempt to focus the Simulator app since it doesn't need focus.
     if (isInteractive()) {
       // TODO: Focus the individual window
-      await osascript.execAsync(`tell application "Simulator" to activate`);
+      await spawnAppleScriptAsync([
+        `try`,
+        `tell application "Simulator" to activate`,
+        `on error`,
+        `tell application "DeviceHub" to activate`,
+        `end try`,
+      ]);
     }
   }
 
