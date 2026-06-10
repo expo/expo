@@ -319,7 +319,7 @@ export class FileSystemFile {
     return this.bytesSync();
   }
 
-  info(options: { md5?: boolean } = {}): any {
+  infoSync(options: { md5?: boolean } = {}): any {
     const entry = store.get(normalizeKey(this.uri));
     if (!entry || entry.kind !== 'file' || !entry.exists) {
       return { exists: false, uri: this.uri };
@@ -333,6 +333,17 @@ export class FileSystemFile {
       creationTime: entry.createdAt ?? null,
       ...(options.md5 ? { md5: fakeMd5(this.uri, size) } : {}),
     };
+  }
+
+  async info(options: { md5?: boolean } = {}): Promise<any> {
+    return this.infoSync(options);
+  }
+
+  async getMd5Async(): Promise<string> {
+    if (!this.exists) {
+      throw new Error('Cannot read file');
+    }
+    return this.md5!;
   }
 
   open(mode?: FileMode): FileSystemFileHandle {

@@ -1809,6 +1809,7 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'file.txt');
         file.writeSync('Hello world');
         expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+        expect(await file.getMd5Async()).toBe('3e25960a79dbc69b674cd4ec67a72c62');
       });
 
       it('returns null size and md5 for nonexistent files', async () => {
@@ -1941,7 +1942,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(url);
         src.create();
         src.writeSync('Hello World');
-        const result = src.info({ md5: true });
+        const result = src.infoSync({ md5: true });
         expect(result.exists).toBe(true);
         if (result.exists) {
           const { uri, size, modificationTime, creationTime, md5 } = result;
@@ -1956,7 +1957,7 @@ export async function test({ describe, expect, it, ...t }) {
         const url = `${testDirectory}executes_correctly_when_options_are_undefined.txt`;
         const src = new File(url);
         src.writeSync('Hello World');
-        const result = src.info();
+        const result = src.infoSync();
         if (result.exists) {
           expect(result.md5).toBeNull();
         }
@@ -1966,8 +1967,25 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(url);
         src.writeSync('Hello world');
         src.delete();
-        const result = src.info();
+        const result = src.infoSync();
         expect(result.exists).toBe(false);
+      });
+
+      it('async implementation works', async () => {
+        const url = `${testDirectory}async_implementation_works.txt`;
+        const src = new File(url);
+        src.create();
+        src.writeSync('Hello World');
+        const result = await src.info({ md5: true });
+        expect(result.exists).toBe(true);
+        if (result.exists) {
+          const { uri, size, modificationTime, creationTime, md5 } = result;
+          expect(modificationTime).not.toBeNull();
+          expect(creationTime).not.toBeNull();
+          expect(md5).not.toBeNull();
+          expect(uri).toBe(url);
+          expect(size).toBe(11);
+        }
       });
     });
     describe('When getting directory info', () => {

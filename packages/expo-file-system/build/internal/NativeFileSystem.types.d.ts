@@ -167,9 +167,21 @@ export declare class NativeFileSystemFile {
     /**
      * Retrieves an object containing properties of a file
      * @throws Error If the application does not have read access to the file, or if the path does not point to a file (for example, it points to a directory).
+     * @returns A promise that resolves to an object with file metadata (for example, size, creation date, and so on).
+     */
+    info(options?: InfoOptions): Promise<FileInfo>;
+    /**
+     * Retrieves an object containing properties of a file synchronously
+     * @throws Error If the application does not have read access to the file, or if the path does not point to a file (for example, it points to a directory).
      * @returns An object with file metadata (for example, size, creation date, and so on).
      */
-    info(options?: InfoOptions): FileInfo;
+    infoSync(options?: InfoOptions): FileInfo;
+    /**
+     * Retrieves the MD5 hash of the file asynchronously.
+     * @throws Error if the file does not exist or cannot be read.
+     * @returns A promise that resolves to the MD5 hash of the file.
+     */
+    getMd5Async(): Promise<string>;
     /**
      * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
      * Also, `false` if the application does not have read access to the file.

@@ -190,8 +190,16 @@ public final class FileSystemModule: Module {
         return try FileSystemFileHandle(file: file, mode: mode)
       }
 
-      Function("info") { (file: FileSystemFile, options: InfoOptions?) in
+      AsyncFunction("info") { (file: FileSystemFile, options: InfoOptions?) in
         return try file.info(options: options ?? InfoOptions())
+      }
+
+      Function("infoSync") { (file: FileSystemFile, options: InfoOptions?) in
+        return try file.info(options: options ?? InfoOptions())
+      }
+
+      AsyncFunction("getMd5Async") { file in
+        return try file.md5
       }
 
       AsyncFunction("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
