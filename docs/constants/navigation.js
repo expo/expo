@@ -636,19 +636,6 @@ export const eas = [
 export const learn = [
   makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
-    'Build with AI tutorial',
-    [
-      makePage('tutorial/build-with-ai/introduction.mdx'),
-      makePage('tutorial/build-with-ai/set-up-your-tools.mdx'),
-      makePage('tutorial/build-with-ai/create-your-first-app.mdx'),
-      makePage('tutorial/build-with-ai/build-the-home-screen.mdx'),
-      makePage('tutorial/build-with-ai/add-stickers.mdx'),
-      makePage('tutorial/build-with-ai/save-your-creation.mdx'),
-      makePage('tutorial/build-with-ai/finishing-touches.mdx'),
-    ],
-    { expanded: true }
-  ),
-  makeSection(
     'Expo tutorial',
     [
       makePage('tutorial/introduction.mdx'),
@@ -662,6 +649,19 @@ export const learn = [
       makePage('tutorial/platform-differences.mdx'),
       makePage('tutorial/configuration.mdx'),
       makePage('tutorial/follow-up.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
+    'Build with AI tutorial',
+    [
+      makePage('tutorial/build-with-ai/introduction.mdx'),
+      makePage('tutorial/build-with-ai/set-up-your-tools.mdx'),
+      makePage('tutorial/build-with-ai/create-your-first-app.mdx'),
+      makePage('tutorial/build-with-ai/build-the-home-screen.mdx'),
+      makePage('tutorial/build-with-ai/add-stickers.mdx'),
+      makePage('tutorial/build-with-ai/save-your-creation.mdx'),
+      makePage('tutorial/build-with-ai/finishing-touches.mdx'),
     ],
     { expanded: true }
   ),

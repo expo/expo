@@ -3,11 +3,9 @@ title: Create your first app
 description: In this chapter, direct your AI agent to create a new Expo app and see it running on your phone.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -31,7 +29,7 @@ Then start your agent in that folder: run `claude` or `codex`. If you're using C
 
 Paste the following prompt into your agent:
 
-```text Prompt|wrap=true
+```text Prompt|wrap
 Create a new Expo app in this folder (the current directory) by running npx create-expo-app@latest and choosing the SDK 54 template — I will test the app with Expo Go on my phone, which uses SDK 54. After it is created, run the project's reset-project script so we start from a minimal app, and delete the app-example folder that the script leaves behind. Don't start the development server; I will run that myself.
 ```
 
@@ -72,7 +70,7 @@ You can also find your project under the **Projects** tab in Expo Go when you're
 
 Now close the loop: ask the agent for a visible change and watch it land on your phone. Paste the following prompt into your agent:
 
-```text Prompt|wrap=true
+```text Prompt|wrap
 Change the home screen so it shows the text "Home screen" in white, centered on a dark background with the color #25292e.
 ```
 
@@ -101,11 +99,11 @@ The next chapters end with a short reminder linking back to this section.
 
 ## Summary
 
-You created an app, ran it on your phone, and changed it with a single prompt. Next, you'll turn this empty screen into the real thing.
-
-<BoxLink
-  title="Next: Build the home screen"
-  Icon={BookOpen02Icon}
-  description="Add navigation tabs, the photo viewer, and an image picker."
-  href="/tutorial/build-with-ai/build-the-home-screen/"
+<ProgressTracker
+  currentChapterIndex={1}
+  name="BUILD_WITH_AI"
+  summary="You created an app, ran it on your phone, and changed it with a single prompt."
+  nextChapterDescription="In the next chapter, you'll turn this empty screen into the real thing: navigation tabs, the photo viewer, and an image picker."
+  nextChapterTitle="Build the home screen"
+  nextChapterLink="/tutorial/build-with-ai/build-the-home-screen/"
 />

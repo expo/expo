@@ -8,6 +8,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
@@ -213,7 +214,7 @@ The MCP server also offers local capabilities: with extra setup, a multimodal ag
 
 Let's confirm everything is wired up. Paste the following prompt into your agent:
 
-```text Prompt|wrap=true
+```text Prompt|wrap
 Use the Expo MCP server to search the Expo documentation for "expo-image-picker" and tell me in one sentence what it does.
 ```
 
@@ -223,11 +224,11 @@ Use the Expo MCP server to search the Expo documentation for "expo-image-picker"
 
 ## Summary
 
-Your toolkit is complete: an AI agent that knows how to build Expo apps, Node.js to power the tooling, and Expo Go on your phone to see the results. Time to build.
-
-<BoxLink
-  title="Next: Create your first app"
-  Icon={BookOpen02Icon}
-  description="Have your agent create a new app and see it running on your phone."
-  href="/tutorial/build-with-ai/create-your-first-app/"
+<ProgressTracker
+  currentChapterIndex={0}
+  name="BUILD_WITH_AI"
+  summary="Your toolkit is complete: an AI agent that knows how to build Expo apps, Node.js to power the tooling, and Expo Go on your phone to see the results."
+  nextChapterDescription="In the next chapter, your agent creates a new app and you see it running on your phone."
+  nextChapterTitle="Create your first app"
+  nextChapterLink="/tutorial/build-with-ai/create-your-first-app/"
 />

@@ -3,10 +3,8 @@ title: Add stickers
 description: In this chapter, direct your AI agent to add an emoji picker modal and make the sticker respond to drag and tap gestures.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
 
 In this chapter, the app earns its name: you'll pick an emoji from a sliding panel, smash it onto your photo, and move it around with your fingers.
@@ -17,7 +15,7 @@ In this chapter, the app earns its name: you'll pick an emoji from a sliding pan
 
 Once a photo is chosen, the app should switch from "picking a photo" mode to "decorating it" mode. Paste the following prompt into your agent:
 
-```text Prompt|wrap=true
+```text Prompt|wrap
 When a photo has been chosen (either picked from the library or by tapping "Use this photo"), replace the two buttons with a row of options: a "Reset" option on the left that brings back the original buttons, and a circular "+" button in the middle. Tapping "+" should slide up a modal from the bottom titled "Choose a sticker" that shows the emoji images from the assets/images folder in a horizontally scrolling list. When I tap an emoji, close the modal and place that emoji on top of the photo as a sticker.
 ```
 
@@ -37,7 +35,7 @@ When a photo has been chosen (either picked from the library or by tapping "Use 
 
 A sticker stuck in one spot isn't much fun. Paste the following prompt into your agent:
 
-```text Prompt|wrap=true
+```text Prompt|wrap
 Make the sticker interactive using the react-native-gesture-handler and react-native-reanimated libraries: I want to drag the sticker around with my finger to place it anywhere on the photo, and double-tap it to double its size (double-tapping again should shrink it back). The movement and resizing should animate smoothly.
 ```
 
@@ -51,11 +49,11 @@ This step is a good reminder of your role: the agent can read its own code, but 
 
 ## Summary
 
-Your photo now wears a draggable, resizable emoji sticker. All that's missing is a way to keep your creation.
-
-<BoxLink
-  title="Next: Save your creation"
-  Icon={BookOpen02Icon}
-  description="Save the decorated photo to your phone's photo library."
-  href="/tutorial/build-with-ai/save-your-creation/"
+<ProgressTracker
+  currentChapterIndex={3}
+  name="BUILD_WITH_AI"
+  summary="Your photo now wears a draggable, resizable emoji sticker. All that's missing is a way to keep your creation."
+  nextChapterDescription="In the next chapter, you'll save the decorated photo to your phone's photo library."
+  nextChapterTitle="Save your creation"
+  nextChapterLink="/tutorial/build-with-ai/save-your-creation/"
 />
