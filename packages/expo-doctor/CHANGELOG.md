@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Recognize the React Native Directory `new-arch-only` status so New-Architecture-only libraries aren't flagged ([#46755](https://github.com/expo/expo/pull/46755) by [@zoontek](https://github.com/zoontek))
-
 ### 💡 Others
+
+## 1.19.10 — 2026-06-10
+
+### 🐛 Bug fixes
+
+- Recognize the React Native Directory `new-arch-only` status so New-Architecture-only libraries aren't flagged ([#46755](https://github.com/expo/expo/pull/46755) by [@zoontek](https://github.com/zoontek))
 
 ## 1.19.9 — 2026-06-05
 

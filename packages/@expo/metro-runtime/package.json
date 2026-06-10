@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "56.0.14",
+  "version": "56.0.15",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "main": "src/index.ts",
@@ -38,7 +38,7 @@
     "url": "https://github.com/expo/expo.git"
   },
   "peerDependencies": {
-    "@expo/log-box": "workspace:^56.0.12",
+    "@expo/log-box": "workspace:^56.0.13",
     "expo": "*",
     "react": "*",
     "react-dom": "*",
@@ -50,7 +50,7 @@
     }
   },
   "dependencies": {
-    "@expo/log-box": "workspace:^56.0.12",
+    "@expo/log-box": "workspace:^56.0.13",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.10 — 2026-06-10
+
+### 🐛 Bug fixes
+
 - Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))
 - Forward unhandled errors and rejections to the dev server console. ([#46578](https://github.com/expo/expo/pull/46578) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Include JavaScript and React component stacks in web dev server error logs. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))

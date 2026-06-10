@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.1.3 — 2026-06-10
+
+### 🐛 Bug fixes
+
 - Deduplicate `availableVideoTracks` for HLS sources with multiple audio renditions. ([#46691](https://github.com/expo/expo/pull/46691) by [@zoontek](https://github.com/zoontek))
 - Recover failed players to fix broken playback placeholder ([#46681](https://github.com/expo/expo/pull/46681) by [@zoontek](https://github.com/zoontek))
-
-### 💡 Others
 
 ## 56.1.2 — 2026-05-21
 
