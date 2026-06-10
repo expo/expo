@@ -12,6 +12,7 @@ import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.JsSession
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.storage.SessionCoordinator
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
@@ -44,18 +45,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   lateinit var memoryMetricsManager: MemoryMetricsManager
   lateinit var updatesMonitoring: UpdatesMonitoring
   private var subscription: UpdatesStateChangeSubscription? = null
-  lateinit var appSessionId: String
 
   private val moduleCreationTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
 
   lateinit var sessionManager: SessionManager
 
-  // Tracks the in-flight session-row INSERT kicked off in `OnCreate`. `OnDestroy`
-  // joins it before stamping `endTimestamp` so the UPDATE doesn't race with the
-  // INSERT and silently no-op.
-  private var sessionStartJob: Job? = null
-
-  private var didSaveStartupMetrics: Boolean = false
+  // Owns the main session lifecycle and gates every write on the session row
+  // being persisted first.
+  lateinit var sessionCoordinator: SessionCoordinator
 
   // Lazy-initialized metadata - created once when first needed
   private val metadata: AppMetadata? by lazy {
@@ -91,11 +88,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // ordering startup-metric writes ahead of caller-driven log events.
           saveStartupMetricsIfNotSaved()
           // Globals merge happens inside `sessionManager.addLogs` so every
-          // persistence path picks them up.
-          sessionManager.addLogs(
+          // persistence path picks them up. The coordinator waits for the
+          // session row before inserting.
+          sessionCoordinator.addLogs(
             listOf(
               LogRecord(
-                sessionId = appSessionId,
+                sessionId = sessionCoordinator.sessionId,
                 timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
                 name = validatedName,
                 body = validatedBody,
@@ -103,8 +101,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
                 attributes = sanitized.attributes?.let { JsonAny.encodeMapToJsonString(it) },
                 droppedAttributesCount = sanitized.droppedCount
               )
-            ),
-            sessionId = appSessionId
+            )
           )
         }
       }
@@ -116,27 +113,24 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       OnCreate {
         sessionManager = SessionManager(context)
 
-        appSessionId = sessionManager.createSessionId()
+        sessionCoordinator = SessionCoordinator(
+          sessionManager = sessionManager,
+          scope = scope,
+          deactivateBefore = moduleCreationTimestamp,
+          startTimestamp = TimeUtils.getProcessStartTimestamp(),
+          metadata = metadata
+        )
 
         // Persist the session row eagerly so it's visible to readers
-        // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
-        // metrics arrive. Older app runs are deactivated in the same coroutine
-        // to keep the order well-defined. The `Job` is captured so `OnDestroy`
-        // can wait for the INSERT before stamping `endTimestamp`.
-        sessionStartJob = scope.launch {
-          sessionManager.deactivateAllSessionsBefore(moduleCreationTimestamp)
-          sessionManager.startSessionWithIdAt(
-            sessionId = appSessionId,
-            timestamp = TimeUtils.getProcessStartTimestamp(),
-            metadata = metadata
-          )
-        }
+        // (`getMainSession`, …) as soon as possible. Idempotent:
+        // a racing write triggers (and joins) the same single start job.
+        scope.launch { sessionCoordinator.awaitSessionReady() }
 
         memoryMetricsManager = MemoryMetricsManager(
           context = context,
           sessionManager = sessionManager
         )
-        updatesMonitoring = UpdatesMonitoring(sessionId = appSessionId)
+        updatesMonitoring = UpdatesMonitoring(sessionId = sessionCoordinator.sessionId)
         updatesMonitoring.patchAppInfoIfNeeded(metadata)
         UpdatesControllerRegistry.controller?.get()?.let { controller ->
           subscription = controller.subscribeToUpdatesStateChanges(this@AppMetricsModule)
@@ -156,12 +150,11 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       OnDestroy {
         // `modulesQueue` is cancelled immediately after this hook returns, so
         // run the UPDATE on the calling thread to make sure the end timestamp
-        // is persisted before teardown. Joining `sessionStartJob` first
-        // guarantees the INSERT lands before the UPDATE so the stamp doesn't
+        // is persisted before teardown. `stopSession` awaits the session-start
+        // job first, so the INSERT lands before the UPDATE and the stamp doesn't
         // silently no-op on a missing row.
         runBlocking {
-          sessionStartJob?.join()
-          sessionManager.stopSession(appSessionId)
+          sessionCoordinator.stopSession()
         }
       }
 
@@ -180,7 +173,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       AsyncFunction("getMainSession") Coroutine { ->
-        sessionManager.getSessionById(appSessionId)?.let { JsSession.fromSessionWithMetrics(it) }
+        sessionManager.getSessionById(sessionCoordinator.sessionId)?.let { JsSession.fromSessionWithMetrics(it) }
       }
     }
 
@@ -196,22 +189,25 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
         scope.launch {
           // Attach any pending startup metrics first so the download-time
-          // metric lands alongside them. The session row itself is already
-          // persisted eagerly in `OnCreate`.
+          // metric lands alongside them. The coordinator waits for the session
+          // row before inserting.
           saveStartupMetricsIfNotSaved()
-          sessionManager.addMetrics(listOf(metric), sessionId = appSessionId)
+          sessionCoordinator.addMetrics(listOf(metric))
         }
       }
     }
   }
 
-  // TODO(@lukmccall): Potential race condition - multiple coroutines could enter the block simultaneously, causing duplicates.
-  internal suspend fun saveStartupMetricsIfNotSaved() {
-    if (!didSaveStartupMetrics) {
-      // The session row is written eagerly in `OnCreate`, so we only need to
-      // attach the startup metrics here once they've been collected.
-      sessionManager.addMetrics(AppStartupManager.metrics, sessionId = appSessionId)
-      didSaveStartupMetrics = true
+  // Persists the collected startup metrics once, then suspends until that write
+  // completes. The coordinator waits for the session row before inserting.
+  internal suspend fun saveStartupMetricsIfNotSaved() = saveStartupMetricsJob.join()
+  
+  // Startup metrics are persisted on first access and exactly once: `by lazy`
+  // runs the initializer a single time even across threads, so concurrent callers
+  // don't each insert them.
+  private val saveStartupMetricsJob: Job by lazy {
+    scope.launch {
+      sessionCoordinator.addMetrics(AppStartupManager.metrics)
     }
   }
 }
