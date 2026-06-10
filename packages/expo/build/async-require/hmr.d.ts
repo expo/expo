@@ -1,3 +1,9 @@
+import type { MarshalledProps } from '../dom/dom-entry';
+declare global {
+    interface Window {
+        $$EXPO_INITIAL_PROPS?: MarshalledProps;
+    }
+}
 type LogLevel = 'trace' | 'info' | 'warn' | 'error' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
 /**
  * HMR Client that receives from the server HMR updates and propagates them

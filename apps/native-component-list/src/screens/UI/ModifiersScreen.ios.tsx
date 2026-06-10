@@ -37,8 +37,11 @@ import {
   onLongPressGesture,
   onAppear,
   onDisappear,
+  onGeometryChange,
   accessibilityLabel,
   accessibilityIdentifier,
+  accessibilityHidden,
+  accessibilityInputLabels,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -656,6 +659,29 @@ export default function ModifiersScreen() {
               </HStack>
             )}
 
+            {/* accessibilityHidden: decorative SF Symbol skipped by VoiceOver */}
+            <HStack spacing={6}>
+              <Image
+                systemName="exclamationmark.triangle"
+                size={17}
+                modifiers={[accessibilityHidden(true)]}
+              />
+              <Text>Something went wrong</Text>
+            </HStack>
+
+            {/* accessibilityInputLabels: Voice Control can target this by spoken phrase */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#1ABC9C'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityInputLabels(['Hang up', 'End call']),
+                ]}>
+                End
+              </Text>
+            </HStack>
+
             <Text
               modifiers={[
                 background('#E67E22'),
@@ -784,6 +810,8 @@ export default function ModifiersScreen() {
           </Section>
 
           <AppearSection />
+
+          <GeometrySection />
 
           {/* Container Shape Modifier */}
           <Section title="Content Shape Modifier">
@@ -943,6 +971,29 @@ function AppearSection() {
           ]}
         />
       </DisclosureGroup>
+    </Section>
+  );
+}
+
+function GeometrySection() {
+  const [frame, setFrame] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  return (
+    <Section title="onGeometryChange (position + size)">
+      <Text
+        modifiers={[
+          background('#5856D6'),
+          cornerRadius(12),
+          padding({ all: 16 }),
+          foregroundStyle({ type: 'color', color: '#FFFFFF' }),
+          onGeometryChange(setFrame),
+        ]}>
+        Track my frame
+      </Text>
+      <Text modifiers={[font({ size: 13 }), monospacedDigit()]}>
+        {`global x: ${frame.x.toFixed(0)}  y: ${frame.y.toFixed(0)}  •  size ${frame.width.toFixed(
+          0
+        )} × ${frame.height.toFixed(0)} (pt)`}
+      </Text>
     </Section>
   );
 }

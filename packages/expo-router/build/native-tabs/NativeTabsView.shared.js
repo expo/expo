@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSelectedScreenKey = useSelectedScreenKey;
 exports.useOnTabSelectedHandler = useOnTabSelectedHandler;
+exports.useOnTabSelectionPreventedHandler = useOnTabSelectionPreventedHandler;
 exports.useSharedScreenProps = useSharedScreenProps;
 exports.ScreenContent = ScreenContent;
 const jsx_runtime_1 = require("react/jsx-runtime");
@@ -28,6 +29,20 @@ function useOnTabSelectedHandler(onTabChange) {
         // navigator emits `tabPress` and dispatches `JUMP_TO`.
         const isNativeAction = actionOrigin !== 'programmatic-js';
         onTabChange({ selectedKey: selectedScreenKey, provenance, isNativeAction });
+    }, [onTabChange]);
+}
+function useOnTabSelectionPreventedHandler(onTabChange) {
+    return (0, react_1.useCallback)(({ nativeEvent: { preventedScreenKey, provenance } }) => {
+        // Forward the disabled tab the user tapped (`preventedScreenKey`), not the
+        // still-active `selectedScreenKey`. `isNativeAction` is required by the payload
+        // and is always `true` here, since programmatic JS navigation bypasses
+        // `preventNativeSelection` and therefore never reaches this callback.
+        onTabChange({
+            selectedKey: preventedScreenKey,
+            provenance,
+            isNativeAction: true,
+            isPrevented: true,
+        });
     }, [onTabChange]);
 }
 function useSharedScreenProps(props) {

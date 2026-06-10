@@ -111,7 +111,7 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
 
 // Also please keep `unit-testing.mdx` file up to date
 jestPreset.transformIgnorePatterns = [
-  '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base))',
+  '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|standard-navigation))',
   // Disable transforming the reanimated plugin in multi-platform tests, causing "Reentrant plugin detected trying to load react-native-reanimated/plugin.."
   '/node_modules/react-native-reanimated/plugin/',
   // Disable transforming the react-native babel preset, since it's part of the transformer itself

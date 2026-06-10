@@ -333,6 +333,48 @@ export default function BottomSheetWithFlexRNContentExample() {
 }
 ```
 
+### Scrollable React Native content
+
+Nest a scrollable React Native list such as `FlatList`, `ScrollView`, or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list) inside the sheet with `RNHostView`. Size the sheet with [`presentationDetents`](modifiers/#presentationdetentsdetents-options) and the list scrolls within that height.
+
+```tsx BottomSheetWithScrollableContentExample.tsx
+import { useState } from 'react';
+import { FlatList, Text as RNText, View } from 'react-native';
+import { Host, BottomSheet, Button, Group, RNHostView, VStack } from '@expo/ui/swift-ui';
+import { presentationDetents, presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
+
+const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
+
+export default function BottomSheetWithScrollableContentExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host matchContents>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <Group
+            modifiers={[
+              presentationDetents(['medium', 'large']),
+              presentationDragIndicator('visible'),
+            ]}>
+            <RNHostView>
+              <View style={{ padding: 16 }}>
+                <FlatList
+                  data={DATA}
+                  keyExtractor={item => item}
+                  renderItem={({ item }) => <RNText style={{ paddingVertical: 16 }}>{item}</RNText>}
+                />
+              </View>
+            </RNHostView>
+          </Group>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

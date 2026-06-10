@@ -55,7 +55,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/expo-modules-macros-plugin": "~0.0.9",
+    "@expo/expo-modules-macros-plugin": "0.2.2",
     "expo-modules-jsi": "workspace:~56.0.7",
     "invariant": "^2.2.4"
   },

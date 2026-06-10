@@ -10,12 +10,14 @@ export function createRecordingOptions(options) {
     if (Platform.OS === 'ios') {
         return {
             ...commonOptions,
+            directory: options.directory,
             ...options.ios,
         };
     }
     else if (Platform.OS === 'android') {
         return {
             ...commonOptions,
+            directory: options.directory,
             ...options.android,
         };
     }

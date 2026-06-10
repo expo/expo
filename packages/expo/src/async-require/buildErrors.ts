@@ -1,4 +1,4 @@
-import { withoutANSIColorStyles } from '@expo/log-box/utils';
+import { withoutANSIColorStyles } from '@expo/log-box-utils';
 
 export class HMRMetroBuildError extends Error {
   public originalMessage: string;

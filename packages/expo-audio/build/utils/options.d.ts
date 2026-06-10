@@ -6,6 +6,9 @@ type CommonRecordingOptions = {
     bitRate: number;
     isMeteringEnabled: boolean;
 };
-export declare function createRecordingOptions(options: RecordingOptions): CommonRecordingOptions & (RecordingOptionsIos | RecordingOptionsAndroid | RecordingOptionsWeb);
+type NativeRecordingOptions = {
+    directory?: RecordingOptions['directory'];
+};
+export declare function createRecordingOptions(options: RecordingOptions): CommonRecordingOptions & ((NativeRecordingOptions & RecordingOptionsIos) | (NativeRecordingOptions & RecordingOptionsAndroid) | RecordingOptionsWeb);
 export {};
 //# sourceMappingURL=options.d.ts.map

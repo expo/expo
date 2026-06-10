@@ -158,15 +158,37 @@ async function getLocalSdkMajorVersion(): Promise<string | null> {
   return version?.split('.')[0] ?? null;
 }
 
+// The first SDK the CLI is versioned in lockstep with (CLI major == SDK major). Earlier releases
+// used an independent scheme (e.g. `1.x` for sdk-54, `2.x` for sdk-55) whose major doesn't map to
+// an SDK, so anything below this falls back to `latest`.
+const FIRST_SDK_ALIGNED_MAJOR = 56;
+
 /**
- * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
+ * Resolves the template dist-tag targeted by a `create-expo-module` release from its own package
+ * version. The CLI is published in lockstep with the SDK (e.g. `56.x.y` ships alongside SDK 56), so
+ * its major version is the SDK major and maps to `sdk-<major>`. Falls back to `latest` for the
+ * older, non-SDK-aligned versions.
+ */
+export function getTemplateDistTag(version: string | undefined): string {
+  const major = Number(version?.split('.')[0]);
+  return Number.isInteger(major) && major >= FIRST_SDK_ALIGNED_MAJOR ? `sdk-${major}` : 'latest';
+}
+
+/**
+ * Selects correct version of the template based on the SDK version and EXPO_BETA flag.
+ *
+ * - For local modules, the SDK is derived from the host project's `expo` dependency.
+ * - For standalone modules, the SDK is derived from the CLI's own version, so that
+ *   `create-expo-module@sdk-XX` scaffolds an SDK XX module rather than always using `latest`.
+ *
+ * In both cases we fall back to `latest` when the SDK can't be determined.
  */
 async function getTemplateVersion(isLocal: boolean) {
   if (env.EXPO_BETA) {
     return 'next';
   }
   if (!isLocal) {
-    return 'latest';
+    return getTemplateDistTag(require('../package.json').version);
   }
   try {
     const sdkVersionMajor = await getLocalSdkMajorVersion();

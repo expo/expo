@@ -35,9 +35,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          submodules: true
-
       - name: Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
 
@@ -45,12 +42,12 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
 
       - name: Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: 'pnpm'
@@ -78,7 +75,7 @@ jobs:
           et prebuild $ARGS
 
       - name: Upload XCFrameworks
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: xcframeworks-${{ matrix.flavor }}
           path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz

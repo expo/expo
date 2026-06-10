@@ -32,7 +32,7 @@ export type RouteNode = {
     /** The type of RouteNode */
     type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
     /** Load a route into memory. Returns the exports from a route. */
-    loadRoute: () => Partial<LoadedRoute>;
+    loadRoute: () => LoadedRoute;
     /** Loaded initial route name. */
     initialRouteName?: string;
     /** Nested routes */

@@ -190,13 +190,17 @@ export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
 
 /**
- * Calls the handler whenever the view's geometry changes. Sizes are in points.
- * @param handler - Function called with the new size.
+ * Calls the handler whenever the view's geometry changes, with its position and size.
+ * `x` and `y` are in the global coordinate space (relative to the window); all values are in points.
+ * @param handler - Function called with the new frame.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
  */
-export const onGeometryChange = (handler: (size: { width: number; height: number }) => void) =>
-  createModifierWithEventListener('onGeometryChange', (size: { width: number; height: number }) =>
-    handler(size)
+export const onGeometryChange = (
+  handler: (frame: { x: number; y: number; width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onGeometryChange',
+    (frame: { x: number; y: number; width: number; height: number }) => handler(frame)
   );
 
 /**
@@ -732,6 +736,16 @@ export const accessibilityValue = (value: string) =>
   createModifier('accessibilityValue', { value });
 
 /**
+ * Sets alternative spoken phrases that Voice Control uses to refer to the view.
+ * Each label is read as a `Text` element on iOS. For example, an "End" button
+ * might offer "Hang up" so users can trigger it by saying that phrase.
+ * @param inputLabels - The spoken phrases that select the view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityinputlabels(_:)).
+ */
+export const accessibilityInputLabels = (inputLabels: string[]) =>
+  createModifier('accessibilityInputLabels', { inputLabels });
+
+/**
  * Sets an accessibility identifier for the view.
  *
  * Unlike `accessibilityLabel`, this value is for UI testing and is not visible
@@ -742,6 +756,17 @@ export const accessibilityValue = (value: string) =>
  */
 export const accessibilityIdentifier = (identifier: string) =>
   createModifier('accessibilityIdentifier', { identifier });
+
+/**
+ * Marks the view as decoratively-named so VoiceOver and other assistive
+ * technologies skip it during element traversal. Useful for hero icons or
+ * presentational imagery that's already described by adjacent text.
+ *
+ * @param hidden - Whether the view should be hidden from accessibility. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityhidden(_:)).
+ */
+export const accessibilityHidden = (hidden: boolean = true) =>
+  createModifier('accessibilityHidden', { hidden });
 
 /**
  * Sets layout priority for the view.
@@ -882,6 +907,19 @@ export const truncationMode = (mode: 'head' | 'middle' | 'tail') =>
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/allowstightening(_:)).
  */
 export const allowsTightening = (value: boolean) => createModifier('allowsTightening', { value });
+/**
+ * Sets the minimum amount that text in this view scales down to fit in the available space.
+ *
+ * Use this modifier if the text you place in a view doesn't fit and it's okay if the text shrinks
+ * to accommodate. For example, a label with a minimum scale factor of `0.5` draws its text in a
+ * font size as small as half of the actual font if needed.
+ * @param factor - A fraction between `0` and `1` (including `0` and `1`) that specifies the amount
+ * of text to draw. For example, a value of `0.5` draws the text in a font size as small as half the
+ * actual font if needed.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/minimumscalefactor(_:)).
+ */
+export const minimumScaleFactor = (factor: number) =>
+  createModifier('minimumScaleFactor', { factor });
 /**
  * Sets the spacing, or kerning, between characters for the text in this view.
  * @default 0
@@ -1424,7 +1462,9 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
+  | ReturnType<typeof accessibilityInputLabels>
   | ReturnType<typeof accessibilityIdentifier>
+  | ReturnType<typeof accessibilityHidden>
   | ReturnType<typeof layoutPriority>
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>
