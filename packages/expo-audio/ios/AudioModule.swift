@@ -531,6 +531,31 @@ public class AudioModule: Module {
       Function("stop") { (stream: AudioStream) in
         stream.stop()
       }
+
+      AsyncFunction("startFileRecordingAsync") { (stream: AudioStream, options: AudioStreamFileRecordingOptions?) throws -> AudioStreamFileRecordingStartResult in
+        let opts = options ?? AudioStreamFileRecordingOptions()
+        let format = opts.format
+        let url: URL
+        if let uri = opts.uri {
+          guard uri.pathExtension.lowercased() == format.fileExtension else {
+            throw AudioStreamFileException(
+              "The URI '\(uri.lastPathComponent)' has extension '.\(uri.pathExtension.lowercased())' but the chosen format is '\(format.rawValue)'. Change the URI extension or the format to match."
+            )
+          }
+          url = uri
+        } else {
+          let baseDir = try recordingDirectory(for: opts.directory)
+          let streamDir = baseDir.appendingPathComponent("AudioStream")
+          try FileManager.default.createDirectory(at: streamDir, withIntermediateDirectories: true)
+          url = streamDir.appendingPathComponent("stream-\(UUID().uuidString).\(format.fileExtension)")
+        }
+        let resolvedUri = try stream.startFileRecording(url: url, format: format)
+        return AudioStreamFileRecordingStartResult(uri: resolvedUri)
+      }
+
+      AsyncFunction("stopFileRecordingAsync") { (stream: AudioStream) throws -> AudioStreamFileRecordingResult in
+        return try stream.stopFileRecording()
+      }
     }
     #endif
   }
