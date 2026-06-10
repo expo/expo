@@ -4,12 +4,13 @@
 // TODO(@kitten): There were type errors here after conversion; needs a review!
 
 // We intentionally import from our web-specific parseLogBoxLog implementation to ensure the conversion logic is correct.
+import { withoutANSIColorStyles as withoutANSIColorStylesHelper } from '@expo/log-box-utils';
+
 import type { MetroStackFrame as ExpoMetroStackFrame } from './Types';
 import type { ExtendedExceptionData as ExpoExtendedExceptionData } from './parseLogBoxLog';
 // End of web-specific imports
 import * as parseLogBoxLogWeb from './parseLogBoxLog';
 import { parseErrorStack } from '../utils/parseErrorStack';
-import { withoutANSIColorStyles as withoutANSIColorStylesHelper } from '../utils/withoutANSIStyles';
 
 interface ExceptionData {
   message: string;

@@ -25,7 +25,7 @@ type SessionRowData = {
   isActive: boolean;
   metricCount: number;
   crashed: boolean;
-  // Detail route: the live sessions have dedicated `main` screens;
+  // Detail route: the live sessions have dedicated `main`/`foreground` screens;
   // inactive ones are looked up by id via the `[id]` screen.
   href: Href;
 };
@@ -46,25 +46,14 @@ export default function SessionsList() {
   }, []);
 
   const refresh = useCallback(async () => {
-    const mainSession = await AppMetrics.getMainSession();
-    const active: SessionRowData[] = mainSession
-      ? [
-          {
-            id: mainSession.id,
-            type: mainSession.type,
-            startDate: mainSession.startDate,
-            endDate: null,
-            isActive: true,
-            metricCount: mainSession?.metrics?.length ?? 0,
-            // A live session is always active, so it never has a crash report.
-            crashed: false,
-            // `main` is the live sessions' dedicated detail routes.
-            href: `/sessions/${mainSession.type}`,
-          },
-        ]
-      : [];
+    const live = await Promise.all([
+      AppMetrics.getMainSession(),
+      AppMetrics.getForegroundSession(),
+    ]);
+    const active = live
+      .filter((session): session is Session => session != null)
+      .map(liveSessionToRow);
 
-    // Inactive sessions come back as plain eager records.
     const records = await AppMetrics.getInactiveSessions();
     const inactive: SessionRowData[] = records
       .map(inactiveSessionToRow)
@@ -152,6 +141,19 @@ export default function SessionsList() {
       />
     </>
   );
+}
+
+function liveSessionToRow(session: Session): SessionRowData {
+  return {
+    id: session.id,
+    type: session.type,
+    startDate: session.startDate,
+    endDate: null,
+    isActive: true,
+    metricCount: session.metrics.length,
+    crashed: false,
+    href: `/sessions/${session.type}`,
+  };
 }
 
 function inactiveSessionToRow(session: Session): SessionRowData {

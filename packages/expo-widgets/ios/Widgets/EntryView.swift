@@ -25,8 +25,7 @@ public struct WidgetsEntryView: View {
   }
 
   public var body: some View {
-    if let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(entry.name)_layout"),
-       !layout.isEmpty {
+    if let layout = WidgetsLayoutRegistry.layout(for: entry.name) {
       let node = evaluateLayout(layout: layout, props: entry.props, environment: widgetEnvironment)
       WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
     } else {

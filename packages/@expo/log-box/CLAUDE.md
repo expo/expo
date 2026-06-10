@@ -124,7 +124,8 @@ Web builds render into Shadow DOM (`renderInShadowRoot.ts`):
 ```bash
 pnpm build:lib     # TypeScript → build/ (types + JS)
 pnpm build:bundle  # Metro bundle → dist/ExpoLogBox.bundle/
-pnpm build         # Both
+pnpm build         # TypeScript library build only
+pnpm build:publish # TypeScript library + Metro bundle
 ```
 
 **Output:**
