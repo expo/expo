@@ -184,6 +184,11 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           NetworkRequestObserver(appContext)
         }
       }
+      
+      // Android has no foreground-session tracking yet
+      AsyncFunction("getForegroundSession") Coroutine { ->
+        null as JsSession?
+      }
     }
 
   fun setEnvironment(environment: String) {

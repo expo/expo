@@ -93,11 +93,20 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
 
     AsyncFunction("getMainSession") { () -> StoredSession? in
       return try await AppMetricsActor.isolated {
-        let mainSessionId = AppMetrics.mainSession.id
-        guard let row = try AppMetrics.database?.getSessionWithChildren(id: mainSessionId) else {
+        try storedSession(id: AppMetrics.mainSession.id)
+      }.value
+    }
+
+    // Returns the current foreground session, or `nil` when the app is not in the foreground.
+    // Reads the actor-isolated `foregroundSession`, so it's async. The handle is cached and reused
+    // while the same foreground session is current, and rebuilt when the session rotates, so the
+    // reference is static per foreground session.
+    AsyncFunction("getForegroundSession") { () -> StoredSession? in
+      return try await AppMetricsActor.isolated { () -> StoredSession? in
+        guard let foregroundSessionId = AppMetrics.foregroundSession?.id else {
           return nil
         }
-        return StoredSession(from: row)
+        return try storedSession(id: foregroundSessionId)
       }.value
     }
 
@@ -132,6 +141,16 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
   }
+}
+
+// Loads a session and its children from the database and wraps it as a `StoredSession`,
+// returning `nil` when the database is unavailable or the session no longer exists.
+@AppMetricsActor
+private func storedSession(id: String) throws -> StoredSession? {
+  guard let row = try AppMetrics.database?.getSessionWithChildren(id: id) else {
+    return nil
+  }
+  return StoredSession(from: row)
 }
 
 struct MetricAttributes: Record {
