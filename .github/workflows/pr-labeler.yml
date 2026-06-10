@@ -44,11 +44,11 @@ jobs:
         run: git fetch origin main:main --depth 100
         if: github.event_name == 'pull_request'
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: 'pnpm'
@@ -126,7 +126,7 @@ jobs:
         id: old_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: "expo-bot"
+          comment-author: 'expo-bot'
           body-includes: <!-- pr-labeler comment -->
       - name: 💬 Add comment with fingerprint
         if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id == '' }}

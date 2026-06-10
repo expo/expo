@@ -5,8 +5,8 @@ import ExpoWidgetsModule from './ExpoWidgets';
 export class Widget {
     /** @hidden */
     nativeWidgetObject;
-    constructor(name, layout) {
-        this.nativeWidgetObject = new ExpoWidgetsModule.Widget(name, layout);
+    constructor(name, layout, initialProps) {
+        this.nativeWidgetObject = new ExpoWidgetsModule.Widget(name, layout, initialProps);
     }
     /**
      * Force reloads the widget, causing it to refresh its content and timeline.
@@ -128,9 +128,10 @@ export function after(date) {
  * Creates a Widget instance.
  * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.
  * @param widget The widget component, marked with the `'widget'` directive.
+ * @param initialProps The initial properties to display before the widget timeline is updated.
  */
-export function createWidget(name, widget) {
-    return new Widget(name, widget);
+export function createWidget(name, widget, initialProps) {
+    return new Widget(name, widget, initialProps);
 }
 /**
  * Creates a Live Activity Factory for managing Live Activities of a specific type.

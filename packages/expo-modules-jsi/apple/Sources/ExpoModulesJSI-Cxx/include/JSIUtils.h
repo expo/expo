@@ -9,7 +9,7 @@
 #include "CppError.h"
 #include "IRuntimeCompat.h"
 #include "MemoryBuffer.h"
-#include "NativeState.h"
+#include "Public/NativeState.h"
 #include "TypedArray.h"
 
 namespace jsi = facebook::jsi;
@@ -248,21 +248,57 @@ inline bool hasNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
   return object.hasNativeState<expo::NativeState>(runtime);
 }
 
-inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, expo::NativeState &nativeState) {
-  std::shared_ptr<expo::NativeState> nativeStatePtr = std::shared_ptr<expo::NativeState>(&nativeState);
-  object.setNativeState(runtime, nativeStatePtr);
+inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, const expo::NativeStateShared &nativeState) {
+  object.setNativeState(runtime, nativeState);
 }
 
 inline void unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
   object.setNativeState(runtime, nullptr);
 }
 
-inline expo::NativeState *_Nullable getNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
+/**
+ Returns the `expo::NativeState` attached to the object, or `nullptr` if the object
+ has no native state, or its native state isn't an `expo::NativeState` subclass.
+ Adopted native states (those constructed in external C++ code) are recovered too
+ as long as their concrete type derives from `expo::NativeState`.
+ */
+inline expo::NativeState *_Nullable getExpoNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
   if (!object.hasNativeState<expo::NativeState>(runtime)) {
-    // JSI's implementation asserts if `hasNativeState` returns true, but we prefer to make it nullable.
     return nullptr;
   }
   return object.getNativeState<expo::NativeState>(runtime).get();
+}
+
+/**
+ Factory used by the default `JavaScriptNativeState` initializer. Builds a fresh
+ `expo::NativeState` with the given context/deallocator and returns it wrapped in
+ the `expo::NativeStateShared` typedef so Swift can hold it as a single value.
+ */
+inline expo::NativeStateShared makeExpoNativeStateShared(expo::NativeState::Context context,
+                                                         expo::NativeState::ContextDeallocator deallocator) {
+  return std::make_shared<expo::NativeState>(context, deallocator);
+}
+
+/**
+ Builds an `expo::NativeStateWeak` from a strong `expo::NativeStateShared`.
+ Exists because Swift/C++ interop does not expose `std::weak_ptr`'s constructor
+ directly, so Swift can't write `expo.NativeStateWeak(shared)`.
+ */
+inline expo::NativeStateWeak makeNativeStateWeak(const expo::NativeStateShared &shared) {
+  return expo::NativeStateWeak(shared);
+}
+
+/**
+ Moves the heap-allocated `expo::NativeStateShared` at `ptr` into a returned
+ by-value `NativeStateShared`, then `delete`s the heap allocation. Pairs with
+ `new expo::NativeStateShared(...)` performed by no-interop C++ consumers
+ (e.g. `EXSharedObjectUtils.mm`) — using Swift's `UnsafeMutablePointer.deallocate()`
+ on a pointer obtained from C++ `new` would be an allocator mismatch.
+ */
+inline expo::NativeStateShared consumeNativeStateSharedPtr(expo::NativeStateShared *ptr) {
+  expo::NativeStateShared shared = std::move(*ptr);
+  delete ptr;
+  return shared;
 }
 
 } // namespace expo

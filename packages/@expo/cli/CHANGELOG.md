@@ -14,11 +14,14 @@
 - Disable sextant QR code rendering for Windows Terminal ([#46455](https://github.com/expo/expo/pull/46455) by [@kitten](https://github.com/kitten))
 - Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 - Remove `@expo/metro-config` install from `expo customize metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
+- Place static entries last in serialized HTML output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
 - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 - [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
+- Bump to `@expo/ws-tunnel@^2.0.0` ([#46696](https://github.com/expo/expo/pull/46696) by [@kitten](https://github.com/kitten))
+- [Internal] Update logbox imports ([#46640](https://github.com/expo/expo/pull/46640) by [@kitten](https://github.com/kitten))
 
 ## 56.1.12 — 2026-05-26
 

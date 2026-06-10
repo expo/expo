@@ -6,7 +6,7 @@ import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPol
 export declare class Widget<PropsType extends object = object, ConfigurationType extends object | undefined = undefined> {
     /** @hidden */
     private nativeWidgetObject;
-    constructor(name: string, layout: (props: PropsType, environment: WidgetEnvironment<ConfigurationType>) => React.JSX.Element);
+    constructor(name: string, layout: (props: PropsType, environment: WidgetEnvironment<ConfigurationType>) => React.JSX.Element, initialProps?: PropsType);
     /**
      * Force reloads the widget, causing it to refresh its content and timeline.
      */
@@ -92,8 +92,9 @@ export declare function after(date: Date): {
  * Creates a Widget instance.
  * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.
  * @param widget The widget component, marked with the `'widget'` directive.
+ * @param initialProps The initial properties to display before the widget timeline is updated.
  */
-export declare function createWidget<PropsType extends object = object, ConfigurationType extends object | undefined = undefined>(name: string, widget: (props: PropsType, context: WidgetEnvironment<ConfigurationType>) => React.JSX.Element): Widget<PropsType, ConfigurationType>;
+export declare function createWidget<PropsType extends object = object, ConfigurationType extends object | undefined = undefined>(name: string, widget: (props: PropsType, context: WidgetEnvironment<ConfigurationType>) => React.JSX.Element, initialProps?: PropsType): Widget<PropsType, ConfigurationType>;
 /**
  * Creates a Live Activity Factory for managing Live Activities of a specific type.
  * @param name The Live Activity name. Must match the `'name'` field in your widget configuration in the app config.

@@ -64,8 +64,8 @@ public final class WidgetsModule: Module {
     }
 
     Class("Widget", WidgetObject.self) {
-      Constructor { (name: String, layout: String) in
-        WidgetObject(name: name, layout: layout)
+      Constructor { (name: String, layout: String, initialProps: [String: Any]?) in
+        WidgetObject(name: name, layout: layout, initialProps: initialProps)
       }
 
       Function("reload") { (widget: WidgetObject) in

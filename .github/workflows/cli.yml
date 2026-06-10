@@ -71,12 +71,12 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
@@ -88,7 +88,6 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -130,12 +129,12 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
@@ -147,7 +146,6 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -161,6 +159,10 @@ jobs:
   playwright-ubuntu:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -171,12 +173,12 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
@@ -208,13 +210,13 @@ jobs:
 
       - name: 🧪 E2E (playwright) Test CLI
         working-directory: packages/@expo/cli
-        run: pnpm test:playwright
+        run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-ubuntu-${{ matrix.shard }}
           path: packages/@expo/cli/playwright-report/
           retention-days: 30
 
@@ -252,12 +254,12 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
@@ -269,7 +271,6 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🎭 Get Playwright information
         id: playwright-info
@@ -294,9 +295,9 @@ jobs:
         run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-windows-${{ matrix.shard }}
           path: packages/@expo/cli/playwright-report/
           retention-days: 30

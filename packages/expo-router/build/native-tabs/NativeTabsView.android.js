@@ -14,6 +14,7 @@ function NativeTabsView(props) {
     const { android: rawAndroidProps, ios: _ignoredRawIosProps, ...rawHostRestProps } = unstable_nativeProps ?? {};
     const { selectedScreenKey, provenance } = (0, NativeTabsView_shared_1.useSelectedScreenKey)(props);
     const onTabSelected = (0, NativeTabsView_shared_1.useOnTabSelectedHandler)(props.onTabChange);
+    const onTabSelectionPrevented = (0, NativeTabsView_shared_1.useOnTabSelectionPreventedHandler)(props.onTabChange);
     const androidAppearances = (0, react_1.useMemo)(() => tabs.map((tab) => (0, appearance_1.createAndroidScreenAppearance)(sanitizeAndroidOptions(tab.options))), [tabs]);
     const children = tabs.map((tab, index) => ((0, jsx_runtime_1.jsx)(Screen, { routeKey: tab.routeKey, name: tab.name, options: tab.options, isFocused: selectedScreenKey === tab.routeKey, androidAppearance: androidAppearances[index], contentRenderer: tab.contentRenderer }, tab.routeKey)));
     if (children.length === 0) {
@@ -22,7 +23,7 @@ function NativeTabsView(props) {
     return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Host, { android: {
             tabBarRespectsIMEInsets: !!tabBarRespectsIMEInsets,
             ...rawAndroidProps,
-        }, tabBarHidden: props.hidden, ...rawHostRestProps, navStateRequest: { selectedScreenKey, baseProvenance: provenance }, onTabSelected: onTabSelected, children: children }));
+        }, tabBarHidden: props.hidden, ...rawHostRestProps, navStateRequest: { selectedScreenKey, baseProvenance: provenance }, onTabSelected: onTabSelected, onTabSelectionPrevented: onTabSelectionPrevented, children: children }));
 }
 function Screen(props) {
     const { options, androidAppearance, contentRenderer } = props;

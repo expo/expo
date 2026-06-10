@@ -60,7 +60,7 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
 
       if (!contextValue) {
         throw new Error(
-          '[expo-observe] markInteractive was called without an active ObserveNavigationContainer. Wrap your tree in <ObserveNavigationContainer>.'
+          '[expo-observe] markInteractive was called without an active React Navigation integration. Wrap your tree in <ObserveNavigationContainer>, or <ObserveNavigationProvider>.'
         );
       }
       const { storage } = contextValue;

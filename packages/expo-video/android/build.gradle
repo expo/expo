@@ -29,4 +29,6 @@ dependencies {
   def fragment_version = "1.8.9"
   implementation "androidx.fragment:fragment:$fragment_version"
   implementation "androidx.fragment:fragment-ktx:$fragment_version"
+
+  testImplementation 'junit:junit:4.13.2'
 }

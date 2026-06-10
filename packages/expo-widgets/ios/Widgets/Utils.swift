@@ -4,7 +4,7 @@ import Foundation
 
 func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [WidgetsTimelineEntry] {
   guard let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") else {
-    return [WidgetsTimelineEntry(date: Date(), name: name, props: nil, entryIndex: nil)]
+    return [WidgetsTimelineEntry(date: Date(), name: name, props: WidgetsLayoutRegistry.initialProps(for: name), entryIndex: nil)]
   }
 
   let entries: [WidgetsTimelineEntry?] = timeline.enumerated().map { index, entry in

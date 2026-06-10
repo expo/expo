@@ -2,7 +2,8 @@ import type { PropsWithChildren } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { TabsHostProps, TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import type { DefaultRouterOptions, EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '../react-navigation/native';
+import type { DefaultRouterOptions, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '../react-navigation/native';
+import type { ScreenProps } from '../useScreens';
 /**
  * Event map for `NativeTabs` navigation events.
  * Only `tabPress` is currently supported.
@@ -11,6 +12,12 @@ export type NativeTabNavigationEventMap = {
     tabPress: {
         data: {
             __internalTabsType: 'native';
+            /**
+             * `true` when the native side prevented the selection because the target
+             * tab is `disabled`. The event is still emitted so listeners are notified,
+             * but no navigation occurs.
+             */
+            isPrevented: boolean;
         };
         canPreventDefault: false;
     };
@@ -395,6 +402,13 @@ export interface OnTabChangeEventPayload {
      */
     provenance: number;
     isNativeAction: boolean;
+    /**
+     * Whether the native side prevented this selection because the target tab is
+     * `disabled`. When `true`, the navigator emits `tabPress` but skips navigation.
+     *
+     * @default false
+     */
+    isPrevented?: boolean;
 }
 export interface NativeTabsViewProps extends Omit<InternalNativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor' | 'rippleColor' | 'disableIndicator' | 'labelVisibilityMode'> {
     focusedIndex: number;
@@ -590,9 +604,7 @@ export interface NativeTabTriggerProps {
      * />
      * ```
      */
-    listeners?: ScreenListeners<NavigationState, EventMapBase> | ((prop: {
-        route: RouteProp<ParamListBase, string>;
-    }) => ScreenListeners<NavigationState, EventMapBase>);
+    listeners?: ScreenProps<any, TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>['listeners'];
 }
 declare const SUPPORTED_TAB_BAR_ITEM_ROLES: readonly ["bookmarks", "contacts", "downloads", "favorites", "featured", "history", "more", "mostRecent", "mostViewed", "recents", "search", "topRated"];
 export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];

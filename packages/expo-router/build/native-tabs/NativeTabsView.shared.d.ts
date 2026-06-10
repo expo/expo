@@ -6,6 +6,7 @@ export declare function useSelectedScreenKey({ focusedIndex, provenance, tabs, }
     provenance: number;
 };
 export declare function useOnTabSelectedHandler(onTabChange: NativeTabsViewProps['onTabChange']): NonNullable<TabsHostProps['onTabSelected']>;
+export declare function useOnTabSelectionPreventedHandler(onTabChange: NativeTabsViewProps['onTabChange']): NonNullable<TabsHostProps['onTabSelectionPrevented']>;
 /**
  * Cross-platform fields used to render a single tab screen. Each platform
  * extends this with its own appearance fields.

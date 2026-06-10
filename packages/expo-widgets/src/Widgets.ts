@@ -27,9 +27,14 @@ export class Widget<
     layout: (
       props: PropsType,
       environment: WidgetEnvironment<ConfigurationType>
-    ) => React.JSX.Element
+    ) => React.JSX.Element,
+    initialProps?: PropsType
   ) {
-    this.nativeWidgetObject = new ExpoWidgetsModule.Widget(name, layout as unknown as string);
+    this.nativeWidgetObject = new ExpoWidgetsModule.Widget(
+      name,
+      layout as unknown as string,
+      initialProps
+    );
   }
 
   /**
@@ -188,15 +193,17 @@ export function after(date: Date): { after: Date } {
  * Creates a Widget instance.
  * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.
  * @param widget The widget component, marked with the `'widget'` directive.
+ * @param initialProps The initial properties to display before the widget timeline is updated.
  */
 export function createWidget<
   PropsType extends object = object,
   ConfigurationType extends object | undefined = undefined,
 >(
   name: string,
-  widget: (props: PropsType, context: WidgetEnvironment<ConfigurationType>) => React.JSX.Element
+  widget: (props: PropsType, context: WidgetEnvironment<ConfigurationType>) => React.JSX.Element,
+  initialProps?: PropsType
 ): Widget<PropsType, ConfigurationType> {
-  return new Widget<PropsType, ConfigurationType>(name, widget);
+  return new Widget<PropsType, ConfigurationType>(name, widget, initialProps);
 }
 
 /**

@@ -54,7 +54,7 @@ export function useFilterScreenChildren(
             screens.push({
               ...child.props,
               options,
-            });
+            } as ScreenProps & { name: string });
           } else {
             // - hidden = undefined -> then the route was not specified in navigator
             // - hidden = true -> then the route is hidden
