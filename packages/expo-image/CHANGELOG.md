@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 - [web] Deprecated `webMaxViewportWidth`. With layout-based selection it is now only used to emit fallback `sizes` breakpoints for browsers that don't yet support `sizes="auto"`. ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))

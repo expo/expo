@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [jetpack-compose] Added `onGloballyPositioned` modifier, which reports a composable's window position and size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Extended the SwiftUI `onGeometryChange` modifier to also report the view's global position (`x`/`y`) alongside its size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `minimumScaleFactor` modifier to let text shrink down to a given fraction of its size before truncating. ([#46740](https://github.com/expo/expo/pull/46740) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS][android] Added React Compiler-friendly `get()` / `set()` accessors to `useNativeState`, as an alternative to reading and writing `.value`. ([#46690](https://github.com/expo/expo/pull/46692) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `BasicTextField` component. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -30,10 +32,12 @@
 ### 🐛 Bug fixes
 
 - [android] Fix React Native touchables (e.g. `Pressable`) on `community/pager-view` pages not responding, or triggering the wrong page's handler, after navigating between pages. ([#46778](https://github.com/expo/expo/pull/46778) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `font`, `dynamicTypeSize`, and `resizable` modifiers not applying to the SwiftUI `Image`. SF Symbols scale with Dynamic Type when a `font` modifier sets a `textStyle`. ([#46714](https://github.com/expo/expo/pull/46714) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [android] Fix React Native `ScrollView` nested scrolling inside `BottomSheet`. ([#46544](https://github.com/expo/expo/pull/46544) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Fix layout shift when `Host` with `matchContents` is used inside React Native Screens. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `PagerView` offsetting `ScrollView` by safe area insets. ([#46637](https://github.com/expo/expo/pull/46637) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `SegmentedControl` being overlapped by sibling components inside a `ScrollView`, by disabling the `Host` safe area insets. ([#46575](https://github.com/expo/expo/pull/46575) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix the community `DateTimePicker`, `MenuView`, `Picker`, and `Slider` applying safe area insets (including keyboard avoidance) twice, by disabling the `Host` safe area insets (`ignoreSafeArea="all"`). ([#46721](https://github.com/expo/expo/pull/46721) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Fix `TextField` jiggling the surrounding content while its label animates on focus (a Material 3 expressive motion spring overshoot). ([#46568](https://github.com/expo/expo/pull/46568) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `BottomSheet` animating open from the bottom-left corner in `fitToContents` mode. ([#46546](https://github.com/expo/expo/pull/46546) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway))
