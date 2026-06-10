@@ -287,6 +287,17 @@ export declare const onSizeChanged: (handler: (size: {
     height: number;
 }) => void) => import("./createModifier").ModifierConfig;
 /**
+ * Calls the handler whenever the composable is positioned, with its position and size.
+ * `x` and `y` are relative to the window. All values are in dp.
+ * @param handler - Function called with the new layout.
+ */
+export declare const onGloballyPositioned: (handler: (layout: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.
  */

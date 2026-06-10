@@ -35,14 +35,25 @@ public struct AnyCodable: Codable, Sendable {
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
 
+    // `Bool` must come before the integer cases — Swift bridges `Bool` and the numeric types
+    // bidirectionally for `as?`, and on Objective-C runtime values, `Bool` round-trips through
+    // `NSNumber` indistinguishably from an integer. Matching `Bool` first preserves type.
     switch value {
+    case let value as Bool:
+      try container.encode(value)
     case let value as Int:
+      try container.encode(value)
+    case let value as Int32:
+      try container.encode(value)
+    case let value as Int64:
       try container.encode(value)
     case let value as UInt:
       try container.encode(value)
-    case let value as Double:
+    case let value as UInt32:
       try container.encode(value)
-    case let value as Bool:
+    case let value as UInt64:
+      try container.encode(value)
+    case let value as Double:
       try container.encode(value)
     case let value as String:
       try container.encode(value)

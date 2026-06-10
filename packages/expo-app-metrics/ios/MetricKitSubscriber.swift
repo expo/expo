@@ -41,7 +41,7 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
     AppMetricsActor.isolated {
       let mainSessions: [SessionRow]
       do {
-        mainSessions = try AppMetrics.database?.getAllSessions().filter { $0.type == Session.SessionType.main.rawValue } ?? []
+        mainSessions = try AppMetrics.database?.getMainSessions() ?? []
       } catch {
         logger.warn("[AppMetrics] Failed to load main sessions for crash attribution: \(error.localizedDescription)")
         return

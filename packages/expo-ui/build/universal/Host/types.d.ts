@@ -1,4 +1,4 @@
-import type { ColorSchemeName, ViewProps } from 'react-native';
+import type { ColorSchemeName, ColorValue, ViewProps } from 'react-native';
 /**
  * Props for the [`Host`](#host) component.
  */
@@ -25,6 +25,19 @@ export interface UniversalHostProps extends ViewProps {
      * @platform web
      */
     colorScheme?: ColorSchemeName;
+    /**
+     * Seed color used to derive the theme applied to the host's subtree. Each platform interprets it natively:
+     * - On Android, it generates a full Material 3 palette (`SchemeTonalSpot`, the same algorithm as Material You) that themes Compose children and is exposed to descendants via `useMaterialColors()`.
+     * - On iOS, it is applied as the SwiftUI tint, propagating through the environment to theme interactive controls such as buttons, switches, and sliders.
+     * - On web, it generates a primary color scale exposed as CSS variables to the subtree.
+     *
+     * When omitted, each platform falls back to its default theme.
+     *
+     * @platform android
+     * @platform ios
+     * @platform web
+     */
+    seedColor?: ColorValue;
     /**
      * Layout direction for the platform UI content.
      * Defaults to the current locale direction from `I18nManager`.

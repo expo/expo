@@ -37,7 +37,11 @@ import {
   onLongPressGesture,
   onAppear,
   onDisappear,
+  onGeometryChange,
   accessibilityLabel,
+  accessibilityIdentifier,
+  accessibilityHidden,
+  accessibilityInputLabels,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -65,6 +69,7 @@ import {
   pickerStyle,
   tag,
   font,
+  dynamicTypeSize,
   lineLimit,
   contentShape,
   shapes,
@@ -307,6 +312,18 @@ export default function ModifiersScreen() {
               <Text modifiers={[font({ textStyle: 'caption' })]}>and small, both scale</Text>
             </Text>
 
+            {/* dynamicTypeSize: clamp how far Dynamic Type scales */}
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>dynamicTypeSize clamp</Text>
+              <Text modifiers={[font({ textStyle: 'body' })]}>body, unbounded</Text>
+              <Text modifiers={[font({ textStyle: 'body' }), dynamicTypeSize({ max: 'large' })]}>
+                body, capped at large
+              </Text>
+              <Text modifiers={[font({ textStyle: 'body' }), dynamicTypeSize('xSmall')]}>
+                body, fixed at xSmall
+              </Text>
+            </VStack>
+
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>
               <Text modifiers={[font({ size: 14 }), textCase('uppercase')]}>uppercase</Text>
@@ -455,6 +472,29 @@ export default function ModifiersScreen() {
               </VStack>
             </HStack>
             <Slider min={0} max={20} onValueChange={setLineSpaceingValue} />
+          </Section>
+          {/* Image modifiers */}
+          <Section title="Image modifier">
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>
+                font text style on a symbol scales with Dynamic Type
+              </Text>
+              <HStack alignment="center" spacing={16}>
+                <Image systemName="bell.fill" />
+                <Image systemName="bell.fill" modifiers={[font({ textStyle: 'largeTitle' })]} />
+                <Image systemName="bell.fill" modifiers={[font({ textStyle: 'caption' })]} />
+              </HStack>
+            </VStack>
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>resizable symbol scales to its frame</Text>
+              <HStack alignment="center" spacing={16}>
+                <Image systemName="star.fill" size={24} />
+                <Image
+                  systemName="star.fill"
+                  modifiers={[resizable(), frame({ width: 64, height: 64 })]}
+                />
+              </HStack>
+            </VStack>
           </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
@@ -642,6 +682,29 @@ export default function ModifiersScreen() {
               </HStack>
             )}
 
+            {/* accessibilityHidden: decorative SF Symbol skipped by VoiceOver */}
+            <HStack spacing={6}>
+              <Image
+                systemName="exclamationmark.triangle"
+                size={17}
+                modifiers={[accessibilityHidden(true)]}
+              />
+              <Text>Something went wrong</Text>
+            </HStack>
+
+            {/* accessibilityInputLabels: Voice Control can target this by spoken phrase */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#1ABC9C'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityInputLabels(['Hang up', 'End call']),
+                ]}>
+                End
+              </Text>
+            </HStack>
+
             <Text
               modifiers={[
                 background('#E67E22'),
@@ -671,6 +734,7 @@ export default function ModifiersScreen() {
                 foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 border({ color: '#9B59B6', width: 1 }),
                 accessibilityLabel('Complex styled card with multiple effects'),
+                accessibilityIdentifier('complex-styled-card'),
                 onTapGesture(() => alert('Complex card with multiple modifiers tapped!')),
               ]}>
               ✨ Complex: All effects combined!
@@ -769,6 +833,8 @@ export default function ModifiersScreen() {
           </Section>
 
           <AppearSection />
+
+          <GeometrySection />
 
           {/* Container Shape Modifier */}
           <Section title="Content Shape Modifier">
@@ -928,6 +994,29 @@ function AppearSection() {
           ]}
         />
       </DisclosureGroup>
+    </Section>
+  );
+}
+
+function GeometrySection() {
+  const [frame, setFrame] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  return (
+    <Section title="onGeometryChange (position + size)">
+      <Text
+        modifiers={[
+          background('#5856D6'),
+          cornerRadius(12),
+          padding({ all: 16 }),
+          foregroundStyle({ type: 'color', color: '#FFFFFF' }),
+          onGeometryChange(setFrame),
+        ]}>
+        Track my frame
+      </Text>
+      <Text modifiers={[font({ size: 13 }), monospacedDigit()]}>
+        {`global x: ${frame.x.toFixed(0)}  y: ${frame.y.toFixed(0)}  •  size ${frame.width.toFixed(
+          0
+        )} × ${frame.height.toFixed(0)} (pt)`}
+      </Text>
     </Section>
   );
 }

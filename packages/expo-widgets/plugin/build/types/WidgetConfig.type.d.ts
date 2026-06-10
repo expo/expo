@@ -13,6 +13,7 @@ export type WidgetConfig = {
     ios?: {
         supportedFamilies: WidgetFamily[];
         contentMarginsDisabled?: boolean;
+        initialLayout?: string;
         configuration?: {
             title: string;
             description?: string;

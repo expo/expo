@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 export type GetStreamingContentOptions = {
     loader?: {
         data?: any;
@@ -24,6 +24,8 @@ export type GetStreamingContentOptions = {
             hmrId?: string;
         }[];
         js: string[];
+        /** Public href of a favicon generated from `web.favicon` in the app config. */
+        favicon?: string;
     };
 };
 /**

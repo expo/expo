@@ -1,0 +1,1 @@
+{"version":3,"file":"renderInShadowRoot.d.ts","sourceRoot":"","sources":["../../src/utils/renderInShadowRoot.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAG/B,wBAAgB,kBAAkB,CAChC,EAAE,EAAE,MAAM,EACV,OAAO,EAAE,KAAK,CAAC,SAAS,GACvB;IACD,OAAO,EAAE,MAAM,IAAI,CAAC;CACrB,CA6CA"}

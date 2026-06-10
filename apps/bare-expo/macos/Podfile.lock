@@ -280,6 +280,8 @@ PODS:
     - ExpoModulesJSI
     - ExpoModulesWorklets
     - RNWorklets
+  - ExpoNetwork (56.0.4):
+    - ExpoModulesCore
   - ExpoSQLite (56.0.4):
     - ExpoModulesCore
   - ExpoSymbols (56.0.5):
@@ -325,7 +327,7 @@ PODS:
     - ExpoModulesCore
   - fast_float (8.0.0)
   - FBLazyVector (0.81.7)
-  - fmt (11.0.2)
+  - fmt (12.1.0)
   - glog (0.3.5)
   - hermes-engine (0.81.6):
     - hermes-engine/Pre-built (= 0.81.6)
@@ -334,20 +336,20 @@ PODS:
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
     - RCT-Folly/Default (= 2024.11.18.00)
   - RCT-Folly/Default (2024.11.18.00):
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
   - RCT-Folly/Fabric (2024.11.18.00):
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
   - RCTDeprecation (0.81.7)
   - RCTRequired (0.81.7)
@@ -2072,7 +2074,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-netinfo (11.5.2):
+  - react-native-netinfo (12.0.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2905,6 +2907,7 @@ DEPENDENCIES:
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
+  - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
@@ -2950,8 +2953,8 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native-macos/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native-macos/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks`)
-  - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_09a60ed3c23ce9283ba9c11e8da8057f/node_modules/@react-native-community/netinfo`)"
-  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.86.0-rc.2_patch_hash=26e2b529e765bf444b707b_51b811a0fe43658e98cf8315e72b690b/node_modules/react-native-webview`)"
+  - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_60f40e58d3693706dee956f2c6645413/node_modules/@react-native-community/netinfo`)"
+  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.86.0-rc.3_patch_hash=26e2b529e765bf444b707b_5631c0a1212dc21284e51eae07fc12e5/node_modules/react-native-webview`)"
   - React-NativeModulesApple (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native-macos/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native-macos/ReactCommon/reactperflogger`)
@@ -2982,10 +2985,10 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native-macos/ReactCommon`)
-  - "RNCAsyncStorage (from `../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.86.0-rc.2_patch_hash=26e_f8d702413189dadcf7af4b26165e40b2/node_modules/@react-native-async-storage/async-storage`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.31.2_patch_hash=e8fb2a67f1fa221dc758c27292b3ee21ed737178_4323434482c172dafecca4b8ccd10d02/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.1_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_a00ece94bf0ad826d3ee1b71023fb58b/node_modules/react-native-reanimated`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_f398d734a48395c596eb4d2ccf3cf0b0/node_modules/react-native-worklets`)"
+  - "RNCAsyncStorage (from `../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.86.0-rc.3_patch_hash=26e_5e2b04981c149415087880ed6dbd882e/node_modules/@react-native-async-storage/async-storage`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.31.2_patch_hash=e8fb2a67f1fa221dc758c27292b3ee21ed737178_4632d6831e7d17384a01da0617d35c08/node_modules/react-native-gesture-handler`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.1_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_9f387c89965562880291b4cd46dd662f/node_modules/react-native-reanimated`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_ac1e0cb5743cd7436dac16ac975c1464/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
   - Yoga (from `../node_modules/react-native-macos/ReactCommon/yoga`)
 
@@ -3067,6 +3070,9 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesWorkletsAdapter:
     :path: "../../../packages/expo-modules-core"
+  ExpoNetwork:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-network/ios"
   ExpoSQLite:
     inhibit_warnings: false
     :path: "../../../packages/expo-sqlite/ios"
@@ -3163,9 +3169,9 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks"
   react-native-netinfo:
-    :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_09a60ed3c23ce9283ba9c11e8da8057f/node_modules/@react-native-community/netinfo"
+    :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_60f40e58d3693706dee956f2c6645413/node_modules/@react-native-community/netinfo"
   react-native-webview:
-    :path: "../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.86.0-rc.2_patch_hash=26e2b529e765bf444b707b_51b811a0fe43658e98cf8315e72b690b/node_modules/react-native-webview"
+    :path: "../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.86.0-rc.3_patch_hash=26e2b529e765bf444b707b_5631c0a1212dc21284e51eae07fc12e5/node_modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -3227,13 +3233,13 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../node_modules/react-native-macos/ReactCommon"
   RNCAsyncStorage:
-    :path: "../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.86.0-rc.2_patch_hash=26e_f8d702413189dadcf7af4b26165e40b2/node_modules/@react-native-async-storage/async-storage"
+    :path: "../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.86.0-rc.3_patch_hash=26e_5e2b04981c149415087880ed6dbd882e/node_modules/@react-native-async-storage/async-storage"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.31.2_patch_hash=e8fb2a67f1fa221dc758c27292b3ee21ed737178_4323434482c172dafecca4b8ccd10d02/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.31.2_patch_hash=e8fb2a67f1fa221dc758c27292b3ee21ed737178_4632d6831e7d17384a01da0617d35c08/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.1_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_a00ece94bf0ad826d3ee1b71023fb58b/node_modules/react-native-reanimated"
+    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.1_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_9f387c89965562880291b4cd46dd662f/node_modules/react-native-reanimated"
   RNWorklets:
-    :path: "../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_f398d734a48395c596eb4d2ccf3cf0b0/node_modules/react-native-worklets"
+    :path: "../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_ac1e0cb5743cd7436dac16ac975c1464/node_modules/react-native-worklets"
   Yoga:
     :path: "../node_modules/react-native-macos/ReactCommon/yoga"
 
@@ -3259,10 +3265,11 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: 93f29833d2a8b957f996eddc05a632eb2bdeaa7d
   ExpoLogBox: 7aa03244fe5eeced5129e4ec7ad5bd9a3994378e
   ExpoMeshGradient: baf62012104fd9c1719de67f88c69958abcd2ed1
-  ExpoModulesCore: 54fe1c082ac0fbc1bd3f4efb9ab1b79797dd352b
+  ExpoModulesCore: c9125d136b81901cdd3aa0e3ed17fd2ab091cac4
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
-  ExpoModulesWorklets: c755176116ae553ede2268ca6837c31eb4081f8a
-  ExpoModulesWorkletsAdapter: 33314a6f5235a51ddf8d9bec2313e2e5d0499979
+  ExpoModulesWorklets: 874ceeb92a8da1dfa32adf197aa65f926e74b9c5
+  ExpoModulesWorkletsAdapter: 727a9f57ba304b0425e2eb5297017b01bc9f2ca1
+  ExpoNetwork: d244aa406eb0aba7e36e5f009a061b2744ab11d7
   ExpoSQLite: 38a35f67bbb3370d9bb859aa65d106909c4e3b19
   ExpoSymbols: b3c964ddc1f1c8d8ddb0eeb830e3a8e42b77ed2d
   ExpoWebBrowser: 6e3d90e3fe1952d21a8494872b1e1a485cd50e2f
@@ -3271,10 +3278,10 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   fast_float: 20817c22759af6ac8d4d67e6e059b8b499953656
   FBLazyVector: e8ec216d79635ba4c9fb0e9becc30391ca4bff1b
-  fmt: 24e7591456deb60b4a77518f83d9a916ac84223f
+  fmt: 4cf0c5ec5864511c96d8d4bd7b03c3c69040af06
   glog: 0b31c25149b9d350b2666c7d459229861a00ec07
   hermes-engine: 7219f6e751ad6ec7f3d7ec121830ee34dae40749
-  RCT-Folly: c803cf33238782d5fd21a5e02d44f64068e0e130
+  RCT-Folly: a3d9b23289a456c318f4814703664bdc33c771cc
   RCTDeprecation: 32fb5034012098ad1f67eba8a62d73bdd7d082e7
   RCTRequired: 9f51919b547926d0c148032cf2a7271a37655af4
   RCTTypeSafety: 7a8749345a241f79e1a39960cae63a1a3d24bf8d
@@ -3308,7 +3315,7 @@ SPEC CHECKSUMS:
   React-logger: 079107325dda1ad527b324f4f3cf61e4f6ce4600
   React-Mapbuffer: 59df6730a578de280cd8675cdf5440b91c243bdf
   React-microtasksnativemodule: 255f0b29a74d001ecd202e4d5f7f170a009b3987
-  react-native-netinfo: 57447b5a45c98808f8eae292cf641f3d91d13830
+  react-native-netinfo: a0be8c77f8420a60ddf07eb87be1a36f02a1bd65
   react-native-webview: 8407aaaf6b539b1e38b72fabb55d6885de03beaf
   React-NativeModulesApple: c1e8f5e34efed354e5a066ef47c45a4ca5dddbb4
   React-oscompat: b359d251f6ea20fa91e5e0f99fd7b563f50a8af3
@@ -3338,12 +3345,12 @@ SPEC CHECKSUMS:
   React-timing: f91e37f2154ef9b25e1ded28326f9998669145f1
   React-utils: 35e85af00d70760e6fda280c78d184da64d89e3d
   ReactAppDependencyProvider: 17d150a60ad301142905427154168f58641e38c4
-  ReactCodegen: df525e57209169eecbcf15c319d505bace9ed668
+  ReactCodegen: b250a895fde6e9bffd9ff76b1afb8243b3746125
   ReactCommon: b2b6ff304cf01e1b67d8e9646e34d58320be0964
   RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
   RNGestureHandler: 7d628c670dfcc1b9fa5840de5648b87ac0635362
-  RNReanimated: 3f5f1c52d537ff4bc947de9e8029ad4ca6a8c1b5
-  RNWorklets: 1cc0d72b9329453d8dbabd552f2e9aef7e9c6056
+  RNReanimated: 82172f522ca0566be697b1e357c0aab36eb10e88
+  RNWorklets: d9e76189f38809d7612cdc5090ea3f41750e304a
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 8a0df683a71bee13fe0b9d8b653d1a062ff65b2e
 

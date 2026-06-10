@@ -19,6 +19,13 @@ import {
   resetErrorOverlay,
   showLoading,
 } from './hmrUtils';
+import type { MarshalledProps } from '../dom/dom-entry';
+
+declare global {
+  interface Window {
+    $$EXPO_INITIAL_PROPS?: MarshalledProps;
+  }
+}
 
 const pendingEntryPoints: string[] = [];
 

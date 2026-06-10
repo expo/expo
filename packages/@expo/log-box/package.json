@@ -1,7 +1,33 @@
 {
   "name": "@expo/log-box",
   "version": "56.0.12",
-  "main": "app/index.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./lib": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./LogBox": {
+      "types": "./build/LogBox.d.ts",
+      "default": "./build/LogBox.js"
+    },
+    "./swap-rn-logbox.js": "./swap-rn-logbox.js",
+    "./swap-rn-logbox-parser.js": "./swap-rn-logbox-parser.js",
+    "./logbox-web-polyfill": {
+      "types": "./build/logbox-web-polyfill.d.ts",
+      "default": "./build/logbox-web-polyfill.js"
+    },
+    "./Data/LogBoxLog": {
+      "types": "./build/Data/LogBoxLog.d.ts",
+      "default": "./build/Data/LogBoxLog.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "start": "expo start",
     "lint": "expo-module lint",
@@ -12,16 +38,18 @@
     "watch": "run-p watch:lib watch:bundle",
     "watch:lib": "tsc -p tsconfig.lib.json --watch",
     "watch:bundle": "node ./scripts/watch-bundle.mjs",
-    "prepare": "run-s build:bundle",
-    "prepublishOnly": "run-s clean build",
-    "build": "run-s build:lib build:bundle",
-    "build:lib": "tsc -p tsconfig.lib.json",
+    "prepublishOnly": "run-s clean build:publish",
+    "build": "run-s build:lib",
+    "build:publish": "run-s build:lib build:bundle",
+    "build:lib": "tsc -p tsconfig.lib.json && node ./scripts/copy-css-modules.mjs",
     "build:bundle": "node ./scripts/build-bundle.mjs",
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
     "@expo/dom-webview": "workspace:^56.0.5",
+    "@expo/log-box-utils": "workspace:^56.0.0",
     "anser": "^1.4.9",
+    "expo-modules-core": "workspace:~56.0.13",
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
@@ -35,14 +63,13 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.86.0-rc.2",
+    "react-native": "0.86.0-rc.3",
     "react-native-web": "^0.21.0",
     "rimraf": "^6.1.2",
     "typescript-plugin-css-modules": "^5.2.0"
   },
   "peerDependencies": {
     "@expo/dom-webview": "workspace:^56.0.5",
-    "expo": "*",
     "react": "*",
     "react-native": "*"
   },

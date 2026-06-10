@@ -67,22 +67,43 @@ function asyncRequireImpl<T>(
   paths: DependencyMapPaths,
   moduleName?: string
 ): Promise<T> | T {
-  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
   const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID, moduleName);
-
-  if (maybeLoadBundlePromise != null) {
-    return maybeLoadBundlePromise.then(importAll);
+  try {
+    // Try importing first to prevent double-loading script when the page already preloaded it
+    return importAll();
+  } catch (error) {
+    const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+    if (maybeLoadBundlePromise != null) {
+      return maybeLoadBundlePromise.then(importAll);
+    }
+    throw error;
   }
-
-  return importAll();
 }
 
-async function asyncRequire<T>(
+function asyncRequire<T>(
   moduleID: number,
   paths: DependencyMapPaths,
   moduleName?: string
-): Promise<T> {
-  return asyncRequireImpl<T>(moduleID, paths, moduleName);
+): PromiseLike<T> & { _result?: T | Promise<T> } {
+  const ret = asyncRequireImpl<T>(moduleID, paths, moduleName);
+  if (!(ret instanceof Promise)) {
+    // We return a thenable with an added `unstable_importMaybeSync`-like
+    // `_result` property to bypass this being force-converted to a promise
+    // for rehydration
+    return {
+      _result: ret,
+      then(resolve, reject) {
+        return Promise.resolve(ret).then(resolve, reject);
+      },
+    };
+  } else {
+    return {
+      _result: ret,
+      then(resolve, reject) {
+        return ret.then(resolve, reject);
+      },
+    };
+  }
 }
 
 // Synchronous version of asyncRequire, which can still return a promise

@@ -34,6 +34,7 @@ internal enum ExpoLayoutDirection: String, Enumerable {
 internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaControllable {
   @Field var useViewportSizeMeasurement: Bool = false
   @Field var colorScheme: ExpoColorScheme?
+  @Field var seedColor: Color?
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
@@ -60,6 +61,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .modifier(SeedColorModifier(seedColor: props.seedColor))
       .applyModifiers(
         props.modifiers,
         appContext: props.appContext,
@@ -73,6 +75,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .modifier(SeedColorModifier(seedColor: props.seedColor))
       .applyModifiers(
         props.modifiers,
         appContext: props.appContext,
@@ -206,6 +209,18 @@ private struct ColorSchemeModifier: ViewModifier {
   func body(content: Content) -> some View {
     if let colorScheme {
       content.environment(\.colorScheme, colorScheme)
+    } else {
+      content
+    }
+  }
+}
+
+private struct SeedColorModifier: ViewModifier {
+  let seedColor: Color?
+
+  func body(content: Content) -> some View {
+    if let seedColor {
+      content.tint(seedColor)
     } else {
       content
     }
