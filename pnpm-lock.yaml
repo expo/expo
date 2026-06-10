@@ -2917,7 +2917,7 @@ importers:
         specifier: workspace:^56.0.18
         version: link:../../expo-constants
       expo-font:
-        specifier: workspace:^56.0.5
+        specifier: workspace:^56.0.6
         version: link:../../expo-font
       expo-server:
         specifier: workspace:^56.0.5
@@ -3518,10 +3518,10 @@ importers:
         specifier: workspace:~56.0.18
         version: link:../expo-constants
       expo-file-system:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.8
         version: link:../expo-file-system
       expo-font:
-        specifier: workspace:~56.0.5
+        specifier: workspace:~56.0.6
         version: link:../expo-font
       expo-keep-awake:
         specifier: workspace:~56.0.3
@@ -18878,9 +18878,7 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
