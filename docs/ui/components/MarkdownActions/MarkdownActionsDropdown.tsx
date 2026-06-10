@@ -5,7 +5,9 @@ import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
 
 import {
+  ClaudeCodeLogoIcon,
   ClaudeLogoIcon,
+  CodexLogoIcon,
   CursorLogoIcon,
   OpenAILogoIcon,
 } from '~/ui/components/CustomIcons/AIProviderIcons';
@@ -79,6 +81,13 @@ export function MarkdownActionsDropdown() {
     return `https://chat.openai.com/?q=${getPrompt(markdownUrl)}`;
   }, [markdownUrl]);
 
+  const codexUrl = useMemo(() => {
+    if (!markdownUrl) {
+      return null;
+    }
+    return `codex://new?prompt=${getPrompt(markdownUrl)}`;
+  }, [markdownUrl]);
+
   const claudeUrl = useMemo(() => {
     if (!markdownUrl) {
       return null;
@@ -86,18 +95,18 @@ export function MarkdownActionsDropdown() {
     return `https://claude.ai/new?q=${getPrompt(markdownUrl)}`;
   }, [markdownUrl]);
 
-  const cursorUrl = useMemo(() => {
-    if (!markdownUrl) {
-      return null;
-    }
-    return `https://cursor.com/link/prompt?text=${getPrompt(markdownUrl)}`;
-  }, [markdownUrl]);
-
   const claudeCodeUrl = useMemo(() => {
     if (!markdownUrl) {
       return null;
     }
     return `claude-cli://open?q=${getPrompt(markdownUrl)}`;
+  }, [markdownUrl]);
+
+  const cursorUrl = useMemo(() => {
+    if (!markdownUrl) {
+      return null;
+    }
+    return `https://cursor.com/link/prompt?text=${getPrompt(markdownUrl)}`;
   }, [markdownUrl]);
 
   const dropdownItems = [];
@@ -137,6 +146,18 @@ export function MarkdownActionsDropdown() {
     );
   }
 
+  if (codexUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="open-codex"
+        label="Open in Codex"
+        Icon={CodexLogoIcon}
+        href={codexUrl}
+        openInNewTab={false}
+      />
+    );
+  }
+
   if (claudeUrl) {
     dropdownItems.push(
       <Dropdown.Item
@@ -149,6 +170,18 @@ export function MarkdownActionsDropdown() {
     );
   }
 
+  if (claudeCodeUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="open-claude-code"
+        label="Open in Claude Code"
+        Icon={ClaudeCodeLogoIcon}
+        href={claudeCodeUrl}
+        openInNewTab={false}
+      />
+    );
+  }
+
   if (cursorUrl) {
     dropdownItems.push(
       <Dropdown.Item
@@ -157,18 +190,6 @@ export function MarkdownActionsDropdown() {
         Icon={CursorLogoIcon}
         href={cursorUrl}
         openInNewTab
-      />
-    );
-  }
-
-  if (claudeCodeUrl) {
-    dropdownItems.push(
-      <Dropdown.Item
-        key="open-claude-code"
-        label="Open in Claude Code"
-        Icon={ClaudeLogoIcon}
-        href={claudeCodeUrl}
-        openInNewTab={false}
       />
     );
   }
