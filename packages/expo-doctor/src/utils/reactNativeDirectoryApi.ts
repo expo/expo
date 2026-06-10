@@ -1,7 +1,7 @@
 // note(Simek): reference https://github.com/react-native-community/directory/blob/main/pages/api/libraries/check.ts
 export type ReactNativeDirectoryCheckResult = {
-  unmaintained: boolean;
-  newArchitecture: 'supported' | 'unsupported' | 'untested';
+  unmaintained?: boolean;
+  newArchitecture: 'supported' | 'unsupported' | 'untested' | 'new-arch-only';
 };
 
 export type DirectoryCheckResponse = Record<string, ReactNativeDirectoryCheckResult>;
