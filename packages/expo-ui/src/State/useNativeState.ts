@@ -21,6 +21,16 @@ export type ObservableState<T> = SharedObject & {
   value: T;
 
   /**
+   * Reads the current value. A React Compiler compliant alternative to reading `.value`
+   */
+  get(): T;
+
+  /**
+   * Writes a new value. A React Compiler-compliant alternative to assigning `.value`
+   */
+  set(value: T): void;
+
+  /**
    * A single listener invoked on the native UI runtime whenever the value changes
    * (after iOS `didSet` and Android's setter). Assigning replaces the previous
    * listener; assign `null` to clear. The initial value does not fire `onChange`.
@@ -62,10 +72,13 @@ type NativeObservableState = {
   getValue(): unknown;
   setValue(v: { value: unknown }): void;
   setOnChange(callback: object | null): void;
+  get?: () => unknown;
+  set?: (value: unknown) => void;
 };
 
 /**
- * Adds a `value` property that delegates to the native `getValue`/`setValue` functions.
+ * Adds a `value` property plus `get`/`set` methods that delegate to the native
+ * `getValue`/`setValue` functions.
  */
 function defineValueProperty(state: NativeObservableState): void {
   Object.defineProperty(state, 'value', {
@@ -76,6 +89,8 @@ function defineValueProperty(state: NativeObservableState): void {
       state.setValue({ value: v });
     },
   });
+  state.get = () => state.getValue();
+  state.set = (v: unknown) => state.setValue({ value: v });
 }
 
 /**

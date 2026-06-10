@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS][android] Added React Compiler-friendly `get()` / `set()` accessors to `useNativeState`, as an alternative to reading and writing `.value`. ([#46690](https://github.com/expo/expo/pull/46692) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `BasicTextField` component. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `accessibilityInputLabels` modifier to set alternative spoken phrases Voice Control uses to refer to a view (for example "Hang up" for an "End" button). ([#46661](https://github.com/expo/expo/pull/46661) by [@ramonclaudio](https://github.com/ramonclaudio))
 
