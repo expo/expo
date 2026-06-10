@@ -301,23 +301,46 @@ final class MetricsDatabase: Sendable {
     }
   }
 
+  /**
+   Returns the `main` sessions — newest first — for crash-report attribution. Crashes from past
+   launches (delivered by MetricKit on a later launch) are matched against these.
+   */
   @AppMetricsActor
-  func getAllSessions() throws -> [SessionRow] {
-    return try collectSessions(sql: "SELECT \(sessionColumns) FROM sessions ORDER BY startTimestamp DESC")
+  func getMainSessions() throws -> [SessionRow] {
+    return try collectSessions(
+      sql: "SELECT \(sessionColumns) FROM sessions WHERE type = 'main' ORDER BY startTimestamp DESC"
+    )
   }
 
   /**
-   Returns every session along with its metrics, logs, and crash report — newest first. Used by the
-   JS-facing read APIs and (filtered down) by the dispatch path.
+   Returns the inactive (ended) sessions along with their metrics, logs, and crash report — newest
+   first. Backs the debug-only `getInactiveSessions` JS API.
    */
   @AppMetricsActor
-  func getAllSessionsWithChildren() throws -> [SessionWithChildren] {
-    return try getAllSessions().map { session in
-      let metrics = try getMetrics(sessionId: session.id)
-      let logs = try getLogs(sessionId: session.id)
-      let crash = try getCrashReport(sessionId: session.id)
-      return SessionWithChildren(session: session, metrics: metrics, logs: logs, crashReportJSON: crash)
+  func getInactiveSessionsWithChildren() throws -> [SessionWithChildren] {
+    return try getInactiveSessions().compactMap { try getSessionWithChildren(id: $0.id) }
+  }
+
+  /**
+   Returns a single session along with its metrics, logs, and crash report, or `nil` if no session
+   with that id exists.
+   */
+  @AppMetricsActor
+  func getSessionWithChildren(id: String) throws -> SessionWithChildren? {
+    guard let session = try getSession(id: id) else {
+      return nil
     }
+    let metrics = try getMetrics(sessionId: session.id)
+    let logs = try getLogs(sessionId: session.id)
+    let crash = try getCrashReport(sessionId: session.id)
+    return SessionWithChildren(session: session, metrics: metrics, logs: logs, crashReportJSON: crash)
+  }
+
+  @AppMetricsActor
+  func getInactiveSessions() throws -> [SessionRow] {
+    return try collectSessions(
+      sql: "SELECT \(sessionColumns) FROM sessions WHERE isActive = 0 ORDER BY startTimestamp DESC"
+    )
   }
 
   /**

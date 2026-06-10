@@ -256,16 +256,25 @@ export abstract class BundlerDevServer {
     this.notifier.startObserving();
   }
 
-  /** Create ngrok instance and start the tunnel server. Exposed for testing. */
+  /** Create the tunnel instance and start the tunnel server. Exposed for testing. */
   public async _startTunnelAsync(): Promise<AsyncNgrok | AsyncWsTunnel | null> {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
     debug('[tunnel] connect to port: ' + port);
-    this.tunnel = envIsWebcontainer()
-      ? new AsyncWsTunnel(this.projectRoot, port)
-      : new AsyncNgrok(this.projectRoot, port);
+    this.tunnel = this._createTunnel(port);
     await this.tunnel.startAsync();
     return this.tunnel;
+  }
+
+  /** Resolve which tunnel implementation to use, without starting it. */
+  private _createTunnel(port: number): AsyncNgrok | AsyncWsTunnel {
+    const useV2Tunnel = env.EXPO_UNSTABLE_TUNNEL_V2 || envIsWebcontainer();
+    if (useV2Tunnel) {
+      const useExpoAccount = !!env.EXPO_UNSTABLE_TUNNEL_V2;
+      return new AsyncWsTunnel(this.projectRoot, port, { useExpoAccount });
+    }
+
+    return new AsyncNgrok(this.projectRoot, port);
   }
 
   protected async startDevSessionAsync() {

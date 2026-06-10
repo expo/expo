@@ -75,10 +75,11 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       // no-op
     }
 
-    AsyncFunction("getAllSessions") { () -> [StoredSession] in
+    // Debug-only: the inactive (ended) sessions
+    AsyncFunction("getInactiveSessions") { () -> [StoredSession] in
       return try await AppMetricsActor.isolated {
         return try AppMetrics.database?
-          .getAllSessionsWithChildren()
+          .getInactiveSessionsWithChildren()
           .map { StoredSession(from: $0) } ?? []
       }.value
     }
@@ -93,9 +94,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     AsyncFunction("getMainSession") { () -> StoredSession? in
       return try await AppMetricsActor.isolated {
         let mainSessionId = AppMetrics.mainSession.id
-        guard let row = try AppMetrics.database?
-          .getAllSessionsWithChildren()
-          .first(where: { $0.session.id == mainSessionId }) else {
+        guard let row = try AppMetrics.database?.getSessionWithChildren(id: mainSessionId) else {
           return nil
         }
         return StoredSession(from: row)
@@ -115,6 +114,12 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       case .arrayOutOfBounds: CrashTriggers.arrayOutOfBounds()
       case .objcException: CrashTriggers.objcException()
       case .stackOverflow: CrashTriggers.stackOverflow()
+      }
+    }
+
+    Class(NetworkRequestObserver.self) {
+      Constructor {
+        return NetworkRequestObserver()
       }
     }
   }

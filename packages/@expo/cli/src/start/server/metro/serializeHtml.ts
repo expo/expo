@@ -98,7 +98,9 @@ function htmlFromSerialAssets(
       orderedJsAssets.filter((a) => a.metadata.isAsync),
       route.entryPoints
     );
-    orderedJsAssets = [...syncAssets, ...sortedAsync];
+    const runtimeAssets = syncAssets.filter((a) => !a.metadata.requires?.length);
+    const entryAssets = syncAssets.filter((a) => !!a.metadata.requires?.length);
+    orderedJsAssets = [...runtimeAssets, ...sortedAsync, ...entryAssets];
   }
 
   const scripts = bundleUrl

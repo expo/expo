@@ -159,7 +159,7 @@
           "default": false
         },
         "unstable_useServerDataLoaders": {
-          "description": "Enable experimental data loader support. This is only supported for `web.output: 'static'` outputs at the moment.",
+          "description": "Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config.",
           "type": "boolean",
           "default": false
         },
