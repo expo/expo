@@ -42,12 +42,14 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return
     }
     let currentTime = CACurrentMediaTime()
+    let currentDate = Date()
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {
         return
       }
       markers.finishedLaunching = currentTime
+      markers.finishedLaunchingDate = currentDate
 
       // Start tracking frame metrics from this point so the data
       // matches the TTI window (finishedLaunching → markInteractive).
@@ -105,11 +107,18 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         let frameMetrics = frameMetricsRecorder.stop()
         let deviceState = await DeviceConditions.deviceState()
         let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
+        let networkRequests: NetworkRequestSummary? = {
+          guard let anchor = markers.finishedLaunchingDate else {
+            return nil
+          }
+          return NetworkRequestMonitor.shared.summarize(start: anchor, end: Date())
+        }()
         let mergedParams = MetricParamsBuilder.build(
           userParams: params,
           frameMetrics: frameMetrics,
           deviceState: deviceState,
-          networkPath: networkPath
+          networkPath: networkPath,
+          networkRequests: networkRequests
         )
         let metric = Metric(
           category: .appStartup,

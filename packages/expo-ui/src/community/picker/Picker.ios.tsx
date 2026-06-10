@@ -41,7 +41,7 @@ export function Picker<T extends PickerItemValue>(props: PickerProps<T>) {
   }));
 
   return (
-    <Host matchContents={{ vertical: true }} style={style}>
+    <Host matchContents={{ vertical: true }} style={style} ignoreSafeArea="all">
       <SwiftUIPicker
         modifiers={modifiers}
         selection={selectedValue}

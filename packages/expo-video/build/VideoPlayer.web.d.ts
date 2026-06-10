@@ -18,7 +18,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     _preservesPitch: boolean;
     _status: VideoPlayerStatus;
     _error: PlayerError | null;
-    _timeUpdateLoop: number | null;
+    _timeUpdateLoop: ReturnType<typeof setTimeout> | null;
     _timeUpdateEventInterval: number;
     audioMixingMode: AudioMixingMode;
     allowsExternalPlayback: boolean;

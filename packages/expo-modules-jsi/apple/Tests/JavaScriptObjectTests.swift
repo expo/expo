@@ -224,6 +224,29 @@ struct JavaScriptObjectTests {
     }
 
     @Test
+    @JavaScriptActor
+    func `set property with sync function closure`() throws {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("double") { this, arguments in
+        return JavaScriptValue(self.runtime, arguments[0].getInt() * 2)
+      }
+      let fn = try object.getPropertyAsFunction("double")
+      #expect(try fn.call(arguments: 21).getInt() == 42)
+    }
+
+    @Test
+    @JavaScriptActor
+    func `set property with async function closure`() async throws {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("addAsync") { this, arguments async throws in
+        return JavaScriptValue(self.runtime, arguments[0].getInt() + arguments[1].getInt())
+      }
+      let fn = try object.getPropertyAsFunction("addAsync")
+      let result = try await fn.call(arguments: 20, 22).getPromise().await()
+      #expect(result.getInt() == 42)
+    }
+
+    @Test
     func `delete property`() {
       let object = JavaScriptObject(runtime)
       object.setProperty("temp", value: true)

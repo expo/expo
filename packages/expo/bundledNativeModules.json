@@ -95,7 +95,7 @@
   "expo-web-browser": "~56.0.5",
   "expo-widgets": "~56.0.15",
   "jest-expo": "~56.0.4",
-  "lottie-react-native": "~7.3.4",
+  "lottie-react-native": "~7.3.8",
   "react": "19.2.3",
   "react-dom": "19.2.3",
   "react-native": "0.86.0-rc.3",

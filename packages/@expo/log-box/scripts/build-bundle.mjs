@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Build the ExpoLogBox.bundle DOM Component.
-// Use `pnpm build` to run this script.
+// Use `pnpm build:bundle` to run this script.
 
 import spawn from '@expo/spawn-async';
 import { globSync } from 'glob';

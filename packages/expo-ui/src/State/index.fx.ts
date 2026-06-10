@@ -41,7 +41,8 @@ function registerSharedObjectSerializer(): void {
     unpack: (packed) => {
       'worklet';
       const obj = (globalThis as any).expo.SharedObject.__resolveInWorklet(packed.objectId);
-      // Define .value property if the object has getValue/setValue (e.g. ObservableState)
+      // Define .value plus the get/set accessors if the object has
+      // getValue/setValue (e.g. ObservableState)
       if (typeof obj.getValue === 'function' && typeof obj.setValue === 'function') {
         Object.defineProperty(obj, 'value', {
           get() {
@@ -51,6 +52,8 @@ function registerSharedObjectSerializer(): void {
             obj.setValue({ value: v });
           },
         });
+        obj.get = () => obj.getValue();
+        obj.set = (v: any) => obj.setValue({ value: v });
       }
       return obj;
     },

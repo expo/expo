@@ -22,13 +22,16 @@ apple/
 │   │   │   └── Values/            # JS value wrappers (Value, Object, Array, Function, ArrayBuffer, TypedArray, Promise, BigInt, Error, WeakObject)
 │   │   └── Utilities/             # Error handling, DeferredPromise, helpers
 │   └── ExpoModulesJSI-Cxx/        # C++ utilities bridging Swift ↔ JSI
-│       ├── include/               # C++ headers
+│       ├── include/               # In-package C++ headers
+│       │   └── Public/            # C++ headers shipped from the xcframework
 │       ├── JSIUtils.cpp
 │       └── TypedArray.cpp
 ├── Tests/                         # Swift Testing suites, one per type
 ```
 
-C++ headers in `apple/Sources/ExpoModulesJSI-Cxx/include/`: `CppError.h`, `HostFunctionClosure.h`, `HostObject.h`, `HostObjectCallbacks.h`, `JSIUtils.h`, `MemoryBuffer.h`, `NativeState.h`, `RetainedSwiftPointer.h`, `RuntimeScheduler.h`, `TypedArray.h`.
+In-package C++ headers (consumed by `ExpoModulesJSI`'s own Swift sources) live in `apple/Sources/ExpoModulesJSI-Cxx/include/`: `CppError.h`, `HostFunctionClosure.h`, `HostObject.h`, `HostObjectCallbacks.h`, `JSIUtils.h`, `MemoryBuffer.h`, `RetainedSwiftPointer.h`, `RuntimeScheduler.h`, `TypedArray.h`.
+
+Headers under `include/Public/` (today just `NativeState.h`) are additionally copied into the xcframework's `Headers/` directory by `build-xcframework.sh` and exposed via a `requires cplusplus` modulemap submodule, so non-interop C++ consumers (e.g. `expo-modules-core`) can include them via `<ExpoModulesJSI/NativeState.h>` and use `__has_include` for graceful fallback on non-Apple platforms.
 
 Root-level files (`package.json`, `index.js`, `expo-module.config.json`, etc.) are npm package scaffolding &mdash; the actual implementation is entirely in `apple/`. The npm package has no JS runtime code; `index.js` exports null.
 
