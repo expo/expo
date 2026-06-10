@@ -20,6 +20,7 @@
 - [iOS] Throw an actionable error when a worklet is used but `react-native-worklets`'s native adapter isn't linked, instead of a misleading "not an instance of Worklet" failure. ([#46571](https://github.com/expo/expo/pull/46571) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fix `canAskAgain` returning `false` for re-requestable permissions in the "Ask every time" state. ([#46683](https://github.com/expo/expo/pull/46683) by [@alanjhughes](https://github.com/alanjhughes))
 - [Internal] Remove `EventEmitter` re-export global type indirection ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
+- [iOS] Fix `EXC_BAD_ACCESS` crash when an async function resolves against a torn-down app context (e.g. a headless background task finishing after the context is deallocated). ([#46783](https://github.com/expo/expo/pull/46783) by [@ctmayhew](https://github.com/ctmayhew))
 
 ### 💡 Others
 
