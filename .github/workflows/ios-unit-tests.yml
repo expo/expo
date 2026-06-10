@@ -67,11 +67,16 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
+      - name: Setup ccache
+        uses: ./.github/actions/setup-ccache
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          ccache: 'true'
           native-tests-pods: 'true'
+      - name: Reset ccache stats
+        run: ccache -z
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
       - name: 🥥 Install CocoaPods in `apps/native-tests/ios`
@@ -88,6 +93,9 @@ jobs:
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 30
           FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 8
         run: pnpm expotools native-unit-tests --platform ios
+      - name: Show ccache stats
+        if: always()
+        run: ccache -s -v
       - name: 📤 Upload xcresult
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
