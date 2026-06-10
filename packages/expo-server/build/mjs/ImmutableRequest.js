@@ -86,6 +86,7 @@ export class ImmutableRequest {
         return this.#request.bodyUsed;
     }
     get duplex() {
+        // NOTE(@kitten): Depending on if `@types/node` is used, this may not be defined
         return this.#request.duplex;
     }
     get headers() {
