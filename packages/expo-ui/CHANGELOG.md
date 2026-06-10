@@ -10,6 +10,7 @@
 
 - [jetpack-compose] Added `onGloballyPositioned` modifier, which reports a composable's window position and size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Extended the SwiftUI `onGeometryChange` modifier to also report the view's global position (`x`/`y`) alongside its size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS][android] Added React Compiler-friendly `get()` / `set()` accessors to `useNativeState`, as an alternative to reading and writing `.value`. ([#46690](https://github.com/expo/expo/pull/46692) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `BasicTextField` component. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `accessibilityInputLabels` modifier to set alternative spoken phrases Voice Control uses to refer to a view (for example "Hang up" for an "End" button). ([#46661](https://github.com/expo/expo/pull/46661) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS][web] Added `seedColor` prop to the universal and SwiftUI `<Host>`, used as the SwiftUI tint on iOS and to derive the primary color scale on web. ([#46566](https://github.com/expo/expo/pull/46566) by [@zoontek](https://github.com/zoontek))

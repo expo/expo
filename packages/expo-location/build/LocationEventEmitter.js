@@ -1,3 +1,2 @@
-import ExpoLocation from './ExpoLocation';
-export const LocationEventEmitter = ExpoLocation;
+export { default as LocationEventEmitter } from './ExpoLocation';
 //# sourceMappingURL=LocationEventEmitter.js.map

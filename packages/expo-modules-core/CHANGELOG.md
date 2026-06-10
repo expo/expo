@@ -18,9 +18,11 @@
 - [iOS] Read iPad-specific supported orientations from `UISupportedInterfaceOrientations~ipad`. ([#46281](https://github.com/expo/expo/issues/46281) by [@bryandent](https://github.com/bryandent)) ([#46306](https://github.com/expo/expo/pull/46306) by [@mvincentong](https://github.com/mvincentong))
 - [iOS] Throw an actionable error when a worklet is used but `react-native-worklets`'s native adapter isn't linked, instead of a misleading "not an instance of Worklet" failure. ([#46571](https://github.com/expo/expo/pull/46571) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fix `canAskAgain` returning `false` for re-requestable permissions in the "Ask every time" state. ([#46683](https://github.com/expo/expo/pull/46683) by [@alanjhughes](https://github.com/alanjhughes))
+- [Internal] Remove `EventEmitter` re-export global type indirection ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
+- [iOS] `@ExpoModule` now synthesizes a `_decorateModule` that binds the module's `@JS` functions directly onto the JS object, letting the module holder skip the dynamic definition path for synthesized modules. ([#46612](https://github.com/expo/expo/pull/46612) by [@tsapeta](https://github.com/tsapeta))
 - Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
 - `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
 - [iOS] `SharedObject::NativeState` now derives from `expo::NativeState` so the Swift wrapper can be recovered from the JS side via `getNativeState`, laying the groundwork for native-state-based shared object lookup. ([#46330](https://github.com/expo/expo/pull/46330) by [@tsapeta](https://github.com/tsapeta))

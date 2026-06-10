@@ -36,13 +36,6 @@ inputs:
   git-lfs:
     description: 'Restore Git LFS cache'
     required: false
-  hermes-engine-aar:
-    description: 'Restore prebuilt hermes-engine AAR'
-    required: false
-  rebuild-hermes-engine-aar-if-needed:
-    description: 'Rebuild hermes-engine AAR when cache missed'
-    default: 'true'
-    required: false
   react-native-gradle-downloads:
     description: 'Restore Gradle downloads cache for React Native libraries'
     required: false
@@ -69,9 +62,6 @@ outputs:
   git-lfs-hit:
     description: 'Returns true, if Git LFS cache is up-to-date'
     value: ${{ steps.git-lfs-cache.outputs.cache-hit }}
-  hermes-engine-aar-hit:
-    description: 'Returns true, if prebuilt hermes-engine AAR cache is up-to-date'
-    value: ${{ steps.cache-hermes-engine-aar.outputs.cache-hit }}
 
 runs:
   using: 'composite'
@@ -193,41 +183,6 @@ runs:
       with:
         path: .git/lfs
         key: ${{ steps.git-lfs.outputs.sha256 }}
-
-    - name: ♻️ Restore hermes-engine AAR cache
-      if: inputs.hermes-engine-aar == 'true'
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-      with:
-        path: android/prebuiltHermes
-        key: hermes-engine-aar-v2-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
-    - name: Check hermes-engine cache-hit
-      if: inputs.hermes-engine-aar == 'true'
-      id: cache-hermes-engine-aar
-      shell: bash
-      run: |
-        CURRENT_VERSION=$(test -f android/prebuiltHermes/.hermesversion && cat android/prebuiltHermes/.hermesversion) || true
-        TARGET_VERSION=$(test -f react-native-lab/react-native/packages/react-native/sdks/.hermesversion && cat react-native-lab/react-native/packages/react-native/sdks/.hermesversion) || true
-        if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then
-          echo "cache-hit=true" >> $GITHUB_OUTPUT
-        else
-          echo "cache-hit=false" >> $GITHUB_OUTPUT
-        fi
-    - name: 🛠 Rebuild hermes-engine AAR when cache missed
-      if: inputs.hermes-engine-aar == 'true' && inputs.rebuild-hermes-engine-aar-if-needed == 'true' && steps.cache-hermes-engine-aar.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        # Ensure node packages are installed when cache miss
-        pnpm install --frozen-lockfile
-        mkdir -p prebuiltHermes
-        cp -f ../react-native-lab/react-native/packages/react-native/sdks/.hermesversion prebuiltHermes/
-        ./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleRelease
-        ./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleDebug
-        cp -f ../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar prebuiltHermes/
-        cp -f ../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar prebuiltHermes/
-      env:
-        # Reset reactNativeArchitectures to build all architectures
-        ORG_GRADLE_PROJECT_reactNativeArchitectures:
-      working-directory: android
 
     - name: 🛠 Setup "REACT_NATIVE_DOWNLOADS_DIR" environment variable
       if: inputs.react-native-gradle-downloads == 'true'

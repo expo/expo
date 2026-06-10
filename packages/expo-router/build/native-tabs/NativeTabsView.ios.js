@@ -19,6 +19,7 @@ function NativeTabsView(props) {
     const { ios: rawIosProps, android: _ignoredRawAndroidProps, ...rawHostRestProps } = unstable_nativeProps ?? {};
     const { selectedScreenKey, provenance } = (0, NativeTabsView_shared_1.useSelectedScreenKey)(props);
     const onTabSelected = (0, NativeTabsView_shared_1.useOnTabSelectedHandler)(props.onTabChange);
+    const onTabSelectionPrevented = (0, NativeTabsView_shared_1.useOnTabSelectionPreventedHandler)(props.onTabChange);
     const iosAppearances = tabs.map((tab) => ({
         standardAppearance: (0, appearance_1.createStandardAppearanceFromOptions)(tab.options),
         scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)(tab.options),
@@ -43,7 +44,7 @@ function NativeTabsView(props) {
             tabBarControllerMode,
             bottomAccessory: bottomAccessoryFn,
             ...rawIosProps,
-        }, tabBarHidden: props.hidden, ...rawHostRestProps, navStateRequest: { selectedScreenKey, baseProvenance: provenance }, onTabSelected: onTabSelected, children: children }));
+        }, tabBarHidden: props.hidden, ...rawHostRestProps, navStateRequest: { selectedScreenKey, baseProvenance: provenance }, onTabSelected: onTabSelected, onTabSelectionPrevented: onTabSelectionPrevented, children: children }));
 }
 function Screen(props) {
     const { options, standardAppearance, scrollEdgeAppearance, contentRenderer } = props;

@@ -436,6 +436,7 @@ export interface ExpoAppMetricsModuleType {
    * @private This API is unstable and may change without notice.
    */
   addCustomMetricToSession(metric: Metric): Promise<void>;
+
   /**
    * Returns the current main session, including its metrics.
    *
@@ -449,4 +450,15 @@ export interface ExpoAppMetricsModuleType {
    * release the instance (drop all references) to stop.
    */
   NetworkRequestObserver: typeof NetworkRequestObserver;
+
+  /**
+   * Resolves to the current foreground session — created when the app becomes
+   * active and ended when it is backgrounded — as a shared object, or `null`
+   * when no foreground session is active. Metrics and logs are fetched lazily
+   * via the returned object.
+   *
+   * @private This API is unstable and may change without notice.
+   * @platform ios
+   */
+  getForegroundSession(): Promise<Session | null>;
 }
