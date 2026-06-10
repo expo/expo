@@ -1,8 +1,4 @@
-import {
-  getMarkdownHref,
-  getMarkdownUrl,
-  rewriteDocsLinksToMarkdown,
-} from './shared.js';
+import { getMarkdownHref, getMarkdownUrl, rewriteDocsLinksToMarkdown } from './shared.js';
 
 describe('getMarkdownHref', () => {
   it('converts docs page hrefs to sibling markdown hrefs', () => {
@@ -14,6 +10,11 @@ describe('getMarkdownHref', () => {
     );
     expect(getMarkdownHref('/search?query=updates')).toBe('/search.md?query=updates');
     expect(getMarkdownHref('/')).toBe('/index.md');
+  });
+
+  it('converts versioned page hrefs whose last segment ends in a number', () => {
+    expect(getMarkdownHref('/versions/v51.0.0')).toBe('/versions/v51.0.0.md');
+    expect(getMarkdownHref('/versions/v51.0.0/')).toBe('/versions/v51.0.0.md');
   });
 
   it('preserves non-page hrefs', () => {
@@ -70,5 +71,37 @@ describe('rewriteDocsLinksToMarkdown', () => {
         '```',
       ].join('\n')
     );
+  });
+
+  it('does not rewrite links inside indented or tilde fenced code blocks', () => {
+    const content = [
+      '1. Step one:',
+      '   ```md',
+      '   [Indented](/get-started/create-a-project/)',
+      '   ```',
+      '~~~md',
+      '[Tilde](/get-started/create-a-project/)',
+      '~~~',
+      '[Outside](/get-started/create-a-project/)',
+    ].join('\n');
+
+    expect(rewriteDocsLinksToMarkdown(content)).toBe(
+      [
+        '1. Step one:',
+        '   ```md',
+        '   [Indented](/get-started/create-a-project/)',
+        '   ```',
+        '~~~md',
+        '[Tilde](/get-started/create-a-project/)',
+        '~~~',
+        '[Outside](/get-started/create-a-project.md)',
+      ].join('\n')
+    );
+  });
+
+  it('does not let a ``` line close a ~~~ fenced block', () => {
+    const content = ['~~~md', '```', '[Inside](/get-started/create-a-project/)', '~~~'].join('\n');
+
+    expect(rewriteDocsLinksToMarkdown(content)).toBe(content);
   });
 });

@@ -49,7 +49,7 @@ const DOC_INDEX_BLOCKQUOTE =
   '> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.';
 
 function splitUrlSuffix(url) {
-  const suffixIndex = url.search(/[?#]/);
+  const suffixIndex = url.search(/[#?]/);
   if (suffixIndex === -1) {
     return { pathname: url, suffix: '' };
   }
@@ -61,7 +61,10 @@ function splitUrlSuffix(url) {
 }
 
 function hasFileExtension(pathname) {
-  return /\.[^/]+$/.test(pathname);
+  const match = pathname.match(/\.([^./]+)$/);
+  // A purely numeric "extension" (e.g. the trailing `0` in `/versions/v51.0.0`) is part of a
+  // version segment, not a real file extension, so such hrefs should still be converted to `.md`.
+  return match !== null && !/^\d+$/.test(match[1]);
 }
 
 export function getMarkdownHref(href) {
@@ -84,39 +87,58 @@ export function getMarkdownUrl(href) {
   return `${DOCS_BASE_URL}${getMarkdownHref(href)}`;
 }
 
+// Matches the opening or closing line of a fenced code block. CommonMark allows up to three
+// leading spaces and supports both backtick and tilde fences, so we accept indented fences
+// (e.g. those nested inside list items) and `~~~` fences, not only ``` at column 0.
+const CODE_FENCE_REGEX = /^\s{0,3}(`{3,}|~{3,})/;
+
+function rewriteMarkdownLinks(line) {
+  return line.replace(
+    /(!?\[[^\n\]]+]\()([^\s)]+)((?:\s+["'][^\n)]*["'])?\))/g,
+    (match, prefix, url, suffix) => {
+      if (prefix.startsWith('!')) {
+        return match;
+      }
+
+      if (url.startsWith(DOCS_BASE_URL_WITH_SLASH)) {
+        return `${prefix}${getMarkdownUrl(url.slice(DOCS_BASE_URL.length))}${suffix}`;
+      }
+
+      if (url.startsWith('/') && !url.startsWith('//')) {
+        return `${prefix}${getMarkdownHref(url)}${suffix}`;
+      }
+
+      return match;
+    }
+  );
+}
+
 export function rewriteDocsLinksToMarkdown(content) {
-  let inFencedCodeBlock = false;
+  // The fence marker (`` ` `` or `~`) that opened the current code block, or null when outside one.
+  // Tracking the marker keeps a ``` line from prematurely closing a ~~~ block and vice versa.
+  let fenceMarker = null;
 
   return content
     .split('\n')
     .map(line => {
-      if (/^```/.test(line)) {
-        inFencedCodeBlock = !inFencedCodeBlock;
-        return line;
-      }
-
-      if (inFencedCodeBlock) {
-        return line;
-      }
-
-      return line.replace(
-        /(!?\[[^\]\n]+\]\()([^)\s]+)((?:\s+["'][^)\n]*["'])?\))/g,
-        (match, prefix, url, suffix) => {
-          if (prefix.startsWith('!')) {
-            return match;
-          }
-
-          if (url.startsWith(DOCS_BASE_URL_WITH_SLASH)) {
-            return `${prefix}${getMarkdownUrl(url.slice(DOCS_BASE_URL.length))}${suffix}`;
-          }
-
-          if (url.startsWith('/') && !url.startsWith('//')) {
-            return `${prefix}${getMarkdownHref(url)}${suffix}`;
-          }
-
-          return match;
+      const fenceMatch = line.match(CODE_FENCE_REGEX);
+      if (fenceMatch) {
+        const marker = fenceMatch[1][0];
+        if (fenceMarker === null) {
+          fenceMarker = marker;
+          return line;
         }
-      );
+        if (marker === fenceMarker) {
+          fenceMarker = null;
+          return line;
+        }
+      }
+
+      if (fenceMarker !== null) {
+        return line;
+      }
+
+      return rewriteMarkdownLinks(line);
     })
     .join('\n');
 }
