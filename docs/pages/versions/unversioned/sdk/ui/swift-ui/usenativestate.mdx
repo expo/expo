@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 `useNativeState` returns an [`ObservableState`](#observablestate) that maps to a SwiftUI [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) on the native side, so reads and writes to `.value` are observed directly by SwiftUI without going through the React render cycle. This lets you update the native view synchronously from a worklet on the UI thread.
 
-> **Note:** When working with the [React Compiler](https://react.dev/learn/react-compiler), you should refrain from accessing and modifying the `value` property directly. Instead, use the `get` and `set` methods, which are compliant with the React Compiler standards.
+> **Note:** When working with the [React Compiler](https://react.dev/learn/react-compiler), you should refrain from accessing and modifying the `value` property directly. Instead, use the [`get`](#observablestate) and [`set`](#observablestate) methods, which are compliant with the React Compiler standards.
 
 ## Installation
 
