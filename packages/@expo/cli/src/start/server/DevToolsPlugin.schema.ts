@@ -36,6 +36,7 @@ export const PluginSchema = z.object({
   packageName: z.string().min(1),
   packageRoot: z.string().min(1),
   webpageRoot: z.string().optional(),
+  webpageBanner: z.boolean().optional(),
   cliExtensions: CliExtensionsSchema.optional(),
 });
 

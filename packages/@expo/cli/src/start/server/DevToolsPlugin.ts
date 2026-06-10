@@ -67,6 +67,10 @@ export class DevToolsPlugin {
     return this.plugin?.webpageRoot;
   }
 
+  get webpageBanner(): boolean {
+    return this.plugin?.webpageBanner ?? false;
+  }
+
   get description(): string {
     return this.plugin.cliExtensions?.description ?? '';
   }

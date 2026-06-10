@@ -11,14 +11,17 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-function createRevision(pkgDir: string, webpageRoot: string | undefined) {
+function createRevision(pkgDir: string, webpageRoot: string | undefined, webpageBanner?: boolean) {
   return {
     name: 'example-devtools',
     path: pkgDir,
     version: '0.0.1',
     config: new ExpoModuleConfig({
       platforms: ['devtools'],
-      devtools: webpageRoot != null ? { webpageRoot } : {},
+      devtools: {
+        ...(webpageRoot != null ? { webpageRoot } : {}),
+        ...(webpageBanner != null ? { webpageBanner } : {}),
+      },
     }),
   };
 }
@@ -39,6 +42,17 @@ describe(resolveModuleAsync, () => {
     const result = await resolveModuleAsync('example-devtools', createRevision(pkgDir, 'web'));
     expect(result).not.toBeNull();
     expect(result!.webpageRoot).toBe(path.join(pkgDir, 'web'));
+    expect(result!.webpageBanner).toBe(false);
+  });
+
+  it('resolves webpageBanner option', async () => {
+    const pkgDir = path.resolve('/node_modules/example-devtools');
+    const result = await resolveModuleAsync(
+      'example-devtools',
+      createRevision(pkgDir, 'web', true)
+    );
+    expect(result).not.toBeNull();
+    expect(result!.webpageBanner).toBe(true);
   });
 
   it('drops webpageRoot when it traverses out of the package directory', async () => {

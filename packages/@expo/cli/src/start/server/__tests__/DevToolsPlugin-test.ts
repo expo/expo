@@ -12,8 +12,22 @@ describe('DevToolsPlugin', () => {
 
     expect(plugin.packageName).toBe('example-plugin');
     expect(plugin.webpageRoot).toBe('/path/to/example-plugin/web');
+    expect(plugin.webpageBanner).toBe(false);
     expect(plugin.executor).toBeUndefined();
     expect(plugin.description).toBe('');
+  });
+
+  it('should create an instance from a plugin with webpageBanner enabled', () => {
+    const pluginDescriptor = {
+      packageName: 'example-plugin',
+      packageRoot: '/path/to/example-plugin',
+      webpageRoot: '/path/to/example-plugin/web',
+      webpageBanner: true,
+    };
+    const projectRoot = '/path/to/project';
+    const plugin = new DevToolsPlugin(pluginDescriptor, projectRoot);
+
+    expect(plugin.webpageBanner).toBe(true);
   });
 
   it('should reject a webpageRoot that escapes the package directory', () => {

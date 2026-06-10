@@ -11,6 +11,7 @@ import { selectAsync } from '../../utils/prompts';
 import { printQRCode } from '../../utils/qr';
 import { getDependencyCheckMessage } from '../checkDependenciesOnStart';
 import type { DevServerManager } from '../server/DevServerManager';
+import type { DevToolsPlugin } from '../server/DevToolsPlugin';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
@@ -23,6 +24,18 @@ interface MoreToolMenuItem extends ExpoChoice<string> {
   action?: () => unknown;
 }
 
+export function getDevToolsPluginWebpageBannerItems(
+  plugins: DevToolsPlugin[],
+  defaultServerUrl: string
+): { packageName: string; url: string }[] {
+  return plugins
+    .filter((plugin) => plugin.webpageBanner && plugin.webpageEndpoint != null)
+    .map((plugin) => ({
+      packageName: plugin.packageName,
+      url: new URL(plugin.webpageEndpoint!, defaultServerUrl).toString(),
+    }));
+}
+
 /** Wraps the DevServerManager and adds an interface for user actions. */
 export class DevServerManagerActions {
   constructor(
@@ -30,7 +43,7 @@ export class DevServerManagerActions {
     private options: Pick<StartOptions, 'devClient' | 'platforms'>
   ) {}
 
-  printDevServerInfo(
+  async printDevServerInfoAsync(
     options: Pick<
       StartOptions,
       'devClient' | 'isWebSocketsEnabled' | 'platforms' | 'dependencyCheckRef'
@@ -81,6 +94,9 @@ export class DevServerManagerActions {
 
         rows--;
         Log.log(printItem(chalk`Metro: {underline ${nativeRuntimeUrl}}`));
+        rows -= await this.printDevToolsPluginWebpageBannersAsync(
+          devServer.getUrlCreator().constructUrl({ scheme: 'http' })
+        );
       } catch (error) {
         console.log('err', error);
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
@@ -89,8 +105,12 @@ export class DevServerManagerActions {
         } else {
           const serverUrl = devServer.getDevServerUrl();
           Log.log(printItem(chalk`Metro: {underline ${serverUrl}}`));
+          rows--;
+          rows -= await this.printDevToolsPluginWebpageBannersAsync(
+            devServer.getUrlCreator().constructUrl({ scheme: 'http' })
+          );
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
-          rows -= 2;
+          rows--;
         }
       }
     }
@@ -113,6 +133,22 @@ export class DevServerManagerActions {
 
     for (const line of dependencyCheckLines) {
       Log.log(line);
+    }
+  }
+
+  private async printDevToolsPluginWebpageBannersAsync(defaultServerUrl: string): Promise<number> {
+    try {
+      const plugins = await this.devServerManager.devtoolsPluginManager.queryPluginsAsync();
+      const bannerItems = getDevToolsPluginWebpageBannerItems(plugins, defaultServerUrl);
+
+      for (const { packageName, url } of bannerItems) {
+        Log.log(printItem(chalk`${packageName}: {underline ${url}}`));
+      }
+
+      return bannerItems.length;
+    } catch (error: any) {
+      debug(`Failed to print DevTools plugin webpage banners: ${error.toString()}`);
+      return 0;
     }
   }
 
