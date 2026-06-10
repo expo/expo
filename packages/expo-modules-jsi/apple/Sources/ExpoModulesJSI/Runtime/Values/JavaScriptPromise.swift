@@ -75,15 +75,16 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    guard !resolveFunction.isEmpty else {
-      preconditionFailure("Cannot settle a promise more than once")
-    }
 
     // `resolve` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+      // If the promise is already settled, do nothing.
+      guard let resolver = resolveFunction.take() else {
+        return
+      }
       // Call the actual resolver given in the Promise setup.
       // This will also call `deferredPromise.resolve` in the `then` handler.
-      _ = try! resolveFunction.take().getFunction().call(arguments: value)
+      _ = try! resolver.getFunction().call(arguments: value)
 
       // Release the rejecter, we cannot call it anymore.
       rejectFunction.release()
@@ -94,19 +95,20 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    guard !rejectFunction.isEmpty else {
-      preconditionFailure("Cannot settle a promise more than once")
-    }
 
     // `reject` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+      // If the promise is already settled, do nothing.
+      guard let rejecter = rejectFunction.take() else {
+        return
+      }
       // Create a JS error from any (native) error.
       let errorMessage = String(describing: error)
       let errorValue = JavaScriptError(runtime, message: errorMessage).asValue()
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
-      _ = try! rejectFunction.take().getFunction().call(arguments: errorValue)
+      _ = try! rejecter.getFunction().call(arguments: errorValue)
 
       // Release the resolver, we cannot call it anymore.
       resolveFunction.release()
