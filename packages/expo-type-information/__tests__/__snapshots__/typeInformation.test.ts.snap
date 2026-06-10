@@ -103,6 +103,7 @@ export declare class TestModuleNativeModuleType extends NativeModule<TestModuleE
   TestFunctionReturningRecord(): TestRecord;
   TestFunctionReturningEnum(): TestEnum;
   TestSimpleAsyncFunction(a: string, b: string): Promise<string>;
+  TestRunOnQueue(a: string, b: string): Promise<string>;
   TestUnderscore(
     url: URL,
     _4: BarcodeType[]
@@ -190,6 +191,9 @@ export function TestFunctionReturningEnum() {
 export async function TestSimpleAsyncFunction(a: string, b: string) {
   return TestModule.TestSimpleAsyncFunction(a, b);
 }
+export async function TestRunOnQueue(a: string, b: string) {
+  return TestModule.TestRunOnQueue(a, b);
+}
 export async function TestUnderscore(url: URL, _5: BarcodeType[]) {
   return TestModule.TestUnderscore(url, _5);
 }
@@ -264,6 +268,7 @@ export declare class TestModule extends NativeModule<TestModuleEvents> {
   TestFunctionReturningRecord(): TestRecord;
   TestFunctionReturningEnum(): TestEnum;
   TestSimpleAsyncFunction(a: string, b: string): Promise<string>;
+  TestRunOnQueue(a: string, b: string): Promise<string>;
   TestUnderscore(
     url: URL,
     _6: BarcodeType[]
@@ -438,6 +443,7 @@ export function TestFunctionReturningEnum(): TestEnum { return TestEnum.simpleCa
 
 
 export async function TestSimpleAsyncFunction(a: string, b: string): Promise<string> { return ""; }
+export async function TestRunOnQueue(a: string, b: string): Promise<string> { return ""; }
 export async function TestUnderscore(url: URL, _2: BarcodeType[]): Promise<unknown /*The type couldn't be resolved automatically.*/> { return; }
 
 
@@ -494,6 +500,7 @@ export function TestTypeCombinations(a) { return []; }
 export function TestFunctionReturningRecord() { return { basicString: "", basicStringInitialized: "", basicIntInferred: 0, basicDoubleInferred: 0, basicStringInferred: "", enumInferred: TestEnum.simpleCase, complexEnumInferred: TestEnum.simpleCase, recordInferred: { field1: 0, field2: "" }, optionalInt: 0, letDoubleBinding: 0 }; }
 export function TestFunctionReturningEnum() { return TestEnum.simpleCase; }
 export async function TestSimpleAsyncFunction(a, b) { return ""; }
+export async function TestRunOnQueue(a, b) { return ""; }
 export async function TestUnderscore(url, _3) { return; }
 export class TestClassWithConstructor {
     constructor(a) { }
@@ -599,6 +606,7 @@ export declare class TestModuleNativeModuleType extends NativeModule<TestModuleE
   TestFunctionReturningRecord(): TestRecord;
   TestFunctionReturningEnum(): TestEnum;
   TestSimpleAsyncFunction(a: string, b: string): Promise<string>;
+  TestRunOnQueue(a: string, b: string): Promise<string>;
   TestUnderscore(
     url: URL,
     _1: BarcodeType[]
@@ -707,6 +715,31 @@ exports[`Same type information 1`] = `
         {
           "arguments": [
             {
+              "name": "a",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+            {
+              "name": "b",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+          ],
+          "definitionOffset": 2672,
+          "name": "TestRunOnQueue",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 1,
+          },
+        },
+        {
+          "arguments": [
+            {
               "name": "url",
               "type": {
                 "kind": 1,
@@ -724,7 +757,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 2672,
+          "definitionOffset": 2854,
           "name": "TestUnderscore",
           "parameters": [],
           "returnType": {
@@ -746,9 +779,9 @@ exports[`Same type information 1`] = `
                 },
               },
             ],
-            "definitionOffset": 2798,
+            "definitionOffset": 2980,
           },
-          "definitionOffset": 2752,
+          "definitionOffset": 2934,
           "methods": [],
           "name": "TestClassWithConstructor",
           "properties": [],
@@ -765,7 +798,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3340,
+              "definitionOffset": 3522,
               "name": "TestAsyncFunction",
               "parameters": [],
               "returnType": {
@@ -810,14 +843,14 @@ exports[`Same type information 1`] = `
                 },
               },
             ],
-            "definitionOffset": 2900,
+            "definitionOffset": 3082,
           },
-          "definitionOffset": 2864,
+          "definitionOffset": 3046,
           "methods": [],
           "name": "TestBasicClass",
           "properties": [
             {
-              "definitionOffset": 3004,
+              "definitionOffset": 3186,
               "name": "TestIntProperty",
               "type": {
                 "kind": 0,
@@ -825,7 +858,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 3072,
+              "definitionOffset": 3254,
               "name": "TestEitherProperty",
               "type": {
                 "kind": 2,
@@ -845,7 +878,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 3159,
+              "definitionOffset": 3341,
               "name": "TestEnumProperty",
               "type": {
                 "kind": 1,
@@ -853,7 +886,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 3243,
+              "definitionOffset": 3425,
               "name": "TestRecordProperty",
               "type": {
                 "kind": 1,
@@ -865,7 +898,7 @@ exports[`Same type information 1`] = `
         {
           "asyncMethods": [],
           "constructor": null,
-          "definitionOffset": 3442,
+          "definitionOffset": 3624,
           "methods": [],
           "name": "TestEmptyClass",
           "properties": [],
@@ -1223,7 +1256,7 @@ exports[`Same type information 1`] = `
           "classes": [],
           "constants": [],
           "constructor": null,
-          "definitionOffset": 3505,
+          "definitionOffset": 3687,
           "events": [
             "onEvent1",
             "onEvent2",
@@ -1249,7 +1282,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3551,
+              "definitionOffset": 3733,
               "name": "url",
             },
             {
@@ -1269,7 +1302,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3735,
+              "definitionOffset": 3917,
               "name": "testRecord",
             },
             {
@@ -1289,7 +1322,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3806,
+              "definitionOffset": 3988,
               "name": "testRecord2",
             },
             {
@@ -1309,7 +1342,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3880,
+              "definitionOffset": 4062,
               "name": "testRecordClass",
             },
             {
@@ -1329,7 +1362,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3966,
+              "definitionOffset": 4148,
               "name": "testEnum",
             },
           ],

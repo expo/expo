@@ -356,6 +356,7 @@ export async function getAllExpoModulesInWorkingDirectory(): Promise<FileTypeInf
             inputFileAbsolutePaths: [fs.realpathSync(file)],
           },
           mapUnicodeCharacters: true,
+          runOnQueue: true,
         })
       )
     )
