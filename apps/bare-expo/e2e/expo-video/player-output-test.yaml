@@ -8,6 +8,10 @@ jsEngine: graaljs
     visible: 'Players ready'
     timeout: 30000
 - tapOn: 'Move player 1 to the next video view'
+- extendedWaitUntil:
+    visible:
+      id: 'viewshot-ready'
+    timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:
@@ -18,6 +22,10 @@ jsEngine: graaljs
     text: 'Move player 2 to the next video view'
     repeat: 2
 - tapOn: 'Move player 1 to the next video view'
+- extendedWaitUntil:
+    visible:
+      id: 'viewshot-ready'
+    timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:
@@ -26,6 +34,10 @@ jsEngine: graaljs
       mode: 'keep-originals'
 - tapOn: 'Move player 1 to first video view'
 - tapOn: 'Move player 2 to first video view'
+- extendedWaitUntil:
+    visible:
+      id: 'viewshot-ready'
+    timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:
@@ -40,6 +52,10 @@ jsEngine: graaljs
 - tapOn:
     text: 'Move player 1 to the next video view'
     repeat: 2
+- extendedWaitUntil:
+    visible:
+      id: 'viewshot-ready'
+    timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:
