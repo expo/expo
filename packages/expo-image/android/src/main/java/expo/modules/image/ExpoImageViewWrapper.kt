@@ -312,11 +312,17 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             newView.bringToFront()
             previousView.alpha = 1f
             newView.alpha = 0f
+            // A newer source can reuse this view as its `newView` before the fade-out ends. That
+            // cancels this animation, and the end action runs on cancel too, so without this guard
+            // it would recycle the view now holding the new image. See issue #46703.
+            val previousTarget = previousView.currentTarget
             previousView.animate().apply {
               duration = transitionDuration
               alpha(0f)
               withEndAction {
-                clearPreviousView()
+                if (previousView.currentTarget === previousTarget) {
+                  clearPreviousView()
+                }
               }
             }
             newView.animate().apply {

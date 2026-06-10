@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 ## 56.0.10 — 2026-06-05
