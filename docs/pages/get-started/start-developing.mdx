@@ -1,110 +1,133 @@
----
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
+import React, { useState } from 'react';
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+export default function AsbestRisikoApp() {
+  // Tilstander (State) for å holde styr på hvor i appen vi er, og poengsum
+  const [aktivSkjerm, setAktivSkjerm] = useState(1);
+  const [akuttFare, setAkuttFare] = useState(false);
+  const [godkjentRutine, setGodkjentRutine] = useState(false);
+  const [totalPoeng, setTotalPoeng] = useState(0);
 
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
+  // Funksjon for å registrere poeng og gå til neste steg
+  const leggTilPoengOgGaaVidere = (poeng) => {
+    setTotalPoeng(totalPoeng + poeng);
+    setAktivSkjerm(aktivSkjerm + 1);
+  };
 
-<Terminal
-  cmd={{
-    npm: ['$ npx expo start'],
-    yarn: ['$ yarn expo start'],
-    pnpm: ['$ pnpm expo start'],
-    bun: ['$ bun expo start'],
-  }}
-/>
+  // Funksjon for strakstiltak (EU Sekundæreksponering)
+  const handterAkuttFare = (erPaaVist) => {
+    if (erPaaVist) {
+      setAkuttFare(true);
+      setAktivSkjerm(4); // Hopper rett til resultatskjermen
+    } else {
+      setAktivSkjerm(2); // Går videre til materialvurdering
+    }
+  };
 
-</Step>
+  return (
+    <div className="app-container p-4 bg-gray-100 min-h-screen font-sans">
+      
+      {/* SKJERM 1: Oppstart & Akuttsjekk */}
+      {aktivSkjerm === 1 && (
+        <div className="skjerm-1">
+          <h2 className="text-xl font-bold mb-4">📍 NY KARTLEGGING</h2>
+          <p className="mb-2">Prosjekt: <strong>Bryggen 15</strong></p>
+          
+          <div className="sikkerhetsrutine mb-6 p-4 bg-white rounded border">
+            <h3 className="font-bold text-red-600">SIKKERHETSFILOSOFI</h3>
+            <label className="flex items-center mt-2 cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="mr-2 w-6 h-6"
+                onChange={(e) => setGodkjentRutine(e.target.checked)} 
+              />
+              No Survey – No Work: Bekreft at kartlegging er påkrevd før arbeid.
+            </label>
+          </div>
 
-<Step label="2">
-## Open the app on your device
+          <div className="akutt-sjekk p-4 bg-yellow-100 rounded border border-yellow-400">
+            <h3 className="font-bold text-lg">🚨 AKUTT FARE?</h3>
+            <p>Er det påvist sedimentert asbeststøv utenfor kilden?</p>
+            <div className="flex gap-4 mt-4">
+              <button 
+                disabled={!godkjentRutine}
+                onClick={() => handterAkuttFare(false)} 
+                className="bg-green-600 text-white p-4 rounded flex-1 font-bold disabled:opacity-50">
+                NEI, GÅ VIDERE
+              </button>
+              <button 
+                disabled={!godkjentRutine}
+                onClick={() => handterAkuttFare(true)} 
+                className="bg-red-600 text-white p-4 rounded flex-1 font-bold disabled:opacity-50">
+                JA, PÅVIST
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
+      {/* SKJERM 2: Materialvurdering (Eksempel på ett felt) */}
+      {aktivSkjerm === 2 && !akuttFare && (
+        <div className="skjerm-2">
+          <h2 className="text-xl font-bold mb-4">⚙️ MATERIALVURDERING</h2>
+          <p className="mb-4">B: Hva er skadeomfanget / tilstanden?</p>
+          
+          <div className="knappe-grid flex flex-col gap-3">
+            <button onClick={() => leggTilPoengOgGaaVidere(0)} className="bg-white border-2 border-green-500 p-4 rounded text-left">
+              🟢 0 p - God tilstand (Ingen skader)
+            </button>
+            <button onClick={() => leggTilPoengOgGaaVidere(1)} className="bg-white border-2 border-yellow-400 p-4 rounded text-left">
+              🟡 1 p - Lav skade (Få overfladiske riper)
+            </button>
+            <button onClick={() => leggTilPoengOgGaaVidere(2)} className="bg-white border-2 border-orange-500 p-4 rounded text-left">
+              🟠 2 p - Middels skade (Flasser/sprekker)
+            </button>
+            <button onClick={() => leggTilPoengOgGaaVidere(3)} className="bg-white border-2 border-red-600 p-4 rounded text-left">
+              🔴 3 p - Stor skade (Kraftig forvitret/knust)
+            </button>
+          </div>
+        </div>
+      )}
 
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>A</kbd> or <kbd>I</kbd> respectively to open the app.
+      {/* SKJERM 3: Prioritetsvurdering ville lagt til poeng på samme måte */}
+      {aktivSkjerm === 3 && (
+        <div className="skjerm-3">
+           {/* Her fortsetter koden for rommets bruk og trafikk før den sender deg til skjerm 4 */}
+           <button onClick={() => leggTilPoengOgGaaVidere(2)} className="bg-blue-600 text-white p-4 rounded w-full mt-4">
+              Fullfør prioritetsvurdering (Simulert)
+           </button>
+        </div>
+      )}
 
-<Collapsible summary="Having problems?">
+      {/* SKJERM 4: Resultat og Tiltak */}
+      {aktivSkjerm === 4 && (
+        <div className="skjerm-4">
+          <h2 className="text-2xl font-bold mb-4">✅ VURDERING FULLFØRT</h2>
+          
+          {akuttFare ? (
+            <div className="bg-red-600 text-white p-6 rounded">
+              <h3 className="text-xl font-bold mb-2">🚨 STRAKSTILTAK PÅKREVD</h3>
+              <p>Påvist sedimentert støv / Sekundæreksponering.</p>
+              <p className="mt-4 font-bold">Tiltak: Fysisk avsperring og varsling umiddelbart. Saneres omgående av godkjent firma med undertrykk.</p>
+            </div>
+          ) : (
+            <div className={`p-6 rounded text-white ${totalPoeng >= 13 ? 'bg-red-600' : totalPoeng >= 9 ? 'bg-orange-500' : 'bg-green-600'}`}>
+              <h3 className="text-xl font-bold mb-2">
+                RISIKONIVÅ: {totalPoeng >= 13 ? 'HØY RISIKO' : totalPoeng >= 9 ? 'MIDDELS RISIKO' : 'LAV RISIKO'}
+              </h3>
+              <p className="text-lg">Totalsum: {totalPoeng} poeng</p>
+              <div className="mt-4 bg-white text-black p-4 rounded">
+                <p><strong>Anbefalt tiltak:</strong> Skal overvåkes og føres inn i asbestregister.</p>
+              </div>
+            </div>
+          )}
 
-Make sure you are on the same Wi-Fi network on your computer and your device.
-
-If it still doesn't work, it may be due to the router configuration — this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
-
-<Terminal
-  cmd={{
-    npm: ['$ npx expo start --tunnel'],
-    yarn: ['$ yarn expo start --tunnel'],
-    pnpm: ['$ pnpm expo start --tunnel'],
-    bun: ['$ bun expo start --tunnel'],
-  }}
-/>
-
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
-
-</Collapsible>
-
-</Step>
-
-<Step label="3">
-
-## Make your first change
-
-Open the **src/app/index.tsx** file in your code editor and make a change.
-
-<DiffBlock
-  raw={`diff --git a/src/app/index.tsx b/src/app/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/src/app/index.tsx
-+++ b/src/app/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
--           Welcome to&nbsp;Expo
-+           Hello World!
-          </ThemedText>
-        </ThemedView>
-  `}
-/>
-
-<Collapsible summary="Changes not showing up on your device?">
-
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
-
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. Press <kbd>Cmd ⌘</kbd> + <kbd>D</kbd>.
-- If you see **Fast Refresh** enabled, toggle it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
-
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
-
-</Collapsible>
-
-</Step>
-
----
-
-## File structure
-
-Below, you can get familiar with the default project's file structure:
-
-<ProjectStructure />
-
-## Features
-
-The default project template has the following features:
-
-<TemplateFeatures />
+          <div className="flex flex-col gap-3 mt-6">
+            <button className="bg-gray-800 text-white p-4 rounded font-bold">💾 LAGRE I REGISTER</button>
+            <button className="bg-blue-600 text-white p-4 rounded font-bold">📄 GENERER PDF-RAPPORT</button>
+            <button onClick={() => window.location.reload()} className="bg-gray-300 text-black p-4 rounded mt-4">Start ny kartlegging</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
