@@ -31,7 +31,7 @@ Then start your agent in that folder: run `claude` or `codex`. If you're using C
 
 Paste the following prompt into your agent:
 
-```text Prompt
+```text Prompt|wrap=true
 Create a new Expo app in this folder (the current directory) by running npx create-expo-app@latest and choosing the SDK 54 template — I will test the app with Expo Go on my phone, which uses SDK 54. After it is created, run the project's reset-project script so we start from a minimal app, and delete the app-example folder that the script leaves behind. Don't start the development server; I will run that myself.
 ```
 
@@ -72,7 +72,7 @@ You can also find your project under the **Projects** tab in Expo Go when you're
 
 Now close the loop: ask the agent for a visible change and watch it land on your phone. Paste the following prompt into your agent:
 
-```text Prompt
+```text Prompt|wrap=true
 Change the home screen so it shows the text "Home screen" in white, centered on a dark background with the color #25292e.
 ```
 

@@ -18,7 +18,7 @@ The app works — now make it feel finished. In this chapter, you'll polish the 
 
 Look at the very top of your app: the clock and battery icons are dark, which makes them hard to read against the dark background. Paste the following prompt into your agent:
 
-```text Prompt
+```text Prompt|wrap=true
 The phone's status bar (the clock and battery icons at the top of the screen) is hard to read against our dark background. Use the expo-status-bar library to make the status bar text light on every screen.
 ```
 
@@ -38,7 +38,7 @@ The phone's status bar (the clock and battery icons at the top of the screen) is
 
 The asset pack you downloaded earlier includes an app icon and a splash screen image. Paste the following prompt into your agent:
 
-```text Prompt
+```text Prompt|wrap=true
 Set the app's icon to assets/images/icon.png, and configure the splash screen using the expo-splash-screen config plugin so it shows assets/images/splash-icon.png centered on a #25292e background on Android, iOS, and web.
 ```
 
@@ -56,15 +56,15 @@ Take a second to appreciate what happened here: you set up a development environ
 
 More importantly, you learned the loop: prompt, build, verify, re-prompt. That loop doesn't end with this tutorial. Try it on your own ideas right now:
 
-```text Prompt
+```text Prompt|wrap=true
 Let me place more than one sticker on the photo.
 ```
 
-```text Prompt
+```text Prompt|wrap=true
 Add a share button that opens the system share sheet so I can send my creation to friends.
 ```
 
-```text Prompt
+```text Prompt|wrap=true
 Fill in the About screen: explain what the app does and credit me as the builder.
 ```
 

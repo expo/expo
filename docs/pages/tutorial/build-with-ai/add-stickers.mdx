@@ -17,7 +17,7 @@ In this chapter, the app earns its name: you'll pick an emoji from a sliding pan
 
 Once a photo is chosen, the app should switch from "picking a photo" mode to "decorating it" mode. Paste the following prompt into your agent:
 
-```text Prompt
+```text Prompt|wrap=true
 When a photo has been chosen (either picked from the library or by tapping "Use this photo"), replace the two buttons with a row of options: a "Reset" option on the left that brings back the original buttons, and a circular "+" button in the middle. Tapping "+" should slide up a modal from the bottom titled "Choose a sticker" that shows the emoji images from the assets/images folder in a horizontally scrolling list. When I tap an emoji, close the modal and place that emoji on top of the photo as a sticker.
 ```
 
@@ -37,7 +37,7 @@ When a photo has been chosen (either picked from the library or by tapping "Use 
 
 A sticker stuck in one spot isn't much fun. Paste the following prompt into your agent:
 
-```text Prompt
+```text Prompt|wrap=true
 Make the sticker interactive using the react-native-gesture-handler and react-native-reanimated libraries: I want to drag the sticker around with my finger to place it anywhere on the photo, and double-tap it to double its size (double-tapping again should shrink it back). The movement and resizing should animate smoothly.
 ```
 
