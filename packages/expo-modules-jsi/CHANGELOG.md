@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Type the host-object setter pointer explicitly so the nil-check conversion type-checks reliably. ([#46736](https://github.com/expo/expo/pull/46736) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 56.0.12 — 2026-07-07
