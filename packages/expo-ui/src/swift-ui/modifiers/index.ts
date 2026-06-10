@@ -23,7 +23,7 @@ import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservatio
 import { id, scrollPosition } from './scrollPosition';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
-import { widgetAccentedRenderingMode, widgetURL } from './widgets';
+import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -1540,6 +1540,7 @@ export type BuiltInModifier =
   | ReturnType<typeof symbolEffect>
   | ReturnType<typeof widgetAccentedRenderingMode>
   | ReturnType<typeof widgetURL>
+  | ReturnType<typeof activityBackgroundTint>
   | ReturnType<typeof containerBackground>;
 
 /**
