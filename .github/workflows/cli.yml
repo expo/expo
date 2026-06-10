@@ -63,7 +63,7 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -121,7 +121,7 @@ jobs:
           git config --global core.eol lf
 
       - name: 👀 Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -165,7 +165,7 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -198,7 +198,7 @@ jobs:
         run: |
           echo version="$(pnpm exec playwright --version)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: playwright-browser-cache
         with:
           path: ~/.cache/ms-playwright
@@ -213,7 +213,7 @@ jobs:
         run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: playwright-report-ubuntu-${{ matrix.shard }}
@@ -246,7 +246,7 @@ jobs:
           git config --global core.eol lf
 
       - name: 👀 Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -280,7 +280,7 @@ jobs:
           echo version="$(pnpm exec playwright --version)" >> $GITHUB_OUTPUT
           echo dir="$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: playwright-browser-cache
         with:
           path: ${{ steps.playwright-info.outputs.dir }}
@@ -295,7 +295,7 @@ jobs:
         run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: playwright-report-windows-${{ matrix.shard }}

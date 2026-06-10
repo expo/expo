@@ -28,7 +28,7 @@ jobs:
     runs-on: macos-26
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: 🔨 Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: 🍺 Install required tools
@@ -48,7 +48,7 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       - name: 💎 Setup Ruby
-        uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
+        uses: ruby/setup-ruby@12fd324f1d0b43274fdc8130f6980590a667c455 # v1
         with:
           ruby-version: 3.2.2
       - name: 💎 Install Ruby gems
@@ -74,7 +74,7 @@ jobs:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-arch-${{ matrix.build-type }}
@@ -99,7 +99,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup pnpm
@@ -116,7 +116,7 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -134,7 +134,7 @@ jobs:
           NODE_ENV: production
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-${{ matrix.build-type }}
