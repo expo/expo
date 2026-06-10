@@ -653,6 +653,21 @@ export const learn = [
     { expanded: true }
   ),
   makeSection(
+    'CI/CD tutorial',
+    [
+      makePage('tutorial/cicd/introduction.mdx'),
+      makePage('tutorial/cicd/first-workflow.mdx'),
+      makePage('tutorial/cicd/development-builds.mdx'),
+      makePage('tutorial/cicd/preview-builds.mdx'),
+      makePage('tutorial/cicd/e2e-tests.mdx'),
+      makePage('tutorial/cicd/production.mdx'),
+      makePage('tutorial/cicd/tag-based-releases.mdx'),
+      makePage('tutorial/cicd/web-deployments.mdx'),
+      makePage('tutorial/cicd/next-steps.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
     'EAS tutorial',
     [
       makePage('tutorial/eas/introduction.mdx'),
