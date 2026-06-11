@@ -126,7 +126,7 @@ export default function BottomSheetScrollableExample() {
             nestedScrollEnabled
             style={{ flex: 1 }}
             data={DATA}
-            keyExtractor={(item) => item}
+            keyExtractor={item => item}
             renderItem={({ item }) => <Text style={{ padding: 16 }}>{item}</Text>}
           />
         </RNHostView>

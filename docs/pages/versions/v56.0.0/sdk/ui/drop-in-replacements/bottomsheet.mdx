@@ -145,7 +145,7 @@ export default function BottomSheetScrollableExample() {
           nestedScrollEnabled
           style={{ flex: 1 }}
           data={DATA}
-          keyExtractor={(item) => item}
+          keyExtractor={item => item}
           contentContainerStyle={{ padding: 24 }}
           renderItem={({ item }) => <Text style={{ paddingVertical: 16 }}>{item}</Text>}
         />
