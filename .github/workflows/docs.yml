@@ -106,6 +106,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy --branch=main
           workingDirectory: docs
+          wranglerVersion: '3'
       - name: 🧹 Prune old production deployments
         if: github.ref == 'refs/heads/main'
         working-directory: docs

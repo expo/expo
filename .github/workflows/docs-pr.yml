@@ -86,6 +86,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy --branch=pr-${{ github.event.pull_request.number }}
           workingDirectory: docs
+          wranglerVersion: '3'
       - name: 💬 Comment with preview URL
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
