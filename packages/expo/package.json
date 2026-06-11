@@ -118,7 +118,7 @@
     "./virtual/*.js": "./virtual/*.js",
     "./virtual/*": "./virtual/*.js",
     "./scripts/*.js": "./scripts/*.js",
-    "./scripts/*": "./scripts/*",
+    "./scripts/*": "./scripts/*.js",
     "./bin/*": "./bin/*",
     "./package.json": "./package.json",
     "./*.json": "./*.json",
@@ -260,7 +260,7 @@
       "./scripts/react-native-xcode.sh",
       "./scripts/xcode/with-environment.sh",
       "./scripts/compose-source-maps.js",
-      "scripts/resolveAppEntry.js"
+      "./scripts/resolveAppEntry.js"
     ]
   }
 }
