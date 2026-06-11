@@ -2,6 +2,7 @@ import { Button as SwiftUIButton } from '@expo/ui/swift-ui';
 import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
+import { omitUserOverridden } from '../modifierUtils';
 import { transformToModifiers } from '../transformStyle';
 import type { ButtonProps, ButtonVariant } from './types';
 
@@ -24,7 +25,11 @@ export function Button({
   testID,
   modifiers: extraModifiers,
 }: ButtonProps) {
-  const buttonSpecificModifiers: ModifierConfig[] = [buttonStyle(variantButtonStyle[variant])];
+  // A user-supplied buttonStyle modifier replaces the variant's.
+  const buttonSpecificModifiers: ModifierConfig[] = omitUserOverridden(
+    [buttonStyle(variantButtonStyle[variant])],
+    extraModifiers
+  );
 
   const universalModifiers = transformToModifiers(
     style,
