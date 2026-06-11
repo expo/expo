@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the SwiftUI `activityBackgroundTint` modifier for setting Live Activity background. ([#46756](https://github.com/expo/expo/pull/46756) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
