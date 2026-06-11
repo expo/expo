@@ -184,6 +184,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
 
+  // MCP server moved out of the EAS section to the top-level /mcp route
+  '/eas/ai/mcp/': '/mcp/',
+
   // Picker replaced by SegmentedButton
   '/versions/latest/sdk/ui/jetpack-compose/picker/':
     '/versions/latest/sdk/ui/jetpack-compose/segmentedbutton/',
