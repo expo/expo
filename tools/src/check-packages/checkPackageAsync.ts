@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import os from 'node:os';
 
 import { checkDependenciesAsync } from './checkDependenciesAsync';
-import checkUniformityAsync from './checkUniformityAsync';
 import runPackageScriptAsync from './runPackageScriptAsync';
 import { ActionOptions } from './types';
 import logger from '../Logger';
@@ -65,25 +64,6 @@ export default async function checkPackageAsync(
         break;
     }
 
-    const args = options.checkPackageType === 'package' ? [] : [options.checkPackageType];
-    if (options.build) {
-      await runPackageScriptAsync(pkg, 'clean', args);
-      await runPackageScriptAsync(pkg, 'build', args);
-      if (pkg.scripts.bundle) {
-        await runPackageScriptAsync(pkg, 'bundle', args);
-      }
-
-      if (options.uniformityCheck) {
-        if (options.checkPackageType === 'package') {
-          await checkUniformityAsync(pkg, './build');
-        } else {
-          await checkUniformityAsync(pkg, `./${options.checkPackageType}/build`);
-        }
-        if (pkg.scripts.bundle) {
-          await checkUniformityAsync(pkg, '*bundle');
-        }
-      }
-    }
     if (options.test) {
       if (shouldSkipTest(pkg)) {
         logger.warn(`🚫 Skipping tests for ${green.bold(pkg.packageName)} on Windows`);
