@@ -14,26 +14,53 @@ class JavaScriptRuntime;
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
-class ArrayBufferByteBufferWrapper: public jsi::MutableBuffer {
+class ArrayBufferStorage: public jsi::MutableBuffer {
 public:
-  explicit ArrayBufferByteBufferWrapper(const jni::alias_ref<jni::JByteBuffer>& byteBuffer);
+  ~ArrayBufferStorage() override = default;
 
-  ArrayBufferByteBufferWrapper(
-    const jni::alias_ref<jni::JByteBuffer>& byteBuffer,
-    std::shared_ptr<jsi::MutableBuffer> retainedBuffer
-  );
+  [[nodiscard]] virtual bool isOwned() const noexcept = 0;
 
-  ~ArrayBufferByteBufferWrapper() override;
+  [[nodiscard]] virtual jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) = 0;
+};
+
+class ByteBufferArrayBufferStorage: public ArrayBufferStorage {
+public:
+  explicit ByteBufferArrayBufferStorage(const jni::alias_ref<jni::JByteBuffer>& byteBuffer);
+
+  ~ByteBufferArrayBufferStorage() override;
 
   [[nodiscard]] uint8_t* data() override;
 
   [[nodiscard]] size_t size() const override;
 
-  [[nodiscard]] const jni::global_ref<jni::JByteBuffer>& getBuffer() const;
+  [[nodiscard]] bool isOwned() const noexcept override;
+
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
 
 private:
   jni::global_ref<jni::JByteBuffer> _byteBuffer;
-  std::shared_ptr<jsi::MutableBuffer> _retainedBuffer;
+};
+
+class MutableBufferViewArrayBufferStorage: public ArrayBufferStorage {
+public:
+  MutableBufferViewArrayBufferStorage(
+    std::shared_ptr<jsi::MutableBuffer> backingBuffer,
+    size_t offset,
+    size_t length
+  );
+
+  [[nodiscard]] uint8_t* data() override;
+
+  [[nodiscard]] size_t size() const override;
+
+  [[nodiscard]] bool isOwned() const noexcept override;
+
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
+
+private:
+  std::shared_ptr<jsi::MutableBuffer> _backingBuffer;
+  size_t _offset;
+  size_t _length;
 };
 
 class ArrayBuffer : public jni::HybridClass<ArrayBuffer, Destructible> {
@@ -63,24 +90,23 @@ public:
 
   explicit ArrayBuffer(const jni::alias_ref<jni::JByteBuffer>& byteBuffer);
 
-  ArrayBuffer(
-    const jni::alias_ref<jni::JByteBuffer>& byteBuffer,
-    std::shared_ptr<jsi::MutableBuffer> retainedBuffer
-  );
+  explicit ArrayBuffer(std::shared_ptr<ArrayBufferStorage> storage);
 
   [[nodiscard]] int size();
 
-  [[nodiscard]] std::shared_ptr<ArrayBufferByteBufferWrapper> jsiMutableBuffer();
+  [[nodiscard]] std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer();
 
-  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer();
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed);
+
+  [[nodiscard]] bool isOwned();
 
   template<class T>
   T read(int position) {
-    return *reinterpret_cast<T *>(buffer->data() + position);
+    return *reinterpret_cast<T *>(storage->data() + position);
   }
 
 private:
-  std::shared_ptr<ArrayBufferByteBufferWrapper> buffer;
+  std::shared_ptr<ArrayBufferStorage> storage;
 };
 
 } // namespace expo

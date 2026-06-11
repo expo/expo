@@ -29,7 +29,7 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
         let backingBuffer = typedArray.getArrayBuffer()
         if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
           return ArrayBuffer(
-            wrapping: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
+            borrowing: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
             count: count,
             cleanup: {
               _ = borrowed
@@ -48,7 +48,7 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
     }
     if let borrowed = jsArrayBuffer.tryBorrowMutableBuffer() {
       return ArrayBuffer(
-        wrapping: UnsafeMutableRawPointer(borrowed.data),
+        borrowing: UnsafeMutableRawPointer(borrowed.data),
         count: borrowed.size,
         cleanup: {
           _ = borrowed

@@ -10,18 +10,65 @@ import ExpoModulesJSI
  - Note: Sendable conformance is `@unchecked` because `UnsafeMutableRawPointer` isn't `Sendable`.
  */
 public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
-  private let rawPointer: UnsafeMutableRawPointer
-  public let byteLength: Int
-  private let cleanup: (() -> Void)?
+  private enum Storage {
+    case owned(pointer: UnsafeMutableRawPointer, count: Int, cleanup: () -> Void)
+    case borrowed(pointer: UnsafeMutableRawPointer, count: Int, cleanup: () -> Void)
+
+    var rawPointer: UnsafeMutableRawPointer {
+      switch self {
+      case let .owned(pointer, _, _), let .borrowed(pointer, _, _):
+        return pointer
+      }
+    }
+
+    var byteLength: Int {
+      switch self {
+      case let .owned(_, count, _), let .borrowed(_, count, _):
+        return count
+      }
+    }
+
+    var isOwned: Bool {
+      switch self {
+      case .owned:
+        return true
+      case .borrowed:
+        return false
+      }
+    }
+
+    func cleanup() {
+      switch self {
+      case let .owned(_, _, cleanup), let .borrowed(_, _, cleanup):
+        cleanup()
+      }
+    }
+  }
+
+  private let storage: Storage
+
+  private var rawPointer: UnsafeMutableRawPointer {
+    return storage.rawPointer
+  }
+
+  public var byteLength: Int {
+    return storage.byteLength
+  }
+
+  public var isOwned: Bool {
+    return storage.isOwned
+  }
 
   init(wrapping data: UnsafeMutableRawPointer, count: Int, cleanup: @escaping () -> Void) {
-    self.rawPointer = data
-    self.byteLength = count
-    self.cleanup = cleanup
+    self.storage = .owned(pointer: data, count: count, cleanup: cleanup)
+  }
+
+  init(borrowing data: UnsafeMutableRawPointer, count: Int, cleanup: @escaping () -> Void) {
+    self.storage = .borrowed(pointer: data, count: count, cleanup: cleanup)
   }
 
   deinit {
-    cleanup?()
+    storage.cleanup()
   }
 
   // MARK: - AnyArrayBuffer
