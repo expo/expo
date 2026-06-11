@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Present Local Network permission as a status row instead of a toggle, and make the Settings debug actions native, full-row-tappable list rows.
+
 ### 💡 Others
 
 ## 57.0.0 — 2026-06-25
