@@ -1,6 +1,7 @@
 package expo.modules.kotlin.views
 
 import android.view.ViewTreeObserver
+import com.facebook.jni.HybridClassBase
 import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
 import java.lang.ref.WeakReference
 
@@ -43,7 +44,12 @@ class ShadowNodeProxy(expoView: ExpoView) {
         weakExpoView.get()?.viewTreeObserver?.takeIf { it.isAlive }?.removeOnPreDrawListener(this)
         val flushNow = pendingFlush
         pendingFlush = null
-        weakExpoView.get()?.stateWrapper?.let { flushNow?.invoke(it) }
+        // The C++ state dies with the shadow node, so a flush scheduled before
+        // unmount can fire against a destroyed wrapper — same isValid guard
+        // StateWrapperImpl uses for its own JNI calls.
+        weakExpoView.get()?.stateWrapper
+          ?.takeIf { it !is HybridClassBase || it.isValid }
+          ?.let { flushNow?.invoke(it) }
         return true
       }
     }
