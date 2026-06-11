@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Present Local Network permission as a status row instead of a toggle, and make the Settings debug actions native, full-row-tappable list rows.
+- [iOS] Improve the Updates tab empty state with clearer guidance on how to publish an update.
 
 ### 💡 Others
 
