@@ -56,9 +56,9 @@ export declare class TestEmptyClass {}
 
 // These events may have arguments that weren't resolved!
 export type TestModuleEvents = {
-  event1: () => void;
-  event2: () => void;
-  event3: () => void;
+  event1: (...args: any[]) => void;
+  event2: (...args: any[]) => void;
+  event3: (...args: any[]) => void;
 };
 
 export interface ExpoWebViewProps extends ViewProps {
@@ -334,9 +334,9 @@ export declare class TestEmptyClass {}
 
 // These events may have arguments that weren't resolved!
 export type TestModuleEvents = {
-  event1: () => void;
-  event2: () => void;
-  event3: () => void;
+  event1: (...args: any[]) => void;
+  event2: (...args: any[]) => void;
+  event3: (...args: any[]) => void;
 };
 
 export interface ExpoWebViewProps extends ViewProps {
@@ -562,9 +562,9 @@ export declare class TestEmptyClass {}
 
 // These events may have arguments that weren't resolved!
 export type TestModuleEvents = {
-  event1: () => void;
-  event2: () => void;
-  event3: () => void;
+  event1: (...args: any[]) => void;
+  event2: (...args: any[]) => void;
+  event3: (...args: any[]) => void;
 };
 
 export declare class TestModuleNativeModuleType extends NativeModule<TestModuleEvents> {

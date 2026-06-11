@@ -798,6 +798,24 @@ function buildModuleEventsTypeDeclaration(
   moduleClassDeclaration: ModuleClassDeclaration,
   { exported }: { exported?: boolean }
 ): ts.Node[] {
+  const createEventType = () =>
+    ts.factory.createFunctionTypeNode(
+      undefined,
+      [
+        ts.factory.createParameterDeclaration(
+          undefined,
+          ts.factory.createToken(ts.SyntaxKind.DotDotDotToken),
+          ts.factory.createIdentifier('args'),
+          undefined,
+          ts.factory.createArrayTypeNode(
+            ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+          ),
+          undefined
+        ),
+      ],
+      voidKeywordType()
+    );
+
   return [
     ts.addSyntheticLeadingComment(
       createTypeAlias({
@@ -807,7 +825,7 @@ function buildModuleEventsTypeDeclaration(
           moduleClassDeclaration.events.map((event) => {
             return createPropertySignature({
               name: event,
-              typeNode: ts.factory.createFunctionTypeNode(undefined, [], voidKeywordType()),
+              typeNode: createEventType(),
             });
           })
         ),

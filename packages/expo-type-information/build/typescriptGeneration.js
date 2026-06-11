@@ -404,6 +404,9 @@ function buildDefaultViewComponent({ componentName, propsTypeAlias, }) {
     ];
 }
 function buildModuleEventsTypeDeclaration(moduleClassDeclaration, { exported }) {
+    const createEventType = () => typescript_1.default.factory.createFunctionTypeNode(undefined, [
+        typescript_1.default.factory.createParameterDeclaration(undefined, typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.DotDotDotToken), typescript_1.default.factory.createIdentifier('args'), undefined, typescript_1.default.factory.createArrayTypeNode(typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.AnyKeyword)), undefined),
+    ], voidKeywordType());
     return [
         typescript_1.default.addSyntheticLeadingComment(createTypeAlias({
             exported,
@@ -411,7 +414,7 @@ function buildModuleEventsTypeDeclaration(moduleClassDeclaration, { exported }) 
             type: typescript_1.default.factory.createTypeLiteralNode(moduleClassDeclaration.events.map((event) => {
                 return createPropertySignature({
                     name: event,
-                    typeNode: typescript_1.default.factory.createFunctionTypeNode(undefined, [], voidKeywordType()),
+                    typeNode: createEventType(),
                 });
             })),
         }), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, ` These events may have arguments that weren't resolved!`),
