@@ -14,6 +14,8 @@ import React
  - Create the `UIWindow` from the connecting `UIWindowScene` and start React Native into it.
  - Re-feed scene life-cycle, URL, and user-activity events to the existing
    `ExpoAppDelegateSubscriberManager`, so app delegate subscribers keep working unchanged.
+ - Forward the same events to `ExpoSceneDelegateSubscriberManager` so modules can subscribe
+   to the scene life cycle directly (with the real `UIScene`).
  */
 @objc(EXExpoAppSceneDelegate)
 open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -51,6 +53,8 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
       launchOptions: nil
     )
 
+    ExpoSceneDelegateSubscriberManager.scene(scene, willConnectTo: session, options: connectionOptions)
+
     // Deep links / universal links.
     Self.route(urlContexts: connectionOptions.urlContexts)
     connectionOptions.userActivities.forEach { Self.route(userActivity: $0) }
@@ -58,34 +62,85 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   open func sceneDidDisconnect(_ scene: UIScene) {
     window = nil
+    ExpoSceneDelegateSubscriberManager.sceneDidDisconnect(scene)
   }
 
   // In the scene lifecycle UIKit no longer calls the app delegate equivalents, so we forward
-  // these to the subscriber manager to preserve existing subscriber behavior.
+  // these to the subscriber manager to preserve existing subscriber behavior, and to the
+  // scene subscriber manager so modules can react to the scene directly.
 
   open func sceneDidBecomeActive(_ scene: UIScene) {
     ExpoAppDelegateSubscriberManager.applicationDidBecomeActive(UIApplication.shared)
+    ExpoSceneDelegateSubscriberManager.sceneDidBecomeActive(scene)
   }
 
   open func sceneWillResignActive(_ scene: UIScene) {
     ExpoAppDelegateSubscriberManager.applicationWillResignActive(UIApplication.shared)
+    ExpoSceneDelegateSubscriberManager.sceneWillResignActive(scene)
   }
 
   open func sceneWillEnterForeground(_ scene: UIScene) {
     ExpoAppDelegateSubscriberManager.applicationWillEnterForeground(UIApplication.shared)
+    ExpoSceneDelegateSubscriberManager.sceneWillEnterForeground(scene)
   }
 
   open func sceneDidEnterBackground(_ scene: UIScene) {
     ExpoAppDelegateSubscriberManager.applicationDidEnterBackground(UIApplication.shared)
+    ExpoSceneDelegateSubscriberManager.sceneDidEnterBackground(scene)
   }
 
   open func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    ExpoSceneDelegateSubscriberManager.scene(scene, openURLContexts: URLContexts)
     Self.route(urlContexts: URLContexts)
   }
 
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+    ExpoSceneDelegateSubscriberManager.scene(scene, continue: userActivity)
     Self.route(userActivity: userActivity)
   }
+
+  open func scene(_ scene: UIScene, willContinueUserActivityWithType userActivityType: String) {
+    ExpoSceneDelegateSubscriberManager.scene(scene, willContinueUserActivityWithType: userActivityType)
+  }
+
+  open func scene(
+    _ scene: UIScene,
+    didFailToContinueUserActivityWithType userActivityType: String,
+    error: Error
+  ) {
+    ExpoSceneDelegateSubscriberManager.scene(scene, didFailToContinueUserActivityWithType: userActivityType, error: error)
+  }
+
+  open func scene(_ scene: UIScene, didUpdate userActivity: NSUserActivity) {
+    ExpoSceneDelegateSubscriberManager.scene(scene, didUpdate: userActivity)
+  }
+
+  open func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
+    return ExpoSceneDelegateSubscriberManager.stateRestorationActivity(for: scene)
+  }
+
+#if os(iOS)
+  open func windowScene(
+    _ windowScene: UIWindowScene,
+    performActionFor shortcutItem: UIApplicationShortcutItem,
+    completionHandler: @escaping (Bool) -> Void
+  ) {
+    ExpoSceneDelegateSubscriberManager.windowScene(windowScene, performActionFor: shortcutItem, completionHandler: completionHandler)
+  }
+
+  open func windowScene(
+    _ windowScene: UIWindowScene,
+    didUpdate previousCoordinateSpace: UICoordinateSpace,
+    interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
+    traitCollection previousTraitCollection: UITraitCollection
+  ) {
+    ExpoSceneDelegateSubscriberManager.windowScene(
+      windowScene,
+      didUpdate: previousCoordinateSpace,
+      interfaceOrientation: previousInterfaceOrientation,
+      traitCollection: previousTraitCollection)
+  }
+#endif // os(iOS)
 
   /// Pass incoming URL contexts to both the subscriber manager and `RCTLinkingManager`.
   public static func route(urlContexts: Set<UIOpenURLContext>) {

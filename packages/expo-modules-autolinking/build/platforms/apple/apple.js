@@ -59,6 +59,7 @@ async function resolveModuleAsync(packageName, revision, extraOutput) {
             .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ??
             [],
         appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
+        sceneDelegateSubscribers: revision.config?.appleSceneDelegateSubscribers() ?? [],
         reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
         debugOnly: revision.config?.appleDebugOnly() ?? false,
         ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
@@ -103,6 +104,7 @@ async function generateModulesProviderAsync(modules, targetPath, entitlementPath
 async function generatePackageListFileContentAsync(modules, className, entitlements, params) {
     const iosModules = modules.filter((module) => module.modules.length ||
         module.appDelegateSubscribers.length ||
+        module.sceneDelegateSubscribers.length ||
         module.reactDelegateHandlers.length);
     const modulesToImport = iosModules.filter((module) => !module.debugOnly);
     const debugOnlyModules = iosModules.filter((module) => module.debugOnly);
@@ -121,6 +123,8 @@ async function generatePackageListFileContentAsync(modules, className, entitleme
         .filter(Boolean);
     const appDelegateSubscribers = [].concat(...modulesToImport.map((module) => module.appDelegateSubscribers));
     const debugOnlyAppDelegateSubscribers = [].concat(...debugOnlyModules.map((module) => module.appDelegateSubscribers));
+    const sceneDelegateSubscribers = [].concat(...modulesToImport.map((module) => module.sceneDelegateSubscribers));
+    const debugOnlySceneDelegateSubscribers = [].concat(...debugOnlyModules.map((module) => module.sceneDelegateSubscribers));
     const reactDelegateHandlerModules = modulesToImport.filter((module) => !!module.reactDelegateHandlers.length);
     const debugOnlyReactDelegateHandlerModules = debugOnlyModules.filter((module) => !!module.reactDelegateHandlers.length);
     return `/**
@@ -142,6 +146,12 @@ ${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
   public override func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
 ${generateClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)}
   }
+
+#if os(iOS) || os(tvOS)
+  public override func getSceneDelegateSubscribers() -> [ExpoSceneDelegateSubscriber.Type] {
+${generateClasses(sceneDelegateSubscribers, debugOnlySceneDelegateSubscribers)}
+  }
+#endif
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
 ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDelegateHandlerModules)}

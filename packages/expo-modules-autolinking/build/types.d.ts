@@ -57,6 +57,7 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
     flags: Record<string, any> | undefined;
     swiftModuleNames: string[];
     appDelegateSubscribers: string[];
+    sceneDelegateSubscribers: string[];
     reactDelegateHandlers: string[];
     debugOnly: boolean;
 }
@@ -150,6 +151,10 @@ export type RawModuleConfigApple = {
      * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
      */
     appDelegateSubscribers?: string[];
+    /**
+     * Names of Swift classes that hook into `ExpoAppSceneDelegate` to receive scene life-cycle events.
+     */
+    sceneDelegateSubscribers?: string[];
     /**
      * Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
      */

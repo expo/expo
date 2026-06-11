@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] `ExpoAppSceneDelegate` now forwards scene life-cycle events to scene delegate subscribers, so modules can react to the UIScene life cycle directly. ([#46792](https://github.com/expo/expo/pull/46792) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))

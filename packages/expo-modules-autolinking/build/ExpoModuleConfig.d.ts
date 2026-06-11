@@ -45,6 +45,10 @@ export declare class ExpoModuleConfig {
      */
     appleAppDelegateSubscribers(): string[];
     /**
+     * Returns a list of names of Swift classes that receive scene life-cycle events.
+     */
+    appleSceneDelegateSubscribers(): string[];
+    /**
      * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
      */
     appleReactDelegateHandlers(): string[];

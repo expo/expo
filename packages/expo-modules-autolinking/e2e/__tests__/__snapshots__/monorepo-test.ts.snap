@@ -23,6 +23,13 @@ internal class file: ModulesProvider {
     ]
   }
 
+#if os(iOS) || os(tvOS)
+  public override func getSceneDelegateSubscribers() -> [ExpoSceneDelegateSubscriber.Type] {
+    return [
+    ]
+  }
+#endif
+
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return [
     ]
@@ -58,6 +65,13 @@ internal class file: ModulesProvider {
     ]
   }
 
+#if os(iOS) || os(tvOS)
+  public override func getSceneDelegateSubscribers() -> [ExpoSceneDelegateSubscriber.Type] {
+    return [
+    ]
+  }
+#endif
+
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return [
     ]
@@ -92,6 +106,13 @@ internal class file: ModulesProvider {
     return [
     ]
   }
+
+#if os(iOS) || os(tvOS)
+  public override func getSceneDelegateSubscribers() -> [ExpoSceneDelegateSubscriber.Type] {
+    return [
+    ]
+  }
+#endif
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return [
@@ -350,6 +371,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMCore",
     ],
@@ -368,6 +390,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
@@ -386,6 +409,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXApplication",
     ],
@@ -404,6 +428,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXConstants",
     ],
@@ -422,6 +447,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
@@ -440,6 +466,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXFileSystem",
     ],
@@ -458,6 +485,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXFont",
     ],
@@ -476,6 +504,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXImageLoader",
     ],
@@ -494,6 +523,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
@@ -512,6 +542,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
@@ -530,6 +561,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXPermissions",
     ],
@@ -548,6 +580,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
@@ -566,6 +599,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
@@ -584,6 +618,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXUpdates",
     ],
@@ -602,6 +637,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
@@ -620,6 +656,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMAppLoader",
     ],
@@ -638,6 +675,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
@@ -890,6 +928,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMCore",
     ],
@@ -908,6 +947,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
@@ -926,6 +966,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXApplication",
     ],
@@ -944,6 +985,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXConstants",
     ],
@@ -962,6 +1004,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
@@ -980,6 +1023,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXFileSystem",
     ],
@@ -998,6 +1042,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXFont",
     ],
@@ -1016,6 +1061,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXImageLoader",
     ],
@@ -1034,6 +1080,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
@@ -1052,6 +1099,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
@@ -1070,6 +1118,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXPermissions",
     ],
@@ -1088,6 +1137,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
@@ -1106,6 +1156,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
@@ -1124,6 +1175,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXUpdates",
     ],
@@ -1142,6 +1194,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
@@ -1160,6 +1213,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMAppLoader",
     ],
@@ -1178,6 +1232,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
@@ -1444,6 +1499,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMCore",
     ],
@@ -1462,6 +1518,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
@@ -1480,6 +1537,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXApplication",
     ],
@@ -1498,6 +1556,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXConstants",
     ],
@@ -1516,6 +1575,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXDevice",
     ],
@@ -1534,6 +1594,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
@@ -1552,6 +1613,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXFileSystem",
     ],
@@ -1570,6 +1632,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXFont",
     ],
@@ -1588,6 +1651,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXImageLoader",
     ],
@@ -1606,6 +1670,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
@@ -1624,6 +1689,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
@@ -1642,6 +1708,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXPermissions",
     ],
@@ -1660,6 +1727,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
@@ -1678,6 +1746,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
@@ -1696,6 +1765,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXUpdates",
     ],
@@ -1714,6 +1784,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
@@ -1732,6 +1803,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMAppLoader",
     ],
@@ -1750,6 +1822,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     ],
     "projects": undefined,
     "reactDelegateHandlers": [],
+    "sceneDelegateSubscribers": [],
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
