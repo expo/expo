@@ -90,6 +90,18 @@ export function getLinkingURL(): string | null {
   return ExpoLinking.getLinkingURL();
 }
 
+/**
+ * Clears the cached initial URL used to launch the app, subsequent
+ * calls to [`getLinkingURL()`] return `null` until a new deep link is received.
+ *
+ * On web this is a no-op.
+ * @platform android
+ * @platform ios
+ */
+export function clearInitialURL(): void {
+  ExpoLinking.clearInitialURL?.();
+}
+
 // @needsAudit
 /**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)

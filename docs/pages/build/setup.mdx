@@ -22,7 +22,14 @@ For a small app, builds for Android and iOS platforms trigger within a few minut
   <Requirement title="A React Native Android or iOS project">
     Don't have a project yet? It's quick and easy to create a "Hello world" app you can use with this guide:
 
-    <Terminal cmd={['$ npx create-expo-app@latest my-app --template default@sdk-56']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npx create-expo-app@latest my-app --template default@sdk-56'],
+        yarn: ['$ yarn create expo-app my-app --template default@sdk-56'],
+        pnpm: ['$ pnpm create expo-app my-app --template default@sdk-56'],
+        bun: ['$ bun create expo my-app --template default@sdk-56'],
+      }}
+    />
 
     EAS Build also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
@@ -40,11 +47,18 @@ For a small app, builds for Android and iOS platforms trigger within a few minut
 
 EAS CLI is the command-line app that you will use to interact with EAS services from your terminal. To install it, run the command:
 
-<Terminal cmd={['$ npm install -g eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
-> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli@latest`. Remember to use that instead of `eas` whenever it's called for in the documentation.
+> You may alternatively use `npx eas-cli@latest` instead of the global installation. When opting for this, remember to always use it instead of `eas` whenever it's called for in the documentation.
 
 </Step>
 
@@ -70,7 +84,14 @@ To learn more about what happens behind the scenes, see [build configuration pro
 
 For development, we recommend creating a [development build](/develop/development-builds/introduction/), which is a debug build of your app and contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library. It helps you iterate as quickly as possible and provides a more flexible, reliable, and complete development environment. To install the library, run the following command:
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 
 Additional configuration may be required for some scenarios:
 

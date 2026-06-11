@@ -3,18 +3,15 @@ import type {
   TabsScreenItemStateAppearanceAndroid,
 } from 'react-native-screens';
 
-import type { BuildAndroidAppearanceArgs } from './appearance.types';
 import { Color } from '../color';
+import type { NativeTabOptions } from './types';
 
-export function createAndroidScreenAppearance({
-  options,
-  tintColor,
-  rippleColor,
-  disableIndicator,
-  labelVisibilityMode,
-}: BuildAndroidAppearanceArgs): TabsScreenAppearanceAndroid {
+export function createAndroidScreenAppearance(
+  options: NativeTabOptions
+): TabsScreenAppearanceAndroid {
   const labelStyle = options.labelStyle;
   const selectedLabelStyle = options.selectedLabelStyle;
+  const tintColor = options.tintColor;
 
   const normal: TabsScreenItemStateAppearanceAndroid = {
     tabBarItemTitleFontColor: labelStyle?.color ?? Color.android.dynamic.onSurfaceVariant,
@@ -35,11 +32,11 @@ export function createAndroidScreenAppearance({
 
   return {
     tabBarBackgroundColor: options.backgroundColor ?? Color.android.dynamic.surfaceContainer,
-    tabBarItemRippleColor: rippleColor ?? Color.android.dynamic.primary,
-    tabBarItemLabelVisibilityMode: labelVisibilityMode,
+    tabBarItemRippleColor: options.rippleColor ?? Color.android.dynamic.primary,
+    tabBarItemLabelVisibilityMode: options.labelVisibilityMode,
     tabBarItemActiveIndicatorColor:
       options.indicatorColor ?? Color.android.dynamic.secondaryContainer,
-    tabBarItemActiveIndicatorEnabled: !disableIndicator,
+    tabBarItemActiveIndicatorEnabled: !options.disableIndicator,
     tabBarItemTitleFontFamily: labelStyle?.fontFamily,
     tabBarItemTitleSmallLabelFontSize: labelStyle?.fontSize,
     tabBarItemTitleLargeLabelFontSize: selectedLabelStyle?.fontSize ?? labelStyle?.fontSize,

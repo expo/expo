@@ -71,7 +71,7 @@ function getAbsoluteConstraints(childId, parentId, legacy = false) {
         createConstraint([childId, 'centerY'], [parentId, 'centerY']),
     ];
 }
-function applyImageToSplashScreenXML(xml, { imageName, contentMode, backgroundColor = '#ffffff', enableFullScreenImage, imageWidth = 100, }) {
+function applyImageToSplashScreenXML(xml, { imageName, contentMode, backgroundColor, enableFullScreenImage, imageWidth, }) {
     const mainView = xml.document.scenes[0]?.scene[0]?.objects[0]?.viewController[0]?.view[0];
     const rect = mainView?.rect[0];
     const width = enableFullScreenImage ? 414 : imageWidth;

@@ -23,13 +23,13 @@ This guide explains how to install the iOS Simulator on your Mac for app develop
 
 ### Try it out
 
-Run your app with `npx expo start` and press <kbd>i</kbd> from the command line.
+Run your app with `npx expo start` and press <kbd>I</kbd> from the command line.
 
 You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again to see if it was successful. If not, check the [troubleshooting](#troubleshooting) tips below.
 
 <ContentSpotlight file="open-in-ios-simulator.mp4" />
 
-You can also press <kbd>shift</kbd> + <kbd>i</kbd> in the Expo CLI to interactively select a simulator to open.
+You can also press <kbd>Shift</kbd> + <kbd>I</kbd> in the Expo CLI to interactively select a simulator to open.
 
 <ContentSpotlight
   alt="List of iOS Simulators in the Expo CLI UI."
@@ -85,19 +85,42 @@ The first time you install the app in the simulator, iOS will ask if you'd like 
 Create a project with the desired SDK version and open it in a simulator to install a particular version of Expo Go.
 
 <Terminal
-  cmd={[
-    '# Bootstrap an SDK 53 project',
-    '$ npx create-expo-app --template blank@53',
-    '',
-    '# Open the app on a simulator to install the required Expo Go app',
-    '$ npx expo start --ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Bootstrap an SDK 53 project',
+      '$ npx create-expo-app --template blank@53',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ npx expo start --ios',
+    ],
+    yarn: [
+      '# Bootstrap an SDK 53 project',
+      '$ yarn create expo-app --template blank@53',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ yarn expo start --ios',
+    ],
+    pnpm: [
+      '# Bootstrap an SDK 53 project',
+      '$ pnpm create expo-app --template blank@53',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ pnpm expo start --ios',
+    ],
+    bun: [
+      '# Bootstrap an SDK 53 project',
+      '$ bun create expo --template blank@53',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ bun expo start --ios',
+    ],
+  }}
 />
 
 ### Expo CLI is printing an error message about `xcrun`, what do I do?
 
 For miscellaneous errors, try the following:
 
-- Manually uninstall Expo Go on your simulator and reinstall by pressing <kbd>shift</kbd> + <kbd>i</kbd> in the Expo CLI Terminal UI and selecting the desired simulator.
+- Manually uninstall Expo Go on your simulator and reinstall by pressing <kbd>Shift</kbd> + <kbd>I</kbd> in the Expo CLI Terminal UI and selecting the desired simulator.
 - If that doesn't help, focus the simulator window and in the Mac toolbar choose **Device** &gt; **Erase All Content and Settings...**<br/>
   This will reinitialize your simulator from a blank image. This is sometimes useful for cases where your computer is low on memory and the simulator fails to store some internal files, leaving the device in a corrupt state.

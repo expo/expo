@@ -21,6 +21,16 @@ export type ObservableState<T> = SharedObject & {
   value: T;
 
   /**
+   * Reads the current value. A React Compiler compliant alternative to reading `.value`
+   */
+  get(): T;
+
+  /**
+   * Writes a new value. A React Compiler-compliant alternative to assigning `.value`
+   */
+  set(value: T): void;
+
+  /**
    * A single listener invoked on the native UI runtime whenever the value changes
    * (after iOS `didSet` and Android's setter). Assigning replaces the previous
    * listener; assign `null` to clear. The initial value does not fire `onChange`.
@@ -37,9 +47,6 @@ export type ObservableState<T> = SharedObject & {
    *   state.onChange = (value) => {
    *     'worklet';
    *     console.log('changed to', value);
-   *   };
-   *   return () => {
-   *     state.onChange = null;
    *   };
    * }, []);
    * ```
@@ -65,28 +72,25 @@ type NativeObservableState = {
   getValue(): unknown;
   setValue(v: { value: unknown }): void;
   setOnChange(callback: object | null): void;
+  get?: () => unknown;
+  set?: (value: unknown) => void;
 };
 
 /**
- * Adds a `value` property that delegates to the native `getValue`/`setValue` functions.
+ * Adds a `value` property plus `get`/`set` methods that delegate to the native
+ * `getValue`/`setValue` functions.
  */
 function defineValueProperty(state: NativeObservableState): void {
-  let warnedOnJSWrite = false;
   Object.defineProperty(state, 'value', {
     get() {
       return state.getValue();
     },
     set(v: unknown) {
-      if (__DEV__ && !warnedOnJSWrite && worklets && !worklets.isUIRuntime()) {
-        warnedOnJSWrite = true;
-        console.warn(
-          'ObservableState.value was set from the JS thread, the result may be unexpected. ' +
-            'Use a worklet to update the state.'
-        );
-      }
       state.setValue({ value: v });
     },
   });
+  state.get = () => state.getValue();
+  state.set = (v: unknown) => state.setValue({ value: v });
 }
 
 /**
@@ -104,7 +108,14 @@ function defineOnChangeProperty(state: NativeObservableState): void {
     set(fn: ((value: unknown) => void) | null | undefined) {
       if (!fn) {
         currentFn = null;
-        state.setOnChange(null);
+        try {
+          state.setOnChange(null);
+        } catch {
+          // On unmount the shared object is often released before this cleanup
+          // runs (useReleasingSharedObject releases it earlier in the component),
+          // so setOnChange throws "already released". Clearing a listener on a
+          // gone object is a no-op, so ignore it rather than crash teardown.
+        }
         return;
       }
       if (!worklets) {

@@ -26,7 +26,7 @@ class ExpoFetchModule : Module() {
     OkHttpClientProvider.createClient(reactContext)
       .newBuilder()
       .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
-      .addInterceptor(CompressionInterceptor)
+      .addInterceptor(TransparentCompressionInterceptor)
       .build()
   }
   private val cookieHandler by lazy { ForwardingCookieHandler(reactContext) }

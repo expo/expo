@@ -6,9 +6,22 @@
 
 ### 🎉 New features
 
+- [web] Improved `static` image source selection on web to be based on the rendered layout size by leading the generated `sizes` with `auto`, and default `static` images to `loading="lazy"` (opt out with `loading="eager"`). ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
+
 ### 🐛 Bug fixes
 
+- [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+- [web] Deprecated `webMaxViewportWidth`. With layout-based selection it is now only used to emit fallback `sizes` breakpoints for browsers that don't yet support `sizes="auto"`. ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
+
+## 56.0.9 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `placeholder` failing to load images from the asset catalog (xcassets). ([#46170](https://github.com/expo/expo/pull/46170) by [@zhelezkov](https://github.com/zhelezkov))
+- [iOS] Fix xcasset images not loading from JS due to `file://` scheme mismatch. ([#46170](https://github.com/expo/expo/pull/46170) by [@zhelezkov](https://github.com/zhelezkov))
 
 ## 56.0.8 — 2026-05-21
 

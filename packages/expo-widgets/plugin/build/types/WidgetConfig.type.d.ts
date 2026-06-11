@@ -1,15 +1,32 @@
 import { WidgetFamily } from './WidgetFamily.type';
 export type WidgetConfig = {
     name: string;
-    supportedFamilies: WidgetFamily[];
     displayName: string;
     description: string;
+    supportedFamilies: WidgetFamily[];
     contentMarginsDisabled: boolean;
     configuration?: {
         title: string;
         description?: string;
         parameters: Record<string, WidgetParameter>;
     };
+    ios?: {
+        supportedFamilies: WidgetFamily[];
+        contentMarginsDisabled?: boolean;
+        initialLayout?: string;
+        configuration?: {
+            title: string;
+            description?: string;
+            parameters: Record<string, WidgetParameter>;
+        };
+    } | null;
+    android?: {
+        minWidth?: number;
+        minHeight?: number;
+        targetCellWidth?: number;
+        targetCellHeight?: number;
+        resizeMode?: 'none' | 'horizontal' | 'vertical' | 'both';
+    } | null;
 };
 export type WidgetParameterString = {
     title: string;

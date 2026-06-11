@@ -4,6 +4,7 @@ import path from 'path';
 
 import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { createProjectHashAsync } from '../../src/Fingerprint';
+import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
@@ -20,16 +21,19 @@ describe('updates managed support', () => {
 
   beforeAll(async () => {
     await fs.rm(projectRoot, { force: true, recursive: true });
-    // Pin the SDK version to prevent the latest version breaking snapshots
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-51', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `blank@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
 
     // Add appId
     const appConfigPath = path.join(projectRoot, 'app.json');

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+- Simplify re-export of `LocationEventEmitter` ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
+
+## 56.0.14 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.12 — 2026-05-21
 
 ### 🐛 Bug fixes

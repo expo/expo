@@ -9,7 +9,7 @@ function createStandardAppearanceFromOptions(_options) {
 function createScrollEdgeAppearanceFromOptions(_options) {
     return {};
 }
-function createAndroidScreenAppearance(_args) {
+function createAndroidScreenAppearance(_options) {
     return {};
 }
 //# sourceMappingURL=appearance.js.map

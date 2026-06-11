@@ -1,6 +1,6 @@
 'use client';
 
-import type { SharedRef } from 'expo';
+import { SharedRef } from 'expo';
 import React, { isValidElement, use, useId, type PropsWithChildren, type ReactNode } from 'react';
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -68,7 +68,7 @@ export interface LinkMenuActionProps {
    * </Link.Menu>
    * ```
    */
-  image?: SharedRef<'image'> | null;
+  image?: InstanceType<SharedRef<'image'>> | null;
   /**
    * Controls how image-based icons are rendered on iOS.
    *
@@ -181,7 +181,7 @@ export interface LinkMenuProps {
    * </Link.Menu>
    * ```
    */
-  image?: SharedRef<'image'> | null;
+  image?: InstanceType<SharedRef<'image'>> | null;
   /**
    * If `true`, the menu will be displayed as a palette.
    * This means that the menu will be displayed as one row.

@@ -3,7 +3,7 @@ import type { MaterialTopTabNavigationEventMap, MaterialTopTabNavigationOptions 
 import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-declare const MaterialTopTabs: import("react").ForwardRefExoticComponent<Omit<import("..").PickPartial<Omit<import("../react-navigation/material-top-tabs").MaterialTopTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation").DefaultRouterOptions<string> & ({
+declare const MaterialTopTabs: import("react").ForwardRefExoticComponent<Omit<import("..").PickPartial<Omit<import("./TopTabs").MaterialTopTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -22,7 +22,7 @@ declare const MaterialTopTabs: import("react").ForwardRefExoticComponent<Omit<im
         beforeRemove: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
         route: import("../react-navigation").RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/material-top-tabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>;
+        navigation: import("./TopTabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
         tabPress: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
         tabLongPress: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
@@ -35,10 +35,10 @@ declare const MaterialTopTabs: import("react").ForwardRefExoticComponent<Omit<im
     }>) | undefined;
     screenOptions?: MaterialTopTabNavigationOptions | ((props: {
         route: import("../react-navigation").RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/material-top-tabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>;
+        navigation: import("./TopTabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => MaterialTopTabNavigationOptions) | undefined;
-    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, MaterialTopTabNavigationOptions, import("../react-navigation/material-top-tabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, MaterialTopTabNavigationOptions, import("./TopTabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;

@@ -100,6 +100,13 @@ compute_hash() {
     # sources invalidates the cache.
     echo "PODS_ROOT=${PODS_ROOT:-}"
     echo "RN_ROOT=${RN_ROOT:-}"
+    # Include the Swift toolchain version so upgrading Xcode invalidates the
+    # cache. A slice's .swiftmodule and Clang module cache are tied to the
+    # compiler that produced them; reusing a slice built by an older toolchain
+    # after an Xcode upgrade surfaces as spurious compile errors that look like
+    # source problems. swiftc --version reports the swiftlang/clang tags and the
+    # target triple, so any toolchain change forces a clean rebuild.
+    echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -115,6 +122,7 @@ platform_destination() {
     appletvos)        echo "tvOS" ;;
     appletvsimulator) echo "tvOS Simulator" ;;
     macosx)           echo "macOS" ;;
+    maccatalyst)      echo "macOS,variant=Mac Catalyst" ;;
     *)
       log "error: Unsupported platform: $1"
       exit 1
@@ -131,10 +139,21 @@ platform_slice_id() {
     iphonesimulator)  echo "ios-arm64_x86_64-simulator" ;;
     appletvos)        echo "tvos-arm64" ;;
     appletvsimulator) echo "tvos-arm64_x86_64-simulator" ;;
+    macosx)           echo "macos-arm64_x86_64" ;;
+    maccatalyst)      echo "ios-arm64_x86_64-maccatalyst" ;;
     *)
       log "error: No slice mapping for platform: $1"
       exit 1
       ;;
+  esac
+}
+
+# Resolves the xcodebuild build-products directory name for a given platform.
+# macOS uses no $EFFECTIVE_PLATFORM_NAME suffix; every other SDK appends one.
+platform_build_dir() {
+  case "$1" in
+    macosx)           echo "${CONFIGURATION}" ;;
+    *)                echo "${CONFIGURATION}-$1" ;;
   esac
 }
 
@@ -146,7 +165,17 @@ build_slice() {
   destination=$(platform_destination "$platform")
   local slice_id
   slice_id=$(platform_slice_id "$platform")
-  local build_dir_name="${CONFIGURATION}-${platform}"
+  local build_dir_name
+  build_dir_name=$(platform_build_dir "$platform")
+
+  # Every platform uses its name as the sdk, except for Mac Catalyst,
+  # which is not a separate platform but rather a variant of macOS.
+  local sdk
+  if [[ "$platform" == "maccatalyst" ]]; then
+    sdk="macosx"
+  else
+    sdk="$platform"
+  fi
 
   log "Building framework slice for ${platform}..."
 
@@ -161,7 +190,7 @@ build_slice() {
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
-    -sdk "$platform" \
+    -sdk "$sdk" \
     -destination "generic/platform=${destination}" \
     -derivedDataPath "$DERIVED_DATA_PATH" \
     -configuration "$CONFIGURATION" \
@@ -180,7 +209,14 @@ build_slice() {
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
   local framework_src="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"
   local swiftmodule_src="${product_path}/${PACKAGE_NAME}.swiftmodule"
-  local generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps-${platform}"
+  # GeneratedModuleMaps follows the same $EFFECTIVE_PLATFORM_NAME convention as
+  # build products: no suffix for macOS, "-${platform}" for everything else.
+  local generated_maps
+  if [[ "$platform" == "macosx" ]]; then
+    generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps"
+  else
+    generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps-${platform}"
+  fi
 
   if [[ ! -d "$framework_src" ]]; then
     log "error: xcodebuild did not produce ${framework_src}"
@@ -194,15 +230,28 @@ build_slice() {
   rm -rf "$staging_dir"
   mkdir -p "$staging_dir"
 
-  cp -r "$framework_src" "$staging_dir/"
+  # `cp -a` preserves symlinks, attributes, and timestamps. `cp -r` resolves
+  # symlinks into real files, which breaks the macOS versioned-framework bundle
+  # layout (top-level `Foo`, `Resources`, etc. must be symlinks into Versions/Current).
+  cp -a "$framework_src" "$staging_dir/"
   if [[ -d "${product_path}/${PACKAGE_NAME}.framework.dSYM" ]]; then
-    cp -r "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
+    cp -a "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
+  fi
+
+  # Modules and Headers live at the framework root on flat (iOS/tvOS) bundles
+  # and inside Versions/A on versioned (macOS/Catalyst) bundles.
+  local framework_root="${staging_dir}/${PACKAGE_NAME}.framework"
+  local content_root
+  if [[ "$platform" == "macosx" || "$platform" == "maccatalyst" ]]; then
+    content_root="${framework_root}/Versions/A"
+  else
+    content_root="${framework_root}"
   fi
 
   # Copy Swift module interfaces and generated headers into the staged framework.
-  local modules_dir="${staging_dir}/${PACKAGE_NAME}.framework/Modules"
+  local modules_dir="${content_root}/Modules"
   mkdir -p "$modules_dir"
-  cp -r "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
+  cp -a "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
   rm -rf "${modules_dir}/${PACKAGE_NAME}.swiftmodule/Project"
 
   # Remove private/package interfaces which reference package-internal and C++ types
@@ -219,13 +268,62 @@ build_slice() {
   #   e.g. "@usableFromInline\ninternal protocol _ConstraintThatIsNotPartOfTheAPIOfThisLibrary {}"
   # NOTE: If these patterns change in a future Swift version, the build will fail with
   # "expected declaration" or "expected type" errors in the .swiftinterface file.
-  find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface' \
-    -exec sed -i '' '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' {} +
+  # Run plain `sed` to a temp file and move it back instead of `sed -i ''`:
+  # BSD sed treats the argument after `-i` as the backup suffix, while GNU sed
+  # (e.g. in a Nix shell) treats `''` as the script and the real script as a
+  # filename, failing with "can't read …: No such file or directory".
+  while IFS= read -r swiftinterface; do
+    local stripped_swiftinterface="${swiftinterface}.stripped"
+    sed '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
+    mv "$stripped_swiftinterface" "$swiftinterface"
+  done < <(find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface')
 
-  local headers_dir="${staging_dir}/${PACKAGE_NAME}.framework/Headers"
+  local headers_dir="${content_root}/Headers"
   mkdir -p "$headers_dir"
   cp "${generated_maps}/${PACKAGE_NAME}-Swift.h" "$headers_dir/"
-  cp "${generated_maps}/${PACKAGE_NAME}.modulemap" "$headers_dir/module.modulemap"
+
+  # Public C++ headers — every file under `Sources/${PACKAGE_NAME}-Cxx/include/Public/`
+  # is shipped in the framework's `Headers/` directory and consumable from external
+  # ObjC++ via `#import <${PACKAGE_NAME}/Header.h>`. They live in a `requires cplusplus`
+  # submodule so Swift consumers don't try to import them.
+  local public_cxx_dir="${PACKAGE_DIR}/Sources/${PACKAGE_NAME}-Cxx/include/Public"
+  local public_cxx_headers=()
+  while IFS= read -r -d '' file; do
+    public_cxx_headers+=("$(basename "$file")")
+  done < <(find "$public_cxx_dir" -maxdepth 1 -name '*.h' -print0)
+  if (( ${#public_cxx_headers[@]} )); then
+    for header in "${public_cxx_headers[@]}"; do
+      cp "${public_cxx_dir}/${header}" "$headers_dir/"
+    done
+  fi
+
+  # Custom modulemap: keeps the Swift-generated header as the main module and
+  # exposes the public C++ headers as a `requires cplusplus` submodule.
+  {
+    echo "module ${PACKAGE_NAME} {"
+    echo "  header \"${PACKAGE_NAME}-Swift.h\""
+    echo "  export *"
+    echo ""
+    echo "  explicit module Cxx {"
+    echo "    requires cplusplus"
+    if (( ${#public_cxx_headers[@]} )); then
+      for header in "${public_cxx_headers[@]}"; do
+        echo "    header \"${header}\""
+      done
+    fi
+    echo "    export *"
+    echo "  }"
+    echo "}"
+  } > "${headers_dir}/module.modulemap"
+
+  # Add the top-level Headers/Modules symlinks expected on versioned macOS
+  # frameworks. xcodebuild already set up ExpoModulesJSI -> Versions/Current/...
+  # and Resources -> Versions/Current/Resources, but not Headers/Modules since
+  # the SPM build doesn't emit those at that point.
+  if [[ "$platform" == "macosx" || "$platform" == "maccatalyst" ]]; then
+    ln -sfn "Versions/Current/Headers" "${framework_root}/Headers"
+    ln -sfn "Versions/Current/Modules" "${framework_root}/Modules"
+  fi
 
   echo "$current_hash" > "${staging_dir}/.build-hash"
 
@@ -300,7 +398,12 @@ fi
 
 # Determine which platforms to build.
 if [[ -n "${PLATFORM_NAME:-}" ]]; then
-  PLATFORMS=("$PLATFORM_NAME")
+  # Xcode identifies Catalyst with PLATFORM_NAME=macosx but EFFECTIVE_PLATFORM_NAME=-maccatalyst.
+  if [[ "${PLATFORM_NAME}" == "macosx" && "${EFFECTIVE_PLATFORM_NAME:-}" == *maccatalyst* ]]; then
+    PLATFORMS=("maccatalyst")
+  else
+    PLATFORMS=("$PLATFORM_NAME")
+  fi
 else
   PLATFORMS=("iphoneos" "iphonesimulator")
 fi
@@ -324,6 +427,16 @@ if [[ ${#platforms_to_build[@]} -eq 0 ]]; then
 fi
 
 PLATFORMS=("${platforms_to_build[@]}")
+
+# Wipe stale intermediates before compiling: DerivedData's module cache and the
+# SwiftPM workspace/.build tree carry over from earlier runs and can reference
+# headers or module layouts that no longer match (e.g. after switching branches).
+# Only runs when a slice needs rebuilding, so the up-to-date fast path is unaffected.
+# Products/ is preserved. build_slice replaces only the slice it rebuilds. The
+# generated modulemap is left intact — it was already regenerated above for the
+# cache hash, so wiping it here would just force a redundant rebuild.
+log "Clearing stale build state (DerivedData, SwiftPM) before rebuild"
+rm -rf "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
 
 SECONDS=0
 

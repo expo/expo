@@ -20,21 +20,22 @@ concurrency:
 
 jobs:
   ios-build:
+    if: github.repository == 'expo/expo'
     strategy:
       fail-fast: true
       matrix:
         build-type: [debug, release]
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: 🔨 Switch to Xcode 26.2
-        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: 🚀 Setup Bun
@@ -42,7 +43,7 @@ jobs:
         with:
           bun-version: latest
       - name: ⬢ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
@@ -73,7 +74,7 @@ jobs:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-arch-${{ matrix.build-type }}
@@ -87,6 +88,7 @@ jobs:
           author_name: React Native Nightly (iOS)
 
   android-build:
+    if: github.repository == 'expo/expo'
     strategy:
       fail-fast: true
       matrix:
@@ -101,7 +103,7 @@ jobs:
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: 🚀 Setup Bun
@@ -109,7 +111,7 @@ jobs:
         with:
           bun-version: latest
       - name: ⬢ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
@@ -132,7 +134,7 @@ jobs:
           NODE_ENV: production
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-${{ matrix.build-type }}

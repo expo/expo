@@ -1,9 +1,9 @@
 import { ThemeProvider } from 'ThemeProvider';
-import { ObserveRoot } from 'expo-observe';
+import BenchmarkHelper from 'benchmark-helper';
+import { Observe, ObserveRoot } from 'expo-observe';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
-import ExpoObserve from 'expo-observe';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 
@@ -66,7 +66,7 @@ function useLoaded() {
   return isLoaded;
 }
 
-ExpoObserve.configure({
+Observe.configure({
   dispatchingEnabled: true,
   sampleRate: 0.9,
   integrations: {
@@ -95,6 +95,12 @@ export default function Main() {
   }, []);
 
   const isLoaded = useLoaded();
+
+  React.useEffect(() => {
+    if (isLoaded) {
+      BenchmarkHelper.reportFullyDrawn();
+    }
+  }, [isLoaded]);
 
   return (
     <ObserveRoot>

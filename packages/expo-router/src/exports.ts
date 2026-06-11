@@ -66,6 +66,24 @@ export {
   type VectorIconProps,
 } from './primitives';
 
+export {
+  unstable_createStandardRouterNavigator,
+  unstable_integrateWithRouter,
+} from './standard-navigation';
+export type {
+  IntegrateWithRouterOptions,
+  StandardUseNavigationBuilderOptions,
+} from './standard-navigation';
+
+// Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
+export { StackRouter, TabRouter } from './react-navigation/routers';
+export type {
+  StackNavigationState,
+  StackRouterOptions,
+  TabNavigationState,
+  TabRouterOptions,
+} from './react-navigation/routers';
+
 export { unstable_navigationEvents } from './navigationEvents';
 export type {
   PagePreloadedEvent,
@@ -88,3 +106,26 @@ export type {
   ExperimentalStackNavigationProp,
   ExperimentalStackScreenProps,
 } from './layouts/experimental-stack';
+
+// Copied from packages/expo-router/src/react-navigation/native-stack/index.tsx
+// Keep in sync
+export type {
+  NativeStackHeaderBackProps,
+  NativeStackHeaderItem,
+  NativeStackHeaderItemButton,
+  NativeStackHeaderItemCustom,
+  NativeStackHeaderItemMenu,
+  NativeStackHeaderItemMenuAction,
+  NativeStackHeaderItemMenuSubmenu,
+  NativeStackHeaderItemProps,
+  NativeStackHeaderItemSpacing,
+  NativeStackHeaderLeftProps,
+  NativeStackHeaderProps,
+  NativeStackHeaderRightProps,
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+  NativeStackNavigationProp,
+  NativeStackNavigatorProps,
+  NativeStackOptionsArgs,
+  NativeStackScreenProps,
+} from './react-navigation/native-stack';

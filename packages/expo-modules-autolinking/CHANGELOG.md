@@ -8,7 +8,23 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
+- Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+- Add experimental `tvos` and `macos` resolution ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+
+## 56.0.13 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- [iOS] Align precompile feature flags for `react-native-worklets@0.8.3` and `react-native-reanimated@4.3.1` with upstream defaults. ([#46221](https://github.com/expo/expo/pull/46221) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Raise every autolinked Expo module's deployment target to at least `ExpoModulesCore`'s during `pod install`, so adapters whose podspecs declare a lower platform value no longer fail. ([#46175](https://github.com/expo/expo/pull/46175) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.12 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.11 — 2026-05-21
 

@@ -36,6 +36,15 @@ import expo.modules.ui.menu.DropdownMenuItemProps
 import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.ui.state.ObservableState
 import expo.modules.ui.state.WorkletCallback
+import expo.modules.ui.textfield.BasicTextFieldContent
+import expo.modules.ui.textfield.BasicTextFieldProps
+import expo.modules.ui.textfield.InnerTextFieldView
+import expo.modules.ui.textfield.KeyboardActionEvent
+import expo.modules.ui.textfield.PlaceholderView
+import expo.modules.ui.textfield.TextFieldContent
+import expo.modules.ui.textfield.TextFieldProps
+import expo.modules.ui.textfield.TextFieldSelectionPayload
+import expo.modules.ui.textfield.TextFieldValuePayload
 import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
 import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
 import expo.modules.ui.menu.ExposedDropdownMenuContent
@@ -69,11 +78,19 @@ class ExpoUIModule : Module() {
         callback.worklet = worklet
         callback
       }
+
+      Property("__expo_ui_shared_object__") { _: WorkletCallback ->
+        true
+      }
     }
 
     Class(ObservableState::class) {
       Constructor { initial: Map<String, Any?> ->
         ObservableState(initial["value"])
+      }
+
+      Property("__expo_ui_shared_object__") { _: ObservableState ->
+        true
       }
 
       Function("getValue") { state: ObservableState ->
@@ -101,8 +118,7 @@ class ExpoUIModule : Module() {
     //region Views use expo-modules-core DSL for uncommon features
 
     View(HostView::class) {
-      // See ShadowNodeSyncFlush.kt for why onExpoUISyncFlush is needed.
-      Events("onLayoutContent", "onExpoUISyncFlush")
+      Events("onLayoutContent")
 
       OnViewDidUpdateProps { view ->
         view.onViewDidUpdateProps()
@@ -139,14 +155,13 @@ class ExpoUIModule : Module() {
       colorScheme.toTokenMap()
     }
 
-    View(RNHostView::class) {
-      // See ShadowNodeSyncFlush.kt for why this internal phantom event is needed.
-      Events("onExpoUISyncFlush")
-    }
+    View(RNHostView::class)
 
     View(SlotView::class) {
       Events("onSlotEvent")
     }
+    View(InnerTextFieldView::class)
+    View(PlaceholderView::class)
     View(IconView::class)
     View(LazyColumnView::class)
     View(LazyRowView::class)
@@ -602,6 +617,20 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<NavigationBarProps>("NavigationBarView") {
+      Content { props ->
+        NavigationBarContent(props)
+      }
+    }
+
+    ExpoUIView<NavigationBarItemProps>("NavigationBarItemView") {
+      val onButtonPressed by Event<Unit>()
+
+      Content { props ->
+        NavigationBarItemContent(props) { onButtonPressed(Unit) }
+      }
+    }
+
     ExpoUIView<SpacerProps>("SpacerView") {
       Content { props ->
         SpacerContent(props)
@@ -661,6 +690,33 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         TextFieldContent(
+          props,
+          setText,
+          setSelection,
+          clear,
+          focus,
+          blur,
+          onValueChanged = { onValueChange(it) },
+          onFocusChange = { onFocusChanged(it) },
+          onKeyboardActionTriggered = { onKeyboardAction(it) },
+          onSelectionChanged = { onSelectionChange(it) }
+        )
+      }
+    }
+
+    ExpoUIView<BasicTextFieldProps>("BasicTextFieldView") {
+      val setText by AsyncFunction<String>()
+      val setSelection by AsyncFunction<Int, Int>()
+      val clear by AsyncFunction()
+      val focus by AsyncFunction()
+      val blur by AsyncFunction()
+      val onValueChange by Event<TextFieldValuePayload>()
+      val onFocusChanged by Event<GenericEventPayload1<Boolean>>()
+      val onKeyboardAction by Event<KeyboardActionEvent>()
+      val onSelectionChange by Event<TextFieldSelectionPayload>()
+
+      Content { props ->
+        BasicTextFieldContent(
           props,
           setText,
           setSelection,

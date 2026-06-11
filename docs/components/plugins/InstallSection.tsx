@@ -1,22 +1,27 @@
 import { PropsWithChildren } from 'react';
 
 import { usePageMetadata } from '~/providers/page-metadata';
-import { Terminal } from '~/ui/components/Snippet';
+import { Terminal, type PackageManagerCommandSet } from '~/ui/components/Snippet';
 import { A, P, CODE } from '~/ui/components/Text';
 
 type InstallSectionProps = PropsWithChildren<{
   packageName: string;
   hideBareInstructions?: boolean;
-  cmd?: string[];
+  cmd?: string[] | PackageManagerCommandSet;
   href?: string;
 }>;
 
-const getInstallCmd = (packageName: string) => `$ npx expo install ${packageName}`;
+const getInstallCmd = (packageName: string): PackageManagerCommandSet => ({
+  npm: [`$ npx expo install ${packageName}`],
+  yarn: [`$ yarn expo install ${packageName}`],
+  pnpm: [`$ pnpm expo install ${packageName}`],
+  bun: [`$ bun expo install ${packageName}`],
+});
 
 export default function InstallSection({
   packageName,
   hideBareInstructions = false,
-  cmd = [getInstallCmd(packageName)],
+  cmd = getInstallCmd(packageName),
   href,
 }: InstallSectionProps) {
   if (href) {

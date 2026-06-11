@@ -24,6 +24,7 @@ concurrency:
 
 jobs:
   test:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -34,11 +35,11 @@ jobs:
         with:
           fetch-depth: 100
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: 'pnpm'
@@ -124,7 +125,7 @@ jobs:
             node ${{ github.workspace }}/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ${{ github.workspace }}/fingerprint-${{ matrix.os }}.json
           }
       - name: 📤 Upload fingerprint
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: fingerprint-${{ matrix.os }}
           path: fingerprint-${{ matrix.os }}.json
@@ -134,17 +135,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Download fingerprint (macos)
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v4
         with:
           name: fingerprint-macos-latest
 
       - name: 📥 Download fingerprint (ubuntu)
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v4
         with:
           name: fingerprint-ubuntu-latest
 
       - name: 📥 Download fingerprint (windows)
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v4
         with:
           name: fingerprint-windows-latest
 

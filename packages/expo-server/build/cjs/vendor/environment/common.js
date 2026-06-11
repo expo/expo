@@ -188,6 +188,7 @@ function mergeAssets(topLevel, routeLevel) {
     return {
         css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
         js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
+        favicon: topLevel?.favicon,
     };
 }
 //# sourceMappingURL=common.js.map

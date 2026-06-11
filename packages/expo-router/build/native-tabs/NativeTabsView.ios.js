@@ -19,6 +19,7 @@ function NativeTabsView(props) {
     const { ios: rawIosProps, android: _ignoredRawAndroidProps, ...rawHostRestProps } = unstable_nativeProps ?? {};
     const { selectedScreenKey, provenance } = (0, NativeTabsView_shared_1.useSelectedScreenKey)(props);
     const onTabSelected = (0, NativeTabsView_shared_1.useOnTabSelectedHandler)(props.onTabChange);
+    const onTabSelectionPrevented = (0, NativeTabsView_shared_1.useOnTabSelectionPreventedHandler)(props.onTabChange);
     const iosAppearances = tabs.map((tab) => ({
         standardAppearance: (0, appearance_1.createStandardAppearanceFromOptions)(tab.options),
         scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)(tab.options),
@@ -43,13 +44,13 @@ function NativeTabsView(props) {
             tabBarControllerMode,
             bottomAccessory: bottomAccessoryFn,
             ...rawIosProps,
-        }, tabBarHidden: props.hidden, ...rawHostRestProps, navStateRequest: { selectedScreenKey, baseProvenance: provenance }, onTabSelected: onTabSelected, children: children }));
+        }, tabBarHidden: props.hidden, ...rawHostRestProps, navStateRequest: { selectedScreenKey, baseProvenance: provenance }, onTabSelected: onTabSelected, onTabSelectionPrevented: onTabSelectionPrevented, children: children }));
 }
 function Screen(props) {
     const { options, standardAppearance, scrollEdgeAppearance, contentRenderer } = props;
     const shared = (0, NativeTabsView_shared_1.useSharedScreenProps)(props);
     const iosIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.icon, standardAppearance?.stacked?.normal?.tabBarItemIconColor);
-    const iosSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.selectedIcon, standardAppearance?.stacked?.selected?.tabBarItemIconColor);
+    const iosSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.selectedIcon ?? shared.icon, standardAppearance?.stacked?.selected?.tabBarItemIconColor);
     const content = (0, jsx_runtime_1.jsx)(NativeTabsView_shared_1.ScreenContent, { options: options, contentRenderer: contentRenderer });
     const wrappedContent = (0, react_1.useMemo)(() => (0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaProvider, { children: content }), [content]);
     return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...shared.options, pointerEvents: shared.pointerEvents, ios: {

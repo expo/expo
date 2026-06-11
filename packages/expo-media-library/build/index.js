@@ -88,6 +88,7 @@ export const usePermissions = createPermissionHook({
     getMethod: (options) => getPermissionsAsync(options?.writeOnly, options?.granularPermissions),
     requestMethod: (options) => requestPermissionsAsync(options?.writeOnly, options?.granularPermissions),
 });
+export { PermissionStatus } from 'expo';
 /**
  * Allows the user to update the assets that your app has access to.
  * The system modal is only displayed if the user originally allowed only `limited` access to their

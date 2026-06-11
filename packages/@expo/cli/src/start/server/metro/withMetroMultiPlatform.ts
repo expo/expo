@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { ExpoConfig, Platform } from '@expo/config';
+import { getPlatformsFromConfig } from '@expo/config';
+import { getPlatformExtensions } from '@expo/config/paths';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
 import type {
@@ -48,10 +50,92 @@ export type StrictResolverFactory = (
 
 const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
+interface PlatformExtensions {
+  sourceExts: string[];
+  unstable_conditionNames: string[];
+}
+
+function constructPlatformExtensions(
+  config: ConfigT
+): Record<string, PlatformExtensions | undefined> {
+  const platformExtensions: Record<string, PlatformExtensions | undefined> = Object.create(null);
+  // TODO(@kitten): Temporary internal override config for per-platform extensions
+  let unstable_platformExtensions: Record<string, string[] | undefined> | undefined;
+  if (
+    config.resolver &&
+    'unstable_platformExtensions' in config.resolver &&
+    config.resolver.unstable_platformExtensions &&
+    typeof config.resolver.unstable_platformExtensions === 'object'
+  ) {
+    unstable_platformExtensions = config.resolver.unstable_platformExtensions as any;
+  }
+  for (const platform of config.resolver?.platforms ?? []) {
+    const customPlatformExtensions = unstable_platformExtensions?.[platform];
+    const sourceExts = getPlatformExtensions(
+      platform,
+      config.resolver.sourceExts,
+      customPlatformExtensions
+    );
+    // Platform-less resolution drops the platform's package-exports conditions, so fold them in.
+    const unstable_conditionNames = [
+      ...config.resolver.unstable_conditionNames,
+      ...(config.resolver.unstable_conditionsByPlatform[platform] ?? []),
+    ];
+    if (sourceExts) {
+      platformExtensions[platform as Platform] = { sourceExts, unstable_conditionNames };
+    }
+  }
+  return platformExtensions;
+}
+
+function resolveWithPlatformExtensions(
+  platformExtensions: PlatformExtensions,
+  context: ResolutionContext,
+  moduleName: string
+): Resolution {
+  const platformContext = asWritable(context);
+  platformContext.preferNativePlatform = false;
+  platformContext.sourceExts = platformExtensions.sourceExts;
+  platformContext.unstable_conditionNames = platformExtensions.unstable_conditionNames;
+  return resolver(platformContext, moduleName, null);
+}
+
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
 function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
+}
+
+const _reactNativeHostPackages = new Map<string, string | null>();
+const _reactNativeHostPathPatterns = new Map<string, RegExp | null>();
+
+function getReactNativeHostPackage(platform: string | null): string | null {
+  if (!platform) {
+    return null;
+  }
+  let supportPackage = _reactNativeHostPackages.get(platform);
+  if (supportPackage === undefined) {
+    const { getSupportPackageForPlatform } =
+      require('expo/internal/unstable-autolinking-exports') as typeof import('expo-modules-autolinking/exports');
+    supportPackage = getSupportPackageForPlatform(platform);
+    _reactNativeHostPackages.set(platform, supportPackage);
+  }
+  return supportPackage;
+}
+
+function getReactNativeHostPathPattern(platform: string | null): RegExp | null {
+  if (!platform) {
+    return null;
+  }
+  let pattern = _reactNativeHostPathPatterns.get(platform);
+  if (pattern === undefined) {
+    const supportPackage = getReactNativeHostPackage(platform);
+    pattern = supportPackage
+      ? new RegExp(`[\\\\/]node_modules[\\\\/]${supportPackage}[\\\\/]`)
+      : null;
+    _reactNativeHostPathPatterns.set(platform, pattern);
+  }
+  return pattern;
 }
 
 function withWebPolyfills(
@@ -235,12 +319,18 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
+  const platformExtensions = constructPlatformExtensions(config);
+
   const getStrictResolver: StrictResolverFactory = (
     { resolveRequest, ...context },
     platform
   ): StrictResolver => {
     return function doResolve(moduleName: string): Resolution {
-      return resolver(context, moduleName, platform);
+      if (platform != null && platformExtensions[platform]) {
+        return resolveWithPlatformExtensions(platformExtensions[platform], context, moduleName);
+      } else {
+        return resolver(context, moduleName, platform);
+      }
     };
   };
 
@@ -382,9 +472,9 @@ export function withExtendedResolver(
       if (!context.dev) return null;
 
       if (
-        // Match react-native renderers.
+        // Match react-native renderers (in the platform's react-native host package).
         (platform !== 'web' &&
-          context.originModulePath.match(/[\\/]node_modules[\\/]react-native[\\/]/) &&
+          getReactNativeHostPathPattern(platform)?.test(context.originModulePath) &&
           moduleName.match(/([\\/]ReactFabric|ReactNativeRenderer)-prod/)) ||
         // Match react production imports.
         (moduleName.match(/\.production(\.min)?\.js$/) &&
@@ -605,10 +695,18 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ) {
-      const doResolve = getStrictResolver(context, platform);
+      // TODO(@kitten): replace and abstract doResolve logic, since it's unsafe and inefficient
+      function doResolve(moduleName: string) {
+        const projectRootContext: ResolutionContext = {
+          ...context,
+          nodeModulesPaths: [],
+          originModulePath: projectRootOriginPath,
+          disableHierarchicalLookup: false,
+        };
+        return getStrictResolver(projectRootContext, platform)(moduleName);
+      }
 
-      const result = doResolve(moduleName);
-
+      const result = getStrictResolver(context, platform)(moduleName);
       if (result.type !== 'sourceFile') {
         return result;
       }
@@ -725,10 +823,14 @@ export function withExtendedResolver(
         const isServer =
           context.customResolverOptions?.environment === 'node' ||
           context.customResolverOptions?.environment === 'react-server';
+        const hostPackage = getReactNativeHostPackage(platform) ?? 'react-native';
 
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          const emptyModule = doReplace('react-native/Libraries/Core/InitializeCore.js', undefined);
+          const emptyModule = doReplace(
+            `${hostPackage}/Libraries/Core/InitializeCore.js`,
+            undefined
+          );
           if (emptyModule) {
             debug('Shimming out InitializeCore for React Native in native SSR bundle');
             return emptyModule;
@@ -736,20 +838,21 @@ export function withExtendedResolver(
         }
 
         const hmrModule = doReplaceStrict(
-          'react-native/Libraries/Utilities/HMRClient.js',
+          `${hostPackage}/Libraries/Utilities/HMRClient.js`,
           'expo/src/async-require/hmr.ts'
         );
         if (hmrModule) return hmrModule;
 
         if (useExpoUnstableLogBox) {
+          // TODO(@kitten): This can never resolve with isolated dependencies
           const logBoxModule = doReplace(
-            'react-native/Libraries/LogBox/LogBoxInspectorContainer.js',
+            `${hostPackage}/Libraries/LogBox/LogBoxInspectorContainer.js`,
             '@expo/log-box/swap-rn-logbox.js'
           );
           if (logBoxModule) return logBoxModule;
 
           const logBoxParserModule = doReplace(
-            'react-native/Libraries/LogBox/Data/parseLogBoxLog.js',
+            `${hostPackage}/Libraries/LogBox/Data/parseLogBoxLog.js`,
             '@expo/log-box/swap-rn-logbox-parser.js'
           );
           if (logBoxParserModule) return logBoxParserModule;
@@ -945,9 +1048,10 @@ export async function withMetroMultiPlatformAsync(
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
+  const configPlatforms = getPlatformsFromConfig(projectRoot, exp);
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(
-      ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
+      ([platform, bundler]) => bundler === 'metro' && configPlatforms.includes(platform as Platform)
     )
     .map(([platform]) => platform);
 

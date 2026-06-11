@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
+- Add `ios`, `android`, `macos`, `tvos` per-platform override support ([#46508](https://github.com/expo/expo/pull/46508) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
+- Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+## 56.0.13 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.11 — 2026-05-21
 

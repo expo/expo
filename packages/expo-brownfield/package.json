@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "56.0.13",
+  "version": "56.0.15",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -18,9 +18,12 @@
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
+    "build:shared": "expo-module build shared",
+    "build:plugin": "expo-module build plugin",
+    "build:cli": "expo-module build cli",
     "clean": "expo-module clean",
-    "lint": "expo-module lint && expo-module lint plugin && expo-module lint cli",
-    "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
+    "lint": "expo-module lint && expo-module lint shared && expo-module lint plugin && expo-module lint cli",
+    "lint:fix": "expo-module lint --fix && expo-module lint shared --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
     "test": "expo-module test",
     "test:e2e-cli": "expo-module test --config e2e/cli/jest.config.js",
     "test:e2e-plugin": "expo-module test --config e2e/plugin/jest.config.js",
@@ -54,7 +57,7 @@
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "diff": "^5.2.0",
-    "expo-build-properties": "workspace:~56.0.13",
+    "expo-build-properties": "workspace:~56.0.15",
     "expo-manifests": "workspace:~56.0.4",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"

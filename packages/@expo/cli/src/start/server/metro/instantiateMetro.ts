@@ -1,4 +1,4 @@
-import { type ExpoConfig, getConfig } from '@expo/config';
+import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { Reporter } from '@expo/metro/metro';
 import type Bundler from '@expo/metro/metro/Bundler';
@@ -9,13 +9,11 @@ import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
-import { getDefaultConfig } from '@expo/metro-config';
+import { loadUserConfig } from '@expo/metro-config';
 import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
 import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
-import { resolveBabelrcName } from '@expo/metro-config/exports';
 import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
@@ -196,9 +194,15 @@ export async function loadMetroConfigAsync(
   const serverRoot = getMetroServerRoot(projectRoot);
   const isWorkspace = serverRoot !== projectRoot;
 
-  // Autolinking Module Resolution will be enabled by default when we're in a monorepo
+  // Out-of-tree platforms (tvos/macos) rely on the autolinking module resolver to remap the
+  // react-native package to their support package, and require autolinking module resolution
+  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some(
+    (platform) => platform === 'tvos' || platform === 'macos'
+  );
+
+  // Autolinking Module Resolution is enabled by default in a monorepo or for out-of-tree platforms.
   const autolinkingModuleResolutionEnabled =
-    exp.experiments?.autolinkingModuleResolution ?? isWorkspace;
+    exp.experiments?.autolinkingModuleResolution ?? (isWorkspace || targetsOutOfTreePlatform);
 
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
@@ -218,20 +222,15 @@ export async function loadMetroConfigAsync(
 
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
-  const configPath = env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined;
-  const resolvedConfig = await resolveConfig(configPath, projectRoot);
-  const defaultConfig = getDefaultConfig(projectRoot);
+  let config = await loadUserConfig({
+    projectRoot,
+    serverRoot,
+    // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
+    overrideConfigPath: env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined,
+  });
 
-  let config: ConfigT = resolvedConfig.isEmpty
-    ? defaultConfig
-    : await mergeConfig(defaultConfig, resolvedConfig.config);
-
-  // Set the watchfolders to include the projectRoot, as Metro assumes this
-  // Force-override the reporter
   config = {
     ...config,
-
     // See: `overrideConfigWithArguments` https://github.com/facebook/metro/blob/5059e26/packages/metro-config/src/loadConfig.js#L274-L339
     // Compare to `LoadOptions` type (disregard `reporter` as we don't expose this)
     resetCache: !!options.resetCache,
@@ -240,10 +239,7 @@ export async function loadMetroConfigAsync(
       ...config.server,
       port: options.port ?? config.server.port,
     },
-
-    watchFolders: !config.watchFolders.includes(config.projectRoot)
-      ? [config.projectRoot, ...config.watchFolders]
-      : config.watchFolders,
+    // Force-override the reporter
     reporter: {
       update(event) {
         terminalReporter.update(event);
@@ -254,23 +250,10 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  // NOTE(@kitten): Pass a hint to the transformer on where to find the Babel config
-  asWritable(config.transformer).extendsBabelConfigPath =
-    config.transformer.enableBabelRCLookup !== false ? resolveBabelrcName(projectRoot) : undefined;
-
   // On-Demand Filesystem is enabled by default
   // TODO(@kitten): Add to config-types JSON schema
   const onDemandFilesystem = exp.experiments?.onDemandFilesystem ?? true;
   asWritable(config.resolver).unstable_onDemandFilesystem = onDemandFilesystem;
-
-  // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
-  // If we instead set it to the special value `null`, it gets enables but also bypasses the "native find" codepath,
-  // which is slower than just using the Node filesystem API
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
-  if (config.resolver.useWatchman === true) {
-    asWritable(config.resolver).useWatchman = null as any;
-  }
 
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 

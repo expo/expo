@@ -1,12 +1,10 @@
 {
-  "extends": "expo-module-scripts/tsconfig.node",
+  "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
-    "lib": ["dom", "DOM.Iterable", "esnext"],
-    "noEmit": true,
-    "jsx": "react",
+    "rootDir": ".",
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS"]
   },
-  "include": ["src/**/*", "app/**/*"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["src/**/*"],
+  "exclude": ["app/**/*", "dist/**/*", "build/**/*", "**/__mocks__/*", "**/__tests__/*"]
 }

@@ -43,7 +43,14 @@ Learn more from the [Set up environment guide](/get-started/set-up-your-environm
 
 First, create an Expo project inside your existing native project's root directory.
 
-<Terminal cmd={['$ npx create-expo-app@latest my-project --template default@sdk-56']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest my-project --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app my-project --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app my-project --template default@sdk-56'],
+    bun: ['$ bun create expo my-project --template default@sdk-56'],
+  }}
+/>
 
 This command creates a new directory named **my-project** that contains your new Expo project. While you can name the project anything, this guide uses **my-project** for consistency. The new project includes an example TypeScript application to help you get started.
 
@@ -165,7 +172,7 @@ This makes sure the React Native Gradle and the Expo plugins are available and a
 </Step>
 
 <Step label="3">
-Add the following lines inside your app's **build.gradle** file (usually **app/build.gradle** &mdash; you can use the [bare minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/build.gradle)):
+Add the following lines inside your app's **build.gradle** file (usually **app/build.gradle** — you can use the [bare minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/build.gradle)):
 
 <DiffBlock source="/static/diffs/brownfield/android/app-build-gradle.diff" />
 
@@ -507,6 +514,13 @@ class ViewController: UIViewController {
 
 You have completed all the basic steps to integrate React Native with your application. Now run the following command in the React Native directory to start the [Metro bundler](https://metrobundler.dev/)
 
-<Terminal cmd={['$ yarn start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run start'],
+    yarn: ['$ yarn run start'],
+    pnpm: ['$ pnpm run start'],
+    bun: ['$ bun run start'],
+  }}
+/>
 
 Metro builds your TypeScript application code into a bundle, serves it through its HTTP server, and shares the bundle from `localhost` on your developer environment to a simulator or device, allowing for [hot reloading](https://reactnative.dev/blog/2016/03/24/introducing-hot-reloading). Now you can build and run your app as normal. Once you reach your React-powered Activity inside the app, it should load the JavaScript code from the development server.

@@ -246,7 +246,7 @@ export class FileSystemFile {
     });
   }
 
-  write(
+  writeSync(
     content: string | Uint8Array,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): void {
@@ -278,6 +278,13 @@ export class FileSystemFile {
     } else {
       store.set(key, { kind: 'file', bytes, type, exists: true, createdAt, modifiedAt: now });
     }
+  }
+
+  async write(
+    content: string | Uint8Array,
+    options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
+  ): Promise<void> {
+    this.writeSync(content, options);
   }
 
   private readBytesOrThrow(): Uint8Array {
@@ -495,7 +502,7 @@ export class FileSystemFileHandle {
     return entry?.bytes?.length ?? 0;
   }
 
-  readBytes(count: number): Uint8Array {
+  readBytesSync(count: number): Uint8Array {
     this.ensureOpen();
     if (this.writeOnly) throw new Error('File handle is write-only');
     const entry = store.get(this.key);
@@ -505,7 +512,11 @@ export class FileSystemFileHandle {
     return slice;
   }
 
-  writeBytes(buffer: Uint8Array): void {
+  async readBytes(count: number): Promise<Uint8Array> {
+    return this.readBytesSync(count);
+  }
+
+  writeBytesSync(buffer: Uint8Array): void {
     this.ensureOpen();
     if (this.readOnly) throw new Error('File handle is read-only');
     const entry = store.get(this.key) ?? {
@@ -527,6 +538,10 @@ export class FileSystemFileHandle {
       modifiedAt: nextMockTimestamp(),
     });
     this.cursor = writeOffset + buffer.length;
+  }
+
+  async writeBytes(buffer: Uint8Array): Promise<void> {
+    this.writeBytesSync(buffer);
   }
 
   close(): void {

@@ -11,6 +11,8 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 `useNativeState` returns an [`ObservableState`](#observablestate) that maps to a SwiftUI [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) on the native side, so reads and writes to `.value` are observed directly by SwiftUI without going through the React render cycle. This lets you update the native view synchronously from a worklet on the UI thread.
 
+> **Note:** When working with the [React Compiler](https://react.dev/learn/react-compiler), you should refrain from accessing and modifying the `value` property directly. Instead, use the [`get`](#observablestate) and [`set`](#observablestate) methods, which are compliant with the React Compiler standards.
+
 ## Installation
 
 <APIInstallSection />
@@ -24,31 +26,34 @@ The example below masks a phone number as the user types. The formatting and the
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { keyboardType } from '@expo/ui/swift-ui/modifiers';
-import { useEffectEvent } from 'react';
+import { useCallback } from 'react';
 
 export default function WorkletPhoneMaskExample() {
   const maskedPhone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
 
-  const handleTextChange = useEffectEvent((v: string) => {
-    'worklet';
-    const digits = v.replace(/\D/g, '').slice(0, 10);
-    let formatted: string;
-    if (digits.length === 0) {
-      formatted = '';
-    } else if (digits.length <= 3) {
-      formatted = digits;
-    } else if (digits.length <= 6) {
-      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-    } else {
-      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-    }
-    if (formatted !== v) {
-      maskedPhone.value = formatted;
-      // Snaps to end for demo. Real masks need smarter cursor handling.
-      selection.value = { start: formatted.length, end: formatted.length };
-    }
-  });
+  const handleTextChange = useCallback(
+    (v: string) => {
+      'worklet';
+      const digits = v.replace(/\D/g, '').slice(0, 10);
+      let formatted: string;
+      if (digits.length === 0) {
+        formatted = '';
+      } else if (digits.length <= 3) {
+        formatted = digits;
+      } else if (digits.length <= 6) {
+        formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+      } else {
+        formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+      }
+      if (formatted !== v) {
+        maskedPhone.value = formatted;
+        // Snaps to end for demo. Real masks need smarter cursor handling.
+        selection.value = { start: formatted.length, end: formatted.length };
+      }
+    },
+    [maskedPhone, selection]
+  );
 
   return (
     <Host matchContents>

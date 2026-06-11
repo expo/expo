@@ -1,0 +1,1 @@
+{"version":3,"file":"Message.d.ts","sourceRoot":"","sources":["../../src/overlay/Message.tsx"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,OAAO,KAAK,MAAM,OAAO,CAAC;AAE1B,OAAO,KAAK,EAAE,OAAO,EAAE,MAAM,eAAe,CAAC;AAE7C,wBAAgB,aAAa,CAAC,KAAK,EAAE;IAAE,OAAO,EAAE,OAAO,CAAC;IAAC,SAAS,CAAC,EAAE,MAAM,CAAA;CAAE,GAAG,KAAK,CAAC,YAAY,CA8CjG"}

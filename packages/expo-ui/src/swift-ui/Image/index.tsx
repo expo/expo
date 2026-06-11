@@ -3,6 +3,7 @@ import type { ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { ViewEvent } from '../../types';
+import { font, foregroundStyle } from '../modifiers';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
@@ -13,13 +14,19 @@ export interface ImageProps extends CommonViewModifierProps {
    */
   systemName?: SFSymbol;
   /**
+   * The asset catalog name of a custom SF Symbol imported as a symbol set.
+   */
+  assetName?: string;
+  /**
    * The URI of the local image file to display.
    * For example: 'file:///path/to/image.jpg'
    * Performs a synchronous read operation that blocks the main thread.
    */
   uiImage?: string;
   /**
-   * The size of the system image.
+   * The fixed size of the system image in points. Does not scale with Dynamic
+   * Type. Use the `font` modifier with `textStyle` for that. Ignored when a
+   * `font` modifier is supplied.
    */
   size?: number;
   /**
@@ -49,9 +56,15 @@ type TapEvent = ViewEvent<'onTap', object> & {
 type NativeImageProps = Omit<ImageProps, 'onPress'> | TapEvent;
 
 function transformNativeProps(props: ImageProps): NativeImageProps {
-  const { onPress, modifiers, ...restProps } = props;
+  const { onPress, modifiers, size, color, ...restProps } = props;
+  const hasFontModifier = modifiers?.some((modifier) => modifier.$type === 'font');
+  const allModifiers = [
+    ...(modifiers ?? []),
+    ...(hasFontModifier ? [] : [font({ size: size ?? 24 })]),
+    ...(color != null ? [foregroundStyle(color)] : []),
+  ];
   return {
-    modifiers,
+    modifiers: allModifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     ...(onPress ? { useTapGesture: true, onTap: () => onPress() } : null),

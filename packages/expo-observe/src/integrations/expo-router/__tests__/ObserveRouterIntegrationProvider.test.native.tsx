@@ -114,7 +114,7 @@ describe('ObserveRouterIntegrationProvider', () => {
         </ObserveRouterIntegrationProvider>
       )
     ).toThrow(
-      '[expo-observe] Router integration was enabled after application mounted. Call ExpoObserve.configure() before mounting AppMetricsRoot.'
+      '[expo-observe] Router integration was enabled after application mounted. Call Observe.configure() before mounting AppMetricsRoot.'
     );
   });
 

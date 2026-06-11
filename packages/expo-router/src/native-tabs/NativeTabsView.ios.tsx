@@ -6,6 +6,7 @@ import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
   ScreenContent,
   useOnTabSelectedHandler,
+  useOnTabSelectionPreventedHandler,
   useSelectedScreenKey,
   useSharedScreenProps,
 } from './NativeTabsView.shared';
@@ -32,6 +33,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
   const { selectedScreenKey, provenance } = useSelectedScreenKey(props);
   const onTabSelected = useOnTabSelectedHandler(props.onTabChange);
+  const onTabSelectionPrevented = useOnTabSelectionPreventedHandler(props.onTabChange);
 
   const iosAppearances = tabs.map((tab) => ({
     standardAppearance: createStandardAppearanceFromOptions(tab.options),
@@ -89,7 +91,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       tabBarHidden={props.hidden}
       {...rawHostRestProps}
       navStateRequest={{ selectedScreenKey, baseProvenance: provenance }}
-      onTabSelected={onTabSelected}>
+      onTabSelected={onTabSelected}
+      onTabSelectionPrevented={onTabSelectionPrevented}>
       {children}
     </TabsHostWrapper>
   );
@@ -110,7 +113,7 @@ function Screen(props: InternalTabScreenProps) {
     standardAppearance?.stacked?.normal?.tabBarItemIconColor
   );
   const iosSelectedIcon = convertOptionsIconToScreensPropsIcon(
-    shared.selectedIcon,
+    shared.selectedIcon ?? shared.icon,
     standardAppearance?.stacked?.selected?.tabBarItemIconColor
   );
 

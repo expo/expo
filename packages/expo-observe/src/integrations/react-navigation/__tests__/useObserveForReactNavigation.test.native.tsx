@@ -37,7 +37,6 @@ jest.mock('@react-navigation/native', () => {
     useRoute,
     useNavigation,
     useStateForPath,
-    getPathFromState: jest.fn(() => '/from-linking'),
     __useRoute: useRoute,
     __useNavigation: useNavigation,
   };
@@ -56,16 +55,7 @@ const initModule = require('../init') as { isInitialized: jest.Mock };
 const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
 
 function wrapper(value: { storage: ReactNavigationIntegrationStorage } | null) {
-  const contextValue = value
-    ? {
-        storage: value.storage,
-        getPathname: (state: any) => {
-          if (!state) return undefined;
-          const route = state.routes?.[state.index ?? 0];
-          return route ? `/${route.name}` : undefined;
-        },
-      }
-    : null;
+  const contextValue = value ? { storage: value.storage } : null;
   return ({ children }: { children: ReactNode }) => (
     <ObserveReactNavigationIntegrationContext.Provider value={contextValue}>
       {children}
@@ -213,7 +203,7 @@ describe('useObserveForReactNavigation', () => {
 
     initModule.isInitialized.mockReturnValue(true);
     expect(() => rerender(undefined)).toThrow(
-      "[expo-observe] React Navigation integration was toggled during a screen's lifecycle. Call `ExpoObserve.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
+      "[expo-observe] React Navigation integration was toggled during a screen's lifecycle. Call `Observe.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
     );
   });
 

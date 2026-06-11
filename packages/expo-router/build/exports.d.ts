@@ -30,6 +30,10 @@ export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 export type * from './types';
 export { Badge, type BadgeProps, Icon, type IconProps, Label, type LabelProps, VectorIcon, type VectorIconProps, } from './primitives';
+export { unstable_createStandardRouterNavigator, unstable_integrateWithRouter, } from './standard-navigation';
+export type { IntegrateWithRouterOptions, StandardUseNavigationBuilderOptions, } from './standard-navigation';
+export { StackRouter, TabRouter } from './react-navigation/routers';
+export type { StackNavigationState, StackRouterOptions, TabNavigationState, TabRouterOptions, } from './react-navigation/routers';
 export { unstable_navigationEvents } from './navigationEvents';
 export type { PagePreloadedEvent, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent, AnalyticsEvent, } from './navigationEvents';
 /**
@@ -38,4 +42,5 @@ export type { PagePreloadedEvent, PageFocusedEvent, PageBlurredEvent, PageRemove
 export { Tabs } from './layouts/Tabs';
 export { ExperimentalStack } from './layouts/experimental-stack';
 export type { ExperimentalStackNavigationOptions, ExperimentalStackNavigationEventMap, ExperimentalStackNavigationProp, ExperimentalStackScreenProps, } from './layouts/experimental-stack';
+export type { NativeStackHeaderBackProps, NativeStackHeaderItem, NativeStackHeaderItemButton, NativeStackHeaderItemCustom, NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction, NativeStackHeaderItemMenuSubmenu, NativeStackHeaderItemProps, NativeStackHeaderItemSpacing, NativeStackHeaderLeftProps, NativeStackHeaderProps, NativeStackHeaderRightProps, NativeStackNavigationEventMap, NativeStackNavigationOptions, NativeStackNavigationProp, NativeStackNavigatorProps, NativeStackOptionsArgs, NativeStackScreenProps, } from './react-navigation/native-stack';
 //# sourceMappingURL=exports.d.ts.map

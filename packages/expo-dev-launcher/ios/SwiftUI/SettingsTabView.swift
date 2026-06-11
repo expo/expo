@@ -92,20 +92,10 @@ struct SettingsTabView: View {
   }
 
   private var titleSection: some View {
-    HStack {
-      Spacer()
-      VStack {
-        Image(systemName: "gearshape")
-          .resizable()
-          .frame(width: 56, height: 56)
-          .opacity(0.3)
-
-        Text("Settings")
-          .font(.title2)
-          .padding(.horizontal, 20)
-      }
-      Spacer()
-    }
+    Text("Settings")
+      .font(.largeTitle)
+      .fontWeight(.bold)
+      .frame(maxWidth: .infinity, alignment: .leading)
   }
 
   private var gestures: some View {
@@ -114,7 +104,7 @@ struct SettingsTabView: View {
         .font(.caption)
         .foregroundColor(.primary.opacity(0.6))
 
-      VStack {
+      VStack(spacing: 0) {
         HStack {
           Image("shake-device", bundle: getDevLauncherBundle())
             .resizable()
@@ -122,7 +112,8 @@ struct SettingsTabView: View {
             .opacity(0.6)
           Toggle("Shake device", isOn: $viewModel.shakeDevice)
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.vertical, 12)
 
         Divider()
 
@@ -133,7 +124,8 @@ struct SettingsTabView: View {
             .opacity(0.6)
           Toggle("Three-finger long-press", isOn: $viewModel.threeFingerLongPress)
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.vertical, 12)
       }
       .background(Color.expoSecondarySystemBackground)
       .cornerRadius(12)
@@ -144,9 +136,10 @@ struct SettingsTabView: View {
     HStack {
       Text("Version")
       Spacer()
-      Text(viewModel.buildInfo["runtimeVersion"] as? String ?? "")
+      Text(viewModel.buildInfo["appVersion"] as? String ?? "")
         .foregroundColor(.secondary)
     }
+    .padding(.vertical, 12)
   }
 
   private var copyToClipboardButton: some View {
@@ -172,6 +165,7 @@ struct SettingsTabView: View {
         .foregroundColor(.blue)
 #endif
     }
+    .padding(.vertical, 12)
   }
 
   private var isAdminUser: Bool {

@@ -3,7 +3,9 @@ import WidgetKit
 import Foundation
 
 func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [WidgetsTimelineEntry] {
-  let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") ?? []
+  guard let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") else {
+    return [WidgetsTimelineEntry(date: Date(), name: name, props: WidgetsLayoutRegistry.initialProps(for: name), entryIndex: nil)]
+  }
 
   let entries: [WidgetsTimelineEntry?] = timeline.enumerated().map { index, entry in
     if let entry = entry as? [String: Any], let timestamp = entry["timestamp"] as? Int, let props = entry["props"] as? [String: Any] {
@@ -30,7 +32,7 @@ public func createRedBox(message: String, stack: String? = nil) -> [String: Any]
 
 public func evaluateLayout(
   layout: String,
-  props: [String: Any],
+  props: [String: Any]?,
   environment: [String: Any]
 ) -> [String: Any] {
   switch evaluateWidgetLayout(layout: layout, props: props, environment: environment) {
@@ -42,10 +44,13 @@ public func evaluateLayout(
   }
 }
 
-func getLiveActivityNodes(forName name: String, props: String = "{}", environment: [String: Any]) -> [String: Any] {
+func getLiveActivityNodes(forName name: String, props: String? = nil, environment: [String: Any]) -> [String: Any] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
-  let propsData = props.data(using: .utf8)
-  let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] } ?? [:]
+  let propsDict = props.flatMap { props in
+    props.data(using: .utf8).flatMap {
+      try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any]
+    }
+  }
 
   switch evaluateWidgetLayout(layout: layout, props: propsDict, environment: environment) {
   case .success(let result):

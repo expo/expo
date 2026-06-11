@@ -8,7 +8,20 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
+- [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
+
 ### 💡 Others
+
+- [Android] Log purge completion errors via `android.util.Log.e` directly instead of `logger.error`, so the failure path doesn't re-enter the `PersistentFileLog` dispatch queue from inside one of its own tasks. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
+
+## 56.0.17 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.15 — 2026-05-21
 
@@ -21,6 +34,7 @@
 ### 💡 Others
 
 - Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+- Added `zstd` decompression support for the `FileDownloader` on Android. ([#46052](https://github.com/expo/expo/pull/46052) by [@kudo](https://github.com/kudo))
 
 ## 56.0.13 — 2026-05-19
 

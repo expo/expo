@@ -100,12 +100,13 @@ struct DevServersView: View {
       }
 
       if showingURLInput {
-        TextField("exp://", text: $urlText)
+        TextField("http://", text: $urlText)
           .onSubmit {
             connectToURL()
           }
           .submitLabel(.go)
         #if !os(macOS)
+          .keyboardType(.URL)
           .autocapitalization(.none)
         #endif
           .disableAutocorrection(true)

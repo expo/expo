@@ -50,7 +50,7 @@ export declare const usePermissions: (options?: import("expo-modules-core").Perm
     writeOnly?: boolean;
     granularPermissions?: GranularPermission[];
 }> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
-export type { PermissionHookOptions, PermissionResponse } from 'expo';
+export { PermissionStatus, type PermissionHookOptions, type PermissionResponse } from 'expo';
 export type { EventSubscription } from 'expo-modules-core';
 /**
  * Allows the user to update the assets that your app has access to.

@@ -39,6 +39,9 @@ export function NativeTabsNavigator({
   indicatorColor,
   badgeTextColor,
   shadowColor,
+  rippleColor,
+  disableIndicator,
+  labelVisibilityMode,
   screenListeners,
   ...rest
 }: InternalNativeTabsProps) {
@@ -82,6 +85,10 @@ export function NativeTabsNavigator({
       indicatorColor,
       badgeTextColor,
       shadowColor,
+      rippleColor,
+      disableIndicator,
+      labelVisibilityMode,
+      tintColor: rest.tintColor,
     },
   });
 
@@ -123,7 +130,22 @@ export function NativeTabsNavigator({
   const provenanceRef = useRef(0);
 
   const onTabChange = useCallback(
-    ({ selectedKey, provenance, isNativeAction }: OnTabChangeEventPayload) => {
+    ({ selectedKey, provenance, isNativeAction, isPrevented = false }: OnTabChangeEventPayload) => {
+      if (isPrevented) {
+        // The native side blocked selecting a disabled tab. Notify listeners, but
+        // don't advance navigation or acknowledge a (non-existent) state transition,
+        // so the provenance counter is left untouched.
+        navigation.emit({
+          type: 'tabPress',
+          target: selectedKey,
+          data: {
+            __internalTabsType: 'native',
+            isPrevented: true,
+          },
+        });
+        return;
+      }
+
       // We should always send the last provenance we got from native side
       provenanceRef.current = provenance;
 
@@ -134,6 +156,7 @@ export function NativeTabsNavigator({
           target: selectedKey,
           data: {
             __internalTabsType: 'native',
+            isPrevented: false,
           },
         });
         navigation.dispatch({

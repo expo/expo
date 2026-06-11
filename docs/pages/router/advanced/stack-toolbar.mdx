@@ -114,7 +114,14 @@ You can browse available symbols in Apple's SF Symbols app.
 
 The recommended source of icons for Android is [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) library. It ships Google's [Material Symbols](https://fonts.google.com/icons) as individual asset subpaths, so Metro only bundles the icons you actually import.
 
-<Terminal cmd={['$ npx expo install @expo/material-symbols']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo/material-symbols'],
+    yarn: ['$ yarn expo install @expo/material-symbols'],
+    pnpm: ['$ pnpm expo install @expo/material-symbols'],
+    bun: ['$ bun expo install @expo/material-symbols'],
+  }}
+/>
 
 Import any icon directly from its own subpath and pass it to the `icon` prop:
 
@@ -779,7 +786,7 @@ You cannot nest `Stack.Toolbar` components inside each other.
 
 <Collapsible summary="Badge and Label primitives are not supported on Android">
 
-On Android, `Stack.Toolbar.Button` renders only its icon &mdash; the `Stack.Toolbar.Badge` and `Stack.Toolbar.Label` children are dropped. If you need badge-like UI on Android, embed a custom component using [`Stack.Toolbar.View`](/versions/latest/sdk/router/stack/#stacktoolbarview).
+On Android, `Stack.Toolbar.Button` renders only its icon — the `Stack.Toolbar.Badge` and `Stack.Toolbar.Label` children are dropped. If you need badge-like UI on Android, embed a custom component using [`Stack.Toolbar.View`](/versions/latest/sdk/router/stack/#stacktoolbarview).
 
 </Collapsible>
 

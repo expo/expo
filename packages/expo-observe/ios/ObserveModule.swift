@@ -54,10 +54,6 @@ public final class ObserveModule: Module {
       }
     }
 
-    Function("setGlobalAttributes") { (attributes: [String: Any]?) in
-      GlobalAttributes.set(attributes)
-    }
-
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
         observeLogger.warn(

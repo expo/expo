@@ -30,12 +30,12 @@
     "expo-web-browser": "workspace:*",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.3",
-    "react-native-gesture-handler": "~2.30.0",
+    "react-native": "0.86.0-rc.3",
+    "react-native-gesture-handler": "~2.31.2",
     "react-native-worklets": "0.8.3",
     "react-native-reanimated": "~4.3.1",
     "react-native-safe-area-context": "~5.6.2",
-    "react-native-screens": "~4.25.1",
+    "react-native-screens": "~4.25.2",
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {

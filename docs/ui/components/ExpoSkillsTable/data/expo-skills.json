@@ -2,10 +2,15 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-05-21T11:09:35.811Z"
+    "fetchedAt": "2026-05-29T10:56:22.852Z"
   },
-  "totalSkills": 14,
+  "totalSkills": 16,
   "skills": [
+    {
+      "name": "add-app-clip",
+      "description": "Add an iOS App Clip target to an Expo app. Use when the user mentions App Clip, AASA, apple-app-site-association, appclips, smart app banner, or wants to ship a lightweight iOS Clip invoked from a URL alongside their parent app.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/add-app-clip/SKILL.md"
+    },
     {
       "name": "building-native-ui",
       "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
@@ -45,6 +50,11 @@
       "name": "expo-module",
       "description": "Guide for creating and writing Expo native modules and views using the Expo Modules API (Swift, Kotlin, TypeScript). Covers module definition DSL, native views, shared objects, config plugins, lifecycle hooks, autolinking, and type system. Use when building or modifying native modules for Expo.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-module/SKILL.md"
+    },
+    {
+      "name": "expo-observe",
+      "description": "Use for anything related to EAS Observe — adding `expo-observe` to an Expo project (AppMetricsRoot/ObserveRoot HOC, markInteractive, the useObserve hook, and the Expo Router / React Navigation integrations for per-route metrics), querying via the EAS CLI (`eas observe:metrics-summary`, `observe:metrics`, `observe:routes`, `observe:events`, `observe:versions`), or interpreting the resulting metrics (cold/warm launch, TTR, TTI, navigation cold/warm TTR, update download, and the TTI frameRate params for triaging slow startups).",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-observe/SKILL.md"
     },
     {
       "name": "expo-tailwind-setup",

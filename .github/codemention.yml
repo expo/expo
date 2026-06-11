@@ -83,7 +83,7 @@ rules:
   - patterns: ['packages/expo-build-properties/**']
     mentions: ['Kudo', 'gabrieldonadel']
   - patterns: ['packages/expo-calendar/**']
-    mentions: ['jakex7', 'alanjhughes']
+    mentions: ['Wenszel', 'alanjhughes']
   - patterns: ['packages/expo-camera/**']
     mentions: ['lukmccall', 'alanjhughes']
   - patterns: ['packages/expo-cellular/**']

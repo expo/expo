@@ -30,7 +30,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
    */
   @JavaScriptActor
   internal func installExpoModulesHostObject() throws {
-    let coreObject = runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
+    let coreObject = try runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
 
     if coreObject.hasProperty("modules") {
       // Host object already installed

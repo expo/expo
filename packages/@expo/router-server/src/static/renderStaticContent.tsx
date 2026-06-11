@@ -17,6 +17,7 @@ import ReactDOMServer from 'react-dom/server';
 import { getRootComponent } from './getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
+  createFaviconAsString,
   createInjectedCssAsString,
   createInjectedScriptsAsString,
   createLoaderDataScriptAsString,
@@ -46,6 +47,8 @@ export type GetStaticContentOptions = {
   assets?: {
     css: string[];
     js: string[];
+    /** Public href of a favicon generated from `web.favicon` in the app config. */
+    favicon?: string;
   };
 };
 
@@ -119,6 +122,11 @@ export async function getStaticContent(
   output = output.replace('</head>', `${fonts.join('')}</head>`);
   if (loadedData) {
     output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
+  }
+
+  // Inject favicon link tag. Mirrors `assets.favicon` handling in `getStreamingContent`.
+  if (options?.assets?.favicon) {
+    output = output.replace('</head>', `${createFaviconAsString(options.assets.favicon)}</head>`);
   }
 
   // Inject hydration assets (JS/CSS bundles). Used in SSR mode

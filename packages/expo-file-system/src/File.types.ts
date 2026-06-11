@@ -89,21 +89,31 @@ export enum FileMode {
 
 export declare class FileHandle {
   /*
-   * Closes the file handle. This allows the file to be deleted, moved or read by a different process. Subsequent calls to `readBytes` or `writeBytes` will throw an error.
+   * Closes the file handle. This allows the file to be deleted, moved or read by a different process. Subsequent calls to `readBytes`, `writeBytes`, `readBytesSync` or `writeBytesSync` will throw an error.
    */
   close(): void;
   /*
    * Reads the specified amount of bytes from the file at the current offset. Max amount of bytes read at once is capped by ArrayBuffer max size (32 bit signed MAX_INT on Android and 64 bit on iOS), but you can read from a FileHandle multiple times.
    * @param length The number of bytes to read.
    */
-  readBytes(length: number): Uint8Array<ArrayBuffer>;
+  readBytes(length: number): Promise<Uint8Array<ArrayBuffer>>;
+  /*
+   * Reads the specified amount of bytes from the file at the current offset. Max amount of bytes read at once is capped by ArrayBuffer max size (32 bit signed MAX_INT on Android and 64 bit on iOS), but you can read from a FileHandle multiple times.
+   * @param length The number of bytes to read.
+   */
+  readBytesSync(length: number): Uint8Array<ArrayBuffer>;
   /*
    * Writes the specified bytes to the file at the current offset.
    * @param bytes A `Uint8Array` array containing bytes to write.
    */
-  writeBytes(bytes: Uint8Array): void;
+  writeBytes(bytes: Uint8Array): Promise<void>;
   /*
-   * A property that indicates the current byte offset in the file. Calling `readBytes` or `writeBytes` will read or write a specified amount of bytes starting from this offset. The offset is incremented by the number of bytes read or written.
+   * Writes the specified bytes to the file at the current offset.
+   * @param bytes A `Uint8Array` array containing bytes to write.
+   */
+  writeBytesSync(bytes: Uint8Array): void;
+  /*
+   * A property that indicates the current byte offset in the file. Calling `readBytes`, `writeBytes`, `readBytesSync` or `writeBytesSync` will read or write a specified amount of bytes starting from this offset. The offset is incremented by the number of bytes read or written.
    * The offset can be set to any value within the file size. If the offset is set to a value greater than the file size, the next write operation will append data to the end of the file.
    * Null if the file handle is closed.
    */

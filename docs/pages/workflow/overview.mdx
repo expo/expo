@@ -50,7 +50,7 @@ Nope! Your Expo project is just a React Native app, which is just a native app. 
 
 Most EAS services also allow you to run them on your own infrastructure, and we provide instructions for how you can accomplish this. For example, [self-hosting updates](/versions/latest/sdk/updates/) (rather than using EAS Update), or [running builds locally](/guides/local-app-development/) or on [your own CI](/build/building-on-ci/) (rather than using our EAS Build worker fleet).
 
-For most teams, it makes sense to use EAS rather than spending the engineering time and resources on acquiring, setting up, and maintaining the services on other infrastructure. Additionally, EAS provides deep integration between services, such as the deployments page for monitoring app version adoption, assigning updates to specific builds, and rolling those updates out incrementally &mdash; which ties back into monitoring with [EAS Insights](/eas-insights/introduction/).
+For most teams, it makes sense to use EAS rather than spending the engineering time and resources on acquiring, setting up, and maintaining the services on other infrastructure. Additionally, EAS provides deep integration between services, such as the deployments page for monitoring app version adoption, assigning updates to specific builds, and rolling those updates out incrementally — which ties back into monitoring with [EAS Insights](/eas-insights/introduction/).
 
 </Collapsible>
 
@@ -104,13 +104,36 @@ The default behavior encourages the use of [Continuous Native Generation](/workf
 The following three commands result in more or less the same project:
 
 <Terminal
-  cmd={[
-    '$ npx create-expo-app@latest --template default@sdk-56 MyApp && cd MyApp && npx expo prebuild',
-    '',
-    '$ npx create-expo-app --template bare-minimum',
-    '',
-    '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx create-expo-app@latest --template default@sdk-56 MyApp && cd MyApp && npx expo prebuild',
+      '',
+      '$ npx create-expo-app --template bare-minimum',
+      '',
+      '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
+    ],
+    yarn: [
+      '$ yarn create expo-app --template default@sdk-56 MyApp && cd MyApp && yarn expo prebuild',
+      '',
+      '$ yarn create expo-app --template bare-minimum',
+      '',
+      '$ yarn dlx @react-native-community/cli@latest init MyApp && cd MyApp && yarn dlx install-expo-modules',
+    ],
+    pnpm: [
+      '$ pnpm create expo-app --template default@sdk-56 MyApp && cd MyApp && pnpm expo prebuild',
+      '',
+      '$ pnpm create expo-app --template bare-minimum',
+      '',
+      '$ pnpm dlx @react-native-community/cli@latest init MyApp && cd MyApp && pnpm dlx install-expo-modules',
+    ],
+    bun: [
+      '$ bun create expo --template default@sdk-56 MyApp && cd MyApp && bun expo prebuild',
+      '',
+      '$ bun create expo --template bare-minimum',
+      '',
+      '$ bunx @react-native-community/cli@latest init MyApp && cd MyApp && bunx install-expo-modules',
+    ],
+  }}
 />
 
 </Collapsible>
@@ -129,7 +152,7 @@ Using CNG can make upgrading to new versions of React Native much easier. It can
 
 CNG has proven to be helpful to many teams. However, it may not be the best fit for your project and this is a perfectly reasonable way to use Expo tools in many cases.
 
-You can run `npx expo prebuild` in the project and then make changes directly to the **android** and **ios** directories, instead of using Expo app config. If you decide to do this, then keep in mind that you won't be able to re-generate your projects using prebuild any longer &mdash; running prebuild after making native changes directly will overwrite all of those modifications.
+You can run `npx expo prebuild` in the project and then make changes directly to the **android** and **ios** directories, instead of using Expo app config. If you decide to do this, then keep in mind that you won't be able to re-generate your projects using prebuild any longer — running prebuild after making native changes directly will overwrite all of those modifications.
 
 Note that you can use [config plugins](/config-plugins/introduction/) to modify the native project configuration without having to modify the native projects directly, and if you decide to move back to CNG at some point.
 

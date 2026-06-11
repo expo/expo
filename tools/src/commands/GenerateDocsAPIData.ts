@@ -131,6 +131,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/navigationbar': ['jetpack-compose/NavigationBar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/segmentedbutton': [
     'jetpack-compose/SegmentedButton/index.tsx',
     'expo-ui',
@@ -150,7 +151,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/snackbar': ['jetpack-compose/Snackbar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/text': ['jetpack-compose/Text/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],

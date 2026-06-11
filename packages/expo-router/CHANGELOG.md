@@ -6,9 +6,39 @@
 
 ### 🎉 New features
 
+- Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))
+- Re-export drawer content components and types (`DrawerContentScrollView`, `DrawerItem`, `DrawerItemList`, `DrawerContentComponentProps`, `DrawerNavigationProp`, and more) from `expo-router/drawer` ([#46635](https://github.com/expo/expo/pull/46635) by [@Ubax](https://github.com/Ubax))
+- [native-tabs] Emit a `tabPress` event with `isPrevented: true` when a `disabled` tab is tapped, without selecting it. ([#46445](https://github.com/expo/expo/pull/46445) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
+- Sync config plugin `Props` type with the options schema, adding the missing `redirects`, `rewrites`, `platformRoutes`, and `disableSynchronousScreensUpdates` options. ([#46677](https://github.com/expo/expo/pull/46677) by [@zoontek](https://github.com/zoontek))
+- [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
+- Allow async routes to rehydrate synchronously by carrying through preloaded modules preventing FOUC in production output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 56.2.7 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- replace SharedRef with SharedRefType ([#46151](https://github.com/expo/expo/pull/46151) by [@Ubax](https://github.com/Ubax))
+
+## 56.2.6 — 2026-05-23
+
+### 🎉 New features
+
+- Allow per-tab customization of Android-only props (`rippleColor`, `indicatorColor`, `disableIndicator`, `labelVisibilityMode`) on `NativeTabs.Trigger`. ([@Ubax](https://github.com/Ubax)) ([#45982](https://github.com/expo/expo/pull/45982) by [@Ubax](https://github.com/Ubax))
+- Upgrade react-native-screens to 4.25.2 ([@Ubax](https://github.com/Ubax)) ([#46142](https://github.com/expo/expo/pull/46142) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- add missing exports to js-tabs and js-top-tabs ([#46117](https://github.com/expo/expo/pull/46117) by [@Ubax](https://github.com/Ubax))
+- [ios] fix selected icon assignment when no selected is specified ([#46096](https://github.com/expo/expo/pull/46096) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- [ios] add wraning in bottom toolbar for when image is passed to icon ([#46094](https://github.com/expo/expo/pull/46094) by [@Ubax](https://github.com/Ubax))
 
 ## 56.2.5 — 2026-05-21
 

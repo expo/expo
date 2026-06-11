@@ -1,29 +1,15 @@
-import {
-  NavigationContainer,
-  type NavigationContainerRef,
-  useNavigationContainerRef,
-} from '@react-navigation/native';
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-  type ComponentProps,
-  type Ref,
-} from 'react';
+import type { NavigationContainerRef } from '@react-navigation/native';
+import { forwardRef, useImperativeHandle, type ComponentProps, type Ref } from 'react';
 
-import { attachActionListener } from './actionListener';
-import { ObserveReactNavigationIntegrationContext } from './context';
-import { createGetPathname } from './getPathname';
-import { createStateChangeHandler } from './handleStateChange';
+import { ObserveNavigationProvider } from './ObserveNavigationProvider';
 import { isInitialized } from './init';
-import { createReactNavigationIntegrationStorage } from './storage';
-import type { NavigationStateLike } from './types';
+import { optionalReactNavigation } from './reactNavigation';
 import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
-type NavigationContainerProps = ComponentProps<typeof NavigationContainer>;
+const NavigationContainer = optionalReactNavigation?.NavigationContainer;
+const useNavigationContainerRef = optionalReactNavigation?.useNavigationContainerRef;
+
+type NavigationContainerProps = ComponentProps<NonNullable<typeof NavigationContainer>>;
 
 export type ObserveNavigationContainerProps = NavigationContainerProps;
 
@@ -31,9 +17,15 @@ function ObserveNavigationContainerImpl(
   props: ObserveNavigationContainerProps,
   forwardedRef: Ref<NavigationContainerRef<ReactNavigation.RootParamList>>
 ) {
-  const { children, onStateChange, onReady, linking, ...rest } = props;
+  if (!NavigationContainer || !useNavigationContainerRef) {
+    throw new Error(
+      '[expo-observe] ObserveNavigationContainer requires @react-navigation/native, ' +
+        "but the package couldn't be resolved. Install @react-navigation/native, or " +
+        "remove the React Navigation integration if it's not needed."
+    );
+  }
+  const { children, ...rest } = props;
   const navigationRef = useNavigationContainerRef();
-  const initialized = isInitialized();
 
   useImperativeHandle(
     forwardedRef,
@@ -41,64 +33,22 @@ function ObserveNavigationContainerImpl(
     [navigationRef]
   );
 
-  const [internal] = useState(() => {
-    if (!initialized) return null;
-    const storage = createReactNavigationIntegrationStorage();
-    const getPathname = createGetPathname(linking);
-    return {
-      storage,
-      getPathname,
-      handleStateChange: createStateChangeHandler(storage, getPathname, performance.now()),
-    };
-  });
-
   useAssertValueDoesNotChange(
-    initialized,
-    `[expo-observe] React Navigation integration was toggled after ObserveNavigationContainer mounted. Call \`ExpoObserve.configure({ integrations: { 'react-navigation': true } })\` before rendering ObserveNavigationContainer.`
-  );
-
-  useEffect(() => {
-    if (!internal) return;
-    return attachActionListener(navigationRef, internal.storage);
-  }, [internal, navigationRef]);
-
-  const onStateChangeMerged = useCallback<NonNullable<NavigationContainerProps['onStateChange']>>(
-    (state) => {
-      internal?.handleStateChange(state as unknown as NavigationStateLike | undefined);
-      onStateChange?.(state);
-    },
-    [internal, onStateChange]
-  );
-
-  // React Navigation's `onStateChange` doesn't fire for the initial state, so
-  // without this the first focused screen would never be recorded — every
-  // subsequent revisit would then look like a cold focus.
-  const onReadyMerged = useCallback<NonNullable<NavigationContainerProps['onReady']>>(() => {
-    if (internal) {
-      const rootState = navigationRef.getRootState() as unknown as NavigationStateLike | undefined;
-      if (rootState) {
-        internal.handleStateChange(rootState);
-      }
-    }
-    onReady?.();
-  }, [internal, navigationRef, onReady]);
-
-  const contextValue = useMemo(
-    () => (internal ? { storage: internal.storage, getPathname: internal.getPathname } : null),
-    [internal]
+    isInitialized(),
+    `[expo-observe] React Navigation integration was toggled after ObserveNavigationContainer mounted. Call \`Observe.configure({ integrations: { 'react-navigation': true } })\` before rendering ObserveNavigationContainer.`
   );
 
   return (
-    <NavigationContainer
-      {...rest}
-      linking={linking}
-      ref={navigationRef as unknown as NavigationContainerProps['ref']}
-      onStateChange={onStateChangeMerged}
-      onReady={onReadyMerged}>
-      <ObserveReactNavigationIntegrationContext.Provider value={contextValue}>
+    <ObserveNavigationProvider
+      navigationRef={
+        navigationRef as unknown as NavigationContainerRef<ReactNavigation.RootParamList>
+      }>
+      <NavigationContainer
+        {...rest}
+        ref={navigationRef as unknown as NavigationContainerProps['ref']}>
         {children}
-      </ObserveReactNavigationIntegrationContext.Provider>
-    </NavigationContainer>
+      </NavigationContainer>
+    </ObserveNavigationProvider>
   );
 }
 

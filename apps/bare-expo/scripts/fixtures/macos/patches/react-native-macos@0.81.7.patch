@@ -1,0 +1,93 @@
+diff --git a/react-native.config.js b/react-native.config.js
+index a34cefa6cf076b7ddca4a6dd9e0f6be8f4b9891a..b38a2837e35555d3834fb35578c45886d455329c 100644
+--- a/react-native.config.js
++++ b/react-native.config.js
+@@ -83,7 +83,19 @@ try {
+ }
+ 
+ // $FlowFixMe[untyped-import]
+-const macosCommands = require('./local-cli/runMacOS/runMacOS');
++let macosCommands;
++try {
++  // runMacOS resolves @react-native-community/cli at module-load time, so
++  // requiring it here would throw in projects that don't depend on the CLI
++  // (e.g. Expo apps). Guard it like the platform lookups above.
++  macosCommands = require('./local-cli/runMacOS/runMacOS');
++} catch {
++  if (verbose) {
++    console.warn(
++      'local-cli/runMacOS could not be loaded - @react-native-community/cli is likely not installed.',
++    );
++  }
++}
+ const {
+   bundleCommand,
+   startCommand,
+@@ -156,7 +168,9 @@ if (android != null) {
+ }
+ 
+ // [macOS
+-config.commands.push(...macosCommands);
++if (macosCommands) {
++  config.commands.push(...macosCommands);
++}
+ if (apple) {
+   config.platforms.macos = {
+     linkConfig: () => {
+diff --git a/scripts/cocoapods/autolinking.rb b/scripts/cocoapods/autolinking.rb
+index d8e9c7cec2f57c124cc2b2fc52b69de8940d3eb5..3eede671066cb814ca43567815e166acbf409cc6 100644
+--- a/scripts/cocoapods/autolinking.rb
++++ b/scripts/cocoapods/autolinking.rb
+@@ -38,7 +38,8 @@ def list_native_modules!(config_command)
+   config = JSON.parse(json)
+ 
+   packages = config["dependencies"]
+-  ios_project_root = Pathname.new(config["project"]["ios"]["sourceDir"])
++  project_config = config["project"]["macos"] || config["project"]["ios"]
++  ios_project_root = Pathname.new(project_config["sourceDir"])
+   react_native_path = Pathname.new(config["reactNativePath"])
+   codegen_output_path = ios_project_root.join("build/generated/autolinking/autolinking.json")
+ 
+@@ -49,7 +50,7 @@ def list_native_modules!(config_command)
+   found_pods = []
+ 
+   packages.each do |package_name, package|
+-    next unless package_config = package["platforms"]["ios"]
++    next unless package_config = package["platforms"]["macos"] || package["platforms"]["ios"]
+ 
+     name = package["name"]
+     podspec_path = package_config["podspecPath"]
+diff --git a/third-party-podspecs/fmt.podspec b/third-party-podspecs/fmt.podspec
+index 2f38990e226c13f483aaf1b986302d4094243814..a40c5755e049974e98a4038c177661d2bdc5681f 100644
+--- a/third-party-podspecs/fmt.podspec
++++ b/third-party-podspecs/fmt.podspec
+@@ -8,14 +8,14 @@ fmt_git_url = fmt_config[:git]
+ 
+ Pod::Spec.new do |spec|
+   spec.name = "fmt"
+-  spec.version = "11.0.2"
++  spec.version = "12.1.0"
+   spec.license = { :type => "MIT" }
+   spec.homepage = "https://github.com/fmtlib/fmt"
+   spec.summary = "{fmt} is an open-source formatting library for C++. It can be used as a safe and fast alternative to (s)printf and iostreams."
+   spec.authors = "The fmt contributors"
+   spec.source = {
+     :git => fmt_git_url,
+-    :tag => "11.0.2"
++    :tag => "12.1.0"
+   }
+   spec.pod_target_xcconfig = {
+     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+diff --git a/third-party-podspecs/RCT-Folly.podspec b/third-party-podspecs/RCT-Folly.podspec
+index 8852179b6ce2ef6ae64e0239edb2594925ff8bc1..040c4f0ca82e6a7342d5b3ed54e556431e5853d2 100644
+--- a/third-party-podspecs/RCT-Folly.podspec
++++ b/third-party-podspecs/RCT-Folly.podspec
+@@ -25,7 +25,7 @@ Pod::Spec.new do |spec|
+   spec.dependency "DoubleConversion"
+   spec.dependency "glog"
+   spec.dependency "fast_float", "8.0.0"
+-  spec.dependency "fmt", "11.0.2"
++  spec.dependency "fmt", "12.1.0"
+   spec.compiler_flags = '-Wno-documentation -faligned-new'
+   spec.source_files = 'folly/String.cpp',
+                       'folly/Conv.cpp',

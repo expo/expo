@@ -128,6 +128,8 @@ abstract class ExpoComposeView<T : ComposeProps>(
     recomposeScope = currentRecomposeScope
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+      // Hosting children render themselves via their own ComposeView; skip to avoid double-rendering.
+      if (child.shouldUseAndroidLayout) continue
       key(child) {
         with(composableScope ?: ComposableScope()) {
           with(child) {
@@ -143,6 +145,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
     recomposeScope = currentRecomposeScope
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+      if (child.shouldUseAndroidLayout) continue
       if (!filter(child)) {
         continue
       }
@@ -160,6 +163,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   fun Child(composableScope: ComposableScope, index: Int) {
     recomposeScope = currentRecomposeScope
     val child = getChildAt(index) as? ExpoComposeView<*> ?: return
+    if (child.shouldUseAndroidLayout) return
     key(child) {
       with(composableScope) {
         with(child) {
@@ -507,7 +511,8 @@ class ComposeFunctionHolder<Props : ComposeProps>(
   appContext: AppContext,
   override val name: String,
   private val composableContent: @Composable FunctionalComposableScope.(props: Props) -> Unit,
-  override val props: Props
+  override val props: Props,
+  override val callbacksDefinition: CallbacksDefinition?
 ) : ExpoComposeView<Props>(context, appContext), ViewFunctionHolder {
   val propsMutableState = mutableStateOf(props)
 

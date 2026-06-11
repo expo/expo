@@ -102,15 +102,15 @@ This metric is not reported automatically. To start measuring it, call `markInte
 
 <Tabs>
 
-<Tab label="SDK 55">
-
-Call `AppMetrics.markInteractive()` from anywhere in your app.
-
-</Tab>
-
 <Tab label="SDK 56 and later">
 
 Call `markInteractive()` from the `useObserve()` hook inside a component.
+
+</Tab>
+
+<Tab label="SDK 55">
+
+Call `AppMetrics.markInteractive()` from anywhere in your app.
 
 </Tab>
 
@@ -149,7 +149,7 @@ Each TTI event includes extra params to help triage issues:
 - **`expo.device.batteryCharging`** (boolean): Whether the device was plugged in or wirelessly charging. Charging tends to raise sustained CPU performance ceilings on iOS and some Android OEMs, so non-charging samples are the more conservative population to compare against.
 - **`expo.device.thermalState`** (string): One of `nominal`, `fair`, `serious`, `critical`, `unknown`. Sustained `serious`/`critical` states cause the OS to throttle the CPU/GPU and can dramatically slow startup independent of any app change.
 - **`expo.network.connected`** (boolean): Whether the device had an internet-capable network at TTI. If TTI degrades only when this is `true`, the cause is likely a network-bound startup path; if it degrades when `false`, the app is doing more work than it should before showing cached content.
-- **`expo.network.type`** (string): One of `wifi`, `cellular`, `ethernet`, `none`, `other`, `unknown`. Use to compare cellular versus Wi-Fi populations &mdash; large gaps usually point to network-bound startup work. VPN traffic is reported as the underlying transport (typically `wifi` or `cellular`) since the VPN tunnels over it. The value set is intentionally the same on Android and iOS so dashboards don't need per-platform branching.
+- **`expo.network.type`** (string): One of `wifi`, `cellular`, `ethernet`, `none`, `other`, `unknown`. Use to compare cellular versus Wi-Fi populations — large gaps usually point to network-bound startup work. VPN traffic is reported as the underlying transport (typically `wifi` or `cellular`) since the VPN tunnels over it. The value set is intentionally the same on Android and iOS so dashboards don't need per-platform branching.
 
 **How to interpret them:**
 
@@ -163,12 +163,14 @@ You can attach your own params to the TTI event by passing them to `markInteract
 
 <Tabs>
 
-<Tab label="SDK 55">
+<Tab label="SDK 56 and later">
 
 ```tsx
-import { AppMetrics } from 'expo-observe';
+import { useObserve } from 'expo-observe';
 
-AppMetrics.markInteractive({
+const { markInteractive } = useObserve();
+
+markInteractive({
   params: {
     tenant: 'acme',
     cohort: 'beta',
@@ -179,14 +181,12 @@ AppMetrics.markInteractive({
 
 </Tab>
 
-<Tab label="SDK 56 and later">
+<Tab label="SDK 55">
 
 ```tsx
-import { useObserve } from 'expo-observe';
+import { AppMetrics } from 'expo-observe';
 
-const { markInteractive } = useObserve();
-
-markInteractive({
+AppMetrics.markInteractive({
   params: {
     tenant: 'acme',
     cohort: 'beta',
@@ -203,19 +203,6 @@ You can also override the route name attached to the event, which is otherwise p
 
 <Tabs>
 
-<Tab label="SDK 55">
-
-```tsx
-import { AppMetrics } from 'expo-observe';
-
-AppMetrics.markInteractive({
-  routeName: '/feed',
-  params: { cacheHit: true },
-});
-```
-
-</Tab>
-
 <Tab label="SDK 56 and later">
 
 ```tsx
@@ -231,6 +218,19 @@ markInteractive({
 
 </Tab>
 
+<Tab label="SDK 55">
+
+```tsx
+import { AppMetrics } from 'expo-observe';
+
+AppMetrics.markInteractive({
+  routeName: '/feed',
+  params: { cacheHit: true },
+});
+```
+
+</Tab>
+
 </Tabs>
 
 Param values can be strings, numbers, booleans, or other JSON-serializable values.
@@ -239,7 +239,7 @@ Param values can be strings, numbers, booleans, or other JSON-serializable value
 
 ### Offline collection
 
-Metrics collected while the device is offline are stored on the device. They are automatically sent to the server when the app moves to the background, provided there is connectivity. You can also call [`ExpoObserve.dispatchEvents()`](/eas/observe/configuration/#dispatchevents) to flush events manually at any time.
+Metrics collected while the device is offline are stored on the device. They are automatically sent to the server when the app moves to the background, provided there is connectivity. You can also call [`Observe.dispatchEvents()`](/eas/observe/configuration/#dispatchevents) to flush events manually at any time.
 
 ### Data retention
 

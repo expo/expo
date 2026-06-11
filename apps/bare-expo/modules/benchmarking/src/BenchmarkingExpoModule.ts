@@ -8,18 +8,25 @@ export declare class SharedPoint extends SharedObject {
 
 declare class BenchmarkingExpoModule extends NativeModule {
   nothing(): void;
+  nothingSynthesized(): void;
   nothingOptimized(): void;
   nothingAsync(): Promise<void>;
+  nothingAsyncSynthesized(): Promise<void>;
   addNumbers(a: number, b: number): number;
+  addNumbersSynthesized(a: number, b: number): number;
   addNumbersOptimized(a: number, b: number): number;
   addStrings(a: string, b: string): string;
+  addStringsSynthesized(a: string, b: string): string;
   addStringsOptimized(a: string, b: string): string;
   foldArray(array: number[]): number;
+  foldArraySynthesized(array: number[]): number;
   passthroughDict(point: { x: number; y: number }): { x: number; y: number };
   passthroughRecord(point: { x: number; y: number }): { x: number; y: number };
+  passthroughSynthesizedRecord(point: { x: number; y: number }): { x: number; y: number };
   passthroughSharedObject(point: SharedPoint): SharedPoint;
   SharedPoint: typeof SharedPoint;
   addNumbersAsync(a: number, b: number): Promise<number>;
+  addNumbersAsyncSynthesized(a: number, b: number): Promise<number>;
   addNumbersAsyncOptimized(a: number, b: number): Promise<number>;
   /** iOS only — measures blocking `runtime.execute` with a sync closure. */
   executeBlockingSync(iterations: number): Promise<number>;

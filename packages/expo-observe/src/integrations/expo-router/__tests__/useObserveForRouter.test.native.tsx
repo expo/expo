@@ -215,7 +215,7 @@ describe('useObserveForRouter', () => {
     expect(mockAddCustomMetric).toHaveBeenNthCalledWith(1, expect.objectContaining({ value: 0.3 }));
   });
 
-  it('does not call AppMetrics.markInteractive when the screen is not focused, but still computes TTI', async () => {
+  it('records lastInteractiveCall when the screen is not focused (skips markInteractive and TTI)', async () => {
     mockUseNavigation.mockReturnValue({ isFocused: () => false });
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
@@ -226,15 +226,24 @@ describe('useObserveForRouter', () => {
     });
 
     expect(AppMetrics.markInteractive).not.toHaveBeenCalled();
-    expect(mockAddCustomMetric).toHaveBeenCalledWith({
-      sessionId: 'session-1',
-      timestamp: expect.any(String),
-      category: 'navigation',
-      routeName: '/test',
-      name: 'tti',
-      value: 0.3,
-      params: { isAppLaunch: false, routeParams: { x: '1' }, url: '/test' },
+    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(storage.screenTimes['screen-a'].lastInteractiveCall).toBe(1300);
+    expect(storage.interactiveScreensIds.has('screen-a')).toBe(false);
+  });
+
+  it('stores lastInteractiveCall and defers TTI emission when dispatchTime is not yet recorded', async () => {
+    // markInteractive runs before the pageFocused handler has seeded dispatchTime.
+    jest.spyOn(performance, 'now').mockReturnValue(1234);
+
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    await act(async () => {
+      await result.current!();
     });
+
+    expect(AppMetrics.markInteractive).toHaveBeenCalled();
+    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(storage.screenTimes['screen-a']).toEqual({ lastInteractiveCall: 1234 });
+    expect(storage.interactiveScreensIds.has('screen-a')).toBe(true);
   });
 
   it('skips TTI calculation silently when no dispatchTime is recorded for the screen', async () => {
@@ -301,7 +310,7 @@ describe('useObserveForRouter', () => {
 
     isInitMock.mockReturnValue(true);
     expect(() => rerender(undefined)).toThrow(
-      "[expo-observe] Router integration was toggled during a screen's lifecycle. Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
+      "[expo-observe] Router integration was toggled during a screen's lifecycle. Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
     );
   });
 });

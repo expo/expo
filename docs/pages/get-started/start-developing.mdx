@@ -15,7 +15,14 @@ import { Step } from '~/ui/components/Step';
 ## Start a development server
 To start the development server, run the following command:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
@@ -24,15 +31,22 @@ To start the development server, run the following command:
 
 After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
 
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
+If you're using an Android Emulator or iOS Simulator, you can press <kbd>A</kbd> or <kbd>I</kbd> respectively to open the app.
 
 <Collapsible summary="Having problems?">
 
 Make sure you are on the same Wi-Fi network on your computer and your device.
 
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
+If it still doesn't work, it may be due to the router configuration — this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --tunnel'],
+    yarn: ['$ yarn expo start --tunnel'],
+    pnpm: ['$ pnpm expo start --tunnel'],
+    bun: ['$ bun expo start --tunnel'],
+  }}
+/>
 
 > Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
 

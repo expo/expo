@@ -32,6 +32,10 @@ class DevMenuViewModel: ObservableObject {
     loadFloatingActionButtonState()
   }
 
+  func refresh() {
+    loadData()
+  }
+
   private func loadAppInfo() {
     let appInfoDict = devMenuManager.getAppInfo()
 
@@ -114,7 +118,7 @@ class DevMenuViewModel: ObservableObject {
   func copyToClipboard(_ content: String) {
     #if !os(tvOS) && !os(macOS)
     UIPasteboard.general.string = content
-    hostUrlCopiedMessage = "Copied!"
+    hostUrlCopiedMessage = "Copied to clipboard"
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       self.hostUrlCopiedMessage = nil
@@ -145,7 +149,7 @@ class DevMenuViewModel: ObservableObject {
     let jsonString = jsonData.flatMap { String(data: $0, encoding: .utf8) } ?? "Unable to serialize app info"
 
     UIPasteboard.general.string = jsonString
-    clipboardMessage = "Copied to clipboard!"
+    clipboardMessage = "Copied to clipboard"
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       self.clipboardMessage = nil
