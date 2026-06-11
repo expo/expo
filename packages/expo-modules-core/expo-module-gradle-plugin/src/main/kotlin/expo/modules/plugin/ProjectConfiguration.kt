@@ -100,25 +100,31 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
     .applyPublishingVariant()
 
   afterEvaluate {
-    val publicationInfo = PublicationInfo(this)
+    val project = this
+    // AGP 9's built-in Kotlin registers the "release" software component later than our
+    // afterEvaluate, so react when it becomes available instead of reading it eagerly. On AGP 8
+    // the component already exists, so this fires immediately.
+    components.matching { it.name == "release" }.all {
+      val publicationInfo = PublicationInfo(project)
 
-    publishingExtension()
-      .publications
-      .createReleasePublication(
-        publicationInfo,
-        expoModulesExtension.pomConfigurator
-      )
+      project.publishingExtension()
+        .publications
+        .createReleasePublication(
+          publicationInfo,
+          expoModulesExtension.pomConfigurator
+        )
 
-    createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
+      project.createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
 
-    val npmLocalRepositoryRelativePath = "local-maven-repo"
-    val npmLocalRepository = File("${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}").toURI()
-    publishingExtension().repositories.mavenLocal { mavenRepo ->
-      mavenRepo.name = "NPMPackage"
-      mavenRepo.url = npmLocalRepository
+      val npmLocalRepositoryRelativePath = "local-maven-repo"
+      val npmLocalRepository = File("${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}").toURI()
+      project.publishingExtension().repositories.mavenLocal { mavenRepo ->
+        mavenRepo.name = "NPMPackage"
+        mavenRepo.url = npmLocalRepository
+      }
+
+      project.createExpoPublishTask(publicationInfo, expoModulesExtension, npmLocalRepositoryRelativePath)
     }
-
-    createExpoPublishTask(publicationInfo, expoModulesExtension, npmLocalRepositoryRelativePath)
   }
 }
 
