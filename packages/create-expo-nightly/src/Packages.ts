@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { readJsonFileAsync } from './JsonFile.js';
 import { runAsync } from './Processes.js';
 
 const EXCLUDE_PACKAGES = [
@@ -68,39 +67,20 @@ export async function getReactNativeTransitivePackagesAsync(
 
 /**
  * Get the names of every Expo package in the expo repo that can be linked from
- * local source, i.e. everything matched by the `packages/*` and
- * `packages/@expo/*` workspace globs minus the excluded packages.
+ * local source, i.e. every workspace package under `packages/` minus the
+ * excluded ones.
  */
 export async function getExpoPackageNamesAsync(expoRepoPath: string): Promise<Set<string>> {
-  const cwd = path.join(expoRepoPath, 'packages');
+  const { stdout } = await runAsync('pnpm', ['list', '--depth=-1', '--recursive', '--json'], {
+    cwd: expoRepoPath,
+  });
 
-  const relativePaths = (
-    await Promise.all([
-      Array.fromAsync(fs.promises.glob('*/package.json', { cwd })),
-      Array.fromAsync(fs.promises.glob('@expo/*/package.json', { cwd })),
-    ])
-  ).flat();
+  const workspaces = JSON.parse(stdout) as Package[];
+  const packagesRoot = path.join(expoRepoPath, 'packages') + path.sep;
 
-  const names = await Promise.all(
-    relativePaths.map(async (relativePath) => {
-      const pkg = await createPackageAsync(path.join(cwd, path.dirname(relativePath)));
-      return pkg?.name ?? null;
-    })
-  );
+  const names = workspaces
+    .filter(({ name, path }) => path.startsWith(packagesRoot) && !EXCLUDE_PACKAGES.includes(name))
+    .map(({ name }) => name);
 
-  return new Set(names.filter((name) => name != null));
-}
-
-async function createPackageAsync(packageRoot: string): Promise<Package | null> {
-  const packageJsonPath = path.join(packageRoot, 'package.json');
-  const packagePath = path.dirname(packageJsonPath);
-  const packageJson = await readJsonFileAsync(packageJsonPath);
-  const name = packageJson.name as string;
-  if (EXCLUDE_PACKAGES.includes(name)) {
-    return null;
-  }
-  return {
-    name,
-    path: packagePath,
-  };
+  return new Set(names);
 }
