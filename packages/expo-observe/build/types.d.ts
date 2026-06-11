@@ -62,6 +62,19 @@ export type ObserveConfig = {
      * Opt in to per-integration behavior.
      */
     integrations?: ObserveIntegrationsConfig;
+    /**
+     * If this property is present, run periodic cleanup of metric database entries
+     * while the process is alive, with this retention window (in seconds).
+     * This allows a long-running app (e.g. an Apple TV app left on for days) to prune metric/log rows
+     * and inactive sessions older than the retention window without waiting for the next launch.
+     */
+    scheduledCleanupRetentionWindow?: number;
+    /**
+     * If this property is present, run a repeating dispatch loop with this interval in seconds.
+     * This allows a long-running process to flush pending metrics and logs without waiting for the app
+     * to go to background.
+     */
+    scheduledDispatchInterval?: number;
 };
 export type ObserveIntegrationsConfig = {
     /**
