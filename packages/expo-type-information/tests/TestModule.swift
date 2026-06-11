@@ -3,6 +3,8 @@ import WebKit
 
 public class TestModule: Module {
   public func definition() -> ModuleDefinition {
+    Events("event1", "event2", "event3")
+
     Constant("StringConstant") { () -> Int in
       return "Swift constant 1283"
     }
