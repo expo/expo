@@ -3,35 +3,34 @@
 import ExpoModulesJSI
 
 /**
- Represents a fixed-length raw binary data buffer backed by a `JavaScriptArrayBuffer`.
- Provides access to the underlying memory owned by the JavaScript runtime.
+ An array buffer that manages its own native memory or borrows native-backed memory.
+ Does not require a JavaScript runtime at creation time — the JSI backing buffer
+ is created on demand when the buffer needs to be returned to JavaScript.
+
+ - Note: Sendable conformance is `@unchecked` because `UnsafeMutableRawPointer` isn't `Sendable`.
  */
 public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
-  /**
-   The underlying JSI array buffer that manages the memory and JS runtime reference.
-   */
-  internal let backingBuffer: JavaScriptArrayBuffer
+  private let rawPointer: UnsafeMutableRawPointer
+  public let byteLength: Int
+  private let cleanup: (() -> Void)?
 
-  /**
-   Initializes the array buffer with the given JSI array buffer.
-   */
-  internal init(_ backingBuffer: consuming JavaScriptArrayBuffer) {
-    self.backingBuffer = backingBuffer
+  init(wrapping data: UnsafeMutableRawPointer, count: Int, cleanup: @escaping () -> Void) {
+    self.rawPointer = data
+    self.byteLength = count
+    self.cleanup = cleanup
   }
 
-  /**
-   The length of the ArrayBuffer in bytes.
-   Fixed at construction time and thus read only.
-   */
-  public lazy var byteLength: Int = backingBuffer.size
+  deinit {
+    cleanup?()
+  }
+
+  // MARK: - AnyArrayBuffer
 
   /**
-   The unsafe mutable raw pointer to the start of the array buffer.
+   Creates a native-owned copy of this ArrayBuffer.
    */
-  private lazy var rawPointer: UnsafeMutableRawPointer = UnsafeMutableRawPointer(backingBuffer.data())
-
-  public func copy() -> NativeArrayBuffer {
-    return NativeArrayBuffer.copy(of: rawPointer, count: byteLength)
+  public func copy() -> ArrayBuffer {
+    return ArrayBuffer.copy(of: rawPointer, count: byteLength)
   }
 
   public var data: Data {
@@ -44,5 +43,120 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 
   public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
     return try body(UnsafeRawBufferPointer(start: rawPointer, count: byteLength))
+  }
+
+  public func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
+    return try body(UnsafeMutableRawBufferPointer(start: rawPointer, count: byteLength))
+  }
+
+  // MARK: - JavaScript conversion
+
+  /**
+   Returns a `JavaScriptArrayBuffer` that wraps the native memory managed by this buffer.
+   The native buffer is retained for the lifetime of the `JavaScriptArrayBuffer`.
+   */
+  func asJavaScriptArrayBuffer(runtime: JavaScriptRuntime) -> JavaScriptArrayBuffer {
+    return runtime.createArrayBuffer(
+      data: rawPointer.assumingMemoryBound(to: UInt8.self),
+      size: byteLength
+    ) { [self] in
+      // Retain `self` until the JS engine releases the ArrayBuffer. When this
+      // closure is dropped, the buffer deinits and deallocates its memory.
+      _ = self
+    }
+  }
+
+  // MARK: - Allocate
+
+  /**
+   Allocates a new native ArrayBuffer of the given size with zero-initialized memory.
+   */
+  public static func allocate(size: Int, initializeToZero: Bool = true) -> ArrayBuffer {
+    let data = UnsafeMutablePointer<UInt8>.allocate(capacity: size)
+    if initializeToZero {
+      data.initialize(repeating: 0, count: size)
+    }
+    return ArrayBuffer(wrapping: data, count: size) {
+      data.deallocate()
+    }
+  }
+
+  // MARK: - Copy
+
+  /**
+   Copies the given raw pointer into a new native ArrayBuffer.
+   */
+  public static func copy(of other: UnsafeRawPointer, count: Int) -> ArrayBuffer {
+    if count == 0 {
+      return ArrayBuffer.allocate(size: 0, initializeToZero: false)
+    }
+    let copy = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
+    copy.initialize(from: other.assumingMemoryBound(to: UInt8.self), count: count)
+
+    return ArrayBuffer(wrapping: copy, count: count) {
+      copy.deallocate()
+    }
+  }
+
+  /**
+   Copies the given Data into a new native ArrayBuffer.
+   */
+  public static func copy(data: Data) throws -> ArrayBuffer {
+    let size = data.count
+    if size == 0 {
+      return ArrayBuffer.allocate(size: 0, initializeToZero: false)
+    }
+    let arrayBuffer = ArrayBuffer.allocate(size: size, initializeToZero: false)
+
+    try data.withUnsafeBytes { rawPointer in
+      guard let baseAddress = rawPointer.baseAddress else {
+        throw MissingBaseAddressError()
+      }
+      memcpy(arrayBuffer.rawPointer, baseAddress, size)
+    }
+    return arrayBuffer
+  }
+
+  // MARK: - Wrap
+
+  /**
+   Wraps the given raw buffer pointer in an ArrayBuffer without copying data.
+   */
+  public static func wrap(
+    dataWithoutCopy data: UnsafeMutableRawBufferPointer,
+    cleanup: @escaping () -> Void
+  ) throws -> ArrayBuffer {
+    guard let baseAddress = data.baseAddress else {
+      throw MissingBaseAddressError()
+    }
+    return ArrayBuffer(wrapping: baseAddress, count: data.count, cleanup: cleanup)
+  }
+
+  /**
+   Zero-copy wraps the given Data object in an ArrayBuffer. The Data's backing store
+   is retained for the lifetime of the returned buffer.
+
+   - Warning: This bypasses Data's copy-on-write capabilities, effectively allowing
+   mutation of the Data from JavaScript code.
+   */
+  public static func wrap(dataWithoutCopy data: Data) -> ArrayBuffer {
+    let retained = Unmanaged.passRetained(data as NSData)
+    let pointer = UnsafeMutableRawPointer(mutating: retained.takeUnretainedValue().bytes)
+    return ArrayBuffer(wrapping: pointer, count: data.count) {
+      retained.release()
+    }
+  }
+}
+
+extension ArrayBuffer: JavaScriptRepresentable {
+  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> ArrayBuffer {
+    fatalError(
+      "Creating ArrayBuffer directly from JavaScriptValue is not supported. " +
+        "ArrayBuffer conversion happens through DynamicArrayBufferType for module arguments."
+    )
+  }
+
+  public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
+    return asJavaScriptArrayBuffer(runtime: runtime).asValue()
   }
 }
