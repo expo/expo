@@ -1,8 +1,8 @@
 'use client';
 
 import type { DependencyList } from 'react';
-import { useEffect, useMemo, useRef } from 'react';
 
+import { useReleasingSharedObjectWithLifecycle } from './useReleasingSharedObjectWithLifecycle';
 import type { SharedObject } from '../ts-declarations/SharedObject';
 
 /**
@@ -12,55 +12,10 @@ export function useReleasingSharedObject<TSharedObject extends SharedObject>(
   factory: () => TSharedObject,
   dependencies: DependencyList
 ): TSharedObject {
-  const objectRef = useRef<TSharedObject | null>(null);
-  const objectRefToRelease = useRef<TSharedObject | null>(null);
-  const isFastRefresh = useRef(false);
-  const previousDependencies = useRef<DependencyList>(dependencies);
-
-  if (objectRef.current == null) {
-    objectRef.current = factory();
-  }
-
-  const object = useMemo(() => {
-    let newObject = objectRef.current;
-    const dependenciesAreEqual =
-      previousDependencies.current?.length === dependencies.length &&
-      dependencies.every((value, index) => value === previousDependencies.current[index]);
-
-    // If the dependencies have changed, schedule the previous object for release and create a new one,
-    // otherwise this has been called because of an unrelated fast refresh, and we don't want to release the object.
-    if (!newObject || !dependenciesAreEqual) {
-      objectRefToRelease.current = objectRef.current;
-      newObject = factory();
-      objectRef.current = newObject;
-      previousDependencies.current = dependencies;
-    }
-    return newObject;
-  }, dependencies);
-
-  useEffect(() => {
-    // When the object changes, release the previous one - it is important to do this in a useEffect, so that we don't release
-    // the object during render.
-    if (objectRefToRelease.current) {
-      objectRefToRelease.current.release();
-      objectRefToRelease.current = null;
-    }
-  }, [object]);
-
-  useMemo(() => {
-    isFastRefresh.current = true;
-  }, []);
-
-  useEffect(() => {
-    isFastRefresh.current = false;
-
-    return () => {
-      // This will be called on every fast refresh and on unmount, but we only want to release the object on unmount.
-      if (!isFastRefresh.current && objectRef.current) {
-        objectRef.current.release();
-      }
-    };
-  }, []);
-
-  return object;
+  return useReleasingSharedObjectWithLifecycle(
+    {
+      factory,
+    },
+    dependencies
+  );
 }
