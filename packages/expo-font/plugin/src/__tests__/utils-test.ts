@@ -84,7 +84,13 @@ describe(resolveFontPaths, () => {
   });
 
   it('resolves unscoped package-style font paths relative to the project root', async () => {
-    const fontPath = path.join(projectRoot, 'node_modules', 'some-font-package', 'fonts', 'Foo.ttf');
+    const fontPath = path.join(
+      projectRoot,
+      'node_modules',
+      'some-font-package',
+      'fonts',
+      'Foo.ttf'
+    );
     await fs.mkdir(path.dirname(fontPath), { recursive: true });
     await fs.writeFile(fontPath, '');
 
