@@ -492,4 +492,27 @@ describe(convertStyleToItemStateAppearance, () => {
     const result = convertStyleToItemStateAppearance(style);
     expect(result).toEqual(expected);
   });
+  it('selectedLabelStyle.color should appear in stacked.selected.tabBarItemTitleFontColor', () => {
+    const options: NativeTabOptions = {
+      selectedLabelStyle: { color: 'green' },
+    };
+    const result = createStandardAppearanceFromOptions(options);
+
+    expect(result.stacked?.selected?.tabBarItemTitleFontColor).toBe('green');
+    expect(result.stacked?.focused?.tabBarItemTitleFontColor).toBe('green');
+    // normal state should NOT have the selected color
+    expect(result.stacked?.normal?.tabBarItemTitleFontColor).toBeUndefined();
+  });
+
+  it('selectedLabelStyle.color should not override labelStyle.color in normal state', () => {
+    const options: NativeTabOptions = {
+      labelStyle: { color: 'black' },
+      selectedLabelStyle: { color: 'green' },
+    };
+    const result = createStandardAppearanceFromOptions(options);
+
+    expect(result.stacked?.normal?.tabBarItemTitleFontColor).toBe('black');
+    expect(result.stacked?.selected?.tabBarItemTitleFontColor).toBe('green');
+    expect(result.stacked?.focused?.tabBarItemTitleFontColor).toBe('green');
+  });
 });

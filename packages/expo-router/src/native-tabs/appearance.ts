@@ -132,6 +132,7 @@ export function appendStyleToAppearance(
       ...baseItemAppearance.normal,
       ...baseItemAppearance[state],
       ...styleAppearance.stacked?.normal,
+      ...styleAppearance.stacked?.[state],
     },
   }));
 

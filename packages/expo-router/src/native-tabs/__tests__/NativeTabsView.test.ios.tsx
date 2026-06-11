@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react-native';
+import * as React from 'react';
 import { View } from 'react-native';
 import { Tabs, type TabsHostProps } from 'react-native-screens';
 
@@ -78,4 +79,63 @@ it('uses shadowColor when it is passed to NativeTabs in both standardAppearance 
   expect(TabsScreen).toHaveBeenCalledTimes(1);
   expect(TabsScreen.mock.calls[0][0].ios?.standardAppearance!.tabBarShadowColor).toBe('red');
   expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe('red');
+});
+
+it('uses selectedLabelStyle.color as tintColor when no tintColor is provided', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger.Label selectedStyle={{ color: 'green' }}>
+            Tab One
+          </NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="two" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+    two: () => <View testID="two" />,
+  });
+
+  expect(TabsHost).toHaveBeenCalledTimes(1);
+  expect(TabsHost.mock.calls[0][0].ios?.tabBarTintColor).toBe('green');
+});
+
+it('explicit tintColor takes precedence over selectedLabelStyle.color', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs tintColor="red">
+        <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger.Label selectedStyle={{ color: 'green' }}>
+            Tab One
+          </NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="two" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+    two: () => <View testID="two" />,
+  });
+
+  expect(TabsHost).toHaveBeenCalledTimes(1);
+  // explicit tintColor should win over selectedLabelStyle.color
+  expect(TabsHost.mock.calls[0][0].ios?.tabBarTintColor).toBe('red');
+});
+
+it('uses selectedIconColor as tintColor fallback when no selectedLabelStyle.color', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger.Icon sf="house.fill" md="house" selectedColor="blue" />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="two" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+    two: () => <View testID="two" />,
+  });
+
+  expect(TabsHost).toHaveBeenCalledTimes(1);
+  expect(TabsHost.mock.calls[0][0].ios?.tabBarTintColor).toBe('blue');
 });
