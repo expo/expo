@@ -4025,7 +4025,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: 0f0a7efa4953b7559a726a817e0fa81bed4f35a7
   ExpoAppIntegrity: 43cc62f24c533b960de07b5038568acedc3a567a
   ExpoAppleAuthentication: 3dd8ddd3016396a8171f06af8cc5e3e008e8eaf4
-  ExpoAppMetrics: f0a9ff6e0a7a1244556a6ae1a8bc284a8c075525
+  ExpoAppMetrics: 5cdb64cf96504ddef0aa2b87e0be3c337416c75d
   ExpoAsset: c2e7b5ba1fe75be683282d6264e38fd7cd8defbb
   ExpoAudio: 7774082d316ceecc2b26efeb10480bea2fa4d67e
   ExpoBackgroundFetch: eff0b77ce55180ad479c5091616d6d2c3bf5ca58
@@ -4098,7 +4098,7 @@ SPEC CHECKSUMS:
   EXUpdates: c6488f0bebe92d6decb5f9b685d33ee91feeccf0
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   FBLazyVector: 5466888598cde67aedb4d3a819adf471d1a3d8c9
-  hermes-engine: df3b0063b8e94b47727a7a6bbb771666586e8408
+  hermes-engine: 6f452a656264a90c54d20b9f965c1ff7dc8f0e0b
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

@@ -11,6 +11,7 @@ import { TestStackNavigator } from 'test-suite/TestStackNavigator';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppMetrics } from 'expo-observe';
 import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
+import ImagePickerBlockingDemo from './ImagePickerBlockingDemo';
 
 type NavigationRouteConfigMap = React.ComponentType;
 
@@ -39,6 +40,8 @@ export function optionalRequire(requirer: () => { default: React.ComponentType }
 const routes: RoutesConfig = {
   [testSuiteRouteName]: TestStackNavigator,
 };
+// Demo tab for the onSelectionFinished PR. Cast: RoutesConfig has fixed keys.
+(routes as any)['picker-demo'] = ImagePickerBlockingDemo;
 
 // TODO vonovak there's potential for skipping the require of APIs tab as it's not used in CI
 // could use metro config to exclude it from bundling

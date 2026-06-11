@@ -57,3 +57,16 @@ minimumReleaseAgeExclude:
   - 'expo-modules-jsi'
   - 'babel-preset-expo'
   - 'jest-expo'
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@shopify/react-native-skia': true
+  '@swc/core': true
+  better-sqlite3: true
+  esbuild: true
+  fmerge: true
+  fsevents: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
+  workerd: true

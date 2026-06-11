@@ -25,6 +25,8 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     // TODO: (@bbarthec) change to "ExpoImagePicker" and propagate to other platforms
     Name("ExponentImagePicker")
 
+    Events("onSelectionFinished")
+
     OnCreate {
       self.appContext?.permissions?.register([
         CameraPermissionRequester(),
@@ -201,6 +203,13 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   }
 
   func didPickMultipleMedia(selection: [PHPickerResult]) {
+
+    // Emit event when user finishes picking media and the image picker closes but the module still needs to process the media and 
+    self.sendEvent("onSelectionFinished", [
+      "selectionCount": selection.count,
+      "assetIds": selection.compactMap { $0.assetIdentifier }
+    ])
+
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
       log.error("Picking operation context has been lost.")

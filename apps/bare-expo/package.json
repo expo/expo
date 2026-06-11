@@ -71,6 +71,7 @@
     "expo-location": "workspace:*",
     "expo-navigation-bar": "workspace:*",
     "expo-network-addons": "workspace:*",
+    "expo-image-picker": "workspace:*",
     "expo-notifications": "workspace:*",
     "expo-observe": "workspace:*",
     "expo-splash-screen": "workspace:*",
