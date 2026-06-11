@@ -11,6 +11,7 @@
 - [iOS] Present Local Network permission as a status row instead of a toggle, and make the Settings debug actions native, full-row-tappable list rows.
 - [iOS] Improve the Updates tab empty state with clearer guidance on how to publish an update.
 - [iOS] Present the development server info dialog as a native sheet.
+- [iOS] Reduce accidental logout in the account selector with a confirmation step and a less prominent button, and add more spacing around the header title.
 
 ### 💡 Others
 
