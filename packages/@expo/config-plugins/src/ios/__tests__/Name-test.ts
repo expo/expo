@@ -4,7 +4,8 @@ import { vol } from 'memfs';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { getName, setDisplayName, setName, setProductName } from '../Name';
-import { getPbxproj, isBuildConfig, isNotComment } from '../utils/Xcodeproj';
+import { findFirstNativeTarget } from '../Target';
+import { getBuildConfigurationsForListId, getPbxproj } from '../utils/Xcodeproj';
 
 jest.mock('fs');
 
@@ -46,21 +47,38 @@ describe(setProductName, () => {
     vol.reset();
   });
 
-  it(`sets the iOS PRODUCT_NAME value`, () => {
+  it(`sets the iOS PRODUCT_NAME value on every build configuration of the application target`, () => {
     for (const [input, output] of [
-      ['My Cool Thing', `"MyCoolThing"`],
-      ['h"&<world/>🚀', `"hworld"`],
+      ['My Cool Thing', 'MyCoolThing'],
+      ['h"&<world/>🚀', 'hworld'],
     ]) {
       // Ensure the value can be parsed and written.
       const project = setProductNameForRoot({ name: input, slug: '' }, projectRoot);
-      expect(
-        Object.entries(project.pbxXCBuildConfigurationSection())
-          .filter(isNotComment)
-          // @ts-ignore
-          .filter(isBuildConfig)[0][1]?.buildSettings?.PRODUCT_NAME
-        // Ensure the value is wrapped in quotes.
-      ).toBe(output);
+
+      const [, nativeTarget] = findFirstNativeTarget(project);
+      const buildConfigurations = getBuildConfigurationsForListId(
+        project,
+        nativeTarget.buildConfigurationList
+      );
+
+      // PRODUCT_NAME should be set on every configuration of the app target.
+      // Values are stored unquoted; the serializer wraps them at write time
+      // only when the heuristic deems it necessary (spaces, special chars).
+      expect(buildConfigurations.length).toBeGreaterThan(0);
+      for (const [, buildConfig] of buildConfigurations) {
+        expect(buildConfig.buildSettings.PRODUCT_NAME).toBe(output);
+      }
     }
+  });
+
+  it(`writes the PRODUCT_NAME to the serialized pbxproj`, () => {
+    const project = setProductNameForRoot({ name: 'My Cool Thing', slug: '' }, projectRoot);
+    const output = project.writeSync();
+    // The sanitized PRODUCT_NAME is a safe identifier, so it serializes
+    // unquoted (`PRODUCT_NAME = MyCoolThing;`). Either form is valid pbxproj.
+    expect(output).toMatch(/PRODUCT_NAME = (MyCoolThing|"MyCoolThing");/);
+    // The default PRODUCT_NAME (HelloWorld) should no longer appear.
+    expect(output).not.toMatch(/PRODUCT_NAME = HelloWorld;/);
   });
 });
 

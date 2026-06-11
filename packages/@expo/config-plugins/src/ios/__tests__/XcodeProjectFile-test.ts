@@ -27,15 +27,17 @@ describe(createBuildSourceFile, () => {
       fileContents: '// hello',
     });
 
-    expect(project.hasFile('HelloWorld/myfile.swift')).toStrictEqual({
-      explicitFileType: undefined,
+    // The shim stores file-reference fields unquoted (the new serializer
+    // applies any needed wrap at write time); the legacy library kept them
+    // verbatim with surrounding quotes.
+    expect(project.hasFile('HelloWorld/myfile.swift')).toMatchObject({
       fileEncoding: 4,
       includeInIndex: 0,
       isa: 'PBXFileReference',
       lastKnownFileType: 'sourcecode.swift',
-      name: '"myfile.swift"',
-      path: '"HelloWorld/myfile.swift"',
-      sourceTree: '"<group>"',
+      name: 'myfile.swift',
+      path: 'HelloWorld/myfile.swift',
+      sourceTree: '<group>',
     });
 
     expect(vol.existsSync(path.join(projectRoot, 'ios/HelloWorld/myfile.swift'))).toBe(true);
