@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Focus the booted device in Device Hub using its `devices://` deep link instead of only bringing the app forward. ([#46809](https://github.com/expo/expo/pull/46809) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 ## 56.1.15 — 2026-06-10

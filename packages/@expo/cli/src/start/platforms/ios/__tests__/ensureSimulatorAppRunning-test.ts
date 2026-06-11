@@ -34,6 +34,47 @@ it('should activate the window when Simulator.app is not running', async () => {
   ]);
 });
 
+it('should open DeviceHub focused on the device via deep link when Simulator.app is unavailable', async () => {
+  jest
+    .mocked(spawnAppleScriptAsync)
+    .mockResolvedValueOnce({ stdout: '0\n' } as any)
+    .mockResolvedValueOnce({ stdout: '1\n' } as any);
+
+  // Xcode 27+ ships DeviceHub instead of Simulator.app, so `open -a Simulator` fails.
+  jest
+    .mocked(spawnAsync)
+    .mockRejectedValueOnce(new Error("Unable to find application named 'Simulator'"))
+    .mockResolvedValueOnce({} as any);
+
+  await ensureSimulatorAppRunningAsync({ udid: '123' });
+
+  expect(spawnAsync).toHaveBeenNthCalledWith(1, 'open', [
+    '-a',
+    'Simulator',
+    '--args',
+    '-CurrentDeviceUDID',
+    '123',
+  ]);
+  expect(spawnAsync).toHaveBeenNthCalledWith(2, 'open', ['devices://device/open?id=123']);
+});
+
+it('should fall back to opening DeviceHub without a device when no udid is provided', async () => {
+  jest
+    .mocked(spawnAppleScriptAsync)
+    .mockResolvedValueOnce({ stdout: '0\n' } as any)
+    .mockResolvedValueOnce({ stdout: '1\n' } as any);
+
+  jest
+    .mocked(spawnAsync)
+    .mockRejectedValueOnce(new Error("Unable to find application named 'Simulator'"))
+    .mockResolvedValueOnce({} as any);
+
+  await ensureSimulatorAppRunningAsync({});
+
+  expect(spawnAsync).toHaveBeenNthCalledWith(1, 'open', ['-a', 'Simulator']);
+  expect(spawnAsync).toHaveBeenNthCalledWith(2, 'open', ['-a', 'DeviceHub']);
+});
+
 it('should throw a timeout warning when Simulator.app takes too long to start', async () => {
   jest.mocked(spawnAppleScriptAsync).mockRejectedValue(new Error('Application isn’t running'));
 
