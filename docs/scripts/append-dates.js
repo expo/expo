@@ -26,8 +26,8 @@ async function appendModificationDate(dir = './pages') {
   try {
     const files = await readdir(dir, { recursive: true, withFileTypes: true });
     const mdxFiles = files
-      .filter((file) => !file.isDirectory() && file.name.endsWith('.mdx'))
-      .map((file) => path.join(file.parentPath, file.name));
+      .filter(file => !file.isDirectory() && file.name.endsWith('.mdx'))
+      .map(file => path.join(file.parentPath, file.name));
 
     // Process files in batches with limited concurrency
     for (let i = 0; i < mdxFiles.length; i += CONCURRENCY) {
