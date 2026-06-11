@@ -57,6 +57,13 @@ jsEngine: graaljs
 - tapOn:
     text: "Open"
     optional: true
+# Wait for the cold start + deep link to land before the per-test loop fires more
+# deep links. Otherwise the next openLink races app boot and is swallowed, flaking
+# the first test case.
+- extendedWaitUntil:
+    visible:
+      id: "test_suite_selection_query_text"
+    timeout: 60000
 `);
   }
 

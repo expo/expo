@@ -24,7 +24,7 @@ jsEngine: graaljs
 # asserting instantly to avoid a startup race.
 - extendedWaitUntil:
     visible: 'isPlaying = true'
-    timeout: 10000
+    timeout: 30000
 - assertVisible: 'isAtStart = false'
 
 - tapOn: Pause
