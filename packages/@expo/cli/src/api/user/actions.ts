@@ -31,7 +31,9 @@ export async function showLoginPromptAsync({
   }
   const hasCredentials = options.username && options.password;
   const sso = options.sso;
-  const browser = options.browser;
+
+  // Browser-based login is the default.
+  const browser = options.browser ?? (!hasCredentials && isInteractive());
 
   if (printNewLine) {
     Log.log();
