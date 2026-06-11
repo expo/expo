@@ -12,7 +12,7 @@ import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.frames.FrameMetricsRecord
 import expo.modules.appmetrics.frames.FrameMetricsRecorder
 import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
-import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.storage.MetricInput
 import expo.modules.appmetrics.utils.DeviceConditions
 import expo.modules.appmetrics.utils.MetricParamsBuilder
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
@@ -42,8 +42,8 @@ object AppStartupManager {
   // CopyOnWriteArrayList: writes (addMetric) happen on the React/JS/main threads;
   // reads (saveStartupMetricsIfNotSaved) happen on appContext.modulesQueue. Snapshot
   // iteration on the read side means we never CME under concurrent add().
-  private val _metrics: MutableList<Metric> = CopyOnWriteArrayList()
-  internal val metrics: List<Metric>
+  private val _metrics: MutableList<MetricInput> = CopyOnWriteArrayList()
+  internal val metrics: List<MetricInput>
     get() = _metrics
 
   // These fields are read and written across the React marker thread, the main thread,
@@ -116,8 +116,7 @@ object AppStartupManager {
     params: Map<String, Any>? = null
   ) {
     _metrics.add(
-      Metric(
-        sessionId = "",
+      MetricInput(
         name = metric.metricName,
         category = AppStartupMetric.category.categoryName,
         value = valueInMs.toDouble() / 1000.0,

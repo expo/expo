@@ -1,6 +1,6 @@
 package expo.modules.appmetrics.appstartup
 
-import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.storage.MetricInput
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,11 +22,10 @@ class AppStartupManagerTest {
     }
 
     @Suppress("UNCHECKED_CAST")
-    val backing = field.get(AppStartupManager) as MutableList<Metric>
+    val backing = field.get(AppStartupManager) as MutableList<MetricInput>
     backing.clear()
 
-    val sample = Metric(
-      sessionId = "test",
+    val sample = MetricInput(
       timestamp = "2026-01-01T00:00:00Z",
       category = "test",
       name = "test",

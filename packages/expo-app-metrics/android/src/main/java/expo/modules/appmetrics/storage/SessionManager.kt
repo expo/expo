@@ -93,13 +93,12 @@ class SessionManager(
   }
 
   suspend fun addMetrics(
-    metrics: List<Metric>,
+    metrics: List<MetricInput>,
     sessionId: String
   ) {
-    val metricsWithSession = metrics.map { metric ->
-      metric.copy(
-        sessionId = sessionId,
-        params = mergeGlobalAttributesIntoJsonString(metric.params)
+    val metricsWithSession = metrics.map { input ->
+      input.stamp(sessionId).copy(
+        params = mergeGlobalAttributesIntoJsonString(input.params)
       )
     }
     database.metricDao().insertAll(metricsWithSession)

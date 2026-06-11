@@ -70,8 +70,7 @@ func decodeMetrics(from rows: [MetricRow]) -> [Metric] {
       timestamp: metric.timestamp,
       routeName: metric.routeName,
       updateId: metric.updateId,
-      params: decodeJSONDictionary(metric.params),
-      sessionId: metric.sessionId
+      params: decodeJSONDictionary(metric.params)
     )
   }
 }

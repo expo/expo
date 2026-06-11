@@ -107,10 +107,9 @@ class SessionMappersTest {
 
   @Test
   fun `JsMetric_fromMetric copies scalar fields verbatim`() {
-    val js = JsMetric.fromMetric(makeMetric(metricId = "m-42", sessionId = "session-1"))
+    val js = JsMetric.fromMetric(makeMetric(metricId = "m-42"))
 
     assertEquals("m-42", js.metricId)
-    assertEquals("session-1", js.sessionId)
     assertEquals("appStartup", js.category)
     assertEquals("timeToInteractive", js.name)
     assertEquals(1.5, js.value, 0.0)
@@ -200,19 +199,6 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `SessionMetricInput_toMetric injects the sessionId`() {
-    val input = SessionMetricInput(
-      category = "custom",
-      name = "purchase",
-      value = 9.99
-    )
-
-    val metric = input.toMetric("session-42")
-
-    assertEquals("session-42", metric.sessionId)
-  }
-
-  @Test
   fun `SessionMetricInput_toMetric maps scalar fields verbatim and generates its own metricId`() {
     val input = SessionMetricInput(
       category = "custom",
@@ -222,7 +208,7 @@ class SessionMappersTest {
       routeName = "Checkout"
     )
 
-    val metric = input.toMetric("session-42")
+    val metric = input.toMetric()
 
     assertEquals("custom", metric.category)
     assertEquals("purchase", metric.name)
@@ -244,10 +230,10 @@ class SessionMappersTest {
       params = mapOf("screen" to "Home", "attempt" to 3, "flag" to true)
     )
 
-    val metric = input.toMetric("session-42")
+    val metric = input.toMetric()
 
     // Round-trip through the JsMetric decoder to assert the encoding is valid.
-    val decoded = JsMetric.fromMetric(metric).params
+    val decoded = JsMetric.fromMetric(metric.stamp("session-42")).params
     assertEquals("Home", decoded?.get("screen"))
     assertEquals(3L, decoded?.get("attempt"))
     assertEquals(true, decoded?.get("flag"))
@@ -257,7 +243,7 @@ class SessionMappersTest {
   fun `SessionMetricInput_toMetric yields null params when none provided`() {
     val input = SessionMetricInput(category = "custom", name = "purchase", value = 1.0)
 
-    val metric = input.toMetric("session-42")
+    val metric = input.toMetric()
 
     assertNull(metric.params)
   }

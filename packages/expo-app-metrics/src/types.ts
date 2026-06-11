@@ -98,7 +98,6 @@ export interface Metric {
   category: string;
   name: string;
   value: number;
-  sessionId: string;
   routeName?: string | null;
   params?: Record<string, unknown>;
 }
@@ -198,9 +197,9 @@ export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown
 
 /**
  * Payload accepted by `Session.addMetric`. The owning session is implied by the
- * receiver, so the input carries every `Metric` field except `sessionId`.
+ * receiver and stamped natively, so a metric and its input share the same shape.
  */
-export type MetricInput = Omit<Metric, 'sessionId'>;
+export type MetricInput = Metric;
 
 export type CallStackFrame = {
   binaryName?: string | null;

@@ -48,7 +48,6 @@ data class JsDebugSession(
 
 @OptimizedRecord
 data class JsMetric(
-  @Field val sessionId: String,
   @Field val category: String,
   @Field val name: String,
   @Field val value: Double,
@@ -58,24 +57,10 @@ data class JsMetric(
   @Field val updateId: String? = null,
   @Field val params: Map<String, Any?>? = null
 ) : Record {
-  fun toMetric(): Metric =
-    Metric(
-      metricId = metricId ?: UUID.randomUUID().toString(),
-      sessionId = sessionId,
-      timestamp = timestamp,
-      category = category,
-      name = name,
-      value = value,
-      routeName = routeName,
-      updateId = updateId,
-      params = params?.let { JsonAny.encodeMapToJsonString(it) }
-    )
-
   companion object {
     fun fromMetric(metric: Metric): JsMetric =
       JsMetric(
         metricId = metric.metricId,
-        sessionId = metric.sessionId,
         timestamp = metric.timestamp,
         category = metric.category,
         name = metric.name,
@@ -88,11 +73,10 @@ data class JsMetric(
 }
 
 /**
- * Payload for `Session.addMetric` — mirrors the TypeScript `MetricInput` type
- * (`Metric` minus `sessionId`). The owning session is implied by the shared
- * object the metric is added to, so the id is injected via `toMetric(sessionId)`
- * rather than carried across the bridge; `updateId` is a native-side concern not
- * exposed to JS.
+ * Payload for `Session.addMetric` — mirrors the TypeScript `MetricInput` type.
+ * The owning session is implied by the shared object the metric is added to, so
+ * the input carries no session id; the object stamps its own during `addMetrics`.
+ * `updateId` is a native-side concern not exposed to JS.
  */
 @OptimizedRecord
 data class SessionMetricInput(
@@ -103,10 +87,8 @@ data class SessionMetricInput(
   @Field val routeName: String? = null,
   @Field val params: Map<String, Any?>? = null
 ) : Record {
-  fun toMetric(sessionId: String): Metric =
-    Metric(
-      metricId = UUID.randomUUID().toString(),
-      sessionId = sessionId,
+  fun toMetric(): MetricInput =
+    MetricInput(
       timestamp = timestamp,
       category = category,
       name = name,

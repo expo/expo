@@ -14,18 +14,6 @@ enum class AppStartupMetric(
   }
 }
 
-enum class MemoryMetric(
-  val metricName: String
-) {
-  Physical("physical"),
-  Available("available"),
-  JavaHeap("javaHeap");
-
-  companion object {
-    val category = MetricCategory.Memory
-  }
-}
-
 enum class MetricCategory(
   val categoryName: String
 ) {
