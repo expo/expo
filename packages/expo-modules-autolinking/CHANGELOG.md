@@ -13,7 +13,7 @@
 
 ### 💡 Others
 
-- [Android] Make the autolinking Gradle plugin compatible with Android Gradle Plugin 9.
+- [Android] Make the autolinking Gradle plugin compatible with Android Gradle Plugin 9. ([#46766](https://github.com/expo/expo/pull/46766) by [@lukmccall](https://github.com/lukmccall))
 - Add experimental `tvos` and `macos` resolution ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ## 56.0.13 — 2026-05-26
