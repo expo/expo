@@ -254,14 +254,14 @@ describe('androidInlineModules.ts', () => {
 
       await generateInlineModulesListFile(listPath, mockMirror);
 
-      const targetFile = '/build/generated/ExpoInlineModulesList.java';
+      const targetFile = '/build/generated/ExpoInlineModulesList.kt';
 
       expect(fs.existsSync(targetFile)).toBe(true);
 
       const content = await fs.promises.readFile(targetFile, 'utf8');
 
-      expect(content).toContain('some.simple.package.SimpleModule.class, "SimpleModule"');
-      expect(content).toContain('other.package.SimpleView.class, "SimpleView"');
+      expect(content).toContain('some.simple.package.SimpleModule::class.java to "SimpleModule"');
+      expect(content).toContain('other.package.SimpleView::class.java to "SimpleView"');
     });
   });
 });
