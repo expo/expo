@@ -62,6 +62,9 @@ jobs:
           bun-version: latest
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🧐 Check all packages
         if: github.event_name == 'schedule' ||
           github.event.inputs.checkAll == 'check-all' ||
@@ -103,6 +106,9 @@ jobs:
           bun-version: latest
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🧐 Check all packages
         run: pnpm expotools check-packages --all
       - name: 🔔 Notify on Slack

@@ -55,6 +55,9 @@ jobs:
         id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
@@ -130,6 +133,9 @@ jobs:
         id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🍏 Run iOS tests
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
@@ -188,6 +194,9 @@ jobs:
           gradle: 'true'
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
@@ -252,6 +261,9 @@ jobs:
         id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🤖 Run Android tests
         uses: ./.github/actions/use-android-emulator
         with:
