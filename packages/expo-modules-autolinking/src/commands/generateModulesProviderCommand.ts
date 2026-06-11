@@ -70,7 +70,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         );
 
         const inlineModulesTargets = JSON.parse(
-          podfileProperties['expo.inlineModules.xcodeProjectTargets'] ?? '{"all":true}'
+          podfileProperties['expo.inlineModules.xcodeProjectTargets'] ?? '{"targets":[]}'
         );
 
         await generateModulesProviderAsync(filteredModules, {

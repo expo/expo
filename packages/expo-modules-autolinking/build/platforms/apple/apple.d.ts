@@ -13,7 +13,7 @@ export declare function resolveExtraBuildDependenciesAsync(projectNativeRoot: st
 interface GenerateModulesProviderParams {
     watchedDirectories: string[];
     inlineModulesTargets: {
-        all: boolean;
+        mainTarget?: string;
         targets: string[];
     };
     targetPath: string;

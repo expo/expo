@@ -5,14 +5,32 @@ import path from 'path';
 export interface InlineModulesXcodeParams {
   watchedDirectories: string[];
   /**
-   * List of targets to which add watchedDirectories. If undefined default to all targets.
+   * List of targets to which inline modules files are added. If undefined defaults to the main target only.
    */
   xcodeProjectTargets?: string[];
+  /** app config name */
+  name: string;
 }
 
 type UUID = string;
 interface FileSystemSynchronizedGroup {
   fileSystemSynchronizedGroups?: { value: string; comment?: string }[];
+}
+
+function escapeXMLCharacters(original: string): string {
+  const noAmps = original.replace('&', '&amp;');
+  const noLt = noAmps.replace('<', '&lt;');
+  const noGt = noLt.replace('>', '&gt;');
+  const noApos = noGt.replace('"', '\\"');
+  return noApos.replace("'", "\\'");
+}
+
+// Note that this main target name is based on how `@expo/cli/src/prebuild/renameTemplateAppNameAsync.ts` preprocesses the ios project template.
+// It is neccesary to match the target name in the path to ExpoModulesProvider.swift for the main target as is used when generating it.
+function getMainTargetName(config: InlineModulesXcodeParams): string {
+  const name = config.name;
+  const safeName = escapeXMLCharacters(name);
+  return IOSConfig.XcodeUtils.sanitizedName(safeName);
 }
 
 function getNativeTargetSynchronizedGroupsMap(pbxProject: XcodeProject) {
@@ -127,7 +145,11 @@ export async function updateXcodeProject(
     .firstProject.targets.filter((target: { value: UUID; comment: string }) => {
       const targetUuid = target.value;
       const targetName = pbxNativeTarget[targetUuid].name;
-      return !xcodeProjectTargets || xcodeProjectTargets.has(targetName);
+      if (!xcodeProjectTargets) {
+        // If the xcodeProjectTargets are not provided, default to the main target
+        return targetName === getMainTargetName(inlineModulesXcodeParams);
+      }
+      return xcodeProjectTargets.has(targetName);
     });
 
   for (const watchedDirectory of swiftWatchedDirectories) {

@@ -188,6 +188,7 @@ export async function prebuildAsync(
     await updateXcodeProject(projectRoot, {
       watchedDirectories: inlineModules.watchedDirectories ?? [],
       xcodeProjectTargets: inlineModules.xcodeProjectTargets,
+      name: exp.name,
     });
   }
 

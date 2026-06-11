@@ -107,7 +107,7 @@ export async function resolveExtraBuildDependenciesAsync(
 
 interface GenerateModulesProviderParams {
   watchedDirectories: string[];
-  inlineModulesTargets: { all: boolean; targets: string[] };
+  inlineModulesTargets: { mainTarget?: string; targets: string[] };
   targetPath: string;
   appRoot: string;
 }

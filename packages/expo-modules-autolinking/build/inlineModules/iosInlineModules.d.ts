@@ -3,7 +3,7 @@ export declare function getIosInlineModulesClassNames(watchedDirectories: string
 export declare function isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets, }: {
     targetPath: string;
     inlineModulesTargets: {
-        all: boolean;
+        mainTarget?: string;
         targets: string[];
     };
 }): boolean;

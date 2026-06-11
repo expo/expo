@@ -20,16 +20,19 @@ export function isTargetInInlineModulesTargets({
   inlineModulesTargets,
 }: {
   targetPath: string;
-  inlineModulesTargets: { all: boolean; targets: string[] };
+  inlineModulesTargets: { mainTarget?: string; targets: string[] };
 }): boolean {
-  if (inlineModulesTargets.all) {
-    return true;
-  }
   const targetRegex = /\/Pods-(.+?)\/ExpoModulesProvider\.swift$/;
   const match = targetPath.match(targetRegex);
   if (!match) {
     return false;
   }
   const targetName = match[1];
-  return targetName !== undefined && inlineModulesTargets.targets.includes(targetName);
+  if (targetName === undefined) {
+    return false;
+  }
+  if (inlineModulesTargets.mainTarget) {
+    return targetName === inlineModulesTargets.mainTarget;
+  }
+  return inlineModulesTargets.targets.includes(targetName);
 }

@@ -7,6 +7,20 @@ exports.updateXcodeProject = updateXcodeProject;
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+function escapeXMLCharacters(original) {
+    const noAmps = original.replace('&', '&amp;');
+    const noLt = noAmps.replace('<', '&lt;');
+    const noGt = noLt.replace('>', '&gt;');
+    const noApos = noGt.replace('"', '\\"');
+    return noApos.replace("'", "\\'");
+}
+// Note that this main target name is based on how `@expo/cli/src/prebuild/renameTemplateAppNameAsync.ts` preprocesses the ios project template.
+// It is neccesary to match the target name in the path to ExpoModulesProvider.swift for the main target as is used when generating it.
+function getMainTargetName(config) {
+    const name = config.name;
+    const safeName = escapeXMLCharacters(name);
+    return config_plugins_1.IOSConfig.XcodeUtils.sanitizedName(safeName);
+}
 function getNativeTargetSynchronizedGroupsMap(pbxProject) {
     const objects = pbxProject.hash.project.objects;
     const nativeTargetSynchronizedGroups = new Map();
@@ -97,7 +111,11 @@ async function updateXcodeProject(projectRoot, inlineModulesXcodeParams) {
         .firstProject.targets.filter((target) => {
         const targetUuid = target.value;
         const targetName = pbxNativeTarget[targetUuid].name;
-        return !xcodeProjectTargets || xcodeProjectTargets.has(targetName);
+        if (!xcodeProjectTargets) {
+            // If the xcodeProjectTargets are not provided, default to the main target
+            return targetName === getMainTargetName(inlineModulesXcodeParams);
+        }
+        return xcodeProjectTargets.has(targetName);
     });
     for (const watchedDirectory of swiftWatchedDirectories) {
         const dirUUID = getOrCreateWatchedDirectoryUUID(watchedDirectory);
