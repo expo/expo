@@ -84,6 +84,14 @@
       "source": "./src/Elements.tsx",
       "default": "./build/Elements.js"
     },
+    "./primitives/*": {
+      "types": {
+        "source": "./src/primitives/*.tsx",
+        "default": "./build/primitives/*.d.ts"
+      },
+      "source": "./src/primitives/*.tsx",
+      "default": "./build/primitives/*.js"
+    },
     "./package.json": "./package.json"
   }
 }
