@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Re-enable the shared remote command center commands so lock screen controls keep working after expo-audio playback. ([#46753](https://github.com/expo/expo/pull/46753) by [@zoontek](https://github.com/zoontek))
 - Deduplicate `availableVideoTracks` for HLS sources with multiple audio renditions. ([#46691](https://github.com/expo/expo/pull/46691) by [@zoontek](https://github.com/zoontek))
 - Recover failed players to fix broken playback placeholder ([#46681](https://github.com/expo/expo/pull/46681) by [@zoontek](https://github.com/zoontek))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
