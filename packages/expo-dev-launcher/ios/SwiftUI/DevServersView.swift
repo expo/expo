@@ -143,13 +143,17 @@ struct DevServersView: View {
         Text("Load embedded bundle")
           .foregroundColor(.primary)
         Spacer()
-        if viewModel.isLoadingLocalBundle {
-          ProgressView()
-        } else {
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        Group {
+          if viewModel.isLoadingLocalBundle {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
         }
+        .frame(width: 20, height: 20)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
@@ -232,13 +236,17 @@ struct DevServerRow: View {
 
         Spacer()
 
-        if viewModel.isLoadingServer {
-          ProgressView()
-        } else {
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        Group {
+          if viewModel.isLoadingServer {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
         }
+        .frame(width: 20, height: 20)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner. ([#46762](https://github.com/expo/expo/pull/46762) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26

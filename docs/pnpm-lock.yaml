@@ -112,9 +112,6 @@ importers:
       react:
         specifier: ^19.2.6
         version: 19.2.6
-      react-confetti-explosion:
-        specifier: ^3.0.3
-        version: 3.0.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react-diff-view:
         specifier: ^3.3.3
         version: 3.3.3(react@19.2.6)
@@ -5998,12 +5995,6 @@ packages:
   raw-body@3.0.2:
     resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
     engines: {node: '>= 0.10'}
-
-  react-confetti-explosion@3.0.3:
-    resolution: {integrity: sha512-ow5ns/1ttzXsIlbbfJmWJNiyQK8lTHBL6lRSUXGaK44K/3NIMngR57Ja96l+D6txTeFhfe0BfXGvORMxhtRDng==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
 
   react-diff-view@3.3.3:
     resolution: {integrity: sha512-CPveApk6n7ZbkW7T6PoptR7LWAvD9hohTHZ7WnKnu3GZkTfUB5rvg486apPo94iYVi4fZd3Nt+rtBZ5877exoQ==}
@@ -13598,11 +13589,6 @@ snapshots:
       http-errors: 2.0.1
       iconv-lite: 0.7.2
       unpipe: 1.0.0
-
-  react-confetti-explosion@3.0.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
 
   react-diff-view@3.3.3(react@19.2.6):
     dependencies:

@@ -486,6 +486,18 @@ internal struct AccessibilityValueModifier: ViewModifier, Record {
   }
 }
 
+internal struct AccessibilityInputLabelsModifier: ViewModifier, Record {
+  @Field var inputLabels: [String]?
+
+  func body(content: Content) -> some View {
+    if let inputLabels = inputLabels {
+      content.accessibilityInputLabels(inputLabels.map { Text($0) })
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AccessibilityIdentifierModifier: ViewModifier, Record {
   @Field var identifier: String?
 
@@ -790,6 +802,14 @@ internal struct TextAllowsTightening: ViewModifier, Record {
     } else {
       content
     }
+  }
+}
+
+internal struct MinimumScaleFactorModifier: ViewModifier, Record {
+  @Field var factor: CGFloat = 1.0
+
+  func body(content: Content) -> some View {
+    content.minimumScaleFactor(factor)
   }
 }
 
@@ -1564,6 +1584,10 @@ extension ViewModifierRegistry {
       return try AccessibilityValueModifier(from: params, appContext: appContext)
     }
 
+    register("accessibilityInputLabels") { params, appContext, _ in
+      return try AccessibilityInputLabelsModifier(from: params, appContext: appContext)
+    }
+
     register("accessibilityIdentifier") { params, appContext, _ in
       return try AccessibilityIdentifierModifier(from: params, appContext: appContext)
     }
@@ -1684,6 +1708,10 @@ extension ViewModifierRegistry {
       return try TextAllowsTightening(from: params, appContext: appContext)
     }
 
+    register("minimumScaleFactor") { params, appContext, _ in
+      return try MinimumScaleFactorModifier(from: params, appContext: appContext)
+    }
+
     register("textCase") { params, appContext, _ in
       return try TextCase(from: params, appContext: appContext)
     }
@@ -1750,6 +1778,10 @@ extension ViewModifierRegistry {
 
     register("dynamicTypeSize") { params, appContext, _ in
       return try DynamicTypeSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("imageScale") { params, appContext, _ in
+      return try ImageScaleModifier(from: params, appContext: appContext)
     }
 
     register("gridCellUnsizedAxes") { params, appContext, _ in
@@ -1882,6 +1914,10 @@ extension ViewModifierRegistry {
 
     register("widgetURL") { params, appContext, _ in
       return try WidgetURLModifier(from: params, appContext: appContext)
+    }
+
+    register("activityBackgroundTint") { params, appContext, _ in
+      return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
     }
 
     register("keyboardType") { params, appContext, _ in

@@ -121,6 +121,21 @@ describe('unstable_nativeProps', () => {
     expect(TabsHost.mock.calls[0][0].onTabSelected).toBeInstanceOf(Function);
   });
 
+  it('wires onTabSelectionPrevented onto Tabs.Host', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].onTabSelectionPrevented).toBeInstanceOf(Function);
+  });
+
   it('drops ios-only raw props on Android so they do not leak onto Tabs.Host', () => {
     renderRouter({
       _layout: () => (

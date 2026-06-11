@@ -45,3 +45,4 @@ export type LogBoxLogDataLegacy = {
 export type MetroStackFrame = Omit<UpstreamStackFrame, 'arguments'> & {
     collapse?: boolean;
 };
+//# sourceMappingURL=Types.d.ts.map

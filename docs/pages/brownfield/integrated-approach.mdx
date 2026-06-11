@@ -361,7 +361,7 @@ engine](https://github.com/facebook/hermes/blob/main/README.md) that is shipped 
 
   <ContentSpotlight
     alt="Xcode Build Settings"
-    src="/static/images/brownfield/user-script-sandboxing.png"
+    src="/static/images/brownfield/user-script-sandboxing.webp"
   />
 </Step>
 
@@ -369,7 +369,7 @@ engine](https://github.com/facebook/hermes/blob/main/README.md) that is shipped 
 
 Now switch to the **Build Phases** tab and add a new `Run Script Phase` before the `[CP] Embed Pods Frameworks` phase. This script will bundle your JavaScript code and assets into the iOS application.
 
-<ContentSpotlight alt="Xcode Build Phases" src="/static/images/brownfield/run-script-phase.png" />
+<ContentSpotlight alt="Xcode Build Phases" src="/static/images/brownfield/run-script-phase.webp" />
 
 ```sh Build React Native code and image
 if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then

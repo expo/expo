@@ -261,6 +261,10 @@ PODS:
   - ExpoModulesWorklets (56.0.13):
     - ExpoModulesCore
     - ExpoModulesJSI
+  - ExpoModulesWorklets/Tests (56.0.13):
+    - ExpoModulesCore
+    - ExpoModulesJSI
+    - ExpoModulesTestCore
   - ExpoModulesWorkletsAdapter (56.0.13):
     - ExpoModulesCore
     - ExpoModulesJSI
@@ -345,6 +349,8 @@ PODS:
     - ExpoModulesWorklets
     - React-RCTFabric
   - ExpoVideo (56.1.2):
+    - ExpoModulesCore
+  - ExpoVideo/Tests (56.1.2):
     - ExpoModulesCore
   - ExpoVideoThumbnails (56.0.3):
     - ExpoModulesCore
@@ -565,7 +571,7 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - lottie-ios (4.6.0)
-  - lottie-react-native (7.3.6):
+  - lottie-react-native (7.3.8):
     - boost
     - DoubleConversion
     - fast_float
@@ -4155,6 +4161,7 @@ DEPENDENCIES:
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
+  - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
@@ -4178,6 +4185,7 @@ DEPENDENCIES:
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
+  - ExpoVideo/Tests (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
@@ -4198,7 +4206,7 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.6_@lottiefiles+dotlottie-react@0.10.1_react-dom@19.2.3_react@19_ca2798bec26a08eda51142ca007a288d/node_modules/lottie-react-native`)"
+  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_453552d057ad10d0f6620dadf33b7b44/node_modules/lottie-react-native`)"
   - MBProgressHUD (~> 1.2.0)
   - nanopb
   - RCT-Folly (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -4497,7 +4505,7 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v250829098.0.14
   lottie-react-native:
-    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.6_@lottiefiles+dotlottie-react@0.10.1_react-dom@19.2.3_react@19_ca2798bec26a08eda51142ca007a288d/node_modules/lottie-react-native"
+    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_453552d057ad10d0f6620dadf33b7b44/node_modules/lottie-react-native"
   RCT-Folly:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -4730,12 +4738,12 @@ SPEC CHECKSUMS:
   ExpoLogBox: 7aa03244fe5eeced5129e4ec7ad5bd9a3994378e
   ExpoMailComposer: ea650b89d3b93c7a277b11a8ab7010a7be6d595e
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
-  ExpoModulesCore: 8f88456d7e5fbd07a05d86785b747c69cb89d993
+  ExpoModulesCore: 00076ada6b1f6abf05088c211487ef0bbe68ef19
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
   ExpoModulesTestCore: 768a9a2b0401e87090bc7280cdb0607ab4cad382
-  ExpoModulesWorklets: c755176116ae553ede2268ca6837c31eb4081f8a
+  ExpoModulesWorklets: 874ceeb92a8da1dfa32adf197aa65f926e74b9c5
   ExpoModulesWorkletsAdapter: 678c6033e27c044148e7eb0ca192b13dcdf87ce9
-  ExpoNetwork: c9651806f67c5fe93d221f9b4533c98ae6833bb9
+  ExpoNetwork: d244aa406eb0aba7e36e5f009a061b2744ab11d7
   ExpoNotifications: 4f6324955cea640a65f40c67a8e42505a6a514b7
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0
   ExpoRouter: 06524ed53f9833aabf49053a119bcc92c1442098
@@ -4753,7 +4761,7 @@ SPEC CHECKSUMS:
   ExpoTaskManager: 806c27d7d9425bd65795e443cfdd216f3178203a
   ExpoTrackingTransparency: a5117d608c3abd938cd40ebcaa2f00049b886a8c
   ExpoUI: 649b8cbcccd23277afa83bf0d065bc40906b7e3a
-  ExpoVideo: 8ebbbf65778c5f986d65fc17bb60b79e9d7624e6
+  ExpoVideo: 4ddc693e7539b16846c6a31841e06757713ff5fc
   ExpoVideoThumbnails: 116c2563d2bd3a1e98326a267020e25fea8af79e
   ExpoWebBrowser: 6e3d90e3fe1952d21a8494872b1e1a485cd50e2f
   EXStructuredHeaders: 9e89bcdd636ae2ecb59995cfba3230f5d7547c08
@@ -4774,12 +4782,12 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: d5c6d584ad5c5461ad9e34e0afb5d40d56e428f5
+  hermes-engine: 42f0ed2cf70592b35e2ca49a6b725d31c8ad4136
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: 8f959969761e9c45d70353667d00af0e5b9cadb3
-  lottie-react-native: 983fd0489530e8d40f173de7f04e2f88b9317a15
+  lottie-react-native: b410d8c9dcaf536198ce852ea47e73c9158ad04e
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7

@@ -38,6 +38,12 @@ import {
 } from './views/SuspenseFallback';
 import { Try } from './views/Try';
 
+declare module 'react' {
+  export function lazy<T extends React.ComponentType<any>>(
+    load: () => PromiseLike<{ default: T }> | Promise<{ default: T }>
+  ): React.LazyExoticComponent<T>;
+}
+
 export type ScreenProps<
   TOptions extends Record<string, any> = Record<string, any>,
   TState extends NavigationState = NavigationState,
@@ -237,15 +243,7 @@ function fromImport(
     }
   }
 
-  return { default: component.default, SuspenseFallback };
-}
-
-function fromLoadedRoute(value: RouteNode, res: LoadedRoute) {
-  if (!(res instanceof Promise)) {
-    return fromImport(value, res);
-  }
-
-  return res.then(fromImport.bind(null, value));
+  return { default: component.default!, SuspenseFallback };
 }
 
 // TODO: Maybe there's a more React-y way to do this?
@@ -258,26 +256,33 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     return qualifiedStore.get(value)!;
   }
 
-  let ScreenComponent:
-    | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
-    | React.ComponentType<{ segment?: string }>;
-
+  let ScreenComponent: React.ComponentType<any>;
   let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
-    ScreenComponent = React.lazy(async () => {
-      const res = value.loadRoute();
-      return fromLoadedRoute(value, res) as Promise<{
-        default: React.ComponentType<any>;
-      }>;
+    ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
+      const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
+      // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
+      // the route is synchronously available, if the `loadRoute` method returns a loaded route
+      // synchronously
+      if (!('then' in res)) {
+        return {
+          then(resolve) {
+            const ret = fromImport(value, res);
+            return Promise.resolve(resolve ? resolve(ret) : ret);
+          },
+        } as PromiseLike<{ default: React.ComponentType<any> }>;
+      } else {
+        return res.then(fromImport.bind(null, value));
+      }
     });
 
     if (__DEV__) {
       ScreenComponent.displayName = `AsyncRoute(${value.route})`;
     }
   } else {
-    const res = value.loadRoute();
+    const res = value.loadRoute() as LoadedRoute;
     const result = fromImport(value, res);
     ScreenComponent = result.default!;
     LayoutSuspenseFallback = value.type === 'layout' ? result.SuspenseFallback : undefined;

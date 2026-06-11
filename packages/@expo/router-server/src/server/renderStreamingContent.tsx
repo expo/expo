@@ -13,7 +13,7 @@ import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { ServerDocument } from 'expo-router/internal/server';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from '../static/getRootComponent';

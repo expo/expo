@@ -32,7 +32,14 @@ Your project should use the following structure:
 
 Once you have set up the basic monorepo structure, create a new module using `create-expo-module` with the flag `--no-example` to skip creating the example app:
 
-<Terminal cmd={['$ npx create-expo-module packages/expo-settings --no-example']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module packages/expo-settings --no-example'],
+    yarn: ['$ yarn create expo-module packages/expo-settings --no-example'],
+    pnpm: ['$ pnpm create expo-module packages/expo-settings --no-example'],
+    bun: ['$ bun create expo-module packages/expo-settings --no-example'],
+  }}
+/>
 
 </Step>
 
@@ -61,24 +68,54 @@ Add your native module from **packages** to your apps' dependencies. Update the 
 Run one of your apps to ensure everything works. Then, start the TypeScript compiler in **packages/expo-settings** to watch for changes and rebuild the module's JavaScript:
 
 <Terminal
-  cmdCopy="cd packages/expo-settings && npm run build"
-  cmd={['$ cd packages/expo-settings', '$ npm run build']}
+  cmd={{
+    npm: ['$ cd packages/expo-settings', '$ npm run build'],
+    yarn: ['$ cd packages/expo-settings', '$ yarn run build'],
+    pnpm: ['$ cd packages/expo-settings', '$ pnpm run build'],
+    bun: ['$ cd packages/expo-settings', '$ bun run build'],
+  }}
 />
 
 Open another terminal window, select an app from the **apps** directory, and run the `prebuild` command with the `--clean` option. Repeat these steps for each app in your monorepo to use the new module.
 
-<Terminal cmd={['$ npx expo prebuild --clean']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean'],
+    yarn: ['$ yarn expo prebuild --clean'],
+    pnpm: ['$ pnpm expo prebuild --clean'],
+    bun: ['$ bun expo prebuild --clean'],
+  }}
+/>
 
 Compile and run the app with the following command:
 
 <Terminal
-  cmdCopy="npx expo run:ios"
-  cmd={[
-    '# Run the app on Android',
-    '$ npx expo run:android',
-    '# Run the app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Run the app on Android',
+      '$ npx expo run:android',
+      '# Run the app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Run the app on Android',
+      '$ yarn expo run:android',
+      '# Run the app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Run the app on Android',
+      '$ pnpm expo run:android',
+      '# Run the app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Run the app on Android',
+      '$ bun expo run:android',
+      '# Run the app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 You can now use the module in your app. To test it, edit the **src/app/index.tsx** file in your app and render the text message from the `expo-settings` module:
@@ -111,7 +148,14 @@ You can publish the module on npm and install it as a dependency in your project
 
 Start by creating a new module with `create-expo-module`. Follow the prompts carefully, as you will publish this library, and choose a unique name for your npm package.
 
-<Terminal cmd={['$ npx create-expo-module expo-settings']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-settings'],
+    yarn: ['$ yarn create expo-module expo-settings'],
+    pnpm: ['$ pnpm create expo-module expo-settings'],
+    bun: ['$ bun create expo-module expo-settings'],
+  }}
+/>
 
 </Step>
 
@@ -122,23 +166,59 @@ Start by creating a new module with `create-expo-module`. Follow the prompts car
 Run one of your apps to ensure everything works. Then, start the TypeScript compiler in the root of your project to watch for changes and rebuild the module's JavaScript:
 
 <Terminal
-  cmd={[
-    '# Run this in the root of the project to start the TypeScript compiler',
-    '$ npm run build',
-  ]}
+  cmd={{
+    npm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ npm run build',
+    ],
+    yarn: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ yarn run build',
+    ],
+    pnpm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ pnpm run build',
+    ],
+    bun: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ bun run build',
+    ],
+  }}
 />
 
 Open another terminal window, compile and run the example app:
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
-  cmd={[
-    '$ cd example',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 </Step>
@@ -172,12 +252,28 @@ Apart from publishing your module to npm, you can use it in your project in the 
 To test the published module in a new project, create a new app and install the module as a dependency by running the following command:
 
 <Terminal
-  cmdCopy="npx create-expo-app@latest my-app --template default@sdk-56 && cd my-app && npx expo install expo-settings"
-  cmd={[
-    '$ npx create-expo-app@latest my-app --template default@sdk-56',
-    '$ cd my-app',
-    '$ npx expo install expo-settings',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx create-expo-app@latest my-app --template default@sdk-56',
+      '$ cd my-app',
+      '$ npx expo install expo-settings',
+    ],
+    yarn: [
+      '$ yarn create expo-app my-app --template default@sdk-56',
+      '$ cd my-app',
+      '$ yarn expo install expo-settings',
+    ],
+    pnpm: [
+      '$ pnpm create expo-app my-app --template default@sdk-56',
+      '$ cd my-app',
+      '$ pnpm expo install expo-settings',
+    ],
+    bun: [
+      '$ bun create expo my-app --template default@sdk-56',
+      '$ cd my-app',
+      '$ bun expo install expo-settings',
+    ],
+  }}
 />
 
 You can now use the module in your app! To test it, edit **src/app/index.tsx** and render the text message from **expo-settings**.
@@ -199,15 +295,40 @@ export default function TabOneScreen() {
 Finally, prebuild your project and run the app by executing the following commands:
 
 <Terminal
-  cmdCopy="npx expo prebuild --clean && npx expo run:ios"
-  cmd={[
-    '# Re-generate the native project directories from scratch',
-    '$ npx expo prebuild --clean',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Re-generate the native project directories from scratch',
+      '$ npx expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Re-generate the native project directories from scratch',
+      '$ yarn expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Re-generate the native project directories from scratch',
+      '$ pnpm expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Re-generate the native project directories from scratch',
+      '$ bun expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 After this configuration, you see the text "Hello world! 👋" displayed in the app.

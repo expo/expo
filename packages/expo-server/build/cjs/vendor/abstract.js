@@ -189,6 +189,7 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
             headers: new Headers(response.headers),
             status: response.status,
             statusText: response.statusText,
+            // NOTE(@kitten): Depending on if workerd types are used this may not be defined
             cf: response.cf,
             webSocket: response.webSocket,
         };

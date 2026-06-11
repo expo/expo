@@ -167,7 +167,11 @@ export interface TextInputProps {
      */
     rows?: number;
     /**
-     * Color of the underline indicator on Android. iOS / web ignore this.
+     * Color of the underline indicator on Android.
+     *
+     * @deprecated The Android `TextInput` renders an unstyled `BasicTextField` that
+     * has no underline indicator, so this has no effect. To draw your own border,
+     * pass it through `style` or `modifiers`.
      * @platform android
      */
     underlineColorAndroid?: ColorValue;

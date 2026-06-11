@@ -13,7 +13,7 @@ public struct DevLauncherRootView: View {
       || UserDefaults.standard.bool(forKey: "expo.devlauncher.hasGrantedNetworkPermission")
     _hasCompletedPermissionFlow = State(initialValue: shouldSkipPermissionFlow)
   }
-  
+
   private static var isSimulator: Bool {
     #if targetEnvironment(simulator)
     return true
@@ -31,7 +31,7 @@ public struct DevLauncherRootView: View {
       mainContent
     }
   }
-  
+
   @ViewBuilder
   private var mainContent: some View {
     let tabView = TabView {

@@ -39,6 +39,7 @@ enum PitchCorrectionQuality: String, Enumerable {
 }
 
 struct RecordingOptions: Record {
+  @Field var directory: RecordingDirectory?
   @Field var `extension`: String
   @Field var sampleRate: Double
   @Field var numberOfChannels: Double
@@ -51,6 +52,11 @@ struct RecordingOptions: Record {
   @Field var linearPCMIsBigEndian: Bool?
   @Field var linearPCMIsFloat: Bool?
   @Field var isMeteringEnabled: Bool = false
+}
+
+enum RecordingDirectory: String, Enumerable {
+  case cache
+  case document
 }
 
 struct Metadata: Record {

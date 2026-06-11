@@ -1,5 +1,6 @@
 package expo.modules.testexpoui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,14 +19,14 @@ data class MyCustomViewProps(
 ) : ComposeProps
 
 @Composable
-fun FunctionalComposableScope.MyCustomViewContent(props: MyCustomViewProps) {
+fun FunctionalComposableScope.MyCustomViewContent(props: MyCustomViewProps, onCustomTap: () -> Unit = {}) {
   Column(
     modifier = ModifierRegistry.applyModifiers(
       props.modifiers,
       appContext,
       composableScope,
       globalEventDispatcher
-    )
+    ).clickable { onCustomTap() }
   ) {
     Text(text = props.title, style = MaterialTheme.typography.titleMedium)
     Children(UIComposableScope())

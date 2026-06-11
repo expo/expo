@@ -60,6 +60,20 @@ target 'minimaltester' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+
+    # The Xcode 27 iOS SDK rejects deployment targets below iOS 15.0. Some pods still
+    # ship a lower target, so raise any below the app's minimum to keep the build valid.
+    min_deployment_target = podfile_properties['ios.deploymentTarget'] || '16.4'
+    if installer.pods_project
+      installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+          if current.to_s =~ /\A\d/ && Gem::Version.new(current) < Gem::Version.new(min_deployment_target)
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_deployment_target
+          end
+        end
+      end
+    end
   end
 
   target 'minimaltesterbrownfield' do

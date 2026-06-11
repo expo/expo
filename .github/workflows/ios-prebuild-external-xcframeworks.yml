@@ -16,13 +16,146 @@ on:
         required: false
         type: boolean
         default: false
+  push:
+    branches:
+      - main
+      - 'sdk-*'
+    # Cheap path pre-filter; the `detect` job confirms a supported external
+    # package's pinned version, patch, or SPM config actually changed.
+    # `patches/**` is intentionally broad — detect maps each changed patch back
+    # to its package via pnpm-workspace.yaml and ignores unrelated patches.
+    paths: &trigger_paths
+      - 'apps/bare-expo/package.json'
+      - 'patches/**'
+      - 'packages/expo-modules-autolinking/external-configs/ios/**'
+      - '.github/workflows/ios-prebuild-external-xcframeworks.yml'
+  pull_request:
+    # Validate-only: builds the changed external package(s) but never publishes
+    # to GCS (publish steps are gated to push / manual dispatch).
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  detect:
+    name: Detect changed external packages
+    runs-on: ubuntu-24.04
+    outputs:
+      should_run: ${{ steps.detect.outputs.should_run }}
+      packages: ${{ steps.detect.outputs.packages }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          submodules: false
+          # Start shallow; the detect step fetches the event base if needed.
+          fetch-depth: 2
+
+      - name: Detect changed external packages
+        id: detect
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+
+          build_all() {
+            echo "$1"
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "packages=" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+
+          # Manual runs always proceed and honor the user-provided package list
+          # (handled downstream via github.event.inputs.packages).
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            build_all "Manual run requested; building requested external packages."
+          fi
+
+          case "$EVENT_NAME" in
+            push)
+              base="$PUSH_BEFORE_SHA"
+              ;;
+            pull_request)
+              base="$PR_BASE_SHA"
+              ;;
+            *)
+              base="$(git rev-parse HEAD^ 2>/dev/null || true)"
+              ;;
+          esac
+
+          if [ -z "$base" ] || [[ "$base" =~ ^0+$ ]]; then
+            build_all "No base commit to diff against; building all external packages."
+          fi
+
+          if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$base" || \
+              build_all "Could not fetch base commit; building all external packages."
+          fi
+
+          config_root="packages/expo-modules-autolinking/external-configs/ios"
+          manifest="apps/bare-expo/package.json"
+          changed=()
+
+          # Derive the package -> patch-file map from pnpm's own source of truth
+          # (the `patchedDependencies` block in pnpm-workspace.yaml) so adding a
+          # patched package needs no edits here. Keys may carry an `@version`
+          # suffix (e.g. `@shopify/react-native-skia@2.6.2`); strip it to get the
+          # bare package name that matches the external-config directory.
+          declare -A package_patches=()
+          while IFS= read -r line; do
+            raw_key="${line%%:*}"
+            patch_path="${line#*: }"
+            name="$(printf '%s' "$raw_key" | sed -E "s/^[[:space:]]*//; s/[[:space:]]*$//; s/^['\"]//; s/['\"]$//; s/@[0-9][^@]*$//")"
+            patch_path="$(printf '%s' "$patch_path" | sed -E "s/^[[:space:]]*//; s/[[:space:]]*$//")"
+            [ -n "$name" ] && package_patches["$name"]="$patch_path"
+          done < <(awk '/^patchedDependencies:/{f=1;next} f&&/^[^[:space:]]/{f=0} f&&NF' pnpm-workspace.yaml)
+
+          while IFS= read -r cfg; do
+            dir="$(dirname "$cfg")"
+            pkg="${dir#"$config_root/"}"
+
+            # The SPM config for this package changed.
+            if ! git diff --quiet "$base" HEAD -- "$dir"; then
+              changed+=("$pkg")
+              continue
+            fi
+
+            # The pnpm patch for this package changed.
+            patch="${package_patches[$pkg]:-}"
+            if [ -n "$patch" ] && ! git diff --quiet "$base" HEAD -- "$patch"; then
+              changed+=("$pkg")
+              continue
+            fi
+
+            # The version pinned in bare-expo's manifest changed.
+            before_ver="$(git show "$base:$manifest" 2>/dev/null \
+              | jq -r --arg p "$pkg" '.dependencies[$p] // .devDependencies[$p] // empty')"
+            after_ver="$(jq -r --arg p "$pkg" '.dependencies[$p] // .devDependencies[$p] // empty' "$manifest")"
+            if [ "$before_ver" != "$after_ver" ]; then
+              changed+=("$pkg")
+            fi
+          done < <(find "$config_root" -name spm.config.json)
+
+          if [ "${#changed[@]}" -eq 0 ]; then
+            echo "No supported external package versions, patches, or configs changed; skipping prebuild."
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "packages=" >> "$GITHUB_OUTPUT"
+          else
+            echo "Changed external packages: ${changed[*]}"
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "packages=${changed[*]}" >> "$GITHUB_OUTPUT"
+          fi
+
   prebuild:
+    needs: detect
+    # Skip when no relevant package changed; never auto-run on forks' pushes.
+    if: >-
+      needs.detect.outputs.should_run == 'true' &&
+      (github.event_name != 'push' || github.repository == 'expo/expo')
     runs-on: macos-26
     timeout-minutes: 120
     permissions:
@@ -34,10 +167,7 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          submodules: true
-
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
 
@@ -45,12 +175,12 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
 
       - name: Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: 'pnpm'
@@ -61,7 +191,8 @@ jobs:
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
         id: prebuild_xcframeworks
         env:
-          INPUT_PACKAGES: ${{ github.event.inputs.packages }}
+          # Manual runs use the dispatch input; push runs use the detected list.
+          INPUT_PACKAGES: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.packages || needs.detect.outputs.packages }}
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
         run: |
           ARGS="-f ${{ matrix.flavor }} -v --external-only"
@@ -78,7 +209,7 @@ jobs:
           et prebuild $ARGS
 
       - name: Upload XCFrameworks
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: xcframeworks-${{ matrix.flavor }}
           path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
@@ -87,20 +218,20 @@ jobs:
           include-hidden-files: true
 
       - name: Authenticate to Google Cloud
-        if: ${{ success() && github.event.inputs.publish == 'true' && github.repository == 'expo/expo' }}
+        if: ${{ success() && (github.event.inputs.publish == 'true' || github.event_name == 'push') && github.repository == 'expo/expo' }}
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           project_id: exponentjs
           workload_identity_provider: projects/321830142373/locations/global/workloadIdentityPools/github/providers/expo
 
       - name: Setup gcloud
-        if: ${{ success() && github.event.inputs.publish == 'true' && github.repository == 'expo/expo' }}
-        uses: google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f # v2
+        if: ${{ success() && (github.event.inputs.publish == 'true' || github.event_name == 'push') && github.repository == 'expo/expo' }}
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
         with:
           project_id: exponentjs
 
       - name: Upload XCFramework directory structure to GCS
-        if: ${{ success() && github.event.inputs.publish == 'true' && github.repository == 'expo/expo' }}
+        if: ${{ success() && (github.event.inputs.publish == 'true' || github.event_name == 'push') && github.repository == 'expo/expo' }}
         run: |
           SYNC_ROOT="$RUNNER_TEMP/precompiled-modules-upload"
           rm -rf "$SYNC_ROOT"

@@ -52,20 +52,20 @@ public final class ModuleHolder {
 
   /// Combines the user-authored definition with the entries synthesized by the
   /// `@ExpoModule` macro on this module's class (if any). The macro emits a
-  /// `_exposedDefinition()` method returning an `[AnyDefinition]` array of the
+  /// `_synthesizedDefinition()` method returning an `[AnyDefinition]` array of the
   /// `Function` / `Property` / `Constructor` entries it generated from `@JS`
   /// members. Those entries are prepended to the user's definitions and the
   /// whole list is fed back through `ModuleDefinition.init` so the merged
   /// result is rebucketed (into `functions`, `properties`, etc.) just like a
   /// hand-written definition. Modules that don't use the macro fall through
-  /// the empty-exposed fast path and return the user's definition unchanged.
+  /// the empty-synthesized fast path and return the user's definition unchanged.
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
     let userDefinition = module.definition()
-    let exposed = module._exposedDefinition()
-    if exposed.isEmpty {
+    let synthesized = module._synthesizedDefinition()
+    if synthesized.isEmpty {
       return userDefinition
     }
-    return ModuleDefinition(definitions: exposed + userDefinition.rawDefinitions)
+    return ModuleDefinition(definitions: synthesized + userDefinition.rawDefinitions)
   }
 
   // MARK: Constants
@@ -75,6 +75,19 @@ public final class ModuleHolder {
    */
   func getLegacyConstants() -> [String: Any?] {
     return definition.getLegacyConstants()
+  }
+
+  @JavaScriptActor
+  func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
+    if javaScriptObject == nil {
+      javaScriptObject = createJavaScriptModuleObject()
+    }
+    // Creating the object can still fail (e.g. the app context has been destroyed), in which case
+    // there is nothing to emit to and we behave like `getJavaScriptValue()` by returning `nil`.
+    if javaScriptObject == nil {
+      return nil
+    }
+    return try body(javaScriptObject!)
   }
 
   @JavaScriptActor
@@ -106,7 +119,13 @@ public final class ModuleHolder {
     }
     do {
       log.info("Creating JS object for module '\(name)'")
-      return try definition.build(appContext: appContext)
+      let object = try definition.build(appContext: appContext)
+
+      // Install the `@JS` members the `@ExpoModule` macro binds directly into the JS object
+      // (the direct-JSI path). A no-op for modules that don't use the macro.
+      try module._decorateModule(object: object, in: appContext.runtime, appContext: appContext)
+
+      return object
     } catch {
       log.error("Building the module object failed: \(error)")
       return nil

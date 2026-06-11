@@ -553,7 +553,8 @@ class ComposeFunctionHolder<Props : ComposeProps>(
   appContext: AppContext,
   override val name: String,
   private val composableContent: @Composable FunctionalComposableScope.(props: Props) -> Unit,
-  override val props: Props
+  override val props: Props,
+  override val callbacksDefinition: CallbacksDefinition?
 ) : ExpoComposeView<Props>(context, appContext), ViewFunctionHolder {
   val propsMutableState = mutableStateOf(props)
 
