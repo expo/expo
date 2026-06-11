@@ -1,11 +1,14 @@
-import VisionKit
 import ExpoModulesCore
+#if !targetEnvironment(macCatalyst)
+import VisionKit
+#endif
 
 protocol ScannerResultHandler {
   func onItemScanned(result: [String: Any])
   @MainActor func onScannerDismissed()
 }
 
+#if !targetEnvironment(macCatalyst)
 @available(iOS 16.0, *)
 class VisionScannerDelegate: NSObject, DataScannerViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
   private let handler: ScannerResultHandler
@@ -32,3 +35,4 @@ class VisionScannerDelegate: NSObject, DataScannerViewControllerDelegate, UIAdap
     handler.onScannerDismissed()
   }
 }
+#endif

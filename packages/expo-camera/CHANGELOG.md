@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Gate `VisionKit` usage behind `targetEnvironment(macCatalyst)` so the module compiles when targeting Mac Catalyst. `isModernBarcodeScannerAvailable` returns `false` and `launchScanner` throws `CameraScannerUnavailableException` on Catalyst, where `DataScannerViewController` is unavailable. ([#46119](https://github.com/expo/expo/pull/46119) by [@skrtdev](https://github.com/skrtdev))
+
 ### 💡 Others
 
 ## 56.0.7 — 2026-05-21

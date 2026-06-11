@@ -2,7 +2,9 @@
 
 import AVFoundation
 import ExpoModulesCore
+#if !targetEnvironment(macCatalyst)
 import VisionKit
+#endif
 
 let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged", "onAvailableLensesChanged"]
 
@@ -31,7 +33,11 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
 
     Property("isModernBarcodeScannerAvailable") {
+      #if targetEnvironment(macCatalyst)
+      false
+      #else
       if #available(iOS 16.0, *) { true } else { false }
+      #endif
     }
 
     Property("toggleRecordingAsyncAvailable") {
@@ -328,6 +334,9 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
 
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in
+      #if targetEnvironment(macCatalyst)
+      throw CameraScannerUnavailableException()
+      #else
       if #available(iOS 16.0, *) {
         try await MainActor.run {
           guard DataScannerViewController.isSupported, DataScannerViewController.isAvailable else {
@@ -338,14 +347,17 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           launchScanner(with: options)
         }
       }
+      #endif
     }
 
     AsyncFunction("dismissScanner") {
+      #if !targetEnvironment(macCatalyst)
       if #available(iOS 16.0, *) {
         await MainActor.run {
           dismissScanner()
         }
       }
+      #endif
     }
 
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in
@@ -389,6 +401,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
   }
 
+  #if !targetEnvironment(macCatalyst)
   @available(iOS 16.0, *)
   @MainActor
   private func launchScanner(with options: VisionScannerOptions?) {
@@ -423,6 +436,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       self?.onScannerDismissed()
     }
   }
+  #endif
 
   func onItemScanned(result: [String: Any]) {
     sendEvent("onModernBarcodeScanned", result)
@@ -430,11 +444,13 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
   @MainActor
   func onScannerDismissed() {
+    #if !targetEnvironment(macCatalyst)
     if #available(iOS 16.0, *) {
       if let controller = scannerContext?.controller as? DataScannerViewController {
         controller.stopScanning()
       }
     }
+    #endif
     scannerContext = nil
   }
 
