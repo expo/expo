@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added support for storing recordings in the app document directory on Android and iOS. ([#46189](https://github.com/expo/expo/pull/46189) by [@shubh73](https://github.com/shubh73))
+- Added a `fileSize` field to `RecorderState` reporting the current size of the recording file in bytes. ([#46808](https://github.com/expo/expo/pull/46808) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

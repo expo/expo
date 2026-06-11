@@ -282,6 +282,15 @@ export type RecorderState = {
     isRecording: boolean;
     /** Duration of the current recording in milliseconds. */
     durationMillis: number;
+    /**
+     * Current size of the recording file in bytes, or `0` if no recording file exists yet.
+     *
+     * The value reflects the bytes already flushed to disk, so during an active recording it can lag
+     * slightly behind real time. On web, it updates when the browser delivers recorded data
+     * (typically when the recording stops), and the value is an approximation that may differ
+     * slightly from the final file size.
+     */
+    fileSize: number;
     /** Whether the media services have been reset (typically indicates a system interruption). */
     mediaServicesDidReset: boolean;
     /** Current audio level/volume being recorded (if metering is enabled). */

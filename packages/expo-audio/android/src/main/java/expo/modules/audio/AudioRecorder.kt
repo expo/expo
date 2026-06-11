@@ -61,6 +61,9 @@ class AudioRecorder(
   private fun currentFileUrl(): String? =
     filePath?.let(::File)?.toUri()?.toString()
 
+  val fileSize: Long
+    get() = filePath?.let { File(it).length() } ?: 0L
+
   private fun getAudioRecorderLevels(): Double? {
     if (!meteringEnabled || recorder == null || !isRecording) {
       return null
@@ -315,6 +318,7 @@ class AudioRecorder(
       putBoolean("canRecord", isPrepared)
       putBoolean("isRecording", isRecording)
       putLong("durationMillis", getAudioRecorderDurationMillis())
+      putLong("fileSize", fileSize)
       getAudioRecorderLevels()?.let {
         putDouble("metering", it)
       }
@@ -325,6 +329,7 @@ class AudioRecorder(
       putBoolean("canRecord", false)
       putBoolean("isRecording", false)
       putLong("durationMillis", 0)
+      putLong("fileSize", 0)
       putString("url", null)
     }
   }
