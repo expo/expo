@@ -1,98 +1,60 @@
----
-title: Introduction to development builds
-sidebar_title: Introduction
-description: Why use development builds and how to get started.
-searchRank: 98
-searchPosition: 1
-hideTOC: true
-hasVideoLink: true
----
+ Softmit
+const express = require('express');
+const app = express();
+app.use(express.json());
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+// डमी डेटाबेस (असल प्रोजेक्ट में यहाँ MySQL/MongoDB जुड़ेगा)
+let users = [
+    { id: 1, name: "Amit", wallet: 0, views: 0, hasPack: false }
+];
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+let appSettings = {
+    minViewsForReward: 100,
+    rewardAmount: 3.00
+};
 
-**Development build** is the term that we use for a "Debug" build of an app that includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library. This library augments the built-in React Native development tooling with additional capabilities, such as support for inspecting network requests and a "launcher" UI that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with EAS Update).
+// 1. USER API: जब यूजर 1 वीडियो पूरा देखेगा
+app.post('/api/watch-video', (req, res) => {
+    const { userId } = req.body;
+    let user = users.find(u => u.id === userId);
 
-<Collapsible summary="Difference between Expo Go and development builds">
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-[Expo Go](https://expo.dev/go) is a playground app for students and learners to get started quickly. It comes with a fixed set of native libraries built in, so you can write JavaScript code and see changes instantly without building a native app yourself. A development build is a fully featured development environment for working on your production-grade Expo apps.
+    // अगर 100 व्यूज हो चुके हैं और पैक नहीं लिया है, तो आगे व्यूज काउंट नहीं होंगे
+    if (user.views >= appSettings.minViewsForReward && !user.hasPack) {
+        return res.status(403).json({ error: "Limit reached! Please buy a pack to continue earning." });
+    }
 
-</Collapsible>
+    // व्यू काउंट बढ़ाएं
+    user.views += 1;
 
-<Collapsible summary="Native app and JavaScript bundle">
+    // हर 100 व्यूज पर ₹3 रिवॉर्ड जोड़ें
+    if (user.views % appSettings.minViewsForReward === 0) {
+        user.wallet += appSettings.rewardAmount;
+    }
 
-The **native app** is what you install on your device. Expo Go is a pre-built native app that works like a playground — it can't be changed after you install it. To add new native libraries or change things like your app name and icon, you need to build your own native app (a development build).
+    res.json({ success: true, currentViews: user.views, walletBalance: user.wallet });
+});
 
-The **JavaScript bundle (`npx expo start`)** is where your app's UI code and business logic are. In production apps, there is one **main.js** bundle that is shipped with the app itself. In development, this JS bundle is live reloaded from your local machine. The main role of React Native is to provide a way for the JavaScript code to access the native APIs (Image, Camera, Notifications, and more). However, only APIs and libraries that were bundled in the **native app** can be used.
+// 2. ADMIN API: एडमिन यहाँ से सेटिंग्स बदल सकता है (Admin Rights)
+app.post('/api/admin/update-settings', (req, res) => {
+    const { newMinViews, newRewardAmount } = req.body;
+    
+    if (newMinViews) appSettings.minViewsForReward = newMinViews;
+    if (newRewardAmount) appSettings.rewardAmount = newRewardAmount;
 
-</Collapsible>
+    res.json({ message: "Settings updated by Admin", currentSettings: appSettings });
+});
 
-<VideoBoxLink
-  videoId="FdjczjkwQKE"
-  title="Expo Go & Development Builds: which should you use?"
-  description="In this tutorial video Beto explains what each of them is, and when to choose a development build."
-/>
+// 3. PACK BUY API: जब यूजर/डेवलपर 100 व्यूज के बाद पैक खरीदेगा
+app.post('/api/buy-pack', (req, res) => {
+    const { userId } = req.body;
+    let user = users.find(u => u.id === userId);
 
-## Why use a development build (a.k.a what _can't_ you do in Expo Go and why)
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-Expo Go is a playground for students and learners to understand the basics of React Native. It's limited and not useful for building production-grade projects, so most apps will convert to using development builds. It helps to know exactly what is _impossible_ in Expo Go and _why_, so you can make an informed decision on when and why to make this move.
+    user.hasPack = true; // पैक एक्टिवेट हो गया
+    res.json({ message: "Pack purchased successfully!", hasPack: user.hasPack });
+});
 
-<Collapsible summary="Use libraries with native code that aren't in Expo Go">
-
-Consider [`react-native-webview`](/versions/latest/sdk/webview/) as an example, a library that contains native code, but [is included in Expo Go](https://github.com/expo/expo/blob/main/apps/expo-go/package.json#L23). When you run `npx expo install react-native-webview` command in your project, it will install the library in your **node_modules** directory, which includes both the JS code and the native code. But the JS bundle you are building _only_ uses the JS code. Then, your JS bundle gets uploaded to Expo Go, and it interacts with the native code that was already bundled with the app.
-
-Instead, when you try to use a library that is not included, for example, [`react-native-firebase`](/guides/using-firebase/#using-react-native-firebase), then you can use the JS code and hot reload the new bundle into Expo Go but it will immediately error because the JS code tries to call the native code from the React Native Firebase package that does not exist in Expo Go. There is no way to get the native code into the Expo Go app unless it was already included in the bundle that was uploaded to the app stores.
-
-</Collapsible>
-
-<Collapsible summary="Test changes in app icon, name, splash screen">
-
-If you're developing your app in Expo Go only, you can build a store version that will use your provided values and images; it just won't be possible to test it in Expo Go.
-
-These native assets are shipped with the native bundle and are immutable once the app is installed. The Expo Go app does show a splash screen, which is your app icon on a solid color background. This is a dev-only emulation to view how the splash screen will probably look. However, it is limited, for example, you cannot test `SplashScreen.setOptions` to animate the splash screen.
-
-</Collapsible>
-
-<Collapsible summary="Remote push notifications">
-
-While [in-app notifications](/versions/latest/sdk/notifications/) are available in Expo Go, remote push notifications (that is, sending a push notification from a server to the app) are not. This is because a push notification service should be tied to your own push notification certificates, and while it is possible to make it work in Expo Go, it often causes confusion for production builds. It is recommended to test remote push notifications in development builds so you can ensure parity in behavior between development and production.
-
-</Collapsible>
-
-<Collapsible summary="Implementing App/Universal links">
-
-Both [Android App Links](/linking/android-app-links/) and [iOS Universal Links](/linking/ios-universal-links/) require a two-way association between the native app and the website. In particular, it requires the native app to include the linked website's URL. This is impossible with Expo Go due to the aforementioned native code immutability.
-
-</Collapsible>
-
-<Collapsible summary="Open projects using older SDKs (iOS device only)">
-
-Expo Go can only support one SDK version at a time. When a new SDK version is released, Expo Go is updated to support the newer version, and this will be the only version of Expo Go available to install from the stores.
-
-If you're developing on an Android Device, Android Emulator, or iOS Simulator, a compatible version of Expo Go can be [downloaded and installed](https://expo.dev/go). The only platform where this is impossible is iPhone devices because Apple does not support side-loading older versions of apps.
-
-</Collapsible>
-
-<BoxLink
-  title="Expo Go to development build"
-  description="Learn how to migrate an existing Expo Go project to using development builds."
-  href="/develop/development-builds/expo-go-to-dev-build/"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Local app development"
-  description="How to build a development client on your local machine."
-  href="/guides/local-app-development"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Development builds on EAS"
-  description="How to build a development client on EAS."
-  href="/develop/development-builds/create-a-build/"
-  Icon={BookOpen02Icon}
-/>
+app.listen(3000, () => console.log('Server running on port 3000'));
