@@ -323,8 +323,7 @@ class ComposeViewBuilderScope<Props : ComposeProps> @PublishedApi internal const
       arrayOf(AnyType(viewType))
     ) { args ->
       val view = args[0] as ComposeFunctionHolder<*>
-      val handler = view.functionHandlers[fnName]
-        ?: error("No handler registered for AsyncFunction '$fnName' on view '${view.name}'. Did you forget to bind it with `$fnName.handle { ... }` inside the Content { } block?")
+      val handler = view.functionHandlers.resolve(fnName)
       handler(emptyArray())
     }
   }
@@ -336,8 +335,7 @@ class ComposeViewBuilderScope<Props : ComposeProps> @PublishedApi internal const
     }
     asyncFunctions[fnName] = SuspendFunctionComponent(fnName, argsTypes) { args ->
       val view = args[0] as ComposeFunctionHolder<*>
-      val handler = view.functionHandlers[fnName]
-        ?: error("No handler registered for AsyncFunction '$fnName' on view '${view.name}'. Did you forget to bind it with `$fnName.handle { ... }` inside the Content { } block?")
+      val handler = view.functionHandlers.resolve(fnName)
       handler(args.sliceArray(1 until args.size))
     }
   }

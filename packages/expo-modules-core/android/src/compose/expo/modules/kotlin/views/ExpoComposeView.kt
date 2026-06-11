@@ -517,7 +517,7 @@ class ComposeFunctionHolder<Props : ComposeProps>(
   val propsMutableState = mutableStateOf(props)
 
   @PublishedApi
-  internal val functionHandlers = mutableMapOf<String, suspend (Array<out Any?>) -> Any?>()
+  internal val functionHandlers = ViewFunctionHandlers(name)
 
   /**
    * Per-instance cache of [ViewEventCallback]s keyed by event name. Populated
@@ -544,6 +544,12 @@ class ComposeFunctionHolder<Props : ComposeProps>(
     val props by propsMutableState
     with(FunctionalComposableScope(this@ComposeFunctionHolder, this@Content)) {
       composableContent(props)
+    }
+    // Effects run in composition order, so this completes after every
+    // `handle { }` binding declared inside the content above.
+    DisposableEffect(Unit) {
+      functionHandlers.markInitiallyBound()
+      onDispose {}
     }
   }
 }
