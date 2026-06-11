@@ -131,7 +131,7 @@ runs:
 
     - name: ♻️ Restore Gradle cache
       if: inputs.ndk == 'true' || inputs.gradle == 'true'
-      uses: gradle/actions/setup-gradle@5e2ebd065dc2488b7a6ad670704656cbbe1e8f60 # v6.1.1
+      uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
       with:
         cache-read-only: ${{ github.ref != 'refs/heads/main' && !contains(github.ref, 'sdk-') }}
 
