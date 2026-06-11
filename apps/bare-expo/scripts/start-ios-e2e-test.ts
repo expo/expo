@@ -159,9 +159,8 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 180_000) 
     );
     const label = 'device startup duration';
     console.time(label);
-    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], {
-      stdio: 'inherit',
-    });
+    // Capture (don't inherit) stdio so the verbose boot/data-migration progress doesn't flood the logs.
+    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b']);
 
     let timeoutHandle: NodeJS.Timeout | null = null;
     const timeoutPromise = new Promise((_, reject) => {
