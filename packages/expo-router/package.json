@@ -28,7 +28,7 @@
         "source": "./src/Route.tsx",
         "default": "./build/Route.d.ts"
       },
-      "source": "./src/Route.ts",
+      "source": "./src/Route.tsx",
       "default": "./build/Route.js"
     },
     "./build/matchers": {
@@ -36,7 +36,7 @@
         "source": "./src/matchers.tsx",
         "default": "./build/matchers.d.ts"
       },
-      "source": "./src/matchers.ts",
+      "source": "./src/matchers.tsx",
       "default": "./build/matchers.js"
     },
     "./build/*.js": {
@@ -153,10 +153,10 @@
     },
     "./rsc": {
       "types": {
-        "source": "./src/rsc/exports.ts",
+        "source": "./src/rsc/exports.tsx",
         "default": "./build/rsc/exports.d.ts"
       },
-      "source": "./src/rsc/exports.ts",
+      "source": "./src/rsc/exports.tsx",
       "default": "./build/rsc/exports.js"
     },
     "./rsc/internal": {

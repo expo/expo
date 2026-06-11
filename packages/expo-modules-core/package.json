@@ -17,7 +17,7 @@
         "default": "./build/index.d.ts"
       },
       "source": "./src/index.ts",
-      "default": "./src/index.js"
+      "default": "./build/index.js"
     },
     "./types": {
       "types": {
@@ -37,7 +37,7 @@
     },
     "./src/uuid": {
       "types": {
-        "source": "./src/uuid/index.d.ts",
+        "source": "./src/uuid/index.ts",
         "default": "./build/uuid/index.d.ts"
       },
       "source": "./src/uuid/index.ts",
