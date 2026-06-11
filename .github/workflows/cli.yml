@@ -88,6 +88,9 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -146,6 +149,9 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -190,6 +196,9 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: 🎭 Get Playwright information
         id: playwright-info
@@ -271,6 +280,9 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: 🎭 Get Playwright information
         id: playwright-info

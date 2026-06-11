@@ -43,6 +43,9 @@ jobs:
         id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🍏 Build iOS Project
         working-directory: ./apps/bare-expo
         run: |

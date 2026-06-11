@@ -182,6 +182,9 @@ jobs:
         run: ccache -z
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/ios
@@ -281,6 +284,9 @@ jobs:
         id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: Build Screen Inspector
         run: ./scripts/build.sh
         working-directory: apps/bare-expo/e2e/image-comparison/inspector
@@ -385,6 +391,9 @@ jobs:
         run: ccache -z
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🧪 Test image comparison utilities
         run: bun test
         working-directory: apps/bare-expo/e2e/image-comparison
@@ -474,6 +483,9 @@ jobs:
         id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🧪 Run e2e tests (bare-expo)
         uses: ./.github/actions/use-android-emulator
         with:

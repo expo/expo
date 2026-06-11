@@ -46,6 +46,9 @@ jobs:
           ndk-version: ${{ matrix.ndk-version }}
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: Init new expo app
         working-directory: ../
         run: pnpm create expo-app ./development-client-android-test --yes
@@ -107,6 +110,9 @@ jobs:
         id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: Init new expo app
         working-directory: ../
         run: pnpm create expo-app ./development-client-ios-test --yes

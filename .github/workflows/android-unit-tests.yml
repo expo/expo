@@ -62,6 +62,9 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🎸 Run native Android unit tests
         if: always()
         timeout-minutes: 30
