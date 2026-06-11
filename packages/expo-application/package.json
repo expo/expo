@@ -4,6 +4,17 @@
   "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "main": "build/Application.js",
   "types": "build/Application.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/Application.ts",
+        "default": "./build/Application.d.ts"
+      },
+      "source": "./src/Application.ts",
+      "default": "./build/Application.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
