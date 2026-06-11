@@ -7,10 +7,12 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
@@ -18,6 +20,7 @@ import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.OptimizedComposeProps
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -50,9 +53,18 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
   val sheetState = rememberModalBottomSheetState(props.skipPartiallyExpanded)
   val scope = rememberCoroutineScope()
 
+  // Material animates the sheet in (via its internal show()) only after the sheet
+  // window composes and its anchors are laid out. A call dispatched right after
+  // presenting would run before that and be no-opped or overridden by show(), so
+  // wait for the entrance animation to start before retargeting it.
+  suspend fun awaitSheetShown() {
+    snapshotFlow { sheetState.targetValue != SheetValue.Hidden }.first { it }
+  }
+
   hide.handle {
     try {
       withContext(scope.coroutineContext) {
+        awaitSheetShown()
         sheetState.hide()
       }
     } catch (_: CancellationException) {
@@ -64,6 +76,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
   expand.handle {
     try {
       withContext(scope.coroutineContext) {
+        awaitSheetShown()
         sheetState.expand()
       }
     } catch (_: CancellationException) {
@@ -75,6 +88,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
   partialExpand.handle {
     try {
       withContext(scope.coroutineContext) {
+        awaitSheetShown()
         sheetState.partialExpand()
       }
     } catch (_: CancellationException) {
