@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 - Support Device Hub as Simulator replacement for Xcode 27+ ([#46757](https://github.com/expo/expo/pull/46757) by [@byCedric](https://github.com/byCedric), [@GersonRocha9](https://github.com/GersonRocha9))
 
 ### 🐛 Bug fixes
