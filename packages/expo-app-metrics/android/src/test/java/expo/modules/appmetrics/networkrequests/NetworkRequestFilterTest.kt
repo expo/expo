@@ -57,4 +57,13 @@ class NetworkRequestFilterTest {
     val filter = NetworkRequestFilter(hosts = listOf("api.expo.dev"))
     assertFalse(filter.matches("not a url", "GET"))
   }
+
+  @Test
+  fun `hosts match the same way OkHttp routed the request`() {
+    // Hosts with underscores are accepted by OkHttp (which actually issued the request) but
+    // rejected by `java.net.URI`. Parsing the host with the same engine that routed the request
+    // keeps the filter from silently dropping a request a `hosts` entry was meant to match.
+    val filter = NetworkRequestFilter(hosts = listOf("my_service.internal"))
+    assertTrue(filter.matches("https://my_service.internal/x", "GET"))
+  }
 }

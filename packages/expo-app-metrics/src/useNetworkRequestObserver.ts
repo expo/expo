@@ -1,6 +1,6 @@
 import { useEventListener } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import AppMetrics from './module';
 import type {
@@ -9,6 +9,18 @@ import type {
   NetworkRequestObserver,
   NetworkRequestStartedEvent,
 } from './types';
+
+/**
+ * Order-stable serialization of a filter, used as the effect's dependency key. Listing the fields
+ * explicitly keeps `{ hosts, methods }` and `{ methods, hosts }` (the same filter) from producing
+ * different keys and re-applying the filter for nothing.
+ */
+function filterKeyOf(filter: NetworkRequestFilter | null | undefined): string {
+  return JSON.stringify({
+    hosts: filter?.hosts ?? null,
+    methods: filter?.methods ?? null,
+  });
+}
 
 export type UseNetworkRequestObserverOptions = {
   /**
@@ -42,13 +54,21 @@ export function useNetworkRequestObserver(
   // Serialized so a fresh object literal with the same contents doesn't re-run the effect every
   // render. The observer is created once with the initial filter; later changes go through
   // `setFilter` so subscriptions survive.
-  const filterKey = JSON.stringify(options.filter ?? null);
+  const filterKey = filterKeyOf(options.filter);
   const observer = useReleasingSharedObject(
     () => new AppMetrics.NetworkRequestObserver(options.filter),
     []
   );
 
+  // The constructor already applied the initial filter, so skip re-applying it on mount; only push
+  // later changes through `setFilter`. Seeded with the mount key so the first effect run is a no-op
+  // unless the filter changed before it fired.
+  const appliedFilterKey = useRef(filterKey);
   useEffect(() => {
+    if (appliedFilterKey.current === filterKey) {
+      return;
+    }
+    appliedFilterKey.current = filterKey;
     observer.setFilter(options.filter ?? null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observer, filterKey]);

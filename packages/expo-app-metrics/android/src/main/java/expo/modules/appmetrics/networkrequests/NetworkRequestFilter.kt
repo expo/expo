@@ -4,7 +4,7 @@ package expo.modules.appmetrics.networkrequests
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import java.net.URI
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /**
  * Declares which requests a `NetworkRequestObserver` emits events for. Mirrors the JS
@@ -53,11 +53,11 @@ data class NetworkRequestFilter(
   }
 
   private fun hostOf(url: String): String? {
-    return try {
-      URI(url).host
-    } catch (_: Exception) {
-      // A malformed URL has no parseable host, so it can't match any `hosts` entry.
-      null
-    }
+    // Parse with OkHttp's `HttpUrl`, the same engine that issued the request, so host extraction
+    // matches how the request was actually routed. `java.net.URI` is stricter (RFC 2396) and
+    // rejects hosts OkHttp accepts (underscores, some IDN/Unicode forms), which would silently
+    // drop a request a `hosts` entry was meant to match. A URL with no parseable host yields
+    // `null` and can't match any `hosts` entry.
+    return url.toHttpUrlOrNull()?.host
   }
 }
