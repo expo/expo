@@ -52,7 +52,7 @@ jobs:
           echo "/opt/swift/usr/bin" >> "$GITHUB_PATH"
       - name: ♻️ Cache swift-format binary
         id: swift-format-cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.local/bin/swift-format
           key: swift-format-${{ runner.os }}-${{ env.SWIFT_FORMAT_VERSION }}
