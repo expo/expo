@@ -14,6 +14,13 @@ const native_1 = require("../react-navigation/native");
 const bottomAccessory_1 = require("./utils/bottomAccessory");
 const icon_1 = require("./utils/icon");
 const children_1 = require("../utils/children");
+function getSelectedTabTintColor(tabs, focusedIndex) {
+    const focusedTab = tabs[focusedIndex];
+    if (!focusedTab)
+        return undefined;
+    const selectedColor = focusedTab.options.selectedLabelStyle?.color ?? focusedTab.options.selectedIconColor;
+    return selectedColor;
+}
 // TODO(@ubax): add per platform implementations splitted into .platform files
 function NativeTabsView(props) {
     const { minimizeBehavior, disableIndicator, focusedIndex, provenance: provenanceProp, tabs, sidebarAdaptable, nonTriggerChildren, } = props;
@@ -28,12 +35,25 @@ function NativeTabsView(props) {
     // it will be out of bounds
     const inBoundsDeferredFocusedIndex = deferredFocusedIndex < tabs.length ? deferredFocusedIndex : focusedIndex;
     const selectedScreenKey = tabs[inBoundsDeferredFocusedIndex].routeKey;
-    const iosAppearances = tabs.map((tab) => process.env.EXPO_OS !== 'ios'
-        ? undefined
-        : {
-            standardAppearance: (0, appearance_1.createStandardAppearanceFromOptions)(tab.options),
-            scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)(tab.options),
-        });
+    const iosAppearances = tabs.map((tab) => {
+        if (process.env.EXPO_OS !== 'ios') {
+            return undefined;
+        }
+        const standardAppearance = (0, appearance_1.createStandardAppearanceFromOptions)(tab.options);
+        const scrollEdgeAppearance = (0, appearance_1.createScrollEdgeAppearanceFromOptions)(tab.options);
+        if (standardAppearance && standardAppearance.stacked) {
+            standardAppearance.inline = standardAppearance.stacked;
+            standardAppearance.compactInline = standardAppearance.stacked;
+        }
+        if (scrollEdgeAppearance && scrollEdgeAppearance.stacked) {
+            scrollEdgeAppearance.inline = scrollEdgeAppearance.stacked;
+            scrollEdgeAppearance.compactInline = scrollEdgeAppearance.stacked;
+        }
+        return {
+            standardAppearance,
+            scrollEdgeAppearance,
+        };
+    });
     const androidAppearances = tabs.map((tab) => process.env.EXPO_OS !== 'android'
         ? undefined
         : (0, appearance_1.createAndroidScreenAppearance)({
@@ -57,7 +77,7 @@ function NativeTabsView(props) {
     }
     const tabBarControllerMode = sidebarAdaptable ? 'tabSidebar' : sidebarAdaptable === false ? 'tabBar' : 'automatic';
     return ((0, jsx_runtime_1.jsx)(TabsHostWrapper, { navState: { selectedScreenKey, provenance }, ios: {
-            tabBarTintColor: props.tintColor,
+            tabBarTintColor: props.tintColor ?? getSelectedTabTintColor(tabs, inBoundsDeferredFocusedIndex),
             tabBarMinimizeBehavior: minimizeBehavior,
             tabBarControllerMode,
             bottomAccessory: bottomAccessoryFn,

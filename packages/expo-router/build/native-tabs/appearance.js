@@ -73,6 +73,7 @@ function appendStyleToAppearance(style, appearance, states) {
             ...baseItemAppearance.normal,
             ...baseItemAppearance[state],
             ...styleAppearance.stacked?.normal,
+            ...styleAppearance.stacked?.[state],
         },
     }));
     const itemAppearance = {
