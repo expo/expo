@@ -40,7 +40,14 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// Materializes an owning ``JavaScriptValue`` by copying the borrowed `jsi::Value`. Use it when the
   /// value must outlive the decode call (stored, captured, handed to a `Promise`). Takes the
   /// `JavaScriptRuntime` wrapper since the owning value needs it; the caller has it in scope.
+  ///
+  /// `runtime` must be the runtime that owns the borrowed value. Copying a reference value (string,
+  /// object, function, array, bigint) clones its `PointerValue` against `runtime`, so passing a
+  /// different runtime would clone a handle from another heap and corrupt it; the assert guards that.
   public func copied(in runtime: JavaScriptRuntime) -> JavaScriptValue {
+    assert(
+      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
+      "`copied(in:)` must be passed the runtime that owns the borrowed value")
     return JavaScriptValue(runtime, pointer.pointee)
   }
 
