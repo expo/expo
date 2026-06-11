@@ -18,6 +18,7 @@ struct NativeArrayBufferTests {
       let buffer = NativeArrayBuffer.allocate(size: size)
 
       #expect(buffer.byteLength == size)
+      #expect(buffer.isOwned == true)
     }
 
     @Test
@@ -49,6 +50,7 @@ struct NativeArrayBufferTests {
       )
 
       #expect(arrayBuffer.byteLength == size)
+      #expect(arrayBuffer.isOwned == true)
       #expect(cleanupCalled == false)
     }
   }
@@ -65,6 +67,7 @@ struct NativeArrayBufferTests {
       }
 
       #expect(copiedBuffer.byteLength == originalData.count)
+      #expect(copiedBuffer.isOwned == true)
       #expect(Array(copiedBuffer.data) == originalData)
     }
 
@@ -74,6 +77,7 @@ struct NativeArrayBufferTests {
       let copiedBuffer = try NativeArrayBuffer.copy(data: originalData)
 
       #expect(copiedBuffer.byteLength == originalData.count)
+      #expect(copiedBuffer.isOwned == true)
       #expect(copiedBuffer.data == originalData)
     }
 
@@ -89,6 +93,7 @@ struct NativeArrayBufferTests {
       let copiedBuffer = originalBuffer.copy()
 
       #expect(copiedBuffer.byteLength == originalBuffer.byteLength)
+      #expect(copiedBuffer.isOwned == true)
 
       // Verify content is the same
       let originalFirst5 = Array(originalBuffer.data.prefix(5))
@@ -274,6 +279,7 @@ struct NativeArrayBufferTests {
         "originalBuffer = new ArrayBuffer(4)",
         "originalView = new Uint8Array(originalBuffer)",
         "originalView.fill(42)",
+        "isOwned = expo.modules.ArrayBufferTests.isOwned(originalBuffer)",
         "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(originalBuffer, 99)",
         "processedBuffer",
       ]).asArrayBuffer()
@@ -287,6 +293,7 @@ struct NativeArrayBufferTests {
       ]).asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 4)
+      #expect(try runtime.eval("isOwned").asBool() == true)
       #expect(originalValues == [42, 42, 42, 42])
       #expect(processedValues == [99, 99, 99, 99])
     }
@@ -296,6 +303,7 @@ struct NativeArrayBufferTests {
       let processedBuffer = try runtime.eval([
         "nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(4)",
         "new Uint8Array(nativeBackedBuffer).fill(42)",
+        "isOwned = expo.modules.ArrayBufferTests.isOwned(nativeBackedBuffer)",
         "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(nativeBackedBuffer, 99)",
         "processedBuffer",
       ]).asArrayBuffer()
@@ -309,6 +317,7 @@ struct NativeArrayBufferTests {
       ]).asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 4)
+      #expect(try runtime.eval("isOwned").asBool() == false)
       #expect(originalValues == [99, 99, 99, 99])
       #expect(processedValues == [99, 99, 99, 99])
     }
@@ -320,6 +329,7 @@ struct NativeArrayBufferTests {
         "fullView = new Uint8Array(nativeBackedBuffer)",
         "fullView.set([1, 2, 3, 4, 5])",
         "partialView = new Uint8Array(nativeBackedBuffer, 1, 2)",
+        "isOwned = expo.modules.ArrayBufferTests.isOwned(partialView)",
         "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(partialView, 99)",
         "processedBuffer",
       ]).asArrayBuffer()
@@ -333,6 +343,7 @@ struct NativeArrayBufferTests {
       ]).asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 2)
+      #expect(try runtime.eval("isOwned").asBool() == false)
       #expect(originalValues == [1, 99, 99, 4, 5])
       #expect(processedValues == [99, 99])
     }
@@ -343,6 +354,7 @@ struct NativeArrayBufferTests {
         "jsBackedBuffer = new Uint8Array([1, 2, 3, 4, 5]).buffer",
         "fullView = new Uint8Array(jsBackedBuffer)",
         "partialView = new Uint8Array(jsBackedBuffer, 1, 2)",
+        "isOwned = expo.modules.ArrayBufferTests.isOwned(partialView)",
         "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(partialView, 99)",
         "processedBuffer",
       ]).asArrayBuffer()
@@ -356,6 +368,7 @@ struct NativeArrayBufferTests {
       ]).asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 2)
+      #expect(try runtime.eval("isOwned").asBool() == true)
       #expect(originalValues == [1, 2, 3, 4, 5])
       #expect(processedValues == [99, 99])
     }
@@ -518,6 +531,10 @@ private final class ArrayBufferTestModule: Module {
       buffer.withUnsafeMutableBytes { ptr in
         memset(ptr.baseAddress!, Int32(pattern), ptr.count)
       }
+    }
+
+    Function("isOwned") { (buffer: ArrayBuffer) -> Bool in
+      return buffer.isOwned
     }
 
     Function("processNativeBuffer") { (buffer: NativeArrayBuffer, newPattern: UInt8) -> NativeArrayBuffer in

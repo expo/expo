@@ -43,7 +43,15 @@ class ArrayBuffer : Destructible {
   /**
    * Returns a direct [ByteBuffer] that wraps this ArrayBuffer's underlying data.
    */
-  external fun toDirectBuffer(): ByteBuffer
+  fun toDirectBuffer(): ByteBuffer = toDirectBuffer(copyBorrowed = false)
+
+  /**
+   * Returns a direct [ByteBuffer] for this ArrayBuffer's underlying data.
+   * When [copyBorrowed] is true, borrowed storage is copied into a new direct [ByteBuffer].
+   */
+  external fun toDirectBuffer(copyBorrowed: Boolean): ByteBuffer
+
+  external fun isOwned(): Boolean
 
   /**
    * Creates a native-owned copy of this ArrayBuffer.

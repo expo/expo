@@ -5,32 +5,62 @@
 
 namespace expo {
 
-ArrayBufferByteBufferWrapper::ArrayBufferByteBufferWrapper(const jni::alias_ref<jni::JByteBuffer> &byteBuffer) : _byteBuffer(jni::make_global(byteBuffer)) {
+ByteBufferArrayBufferStorage::ByteBufferArrayBufferStorage(const jni::alias_ref<jni::JByteBuffer> &byteBuffer)
+  : _byteBuffer(jni::make_global(byteBuffer)) {
   _byteBuffer->order(jni::JByteOrder::nativeOrder());
 }
 
-ArrayBufferByteBufferWrapper::ArrayBufferByteBufferWrapper(
-  const jni::alias_ref<jni::JByteBuffer> &byteBuffer,
-  std::shared_ptr<jsi::MutableBuffer> retainedBuffer
-) : _byteBuffer(jni::make_global(byteBuffer)),
-    _retainedBuffer(std::move(retainedBuffer)) {
-  _byteBuffer->order(jni::JByteOrder::nativeOrder());
-}
-
-ArrayBufferByteBufferWrapper::~ArrayBufferByteBufferWrapper() {
+ByteBufferArrayBufferStorage::~ByteBufferArrayBufferStorage() {
   jni::ThreadScope::WithClassLoader([&] { _byteBuffer.reset(); });
 }
 
-uint8_t *ArrayBufferByteBufferWrapper::data() {
+uint8_t *ByteBufferArrayBufferStorage::data() {
   return _byteBuffer->getDirectBytes();
 }
 
-size_t ArrayBufferByteBufferWrapper::size() const {
+size_t ByteBufferArrayBufferStorage::size() const {
   return _byteBuffer->getDirectSize();
 }
 
-const jni::global_ref<jni::JByteBuffer> &ArrayBufferByteBufferWrapper::getBuffer() const {
-  return this->_byteBuffer;
+bool ByteBufferArrayBufferStorage::isOwned() const noexcept {
+  return true;
+}
+
+jni::local_ref<jni::JByteBuffer> ByteBufferArrayBufferStorage::toDirectBuffer(bool) {
+  return jni::make_local(_byteBuffer);
+}
+
+MutableBufferViewArrayBufferStorage::MutableBufferViewArrayBufferStorage(
+  std::shared_ptr<jsi::MutableBuffer> backingBuffer,
+  size_t offset,
+  size_t length
+) : _backingBuffer(std::move(backingBuffer)),
+    _offset(offset),
+    _length(length) {}
+
+uint8_t *MutableBufferViewArrayBufferStorage::data() {
+  return _backingBuffer->data() + _offset;
+}
+
+size_t MutableBufferViewArrayBufferStorage::size() const {
+  return _length;
+}
+
+bool MutableBufferViewArrayBufferStorage::isOwned() const noexcept {
+  return false;
+}
+
+jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer(bool copyBorrowed) {
+  if (copyBorrowed) {
+    auto byteBuffer = jni::JByteBuffer::allocateDirect(static_cast<jint>(_length));
+    byteBuffer->order(jni::JByteOrder::nativeOrder());
+    memcpy(byteBuffer->getDirectAddress(), data(), _length);
+    return byteBuffer;
+  }
+
+  auto byteBuffer = jni::JByteBuffer::wrapBytes(data(), _length);
+  byteBuffer->order(jni::JByteOrder::nativeOrder());
+  return byteBuffer;
 }
 
 void ArrayBuffer::registerNatives() {
@@ -44,6 +74,7 @@ void ArrayBuffer::registerNatives() {
                    makeNativeMethod("readFloat", ArrayBuffer::read<float>),
                    makeNativeMethod("readDouble", ArrayBuffer::read<double>),
                    makeNativeMethod("toDirectBuffer", ArrayBuffer::toDirectBuffer),
+                   makeNativeMethod("isOwned", ArrayBuffer::isOwned),
                  });
 }
 
@@ -58,9 +89,12 @@ ArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
                          jsi::ArrayBuffer &arrayBuffer) {
   auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(runtime);
   if (mutableBuffer) {
-    auto byteBuffer = jni::JByteBuffer::wrapBytes(mutableBuffer->data(), mutableBuffer->size());
-    byteBuffer->order(jni::JByteOrder::nativeOrder());
-    auto value = ArrayBuffer::newObjectCxxArgs(byteBuffer, std::move(mutableBuffer));
+    auto storage = std::make_shared<MutableBufferViewArrayBufferStorage>(
+      std::move(mutableBuffer),
+      0,
+      arrayBuffer.size(runtime)
+    );
+    auto value = ArrayBuffer::newObjectCxxArgs(std::move(storage));
     jsiContext->jniDeallocator->addReference(value);
     return value;
   }
@@ -84,10 +118,12 @@ ArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
   auto mutableBuffer = backingBuffer.tryGetMutableBuffer(runtime);
   if (mutableBuffer) {
     size_t offset = typedArray.byteOffset(runtime);
-    auto byteBuffer = jni::JByteBuffer::wrapBytes(
-      mutableBuffer->data() + offset, size);
-    byteBuffer->order(jni::JByteOrder::nativeOrder());
-    auto value = ArrayBuffer::newObjectCxxArgs(byteBuffer, std::move(mutableBuffer));
+    auto storage = std::make_shared<MutableBufferViewArrayBufferStorage>(
+      std::move(mutableBuffer),
+      offset,
+      size
+    );
+    auto value = ArrayBuffer::newObjectCxxArgs(std::move(storage));
     jsiContext->jniDeallocator->addReference(value);
     return value;
   }
@@ -102,23 +138,25 @@ ArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
 }
 
 ArrayBuffer::ArrayBuffer(const jni::alias_ref<jni::JByteBuffer> &byteBuffer)
-  : buffer(std::make_shared<ArrayBufferByteBufferWrapper>(byteBuffer)) { }
+  : storage(std::make_shared<ByteBufferArrayBufferStorage>(byteBuffer)) { }
 
-ArrayBuffer::ArrayBuffer(
-  const jni::alias_ref<jni::JByteBuffer> &byteBuffer,
-  std::shared_ptr<jsi::MutableBuffer> retainedBuffer
-) : buffer(std::make_shared<ArrayBufferByteBufferWrapper>(byteBuffer, std::move(retainedBuffer))) { }
+ArrayBuffer::ArrayBuffer(std::shared_ptr<ArrayBufferStorage> storage)
+  : storage(std::move(storage)) { }
 
 int ArrayBuffer::size() {
-  return (int) buffer->size();
+  return (int) storage->size();
 }
 
-std::shared_ptr<ArrayBufferByteBufferWrapper> ArrayBuffer::jsiMutableBuffer() {
-  return this->buffer;
+std::shared_ptr<jsi::MutableBuffer> ArrayBuffer::jsiMutableBuffer() {
+  return this->storage;
 }
 
-jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer() {
-  return jni::make_local(buffer->getBuffer());
+jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer(bool copyBorrowed) {
+  return storage->toDirectBuffer(copyBorrowed);
+}
+
+bool ArrayBuffer::isOwned() {
+  return storage->isOwned();
 }
 
 }
