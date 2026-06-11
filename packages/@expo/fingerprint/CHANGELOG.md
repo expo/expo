@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
+- Fixed ignore patterns (built-in and `.fingerprintignore`) not matching on Windows, which made fingerprints differ between Windows machines and EAS builds ("Runtime version mismatch"). ([#](https://github.com/expo/expo/pull/) by [@blurbyte](https://github.com/blurbyte))
 
 ### 💡 Others
 
