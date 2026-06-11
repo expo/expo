@@ -11,15 +11,15 @@
     "./plugin": "./plugin/build/index.js",
     ".": {
       "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "default": "./build/index.js"
     },
     "./legacy": {
       "types": "./build/legacy/index.d.ts",
-      "default": "./src/legacy/index.ts"
+      "default": "./build/legacy/index.js"
     },
     "./next": {
       "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "default": "./build/index.js"
     }
   },
   "sideEffects": false,
@@ -61,16 +61,5 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  },
-  "exports": {
-    ".": {
-      "types": {
-        "source": "./src/index.ts",
-        "default": "./build/index.d.ts"
-      },
-      "source": "./src/index.ts",
-      "default": "./build/index.js"
-    },
-    "./package.json": "./package.json"
   }
 }
