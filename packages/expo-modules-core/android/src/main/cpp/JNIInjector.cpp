@@ -8,6 +8,7 @@
 #include "JavaScriptObject.h"
 #include "JavaScriptWeakObject.h"
 #include "JavaScriptFunction.h"
+#include "ArrayBuffer.h"
 #include "JavaScriptArrayBuffer.h"
 #include "JavaScriptTypedArray.h"
 #include "NativeArrayBuffer.h"
@@ -43,6 +44,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptObject::registerNatives();
     expo::JavaScriptWeakObject::registerNatives();
     expo::JavaScriptFunction::registerNatives();
+    expo::ArrayBuffer::registerNatives();
     expo::JavaScriptArrayBuffer::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
     expo::NativeArrayBuffer::registerNatives();

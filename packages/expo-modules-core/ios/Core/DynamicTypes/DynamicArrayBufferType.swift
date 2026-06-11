@@ -23,33 +23,19 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
       let count = typedArray.byteLength
 
       if count == 0 {
-        return NativeArrayBuffer.allocate(size: 0)
+        return ArrayBuffer.allocate(size: 0)
       }
       return try typedArray.withUnsafeBytes { bytes in
-        switch innerType {
-        case is NativeArrayBuffer.Type:
-          let backingBuffer = typedArray.getArrayBuffer()
-          if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
-            return NativeArrayBuffer(
-              wrapping: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
-              count: count,
-              cleanup: {
-                _ = borrowed
-              })
-          }
-          return NativeArrayBuffer.copy(of: bytes.baseAddress!, count: count)
-        default:
-          // Copy the TypedArray's view (respecting its `byteOffset` and `byteLength`) into a
-          // freshly allocated JS ArrayBuffer wrapped in `ArrayBuffer`.
-          // TODO: Support zero-copy views by extending `ArrayBuffer` with `byteOffset`/`byteLength`
-          // so it can expose a slice of the underlying JSI buffer directly.
-          let runtime = try appContext.runtime
-          let newBuffer = runtime.createArrayBuffer(size: count)
-          if count > 0 {
-            memcpy(newBuffer.data(), bytes.baseAddress!, count)
-          }
-          return ArrayBuffer(newBuffer)
+        let backingBuffer = typedArray.getArrayBuffer()
+        if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
+          return ArrayBuffer(
+            wrapping: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
+            count: count,
+            cleanup: {
+              _ = borrowed
+            })
         }
+        return ArrayBuffer.copy(of: bytes.baseAddress!, count: count)
       }
     }
     guard jsValue.isArrayBuffer() else {
@@ -57,28 +43,23 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
     }
     let jsArrayBuffer = jsValue.getArrayBuffer()
 
-    switch innerType {
-    case is NativeArrayBuffer.Type:
-      if let borrowed = jsArrayBuffer.tryBorrowMutableBuffer() {
-        return NativeArrayBuffer(
-          wrapping: UnsafeMutableRawPointer(borrowed.data),
-          count: borrowed.size,
-          cleanup: {
-            _ = borrowed
-          })
-      }
-      return NativeArrayBuffer.copy(of: UnsafeRawPointer(jsArrayBuffer.data()), count: jsArrayBuffer.size)
-    default:
-      return ArrayBuffer(jsArrayBuffer)
+    if jsArrayBuffer.size == 0 {
+      return ArrayBuffer.allocate(size: 0)
     }
+    if let borrowed = jsArrayBuffer.tryBorrowMutableBuffer() {
+      return ArrayBuffer(
+        wrapping: UnsafeMutableRawPointer(borrowed.data),
+        count: borrowed.size,
+        cleanup: {
+          _ = borrowed
+        })
+    }
+    return ArrayBuffer.copy(of: UnsafeRawPointer(jsArrayBuffer.data()), count: jsArrayBuffer.size)
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
-    if let nativeArrayBuffer = value as? NativeArrayBuffer {
-      return nativeArrayBuffer.asJavaScriptArrayBuffer(runtime: try appContext.runtime).asValue()
-    }
     if let arrayBuffer = value as? ArrayBuffer {
-      return arrayBuffer.backingBuffer.asValue()
+      return arrayBuffer.asJavaScriptArrayBuffer(runtime: try appContext.runtime).asValue()
     }
     throw Conversions.ConversionToJSFailedException((kind: .object, nativeType: ValueType.self))
   }
@@ -91,11 +72,5 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
 internal final class NotArrayBufferException: GenericException<any AnyArrayBuffer.Type>, @unchecked Sendable {
   override var reason: String {
     "Given argument is not an instance of \(param)"
-  }
-}
-
-internal final class ArrayBufferArgumentTypeException: GenericException<any AnyArrayBuffer.Type>, @unchecked Sendable {
-  override var reason: String {
-    "\(param) cannot be used as argument type. Use either ArrayBuffer or NativeArrayBuffer"
   }
 }

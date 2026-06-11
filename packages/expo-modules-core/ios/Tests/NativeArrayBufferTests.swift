@@ -5,7 +5,7 @@ import Testing
 
 @testable import ExpoModulesCore
 
-@Suite("NativeArrayBuffer")
+@Suite("ArrayBuffer")
 struct NativeArrayBufferTests {
 
   // MARK: - Allocation
@@ -80,10 +80,10 @@ struct NativeArrayBufferTests {
     @Test
     func `copies from another NativeArrayBuffer`() {
       let originalBuffer = NativeArrayBuffer.allocate(size: 50, initializeToZero: true)
-      // Write some test data via withUnsafeBytes
+      // Write some test data via withUnsafeMutableBytes
       let testBytes: [UInt8] = [1, 2, 3, 4, 5]
-      originalBuffer.withUnsafeBytes { ptr in
-        memcpy(UnsafeMutableRawPointer(mutating: ptr.baseAddress!), testBytes, testBytes.count)
+      originalBuffer.withUnsafeMutableBytes { ptr in
+        memcpy(ptr.baseAddress!, testBytes, testBytes.count)
       }
 
       let copiedBuffer = originalBuffer.copy()
@@ -105,8 +105,8 @@ struct NativeArrayBufferTests {
     func `converts to Data`() {
       let testData: [UInt8] = [1, 2, 3, 4, 5]
       let buffer = NativeArrayBuffer.allocate(size: testData.count)
-      buffer.withUnsafeBytes { ptr in
-        memcpy(UnsafeMutableRawPointer(mutating: ptr.baseAddress!), testData, testData.count)
+      buffer.withUnsafeMutableBytes { ptr in
+        memcpy(ptr.baseAddress!, testData, testData.count)
       }
 
       let convertedData = buffer.data
@@ -118,8 +118,8 @@ struct NativeArrayBufferTests {
     func `conforms to ContiguousBytes`() {
       let testData: [UInt8] = [1, 2, 3, 4, 5, 6, 7, 8]
       let buffer = NativeArrayBuffer.allocate(size: testData.count)
-      buffer.withUnsafeBytes { ptr in
-        memcpy(UnsafeMutableRawPointer(mutating: ptr.baseAddress!), testData, testData.count)
+      buffer.withUnsafeMutableBytes { ptr in
+        memcpy(ptr.baseAddress!, testData, testData.count)
       }
 
       let extractedBytes = buffer.withUnsafeBytes { ptr in
@@ -269,6 +269,98 @@ struct NativeArrayBufferTests {
     }
 
     @Test
+    func `copies JS-backed ArrayBuffer when using ArrayBuffer argument`() throws {
+      let processedBuffer = try runtime.eval([
+        "originalBuffer = new ArrayBuffer(4)",
+        "originalView = new Uint8Array(originalBuffer)",
+        "originalView.fill(42)",
+        "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(originalBuffer, 99)",
+        "processedBuffer",
+      ]).asArrayBuffer()
+
+      let originalValues = try runtime.eval([
+        "Array.from(originalView)"
+      ]).asArray().map { try $0.asInt() }
+
+      let processedValues = try runtime.eval([
+        "Array.from(new Uint8Array(processedBuffer))"
+      ]).asArray().map { try $0.asInt() }
+
+      #expect(processedBuffer.byteLength == 4)
+      #expect(originalValues == [42, 42, 42, 42])
+      #expect(processedValues == [99, 99, 99, 99])
+    }
+
+    @Test
+    func `shares native-backed ArrayBuffer when using ArrayBuffer argument`() throws {
+      let processedBuffer = try runtime.eval([
+        "nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(4)",
+        "new Uint8Array(nativeBackedBuffer).fill(42)",
+        "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(nativeBackedBuffer, 99)",
+        "processedBuffer",
+      ]).asArrayBuffer()
+
+      let originalValues = try runtime.eval([
+        "Array.from(new Uint8Array(nativeBackedBuffer))"
+      ]).asArray().map { try $0.asInt() }
+
+      let processedValues = try runtime.eval([
+        "Array.from(new Uint8Array(processedBuffer))"
+      ]).asArray().map { try $0.asInt() }
+
+      #expect(processedBuffer.byteLength == 4)
+      #expect(originalValues == [99, 99, 99, 99])
+      #expect(processedValues == [99, 99, 99, 99])
+    }
+
+    @Test
+    func `shares native-backed typed array view when using ArrayBuffer argument`() throws {
+      let processedBuffer = try runtime.eval([
+        "nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(5)",
+        "fullView = new Uint8Array(nativeBackedBuffer)",
+        "fullView.set([1, 2, 3, 4, 5])",
+        "partialView = new Uint8Array(nativeBackedBuffer, 1, 2)",
+        "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(partialView, 99)",
+        "processedBuffer",
+      ]).asArrayBuffer()
+
+      let originalValues = try runtime.eval([
+        "Array.from(new Uint8Array(nativeBackedBuffer))"
+      ]).asArray().map { try $0.asInt() }
+
+      let processedValues = try runtime.eval([
+        "Array.from(new Uint8Array(processedBuffer))"
+      ]).asArray().map { try $0.asInt() }
+
+      #expect(processedBuffer.byteLength == 2)
+      #expect(originalValues == [1, 99, 99, 4, 5])
+      #expect(processedValues == [99, 99])
+    }
+
+    @Test
+    func `copies JS-backed typed array view when using ArrayBuffer argument`() throws {
+      let processedBuffer = try runtime.eval([
+        "jsBackedBuffer = new Uint8Array([1, 2, 3, 4, 5]).buffer",
+        "fullView = new Uint8Array(jsBackedBuffer)",
+        "partialView = new Uint8Array(jsBackedBuffer, 1, 2)",
+        "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(partialView, 99)",
+        "processedBuffer",
+      ]).asArrayBuffer()
+
+      let originalValues = try runtime.eval([
+        "Array.from(fullView)"
+      ]).asArray().map { try $0.asInt() }
+
+      let processedValues = try runtime.eval([
+        "Array.from(new Uint8Array(processedBuffer))"
+      ]).asArray().map { try $0.asInt() }
+
+      #expect(processedBuffer.byteLength == 2)
+      #expect(originalValues == [1, 2, 3, 4, 5])
+      #expect(processedValues == [99, 99])
+    }
+
+    @Test
     func `shares native-backed buffer when using NativeArrayBuffer argument`() throws {
       let processedBuffer = try runtime.eval([
         "nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(4)",
@@ -388,13 +480,13 @@ struct NativeArrayBufferTests {
     }
 
     @Test
-    func `allows direct memory access via withUnsafeBytes`() {
+    func `allows direct memory access via withUnsafeMutableBytes`() {
       let size = 1000
       let buffer = NativeArrayBuffer.allocate(size: size)
 
       let pattern: UInt8 = 0xAA
-      buffer.withUnsafeBytes { ptr in
-        memset(UnsafeMutableRawPointer(mutating: ptr.baseAddress!), Int32(pattern), size)
+      buffer.withUnsafeMutableBytes { ptr in
+        memset(ptr.baseAddress!, Int32(pattern), size)
       }
 
       #expect(buffer.data.allSatisfy { $0 == pattern } == true)
@@ -423,14 +515,21 @@ private final class ArrayBufferTestModule: Module {
     }
 
     Function("fillWithPattern") { (buffer: ArrayBuffer, pattern: UInt8) in
-      buffer.withUnsafeBytes { ptr in
-        memset(UnsafeMutableRawPointer(mutating: ptr.baseAddress!), Int32(pattern), ptr.count)
+      buffer.withUnsafeMutableBytes { ptr in
+        memset(ptr.baseAddress!, Int32(pattern), ptr.count)
       }
     }
 
     Function("processNativeBuffer") { (buffer: NativeArrayBuffer, newPattern: UInt8) -> NativeArrayBuffer in
-      buffer.withUnsafeBytes { ptr in
-        memset(UnsafeMutableRawPointer(mutating: ptr.baseAddress!), Int32(newPattern), ptr.count)
+      buffer.withUnsafeMutableBytes { ptr in
+        memset(ptr.baseAddress!, Int32(newPattern), ptr.count)
+      }
+      return buffer
+    }
+
+    Function("processBuffer") { (buffer: ArrayBuffer, newPattern: UInt8) -> ArrayBuffer in
+      buffer.withUnsafeMutableBytes { ptr in
+        memset(ptr.baseAddress!, Int32(newPattern), ptr.count)
       }
       return buffer
     }

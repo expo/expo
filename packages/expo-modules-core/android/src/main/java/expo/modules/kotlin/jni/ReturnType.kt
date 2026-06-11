@@ -19,6 +19,7 @@ enum class ReturnType(val value: Int = nextValue()) {
   SHARED_OBJECT,
   JS_TYPED_ARRAY,
   JS_ARRAY_BUFFER,
+  ARRAY_BUFFER,
   NATIVE_ARRAY_BUFFER,
   MAP,
   COLLECTION,
