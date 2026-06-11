@@ -1,3 +1,4 @@
+import Foundation
 import ExpoModulesCore
 import EXUpdatesInterface
 
@@ -33,6 +34,8 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       )
     }
 
+    // TODO(@ubax): move `logEvent` onto the Session shared object so logs are recorded via a
+    // session handle (like `addMetric`), instead of writing to `mainSession` directly here.
     Function("logEvent") { (name: String, options: LogEventOptions?) in
       guard let validatedName = validateEventName(name) else {
         return
@@ -91,23 +94,44 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }.value
     }
 
-    AsyncFunction("getMainSession") { () -> StoredSession? in
-      return try await AppMetricsActor.isolated {
-        try storedSession(id: AppMetrics.mainSession.id)
-      }.value
+    // Synchronous and never nil: the main session is the process-lifetime singleton, always
+    // available. It's a `SharedObject`, so returning the same instance hands JS the identical shared
+    // object on every call (`getMainSession() === getMainSession()`).
+    Function("getMainSession") { () -> Session in
+      return AppMetrics.mainSession
     }
 
     // Returns the current foreground session, or `nil` when the app is not in the foreground.
-    // Reads the actor-isolated `foregroundSession`, so it's async. The handle is cached and reused
-    // while the same foreground session is current, and rebuilt when the session rotates, so the
-    // reference is static per foreground session.
-    AsyncFunction("getForegroundSession") { () -> StoredSession? in
-      return try await AppMetricsActor.isolated { () -> StoredSession? in
-        guard let foregroundSessionId = AppMetrics.foregroundSession?.id else {
-          return nil
-        }
-        return try storedSession(id: foregroundSessionId)
-      }.value
+    // Reads the actor-isolated `foregroundSession`, so it's async. The instance is the shared object
+    // itself, so JS gets the same object while the session is current and a new one after it rotates.
+    AsyncFunction("getForegroundSession") { () -> Session? in
+      return try await AppMetricsActor.isolated { AppMetrics.foregroundSession }.value
+    }
+
+    Class("Session", Session.self) {
+      Property("id") { $0.id }
+      Property("type") { $0.type.rawValue }
+      Property("startDate") { $0.startDate.ISO8601Format() }
+
+      AsyncFunction("isActive") { (session: Session) -> Bool in
+        return try await AppMetricsActor.isolated { session.isActive }.value
+      }
+
+      AsyncFunction("getEndDate") { (session: Session) -> String? in
+        return try await AppMetricsActor.isolated { session.endDate?.ISO8601Format() }.value
+      }
+
+      AsyncFunction("getMetrics") { (session: Session) -> [Metric] in
+        return try await AppMetricsActor.isolated { try session.getMetrics() }.value
+      }
+
+      AsyncFunction("getLogs") { (session: Session) -> [LogRecord] in
+        return try await AppMetricsActor.isolated { try session.getLogs() }.value
+      }
+
+      AsyncFunction("addMetric") { (session: Session, input: SessionMetricInput) in
+        try await AppMetricsActor.isolated { try session.addMetric(input) }.value
+      }
     }
 
     Function("simulateCrashReport") {

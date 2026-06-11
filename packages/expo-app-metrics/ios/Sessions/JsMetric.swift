@@ -28,3 +28,28 @@ struct JsMetric: Record {
     )
   }
 }
+
+/**
+ Mirrors the TypeScript `MetricInput` type (`Metric` minus `sessionId`)
+ */
+struct SessionMetricInput: Record {
+  @Field var category: String = ""
+  @Field var name: String = ""
+  @Field var value: Double = 0
+  @Field var timestamp: String = Date.now.ISO8601Format()
+  @Field var routeName: String?
+  @Field var params: [String: Any]?
+
+  func toMetric(sessionId: String) -> Metric {
+    return Metric(
+      category: Metric.Category(rawValue: category),
+      name: name,
+      value: value,
+      timestamp: timestamp,
+      routeName: routeName,
+      updateId: nil,
+      params: params,
+      sessionId: sessionId
+    )
+  }
+}

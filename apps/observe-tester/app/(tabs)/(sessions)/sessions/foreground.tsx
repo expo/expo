@@ -1,11 +1,11 @@
-import AppMetrics, { type Session } from 'expo-app-metrics';
+import AppMetrics, { type DebugSession } from 'expo-app-metrics';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 
 import { SessionDetail, liveSessionToRecord } from '@/components/SessionDetail';
 
 export default function ForegroundSessionScreen() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<DebugSession | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useFocusEffect(
