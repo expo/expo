@@ -14,6 +14,13 @@ export interface VersionInfo {
 export const ExpoVersionMappings: VersionInfo[] = [
   // Please keep sdk versions in sorted order (latest sdk first)
   {
+    expoPackageVersion: '~56.0.0',
+    sdkVersion: '56.0.0',
+    iosDeploymentTarget: '16.4',
+    reactNativeVersionRange: '~0.85.0',
+    supportCliIntegration: true,
+  },
+  {
     expoPackageVersion: '~55.0.0',
     sdkVersion: '55.0.0',
     iosDeploymentTarget: '15.1',

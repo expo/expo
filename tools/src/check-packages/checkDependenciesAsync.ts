@@ -13,7 +13,7 @@ import { DependencyKind, type PackageDependency, type Package } from '../Package
 
 type PackageCheckType = ActionOptions['checkPackageType'];
 
-/** The three levels of of which dangerous dependencies are allowed.
+/** The three levels of which dangerous dependencies are allowed.
  * @remarks
  * We can configure selectively invalid dependencies to be allowed in `SPECIAL_DEPENDENCIES` below.
  * - `types-only` means we allow any type-only import
@@ -43,7 +43,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   },
 
   'expo-router': {
-    'expect/build/matchers': 'ignore-dev', // TODO: Unsure how to replace safely. Dep/Peer won't work. Globals and `@jest/globals` unclear
     'react-native-tab-view': 'ignore-dev', // TODO: Should be a peer dep, but it's only used in the MaterialTopTabs which is gated behind a try/catch require, so it's not inherently dangerous
   },
 
@@ -261,8 +260,9 @@ function createExternalImportValidator(pkg: Package) {
         }
         // NOTE: Loose check to see if a dependency is pinned
         const isLoose = /[~|^><=](\s*\d+\.)/.test(versionRange) || versionRange === '*';
+        const isPrerelease = versionRange.includes('-');
         const isPinned = /^\d+\.\d+\.\d+$/.test(versionRange);
-        return !isLoose || isPinned;
+        return !isPrerelease && (!isLoose || isPinned);
       }
       return null;
     },

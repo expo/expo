@@ -352,15 +352,15 @@ export function applyImageToSplashScreenXML(
   {
     imageName,
     contentMode,
-    backgroundColor = '#ffffff',
+    backgroundColor,
     enableFullScreenImage,
-    imageWidth = 100,
+    imageWidth,
   }: {
     imageName: string;
     contentMode: ImageContentMode;
-    backgroundColor?: string;
+    backgroundColor: string;
     enableFullScreenImage: boolean;
-    imageWidth?: number;
+    imageWidth: number;
   }
 ): IBSplashScreenDocument {
   const mainView = xml.document.scenes[0]?.scene[0]?.objects[0]?.viewController[0]?.view[0];

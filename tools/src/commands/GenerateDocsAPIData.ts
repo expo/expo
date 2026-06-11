@@ -9,6 +9,7 @@ import type { TypeDocOptions } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
+import { applyDocsInline, DOCS_INLINE_TAG } from '../generate-docs-api-data/docsInline';
 
 type ActionOptions = {
   packageName?: string;
@@ -23,10 +24,19 @@ const MINIFY_JSON = true;
 
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
-  'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
   'expo-ui/community/datetime-picker': ['community/datetime-picker/index.tsx', 'expo-ui'],
+  'expo-ui/community/masked-view': ['community/masked-view/index.tsx', 'expo-ui'],
+  'expo-ui/community/menu': ['community/menu/index.tsx', 'expo-ui'],
+  'expo-ui/community/pager-view': ['community/pager-view/index.tsx', 'expo-ui'],
+  'expo-ui/community/picker': ['community/picker/index.tsx', 'expo-ui'],
+  'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
+  'expo-ui/community/slider': ['community/slider/index.tsx', 'expo-ui'],
 
   // Swift UI
+  'expo-ui/swift-ui/accessorywidgetbackground': [
+    'swift-ui/AccessoryWidgetBackground/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
@@ -62,9 +72,12 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/swipeactions': ['swift-ui/SwipeActions/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/tabview': ['swift-ui/TabView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
   'expo-ui/swift-ui/vstack': ['swift-ui/VStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
 
@@ -102,6 +115,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'jetpack-compose/HorizontalFloatingToolbar/index.tsx',
     'expo-ui',
   ],
+  'expo-ui/jetpack-compose/horizontalpager': [
+    'jetpack-compose/HorizontalPager/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/icon': ['jetpack-compose/Icon/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/iconbutton': ['jetpack-compose/IconButton/index.tsx', 'expo-ui'],
@@ -114,6 +131,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/navigationbar': ['jetpack-compose/NavigationBar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/segmentedbutton': [
     'jetpack-compose/SegmentedButton/index.tsx',
     'expo-ui',
@@ -130,11 +148,38 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/spacer': ['jetpack-compose/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/surface': ['jetpack-compose/Surface/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/checkbox': ['jetpack-compose/Checkbox/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/snackbar': ['jetpack-compose/Snackbar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/text': ['jetpack-compose/Text/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/loadingindicator': [
+    'jetpack-compose/LoadingIndicator/index.tsx',
+    'expo-ui',
+  ],
+
+  // Universal (cross-platform JS components)
+  'expo-ui/universal/host': ['universal/Host/index.tsx', 'expo-ui'],
+  'expo-ui/universal/column': ['universal/Column/index.tsx', 'expo-ui'],
+  'expo-ui/universal/row': ['universal/Row/index.tsx', 'expo-ui'],
+  'expo-ui/universal/text': ['universal/Text/index.tsx', 'expo-ui'],
+  'expo-ui/universal/button': ['universal/Button/index.tsx', 'expo-ui'],
+  'expo-ui/universal/scrollview': ['universal/ScrollView/index.tsx', 'expo-ui'],
+  'expo-ui/universal/switch': ['universal/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/universal/slider': ['universal/Slider/index.tsx', 'expo-ui'],
+  'expo-ui/universal/checkbox': ['universal/Checkbox/index.tsx', 'expo-ui'],
+  'expo-ui/universal/bottomsheet': ['universal/BottomSheet/index.tsx', 'expo-ui'],
+  'expo-ui/universal/fieldgroup': ['universal/FieldGroup/index.ts', 'expo-ui'],
+  'expo-ui/universal/icon': ['universal/Icon/index.tsx', 'expo-ui'],
+  'expo-ui/universal/spacer': ['universal/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/universal/textinput': ['universal/TextInput/index.tsx', 'expo-ui'],
+  'expo-ui/universal/collapsible': ['universal/Collapsible/index.tsx', 'expo-ui'],
+  'expo-ui/universal/list': ['universal/List/index.tsx', 'expo-ui'],
+  'expo-ui/universal/listitem': ['universal/ListItem/index.ts', 'expo-ui'],
+  'expo-ui/universal/picker': ['universal/Picker/index.ts', 'expo-ui'],
+  'expo-ui/universal/rnhostview': ['universal/RNHostView/index.tsx', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
@@ -151,11 +196,13 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
+  'expo-type-information': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
-  'expo-calendar': ['Calendar.ts'],
-  'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
+  'expo-calendar': ['index.ts'],
+  'expo-calendar-legacy': ['legacy/index.ts', 'expo-calendar'],
+  'expo-calendar-next': ['next/index.ts', 'expo-calendar'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
@@ -163,6 +210,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
   'expo-contacts-next': ['next/index.ts', 'expo-contacts'],
+  'expo-contacts-legacy': ['legacy/index.ts', 'expo-contacts'],
   'expo-crypto': ['Crypto.ts'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-dev-menu': ['DevMenu.ts'],
@@ -200,20 +248,21 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
-  'expo-media-library': ['MediaLibrary.ts'],
-  'expo-media-library-next': ['next/index.ts', 'expo-media-library'],
+  'expo-media-library': ['index.ts'],
+  'expo-media-library-legacy': ['legacy/index.ts', 'expo-media-library'],
   'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-router': ['exports.ts'],
+  'expo-router': [['exports.ts', 'html.ts']],
   'expo-router/stack': ['stack/index.ts', 'expo-router'],
   'expo-router/link': ['link/index.ts', 'expo-router'],
   'expo-router/color': ['color/index.ts', 'expo-router'],
   'expo-router/native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-router/split-view': ['split-view/index.ts', 'expo-router'],
+  'expo-router/experimental-stack': ['layouts/experimental-stack/index.tsx', 'expo-router'],
   'expo-router/ui': ['ui/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
@@ -294,6 +343,7 @@ const executeCommand = async (
       ...Configuration.OptionDefaults.blockTags,
       '@alias',
       '@deprecated',
+      DOCS_INLINE_TAG,
       '@docsMissing',
       '@header',
       '@hideType',
@@ -323,7 +373,39 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
+    const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
+    if (fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+      const pluginApp = await Application.bootstrapWithPlugins(
+        {
+          ...typedocOptions,
+          entryPoints: [pluginEntryPath],
+          tsconfig: pluginTsConfigPath,
+        } as unknown as TypeDocOptions,
+        [new TSConfigReader(), new TypeDocReader()]
+      );
+      const pluginProject = await pluginApp.convert();
+      if (pluginProject) {
+        const tempPluginJson = path.join(os.tmpdir(), `${jsonFileName}-plugin-${Date.now()}.json`);
+        await pluginApp.generateJson(pluginProject, tempPluginJson);
+        const pluginOutput = await fs.readJson(tempPluginJson);
+        await fs.remove(tempPluginJson);
+        const pluginChildren = (pluginOutput.children ?? [])
+          .filter((entry: any) => entry.name !== 'default')
+          .map((entry: any) => ({
+            ...entry,
+            _source: 'plugin',
+          }));
+        output.children = [...(output.children ?? []), ...pluginChildren];
+      }
+    }
+
     const { readme, symbolIdMap, ...trimmedOutput } = output;
+
+    await applyDocsInline(trimmedOutput, {
+      packageSrcDir: entriesPath,
+      tsConfigPath,
+    });
 
     if (MINIFY_JSON) {
       const minifiedJson = filterOutKeys(filterOutKeys(trimmedOutput));

@@ -13,7 +13,7 @@ export function GroupList({ route, children }: GroupListProps) {
 
   return (
     <>
-      <CALLOUT className="border-default mb-2 ml-4 border-b p-1 pl-[5.5] font-semibold">
+      <CALLOUT className="mb-2 ml-4 border-b border-default p-1 pl-[5.5] font-semibold">
         {route.name}
       </CALLOUT>
       {children}

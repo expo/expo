@@ -22,7 +22,7 @@ jobs:
   smoke_test:
     name: Prebuild XCFrameworks (Debug)
     runs_on: macos-large
-    image: latest
+    image: macos-tahoe-26.4-xcode-26.4
     steps:
       - uses: eas/checkout
       - id: detect

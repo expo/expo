@@ -1,12 +1,14 @@
+import { loadModuleSync, resolveFrom } from '@expo/require-utils';
 import assert from 'assert';
-import * as path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { PluginError } from './errors';
 import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
-import { fileExists } from './modules';
-// Default plugin entry file name.
+
+// Re-exported for back-compat with external consumers.
 export const pluginFileName = 'app.plugin.js';
+
+// `.js` first keeps the published-artifact case at one stat.
+const pluginExtensions = ['.js', '.cjs', '.mjs', '.ts', '.cts', '.mts'];
 
 /**
  * Resolve the config plugin from a node module or package.
@@ -15,7 +17,7 @@ export const pluginFileName = 'app.plugin.js';
  *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
  *     - Resolve the config plugin as-is
  *   2. If the reference a module? e.g. `expo-font`
- *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
+ *     - Resolve the root `app.plugin.{js,cjs,mjs,ts,cts,mts}` file within the module
  *   3. Does the module have a valid config plugin in the `main` field?
  *     - Resolve the `main` entry point as config plugin
  */
@@ -24,26 +26,21 @@ export function resolvePluginForModule(
   pluginReference: string
 ): { filePath: string; isPluginFile: boolean } {
   if (moduleNameIsDirectFileReference(pluginReference)) {
-    // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
-    const pluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
+    const pluginScriptFile = resolveFrom(projectRoot, pluginReference, {
+      extensions: pluginExtensions,
+    });
     if (pluginScriptFile) {
-      return {
-        // NOTE(cedric): `path.sep` is required here, we are resolving the absolute path, not the plugin reference
-        isPluginFile: pluginScriptFile.endsWith(path.sep + pluginFileName),
-        filePath: pluginScriptFile,
-      };
+      return { isPluginFile: false, filePath: pluginScriptFile };
     }
   } else if (moduleNameIsPackageReference(pluginReference)) {
-    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
-    const pluginPackageFile = resolveFrom.silent(
-      projectRoot,
-      `${pluginReference}/${pluginFileName}`
-    );
-    if (pluginPackageFile && fileExists(pluginPackageFile)) {
+    const pluginPackageFile = resolveFrom(projectRoot, `${pluginReference}/app.plugin`, {
+      extensions: pluginExtensions,
+    });
+    if (pluginPackageFile) {
       return { isPluginFile: true, filePath: pluginPackageFile };
     }
-    // Try to resole the `main` entry as config plugin
-    const packageMainEntry = resolveFrom.silent(projectRoot, pluginReference);
+    // Skip the extension/index probes — Node's resolver (step 4) handles `main`.
+    const packageMainEntry = resolveFrom(projectRoot, pluginReference, { extensions: [] });
     if (packageMainEntry) {
       return { isPluginFile: false, filePath: packageMainEntry };
     }
@@ -113,34 +110,17 @@ export function resolveConfigPluginFunctionWithInfo(projectRoot: string, pluginR
   );
   let result: any;
   try {
-    result = requirePluginFile(pluginFile);
+    result = loadModuleSync(pluginFile);
   } catch (error) {
-    const learnMoreLink = 'Learn more: https://docs.expo.dev/guides/config-plugins/';
-
-    let underlyingError: string;
-    let stack: string | undefined;
-
-    if (error instanceof Error) {
-      const errorWithCode = error as Error & { code?: string };
-      underlyingError = `${errorWithCode.message} ${errorWithCode.code ?? ''}`;
-      stack = errorWithCode.stack;
-    } else {
-      underlyingError = String(error);
+    let message = error instanceof Error ? error.message : String(error);
+    // Don't clobber `loadModuleSync`'s code-framed error
+    if (!isPluginFile && !moduleNameIsDirectFileReference(pluginReference)) {
+      message += `\n\nNo "app.plugin.{js,cjs,mjs,ts,cts,mts}" file was found in "${pluginReference}", so the package's main entry was loaded instead. Config plugins are typically exported from an "${pluginFileName}" file in the package root.\nLearn more: https://docs.expo.dev/guides/config-plugins/`;
     }
 
-    let errorMessage = `Unable to resolve a valid config plugin for ${pluginReference}.\n`;
-
-    if (!isPluginFile) {
-      errorMessage += `• No "${pluginFileName}" file found in ${pluginReference}: config plugins are typically exported from an "${pluginFileName}" file in the package root.\n`;
-    }
-
-    errorMessage += `• main export of ${pluginReference} does not appear to be a config plugin: the following error was thrown when importing ${pluginFile}: ${underlyingError}\n`;
-    errorMessage += `Verify that ${pluginReference} includes a config plugin. If it does not, then remove the entry from plugins in your app config file. ${learnMoreLink}`;
-
-    const pluginError = new PluginError(errorMessage, 'INVALID_PLUGIN_IMPORT');
-
-    if (stack) {
-      pluginError.stack = stack;
+    const pluginError = new PluginError(message, 'INVALID_PLUGIN_IMPORT');
+    if (error instanceof Error && error.stack) {
+      pluginError.stack = error.stack;
     }
     throw pluginError;
   }
@@ -195,13 +175,4 @@ export function resolveConfigPluginExport({
   }
 
   return plugin;
-}
-
-function requirePluginFile(filePath: string): any {
-  try {
-    return require(filePath);
-  } catch (error) {
-    // TODO: Improve error messages
-    throw error;
-  }
 }

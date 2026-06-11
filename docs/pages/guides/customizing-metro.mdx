@@ -18,7 +18,14 @@ You can customize the Metro bundler by creating a **metro.config.js** file at th
 
 Run the following command to generate the template file:
 
-<Terminal cmd={['$ npx expo customize metro.config.js']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo customize metro.config.js'],
+    yarn: ['$ yarn expo customize metro.config.js'],
+    pnpm: ['$ pnpm expo customize metro.config.js'],
+    bun: ['$ bun expo customize metro.config.js'],
+  }}
+/>
 
 The **metro.config.js** file looks as below:
 
@@ -30,7 +37,9 @@ const config = getDefaultConfig(__dirname);
 module.exports = config;
 ```
 
-See [**metro.config.js** documentation](https://metrobundler.dev/docs/configuration/) for more information.
+See [**metro.config.js** documentation](/versions/latest/config/metro) for more information.
+
+> **info** Expo locks down some Metro configuration options to prevent projects from breaking. Not every option upstream Metro accepts can be customized or is supported. Expo also doesn't support loading Metro configs from YAML files (deprecated upstream) or any Metro configs located outside your repository.
 
 ## Assets
 
@@ -109,6 +118,19 @@ You will see the changes the next time you restart the dev server. Resolutions a
   Icon={BookOpen02Icon}
 />
 
+## File watching and crawling
+
+From **SDK 56**, Expo's file map supports on-demand filesystem access. In practice, this means your `watchFolders` no longer need to include every module your app bundles, and projects that symlink to dependencies outside of the project root will now resolve correctly.
+
+The on-demand filesystem is controlled by the [`experiments.onDemandFilesystem`](/versions/v56.0.0/config/app/#ondemandfilesystem) flag in your [app config](/workflow/configuration/) and is enabled by default.
+
+<BoxLink
+  title="On-demand filesystem"
+  description="Learn how Expo's file map discovers, watches, and lazily resolves source files."
+  href="/versions/v56.0.0/config/metro/#on-demand-filesystem"
+  Icon={BookOpen02Icon}
+/>
+
 ## Bundle splitting
 
 Expo CLI automatically splits bundles based on async imports (web-only).
@@ -159,7 +181,14 @@ Modify your [app config](/workflow/configuration) to enable the feature using th
 
 To start the development server run the following command:
 
-<Terminal cmd={['$ npx expo start --web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
 
 Alternatively, press <kbd>W</kbd> in the Expo CLI terminal UI.
 

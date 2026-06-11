@@ -57,7 +57,14 @@ The compatibility status of many of the most popular libraries is tracked on [Re
 
 Run `npx expo-doctor` to check your dependencies against the data in React Native Directory.
 
-<Terminal cmd={['$ npx expo-doctor@latest']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-doctor@latest'],
+    yarn: ['$ yarn dlx expo-doctor@latest'],
+    pnpm: ['$ pnpm dlx expo-doctor@latest'],
+    bun: ['$ bunx expo-doctor@latest'],
+  }}
+/>
 
 You can configure the React Native Directory check in your **package.json** file. For example, if you would like to exclude a package from validation:
 
@@ -85,7 +92,14 @@ You can configure the React Native Directory check in your **package.json** file
 
 **As of SDK 52**, all new projects will be initialized with the New Architecture enabled by default.
 
-<Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-55']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
+    bun: ['$ bun create expo --template default@sdk-56'],
+  }}
+/>
 
 ## Enable the New Architecture in an existing project
 
@@ -126,22 +140,62 @@ You can configure the React Native Directory check in your **package.json** file
       <Tabs tabs={['Android', 'iOS']}>
         <Tab>
           <Terminal
-            cmd={[
-              '# Run a clean prebuild and start a local build, if you like',
-              '$ npx expo prebuild --clean && npx expo run:android',
-              '# Run a build with EAS if you prefer',
-              '$ eas build -p android',
-            ]}
+            cmd={{
+              npm: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ npx expo prebuild --clean && npx expo run:android',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p android',
+              ],
+              yarn: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ yarn expo prebuild --clean && yarn expo run:android',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p android',
+              ],
+              pnpm: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ pnpm expo prebuild --clean && pnpm expo run:android',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p android',
+              ],
+              bun: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ bun expo prebuild --clean && bun expo run:android',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p android',
+              ],
+            }}
           />
         </Tab>
         <Tab>
           <Terminal
-            cmd={[
-              '# Run a clean prebuild and start a local build, if you like',
-              '$ npx expo prebuild --clean && npx expo run:ios',
-              '# Run a build with EAS if you prefer',
-              '$ eas build -p ios',
-            ]}
+            cmd={{
+              npm: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ npx expo prebuild --clean && npx expo run:ios',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p ios',
+              ],
+              yarn: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ yarn expo prebuild --clean && yarn expo run:ios',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p ios',
+              ],
+              pnpm: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ pnpm expo prebuild --clean && pnpm expo run:ios',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p ios',
+              ],
+              bun: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ bun expo prebuild --clean && bun expo run:ios',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p ios',
+              ],
+            }}
           />
         </Tab>
       </Tabs>
@@ -192,7 +246,7 @@ On **SDK 54 and earlier**, you can opt out of the New Architecture by setting th
 
 ## Troubleshooting
 
-Meta and Expo are working toward making the New Architecture the default for all new apps and ensuring it is as easy as possible to migrate existing apps. However, the New Architecture isn't just a name &mdash; many of the internals of React Native has been re-architected and rebuilt from the ground up. As a result, you may encounter issues when enabling the New Architecture in your app. The following is some advice for troubleshooting these issues.
+Meta and Expo are working toward making the New Architecture the default for all new apps and ensuring it is as easy as possible to migrate existing apps. However, the New Architecture isn't just a name — many of the internals of React Native has been re-architected and rebuilt from the ground up. As a result, you may encounter issues when enabling the New Architecture in your app. The following is some advice for troubleshooting these issues.
 
 <Collapsible summary="Can I still try the New Architecture even if some of the libraries I use aren't supported?">
 

@@ -3,6 +3,7 @@ import {
   Host,
   TextField,
   TextFieldRef,
+  TextFieldSelection,
   SecureField,
   Form,
   Section,
@@ -23,22 +24,31 @@ import {
   tag,
   buttonStyle,
   foregroundStyle,
+  textFieldStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { runOnJS } from 'react-native-worklets';
 
 export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
-  const phoneRef = React.useRef<TextFieldRef>(null);
-  const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
-
-  const setPhoneCursor = React.useCallback((position: number) => {
-    phoneRef.current?.setSelection(position, position);
-  }, []);
 
   const username = useNativeState('johndoe');
+  React.useEffect(() => {
+    username.onChange = (newUsername) => {
+      'worklet';
+      console.log('Username changed to:', newUsername);
+    };
+    return () => {
+      username.onChange = null;
+    };
+  }, []);
   const imperativeText = useNativeState('Select me!');
+  const imperativeSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
+  const [imperativeSelDisplay, setImperativeSelDisplay] = React.useState<TextFieldSelection>({
+    start: 0,
+    end: 0,
+  });
   const maskedPhone = useNativeState('');
+  const phoneSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
 
   const submitLabelOptions = [
     'continue',
@@ -62,7 +72,7 @@ export default function TextFieldScreen() {
           <TextField
             text={username}
             placeholder="Username"
-            modifiers={[autocorrectionDisabled()]}
+            modifiers={[autocorrectionDisabled(), textFieldStyle('plain')]}
             onTextChange={(v) => console.log('username:', v)}
           />
           <TextField
@@ -101,8 +111,8 @@ export default function TextFieldScreen() {
         {/* Worklet-based phone masking — updates synchronously on the UI thread */}
         <Section title="Worklet Phone Masking">
           <TextField
-            ref={phoneRef}
             text={maskedPhone}
+            selection={phoneSelection}
             placeholder="(555) 123-4567"
             modifiers={[keyboardType('phone-pad')]}
             onTextChange={(v) => {
@@ -120,8 +130,7 @@ export default function TextFieldScreen() {
               }
               if (formatted !== v) {
                 maskedPhone.value = formatted;
-                // To keep selection at the end of the input while typing
-                runOnJS(setPhoneCursor)(formatted.length);
+                phoneSelection.value = { start: formatted.length, end: formatted.length };
               }
             }}
           />
@@ -175,12 +184,13 @@ export default function TextFieldScreen() {
           <TextField
             ref={textRef}
             text={imperativeText}
+            selection={imperativeSelection}
+            onSelectionChange={setImperativeSelDisplay}
             placeholder="Imperative field"
             modifiers={[autocorrectionDisabled()]}
-            onSelectionChange={setSelection}
           />
           <Text modifiers={[foregroundStyle('secondary')]}>
-            Selection: {selection ? `${selection.start}–${selection.end}` : 'none'}
+            {`Selection: ${imperativeSelDisplay.start}–${imperativeSelDisplay.end}`}
           </Text>
           <HStack spacing={12}>
             <Button
@@ -200,7 +210,10 @@ export default function TextFieldScreen() {
             />
             <Button
               modifiers={[buttonStyle('bordered')]}
-              onPress={() => textRef.current?.setSelection(0, 7)}
+              onPress={async () => {
+                await textRef.current?.focus();
+                textRef.current?.setSelection(0, 7);
+              }}
               label="Select"
             />
           </HStack>

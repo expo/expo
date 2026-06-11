@@ -1,33 +1,48 @@
 import * as upstreamTransformer from '../metro-transform-worker';
 import type { JsTransformOptions } from '../metro-transform-worker';
 import { transform } from '../transform-worker';
+import * as transformShimMod from '../transformShim';
 
 jest.mock('../metro-transform-worker', () => ({
   transform: jest.fn(),
 }));
 
-beforeEach(() => {
-  jest.mocked(upstreamTransformer.transform).mockReset();
+jest.mock('../transformShim', () => ({
+  transformShim: jest.fn(),
+}));
+
+const emptyTransformResult = (): any => ({
+  dependencies: [],
+  // The CSS pipeline merges `output[0].data` into its own; returning a bare
+  // object here keeps the snapshot output focused on the CSS metadata.
+  output: [{}],
 });
+
+const resetTransformMocks = () => {
+  jest.mocked(upstreamTransformer.transform).mockReset().mockResolvedValue(emptyTransformResult());
+  jest.mocked(transformShimMod.transformShim).mockReset().mockReturnValue(emptyTransformResult());
+};
+
+beforeEach(resetTransformMocks);
+
+// Returns whichever of `metro-transform-worker.transform` or `transformShim`
+// the CSS pipeline actually invoked. The two are mutually exclusive: CSS shims
+// take the synchronous `transformShim` path; everything else still goes through
+// the full Babel pipeline.
+const getWrappedBody = (): string => {
+  const workerCalls = jest.mocked(upstreamTransformer.transform).mock.calls;
+  const shimCalls = jest.mocked(transformShimMod.transformShim).mock.calls;
+  expect(workerCalls.length + shimCalls.length).toBe(1);
+  return workerCalls.length ? workerCalls[0][3].toString('utf8') : (shimCalls[0][2] as string);
+};
 
 const doTransformForOutput = async (
   filename: string,
   src: string,
   options: Partial<JsTransformOptions>
 ): Promise<{ input: string; output: any }> => {
-  jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
-    dependencies: [],
-    output: [
-      // @ts-expect-error
-      {},
-    ],
-  });
   const output = await doTransform(filename, src, options);
-  expect(upstreamTransformer.transform).toHaveBeenCalledTimes(1);
-  return {
-    input: jest.mocked(upstreamTransformer.transform).mock.calls[0][3].toString('utf8'),
-    output,
-  };
+  return { input: getWrappedBody(), output };
 };
 
 const doTransformForInput = async (
@@ -36,8 +51,7 @@ const doTransformForInput = async (
   options: Partial<JsTransformOptions>
 ): Promise<string> => {
   await doTransform(filename, src, options);
-  expect(upstreamTransformer.transform).toHaveBeenCalledTimes(1);
-  return jest.mocked(upstreamTransformer.transform).mock.calls[0][3].toString('utf8');
+  return getWrappedBody();
 };
 const doTransform = async (filename: string, src: string, options: Partial<JsTransformOptions>) => {
   return transform({} as any, '/', filename, Buffer.from(src), {
@@ -295,7 +309,7 @@ describe('Expo Router server files (+html, +api)', () => {
         'app/+html.web.jsx',
         'app/+html.web.ts',
       ]) {
-        jest.mocked(upstreamTransformer.transform).mockReset();
+        resetTransformMocks();
 
         expect(
           (
@@ -314,7 +328,7 @@ describe('Expo Router server files (+html, +api)', () => {
 
       // Ensure the server code doesn't leak into the client on any platform.
       for (const platform of ['ios', 'android', 'web']) {
-        jest.mocked(upstreamTransformer.transform).mockReset();
+        resetTransformMocks();
         expect(
           (
             await doTransformForOutput('app/+html.js', 'REMOVE ME!', {
@@ -381,7 +395,7 @@ describe('Expo Router server files (+html, +api)', () => {
         'app/+middleware.jsx',
         'app/+middleware.tsx',
       ]) {
-        jest.mocked(upstreamTransformer.transform).mockReset();
+        resetTransformMocks();
 
         expect(
           (
@@ -400,7 +414,7 @@ describe('Expo Router server files (+html, +api)', () => {
 
       // Ensure the server code doesn't leak into the client on any platform.
       for (const platform of ['ios', 'android', 'web']) {
-        jest.mocked(upstreamTransformer.transform).mockReset();
+        resetTransformMocks();
         expect(
           (
             await doTransformForOutput('app/+middleware.js', 'REMOVE ME!', {

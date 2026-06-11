@@ -1,4 +1,4 @@
-import type { LoaderFunction } from 'expo-server';
+import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server';
 import { type ComponentType, type PropsWithChildren } from 'react';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
@@ -19,6 +19,7 @@ export type LoadedRoute = {
         params?: Params;
     }) => Params[];
     loader?: LoaderFunction;
+    generateMetadata?: GenerateMetadataFunction;
 };
 export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'>;
 export type MiddlewareNode = {
@@ -31,7 +32,7 @@ export type RouteNode = {
     /** The type of RouteNode */
     type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
     /** Load a route into memory. Returns the exports from a route. */
-    loadRoute: () => Partial<LoadedRoute>;
+    loadRoute: () => LoadedRoute;
     /** Loaded initial route name. */
     initialRouteName?: string;
     /** Nested routes */

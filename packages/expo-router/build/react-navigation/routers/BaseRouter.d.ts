@@ -5,18 +5,7 @@ import type { CommonNavigationAction, NavigationState, PartialState } from './ty
  */
 export declare const BaseRouter: {
     getStateForAction<State extends NavigationState>(state: State, action: CommonNavigationAction): State | PartialState<State> | null;
-    shouldActionChangeFocus(action: CommonNavigationAction): action is {
-        type: "NAVIGATE";
-        payload: {
-            name: string;
-            params?: object;
-            path?: string;
-            merge?: boolean;
-            pop?: boolean;
-        };
-        source?: string;
-        target?: string;
-    } | {
+    shouldActionChangeFocus(action: CommonNavigationAction): action is import("./CommonActions").NavigateAction | {
         type: "NAVIGATE_DEPRECATED";
         payload: {
             name: string;

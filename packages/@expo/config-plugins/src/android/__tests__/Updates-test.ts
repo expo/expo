@@ -20,16 +20,11 @@ const fixturesPath = path.resolve(__dirname, 'fixtures');
 const sampleCodeSigningCertificatePath = path.resolve(fixturesPath, 'codeSigningCertificate.pem');
 
 jest.mock('fs');
-jest.mock('resolve-from');
-
-const { silent } = require('resolve-from');
 
 const fsReal = jest.requireActual('fs') as typeof import('fs');
 
 describe('Android Updates config', () => {
   beforeEach(() => {
-    const resolveFrom = require('resolve-from');
-    resolveFrom.silent = silent;
     vol.reset();
   });
 

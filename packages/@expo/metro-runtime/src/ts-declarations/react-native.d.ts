@@ -9,7 +9,8 @@ declare module 'react-native/Libraries/Utilities/DevLoadingView' {
 }
 
 declare module 'react-native/Libraries/Core/ExceptionsManager' {
-  declare class SyntheticError extends Error {}
+  class SyntheticError extends Error {}
+
   const ExceptionsManager: {
     parseException(e: any, isFatal: boolean): void;
     handleException(e: any): void;

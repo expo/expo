@@ -15,6 +15,13 @@ class FileSystemUploadTask {
     console.warn('expo-file-system is not supported on web');
     return Promise.resolve({ body: '', status: 0, headers: {} });
   }
+  addListener() {
+    console.warn('expo-file-system is not supported on web');
+    return { remove: () => {} };
+  }
+  release() {
+    console.warn('expo-file-system is not supported on web');
+  }
   cancel() {
     console.warn('expo-file-system is not supported on web');
   }
@@ -32,6 +39,13 @@ class FileSystemDownloadTask {
   resume() {
     console.warn('expo-file-system is not supported on web');
     return Promise.resolve(null);
+  }
+  addListener() {
+    console.warn('expo-file-system is not supported on web');
+    return { remove: () => {} };
+  }
+  release() {
+    console.warn('expo-file-system is not supported on web');
   }
   cancel() {
     console.warn('expo-file-system is not supported on web');

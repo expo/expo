@@ -3,6 +3,8 @@ import type { Manifest, MiddlewareInfo, Route } from '../manifest';
 import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils/matchers';
 import { MiddlewareModule, shouldRunMiddleware } from '../utils/middleware';
 
+const LOADER_PREFIX = '/_expo/loaders';
+
 /** Internal errors class to indicate that the server has failed
  * @remarks
  * This should be thrown for unexpected errors, so they show up as crashes.
@@ -52,7 +54,7 @@ export interface RequestHandlerParams {
 }
 
 export interface RequestHandlerInput {
-  getHtml(request: Request, route: Route): Promise<string | Response | null>;
+  getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
   getRoutesManifest(): Promise<Manifest | null>;
   getApiRoute(route: Route): Promise<any>;
   getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
@@ -95,7 +97,11 @@ export function createRequestHandler({
 
     if (manifest.middleware) {
       const middleware = await getMiddleware(manifest.middleware);
-      if (shouldRunMiddleware(request, middleware)) {
+      // Pass the route a loader endpoint resolves to, so matchers can't be bypassed via `/_expo/loaders/...`.
+      const effectivePathname = url.pathname.startsWith(LOADER_PREFIX + '/')
+        ? url.pathname.slice(LOADER_PREFIX.length).replace(/\/index$/, '/')
+        : url.pathname;
+      if (shouldRunMiddleware(request, middleware, effectivePathname)) {
         const middlewareResponse = await middleware.default(new ImmutableRequest(request));
         if (middlewareResponse instanceof Response) {
           return middlewareResponse;
@@ -136,9 +142,9 @@ export function createRequestHandler({
 
     // First, test static routes and loader data requests
     if (request.method === 'GET' || request.method === 'HEAD') {
-      const isLoaderRequest = url.pathname.startsWith('/_expo/loaders/');
+      const isLoaderRequest = url.pathname.startsWith(LOADER_PREFIX + '/');
       const matchedPath = isLoaderRequest
-        ? url.pathname.replace('/_expo/loaders', '').replace(/\/index$/, '/')
+        ? url.pathname.slice(LOADER_PREFIX.length).replace(/\/index$/, '/')
         : url.pathname;
 
       for (const route of manifest.htmlRoutes) {
@@ -264,14 +270,15 @@ export function createRequestHandler({
       headers: new Headers(response.headers),
       status: response.status,
       statusText: response.statusText,
-      cf: response.cf,
-      webSocket: response.webSocket,
+      // NOTE(@kitten): Depending on if workerd types are used this may not be defined
+      cf: (response as Response & { cf?: unknown }).cf,
+      webSocket: (response as Response & { webSocket?: unknown }).webSocket,
     };
     return createResponse(routeType, route, response.body, modifiedResponseInit);
   }
 
   async function respondNotFoundHTML(
-    html: string | Response | null,
+    html: string | ReadableStream | Response | null,
     route: Route
   ): Promise<Response> {
     if (typeof html === 'string') {
@@ -286,6 +293,15 @@ export function createRequestHandler({
     if (isResponse(html)) {
       // Only used for development errors
       return html;
+    }
+
+    if (html != null) {
+      return createResponse('notFoundHtml', route, html, {
+        status: 404,
+        headers: new Headers({
+          'Content-Type': 'text/html',
+        }),
+      });
     }
 
     throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
@@ -322,7 +338,7 @@ export function createRequestHandler({
     return createResponseFrom('api', route, response);
   }
 
-  function respondHTML(html: string | Response | null, route: Route): Response {
+  function respondHTML(html: string | ReadableStream | Response | null, route: Route): Response {
     if (typeof html === 'string') {
       return createResponse('html', route, html, {
         status: 200,
@@ -335,6 +351,15 @@ export function createRequestHandler({
     if (isResponse(html)) {
       // Only used for development error responses
       return html;
+    }
+
+    if (html != null) {
+      return createResponse('html', route, html, {
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'text/html',
+        }),
+      });
     }
 
     throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);

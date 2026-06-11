@@ -1,4 +1,5 @@
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
+import { VectorIconsCheck } from '../checks/VectorIconsCheck';
 import type { DoctorCheck } from '../checks/checks.types';
 import {
   printCheckResultSummaryOnComplete,
@@ -88,6 +89,32 @@ describe(resolveChecksInScope, () => {
     expect(
       checks.find((check) => check instanceof InstalledDependencyVersionCheck)
     ).not.toBeUndefined();
+  });
+
+  describe('VectorIconsCheck SDK version filtering', () => {
+    it('includes VectorIconsCheck for SDK 56 and above', async () => {
+      const checks = resolveChecksInScope(
+        {
+          name: 'foo',
+          slug: 'foo',
+          sdkVersion: '56.0.0',
+        },
+        {}
+      );
+      expect(checks.find((check) => check instanceof VectorIconsCheck)).not.toBeUndefined();
+    });
+
+    it('excludes VectorIconsCheck for SDK 55 and below', async () => {
+      const checks = resolveChecksInScope(
+        {
+          name: 'foo',
+          slug: 'foo',
+          sdkVersion: '55.0.0',
+        },
+        {}
+      );
+      expect(checks.find((check) => check instanceof VectorIconsCheck)).toBeUndefined();
+    });
   });
 });
 

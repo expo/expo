@@ -9,7 +9,7 @@ import {
   Query,
   requestPermissionsAsync,
   MediaSubtype,
-} from 'expo-media-library/next';
+} from 'expo-media-library';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
 import {
@@ -74,18 +74,18 @@ const AssetScreen = () => {
 
   const loadAssetState = async (selectedAsset: Asset) => {
     const info = await selectedAsset.getInfo();
-    const subtypes = await selectedAsset.getMediaSubtypes();
     if (Platform.OS === 'ios') {
-      const [orient, networkAsset, pairedVideo] = await Promise.all([
+      const [orient, networkAsset, pairedVideo, subtypes] = await Promise.all([
         selectedAsset.getOrientation(),
         selectedAsset.getIsInCloud(),
         selectedAsset.getLivePhotoVideoUri(),
+        selectedAsset.getMediaSubtypes(),
       ]);
+      setMediaSubtypes(subtypes);
       setOrientation(orient);
       setIsNetworkAsset(networkAsset);
       setPairedVideoUri(pairedVideo);
     }
-    setMediaSubtypes(subtypes);
     setAsset(selectedAsset);
     setAssetInfo(info);
     setTestState(TestState.FINISHED);
@@ -166,8 +166,7 @@ const AssetScreen = () => {
         }
         case 'video': {
           const videoFile = new File(dir, `${screenName}.mp4`);
-          const videoUrl =
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4';
+          const videoUrl = 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4';
           await File.downloadFileAsync(videoUrl, videoFile, { idempotent: true });
           return videoFile;
         }
@@ -214,6 +213,9 @@ const AssetScreen = () => {
           <Text style={styles.infoText}>
             <Text style={styles.bold}>Duration:</Text>
             {assetInfo.duration !== null ? `${assetInfo.duration} ms` : 'N/A'}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Is Favorite:</Text> {String(assetInfo.isFavorite)}
           </Text>
           <Text style={styles.infoText}>
             <Text style={styles.bold}>Media Subtypes:</Text> {mediaSubtypes?.join(', ') || 'N/A'}
@@ -276,13 +278,11 @@ const AssetScreen = () => {
             <Pressable style={styles.deleteButton} onPress={handleDeleteAsset}>
               <Text style={styles.deleteButtonText}>Delete Asset</Text>
             </Pressable>
-            {Platform.OS === 'ios' && (
-              <Pressable style={styles.primaryButton} onPress={toggleFavorite}>
-                <Text style={styles.primaryButtonText}>
-                  {assetInfo?.isFavorite ? 'Unmark Favorite' : 'Mark Favorite'}
-                </Text>
-              </Pressable>
-            )}
+            <Pressable style={styles.primaryButton} onPress={toggleFavorite}>
+              <Text style={styles.primaryButtonText}>
+                {assetInfo?.isFavorite ? 'Unmark Favorite' : 'Mark Favorite'}
+              </Text>
+            </Pressable>
           </View>
           {renderAssetInfo()}
         </>
@@ -297,7 +297,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
   },
   image: {
     width: 200,

@@ -87,6 +87,7 @@ export type ExpoGoConfig = {
     packagerOpts: {
         [key: string]: any;
     };
+    username?: string;
 };
 export type EASConfig = {
     projectId?: string;
@@ -129,7 +130,8 @@ export declare enum ProjectPrivacy {
     PUBLIC = "public",
     UNLISTED = "unlisted"
 }
-export type Platform = 'android' | 'ios' | 'web';
+export type Platform = 'android' | 'ios' | 'web' | 'tvos' | 'macos';
+export type NativePlatform = Exclude<Platform, 'web'>;
 export type ProjectTarget = 'managed' | 'bare';
 export type ConfigErrorCode = 'NO_APP_JSON' | 'NOT_OBJECT' | 'NO_EXPO' | 'MODULE_NOT_FOUND' | 'DEPRECATED' | 'INVALID_MODE' | 'INVALID_FORMAT' | 'INVALID_PLUGIN' | 'INVALID_CONFIG' | 'ENTRY_NOT_FOUND';
 export type ConfigContext = {

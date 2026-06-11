@@ -26,15 +26,15 @@ jobs:
         ndk-version: [21.4.7075529]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: 🔨 Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: 'pnpm'
@@ -56,18 +56,18 @@ jobs:
             const pkg = require('./package.json'); \
             pkg.resolutions = { \
               ...pkg.resolutions, \
-              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
-              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
-              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
-              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
-              'expo-updates': 'file:../expo/packages/expo-updates', \
-              'expo-manifests': 'file:../expo/packages/expo-manifests', \
-              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+              'expo-dev-menu': 'file:${{ github.workspace }}/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:${{ github.workspace }}/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:${{ github.workspace }}/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:${{ github.workspace }}/packages/expo-updates-interface', \
+              'expo-updates': 'file:${{ github.workspace }}/packages/expo-updates', \
+              'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
+              'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-android-test
-        run: pnpm add file:../expo/packages/expo-dev-client
+        run: pnpm add file:${{ github.workspace }}/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-android-test
         run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
@@ -90,15 +90,15 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: 🔨 Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: 'pnpm'
@@ -117,18 +117,18 @@ jobs:
             const pkg = require('./package.json'); \
             pkg.resolutions = { \
               ...pkg.resolutions, \
-              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
-              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
-              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
-              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
-              'expo-updates': 'file:../expo/packages/expo-updates', \
-              'expo-manifests': 'file:../expo/packages/expo-manifests', \
-              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+              'expo-dev-menu': 'file:${{ github.workspace }}/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:${{ github.workspace }}/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:${{ github.workspace }}/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:${{ github.workspace }}/packages/expo-updates-interface', \
+              'expo-updates': 'file:${{ github.workspace }}/packages/expo-updates', \
+              'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
+              'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-ios-test
-        run: pnpm add file:../expo/packages/expo-dev-client
+        run: pnpm add file:${{ github.workspace }}/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-ios-test
         run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json

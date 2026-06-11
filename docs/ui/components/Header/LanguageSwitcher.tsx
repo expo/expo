@@ -33,7 +33,7 @@ export function LanguageSwitcher() {
 
   return (
     <Select
-      className="min-w-[108px]"
+      className="min-w-27"
       value={currentLocale}
       onValueChange={onLocaleSelect}
       options={options}

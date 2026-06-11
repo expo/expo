@@ -1,3 +1,5 @@
+import type { SharedObject } from 'expo';
+import type { Session } from './Session';
 export type AppStartupTimes = {
     /**
      * Time from when the user taps the app to the moment the app starts executing the main code.
@@ -92,7 +94,7 @@ export interface Metric {
     name: string;
     value: number;
     sessionId: string;
-    routeName?: string;
+    routeName?: string | null;
     params?: Record<string, unknown>;
 }
 export type MetricAttributes = {
@@ -101,28 +103,90 @@ export type MetricAttributes = {
      * with a sensible default when omitted — for example, the TTI metric falls
      * back to the initial route name detected from the router.
      */
-    routeName?: string;
+    routeName?: string | null;
     /**
      * Custom parameters to attach to the metric.
      */
     params?: Record<string, unknown>;
 };
+/**
+ * Severity of a log event, ordered from least to most severe:
+ *
+ * - `"trace"` — Fine-grained tracing, typically only useful while reproducing
+ *   a specific issue.
+ * - `"debug"` — Diagnostic detail useful during development; usually filtered
+ *   out in production.
+ * - `"info"` — Routine, expected events that record normal app behavior.
+ * - `"warn"` — Unexpected but recoverable conditions worth investigating.
+ * - `"error"` — An operation failed; the app continues running but is in a
+ *   degraded state.
+ * - `"fatal"` — A severe failure, often immediately followed by app termination.
+ */
+export type LogSeverity = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+/**
+ * Value types accepted in a log event's `attributes` map. Strings, numbers,
+ * and booleans are stored as typed primitives; arrays and nested maps preserve
+ * their structure. Other JS values (functions, `Date`, `undefined`, etc.) are
+ * not supported and may be dropped by downstream consumers.
+ */
+export type LogAttributeValue = string | number | boolean | LogAttributeValue[] | {
+    [key: string]: LogAttributeValue;
+};
+/**
+ * A single log event collected during a session.
+ */
+export type LogRecord = {
+    /**
+     * ISO 8601 timestamp of when the record was created.
+     */
+    timestamp: string;
+    /**
+     * Event name.
+     */
+    name: string;
+    /**
+     * Optional free-form message describing the event.
+     */
+    body?: string | null;
+    /**
+     * Custom attributes attached to the event. Each entry is preserved with its
+     * original value type — see `LogAttributeValue` for the supported shapes.
+     */
+    attributes?: Record<string, LogAttributeValue> | null;
+    /**
+     * Severity of the event.
+     */
+    severity: LogSeverity;
+};
+/**
+ * Optional configuration accepted by `logEvent`. The event name is passed as
+ * the first positional argument since it's required and the only field most
+ * callers set.
+ */
+export type LogEventOptions = {
+    /**
+     * Optional free-form message describing the event.
+     */
+    body?: string | null;
+    /**
+     * Custom attributes attached to the event. Each entry is preserved with its
+     * original value type — see `LogAttributeValue` for the supported shapes.
+     */
+    attributes?: Record<string, LogAttributeValue> | null;
+    /**
+     * Severity of the event.
+     *
+     * @default "info"
+     */
+    severity?: LogSeverity | null;
+};
 export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
 export type CrashKind = 'badAccess' | 'fatalError' | 'divideByZero' | 'forceUnwrapNil' | 'arrayOutOfBounds' | 'objcException' | 'stackOverflow';
-type SessionBase = {
-    id: string;
-    startDate: string;
-    endDate?: string | null;
-    metrics: Metric[];
-};
-export type MainSession = SessionBase & {
-    type: 'main';
-    crashReport?: CrashReport | null;
-};
-export type GenericSession = SessionBase & {
-    type: Exclude<SessionType, 'main'>;
-};
-export type Session = MainSession | GenericSession;
+/**
+ * Payload accepted by `Session.addMetric`. The owning session is implied by the
+ * receiver, so the input carries every `Metric` field except `sessionId`.
+ */
+export type MetricInput = Omit<Metric, 'sessionId'>;
 export type CallStackFrame = {
     binaryName?: string | null;
     binaryUUID?: string | null;
@@ -130,6 +194,14 @@ export type CallStackFrame = {
     offsetIntoBinaryTextSegment?: number | null;
     sampleCount?: number | null;
     subFrames?: CallStackFrame[] | null;
+    /**
+     * Resolved symbol from on-device `dladdr` symbolication. Swift and Itanium-ABI C++
+     * names are demangled; Objective-C selectors and plain C symbols are returned as-is.
+     * `null` when the binary is not loaded in this process or `dladdr` could not resolve it.
+     *
+     * @platform ios
+     */
+    symbol?: string | null;
 };
 export type CallStack = {
     threadAttributed?: boolean | null;
@@ -157,19 +229,169 @@ export type CrashReport = {
     timestampEnd: string;
     ingestedAt: string;
 };
+/**
+ * Snapshot emitted at the moment a request begins. Carries enough information to render the
+ * request in an "in-flight" debug UI; the matching completion event arrives later with the
+ * same `id`.
+ */
+export type NetworkRequestStartedEvent = {
+    /** Stable identifier shared with the corresponding `requestCompleted` event. */
+    id: string;
+    /** Request URL as supplied to the native networking layer. May include query parameters and fragments. */
+    url: string;
+    /** HTTP method (`GET`, `POST`, …). */
+    method: string;
+    /** ISO 8601 timestamp of when the request started. Truncated to whole seconds. */
+    startedAt: string;
+};
+/**
+ * One hop in a redirect chain. `fromUrl` issued the 3xx response, `toUrl` is where it pointed.
+ * For a complete chain the first entry's `fromUrl` matches the parent
+ * `NetworkRequestCompletedEvent.url`, and the last entry's `toUrl` is where the request
+ * actually landed.
+ */
+export type NetworkRequestRedirect = {
+    /** The URL that returned the redirect. */
+    fromUrl: string;
+    /** The URL the request was redirected to. */
+    toUrl: string;
+    /** The 3xx status code (301, 302, 307, 308, …) returned by `fromUrl`. */
+    statusCode: number;
+};
+/**
+ * Snapshot emitted when a request completes (successfully or otherwise). Shares its `id` with
+ * the corresponding `requestStarted` event so consumers can correlate the two.
+ */
+export type NetworkRequestCompletedEvent = {
+    /** Stable identifier shared with the corresponding `requestStarted` event. */
+    id: string;
+    /** Request URL as supplied to the native networking layer. May include query parameters and fragments. */
+    url: string;
+    /** HTTP method (`GET`, `POST`, …). */
+    method: string;
+    /** Response status code, or `null` if the request failed before headers were received. */
+    statusCode: number | null;
+    /**
+     * Negotiated wire protocol (`http/1.1`, `h2`, `h3`), or `null` when the OS didn't report one.
+     */
+    networkProtocol: string | null;
+    /** Total request bytes on the wire (headers + body), or `null` if unavailable. */
+    requestBytesSent: number | null;
+    /** Total response bytes on the wire (headers + body), or `null` if unavailable. */
+    responseBytesReceived: number | null;
+    /** Short, human-readable error description if the request failed. */
+    errorDescription: string | null;
+    /**
+     * ISO 8601 timestamp of when the request started (matches `requestStarted.startedAt`).
+     * Truncated to whole seconds — use `totalDuration` for sub-second timing.
+     */
+    startedAt: string | null;
+    /**
+     * ISO 8601 timestamp of when the response finished arriving. Truncated to whole seconds — use
+     * `totalDuration` for sub-second timing.
+     */
+    completedAt: string | null;
+    /** Total wall-clock duration of the request in seconds. */
+    totalDuration: number;
+    /**
+     * Ordered list of redirect hops that preceded the final response. Empty when the request
+     * completed without any 3xx redirects.
+     */
+    redirects: NetworkRequestRedirect[];
+};
+/**
+ * Map of events emitted by `NetworkRequestObserver`. Used by the underlying `SharedObject`
+ * event-emitter to type listener callbacks.
+ */
+export type NetworkRequestObserverEvents = {
+    requestStarted(event: NetworkRequestStartedEvent): void;
+    requestCompleted(event: NetworkRequestCompletedEvent): void;
+};
+/**
+ * Per-instance handle to the network-request stream. Each `new NetworkRequestObserver()` allocates
+ * its own SharedObject and registers as a delegate on the native singleton; when JS releases the
+ * instance the delegate slot is automatically reclaimed.
+ *
+ * Subscribe to events via `addListener`/`removeListener` (inherited from the SharedObject base).
+ *
+ * @example
+ * ```ts
+ * import AppMetrics from 'expo-app-metrics';
+ *
+ * const observer = new AppMetrics.NetworkRequestObserver();
+ * const sub = observer.addListener('requestCompleted', event => {
+ *   console.log(event.url, event.totalDuration);
+ * });
+ * // later
+ * sub.remove();
+ * ```
+ */
+export declare class NetworkRequestObserver extends SharedObject<NetworkRequestObserverEvents> {
+    constructor();
+}
+/**
+ * A historic session and its recorded data, returned by `getInactiveSessions()`
+ * as a plain eager record (not a shared object). Debug-only: intended for
+ * inspecting on-device history, not production use.
+ *
+ * @private This API is unstable, debug-only, and may change without notice.
+ */
+export type DebugSession = {
+    /** Unique identifier (UUID) of the session. */
+    id: string;
+    /** Kind of session. */
+    type: SessionType;
+    /** ISO 8601 timestamp of when the session started. */
+    startDate: string;
+    /** ISO 8601 timestamp of when the session ended, or `null`/absent while active. */
+    endDate?: string | null;
+    /** Metrics recorded during the session. */
+    metrics: Metric[];
+    /** Log events recorded during the session. */
+    logs: LogRecord[];
+    /** Crash report attached to the session, if any. Never present on Android (MetricKit is iOS-only). */
+    crashReport?: CrashReport | null;
+};
 export interface ExpoAppMetricsModuleType {
     markFirstRender(): void;
     markInteractive(attributes?: MetricAttributes): void;
-    getStoredEntries(): Promise<Metric[]>;
+    /**
+     * Records a log event against the current main session. The event is
+     * persisted locally and dispatched on the next `dispatchEvents()` flush as an
+     * OpenTelemetry log record sent to the `/v1/logs` endpoint.
+     *
+     * Severity defaults to `"info"` when not provided.
+     *
+     * @param name Event name. Maps to the OpenTelemetry `event.name` attribute.
+     * @param options Optional body, attributes, and severity overrides.
+     */
+    logEvent(name: string, options?: LogEventOptions): void;
+    /**
+     * Sets attributes merged into every subsequent metric and log event.
+     * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
+     * object to clear.
+     *
+     * @example
+     * ```ts
+     * AppMetrics.setGlobalAttributes({
+     *   subscription_tier: 'pro',
+     *   experiment_variant: 'B',
+     * });
+     * ```
+     */
+    setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null): void;
     clearStoredEntries(): Promise<void>;
     /**
-     * Returns all sessions across the current and historical entries,
-     * ordered with the current launch first.
+     * Returns the recorded sessions as plain `Session` records, ordered with
+     * the most recent first. Each record eagerly includes its metrics, logs, and
+     * crash report.
+     *
+     * Debug-only: intended for inspecting on-device history (e.g. the
+     * ObserveTester app), not for production use.
      *
      * @private This API is unstable and may change without notice.
-     * @platform ios
      */
-    getAllSessions(): Promise<Session[]>;
+    getInactiveSessions(): Promise<DebugSession[]>;
     /**
      * Simulates a crash report, attributing it to the current main session.
      * Intended for development and debugging only.
@@ -187,27 +409,44 @@ export interface ExpoAppMetricsModuleType {
      */
     triggerCrash(kind: CrashKind): void;
     /**
-     * Starts a new app metrics session. Returns the session ID.
-     *
-     * @platform android
+     * @private This API is unstable and may change without notice.
      */
-    startSession(): string;
+    addCustomMetricToSession(metric: Metric): Promise<void>;
     /**
-     * Stops the app metrics session with the given session ID.
+     * Returns the main session — the per-launch session that tracks the entire
+     * app process — as a shared object built from in-memory state, so the call
+     * is synchronous and never returns `null`. Metrics and logs are fetched
+     * lazily via the returned object.
      *
-     * @platform android
+     * The returned object is a static reference: repeated calls return the same
+     * object while it stays referenced, so `getMainSession() === getMainSession()`.
+     *
+     * @private This API is unstable and may change without notice.
      */
-    stopSession(sessionId: string): void;
+    getMainSession(): Session;
     /**
-     * @platform android
+     * Resolves to the current foreground session — created when the app becomes
+     * active and ended when it is backgrounded — as a shared object, or `null`
+     * when no foreground session is active. Metrics and logs are fetched lazily
+     * via the returned object.
+     *
+     * @private This API is unstable and may change without notice.
+     * @platform ios
      */
-    addCustomMetricToSession(sessionId: string, metric: {
-        category: string;
-        name: string;
-        value: number;
-        routeName?: string;
-        params?: Record<string, unknown>;
-    }): Promise<void>;
+    getForegroundSession(): Promise<Session | null>;
+    /**
+     * Class for subscribing to HTTP requests observed by the native networking interceptor.
+     * Construct an instance to begin receiving `requestStarted`/`requestCompleted` events;
+     * release the instance (drop all references) to stop.
+     */
+    NetworkRequestObserver: typeof NetworkRequestObserver;
+    /**
+     * Native `Session` shared-object class (live main/foreground sessions).
+     * Exposed so the web module can substitute its own implementation; not
+     * intended to be constructed from user code.
+     *
+     * @private This API is unstable and may change without notice.
+     */
+    Session: typeof Session;
 }
-export {};
 //# sourceMappingURL=types.d.ts.map

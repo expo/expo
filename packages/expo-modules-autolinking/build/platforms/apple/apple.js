@@ -115,7 +115,9 @@ async function generatePackageListFileContentAsync(modules, className, entitleme
     let modulesClassNames = []
         .concat(...modulesToImport.map((module) => module.modules))
         .filter(Boolean);
-    modulesClassNames = modulesClassNames.concat(await (0, iosInlineModules_1.getIosInlineModulesClassNames)(params.watchedDirectories, params.appRoot));
+    if ((0, iosInlineModules_1.isTargetInInlineModulesTargets)(params)) {
+        modulesClassNames = modulesClassNames.concat(await (0, iosInlineModules_1.getIosInlineModulesClassNames)(params.watchedDirectories, params.appRoot));
+    }
     const debugOnlyModulesClassNames = []
         .concat(...debugOnlyModules.map((module) => module.modules))
         .filter(Boolean);

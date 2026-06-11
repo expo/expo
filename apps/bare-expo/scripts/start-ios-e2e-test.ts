@@ -14,6 +14,7 @@ import {
   getStartMode,
   retryAsync,
   prettyPrintTestSuiteLogs,
+  printImageComparisonServerLogs,
   runCustomMaestroFlowsAsync,
   MAESTRO_ENV_VARS,
   TEST_DURATION_LABEL,
@@ -244,6 +245,7 @@ async function testAsync(
       console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
 
       console.log(prettyPrintTestSuiteLogs(await getTestSuiteLogs()));
+      await printImageComparisonServerLogs();
       // we need to always get these logs since it stops listener process
       const nativeLogs = await getNativeErrorLogs();
       if (!(await isAppRunning())) {

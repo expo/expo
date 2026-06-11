@@ -150,6 +150,14 @@ export async function resolvePortAsync(
     port = env.RCT_METRO_PORT || fallbackPort || 8081;
   }
 
+  // Port 0 means "pick any available port" — scan from the fallback port without prompting.
+  if (port === 0) {
+    const scanFrom = env.RCT_METRO_PORT || fallbackPort || 8081;
+    const resolvedPort = await getFreePortAsync(scanFrom);
+    process.env.RCT_METRO_PORT = String(resolvedPort);
+    return resolvedPort;
+  }
+
   // Only check the port when the bundler is running.
   const resolvedPort = await choosePortAsync(projectRoot, {
     defaultPort: port,

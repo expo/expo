@@ -131,7 +131,8 @@ export const buildStep: Step<PrebuildContext> = {
         product,
         artifacts,
         ctx.request.platformFilter,
-        ctx.customBuiltProducts
+        ctx.customBuiltProducts,
+        ctx.request.clean
       );
       setStage(ctx, 'build', 'success');
       return;

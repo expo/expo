@@ -19,6 +19,13 @@ import {
   resetErrorOverlay,
   showLoading,
 } from './hmrUtils';
+import type { MarshalledProps } from '../dom/dom-entry';
+
+declare global {
+  interface Window {
+    $$EXPO_INITIAL_PROPS?: MarshalledProps;
+  }
+}
 
 const pendingEntryPoints: string[] = [];
 
@@ -111,8 +118,7 @@ const HMRClient = {
       const webMetadata =
         process.env.EXPO_OS === 'web'
           ? {
-              platform: 'web',
-              mode: 'BRIDGE',
+              mode: typeof window.$$EXPO_INITIAL_PROPS !== 'undefined' ? 'dom' : 'web',
             }
           : undefined;
       hmrClient.send(

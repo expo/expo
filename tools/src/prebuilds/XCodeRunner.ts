@@ -75,50 +75,63 @@ export async function spawnXcodeBuildWithSpinner(
         const statusText = `${spinnerText} ${summary.trim()}${warningText}`;
         if (hasWarnings) {
           spinner.warn(statusText);
+          // Surface the actual warnings even on success — without this, CI
+          // logs only see the count and have no way to triage what changed.
+          printDiagnostics(formatter.warnings, []);
         } else {
           spinner.succeed(statusText);
         }
       } else {
         spinner.fail(`${spinnerText} failed with code ${code}`);
         summary && logger.error('\n' + summary.trim() + '\n');
-
-        // On failure, show warnings first (consistent with FrameworkVerifier)
-        if (hasWarnings) {
-          logger.log(chalk.gray('      Warnings:'));
-          formatter.warnings
-            .slice(0, 10)
-            .forEach((warn) => logger.log(chalk.gray(`        ${warn}`)));
-          if (warningCount > 10) {
-            logger.log(chalk.gray(`        ... and ${warningCount - 10} more warnings`));
-          }
-        }
-
-        // Show errors (consistent with FrameworkVerifier style)
-        if (formatter.errors.length > 0) {
-          logger.log(chalk.gray('      Errors:'));
-          formatter.errors
-            .slice(0, 10)
-            .forEach((err) => logger.log(chalk.gray(`        ${err.trim()}`)));
-          if (formatter.errors.length > 10) {
-            logger.log(chalk.gray(`        ... and ${formatter.errors.length - 10} more errors`));
-          }
-        }
-
-        // If formatter didn't capture any errors, fall back to showing raw output
+        printDiagnostics(formatter.warnings, formatter.errors);
         if (formatter.errors.length === 0) {
-          const rawErrors = extractRawCompileErrors(results);
-          if (rawErrors.length > 0) {
-            logger.log(chalk.gray('      Raw errors:'));
-            rawErrors.slice(0, 10).forEach((err) => logger.log(chalk.gray(`        ${err}`)));
-          } else if (error) {
-            logger.log(chalk.gray(error));
-          }
+          printRawErrorFallback(results, error);
         }
       }
 
       resolve({ code, results, error });
     });
   });
+}
+
+/**
+ * Print formatted compile warnings and errors. Used on both success-with-
+ * warnings and failure, so CI always surfaces diagnostics regardless of
+ * overall build status.
+ */
+function printDiagnostics(warnings: string[], errors: string[]): void {
+  const MAX = 10;
+
+  if (warnings.length > 0) {
+    logger.log(chalk.gray('      Warnings:'));
+    warnings.slice(0, MAX).forEach((warn) => logger.log(chalk.gray(`        ${warn}`)));
+    if (warnings.length > MAX) {
+      logger.log(chalk.gray(`        ... and ${warnings.length - MAX} more warnings`));
+    }
+  }
+
+  if (errors.length > 0) {
+    logger.log(chalk.gray('      Errors:'));
+    errors.slice(0, MAX).forEach((err) => logger.log(chalk.gray(`        ${err.trim()}`)));
+    if (errors.length > MAX) {
+      logger.log(chalk.gray(`        ... and ${errors.length - MAX} more errors`));
+    }
+  }
+}
+
+/**
+ * Print fallback raw errors when the xcodebuild failed but the formatter
+ * didn't capture structured errors. Called only on failure.
+ */
+function printRawErrorFallback(rawOutput: string, stderr: string): void {
+  const rawErrors = extractRawCompileErrors(rawOutput);
+  if (rawErrors.length > 0) {
+    logger.log(chalk.gray('      Raw errors:'));
+    rawErrors.slice(0, 10).forEach((err) => logger.log(chalk.gray(`        ${err}`)));
+  } else if (stderr) {
+    logger.log(chalk.gray(stderr));
+  }
 }
 
 /**

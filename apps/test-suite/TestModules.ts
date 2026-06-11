@@ -40,6 +40,18 @@ export function getTestModules() {
   const modules: Module[] = [
     // Sanity
     require('./tests/Basic'),
+    require('./tests/JSDestructuring'),
+    require('./tests/JSAsync'),
+    require('./tests/JSAsyncGenerator'),
+    require('./tests/JSBlockScoping'),
+    require('./tests/JSPrivateMethods'),
+    require('./tests/JSPrivateProperties'),
+    require('./tests/JSReactJSX'),
+    require('./tests/JSNamedGroupsRegexes'),
+    require('./tests/JSUnicodeRegexes'),
+    require('./tests/JSNullishCoalescing'),
+    require('./tests/JSOptionalChaining'),
+    require('./tests/JSHermesMisc'),
   ];
 
   // Expo core modules should run everywhere
@@ -73,6 +85,7 @@ export function getTestModules() {
   }
 
   if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));
     modules.push(require('./tests/CalendarNext'));

@@ -41,7 +41,7 @@ export function ThemeSelector() {
 
   return (
     <Select
-      className="min-w-[108px]"
+      className="min-w-27"
       value={themeName ?? Themes.AUTO}
       onValueChange={onThemeSelect}
       options={options}

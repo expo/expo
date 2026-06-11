@@ -4,7 +4,8 @@ const fs = jest.requireActual('fs') as typeof import('fs');
 const template = path.join(__dirname, '../../../../../../../templates/expo-template-bare-minimum/');
 
 export function readAllFiles(): {
-  'ios/HelloWorld/AppDelegate.mm': string;
+  'ios/HelloWorld/AppDelegate.swift': string;
+  'ios/HelloWorld/SceneDelegate.swift': string;
   'ios/Podfile': string;
   'ios/HelloWorld.xcodeproj/project.pbxproj': string;
   'ios/HelloWorld/Info.plist': string;

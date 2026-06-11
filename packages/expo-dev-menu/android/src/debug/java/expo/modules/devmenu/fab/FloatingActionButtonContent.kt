@@ -13,11 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -34,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import com.composeunstyled.Icon
 import com.composeunstyled.Text
 import expo.modules.devmenu.R
-import kotlinx.coroutines.delay
 
 private val FabBlue = Color(0xFF007AFF)
 
@@ -43,7 +38,8 @@ fun FloatingActionButtonContent(
   modifier: Modifier = Modifier,
   isPressed: Boolean = false,
   isDragging: Boolean = false,
-  isIdle: Boolean = false
+  isIdle: Boolean = false,
+  showLabel: Boolean = true
 ) {
   val scale by animateFloatAsState(
     targetValue = if (isPressed && !isDragging) 0.9f else 1f,
@@ -59,13 +55,6 @@ fun FloatingActionButtonContent(
     targetValue = if (isIdle) 0f else 1f,
     label = "idleSaturation"
   )
-
-  var showLabel by remember { mutableStateOf(true) }
-
-  LaunchedEffect(Unit) {
-    delay(10_000)
-    showLabel = false
-  }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,

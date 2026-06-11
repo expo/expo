@@ -1,0 +1,185 @@
+---
+title: React Navigation integration
+sidebar_title: React Navigation
+description: Track per-screen render and interactive timings by enabling the React Navigation integration for EAS Observe.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+EAS Observe ships an opt-in integration for [React Navigation](https://reactnavigation.org/) that collects per-screen metrics tagged with the screen's route-name path (for example, `/Tabs/Sessions`). This lets you compare navigation performance by screen in the dashboard instead of looking only at app-wide aggregates.
+
+If your app uses [Expo Router](/router/introduction/), use the [Expo Router integration](/eas/observe/integrations/expo-router/) instead. This page is for apps that use React Navigation directly.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Expo SDK 56 and later">
+    The React Navigation integration is available on SDK 56 and later. On earlier SDKs,
+    `expo-observe` still tracks app-wide metrics, but per-screen navigation events are not emitted.
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+  <Requirement title="@react-navigation/native 7 or later installed in the app">
+    The integration depends on `@react-navigation/native` (v7.0.0 or later) at runtime. If the
+    package is not installed, the integration becomes a silent no-op.
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## Enable the integration
+
+> **warning** The integration must be enabled before mount and cannot be toggled at runtime. Calling `configure()` after the app has mounted, or toggling the flag mid-session, throws an error.
+
+Call `Observe.configure()` with the `react-navigation` integration flag at module scope, before any screen mounts:
+
+```tsx App.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: { 'react-navigation': true },
+});
+```
+
+</Step>
+
+<Step label="2">
+
+## Connect the integration to your navigation
+
+How you connect the integration depends on whether your app uses React Navigation's [dynamic or static configuration](https://reactnavigation.org/docs/static-vs-dynamic/). Both approaches record the same per-screen metrics.
+
+<Tabs>
+
+<Tab label="Dynamic">
+
+For [dynamic configuration](https://reactnavigation.org/docs/hello-react-navigation/), replace your top-level `<NavigationContainer>` with `<ObserveNavigationContainer>`. It wraps the stock container, accepts the same props, and forwards the same ref. It also subscribes to navigation state changes so it can record per-screen render timings.
+
+```tsx App.tsx
+import { Observe } from 'expo-observe';
+import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
+
+Observe.configure({
+  integrations: { 'react-navigation': true },
+});
+
+export default function App() {
+  return <ObserveNavigationContainer>{/* your navigators */}</ObserveNavigationContainer>;
+}
+```
+
+</Tab>
+
+<Tab label="Static">
+
+With [static configuration](https://reactnavigation.org/docs/static-configuration/), there is no `NavigationContainer` to replace. `createStaticNavigation()` renders one for you. Instead, create the navigation ref yourself, pass it to the returned `<Navigation>` element, and wrap the element in `<ObserveNavigationProvider>` with the same ref. The provider listens to navigation events through the ref and records the same per-screen render timings.
+
+```tsx App.tsx
+import { createStaticNavigation, useNavigationContainerRef } from '@react-navigation/native';
+import { Observe } from 'expo-observe';
+import { ObserveNavigationProvider } from 'expo-observe/integrations/react-navigation';
+
+import { RootStack } from './navigation';
+
+Observe.configure({
+  integrations: { 'react-navigation': true },
+});
+
+const Navigation = createStaticNavigation(RootStack);
+
+export default function App() {
+  const navigationRef = useNavigationContainerRef();
+
+  return (
+    <ObserveNavigationProvider navigationRef={navigationRef}>
+      <Navigation ref={navigationRef} />
+    </ObserveNavigationProvider>
+  );
+}
+```
+
+> **info** `ObserveNavigationProvider` does not render a container of its own. It listens to the `navigationRef` you pass. It must be an ancestor of every screen so that `useObserve()` works inside them.
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+## Call `useObserve()` in your screens
+
+Use the `useObserve()` hook to get a `markInteractive` that is automatically scoped to the current screen. The emitted event is tagged with the screen's path.
+
+```tsx screens/Home.tsx
+import { useObserve } from 'expo-observe';
+import { useEffect } from 'react';
+
+export default function Home() {
+  const { markInteractive } = useObserve();
+
+  useEffect(() => {
+    markInteractive();
+  }, [markInteractive]);
+
+  return (/* your screen content */);
+}
+```
+
+> **info** If the integration is disabled or `@react-navigation/native` is not installed, `useObserve()` falls back to the global `AppMetrics.markInteractive`. You can leave the hook in place regardless of integration state.
+
+</Step>
+
+## Metrics
+
+### Per-screen first render (`cold_ttr`)
+
+**What it measures:** Time from when a navigation action is dispatched (for example, `navigation.navigate()`) to when the destination screen first becomes focused. For the very first focus after app launch, the measurement is taken from when the JS bundle is loaded, and the event includes `isAppLaunch: true`.
+
+Emitted at most once per screen instance within a session.
+
+**Event params:**
+
+| Param         | Type      | Description                                                                    |
+| ------------- | --------- | ------------------------------------------------------------------------------ |
+| `routeName`   | `string`  | Route-name path (for example, `/Tabs/Sessions`).                               |
+| `routeParams` | `object`  | Focused route params (for example, `{ sessionId: 'abc' }`).                    |
+| `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
+
+### Per-screen warm render (`warm_ttr`)
+
+**What it measures:** Same as `cold_ttr`, but for screens that were already rendered before focus, typically because they were preloaded or the user navigated back to them. Tab-navigator siblings count as warm only once they have been mounted. With React Navigation v7's default `lazy: true`, unfocused tabs stay unmounted and their first focus is recorded as `cold_ttr`.
+
+**Event params:**
+
+| Param         | Type     | Description                                                 |
+| ------------- | -------- | ----------------------------------------------------------- |
+| `routeName`   | `string` | Route-name path (for example, `/Tabs/Sessions`).            |
+| `routeParams` | `object` | Focused route params (for example, `{ sessionId: 'abc' }`). |
+
+### Per-screen time to interactive (`tti`)
+
+**What it measures:** Time from when a navigation action is dispatched to when `markInteractive()` is called on the destination screen. Only the first call per navigation is recorded, so it is safe to call `markInteractive()` multiple times.
+
+**Event params:**
+
+| Param         | Type     | Description                                              |
+| ------------- | -------- | -------------------------------------------------------- |
+| `routeName`   | `string` | Route-name path (for example, `/Tabs/Sessions`).         |
+| `routeParams` | `object` | Focused route params.                                    |
+| `...`         | `any`    | Any custom params passed via `markInteractive({ ... })`. |
+
+## Notes and troubleshooting
+
+- `routeName` is built from route names (`/Tabs/Sessions`), so route params never appear in the path. This keeps metrics stable across distinct param values so the dashboard buckets them together. Param values are still available on the event via `routeParams`.
+- The integration only activates if `@react-navigation/native` is installed at runtime. If it is not installed, `useObserve()` continues to work, but no per-screen navigation metrics are emitted. Rendering `<ObserveNavigationContainer>` or `<ObserveNavigationProvider>` without `@react-navigation/native` throws.
+- The integration must be enabled before mount via `Observe.configure({ integrations: { 'react-navigation': true } })`. Toggling it after the app has mounted, or after `<ObserveNavigationContainer>` or `<ObserveNavigationProvider>` has mounted, throws.
+- With static configuration, pass the same ref to both `<ObserveNavigationProvider>` and the `<Navigation>` element. If the provider receives a ref that is not connected to a navigation container, no per-screen metrics are emitted.
+- `markInteractive()` only records once the screen is focused. Calls made on an unfocused screen update internal state but do not emit a `tti` event until the screen is focused.
+- Call `useObserve()` inside the screen component, not in a higher-level wrapper. If the screen's identity changes between renders, the hook logs a warning. If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
+- For general issues with EAS Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).

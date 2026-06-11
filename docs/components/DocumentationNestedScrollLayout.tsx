@@ -82,15 +82,15 @@ export default function DocumentationNestedScrollLayout({
 
   return (
     <div className="mx-auto flex h-dvh w-full flex-col overflow-hidden">
-      <div className="max-lg-gutters:sticky">{header}</div>
+      <div className="max-lg:sticky">{header}</div>
       <div className="mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between">
-        <div className="max-lg-gutters:hidden relative h-full">
+        <div className="relative h-full max-lg:hidden">
           {onSidebarToggle ? (
             <div
               className={mergeClasses(
                 'absolute z-20 flex items-center justify-center transition-all duration-200 ease-out',
                 'bottom-6',
-                isSidebarCollapsed ? 'left-5 translate-x-0' : 'left-[280px] -translate-x-1/2'
+                isSidebarCollapsed ? 'left-5 translate-x-0' : 'left-70 -translate-x-1/2'
               )}>
               <Tooltip.Root delayDuration={300}>
                 <Tooltip.Trigger asChild>
@@ -104,7 +104,7 @@ export default function DocumentationNestedScrollLayout({
                       isSidebarCollapsed
                         ? 'border-palette-gray5 bg-palette-gray4 text-icon-secondary dark:border-palette-gray6 dark:bg-palette-gray5'
                         : 'border-default bg-default text-icon-secondary',
-                      'hover:bg-element focus-visible:ring-palette-blue9 focus-visible:ring-2 focus-visible:outline-none'
+                      'hover:bg-element focus-visible:ring-2 focus-visible:ring-palette-blue9 focus-visible:outline-none'
                     )}
                     aria-label={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
                     title={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
@@ -120,7 +120,7 @@ export default function DocumentationNestedScrollLayout({
                     </span>
                   </Button>
                 </Tooltip.Trigger>
-                <Tooltip.Content sideOffset={8} className="max-w-[260px] text-center text-sm">
+                <Tooltip.Content sideOffset={8} className="max-w-65 text-center text-sm">
                   Use Cmd/Ctrl + Shift + Enter to toggle immersive mode.
                 </Tooltip.Content>
               </Tooltip.Root>
@@ -128,10 +128,8 @@ export default function DocumentationNestedScrollLayout({
           ) : null}
           <div
             className={mergeClasses(
-              'border-r-default flex h-full max-w-[280px] flex-col overflow-hidden border-r transition-[max-width,opacity,width] duration-200 ease-out will-change-[max-width,width,opacity]',
-              isSidebarCollapsed
-                ? 'w-0 max-w-0 border-r-0 opacity-0'
-                : 'w-[280px] max-w-[280px] opacity-100'
+              'flex h-full max-w-70 flex-col overflow-hidden border-r border-r-default transition-[max-width,opacity,width] duration-200 ease-out will-change-[max-width,width,opacity]',
+              isSidebarCollapsed ? 'w-0 max-w-0 border-r-0 opacity-0' : 'w-70 max-w-70 opacity-100'
             )}>
             {isSidebarCollapsed ? null : (
               <>
@@ -150,15 +148,14 @@ export default function DocumentationNestedScrollLayout({
         <div
           className={mergeClasses(
             'relative flex h-[calc(100dvh-60px)] w-full overflow-hidden',
-            'max-lg-gutters:overflow-auto',
+            'max-lg:overflow-auto',
             isMobileMenuVisible && 'hidden'
           )}>
           <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
             <div
               className={mergeClasses(
                 'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
-                isChatExpanded &&
-                  'max-lg-gutters:max-w-screen-xl max-lg-gutters:pl-0 max-lg-gutters:pr-0'
+                isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
               )}>
               {children}
             </div>
@@ -167,8 +164,8 @@ export default function DocumentationNestedScrollLayout({
         {!hideTOC && (
           <div
             className={mergeClasses(
-              'border-l-default flex h-[calc(100dvh-60px)] max-w-[280px] shrink-0 flex-col overflow-hidden border-l',
-              'max-xl-gutters:hidden'
+              'flex h-[calc(100dvh-60px)] max-w-70 shrink-0 flex-col overflow-hidden border-l border-l-default',
+              'max-xl:hidden'
             )}>
             <ScrollContainer ref={sidebarRightRef}>
               {cloneElement(sidebarRight, {

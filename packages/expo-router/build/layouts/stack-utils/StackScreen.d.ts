@@ -1,5 +1,6 @@
 import { type PropsWithChildren } from 'react';
-import { StackScreenTitle, StackScreenBackButton } from './screen';
+import { StackTitle } from './StackTitle';
+import { StackScreenBackButton } from './screen';
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import type { NativeStackNavigationOptions, NativeStackNavigationEventMap } from '../../react-navigation/native-stack';
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
@@ -53,7 +54,7 @@ export interface StackScreenProps extends PropsWithChildren {
  *
  * Can be used in the `_layout.tsx` files, or directly in page components.
  *
- * When configuring header inside page components, prefer using `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components.
+ * When configuring header inside page components, prefer using `Stack.Title`, `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components.
  *
  * @example
  * ```tsx app/_layout.tsx
@@ -70,26 +71,12 @@ export interface StackScreenProps extends PropsWithChildren {
  *  );
  * }
  * ```
- *
- * @example
- * ```tsx app/home.tsx
- * import { Stack } from 'expo-router';
- *
- * export default function HomePage() {
- *   return (
- *     <>
- *       <Stack.Screen
- *         options={{ headerTransparent: true }}
- *       />
- *       <Stack.Screen.Title>Welcome Home</Stack.Screen.Title>
- *       // Page content
- *     </>
- *   );
- * }
- * ```
  */
 export declare const StackScreen: (({ children, options, ...rest }: StackScreenProps) => import("react/jsx-runtime").JSX.Element) & {
-    Title: typeof StackScreenTitle;
+    /**
+     * @deprecated Use `Stack.Title` instead.
+     */
+    Title: typeof StackTitle;
     BackButton: typeof StackScreenBackButton;
 };
 export declare function validateStackPresentation(options: NativeStackNavigationOptions): NativeStackNavigationOptions;

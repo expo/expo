@@ -2,11 +2,11 @@ name: Publish Canaries
 
 on:
   workflow_dispatch:
-      inputs:
-        skip-ios-prebuilds:
-          description: Skip bundling iOS xcframeworks
-          type: boolean
-          default: false
+    inputs:
+      skip-ios-prebuilds:
+        description: Skip bundling iOS xcframeworks
+        type: boolean
+        default: false
   pull_request:
     paths:
       - .github/workflows/publish-canaries.yml
@@ -19,31 +19,30 @@ concurrency:
 
 jobs:
   publish-canaries:
-    runs-on: macos-15
+    if: github.repository == 'expo/expo'
+    runs-on: macos-26
     timeout-minutes: 120
     env:
       NODE_AUTH_TOKEN: ${{ secrets.EXPO_BOT_NPM_TOKEN }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: 🔨 Switch to Xcode 26.2
-        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: 🔨 Add bin to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: 'pnpm'
           registry-url: https://registry.npmjs.org/
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
           distribution: 'temurin'
           java-version: '17'

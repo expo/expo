@@ -1,8 +1,6 @@
 #pragma once
 
-#include <fbjni/fbjni.h>
-#include <react/fabric/CoreComponentsRegistry.h>
-#include <react/fabric/StateWrapperImpl.h>
+#include "../ExpoHeader.pch"
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;
@@ -19,6 +17,23 @@ public:
   static jni::local_ref<jni::JMap<jstring, jobject>> getStateProps(
     jni::alias_ref<NativeStatePropsGetter::javaobject> self,
     jni::alias_ref<jobject> stateWrapper
+  );
+
+  // Synchronously flushes a shadow-node size state update in the current frame
+  // (`UpdateMode::unstable_Immediate`) — the same path iOS uses. This avoids the layout shift an
+  // asynchronous `StateWrapper.updateState` causes for matchContents Hosts in Expo UI Compose views
+  static void updateStyleSizeImmediate(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jni::alias_ref<jobject> stateWrapper,
+    jdouble styleWidth,
+    jdouble styleHeight
+  );
+
+  static void updateViewSizeImmediate(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jni::alias_ref<jobject> stateWrapper,
+    jdouble width,
+    jdouble height
   );
 };
 

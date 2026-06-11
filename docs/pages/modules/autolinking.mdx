@@ -38,7 +38,7 @@ The autolinked modules are automatically added to the build, which usually means
 The behavior of the module resolution can be customized using some configuration options. These options can be defined in three different places, from the lowest to the highest precedence:
 
 - `expo.autolinking` config object in application's **package.json**
-- per platform overrides with `expo.autolinking.ios` and `expo.autolinking.android` objects
+- per platform overrides with `expo.autolinking.android`, `expo.autolinking.ios`, and `expo.autolinking.apple` objects (`apple` falls back to `ios` when `apple` is missing)
 - options provided to the CLI command, the `use_expo_modules!` method in the **Podfile** or `useExpoModules` function in the **settings.gradle**
 
 <PaddedAPIBox header="searchPaths">
@@ -110,6 +110,38 @@ module.exports = {
 > **info** Before **SDK 54**, the `exclude` option only applied to Expo modules and not React Native modules. React Native modules could only be excluded using a **react-native.config.js** file in the root directory of your project.
 
 </PaddedAPIBox>
+<PaddedAPIBox header="include">
+
+> **info** Available in **SDK 55 and later**.
+
+A list of additional package names to verify for deduplication. This is useful for utility libraries that should not be duplicated because of singleton or internal state, even when they aren't native modules.
+
+```json package.json
+{
+  "expo": {
+    "autolinking": {
+      "include": ["third-party-expo-module"]
+    }
+  }
+}
+```
+
+Unlike other options, per-platform `include` lists are merged with the root list rather than overridden. The configuration below verifies a third-party library on every platform and additionally checks for platform-specific library only on Android:
+
+```json package.json
+{
+  "expo": {
+    "autolinking": {
+      "include": ["third-party-expo-module"],
+      "android": {
+        "include": ["third-party-android-module"]
+      }
+    }
+  }
+}
+```
+
+</PaddedAPIBox>
 <PaddedAPIBox header="flags" platforms={["ios"]}>
 
 CocoaPods flags to pass to each autolinked pod. `inhibit_warnings` is likely the only flag most developers want to use, to inhibit Xcode warnings produced when compiling the autolinked modules.
@@ -161,7 +193,14 @@ When enabled, this flag opts you out of the new behavior and restores the behavi
 
 This command is called by the build system to resolve Expo modules during the first phase of autolinking. Its implementation is shared between all platforms. The output from `search` will contain a list of `duplicates` per package, if any duplicates were found.
 
-<Terminal cmd={['$ npx expo-modules-autolinking search']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-modules-autolinking search'],
+    yarn: ['$ yarn dlx expo-modules-autolinking search'],
+    pnpm: ['$ pnpm dlx expo-modules-autolinking search'],
+    bun: ['$ bunx expo-modules-autolinking search'],
+  }}
+/>
 
 The above command returns an object in JSON format with Expo modules that Expo Autolinking found:
 
@@ -186,7 +225,14 @@ The above command returns an object in JSON format with Expo modules that Expo A
 
 This command is called by the build system during the second phase of autolinking. It outputs an object with more (platform-specific) details for each Expo module, such as the path to the **build.gradle** or podspec files and module classes to link.
 
-<Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <apple|android>']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-modules-autolinking resolve --platform <apple|android>'],
+    yarn: ['$ yarn dlx expo-modules-autolinking resolve --platform <apple|android>'],
+    pnpm: ['$ pnpm dlx expo-modules-autolinking resolve --platform <apple|android>'],
+    bun: ['$ bunx expo-modules-autolinking resolve --platform <apple|android>'],
+  }}
+/>
 
 For example, with the `--platform apple` option, it returns an object in JSON format with an array of modules and resolved details for the platform:
 
@@ -218,7 +264,14 @@ For example, with the `--platform apple` option, it returns an object in JSON fo
 
 Verifies the autolinked native modules by checking for duplicates. Warnings are shown for each conflicting, duplicate installation.
 
-<Terminal cmd={['$ npx expo-modules-autolinking verify']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-modules-autolinking verify'],
+    yarn: ['$ yarn dlx expo-modules-autolinking verify'],
+    pnpm: ['$ pnpm dlx expo-modules-autolinking verify'],
+    bun: ['$ bunx expo-modules-autolinking verify'],
+  }}
+/>
 
 Pass the `--verbose` option to list all autolinked native modules.
 
@@ -227,7 +280,14 @@ Pass the `--verbose` option to list all autolinked native modules.
 
 This command is called by the build system when autolinking React Native modules. It outputs an object with more platform-specific details for each React Native module, such as the path to the gradle or podspec files.
 
-<Terminal cmd={['$ npx expo-modules-autolinking react-native-config']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-modules-autolinking react-native-config'],
+    yarn: ['$ yarn dlx expo-modules-autolinking react-native-config'],
+    pnpm: ['$ pnpm dlx expo-modules-autolinking react-native-config'],
+    bun: ['$ bunx expo-modules-autolinking react-native-config'],
+  }}
+/>
 
 For example, with the `--platform ios` option, it returns an object in **react-native.config.js**'s output format with information about each React Native dependency and the path to the React Native installation.
 

@@ -20,8 +20,7 @@ export type RequestHandler = (
 const STORE = new AsyncLocalStorage();
 
 export interface RequestHandlerParams
-  extends ExpoRequestHandlerParams,
-    Partial<ExpoRequestHandlerInput> {
+  extends ExpoRequestHandlerParams, Partial<ExpoRequestHandlerInput> {
   handleRouteError?(error: Error): Promise<Response>;
 }
 

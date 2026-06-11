@@ -16,6 +16,7 @@ on:
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/router-server/**
       - packages/@expo/log-box/**
+      - packages/@expo/metro-file-map/**
       - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
@@ -37,6 +38,7 @@ on:
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/router-server/**
       - packages/@expo/log-box/**
+      - packages/@expo/metro-file-map/**
       - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
@@ -53,6 +55,7 @@ concurrency:
 
 jobs:
   jest-ubuntu:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -60,7 +63,7 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -68,24 +71,23 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
 
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: '1.x'
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -96,6 +98,7 @@ jobs:
         run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   jest-windows:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -118,7 +121,7 @@ jobs:
           git config --global core.eol lf
 
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -126,24 +129,23 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
 
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: '1.x'
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -155,10 +157,15 @@ jobs:
         run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   playwright-ubuntu:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -166,18 +173,18 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
 
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: '1.x'
 
@@ -191,7 +198,7 @@ jobs:
         run: |
           echo version="$(pnpm exec playwright --version)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
-        uses: actions/cache@v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: playwright-browser-cache
         with:
           path: ~/.cache/ms-playwright
@@ -203,17 +210,18 @@ jobs:
 
       - name: 🧪 E2E (playwright) Test CLI
         working-directory: packages/@expo/cli
-        run: pnpm test:playwright
+        run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-ubuntu-${{ matrix.shard }}
           path: packages/@expo/cli/playwright-report/
           retention-days: 30
 
   playwright-windows:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -238,7 +246,7 @@ jobs:
           git config --global core.eol lf
 
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -246,24 +254,23 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: 10
 
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
 
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: '1.x'
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
-
 
       - name: 🎭 Get Playwright information
         id: playwright-info
@@ -273,7 +280,7 @@ jobs:
           echo version="$(pnpm exec playwright --version)" >> $GITHUB_OUTPUT
           echo dir="$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
-        uses: actions/cache@v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: playwright-browser-cache
         with:
           path: ${{ steps.playwright-info.outputs.dir }}
@@ -288,9 +295,9 @@ jobs:
         run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-windows-${{ matrix.shard }}
           path: packages/@expo/cli/playwright-report/
           retention-days: 30

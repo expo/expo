@@ -1,10 +1,9 @@
 import { FieldGroup as FieldGroupBase } from './FieldGroup';
-import { FieldSection } from './FieldSection';
-import { Header, Footer } from './FieldSectionSlots';
+import type { FieldSectionFooterProps, FieldSectionHeaderProps, FieldSectionProps } from './types';
 declare const FieldGroup: typeof FieldGroupBase & {
-    Section: typeof FieldSection;
-    SectionHeader: typeof Header;
-    SectionFooter: typeof Footer;
+    Section: React.FC<FieldSectionProps>;
+    SectionHeader: React.FC<FieldSectionHeaderProps>;
+    SectionFooter: React.FC<FieldSectionFooterProps>;
 };
 export { FieldGroup };
 export * from './types';

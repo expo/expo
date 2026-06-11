@@ -1,12 +1,23 @@
 import { NativeModule, registerWebModule } from 'expo';
+import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
 
-import type { Config, ExpoObserveModuleType } from './types';
+import type { ObserveConfig, ObserveModule, ObserveAttributes } from './types';
 
-export * from './types';
-
-class ExpoObserveModule extends NativeModule implements ExpoObserveModuleType {
+class ExpoObserveModule extends NativeModule implements ObserveModule {
   async dispatchEvents() {}
-  configure(config: Config): void {}
+  configure(config: ObserveConfig): void {}
+  logEvent(name: string, options?: LogEventOptions): void {
+    AppMetrics.logEvent(name, options);
+  }
+  markFirstRender(): void {
+    AppMetrics.markFirstRender();
+  }
+  markInteractive(attributes?: MetricAttributes): void {
+    AppMetrics.markInteractive(attributes);
+  }
+  setGlobalAttributes(attributes?: ObserveAttributes | null): void {
+    AppMetrics.setGlobalAttributes(attributes);
+  }
   setBundleDefaults(defaults: { environment: string; isJsDev: boolean }): void {}
 }
 

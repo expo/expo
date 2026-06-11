@@ -73,7 +73,14 @@ You can export any of the following functions `GET`, `POST`, `PUT`, `PATCH`, `DE
 
 Start the development server with Expo CLI:
 
-<Terminal cmd={['$ npx expo']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo'],
+    yarn: ['$ yarn expo'],
+    pnpm: ['$ pnpm expo'],
+    bun: ['$ bun expo'],
+  }}
+/>
 
 </Step>
 
@@ -203,7 +210,14 @@ Making requests with an undefined method will automatically return `405: Method 
 
 You can use the [`expo-server`](/versions/latest/sdk/server/) library to use several utilities and code patterns that work in any server-side Expo code. This includes utilities to get request metadata, for scheduling tasks, and for error handling.
 
-<Terminal cmd={['$ npx expo install expo-server']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-server'],
+    yarn: ['$ yarn expo install expo-server'],
+    pnpm: ['$ pnpm expo install expo-server'],
+    bun: ['$ bun expo install expo-server'],
+  }}
+/>
 
 Using `expo-server` is not limited to API routes and it can be used in any other server code as well, for example, in [server middleware](/router/web/middleware/).
 
@@ -357,10 +371,10 @@ export default function middleware(request: Request) {
 
 API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-metro). They have access to all of the language features as your client code:
 
-- [TypeScript](/guides/typescript) &mdash; types and [**tsconfig.json** paths](/guides/typescript/#path-aliases-optional).
-- [Environment variables](/guides/environment-variables) &mdash; server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
-- Node.js standard library &mdash; ensure that you are using the correct version of Node.js locally for your server environment.
-- **babel.config.js** and **metro.config.js** support &mdash; settings work across both client and server code.
+- [TypeScript](/guides/typescript) — types and [**tsconfig.json** paths](/guides/typescript/#path-aliases-optional).
+- [Environment variables](/guides/environment-variables) — server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
+- Node.js standard library — ensure that you are using the correct version of Node.js locally for your server environment.
+- **babel.config.js** and **metro.config.js** support — settings work across both client and server code.
 
 {/* TODO: SSR, redirects, middleware, and so on. */}
 
@@ -376,14 +390,28 @@ Route handlers are executed in a sandboxed environment that is isolated from the
 
 When you're ready to deploy to production, run the following command to create the server bundle in the **dist** directory (see the [Expo CLI documentation](/more/expo-cli#exporting) for more details):
 
-<Terminal cmd={['$ npx expo export --platform web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 This server can be tested locally with `npx expo serve`, visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
 You can deploy the server for production using [EAS Hosting](/eas/hosting/get-started) or another third-party service.
 
 If you want to export API routes and skip generating a website version of your app, you can use the following command, which will generate a **dist** directory containing only the server code of your project.
 
-<Terminal cmd={['$ npx expo export --platform web --no-ssg']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web --no-ssg'],
+    yarn: ['$ yarn expo export --platform web --no-ssg'],
+    pnpm: ['$ pnpm expo export --platform web --no-ssg'],
+    bun: ['$ bun expo export --platform web --no-ssg'],
+  }}
+/>
 
 <BoxLink
   title="Deploy instantly with EAS"
@@ -414,7 +442,14 @@ Ensure the `origin` field is **NOT** set in the **app.json** or in the `expo.ext
 
 Setup [EAS Hosting](/eas/hosting/get-started) for the project by deploying once locally first.
 
-<Terminal cmd={['$ npx expo export -p web', '$ eas deploy']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export -p web', '$ eas deploy'],
+    yarn: ['$ yarn expo export -p web', '$ eas deploy'],
+    pnpm: ['$ pnpm expo export -p web', '$ eas deploy'],
+    bun: ['$ bun expo export -p web', '$ eas deploy'],
+  }}
+/>
 
 </Step>
 
@@ -437,13 +472,36 @@ You're now ready to use automatic server deployment! Run the build command to st
 You can also run this locally with:
 
 <Terminal
-  cmd={[
-    '# Android',
-    '$ npx expo run:android --variant release',
-    '',
-    '# iOS',
-    '$ npx expo run:ios --configuration Release',
-  ]}
+  cmd={{
+    npm: [
+      '# Android',
+      '$ npx expo run:android --variant release',
+      '',
+      '# iOS',
+      '$ npx expo run:ios --configuration Release',
+    ],
+    yarn: [
+      '# Android',
+      '$ yarn expo run:android --variant release',
+      '',
+      '# iOS',
+      '$ yarn expo run:ios --configuration Release',
+    ],
+    pnpm: [
+      '# Android',
+      '$ pnpm expo run:android --variant release',
+      '',
+      '# iOS',
+      '$ pnpm expo run:ios --configuration Release',
+    ],
+    bun: [
+      '# Android',
+      '$ bun expo run:android --variant release',
+      '',
+      '# iOS',
+      '$ bun expo run:ios --configuration Release',
+    ],
+  }}
 />
 
 </Step>
@@ -465,14 +523,28 @@ It can often be useful to test the production build against a local dev server t
 
 Export the production server:
 
-<Terminal cmd={['$ npx expo export']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export'],
+    yarn: ['$ yarn expo export'],
+    pnpm: ['$ pnpm expo export'],
+    bun: ['$ bun expo export'],
+  }}
+/>
 
 </Step>
 <Step label="2">
 
 Host the production server locally:
 
-<Terminal cmd={['$ npx expo serve']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo serve'],
+    yarn: ['$ yarn expo serve'],
+    pnpm: ['$ pnpm expo serve'],
+    bun: ['$ bun expo serve'],
+  }}
+/>
 
 </Step>
 
@@ -503,7 +575,14 @@ Remember to remove this `origin` value when deploying to production.
 
 Build the app in release mode on to a simulator:
 
-<Terminal cmd={['$ EXPO_NO_DEPLOY=1 npx expo run:ios --configuration Release']} />
+<Terminal
+  cmd={{
+    npm: ['$ EXPO_NO_DEPLOY=1 npx expo run:ios --configuration Release'],
+    yarn: ['$ EXPO_NO_DEPLOY=1 yarn expo run:ios --configuration Release'],
+    pnpm: ['$ EXPO_NO_DEPLOY=1 pnpm expo run:ios --configuration Release'],
+    bun: ['$ EXPO_NO_DEPLOY=1 bun expo run:ios --configuration Release'],
+  }}
+/>
 
 </Step>
 
@@ -531,7 +610,14 @@ Before deploying to these providers, it may be good to be familiar with the basi
 
 The `expo-server` library contains adapters for various providers and runtimes. Before proceeding with any of the below sections, install the `expo-server` library.
 
-<Terminal cmd={['$ npx expo install expo-server']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-server'],
+    yarn: ['$ yarn expo install expo-server'],
+    pnpm: ['$ pnpm expo install expo-server'],
+    bun: ['$ bun expo install expo-server'],
+  }}
+/>
 
 ### Bun
 
@@ -591,7 +677,14 @@ Start the server with `bun`:
 
 Install the required dependencies:
 
-<Terminal cmd={['$ npm i -D express compression morgan']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev express compression morgan'],
+    yarn: ['$ yarn add --dev express compression morgan'],
+    pnpm: ['$ pnpm add --save-dev express compression morgan'],
+    bun: ['$ bun add --dev express compression morgan'],
+  }}
+/>
 
 </Step>
 
@@ -599,7 +692,14 @@ Install the required dependencies:
 
 Export the website for production:
 
-<Terminal cmd={['$ npx expo export -p web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export -p web'],
+    yarn: ['$ yarn expo export -p web'],
+    pnpm: ['$ pnpm expo export -p web'],
+    bun: ['$ bun expo export -p web'],
+  }}
+/>
 
 </Step>
 
@@ -674,7 +774,7 @@ import path from 'node:path';
 import { createRequestHandler } from 'expo-server/adapter/netlify';
 
 export default createRequestHandler({
-  /* @info Points to the root <CODE>dist/</CODE> (output) directory */
+  /* @info Points to the root `dist/` (output) directory */
   build: path.join(__dirname, '../../dist/server'),
   /* @end */
 });
@@ -714,7 +814,14 @@ Create a Netlify configuration file at the root of your project to redirect all 
 
 After you have created the configuration files, you can build the website and functions with Expo CLI:
 
-<Terminal cmd={['$ npx expo export -p web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export -p web'],
+    yarn: ['$ yarn expo export -p web'],
+    pnpm: ['$ pnpm expo export -p web'],
+    bun: ['$ bun expo export -p web'],
+  }}
+/>
 
 </Step>
 
@@ -723,12 +830,32 @@ After you have created the configuration files, you can build the website and fu
 Deploy to Netlify with the [Netlify CLI](https://docs.netlify.com/cli/get-started/).
 
 <Terminal
-  cmd={[
-    '# Install the Netlify CLI globally if needed.',
-    '$ npm install netlify-cli -g',
-    '# Deploy the website.',
-    '$ netlify deploy',
-  ]}
+  cmd={{
+    npm: [
+      '# Install the Netlify CLI globally if needed.',
+      '$ npm install --global netlify-cli',
+      '# Deploy the website.',
+      '$ netlify deploy',
+    ],
+    yarn: [
+      '# Install the Netlify CLI globally if needed.',
+      '$ yarn global add netlify-cli',
+      '# Deploy the website.',
+      '$ netlify deploy',
+    ],
+    pnpm: [
+      '# Install the Netlify CLI globally if needed.',
+      '$ pnpm add --global netlify-cli',
+      '# Deploy the website.',
+      '$ netlify deploy',
+    ],
+    bun: [
+      '# Install the Netlify CLI globally if needed.',
+      '$ bun add --global netlify-cli',
+      '# Deploy the website.',
+      '$ netlify deploy',
+    ],
+  }}
 />
 
 You can now visit your website at the URL provided by Netlify CLI. Running `netlify deploy --prod` will publish to the production URL.
@@ -753,7 +880,7 @@ Create a server entry file. All requests will be delegated through this middlewa
 const { createRequestHandler } = require('expo-server/adapter/vercel');
 
 module.exports = createRequestHandler({
-  /* @info Points to the root <CODE>dist/</CODE> (output) directory */
+  /* @info Points to the root `dist/` (output) directory */
   build: require('path').join(__dirname, '../dist/server'),
   /* @end */
 });
@@ -844,14 +971,40 @@ After you have created the configuration files, add a `vercel-build` script to y
 Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
 
 <Terminal
-  cmd={[
-    '# Install the Vercel CLI globally if needed.',
-    '$ npm install vercel -g',
-    '# Build the website.',
-    '$ vercel build',
-    '# Deploy the website.',
-    '$ vercel deploy --prebuilt',
-  ]}
+  cmd={{
+    npm: [
+      '# Install the Vercel CLI globally if needed.',
+      '$ npm install --global vercel',
+      '# Build the website.',
+      '$ vercel build',
+      '# Deploy the website.',
+      '$ vercel deploy --prebuilt',
+    ],
+    yarn: [
+      '# Install the Vercel CLI globally if needed.',
+      '$ yarn global add vercel',
+      '# Build the website.',
+      '$ vercel build',
+      '# Deploy the website.',
+      '$ vercel deploy --prebuilt',
+    ],
+    pnpm: [
+      '# Install the Vercel CLI globally if needed.',
+      '$ pnpm add --global vercel',
+      '# Build the website.',
+      '$ vercel build',
+      '# Deploy the website.',
+      '$ vercel deploy --prebuilt',
+    ],
+    bun: [
+      '# Install the Vercel CLI globally if needed.',
+      '$ bun add --global vercel',
+      '# Build the website.',
+      '$ vercel build',
+      '# Deploy the website.',
+      '$ vercel deploy --prebuilt',
+    ],
+  }}
 />
 
 You can now visit your website at the URL provided by the Vercel CLI.

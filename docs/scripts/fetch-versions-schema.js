@@ -12,9 +12,15 @@ export async function getSchemaAsync(sdkVersion, isUnversioned = false) {
   }
 
   const response = await fetch(
-    `http://exp.host/--/api/v2/sdks/${sdkVersion.replace('v', '')}/native-modules`
+    `https://exp.host/--/api/v2/sdks/${sdkVersion.replace('v', '')}/native-modules`
   );
+  if (!response.ok) {
+    throw new Error(`Failed to fetch native module schema for ${sdkVersion}: ${response.status}`);
+  }
   const responseJson = await response.json();
+  if (!Array.isArray(responseJson?.data)) {
+    throw new Error(`Unexpected native module schema response for ${sdkVersion}`);
+  }
   const versionData = responseJson.data.map(entry => {
     delete entry.id;
     delete entry.sdkVersion;
@@ -41,11 +47,21 @@ export async function getSchemaAsync(sdkVersion, isUnversioned = false) {
 }
 
 const versionedVersions = VERSIONS.filter(version => version.includes('.'));
-const nextVersion = inc(BETA_VERSION ?? LATEST_VERSION, 'major');
+const nextVersion = inc(BETA_VERSION || LATEST_VERSION, 'major');
 
-await Promise.all([
+const labels = [...versionedVersions, `${nextVersion} (unversioned)`];
+const results = await Promise.allSettled([
   ...versionedVersions.map(version => getSchemaAsync(version)),
   getSchemaAsync(nextVersion, true),
 ]);
 
-console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully fetched versions schemas`);
+results.forEach((result, index) => {
+  if (result.status === 'rejected') {
+    console.warn(
+      ` \x1b[1m\x1b[33m⚠\x1b[0m Kept committed snapshot for ${labels[index]}: ${result.reason.message}`
+    );
+  }
+});
+
+const fetched = results.filter(result => result.status === 'fulfilled').length;
+console.log(` \x1b[1m\x1b[32m✓\x1b[0m Fetched ${fetched}/${results.length} versions schemas`);

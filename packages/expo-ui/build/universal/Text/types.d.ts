@@ -2,10 +2,12 @@ import type { UniversalBaseProps } from '../types';
 /**
  * Font weight for text content. Accepts named values (`'normal'`, `'bold'`) or
  * numeric string values from `'100'` (thin) to `'900'` (black).
+ * @docsInline
  */
 export type UniversalFontWeight = 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
 /**
  * Text-specific styling options for the [`Text`](#text) component.
+ * @docsInline
  */
 export interface UniversalTextStyle {
     /**
@@ -25,7 +27,12 @@ export interface UniversalTextStyle {
      */
     color?: string;
     /**
-     * Line height in points. On iOS, this is converted to inter-line spacing by subtracting the font size.
+     * Line height in points.
+     *
+     * On iOS this is approximated as `lineSpacing(lineHeight - fontSize)` because
+     * SwiftUI only exposes a true `lineHeight(_:)` modifier on iOS 26+. For exact
+     * spacing on iOS 26+ compose the `lineHeight` modifier from
+     * `@expo/ui/swift-ui/modifiers` via the `modifiers` prop.
      */
     lineHeight?: number;
     /**

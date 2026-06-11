@@ -6,6 +6,7 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
   var configuration: ManagedAppSplashScreenConfiguration?
   var splashScreenView: UIView?
   var imageViewContainer: UIView?
+  var activityIndicator: UIActivityIndicatorView?
 
   @objc init(with manifest: EXManifests.Manifest) {
     configuration = SplashScreenConfigurationBuilder.parse(manifest: manifest)
@@ -80,6 +81,21 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
             container.alpha = 1
           }
         }
+      } else if imageViewContainer == nil, let splashScreenView {
+        // Show a very light grey placeholder when there's no app icon
+        let placeholder = UIView()
+        placeholder.translatesAutoresizingMaskIntoConstraints = false
+        placeholder.backgroundColor = UIColor(white: 0.99, alpha: 1.0)
+        placeholder.layer.cornerRadius = 30
+        imageViewContainer = placeholder
+        splashScreenView.addSubview(placeholder)
+
+        NSLayoutConstraint.activate([
+          placeholder.centerXAnchor.constraint(equalTo: splashScreenView.centerXAnchor),
+          placeholder.centerYAnchor.constraint(equalTo: splashScreenView.centerYAnchor),
+          placeholder.widthAnchor.constraint(equalToConstant: 200),
+          placeholder.heightAnchor.constraint(equalToConstant: 200)
+        ])
       }
     }
   }

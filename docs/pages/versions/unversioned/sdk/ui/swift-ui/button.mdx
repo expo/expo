@@ -8,8 +8,19 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`Button`](../universal/button) — it renders the appropriate native component per platform.
 
 Expo UI Button matches the official SwiftUI [Button API](https://developer.apple.com/documentation/swiftui/button) and supports styling via the [`buttonStyle`](modifiers/#buttonstylestyle), [`controlSize`](modifiers/#controlsizesize), and other modifiers.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/button/ios-light.webp"
+  darkSrc="/static/images/expo-ui/button/ios-dark.webp"
+  alt="Two iOS 26 Liquid Glass buttons — a glassProminent Get started above a glass Learn more"
+/>
 
 ## Installation
 
@@ -90,6 +101,38 @@ export default function ButtonStylesExample() {
         <Button label="Borderless" modifiers={[buttonStyle('borderless')]} />
         <Button label="Plain" modifiers={[buttonStyle('plain')]} />
       </VStack>
+    </Host>
+  );
+}
+```
+
+### Button border shape
+
+Use the `buttonBorderShape` modifier to change the shape of a styled button. Available shapes are: `automatic`, `capsule`, `roundedRectangle`, and `circle` (iOS 17+).
+
+```tsx ButtonBorderShapeExample.tsx
+import { Host, Button } from '@expo/ui/swift-ui';
+import {
+  buttonStyle,
+  controlSize,
+  buttonBorderShape,
+  labelStyle,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function ButtonBorderShapeExample() {
+  return (
+    <Host matchContents>
+      <Button
+        label="Favorite"
+        systemImage="heart.fill"
+        modifiers={[
+          buttonStyle('glass'),
+          controlSize('extraLarge'),
+          labelStyle('iconOnly'),
+          buttonBorderShape('circle'),
+        ]}
+        onPress={() => alert('Favorited')}
+      />
     </Host>
   );
 }

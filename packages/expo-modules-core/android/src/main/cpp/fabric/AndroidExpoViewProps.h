@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "ExpoViewProps.h"
 
-#include <fbjni/fbjni.h>
 #include <react/renderer/core/RawValue.h>
 
 namespace react = facebook::react;

@@ -33,13 +33,27 @@ Install `jest-expo` and other required dev dependencies in your project. Run the
 
 <Tab label="macOS/Linux">
 
-<Terminal cmd={['$ npx expo install jest-expo jest @types/jest --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install jest-expo jest @types/jest --dev'],
+    yarn: ['$ yarn expo install jest-expo jest @types/jest --dev'],
+    pnpm: ['$ pnpm expo install jest-expo jest @types/jest --dev'],
+    bun: ['$ bun expo install jest-expo jest @types/jest --dev'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Windows">
 
-<Terminal cmd={['$ npx expo install jest-expo jest @types/jest "--" --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install jest-expo jest @types/jest "--" --dev'],
+    yarn: ['$ yarn expo install jest-expo jest @types/jest "--" --dev'],
+    pnpm: ['$ pnpm expo install jest-expo jest @types/jest "--" --dev'],
+    bun: ['$ bun expo install jest-expo jest @types/jest "--" --dev'],
+  }}
+/>
 
 </Tab>
 
@@ -143,13 +157,27 @@ To install it, run the following command:
 
 <Tab label="macOS/Linux">
 
-<Terminal cmd={['$ npx expo install @testing-library/react-native --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @testing-library/react-native --dev'],
+    yarn: ['$ yarn expo install @testing-library/react-native --dev'],
+    pnpm: ['$ pnpm expo install @testing-library/react-native --dev'],
+    bun: ['$ bun expo install @testing-library/react-native --dev'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Windows">
 
-<Terminal cmd={['$ npx expo install @testing-library/react-native "--" --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @testing-library/react-native "--" --dev'],
+    yarn: ['$ yarn expo install @testing-library/react-native "--" --dev'],
+    pnpm: ['$ pnpm expo install @testing-library/react-native "--" --dev'],
+    bun: ['$ bun expo install @testing-library/react-native "--" --dev'],
+  }}
+/>
 
 </Tab>
 
@@ -173,7 +201,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export const CustomText = ({ children }: PropsWithChildren) => <Text>{children}</Text>;
 /* @end */
 
-/* @info This component currently renders a welcome message on the app screen using the <CODE>CustomText</CODE> component. */
+/* @info This component currently renders a welcome message on the app screen using the `CustomText` component. */
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
@@ -223,7 +251,14 @@ In the above example, the `getByText` query helps your tests find relevant eleme
 
 Run the following command in a terminal window to execute the test:
 
-<Terminal cmd={['$ npm run test']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run test'],
+    yarn: ['$ yarn run test'],
+    pnpm: ['$ pnpm run test'],
+    bun: ['$ bun run test'],
+  }}
+/>
 
 You will see one test being passed.
 

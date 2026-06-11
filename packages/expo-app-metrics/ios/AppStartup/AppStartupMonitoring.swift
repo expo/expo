@@ -42,12 +42,14 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return
     }
     let currentTime = CACurrentMediaTime()
+    let currentDate = Date()
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {
         return
       }
       markers.finishedLaunching = currentTime
+      markers.finishedLaunchingDate = currentDate
 
       // Start tracking frame metrics from this point so the data
       // matches the TTI window (finishedLaunching → markInteractive).
@@ -102,19 +104,28 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       markers.timeToInteractive = currentTime
 
       if let tti = markers.getTTI() {
-        var params = params
         let frameMetrics = frameMetricsRecorder.stop()
-        if frameMetrics.expectedFrames > 0 {
-          params["frameRate.slowFrames"] = frameMetrics.slowFrames
-          params["frameRate.frozenFrames"] = frameMetrics.frozenFrames
-          params["frameRate.totalDelay"] = frameMetrics.freezeTime
-        }
+        let deviceState = await DeviceConditions.deviceState()
+        let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
+        let networkRequests: NetworkRequestSummary? = {
+          guard let anchor = markers.finishedLaunchingDate else {
+            return nil
+          }
+          return NetworkRequestMonitor.shared.summarize(start: anchor, end: Date())
+        }()
+        let mergedParams = MetricParamsBuilder.build(
+          userParams: params,
+          frameMetrics: frameMetrics,
+          deviceState: deviceState,
+          networkPath: networkPath,
+          networkRequests: networkRequests
+        )
         let metric = Metric(
           category: .appStartup,
           name: "timeToInteractive",
           value: tti,
           routeName: routeName,
-          params: params.isEmpty ? nil : params
+          params: mergedParams.isEmpty ? nil : mergedParams
         )
         reportMetric(metric)
       }

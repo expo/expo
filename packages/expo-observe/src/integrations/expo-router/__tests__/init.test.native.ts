@@ -1,0 +1,414 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+import AppMetrics from 'expo-app-metrics';
+import type { ActionDispatchedEvent, PageFocusedEvent, PagePreloadedEvent } from 'expo-router';
+
+import { initListeners } from '../init';
+import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
+
+jest.mock('expo-app-metrics', () => {
+  const addCustomMetricToSession = jest.fn();
+  const getMainSession = jest.fn(() => ({ id: 'session-1' }));
+  return {
+    __esModule: true,
+    default: {
+      markInteractive: jest.fn(),
+      getMainSession,
+      addCustomMetricToSession,
+    },
+  };
+});
+
+jest.mock('../router', () => ({ optionalRouter: undefined, isRouterInstalled: false }));
+
+const mockGetMainSession = AppMetrics.getMainSession as jest.Mock;
+const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
+const mockSessionId = 'session-1';
+
+type Listener<T> = (event: T) => void;
+
+interface FakeNavigationEvents {
+  addListener<T>(type: string, cb: Listener<T>): () => void;
+  emit<T>(type: string, event: T): void;
+}
+
+function createFakeNavigationEvents(): FakeNavigationEvents {
+  const listeners: Record<string, Set<Listener<any>>> = {};
+  return {
+    addListener(type, cb) {
+      listeners[type] = listeners[type] ?? new Set();
+      listeners[type].add(cb);
+      return () => listeners[type].delete(cb);
+    },
+    emit(type, event) {
+      listeners[type]?.forEach((cb) => cb(event));
+    },
+  };
+}
+
+function dispatch(events: FakeNavigationEvents, actionType: string) {
+  events.emit<Partial<ActionDispatchedEvent>>('actionDispatched', {
+    type: 'actionDispatched',
+    actionType: actionType as ActionDispatchedEvent['actionType'],
+  });
+}
+
+function focus(
+  events: FakeNavigationEvents,
+  screenId: string,
+  overrides?: Partial<PageFocusedEvent>
+) {
+  events.emit<Partial<PageFocusedEvent>>('pageFocused', {
+    type: 'pageFocused',
+    screenId,
+    pathname: `/${screenId}`,
+    params: {},
+    segments: [screenId],
+    ...overrides,
+  });
+}
+
+function preload(
+  events: FakeNavigationEvents,
+  screenId: string,
+  overrides?: Partial<PagePreloadedEvent>
+) {
+  events.emit<Partial<PagePreloadedEvent>>('pagePreloaded', {
+    type: 'pagePreloaded',
+    screenId,
+    pathname: `/${screenId}`,
+    params: {},
+    segments: [screenId],
+    ...overrides,
+  });
+}
+
+function flushAsync() {
+  return new Promise((resolve) => setImmediate(resolve));
+}
+
+let storage: RouterIntegrationStorage;
+let events: FakeNavigationEvents;
+let cleanup: () => void;
+let logSpy: jest.SpyInstance;
+let warnSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  storage = createRouterIntegrationStorage();
+  events = createFakeNavigationEvents();
+  cleanup = initListeners(storage, events as any);
+});
+
+afterEach(() => {
+  cleanup?.();
+  expect(logSpy).not.toHaveBeenCalled();
+  expect(warnSpy).not.toHaveBeenCalled();
+  jest.clearAllMocks();
+});
+
+describe('initListeners', () => {
+  it('records cold_ttr with isAppLaunch=true on the first focus after a non-PRELOAD action', async () => {
+    const now = performance.now();
+    jest.spyOn(performance, 'now').mockReturnValue(now + 100);
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric).toHaveBeenCalledWith({
+      sessionId: mockSessionId,
+      timestamp: expect.any(String),
+      category: 'navigation',
+      name: 'cold_ttr',
+      routeName: '/a',
+      value: expect.closeTo(0.1, 2),
+      params: { isAppLaunch: true, routeParams: {}, url: '/a' },
+    });
+  });
+
+  it('seeds dispatchTime and isAppLaunch=true for the initial screen so a later markInteractive can compute navigation TTI', async () => {
+    focus(events, 'a');
+    await flushAsync();
+
+    // The initial focus is treated as if the app launch dispatched the
+    // navigation — without this, useObserveForRouter has no dispatchTime to
+    // diff against and the navigation `tti` metric is silently skipped.
+    expect(storage.screenTimes['a']).toEqual({
+      dispatchTime: expect.any(Number),
+      isAppLaunch: true,
+    });
+  });
+
+  it('seeds isAppLaunch=false on subsequent navigated focuses so markInteractive can label the tti metric', async () => {
+    focus(events, 'a');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(storage.screenTimes['b']).toEqual({
+      dispatchTime: expect.any(Number),
+      isAppLaunch: false,
+    });
+  });
+
+  it('records cold_ttr with isAppLaunch=false on subsequent focuses of a new screen', async () => {
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+    mockAddCustomMetric.mockClear();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
+      isAppLaunch: false,
+      routeParams: {},
+      url: '/b',
+    });
+  });
+
+  it('records warm_ttr when revisiting a previously rendered screen', async () => {
+    focus(events, 'a');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(3);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
+      isAppLaunch: true,
+      routeParams: {},
+      url: '/a',
+    });
+    expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
+    expect(mockAddCustomMetric.mock.calls[1][0].params).toEqual({
+      isAppLaunch: false,
+      routeParams: {},
+      url: '/b',
+    });
+    expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
+    expect(mockAddCustomMetric.mock.calls[2][0].params).toEqual({
+      isAppLaunch: false,
+      routeParams: {},
+      url: '/a',
+    });
+  });
+
+  it.each<[string[], string, Record<string, string | string[]>, string]>([
+    [[], '/', {}, '/'],
+    [['(tabs)'], '/', {}, '/(tabs)'],
+    [['(tabs)', '(home)'], '/', {}, '/(tabs)/(home)'],
+    [['users', '[id]'], '/users/42', { id: '42' }, '/users/[id]'],
+    [['files', '[...path]'], '/files/a/b/c', { path: ['a', 'b', 'c'] }, '/files/[...path]'],
+    [
+      ['(tabs)', 'sessions', '[sessionId]'],
+      '/sessions/1234',
+      { sessionId: '1234' },
+      '/(tabs)/sessions/[sessionId]',
+    ],
+  ])(
+    'pageFocused(segments=%s, pathname=%s, params=%s) records routeName=%s',
+    async (segments, pathname, routeParams, expectedRouteName) => {
+      dispatch(events, 'NAVIGATE');
+      focus(events, 'screen', { pathname, params: routeParams, segments });
+      await flushAsync();
+
+      expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+      expect(mockAddCustomMetric).toHaveBeenCalledWith(
+        expect.objectContaining({
+          routeName: expectedRouteName,
+          params: expect.objectContaining({
+            url: pathname,
+            routeParams,
+          }),
+        })
+      );
+    }
+  );
+
+  it('does not record a TTR for a PRELOAD action', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    dispatch(events, 'PRELOAD');
+    focus(events, 'a');
+    await flushAsync();
+    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+  });
+
+  it('records warm_ttr when a preloaded screen is focused for the first time', async () => {
+    dispatch(events, 'PRELOAD');
+    preload(events, 'a');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+  });
+
+  it('records cold_ttr for a non-preloaded screen even when a different screen was preloaded', async () => {
+    dispatch(events, 'PRELOAD');
+    preload(events, 'a');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
+  });
+
+  it('does not emit a metric when a screen is preloaded but never focused', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    dispatch(events, 'PRELOAD');
+    preload(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(storage.renderedScreensIds.has('a')).toBe(true);
+  });
+
+  it('handles a duplicate pagePreloaded for the same screen idempotently', async () => {
+    preload(events, 'a');
+    preload(events, 'a');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+    expect(storage.renderedScreensIds.size).toBe(1);
+  });
+
+  it('treats subsequent focuses of a preloaded screen as warm_ttr', async () => {
+    preload(events, 'a');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(3);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+    expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
+    expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
+  });
+
+  it('cleanup unsubscribes all listeners', async () => {
+    cleanup();
+    dispatch(events, 'NAVIGATE');
+    preload(events, 'a');
+    focus(events, 'a');
+    await flushAsync();
+    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(storage.pendingActions).toHaveLength(0);
+    expect(storage.renderedScreensIds.size).toBe(0);
+    cleanup = () => {};
+  });
+
+  it('emits tti alongside the TTR when a pending interactive was waiting (post-cold-launch)', async () => {
+    // Cold-launch first screen so the next focus runs through the warm branch.
+    focus(events, 'a');
+    await flushAsync();
+    mockAddCustomMetric.mockClear();
+
+    // markInteractive ran before pageFocused — wrote lastInteractiveCall with
+    // no dispatchTime.
+    storage.screenTimes['b'] = { lastInteractiveCall: performance.now() };
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
+    const ttrCall = mockAddCustomMetric.mock.calls[0][0];
+    const ttiCall = mockAddCustomMetric.mock.calls[1][0];
+    expect(ttrCall.name).toBe('cold_ttr');
+    expect(ttrCall.params.isAppLaunch).toBe(false);
+    expect(ttiCall.name).toBe('tti');
+    expect(ttiCall.value).toBe(ttrCall.value);
+    expect(ttiCall.routeName).toBe('/b');
+    expect(ttiCall.params).toEqual({ isAppLaunch: false, routeParams: {}, url: '/b' });
+    expect(storage.interactiveScreensIds.has('b')).toBe(true);
+  });
+
+  it('emits tti = cold_ttr when a pending interactive was waiting during cold launch', async () => {
+    storage.screenTimes['a'] = { lastInteractiveCall: performance.now() };
+
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
+    const ttrCall = mockAddCustomMetric.mock.calls.find((c) => c[0].name === 'cold_ttr')?.[0];
+    const ttiCall = mockAddCustomMetric.mock.calls.find((c) => c[0].name === 'tti')?.[0];
+    expect(ttrCall.params.isAppLaunch).toBe(true);
+    expect(ttiCall.value).toBe(ttrCall.value);
+    expect(ttiCall.routeName).toBe('/a');
+    expect(ttiCall.params).toEqual({ isAppLaunch: true, routeParams: {}, url: '/a' });
+    expect(storage.interactiveScreensIds.has('a')).toBe(true);
+  });
+
+  it('marks lastInteractiveCall after a deferred emit so a follow-up markInteractive is deduped', async () => {
+    storage.hasRecordedInitialTtr = true;
+    storage.screenTimes['b'] = { lastInteractiveCall: 1000 };
+
+    const nowSpy = jest.spyOn(performance, 'now');
+    nowSpy.mockReturnValue(2000);
+    dispatch(events, 'NAVIGATE');
+    nowSpy.mockReturnValue(2100);
+    focus(events, 'b');
+    await flushAsync();
+
+    // After pageFocused: dispatchTime < lastInteractiveCall (now), so a
+    // follow-up markInteractive after focus is treated as duplicate.
+    const entry = storage.screenTimes['b'];
+    expect(entry?.dispatchTime).toBe(2000);
+    expect(entry?.lastInteractiveCall).toBe(2100);
+  });
+
+  it('uses getMainSession from AppMetrics for the metric session id', async () => {
+    mockGetMainSession.mockReturnValueOnce({ id: 'custom-session' });
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(mockAddCustomMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ sessionId: 'custom-session' })
+    );
+  });
+});
+
+describe('isInitialized + initRouterIntegration', () => {
+  it('flips initialized when initRouterIntegration is called and stays decoupled from initListeners', () => {
+    jest.isolateModules(() => {
+      const init = require('../init');
+      expect(init.isInitialized()).toBe(false);
+
+      const fresh = createRouterIntegrationStorage();
+      const fakeEvents = createFakeNavigationEvents();
+      const dispose = init.initListeners(fresh, fakeEvents);
+      expect(init.isInitialized()).toBe(false);
+      dispose();
+
+      init.initRouterIntegration();
+      expect(init.isInitialized()).toBe(true);
+    });
+  });
+});

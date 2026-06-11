@@ -73,11 +73,11 @@ export function getCssSerialAssets<T extends any>(
 
       if (cssMetadata.externalImports) {
         for (const external of cssMetadata.externalImports) {
-          let source = `<link rel="stylesheet" href="${external.url}"`;
+          let source = `<link rel="stylesheet" href="${escapeHtmlAttribute(external.url)}"`;
 
           // TODO: How can we do this for local css imports?
           if (external.media) {
-            source += `media="${external.media}"`;
+            source += ` media="${escapeHtmlAttribute(external.media)}"`;
           }
 
           // TODO: supports attribute
@@ -162,4 +162,8 @@ export function fileNameFromContents({ filepath, src }: { filepath: string; src:
 // TODO(@hassankhan): Investigate why we don't always pass the filename with extension here
 export function getFileName(module: string) {
   return path.basename(module).replace(/\.\w+$/, '');
+}
+
+function escapeHtmlAttribute(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }

@@ -20,9 +20,16 @@ In this tutorial, you'll build an example module with a native view that renders
 
 Create a new module by running the following command and name the example module `expo-web-view`:
 
-<Terminal cmd={['$ npx create-expo-module expo-web-view']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-web-view'],
+    yarn: ['$ yarn create expo-module expo-web-view'],
+    pnpm: ['$ pnpm create expo-module expo-web-view'],
+    bun: ['$ bun create expo-module expo-web-view'],
+  }}
+/>
 
-> **info** Since this is an example library and won't be published, press <kbd>return</kbd> for all prompts to accept the default values.
+> **info** Since this is an example library and won't be published, press <kbd>Return</kbd> for all prompts to accept the default values.
 
 </Step>
 
@@ -105,22 +112,61 @@ export default function App() {
 To ensure everything is working, start the TypeScript compiler to watch for changes and rebuild the module's JavaScript:
 
 <Terminal
-  cmdCopy="npm run build"
-  cmd={[
-    '# Run this in the root of the project to start the TypeScript compiler',
-    '$ npm run build',
-  ]}
+  cmd={{
+    npm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ npm run build',
+    ],
+    yarn: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ yarn run build',
+    ],
+    pnpm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ pnpm run build',
+    ],
+    bun: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ bun run build',
+    ],
+  }}
 />
 
 <Terminal
-  cmd={[
-    '# Navigate to the example directory',
-    '$ cd example',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Navigate to the example directory',
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Navigate to the example directory',
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Navigate to the example directory',
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Navigate to the example directory',
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 You should now see a blank purple screen. While it's not very exciting, it's a good start. Next, turn it into a WebView.
@@ -191,14 +237,40 @@ class ExpoWebView: ExpoView {
 No changes are required. Rebuild and run the app using the following commands:
 
 <Terminal
-  cmd={[
-    '# Prebuild the example app with the --clean flag to ensure a clean build',
-    '$ npx expo prebuild --clean',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Prebuild the example app with the --clean flag to ensure a clean build',
+      '$ npx expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Prebuild the example app with the --clean flag to ensure a clean build',
+      '$ yarn expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Prebuild the example app with the --clean flag to ensure a clean build',
+      '$ pnpm expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Prebuild the example app with the --clean flag to ensure a clean build',
+      '$ bun expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 After that, you'll see the [Expo Modules API overview page](/modules/overview) rendered. If the changes aren't reflected, try reinstalling the app.
@@ -211,7 +283,7 @@ After that, you'll see the [Expo Modules API overview page](/modules/overview) r
 
 To set a prop on the view, define the prop name and setter inside `ExpoWebViewModule`. In this case, you can access the `webView` property directly for convenience. However, in real-world scenarios, keep the logic inside the `ExpoWebView` class to minimize how much `ExpoWebViewModule` knows about its internals.
 
-Use the [Prop definition component](/modules/module-api/#prop) to define the prop. In the prop setter block, you can access both the view and the prop. Specify that the URL is of type `URL` &mdash; the Expo modules API will convert strings to the native `URL` type.
+Use the [Prop definition component](/modules/module-api/#prop) to define the prop. In the prop setter block, you can access both the view and the prop. Specify that the URL is of type `URL` — the Expo modules API will convert strings to the native `URL` type.
 
 ### Android module
 
@@ -291,13 +363,36 @@ export default function App() {
 Rebuild the example app:
 
 <Terminal
-  cmd={[
-    '$ npx expo prebuild --clean',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '$ yarn expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ pnpm expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '$ bun expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 After that, you'll see the [Expo homepage](https://expo.dev) in the WebView.
@@ -551,7 +646,7 @@ function LoadingView({ isLoading }: { isLoading: boolean }) {
 
 <ContentSpotlight
   alt="A simple web browser UI built around our WebView"
-  src="/static/images/modules/native-view-tutorial/web-browser.png"
+  src="/static/images/modules/native-view-tutorial/web-browser.webp"
   className="max-w-[600px]"
 />
 

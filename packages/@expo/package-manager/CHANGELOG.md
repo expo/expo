@@ -6,9 +6,33 @@
 
 ### 🎉 New features
 
+- Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.12.0 — 2026-05-20
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 1.11.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.10.5 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.10.4 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
 
 ## 1.10.3 — 2026-02-03
 

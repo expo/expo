@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'Label component',
+    route: 'ui/label',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LabelScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
@@ -59,6 +67,38 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Slider replacement',
+    route: 'ui/community-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySliderScreen'));
+    },
+  },
+  {
+    name: 'Community MaskedView replacement',
+    route: 'ui/community-masked-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMaskedViewScreen'));
+    },
+  },
+  {
+    name: 'Community Menu replacement',
+    route: 'ui/community-menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMenuScreen'));
+    },
+  },
+  {
+    name: 'Community PagerView replacement',
+    route: 'ui/community-pager-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPagerViewScreen'));
+    },
+  },
+  {
     name: 'TabView component',
     route: 'ui/tabview',
     options: {},
@@ -112,6 +152,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MenuScreen'));
+    },
+  },
+  {
+    name: 'AlertDialog component',
+    route: 'ui/alert-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AlertDialogScreen'));
     },
   },
   {
@@ -211,6 +259,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Swipe Actions',
+    route: 'ui/swipe-actions',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SwipeActionsScreen'));
+    },
+  },
+  {
     name: 'Animation Modifier',
     route: 'ui/animation-modifier',
     options: {},
@@ -224,6 +280,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ContentTransitionScreen'));
+    },
+  },
+  {
+    name: 'Symbol Effect',
+    route: 'ui/symbol-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SymbolEffectScreen'));
     },
   },
   {
@@ -256,6 +320,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ScrollViewScreen'));
+    },
+  },
+  {
+    name: 'ScrollView shared position',
+    route: 'ui/scrollview-shared-position',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewSharedPositionScreen'));
     },
   },
   {

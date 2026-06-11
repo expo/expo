@@ -11,6 +11,7 @@ export declare function scanFilesRecursively(parentPath: string, includeDirector
 export declare const fileExistsAsync: (file: string) => Promise<string | null>;
 export declare const fastJoin: (from: string, append: string) => string;
 export declare const maybeRealpath: (target: string) => Promise<string | null>;
+export declare function isPathInside(child: string, parent: string): boolean;
 export type PackageJson = Record<string, unknown> & {
     name?: string;
     version?: string;

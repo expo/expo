@@ -29,7 +29,9 @@
 require 'fileutils'
 require 'json'
 require 'net/http'
+require 'open3'
 require 'set'
+require 'tempfile'
 require 'uri'
 
 module Expo
@@ -51,6 +53,11 @@ module Expo
 
     # Centralized build output directory under packages/precompile/
     PRECOMPILE_BUILD_DIR = '.build'.freeze
+
+    # Subdir under packages/precompile/.build/ holding <Name>/<flavor>/<Name>.xcframework (monorepo source).
+    SHARED_SPM_DEPS_SOURCE_DIR = '.spm-deps'.freeze
+    # Subdir inside an npm package that bundles shared SPM xcframeworks for standalone consumers.
+    BUNDLED_SHARED_SPM_DEPS_SUBPATH = File.join('prebuilds', 'spm-deps').freeze
 
     # Apple platforms supported by CocoaPods podspecs
     APPLE_PLATFORMS = %w[ios osx tvos watchos visionos].freeze
@@ -74,6 +81,11 @@ module Expo
     @hermes_version = nil
     @claimed_vendored_frameworks = nil  # Set<String> — xcframework names already claimed by a prebuilt pod
     @framework_owner_map = nil          # Hash: framework_name -> owning_pod_name
+    @failed_remote_downloads = Set.new
+    @warned_no_prebuilt_react = false
+    @target_platform = nil
+    @xcframework_slice_cache = nil
+    @status_cache = {}                  # Hash: pod_name -> resolve_prebuilt_status result
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -95,16 +107,42 @@ module Expo
         ENV[EXTERNAL_MODULES_BASE_URL_ENV_VAR]
       end
 
-      # Returns true if precompiled modules are enabled via environment variable
+      # Returns true if precompiled modules are enabled via environment variable.
+      # Precompiled module xcframeworks are linked against the prebuilt
+      # React.xcframework, so they also require RCT_USE_PREBUILT_RNCORE=1. If
+      # the user opted in to precompiled modules but React Native is still set
+      # to build from source, fall back to source-built modules and print once.
       def enabled?
-        ENV[ENV_VAR] == '1'
+        return false unless ENV[ENV_VAR] == '1'
+        return true if prebuilt_react_active?
+
+        unless @warned_no_prebuilt_react
+          @warned_no_prebuilt_react = true
+          Pod::UI.puts "[Expo] EXPO_USE_PRECOMPILED_MODULES=1 was set, but React Native is configured to build from source (RCT_USE_PREBUILT_RNCORE is not 1). Precompiled Expo modules require the prebuilt React.xcframework, so every Expo module will be built from source for this install. To use precompiled modules, ensure `ios.buildReactNativeFromSource` is not `true` in the `expo-build-properties` plugin (the default uses the prebuilt framework), or export RCT_USE_PREBUILT_RNCORE=1 before running `pod install`.".yellow
+        end
+        false
       end
 
-      # Sets the list of package name patterns that should be built from source
-      # instead of using precompiled xcframeworks. Patterns are treated as regexes
-      # (e.g., ".*" for all, "expo-audio" for exact match, "expo-.*" for prefix).
+      def configure(target_platform: nil, build_from_source: nil)
+        self.target_platform = target_platform unless target_platform.nil?
+        self.build_from_source = build_from_source unless build_from_source.nil?
+      end
+
       def build_from_source=(patterns)
         @build_from_source_patterns = (patterns || []).map { |p| Regexp.new("^#{p}$") }
+        @status_cache = {}
+      end
+
+      def target_platform=(platform)
+        normalized = normalize_xcframework_platform(platform)
+        return if @target_platform == normalized
+
+        @target_platform = normalized
+        @all_bundled_frameworks = nil
+        @claimed_vendored_frameworks = nil
+        @framework_owner_map = nil
+        @xcframework_slice_cache = nil
+        @status_cache = {}
       end
 
       # Checks if a pod is configured to be built from source via buildFromSource.
@@ -155,10 +193,14 @@ module Expo
       # - Pods that vendor xcframeworks (already precompiled)
       # - Source-built pods that depend on React-Core (non-modular includes)
       #
+      # Also stages shared SPM dep xcframework symlinks inside their owner pod's
+      # directory — must run before `generate_pods_project` reads each xcframework's
+      # Info.plist to slice it.
+      #
       # @param installer [Pod::Installer] The CocoaPods installer instance
       def perform_pre_install(installer)
         return unless enabled?
-        return unless prebuilt_react_active?
+        ensure_shared_spm_deps(installer)
         return if linkage(installer).nil?
 
         pods_to_downgrade = Set.new(installer.podfile.framework_modules_to_patch)
@@ -180,6 +222,63 @@ module Expo
             end
           end
         end
+      end
+
+      # Symlinks each shared SPM dependency xcframework (e.g. SDWebImage) into the
+      # pod directory of its owner. Ownership is whatever `build_vendored_paths` set
+      # in `@framework_owner_map` during `store_podspec` (resolution-first);
+      # falls back to alphabetical-first only if the map has no entry. Must run
+      # before `generate_pods_project` so CocoaPods sees the symlinks when reading
+      # each xcframework's Info.plist.
+      def ensure_shared_spm_deps(installer)
+        return unless enabled?
+
+        consumers_by_dep = collect_shared_spm_deps(installer)
+        return if consumers_by_dep.empty?
+
+        @framework_owner_map ||= {}
+        @claimed_vendored_frameworks ||= Set.new
+
+        unresolved = []
+        staged = 0
+
+        consumers_by_dep.each do |dep_name, consumers|
+          existing = @framework_owner_map[dep_name]
+          owner_name = (existing && consumers.key?(existing)) ? existing : consumers.keys.sort.first
+          owner_info = consumers[owner_name]
+          @framework_owner_map[dep_name] ||= owner_name
+          @claimed_vendored_frameworks.add(dep_name)
+
+          source_path = shared_spm_dep_xcframework_path(dep_name, owner_info, build_flavor)
+          owner_pod_dir = File.join(installer.sandbox.root, owner_name)
+          unless source_path && File.directory?(owner_pod_dir)
+            unresolved << dep_name
+            next
+          end
+
+          FileUtils.rm_rf(File.join(owner_pod_dir, "#{dep_name}.xcframework"))
+          File.symlink(source_path, File.join(owner_pod_dir, "#{dep_name}.xcframework"))
+          staged += 1
+        end
+
+        if unresolved.any?
+          Pod::UI.warn "[Expo-precompiled] Shared SPM xcframeworks not found for: #{unresolved.join(', ')} (flavor: #{build_flavor}). The Expo modules that depend on them will fail at runtime with dyld 'Library not loaded: @rpath/<Name>.framework/<Name>'. Run the precompile prebuild pipeline, or ensure each consuming npm package ships prebuilds/spm-deps/<Name>/<flavor>/<Name>.xcframework."
+        end
+
+        Pod::UI.puts "[Expo] ".blue + "Staged #{staged}/#{consumers_by_dep.size} shared SPM xcframework(s) (#{build_flavor})" if staged > 0
+      end
+
+      # dep_name => { pod_name => pod_info } for shared SPM deps consumed by enabled prebuilt pods in this install.
+      def collect_shared_spm_deps(installer)
+        by_dep = {}
+        installer.pod_targets.each do |pod_target|
+          info = pod_lookup_map[pod_target.name]
+          next unless info && has_prebuilt_xcframework?(pod_target.name)
+          (info[:spm_dependency_frameworks] || []).each do |dep_name|
+            (by_dep[dep_name] ||= {})[pod_target.name] = info
+          end
+        end
+        by_dep
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -363,11 +462,12 @@ module Expo
         end
       end
 
-      # Registers companion pods gated by a Podfile property.
+      # Registers companion pods gated by a Podfile property or resolved dependency.
       # A product can declare `autolinkWhen` in its spm.config.json to opt into this flow.
       # The pod is auto-registered when:
       #   1. The podspec exists (source build) or prebuilt xcframework exists (precompiled)
-      #   2. The gating Podfile.properties.json value is not the disabled value
+      #   2. The gating Podfile.properties.json value is not the disabled value, or
+      #      the gating dependency is present in the resolved dependency graph
       #   3. It's not already registered in the Podfile
       #   4. All of its local dependencies (pods in the lookup map) are already registered
       #
@@ -386,6 +486,9 @@ module Expo
       #     "podfileProperty": "expo.camera.barcode-scanner-enabled",
       #     "disabledValue": "false"
       #   }
+      #   "autolinkWhen": {
+      #     "podName": "RNWorklets"
+      #   }
       def register_companion_pods(podfile, target_definition, project_directory, tests_only: false)
         return if tests_only
 
@@ -395,14 +498,7 @@ module Expo
           condition = info[:autolink_when]
           next unless condition
           next if target_definition.dependencies.any? { |dep| dep.name == pod_name }
-
-          property = condition['podfileProperty']
-          disabled_value = condition['disabledValue']
-          next unless property
-
-          current_value = properties[property]
-          # Only skip if the property is explicitly set to the disabled value
-          next if current_value == disabled_value
+          next unless companion_autolink_condition_met?(condition, properties)
 
           podspec_file = File.join(info[:podspec_dir], "#{pod_name}.podspec")
           unless File.exist?(podspec_file)
@@ -428,7 +524,8 @@ module Expo
           registered_pod_names = target_definition.dependencies.map(&:name)
           missing_local_dep = spec.all_dependencies.find do |dep|
             root_spec_name = dep.name.partition('/').first
-            pod_lookup_map.key?(root_spec_name) && !registered_pod_names.include?(root_spec_name)
+            dep_info = pod_lookup_map[root_spec_name]
+            dep_info && dep_info[:type] == :internal && !registered_pod_names.include?(root_spec_name)
           end
           if missing_local_dep
             Pod::UI.message "[Expo] Skipping companion pod #{pod_name}: dependency #{missing_local_dep.name} is not installed"
@@ -445,11 +542,13 @@ module Expo
             end
           end
 
+          condition_label = companion_autolink_condition_label(condition)
+
           if enabled? && has_prebuilt_xcframework?(pod_name)
-            Pod::UI.message "— #{pod_name.green} (prebuilt companion, gated by #{property})"
+            Pod::UI.message "— #{pod_name.green} (prebuilt companion, gated by #{condition_label})"
             podfile.pod(pod_name, :podspec => podspec_rel)
           else
-            Pod::UI.message "— #{pod_name.green} (companion, gated by #{property})"
+            Pod::UI.message "— #{pod_name.green} (companion, gated by #{condition_label})"
             podspec_dir_rel = Pathname.new(info[:podspec_dir]).relative_path_from(project_directory).to_s
             podfile.pod(pod_name, :path => podspec_dir_rel)
           end
@@ -462,6 +561,24 @@ module Expo
         props_path = File.join(Pod::Config.instance.installation_root.to_s, 'Podfile.properties.json')
         return {} unless File.exist?(props_path)
         JSON.parse(File.read(props_path)) rescue {}
+      end
+
+      def companion_autolink_condition_met?(condition, properties)
+        pod_name = condition['podName']
+        return pod_lookup_map.key?(pod_name) if pod_name
+
+        npm_package = condition['npmPackage']
+        return react_native_config.dig('dependencies', npm_package) != nil if npm_package
+
+        property = condition['podfileProperty']
+        return false unless property
+
+        # Only skip if the property is explicitly set to the disabled value.
+        properties[property] != condition['disabledValue']
+      end
+
+      def companion_autolink_condition_label(condition)
+        condition['podName'] || condition['npmPackage'] || condition['podfileProperty']
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -493,7 +610,7 @@ module Expo
 
         log_linking_status(spec.name, true, default_tarball)
 
-        spec.source = { :http => URI::File.build(path: default_tarball).to_s, :flatten => false }
+        spec.source = { :http => local_file_uri(default_tarball), :flatten => false }
         spec.vendored_frameworks = build_vendored_paths(product_name, pod_info, spec.name)
 
         extra_fw_paths = framework_search_paths_for_skipped_deps(spec.name, pod_info)
@@ -531,7 +648,7 @@ module Expo
         spec_json = JSON.parse(spec.to_pretty_json)
 
         # Override source to local tarball
-        spec_json['source'] = { 'http' => URI::File.build(path: default_tarball).to_s, 'flatten' => false }
+        spec_json['source'] = { 'http' => local_file_uri(default_tarball), 'flatten' => false }
         spec_json['vendored_frameworks'] = build_vendored_paths(product_name, pod_info, spec.name)
 
         # Clear source-build attributes
@@ -860,6 +977,14 @@ module Expo
         ENV['RCT_USE_PREBUILT_RNCORE'] == '1'
       end
 
+      # Builds a `file://` URI for a local filesystem path, percent-encoding
+      # any non-ASCII characters so paths with Unicode segments (e.g. emoji or
+      # accented characters) don't trip URI::File.build's RFC 3986 path
+      # validation.
+      def local_file_uri(path)
+        URI::File.build(path: URI::DEFAULT_PARSER.escape(path)).to_s
+      end
+
       # ──────────────────────────────────────────────────────────────────────
       # Helpers: use_frameworks! configuration
       # ──────────────────────────────────────────────────────────────────────
@@ -1049,15 +1174,10 @@ module Expo
         end
       end
 
-      # Builds the vendored_frameworks paths array for a prebuilt pod.
-      # Deduplicates shared SPM dependency frameworks across multiple prebuilt pods:
-      # the first pod to claim a framework "owns" it; subsequent pods skip it and
-      # instead get FRAMEWORK_SEARCH_PATHS pointing at the owning pod's directory.
-      #
-      # @param product_name [String] The product/module name
-      # @param pod_info [Hash] Package info from spm.config.json lookup
-      # @param pod_name [String] The pod name (for summary tracking)
-      # @return [Array<String>] vendored framework paths
+      # Returns vendored_frameworks paths for a prebuilt pod: the product's own
+      # xcframework plus any shared SPM deps this pod owns (first to claim wins;
+      # non-owners get FRAMEWORK_SEARCH_PATHS instead). Shared dep entries are
+      # symlinks staged by `ensure_shared_spm_deps` inside the owner's pod dir.
       def build_vendored_paths(product_name, pod_info, pod_name)
         @claimed_vendored_frameworks ||= Set.new
         @framework_owner_map ||= {}
@@ -1067,38 +1187,27 @@ module Expo
         @framework_owner_map[product_name] = pod_name
 
         (pod_info[:spm_dependency_frameworks] || []).each do |dep_name|
-          if @claimed_vendored_frameworks.include?(dep_name)
-            owner = @framework_owner_map[dep_name]
-            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Skipping #{dep_name}.xcframework from #{pod_name} — already vendored by #{owner}"
-          else
+          owner = (@framework_owner_map[dep_name] ||= pod_name)
+          if owner == pod_name
             paths << "#{dep_name}.xcframework"
-            @claimed_vendored_frameworks.add(dep_name)
-            @framework_owner_map[dep_name] = pod_name
+          else
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Skipping #{dep_name}.xcframework from #{pod_name} — already vendored by #{owner}"
           end
           log_spm_dependency(pod_name, dep_name)
         end
         paths
       end
 
-      # Returns FRAMEWORK_SEARCH_PATHS entries for shared SPM dependency frameworks
-      # that were claimed by another prebuilt pod. The non-owning pod needs these
-      # paths so the linker can find the xcframeworks at build time.
-      #
-      # @param pod_name [String] The pod name
-      # @param pod_info [Hash] Package info from spm.config.json lookup
-      # @return [Array<String>] framework search path entries
+      # FRAMEWORK_SEARCH_PATHS entries for shared SPM deps claimed by another pod.
+      # CocoaPods slices each xcframework into `${PODS_XCFRAMEWORKS_BUILD_DIR}/<owner>/`,
+      # which is where the linker resolves the framework.
       def framework_search_paths_for_skipped_deps(pod_name, pod_info)
-        @claimed_vendored_frameworks ||= Set.new
         @framework_owner_map ||= {}
-
-        paths = []
-        (pod_info[:spm_dependency_frameworks] || []).each do |dep_name|
+        owners = (pod_info[:spm_dependency_frameworks] || []).filter_map do |dep_name|
           owner = @framework_owner_map[dep_name]
-          if owner && owner != pod_name
-            paths << "\"${PODS_ROOT}/#{owner}\""
-          end
-        end
-        paths.uniq
+          owner if owner && owner != pod_name
+        end.uniq
+        owners.flat_map { |owner| [%("${PODS_XCFRAMEWORKS_BUILD_DIR}/#{owner}"), %("${PODS_ROOT}/#{owner}")] }
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -1125,11 +1234,13 @@ module Expo
         package_root_var = "#{pods_parent}/#{package_root_rel}"
         dsym_stamp = "$(DERIVED_FILE_DIR)/expo-dsym-resolve-#{product_name}-$(CONFIGURATION).stamp"
 
+        shared_deps = shared_dep_switch_args(spec_name, pod_info)
+
         switch_phase = {
           'name' => "[Expo] Switch #{spec_name} XCFramework for build configuration",
           'execution_position' => 'before_compile',
           'input_files' => ["#{pods_parent}/#{switch_script_rel}"],
-          'script' => xcframework_switch_script(product_name, xcframeworks_dir_var, switch_script_path),
+          'script' => xcframework_switch_script(product_name, xcframeworks_dir_var, switch_script_path, shared_deps),
         }
 
         if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
@@ -1172,32 +1283,55 @@ module Expo
         SH
       end
 
-      # Returns the shell script for the xcframework switch phase.
-      def xcframework_switch_script(product_name, xcframeworks_dir, script_path)
-        <<~SH
-          # Switch between debug/release XCFramework based on build configuration
-          # This script is auto-generated by expo-modules-autolinking
-
+      # Shell script for the xcframework switch phase. With no shared deps the
+      # script short-circuits in shell when the per-pod state file matches; with
+      # shared deps Node is always invoked so each dep's symlink can be repointed
+      # (it has its own per-dep state file inside replace-xcframework.js).
+      def xcframework_switch_script(product_name, xcframeworks_dir, script_path, shared_deps = [])
+        config_detect = <<~SH.chomp
           CONFIG="release"
           if echo "$GCC_PREPROCESSOR_DEFINITIONS" | grep -q "DEBUG=1"; then
             CONFIG="debug"
           fi
-
-          # Early exit: Skip Node.js invocation if configuration hasn't changed
-          # This optimization avoids ~100-200ms overhead per module on incremental builds
-          LAST_CONFIG_FILE="#{xcframeworks_dir}/artifacts/.last_build_configuration"
-          if [ -f "$LAST_CONFIG_FILE" ] && [ "$(cat "$LAST_CONFIG_FILE")" = "$CONFIG" ]; then
-            exit 0
-          fi
-
-          # Configuration changed or first build - invoke Node.js to extract tarball
-          . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
-
-          "$NODE_BINARY" "#{script_path}" \\
-            -c "$CONFIG" \\
-            -m "#{product_name}" \\
-            -x "#{xcframeworks_dir}"
         SH
+
+        if shared_deps.empty?
+          <<~SH
+            # Auto-generated by expo-modules-autolinking
+            #{config_detect}
+            LAST_CONFIG_FILE="#{xcframeworks_dir}/artifacts/.last_build_configuration"
+            if [ -f "$LAST_CONFIG_FILE" ] && [ "$(cat "$LAST_CONFIG_FILE")" = "$CONFIG" ]; then
+              exit 0
+            fi
+            . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+            "$NODE_BINARY" "#{script_path}" -c "$CONFIG" -m "#{product_name}" -x "#{xcframeworks_dir}"
+          SH
+        else
+          shared_args = shared_deps.map { |arg| "  #{arg}" }.join(" \\\n")
+          <<~SH
+            # Auto-generated by expo-modules-autolinking
+            #{config_detect}
+            . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+            "$NODE_BINARY" "#{script_path}" \\
+              -c "$CONFIG" \\
+              -m "#{product_name}" \\
+              -x "#{xcframeworks_dir}" \\
+            #{shared_args}
+          SH
+        end
+      end
+
+      # '--shared "<Name>:<source_base>"' tokens for shared SPM deps this pod owns.
+      # Non-owners reach the framework via FRAMEWORK_SEARCH_PATHS at link time.
+      def shared_dep_switch_args(pod_name, pod_info)
+        return [] unless pod_info && pod_info[:spm_dependency_frameworks]
+        @framework_owner_map ||= {}
+        pod_info[:spm_dependency_frameworks].filter_map do |dep_name|
+          next nil unless @framework_owner_map[dep_name] == pod_name
+          source_base = shared_spm_dep_source_base(dep_name, pod_info)
+          next nil unless source_base
+          %(--shared "#{dep_name}:#{source_base.gsub(/[\\"$`]/) { |c| "\\#{c}" }}")
+        end
       end
 
       # Returns the shell script for the dSYM source map resolution phase.
@@ -1575,7 +1709,7 @@ module Expo
         current_dir = start_dir || Dir.pwd
 
         loop do
-          return current_dir if File.directory?(File.join(current_dir, 'packages'))
+          return current_dir if File.exist?(File.join(current_dir, 'packages', 'expo-modules-core', 'spm.config.json'))
 
           parent = File.dirname(current_dir)
           break if parent == current_dir
@@ -1634,7 +1768,8 @@ module Expo
           unless has_prebuilt_xcframework?(pod_name)
             product_name = info[:product_name] || pod_name
             expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
-            Pod::UI.warn "[Expo-precompiled] #{pod_name}: prebuilt xcframework not found. Expected tarball at #{expected}"
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: prebuilt xcframework unavailable; building from source".yellow}"
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  Expected tarball: #{expected}")}"
             next
           end
 
@@ -1688,13 +1823,15 @@ module Expo
         end
       end
 
-      # Returns the Hermes version, accounting for Hermes v1 opt-in.
+      # Returns the Hermes version. Hermes v1 is the default; classic Hermes is opt-out.
       # Mirrors the TypeScript resolution logic in tools/src/prebuilds/Utils.ts.
       def hermes_version
         @hermes_version ||= begin
           rn_path = react_native_path
           if rn_path
-            is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
+            # Matches hermes-engine.podspec polarity: V1 is the default, classic
+            # is selected only when the consuming app explicitly sets the env var to "0".
+            is_v1 = ENV['RCT_HERMES_V1_ENABLED'] != '0'
             props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
             version = File.exist?(props_path) ?
               parse_version_properties(props_path)[is_v1 ? 'HERMES_V1_VERSION_NAME' : 'HERMES_VERSION_NAME'] : nil
@@ -1753,6 +1890,7 @@ module Expo
         product_name = pod_info[:product_name] || pod_name
         tarball = resolve_prebuilt_tarball(pod_info, product_name, build_flavor, pod_name)
         return { available: false, reason: :missing_tarball, path: tarball } unless File.exist?(tarball)
+        return { available: false, reason: :missing_platform_slice, path: tarball } unless xcframework_supports_target_platform?(tarball)
 
         { available: true, resolved: [pod_info, product_name, tarball] }
       end
@@ -1760,6 +1898,11 @@ module Expo
       # A pod may use a prebuilt xcframework only when its own prebuilt artifact
       # exists and every local Expo dependency also uses prebuilt.
       def resolve_prebuilt_status(pod_name, visiting = Set.new)
+        return _resolve_prebuilt_status_uncached(pod_name, visiting) unless visiting.empty?
+        @status_cache[pod_name] ||= _resolve_prebuilt_status_uncached(pod_name, visiting)
+      end
+
+      def _resolve_prebuilt_status_uncached(pod_name, visiting)
         return { available: false, reason: :build_from_source } if build_from_source?(pod_name)
         return { available: true } if visiting.include?(pod_name)
 
@@ -1785,6 +1928,43 @@ module Expo
         own_resolution
       end
 
+      # Candidate parent dirs (each holds <flavor>/<Name>.xcframework subtrees) for
+      # a shared SPM dep. Ordered: EXPO_PRECOMPILED_MODULES_PATH override, monorepo
+      # .spm-deps, then the consumer-side npm-bundled location.
+      def shared_spm_dep_source_base_candidates(dep_name, pod_info)
+        candidates = []
+        candidates << File.join(custom_modules_path, SHARED_SPM_DEPS_SOURCE_DIR, dep_name) if custom_modules_path
+        candidates << File.join(memoized_repo_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR, SHARED_SPM_DEPS_SOURCE_DIR, dep_name) if memoized_repo_root
+        candidates << File.join(pod_info[:package_root], BUNDLED_SHARED_SPM_DEPS_SUBPATH, dep_name) if pod_info && pod_info[:package_root]
+        candidates
+      end
+
+      # First candidate base that has at least one flavor on disk (used to build switch-script source_base args).
+      def shared_spm_dep_source_base(dep_name, pod_info)
+        shared_spm_dep_source_base_candidates(dep_name, pod_info).find do |base|
+          %w[debug release].any? { |f| File.directory?(File.join(base, f, "#{dep_name}.xcframework")) }
+        end
+      end
+
+      # First candidate that has the requested flavor on disk (walks all candidates so a partial monorepo doesn't shadow a complete npm bundle).
+      def shared_spm_dep_xcframework_path(dep_name, pod_info, flavor)
+        shared_spm_dep_source_base_candidates(dep_name, pod_info).each do |base|
+          path = File.join(base, flavor, "#{dep_name}.xcframework")
+          return path if File.directory?(path)
+        end
+        nil
+      end
+
+      def memoized_repo_root
+        return @repo_root if @memoized_repo_root_set
+        begin
+          @repo_root = find_repo_root
+        ensure
+          @memoized_repo_root_set = true
+        end
+        @repo_root
+      end
+
       def resolve_prebuilt_tarball(pod_info, product_name, flavor, pod_name = nil)
         tarball = File.join(pod_info[:build_output_dir], flavor, 'xcframeworks', "#{product_name}.tar.gz")
         return tarball if File.exist?(tarball)
@@ -1801,22 +1981,109 @@ module Expo
           "#{product_name}.tar.gz"
         ].join('/')
         remote_url = "#{base_url.chomp('/')}/#{relative_path}"
+        remote_tarball = File.join(remote_precompiled_artifacts_dir, relative_path)
 
-        download_remote_tarball(remote_url, tarball, pod_name || product_name, flavor)
+        return remote_tarball if File.exist?(remote_tarball)
+        return remote_tarball if failed_remote_downloads.include?(remote_url)
+
+        download_remote_tarball(remote_url, remote_tarball, pod_name || product_name, flavor)
+        remote_tarball
+      end
+
+      def normalize_xcframework_platform(platform)
+        name = platform.respond_to?(:name) ? platform.name : platform
+        name = name.string_name if name.respond_to?(:string_name)
+        normalized = name.to_s.downcase
+        normalized == 'osx' ? 'macos' : normalized
+      end
+
+      def xcframework_supports_target_platform?(path)
+        return true unless @target_platform
+
+        @xcframework_slice_cache ||= {}
+        cache_key = [path, @target_platform]
+        return @xcframework_slice_cache[cache_key] if @xcframework_slice_cache.key?(cache_key)
+
+        @xcframework_slice_cache[cache_key] = begin
+          info_plists = File.directory?(path) ? [read_plist(File.join(path, 'Info.plist'))] : read_xcframework_info_plists_from_tarball(path)
+          info_plists.any? && info_plists.all? { |info_plist| info_plist_supports_target_platform?(info_plist) }
+        end
+      end
+
+      def info_plist_supports_target_platform?(info_plist)
+        return false unless info_plist
+
+        available_libraries = info_plist['AvailableLibraries']
+        return false unless available_libraries.is_a?(Array)
+
+        available_libraries.any? do |library|
+          normalize_xcframework_platform(library['SupportedPlatform']) == @target_platform
+        end
+      end
+
+      def read_xcframework_info_plists_from_tarball(tarball)
+        entries_output, status = Open3.capture2e('tar', 'tzf', tarball)
+        unless status.success?
+          Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{entries_output.strip}"
+          return []
+        end
+
+        entries = entries_output.lines.map(&:strip)
+        plist_entries = entries.select { |entry| entry.end_with?('.xcframework/Info.plist') }
+        Pod::UI.warn "[Expo-precompiled] No XCFramework Info.plist found in #{File.basename(tarball)}" if plist_entries.empty?
+
+        plist_entries.filter_map do |entry|
+          plist_data, plist_status = Open3.capture2e('tar', 'xOzf', tarball, entry)
+          unless plist_status.success?
+            Pod::UI.warn "[Expo-precompiled] Failed to extract #{entry} from #{File.basename(tarball)}: #{plist_data.strip}"
+            next
+          end
+
+          Tempfile.create(['expo-xcframework-info', '.plist']) do |file|
+            file.binmode
+            file.write(plist_data)
+            file.flush
+            read_plist(file.path)
+          end
+        end
+      rescue StandardError => e
+        Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{e.message}"
+        []
+      end
+
+      def read_plist(path)
+        Xcodeproj::Plist.read_from_path(path)
+      rescue StandardError => e
+        Pod::UI.warn "[Expo-precompiled] Failed to read #{File.basename(path)}: #{e.message}"
+        nil
+      end
+
+      def failed_remote_downloads
+        @failed_remote_downloads ||= Set.new
+      end
+
+      def remote_precompiled_artifacts_dir
+        pods_root = Pod::Config.instance.sandbox_root rescue File.join(Dir.pwd, 'Pods')
+        File.join(pods_root.to_s, 'ExpoPrecompiledArtifacts')
+      end
+
+      def gray(text)
+        text.respond_to?(:gray) ? text.gray : text
       end
 
       def download_remote_tarball(remote_url, destination_path, pod_name, flavor)
         FileUtils.mkdir_p(File.dirname(destination_path))
         tmp_path = "#{destination_path}.download-#{Process.pid}"
 
-        Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: downloading #{flavor} artifact from #{remote_url}"
-
         download_to_file(remote_url, tmp_path)
         FileUtils.mv(tmp_path, destination_path)
+        Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: downloaded remote #{flavor} artifact"
         destination_path
       rescue => e
         FileUtils.rm_f(tmp_path) if tmp_path && File.exist?(tmp_path)
-        Pod::UI.warn "[Expo-precompiled] #{pod_name}: failed to download #{flavor} artifact from #{remote_url}: #{e.message}"
+        failed_remote_downloads.add(remote_url)
+        Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: remote #{flavor} artifact unavailable (#{e.message}); building from source".yellow}"
+        Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  URL: #{remote_url}")}"
         nil
       end
 
@@ -2069,6 +2336,8 @@ module Expo
           'prebuilt config not found'
         when :missing_tarball
           'prebuilt tarball not found'
+        when :missing_platform_slice
+          "prebuilt xcframework does not contain a slice for #{@target_platform}"
         when :dependency_unavailable
           reason = format_prebuilt_unavailable_reason(reason: info[:dependency_reason], path: info[:dependency_path])
           "dependency #{info[:dependency]} is not using prebuilt: #{reason}"

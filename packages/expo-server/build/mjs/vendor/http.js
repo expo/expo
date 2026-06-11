@@ -60,12 +60,30 @@ function convertRawHeaders(requestHeaders) {
 }
 // Convert an http request to an expo request
 export function convertRequest(req, res) {
-    const url = new URL(req.url, `http://${req.headers.host}`);
+    const proto = 'encrypted' in req.socket && !!req.socket.encrypted ? 'https' : 'http';
+    const url = new URL(req.url, `${proto}://${req.headers.host}`);
     // Abort action/loaders once we can no longer write a response or request aborts
     const controller = new AbortController();
-    res.once('close', () => controller.abort());
-    res.once('error', (err) => controller.abort(err));
-    req.once('error', (err) => controller.abort(err));
+    res.once('close', () => {
+        if (!res.writableEnded) {
+            if (!controller.signal.aborted) {
+                controller.abort();
+            }
+            if (!req.destroyed) {
+                req.destroy();
+            }
+        }
+    });
+    res.once('error', (err) => {
+        if (err.name !== 'AbortError' && !controller.signal.aborted) {
+            controller.abort(err);
+        }
+    });
+    req.once('error', (err) => {
+        if (err.name !== 'AbortError' && !controller.signal.aborted) {
+            controller.abort(err);
+        }
+    });
     const init = {
         method: req.method,
         headers: convertRawHeaders(req.rawHeaders),
@@ -73,6 +91,7 @@ export function convertRequest(req, res) {
     };
     if (req.method !== 'GET' && req.method !== 'HEAD') {
         init.body = Readable.toWeb(req);
+        // NOTE(@kitten): Depending on if `@types/node` is used this may not be defined
         init.duplex = 'half';
     }
     return new Request(url.href, init);

@@ -13,6 +13,7 @@ import {
   getWorkflowRunsForRepoAsync,
 } from '../GitHubActions';
 import logger from '../Logger';
+import { sanitizeTerminalOutput } from '../Utils';
 
 // --- TUI helpers ---
 
@@ -447,7 +448,7 @@ function printLogSnippets(snippets: string[]): void {
   for (let si = 0; si < snippets.length; si++) {
     const indented = snippets[si]
       .split('\n')
-      .map((line) => `    \u2502 ${line}`)
+      .map((line) => `    \u2502 ${sanitizeTerminalOutput(line)}`)
       .join('\n');
     logger.log(indented);
     if (si < snippets.length - 1) {

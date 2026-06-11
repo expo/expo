@@ -35,33 +35,54 @@ function importMetroConfigFromProject(
   }
 }
 
-export async function configExistsAsync(projectRoot: string): Promise<boolean> {
-  try {
-    const MetroConfig = importMetroConfigFromProject(projectRoot);
-    const result = await MetroConfig.resolveConfig(undefined, projectRoot);
-    return !result.isEmpty;
-  } catch (err) {
-    if (err instanceof MetroConfigPackageMissingError) {
-      return false;
-    } else {
-      throw err;
-    }
+let _expoMetroConfig: typeof import('expo/metro-config') | undefined;
+
+function loadExpoMetroConfig(projectDir: string): typeof import('expo/metro-config') {
+  if (_expoMetroConfig != null) {
+    return _expoMetroConfig;
   }
-}
-
-export async function loadConfigAsync(projectDir: string): Promise<InputConfigT> {
-  const MetroConfig = importMetroConfigFromProject(projectDir);
-  return await MetroConfig.loadConfig({ cwd: projectDir }, {});
-}
-
-export async function loadExpoMetroConfig(
-  projectDir: string
-): Promise<typeof import('expo/metro-config')> {
   const expoMetroConfigResolved = resolveFrom.silent(projectDir, 'expo/metro-config');
   if (!expoMetroConfigResolved) {
     throw notFoundError('expo');
   }
-  return require(expoMetroConfigResolved);
+  _expoMetroConfig = require(expoMetroConfigResolved);
+  return _expoMetroConfig!;
+}
+
+export function getDefaultMetroConfig(projectRoot: string) {
+  const expoMetroConfig = loadExpoMetroConfig(projectRoot);
+  return expoMetroConfig.getDefaultConfig(projectRoot);
+}
+
+export async function loadMetroUserConfigAsync(
+  projectRoot: string,
+  serverRoot: string
+): Promise<InputConfigT | null> {
+  const expoMetroConfig = loadExpoMetroConfig(projectRoot);
+  // NOTE(@kitten): This API was added later on
+  if ('loadUserConfig' in expoMetroConfig) {
+    return await expoMetroConfig.loadUserConfig({ projectRoot, serverRoot });
+  } else {
+    try {
+      const MetroConfig = importMetroConfigFromProject(projectRoot);
+      // `loadConfig` adds the metro defaults when no config exists, so we need to manually check
+      // if a user config exists first and bail out if it doesn't
+      const { filepath, isEmpty } = await MetroConfig.resolveConfig(undefined, projectRoot);
+      if (isEmpty) {
+        return null;
+      }
+      return await MetroConfig.loadConfig(
+        {
+          cwd: projectRoot,
+          config: filepath,
+        },
+        {}
+      );
+    } catch {
+      // If we can't load the config, we assume it doesn't exist
+      return null;
+    }
+  }
 }
 
 class MetroConfigPackageMissingError extends Error {}

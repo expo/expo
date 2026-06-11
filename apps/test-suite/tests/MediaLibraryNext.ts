@@ -8,7 +8,7 @@ import {
   AssetField,
   addListener,
   removeAllListeners,
-} from 'expo-media-library/next';
+} from 'expo-media-library';
 import { Platform } from 'react-native';
 
 export const name = 'MediaLibrary@Next';
@@ -58,7 +58,7 @@ export async function test(t) {
     }
   });
 
-  t.describe('Stress tests', async () => {
+  t.describe('Stress tests', () => {
     t.it('creating files with the same filename', async () => {
       for (let i = 0; i < 40; i++) {
         const asset = await Asset.create(pngFile.localUri);
@@ -481,17 +481,19 @@ export async function test(t) {
       t.expect(width).toBeGreaterThan(0);
     });
 
-    if (Platform.OS === 'ios') {
-      t.it('sets and gets favorite status', async () => {
+    t.it('sets and gets favorite status', async () => {
+      if (Platform.OS === 'android' && Platform.Version < 29) {
         t.expect(await asset.getFavorite()).toBe(false);
-        // mark as favorite
+        await asset.setFavorite(true);
+        t.expect(await asset.getFavorite()).toBe(false);
+      } else {
+        t.expect(await asset.getFavorite()).toBe(false);
         await asset.setFavorite(true);
         t.expect(await asset.getFavorite()).toBe(true);
-        // unmark as favorite
         await asset.setFavorite(false);
         t.expect(await asset.getFavorite()).toBe(false);
-      });
-    }
+      }
+    });
 
     t.it('returns an asset info object', async () => {
       const info = await asset.getInfo();
@@ -505,9 +507,7 @@ export async function test(t) {
       t.expect(info.duration).toBe(await asset.getDuration());
       t.expect(info.creationTime).toBe(await asset.getCreationTime());
       t.expect(info.modificationTime).toBe(await asset.getModificationTime());
-      if (Platform.OS === 'ios') {
-        t.expect(info.isFavorite).toBe(await asset.getFavorite());
-      }
+      t.expect(info.isFavorite).toBe(await asset.getFavorite());
     });
   });
 
@@ -638,6 +638,36 @@ export async function test(t) {
         .exe();
       // then
       t.expect(await videoAsset.getMediaType()).toBe(MediaType.VIDEO);
+    });
+
+    t.it('isFavorite filter works correctly', async () => {
+      // given
+      const albumName = createAlbumName('isFavorite filter');
+      const favoriteAsset = await Asset.create(pngFile.localUri);
+      const nonFavoriteAsset = await Asset.create(jpgFile.localUri);
+      assetsContainer.push(favoriteAsset, nonFavoriteAsset);
+      const album = await Album.create(albumName, [favoriteAsset, nonFavoriteAsset]);
+      albumsContainer.push(album);
+      await favoriteAsset.setFavorite(true);
+
+      // when
+      const favoriteAssets = await new Query().album(album).eq(AssetField.IS_FAVORITE, true).exe();
+      const nonFavoriteAssets = await new Query()
+        .album(album)
+        .eq(AssetField.IS_FAVORITE, false)
+        .exe();
+
+      // then
+      if (Platform.OS === 'android' && Platform.Version < 29) {
+        // IS_FAVORITE filtering is a no-op pre-Q — both queries return all assets
+        t.expect(favoriteAssets.length).toBe(2);
+        t.expect(nonFavoriteAssets.length).toBe(2);
+      } else {
+        t.expect(favoriteAssets.map((a) => a.id)).toContain(favoriteAsset.id);
+        t.expect(favoriteAssets.map((a) => a.id)).not.toContain(nonFavoriteAsset.id);
+        t.expect(nonFavoriteAssets.map((a) => a.id)).toContain(nonFavoriteAsset.id);
+        t.expect(nonFavoriteAssets.map((a) => a.id)).not.toContain(favoriteAsset.id);
+      }
     });
 
     if (Platform.OS !== 'ios') {
@@ -820,6 +850,54 @@ export async function test(t) {
       t.expect(firstAsset.id).toBe(videoAsset.id);
       t.expect(secondAsset.id).toBe(shorterAsset.id);
       t.expect(thirdAsset.id).toBe(tallerAsset.id);
+    });
+
+    t.it('exeForMetadata works correctly for images', async () => {
+      // given
+      const asset = await Asset.create(pngFile.localUri);
+      assetsContainer.push(asset);
+      const albumName = createAlbumName('exeForMetadata works correctly for images');
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const results = await new Query().album(album).exeForMetadata();
+      // then
+      t.expect(results.length).toBe(1);
+      const result = results[0];
+      t.expect(result.id).toBeDefined();
+      t.expect(result.creationTime).toBeDefined();
+      t.expect(result.duration).toBe(null);
+      t.expect(result.filename.toLowerCase()).toMatch(/\.png/);
+      t.expect(result.height).toBeGreaterThan(0);
+      t.expect(result.mediaType).toBeDefined();
+      t.expect(new Date(result.modificationTime).getFullYear()).toBeGreaterThan(1970);
+      t.expect(result.modificationTime).toBeGreaterThan(0);
+      t.expect(result.width).toBeGreaterThan(0);
+      t.expect(result.isFavorite).toBe(false);
+    });
+
+    t.it('exeForMetadata works correctly for videos', async () => {
+      // given
+      const asset = await Asset.create(mp4File.localUri);
+      assetsContainer.push(asset);
+      const albumName = createAlbumName('exeForMetadata works correctly for videos');
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const results = await new Query().album(album).exeForMetadata();
+      // then
+      t.expect(results.length).toBe(1);
+      const result = results[0];
+      t.expect(result.id).toBeDefined();
+      t.expect(result.creationTime).toBeDefined();
+      t.expect(result.duration).toBeGreaterThan(0);
+      t.expect(result.filename.toLowerCase()).toMatch(/\.mp4/);
+      t.expect(result.height).toBeGreaterThan(0);
+      t.expect(result.mediaType).toBeDefined();
+      t.expect(new Date(result.modificationTime).getFullYear()).toBeGreaterThan(1970);
+      t.expect(result.modificationTime).toBeGreaterThan(0);
+      t.expect(result.width).toBeGreaterThan(0);
+      t.expect(result.isFavorite).toBe(false);
     });
   });
 

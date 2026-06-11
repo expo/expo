@@ -3,10 +3,10 @@ import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPol
 /**
  * Represents a widget instance. Provides methods to manage the widget's timeline.
  */
-export declare class Widget<T extends object = object> {
+export declare class Widget<PropsType extends object = object, ConfigurationType extends object | undefined = undefined> {
     /** @hidden */
     private nativeWidgetObject;
-    constructor(name: string, layout: (props: T, environment: WidgetEnvironment) => React.JSX.Element);
+    constructor(name: string, layout: (props: PropsType, environment: WidgetEnvironment<ConfigurationType>) => React.JSX.Element, initialProps?: PropsType);
     /**
      * Force reloads the widget, causing it to refresh its content and timeline.
      */
@@ -15,16 +15,16 @@ export declare class Widget<T extends object = object> {
      * Schedules a series of updates for the widget's content and reloads the widget.
      * @param entries Timeline entries, each specifying a date and the props to display at that time.
      */
-    updateTimeline(entries: WidgetTimelineEntry<T>[]): void;
+    updateTimeline(entries: WidgetTimelineEntry<PropsType>[]): void;
     /**
      * Sets the widget's content to the given props immediately, without scheduling a timeline.
      * @param props The properties to display in the widget.
      */
-    updateSnapshot(props: T): void;
+    updateSnapshot(props: PropsType): void;
     /**
      * Returns the current timeline entries for the widget, including past and future entries.
      */
-    getTimeline(): Promise<WidgetTimelineEntry<T>[]>;
+    getTimeline(): Promise<WidgetTimelineEntry<PropsType>[]>;
 }
 /**
  * Represents a Live Activity instance. Provides methods to update its content and end it.
@@ -90,8 +90,9 @@ export declare function after(date: Date): {
  * Creates a Widget instance.
  * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.
  * @param widget The widget component, marked with the `'widget'` directive.
+ * @param initialProps The initial properties to display before the widget timeline is updated.
  */
-export declare function createWidget<T extends object = object>(name: string, widget: (props: T, context: WidgetEnvironment) => React.JSX.Element): Widget<T>;
+export declare function createWidget<PropsType extends object = object, ConfigurationType extends object | undefined = undefined>(name: string, widget: (props: PropsType, context: WidgetEnvironment<ConfigurationType>) => React.JSX.Element, initialProps?: PropsType): Widget<PropsType, ConfigurationType>;
 /**
  * Creates a Live Activity Factory for managing Live Activities of a specific type.
  * @param name The Live Activity name. Must match the `'name'` field in your widget configuration in the app config.
@@ -111,4 +112,9 @@ export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['
  * @return An event subscription that can be used to remove the listener.
  */
 export declare function addPushToStartTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']): EventSubscription;
+/**
+ * A directory that can be used to store shared images for widgets.
+ * The contents of this directory are accessible by both the main app and widgets.
+ */
+export declare const widgetsDirectory: string;
 //# sourceMappingURL=Widgets.d.ts.map

@@ -9,6 +9,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -18,7 +19,7 @@ React Native is supported on Android TV and Apple TV through the [React Native T
 
 Using the React Native TV library as the `react-native` dependency in an Expo project, it becomes capable of targeting both mobile (Android, iOS) and TV (Android TV, Apple TV) devices.
 
-## Project changes required
+## Native project changes required
 
 The necessary changes to the native Android and iOS files are minimal and can be automated with a [config plugin](https://github.com/react-native-tvos/config-tv/tree/main/packages/config-tv) if you use [prebuild](/more/glossary-of-terms/#prebuild). Below is a list of changes made by the config plugins, which you can alternatively apply manually:
 
@@ -74,11 +75,25 @@ The necessary changes to the native Android and iOS files are minimal and can be
 
 The fastest way to generate a new project is described in the [TV example](https://github.com/expo/examples/tree/master/with-tv) within the Expo examples repository:
 
-<Terminal cmd={['$ npx create-expo-app MyTVProject -e with-tv']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app MyTVProject -e with-tv'],
+    yarn: ['$ yarn create expo-app MyTVProject -e with-tv'],
+    pnpm: ['$ pnpm create expo-app MyTVProject -e with-tv'],
+    bun: ['$ bun create expo MyTVProject -e with-tv'],
+  }}
+/>
 
 You can start with the [TV Router example](https://github.com/expo/examples/tree/master/with-router-tv):
 
-<Terminal cmd={['$ npx create-expo-app MyTVProject -e with-router-tv']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app MyTVProject -e with-router-tv'],
+    yarn: ['$ yarn create expo-app MyTVProject -e with-router-tv'],
+    pnpm: ['$ pnpm create expo-app MyTVProject -e with-router-tv'],
+    bun: ['$ bun create expo MyTVProject -e with-router-tv'],
+  }}
+/>
 
 This creates a new project that uses [Expo Router](/router/introduction/) for file-based navigation, modeled after the [**create-expo-app** default template](/get-started/create-a-project/).
 
@@ -145,28 +160,57 @@ The following walkthrough describes the steps required to modify an Expo project
 
 ### Modify dependencies for TV
 
-In **package.json**, modify the `react-native` dependency to use the TV repo, and exclude this dependency from [`npx expo install` version validation](/more/expo-cli/#configuring-dependency-validation).
+In **package.json**, modify the `react-native` dependency to use the TV repo.
 
-> **Warning** The `react-native-tvos` version should match the Expo SDK you are using. For example, Expo SDK 54 uses React Native 0.81, so you should use `react-native-tvos@0.81-stable` (the latest 0.81 version) as shown below. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use for older SDKs.
+<Tabs>
 
-{/* prettier-ignore */}
+<Tab label="SDK 56 and later">
 ```json package.json
 {
   /* @hide ... */ /* @end */
   "dependencies": {
     /* @hide ... */ /* @end */
-    "react-native": "npm:react-native-tvos@0.81-stable",
+    "react-native": "npm:react-native-tvos@0.85-stable"
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+The `react-native-tvos` version must match the Expo SDK you are using. For example, Expo SDK 56 uses React Native 0.85, so you should use `react-native-tvos@0.85-stable` (the latest 0.85 version) as shown above. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use.
+
+In SDK 56 and later, [upgrading your project to a newer SDK version](/workflow/upgrading-expo-sdk-walkthrough/#upgrade-the-expo-sdk) also upgrades the TV repo dependency.
+
+</Tab>
+
+<Tab label="SDK 55 and earlier">
+You will need to exclude the `react-native` dependency from [`npx expo install` version validation](/more/expo-cli/#configuring-dependency-validation).
+
+```json package.json
+{
+  /* @hide ... */ /* @end */
+  "dependencies": {
+    /* @hide ... */ /* @end */
+    "react-native": "npm:react-native-tvos@0.83-stable"
     /* @hide ... */ /* @end */
   },
   "expo": {
     "install": {
-      "exclude": [
-        "react-native"
-      ]
+      "exclude": ["react-native"]
     }
   }
 }
 ```
+
+The `react-native-tvos` version must match the Expo SDK you are using. For example, Expo SDK 55 uses React Native 0.83, so you should use `react-native-tvos@0.83-stable` (the latest 0.83 version) as shown above. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use.
+
+> **Warning** If upgrading an Expo TV project to SDK 55 or earlier, the `react-native-tvos` version **must be upgraded manually**. It will not be automatically updated by `npx expo install expo@latest --fix`.
+
+</Tab>
+
+</Tabs>
+
+> **Warning** If you have more than one Expo project in a monorepo, and one of them is modified for TV, then all of them should be modified to use the React Native TV package as described here, even if some of the projects are not configured to target TV. This avoids possible conflicts between the project dependencies, while still supporting mobile development fully on all the projects.
+> {/* prettier-ignore */}
 
 </Step>
 
@@ -174,7 +218,14 @@ In **package.json**, modify the `react-native` dependency to use the TV repo, an
 
 ### Add the TV config plugin
 
-<Terminal cmd={['$ npx expo install @react-native-tvos/config-tv -- --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @react-native-tvos/config-tv -- --dev'],
+    yarn: ['$ yarn expo install @react-native-tvos/config-tv -- --dev'],
+    pnpm: ['$ pnpm expo install @react-native-tvos/config-tv -- --dev'],
+    bun: ['$ bun expo install @react-native-tvos/config-tv -- --dev'],
+  }}
+/>
 
 When installed, the plugin will modify the project for TV when either:
 
@@ -221,7 +272,14 @@ Set the `EXPO_TV` environment variable, and run prebuild to make the TV modifica
 
 Start an Android TV emulator and use the following command to start the app on the emulator:
 
-<Terminal cmd={['$ npx expo run:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
 
 </Step>
 <Step label="5">
@@ -230,7 +288,14 @@ Start an Android TV emulator and use the following command to start the app on t
 
 Run the following command to build and run the app on an Apple TV simulator:
 
-<Terminal cmd={['$ npx expo run:ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
 
 </Step>
 <Step label="6">

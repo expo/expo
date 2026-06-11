@@ -12,23 +12,16 @@ exports.resolveConfigPluginExport = resolveConfigPluginExport;
 exports.resolveConfigPluginFunction = resolveConfigPluginFunction;
 exports.resolveConfigPluginFunctionWithInfo = resolveConfigPluginFunctionWithInfo;
 exports.resolvePluginForModule = resolvePluginForModule;
+function _requireUtils() {
+  const data = require("@expo/require-utils");
+  _requireUtils = function () {
+    return data;
+  };
+  return data;
+}
 function _assert() {
   const data = _interopRequireDefault(require("assert"));
   _assert = function () {
-    return data;
-  };
-  return data;
-}
-function path() {
-  const data = _interopRequireWildcard(require("path"));
-  path = function () {
-    return data;
-  };
-  return data;
-}
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
     return data;
   };
   return data;
@@ -40,17 +33,12 @@ function _errors() {
   };
   return data;
 }
-function _modules() {
-  const data = require("./modules");
-  _modules = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-// Default plugin entry file name.
+// Re-exported for back-compat with external consumers.
 const pluginFileName = exports.pluginFileName = 'app.plugin.js';
+
+// `.js` first keeps the published-artifact case at one stat.
+const pluginExtensions = ['.js', '.cjs', '.mjs', '.ts', '.cts', '.mts'];
 
 /**
  * Resolve the config plugin from a node module or package.
@@ -59,32 +47,35 @@ const pluginFileName = exports.pluginFileName = 'app.plugin.js';
  *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
  *     - Resolve the config plugin as-is
  *   2. If the reference a module? e.g. `expo-font`
- *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
+ *     - Resolve the root `app.plugin.{js,cjs,mjs,ts,cts,mts}` file within the module
  *   3. Does the module have a valid config plugin in the `main` field?
  *     - Resolve the `main` entry point as config plugin
  */
 function resolvePluginForModule(projectRoot, pluginReference) {
   if (moduleNameIsDirectFileReference(pluginReference)) {
-    // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
-    const pluginScriptFile = _resolveFrom().default.silent(projectRoot, pluginReference);
+    const pluginScriptFile = (0, _requireUtils().resolveFrom)(projectRoot, pluginReference, {
+      extensions: pluginExtensions
+    });
     if (pluginScriptFile) {
       return {
-        // NOTE(cedric): `path.sep` is required here, we are resolving the absolute path, not the plugin reference
-        isPluginFile: pluginScriptFile.endsWith(path().sep + pluginFileName),
+        isPluginFile: false,
         filePath: pluginScriptFile
       };
     }
   } else if (moduleNameIsPackageReference(pluginReference)) {
-    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
-    const pluginPackageFile = _resolveFrom().default.silent(projectRoot, `${pluginReference}/${pluginFileName}`);
-    if (pluginPackageFile && (0, _modules().fileExists)(pluginPackageFile)) {
+    const pluginPackageFile = (0, _requireUtils().resolveFrom)(projectRoot, `${pluginReference}/app.plugin`, {
+      extensions: pluginExtensions
+    });
+    if (pluginPackageFile) {
       return {
         isPluginFile: true,
         filePath: pluginPackageFile
       };
     }
-    // Try to resole the `main` entry as config plugin
-    const packageMainEntry = _resolveFrom().default.silent(projectRoot, pluginReference);
+    // Skip the extension/index probes — Node's resolver (step 4) handles `main`.
+    const packageMainEntry = (0, _requireUtils().resolveFrom)(projectRoot, pluginReference, {
+      extensions: []
+    });
     if (packageMainEntry) {
       return {
         isPluginFile: false,
@@ -144,27 +135,16 @@ function resolveConfigPluginFunctionWithInfo(projectRoot, pluginReference) {
   } = resolvePluginForModule(projectRoot, pluginReference);
   let result;
   try {
-    result = requirePluginFile(pluginFile);
+    result = (0, _requireUtils().loadModuleSync)(pluginFile);
   } catch (error) {
-    const learnMoreLink = 'Learn more: https://docs.expo.dev/guides/config-plugins/';
-    let underlyingError;
-    let stack;
-    if (error instanceof Error) {
-      const errorWithCode = error;
-      underlyingError = `${errorWithCode.message} ${errorWithCode.code ?? ''}`;
-      stack = errorWithCode.stack;
-    } else {
-      underlyingError = String(error);
+    let message = error instanceof Error ? error.message : String(error);
+    // Don't clobber `loadModuleSync`'s code-framed error
+    if (!isPluginFile && !moduleNameIsDirectFileReference(pluginReference)) {
+      message += `\n\nNo "app.plugin.{js,cjs,mjs,ts,cts,mts}" file was found in "${pluginReference}", so the package's main entry was loaded instead. Config plugins are typically exported from an "${pluginFileName}" file in the package root.\nLearn more: https://docs.expo.dev/guides/config-plugins/`;
     }
-    let errorMessage = `Unable to resolve a valid config plugin for ${pluginReference}.\n`;
-    if (!isPluginFile) {
-      errorMessage += `• No "${pluginFileName}" file found in ${pluginReference}: config plugins are typically exported from an "${pluginFileName}" file in the package root.\n`;
-    }
-    errorMessage += `• main export of ${pluginReference} does not appear to be a config plugin: the following error was thrown when importing ${pluginFile}: ${underlyingError}\n`;
-    errorMessage += `Verify that ${pluginReference} includes a config plugin. If it does not, then remove the entry from plugins in your app config file. ${learnMoreLink}`;
-    const pluginError = new (_errors().PluginError)(errorMessage, 'INVALID_PLUGIN_IMPORT');
-    if (stack) {
-      pluginError.stack = stack;
+    const pluginError = new (_errors().PluginError)(message, 'INVALID_PLUGIN_IMPORT');
+    if (error instanceof Error && error.stack) {
+      pluginError.stack = error.stack;
     }
     throw pluginError;
   }
@@ -211,13 +191,5 @@ function resolveConfigPluginExport({
     throw new (_errors().PluginError)(`Plugin "${pluginReference}" must export a function from file: ${pluginFile}. ${learnMoreLink}`, 'INVALID_PLUGIN_TYPE');
   }
   return plugin;
-}
-function requirePluginFile(filePath) {
-  try {
-    return require(filePath);
-  } catch (error) {
-    // TODO: Improve error messages
-    throw error;
-  }
 }
 //# sourceMappingURL=plugin-resolver.js.map

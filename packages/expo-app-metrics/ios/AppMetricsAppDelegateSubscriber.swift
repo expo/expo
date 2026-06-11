@@ -3,6 +3,15 @@ import ExpoModulesCore
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
     AppMetrics.mainSession.appStartupMonitor.markMain()
+    // Install the URLSessionTask swizzles synchronously before any app code (RN included) issues
+    // its first network request. Doing this on the `AppMetricsActor` would defer it past that
+    // point, so it stays inline here. `install()` is idempotent — subsequent app-delegate calls
+    // are no-ops.
+    NetworkRequestTaskSwizzling.install()
+    AppMetricsActor.isolated {
+      NetworkPathMonitor.shared.start()
+      NetworkRequestMonitor.shared.start()
+    }
   }
 
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {

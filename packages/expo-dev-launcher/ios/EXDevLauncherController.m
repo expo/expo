@@ -116,9 +116,9 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   if (deepLink) {
     // Passes pending deep link to initialURL if any
     launchOptions[UIApplicationLaunchOptionsURLKey] = deepLink;
-  } else if (launchOptions[UIApplicationLaunchOptionsURLKey] && [EXDevLauncherURLHelper isDevLauncherURL:launchOptions[UIApplicationLaunchOptionsURLKey]]) {
-    // Strips initialURL if it is from myapp://expo-development-client/?url=...
-    // That would make dev-launcher acts like a normal app.
+  } else {
+    // The pending deep link has already been consumed by an earlier React host. Strip the URL
+    // from the cached launchOptions so a subsequent React host
     launchOptions[UIApplicationLaunchOptionsURLKey] = nil;
   }
 
@@ -252,7 +252,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return;
   }
 
-  [self useDefaultLaunchUrlFallback];
+  if (useDefaultLaunchUrlFallback) {
+    [self launchDefaultUrlFallbackOrNavigateToLauncher];
+  } else {
+    [self navigateToLauncher];
+  }
 }
 
 - (void)launchDefaultUrlFallbackOrNavigateToLauncher {
@@ -289,6 +293,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   // Reset app react host
   [self.delegate destroyReactInstance];
+
+  // Tell expo-linking to clear its cached initial URL so the next React host doesn't pick up
+  // the deep link that originally launched the previous app.
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"ExpoLinkingClearInitialURL" object:self];
 
   if (_devLauncherViewController != nil) {
     [_devLauncherViewController resetHostingController];
@@ -416,7 +424,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     RCTDevLoadingViewSetEnabled(NO);
     [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
-      [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
+      NSString *bundlePath = [NSString stringWithFormat:@"index.bundle?platform=%@&dev=true&minify=false", RCTPlatformName];
+      [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:bundlePath relativeToURL:expoUrl] manifest:nil];
     } else {
       [self _initAppWithUrl:expoUrl bundleUrl:expoUrl manifest:nil];
     }
@@ -426,10 +435,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   };
 
   void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
+    NSURL *resolvedBundleURL = [EXDevLauncherURLHelper bundleURL:bundleURL withResolvedPlatform:RCTPlatformName];
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
     [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:manifest];
-    [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
+    [self _initAppWithUrl:expoUrl bundleUrl:resolvedBundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }

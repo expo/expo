@@ -1,7 +1,10 @@
+import Foundation
+import ExpoModulesCore
+
 /**
  Session is a time frame during the app's lifetime that tracks various metrics from its start till its end.
  */
-public class Session: Codable, MetricsReceiver, @unchecked Sendable {
+public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
   /**
    Unique ID of the session in UUID v4 format.
    */
@@ -22,28 +25,40 @@ public class Session: Codable, MetricsReceiver, @unchecked Sendable {
    */
   private(set) var endDate: Date?
 
-  /**
-   An array of metrics collected during the session.
-   */
-  public private(set) var metrics: [Metric] = []
-
   init(type: SessionType = .custom) {
     self.id = UUID().uuidString
     self.startDate = Date.now
     self.type = type
+    super.init()
 
-    AppMetrics.storage.currentEntry.add(session: self)
+    // The session-row INSERT is fire-and-forget on `AppMetricsActor`. Subsequent writes for this
+    // session (metrics, logs, `stop()`, crash reports) all go through the same actor, and tasks on
+    // an actor run in submission order — so they always observe the INSERT before their own SQL
+    // runs, even though no caller `await`s the task returned here. The invariant only holds because
+    // every metric-producing path enqueues *after* `Session.init` returns; if a future caller
+    // submits to `AppMetricsActor` from a parallel task that could race `init`, this should be
+    // converted to a stored `sessionStartTask` that downstream writes `await` before proceeding.
+    AppMetricsActor.isolated { [self] in
+      let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
+      do {
+        try AppMetrics.database?.insert(session: SessionRow.snapshot(of: self, environment: environment))
+      } catch {
+        logger.warn("[AppMetrics] Failed to insert session row: \(error.localizedDescription)")
+      }
+    }
   }
 
   /**
-   Test-only initializer that builds a session with explicit values and skips registering it
-   with the global storage. Do not use from production code.
+   Non-registering initializer that builds a session with explicit values.
+   The caller is responsible for adding it to storage (or skipping that step,
+   e.g. in tests).
    */
   init(id: String, type: SessionType, startDate: Date, endDate: Date?) {
     self.id = id
     self.type = type
     self.startDate = startDate
     self.endDate = endDate
+    super.init()
   }
 
   /**
@@ -62,24 +77,34 @@ public class Session: Codable, MetricsReceiver, @unchecked Sendable {
   }
 
   /**
-   Stops the session and commits the contents of the storage.
+   Stops the session, persists its end timestamp, and writes a final duration metric.
    */
   func stop() {
     if endDate != nil {
       // Can't stop session more than once
       return
     }
-    endDate = Date.now
-    metrics.append(Metric(category: .session, name: "duration", value: duration))
+    let endDate = Date.now
+    self.endDate = endDate
+    let durationMetric = Metric(category: .session, name: "duration", value: duration)
 
-    AppMetricsActor.isolated {
-      try? AppMetrics.storage.commit()
+    AppMetricsActor.isolated { [self] in
+      do {
+        try AppMetrics.database?.updateSessionActiveStatus(
+          id: self.id,
+          isActive: false,
+          endTimestamp: endDate.ISO8601Format()
+        )
+        try AppMetrics.database?.insert(metric: MetricRow.from(metric: durationMetric, sessionId: self.id))
+      } catch {
+        logger.warn("[AppMetrics] Failed to finalize session \(self.id): \(error.localizedDescription)")
+      }
     }
   }
 
   // MARK: - Session type
 
-  public enum SessionType: String, Codable {
+  public enum SessionType: String, Codable, Sendable {
     /// The main session that tracks metrics for the entire app process lifecycle.
     case main
 
@@ -100,29 +125,58 @@ public class Session: Codable, MetricsReceiver, @unchecked Sendable {
 
   let memoryMeter = MemoryMonitoring()
 
+  // MARK: - Reading and recording session data
+
+  /**
+   Metrics recorded against this session, decoded from storage.
+   */
+  @AppMetricsActor
+  func getMetrics() throws -> [Metric] {
+    let rows = try AppMetrics.database?.getMetrics(sessionId: id) ?? []
+    return decodeMetrics(from: rows)
+  }
+
+  /**
+   Log records recorded against this session, decoded from storage.
+   */
+  @AppMetricsActor
+  func getLogs() throws -> [LogRecord] {
+    let rows = try AppMetrics.database?.getLogs(sessionId: id) ?? []
+    return decodeLogs(from: rows)
+  }
+
+  /**
+   Records a metric against this session. JS-facing: errors propagate so the caller's promise rejects.
+   */
+  @AppMetricsActor
+  func addMetric(_ input: SessionMetricInput) throws {
+    try insert(input.toMetric(sessionId: id))
+  }
+
+  // Persists a metric row for this session. Shared by the throwing JS path (`addMetric`) and the
+  // fire-and-forget native push path (`receiveMetric`), which differ only in error handling.
+  @AppMetricsActor
+  private func insert(_ metric: Metric) throws {
+    try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: id))
+  }
+
   // MARK: - MetricsReceiver
 
   @AppMetricsActor
   public func receiveMetric(_ metric: Metric) {
-    self.metrics.append(metric)
-
-    // It's probably not the best approach to commit the storage on every received metric,
-    // but it seems fine for the proof of concept.
-    try? AppMetrics.storage.commit()
+    do {
+      try insert(metric)
+    } catch {
+      logger.warn("[AppMetrics] Failed to insert metric \"\(metric.getMetricKey())\" for session \(self.id): \(error.localizedDescription)")
+    }
   }
 
-  // MARK: - Codable
-
-  private enum CodingKeys: String, CodingKey {
-    case id, type, startDate, endDate, metrics
-  }
-
-  public required init(from decoder: any Decoder) throws {
-    let values = try decoder.container(keyedBy: CodingKeys.self)
-    id = try values.decode(String.self, forKey: .id)
-    type = try values.decodeIfPresent(SessionType.self, forKey: .type) ?? .unknown
-    startDate = try values.decode(Date.self, forKey: .startDate)
-    endDate = try values.decodeIfPresent(Date.self, forKey: .endDate)
-    metrics = try values.decodeIfPresent([Metric].self, forKey: .metrics) ?? []
+  @AppMetricsActor
+  public func receiveLog(_ log: LogRecord) {
+    do {
+      try AppMetrics.database?.insert(log: LogRow.from(log: log, sessionId: self.id))
+    } catch {
+      logger.warn("[AppMetrics] Failed to insert log \"\(log.name)\" for session \(self.id): \(error.localizedDescription)")
+    }
   }
 }

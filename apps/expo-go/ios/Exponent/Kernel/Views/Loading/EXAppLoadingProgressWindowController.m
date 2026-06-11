@@ -136,7 +136,7 @@
   if (status == kEXAppLoaderRemoteUpdateStatusChecking) {
     return @"Checking for latest version...";
   } else if (status == kEXAppLoaderRemoteUpdateStatusDownloading) {
-    return @"Loading latest version...";
+    return @"Loading project...";
   } else {
     return nil;
   }

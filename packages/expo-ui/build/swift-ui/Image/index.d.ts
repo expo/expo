@@ -8,13 +8,19 @@ export interface ImageProps extends CommonViewModifierProps {
      */
     systemName?: SFSymbol;
     /**
+     * The asset catalog name of a custom SF Symbol imported as a symbol set.
+     */
+    assetName?: string;
+    /**
      * The URI of the local image file to display.
      * For example: 'file:///path/to/image.jpg'
      * Performs a synchronous read operation that blocks the main thread.
      */
     uiImage?: string;
     /**
-     * The size of the system image.
+     * The fixed size of the system image in points. Does not scale with Dynamic
+     * Type. Use the `font` modifier with `textStyle` for that. Ignored when a
+     * `font` modifier is supplied.
      */
     size?: number;
     /**

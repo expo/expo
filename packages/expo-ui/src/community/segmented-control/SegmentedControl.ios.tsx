@@ -35,7 +35,7 @@ export function SegmentedControl(props: SegmentedControlProps) {
   };
 
   return (
-    <Host matchContents={{ vertical: true }} style={style}>
+    <Host matchContents={{ vertical: true }} style={style} ignoreSafeArea="all">
       <Picker
         selection={selectedIndex}
         onSelectionChange={handleSelectionChange}

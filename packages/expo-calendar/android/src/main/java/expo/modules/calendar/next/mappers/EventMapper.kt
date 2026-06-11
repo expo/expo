@@ -52,20 +52,20 @@ class EventMapper {
     rrule = eventRecord.recurrenceRule?.toDomain()
   )
 
-  private fun EventAvailability.toDomain() = when (this) {
+  fun EventAvailability.toDomain() = when (this) {
     EventAvailability.BUSY -> Availability.BUSY
     EventAvailability.FREE -> Availability.FREE
     EventAvailability.TENTATIVE -> Availability.TENTATIVE
   }
 
-  private fun EventAccessLevel.toDomain() = when (this) {
+  fun EventAccessLevel.toDomain() = when (this) {
     EventAccessLevel.PUBLIC -> AccessLevel.PUBLIC
     EventAccessLevel.PRIVATE -> AccessLevel.PRIVATE
     EventAccessLevel.CONFIDENTIAL -> AccessLevel.CONFIDENTIAL
     EventAccessLevel.DEFAULT -> AccessLevel.DEFAULT
   }
 
-  private fun RecurrenceRuleRecord.toDomain() = RecurrenceRule(
+  fun RecurrenceRuleRecord.toDomain() = RecurrenceRule(
     frequency = frequency
       ?: throw IllegalArgumentException("Frequency is required for recurrence rule"),
     interval = interval,

@@ -90,6 +90,7 @@ export type ExpoGoConfig = {
   packagerOpts: {
     [key: string]: any;
   };
+  username?: string;
 };
 
 export type EASConfig = {
@@ -138,7 +139,8 @@ export enum ProjectPrivacy {
   UNLISTED = 'unlisted',
 }
 
-export type Platform = 'android' | 'ios' | 'web';
+export type Platform = 'android' | 'ios' | 'web' | 'tvos' | 'macos';
+export type NativePlatform = Exclude<Platform, 'web'>;
 export type ProjectTarget = 'managed' | 'bare';
 
 export type ConfigErrorCode =

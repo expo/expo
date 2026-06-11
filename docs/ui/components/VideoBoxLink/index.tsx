@@ -43,17 +43,17 @@ export function VideoBoxLink({
         openInNewTab
         href={`https://www.youtube.com/watch?v=${videoId}${time ? `&t=${time}` : ''}`}
         className={mergeClasses(
-          'group border-default bg-default relative flex items-stretch overflow-hidden rounded-lg border shadow-xs transition',
+          'group relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
           'hocus:bg-subtle hocus:shadow-sm',
-          'max-sm-gutters:flex-col',
+          'max-sm:flex-col',
           '[&+hr]:mt-6!',
           className
         )}
         aria-label={`Watch video: ${title} (opens in new tab)`}>
         <div
           className={mergeClasses(
-            'border-secondary bg-element relative flex max-w-[200px] items-center justify-center overflow-hidden border-r',
-            'max-sm-gutters:max-w-full max-sm-gutters:border-b max-sm-gutters:border-r-0'
+            'relative flex max-w-50 items-center justify-center overflow-hidden border-r border-secondary bg-element',
+            'max-sm:max-w-full max-sm:border-r-0 max-sm:border-b'
           )}>
           <img
             src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
@@ -62,10 +62,10 @@ export function VideoBoxLink({
             aria-label={`Video thumbnail for ${title}`}
           />
           <div
-            className="absolute top-[calc(50%-22px)] right-[calc(50%-22px)] flex size-[44px] items-center justify-center rounded-full bg-[#000a]"
+            className="absolute top-[calc(50%-22px)] right-[calc(50%-22px)] flex size-11 items-center justify-center rounded-full bg-[#000a]"
             role="presentation"
             aria-hidden="true">
-            <PlaySolidIcon className="icon-lg text-palette-white ml-0.5" />
+            <PlaySolidIcon className="ml-0.5 icon-lg text-palette-white" />
           </div>
         </div>
         <div className="flex flex-col justify-center gap-1 px-4 py-2">
@@ -77,7 +77,7 @@ export function VideoBoxLink({
           )}
         </div>
         <ArrowUpRightIcon
-          className="icon-md text-icon-secondary max-sm-gutters:hidden my-auto mr-4 ml-auto shrink-0"
+          className="my-auto mr-4 ml-auto icon-md shrink-0 text-icon-secondary max-sm:hidden"
           aria-hidden="true"
         />
       </LinkBase>

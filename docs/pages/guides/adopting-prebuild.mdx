@@ -15,7 +15,14 @@ Adopting prebuild will automatically add support for developing modules with the
 
 The `expo` package contains the [`npx expo prebuild`](/more/expo-cli/#prebuild) command and indicates which [prebuild template](/workflow/continuous-native-generation#templates) to use:
 
-<Terminal cmd={['$ npm install expo']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo'],
+    yarn: ['$ yarn add expo'],
+    pnpm: ['$ pnpm add expo'],
+    bun: ['$ bun add expo'],
+  }}
+/>
 
 Ensure you install the version of `expo` that works for your currently installed [version of `react-native`](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
 
@@ -48,18 +55,48 @@ If you're migrating an existing project, then you may want to refer to [**migrat
 
 Run the following command to regenerate the **android** and **ios** directories based on the app config (**app.json/app.config.js**) configuration:
 
-<Terminal cmd={['$ npx expo prebuild --clean']} cmdCopy="npx expo prebuild --clean" />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean'],
+    yarn: ['$ yarn expo prebuild --clean'],
+    pnpm: ['$ pnpm expo prebuild --clean'],
+    bun: ['$ bun expo prebuild --clean'],
+  }}
+/>
 
 You can test that everything worked by building the projects locally:
 
 <Terminal
-  cmd={[
-    '# Build your native Android project',
-    '$ npx expo run:android',
-    '',
-    '# Build your native iOS project',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Build your native Android project',
+      '$ npx expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Build your native Android project',
+      '$ yarn expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Build your native Android project',
+      '$ pnpm expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Build your native Android project',
+      '$ bun expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 > Learn more about [compiling native apps](/more/expo-cli/#compiling).
@@ -123,7 +160,7 @@ If your project has any native modifications (changes to the **android** or **io
 
 - Check to see if your changes overlap with the built-in [app config fields](/versions/latest/config/app/). For example, if you have an app icon, be sure to define it as `expo.icon` in the **app.json** then re-run `npx expo prebuild`.
 - Look up if any of the packages you are using require an [Expo config plugin][config-plugins]. If a package in your project requires additional changes inside the **android** or **ios** directories, then you will probably need a Config Plugin. Some plugins can be automatically added by running `npx expo install` with all of the packages in your **package.json** dependencies. If a package requires a plugin but doesn't supply one, then you can try checking the community plugins at [`expo/config-plugins`](https://github.com/expo/config-plugins) to see if one already exists.
-- You can use the [VS Code Expo extension][vs-code-expo] to introspect your changes and debug if prebuild is generating the native code you expect. Just press <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>p</kbd>, type "Expo: Preview Modifier", and select the native file you wish to introspect.
+- You can use the [VS Code Expo extension][vs-code-expo] to introspect your changes and debug if prebuild is generating the native code you expect. Just press <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>, type "Expo: Preview Modifier", and select the native file you wish to introspect.
 - Additionally, you can develop local config plugins to fit your needs. [Learn more](/config-plugins/development-and-debugging/#develop-a-plugin).
 
 ## Add more features

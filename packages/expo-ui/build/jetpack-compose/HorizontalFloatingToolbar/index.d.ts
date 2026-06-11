@@ -6,9 +6,17 @@ export type HorizontalFloatingToolbarColors = {
      */
     toolbarContainerColor?: ColorValue;
     /**
+     *  Color of the toolbar content (icons/text).
+     */
+    toolbarContentColor?: ColorValue;
+    /**
      * Color of the floating action button container (background).
      */
     fabContainerColor?: ColorValue;
+    /**
+     *  Color of the floating action button content (icon).
+     */
+    fabContentColor?: ColorValue;
 };
 export type HorizontalFloatingToolbarProps = {
     /**

@@ -82,7 +82,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
       // Swallowing the exception avoids an unhandled promise rejection on the JS side.
     }
   }
- 
+
   val resolvedContainerColor = props.containerColor.composeOrNull ?: BottomSheetDefaults.ContainerColor
   val resolvedContentColor = props.contentColor.composeOrNull ?: contentColorFor(resolvedContainerColor)
   val resolvedScrimColor = props.scrimColor.composeOrNull ?: BottomSheetDefaults.ScrimColor

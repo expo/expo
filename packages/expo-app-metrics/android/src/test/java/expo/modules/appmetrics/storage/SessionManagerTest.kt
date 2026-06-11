@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
+import expo.modules.appmetrics.AppUpdatesInfo
+import expo.modules.appmetrics.BuildConfig
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -34,71 +36,6 @@ class SessionManagerTest {
     database.close()
   }
 
-  // region Session Uniqueness Tests
-
-  @Test
-  fun `getAllSessions returns each session exactly once`() =
-    runTest {
-      // Arrange
-      val session1Id = "session-1"
-      val session2Id = "session-2"
-      sessionManager.startSessionWithIdAt(session1Id, "2025-01-01T00:00:00.000Z")
-      sessionManager.startSessionWithIdAt(session2Id, "2025-01-01T01:00:00.000Z")
-
-      // Add multiple metrics to session 1
-      val metrics = listOf(
-        createMetric("metric-1", session1Id),
-        createMetric("metric-2", session1Id),
-        createMetric("metric-3", session1Id)
-      )
-      database.metricDao().insertAll(metrics)
-
-      // Act
-      val result = sessionManager.getAllSessions()
-
-      // Assert
-      assertEquals(2, result.size)
-      val sessionIds = result.map { it.session.id }
-      assertEquals(sessionIds.distinct().size, sessionIds.size)
-      assertTrue(sessionIds.contains(session1Id))
-      assertTrue(sessionIds.contains(session2Id))
-    }
-
-  @Test
-  fun `getAllActiveSessions returns each active session only once`() =
-    runTest {
-      // Arrange
-      val activeSession1 = "active-1"
-      val activeSession2 = "active-2"
-      val inactiveSession = "inactive-1"
-
-      sessionManager.startSessionWithIdAt(activeSession1, "2025-01-01T00:00:00.000Z")
-      sessionManager.startSessionWithIdAt(activeSession2, "2025-01-01T01:00:00.000Z")
-      sessionManager.startSessionWithIdAt(inactiveSession, "2025-01-01T02:00:00.000Z")
-      // Add multiple metrics to each session
-      val metrics = listOf(
-        createMetric("metric-1", activeSession1),
-        createMetric("metric-2", activeSession1),
-        createMetric("metric-3", activeSession2),
-        createMetric("inactive-metric", inactiveSession)
-      )
-      database.metricDao().insertAll(metrics)
-      sessionManager.stopSession(inactiveSession)
-
-      // Act
-      val result = sessionManager.getAllActiveSessions()
-
-      // Assert
-      assertEquals(2, result.size)
-      val sessionIds = result.map { it.session.id }
-      assertEquals(sessionIds.distinct().size, sessionIds.size)
-      assertTrue(sessionIds.contains(activeSession1))
-      assertTrue(sessionIds.contains(activeSession2))
-      assertFalse(sessionIds.contains(inactiveSession))
-    }
-
-  // endregion
-
   // region Session Lifecycle Tests
 
   @Test
@@ -112,7 +49,11 @@ class SessionManagerTest {
         appIdentifier = "com.test.app",
         appVersion = "1.2.3",
         appBuildNumber = "42",
-        appUpdateId = "update-123",
+        appUpdatesInfo = AppUpdatesInfo(
+          updateId = "update-123",
+          runtimeVersion = null,
+          requestHeaders = null
+        ),
         deviceOs = "Android",
         deviceOsVersion = "14",
         deviceModel = "Pixel 8",
@@ -127,10 +68,7 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, timestamp, metadata, environment = "production")
 
       // Assert
-      val sessions = sessionManager.getAllSessions()
-      assertEquals(1, sessions.size)
-
-      val session = sessions[0].session
+      val session = database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!.session
       assertEquals(sessionId, session.id)
       assertEquals(timestamp, session.startTimestamp)
       assertTrue(session.isActive)
@@ -161,22 +99,22 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z", metadata, environment = "production")
 
       // Assert
-      val sessions = sessionManager.getAllSessions()
-      assertEquals("production", sessions[0].session.environment)
+      val session = database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!.session
+      assertEquals("production", session.environment)
     }
 
   @Test
   fun `startSessionWithIdAt falls back to preferences environment`() =
     runTest {
-      // Arrange — Robolectric apps are debuggable, so default is "development"
       val sessionId = "test-session"
+      val expected = if (BuildConfig.DEBUG) "development" else null
 
       // Act
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
 
       // Assert
-      val sessions = sessionManager.getAllSessions()
-      assertEquals("development", sessions[0].session.environment)
+      val session = database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!.session
+      assertEquals(expected, session.environment)
     }
 
   @Test
@@ -187,19 +125,28 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
 
       // Verify it starts as active
-      var sessions = sessionManager.getAllActiveSessions()
-      assertEquals(1, sessions.size)
+      assertTrue(database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!.session.isActive)
 
       // Act
       sessionManager.stopSession(sessionId)
 
       // Assert
-      sessions = sessionManager.getAllActiveSessions()
-      assertEquals(0, sessions.size)
+      assertFalse(database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!.session.isActive)
+    }
 
-      val allSessions = sessionManager.getAllSessions()
-      assertEquals(1, allSessions.size)
-      assertFalse(allSessions[0].session.isActive)
+  @Test
+  fun `stopSession stamps endTimestamp`() =
+    runTest {
+      // Arrange
+      val sessionId = "test-session"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      // Act
+      sessionManager.stopSession(sessionId)
+
+      // Assert
+      val stopped = database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!
+      assertNotNull("endTimestamp should be set after stopSession", stopped.session.endTimestamp)
     }
 
   @Test
@@ -215,9 +162,69 @@ class SessionManagerTest {
       sessionManager.deactivateAllSessionsBefore("2025-01-10T00:00:00.000Z")
 
       // Assert
-      val activeSessions = sessionManager.getAllActiveSessions()
-      assertEquals(1, activeSessions.size)
-      assertEquals(newSession, activeSessions[0].session.id)
+      assertFalse(database.sessionDao().getSessionWithMetricsBySessionId(oldSession)!!.session.isActive)
+      assertTrue(database.sessionDao().getSessionWithMetricsBySessionId(newSession)!!.session.isActive)
+    }
+
+  @Test
+  fun `deactivateAllSessionsBefore excludes a session whose startTimestamp equals the cutoff`() =
+    runTest {
+      // The active-session safety in AppMetricsModule depends on this being a
+      // strict `<` comparison, NOT `<=`: a freshly-created session shares its
+      // start timestamp with the sweep cutoff, so it must survive the sweep even
+      // though it can run after the session's own INSERT.
+      val cutoff = "2025-01-10T00:00:00.000Z"
+      val atCutoff = "at-cutoff-session"
+      val justBefore = "just-before-session"
+      sessionManager.startSessionWithIdAt(atCutoff, cutoff)
+      sessionManager.startSessionWithIdAt(justBefore, "2025-01-09T23:59:59.999Z")
+
+      // Act
+      sessionManager.deactivateAllSessionsBefore(cutoff)
+
+      // Assert — equal to the cutoff is preserved (proves `<`), strictly older
+      // is deactivated.
+      assertTrue(database.sessionDao().getSessionWithMetricsBySessionId(atCutoff)!!.session.isActive)
+      assertFalse(database.sessionDao().getSessionWithMetricsBySessionId(justBefore)!!.session.isActive)
+    }
+
+  @Test
+  fun `deactivateAllSessionsBefore stamps endTimestamp on orphan sessions`() =
+    runTest {
+      // Arrange — a session left active across launches (force-killed process,
+      // OOM, etc.). On the next module create we deactivate it, and the cutoff
+      // timestamp is the heuristic end-time we record.
+      val orphan = "orphan-session"
+      sessionManager.startSessionWithIdAt(orphan, "2025-01-01T00:00:00.000Z")
+
+      // Act
+      val cutoff = "2025-01-10T00:00:00.000Z"
+      sessionManager.deactivateAllSessionsBefore(cutoff)
+
+      // Assert
+      val deactivated = database.sessionDao().getSessionWithMetricsBySessionId(orphan)!!
+      assertFalse(deactivated.session.isActive)
+      assertEquals(cutoff, deactivated.session.endTimestamp)
+    }
+
+  @Test
+  fun `deactivateAllSessionsBefore preserves existing endTimestamps`() =
+    runTest {
+      // Arrange — a session that was properly stopped via stopSession should
+      // keep its real end time even if it predates the deactivate cutoff.
+      val cleanlyStopped = "clean-session"
+      sessionManager.startSessionWithIdAt(cleanlyStopped, "2025-01-01T00:00:00.000Z")
+      sessionManager.stopSession(cleanlyStopped)
+      val originalEnd = database.sessionDao().getSessionWithMetricsBySessionId(cleanlyStopped)!!
+        .session.endTimestamp
+      assertNotNull("precondition: stopSession should have stamped endTimestamp", originalEnd)
+
+      // Act
+      sessionManager.deactivateAllSessionsBefore("2025-01-10T00:00:00.000Z")
+
+      // Assert — the cleanly-stopped session keeps its original end time.
+      val preserved = database.sessionDao().getSessionWithMetricsBySessionId(cleanlyStopped)!!
+      assertEquals(originalEnd, preserved.session.endTimestamp)
     }
 
   @Test
@@ -234,9 +241,8 @@ class SessionManagerTest {
       sessionManager.updateEnvironmentForActiveSessions("production")
 
       // Assert
-      val allSessions = sessionManager.getAllSessions()
-      val active = allSessions.find { it.session.id == activeSession }
-      val inactive = allSessions.find { it.session.id == inactiveSession }
+      val active = database.sessionDao().getSessionWithMetricsBySessionId(activeSession)
+      val inactive = database.sessionDao().getSessionWithMetricsBySessionId(inactiveSession)
 
       assertEquals("production", active?.session?.environment)
       assertEquals("staging", inactive?.session?.environment)
@@ -268,9 +274,8 @@ class SessionManagerTest {
       sessionManager.addMetrics(metricsForSession2, session2Id)
 
       // Assert
-      val sessions = sessionManager.getAllSessions()
-      val s1 = sessions.find { it.session.id == session1Id }
-      val s2 = sessions.find { it.session.id == session2Id }
+      val s1 = database.sessionDao().getSessionWithMetricsBySessionId(session1Id)
+      val s2 = database.sessionDao().getSessionWithMetricsBySessionId(session2Id)
 
       assertEquals(2, s1?.metrics?.size)
       assertTrue(s1?.metrics?.all { it.sessionId == session1Id } ?: false)
@@ -356,33 +361,6 @@ class SessionManagerTest {
       // Assert - only the first metric should have been received
       assertEquals(1, receivedIds.size)
       assertTrue(receivedIds.contains("metric-1"))
-    }
-
-  @Test
-  fun `startSessionWithIdAndMetricsAt notifies listeners`() =
-    runTest {
-      // Arrange
-      val receivedIds = mutableListOf<String>()
-      sessionManager.addMetricsInsertListener { metricIds ->
-        receivedIds.addAll(metricIds)
-      }
-
-      val metrics = listOf(
-        createMetric("metric-1", ""),
-        createMetric("metric-2", "")
-      )
-
-      // Act
-      sessionManager.startSessionWithIdAndMetricsAt(
-        id = "session-1",
-        metrics = metrics,
-        timestamp = "2025-01-01T00:00:00.000Z"
-      )
-
-      // Assert
-      assertEquals(2, receivedIds.size)
-      assertTrue(receivedIds.contains("metric-1"))
-      assertTrue(receivedIds.contains("metric-2"))
     }
 
   // endregion
@@ -538,34 +516,35 @@ class SessionManagerTest {
       assertEquals(600, s2.metrics.size)
     }
 
+  @Test
+  fun `getSessionsWithMetrics yields empty logs from the chunked merger path`() =
+    runTest {
+      // Arrange — the chunked-merger branch in `getSessionsWithMetrics`
+      // constructs `SessionWithMetrics(...)` without passing logs and relies on
+      // the `= emptyList()` default. The session DOES have logs in storage,
+      // but the merger projects metrics-only. This test fails loudly if the
+      // default is removed or the merger ever needs to surface logs too.
+      val sessionId = "session-with-logs"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      val metricIds = (1..1100).map { "metric-$it" }
+      metricIds.chunked(500).forEach { chunk ->
+        database.metricDao().insertAll(chunk.map { createMetric(it, sessionId) })
+      }
+      // Also insert logs so an accidental relation-load would surface them.
+      database.logDao().insertAll(listOf(createLog("log-a", sessionId)))
+
+      // Act — 1100 IDs forces the chunked path
+      val result = sessionManager.getSessionsWithMetrics(metricIds)
+
+      // Assert
+      assertEquals(1, result.size)
+      assertEquals(emptyList<LogRecord>(), result[0].logs)
+    }
+
   // endregion
 
   // region Data Cleanup Tests
-
-  @Test
-  fun `removeSessions deletes sessions and cascades to metrics`() =
-    runTest {
-      // Arrange
-      val sessionId = "session-to-delete"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      val metrics = listOf(
-        createMetric("metric-1", sessionId),
-        createMetric("metric-2", sessionId)
-      )
-      database.metricDao().insertAll(metrics)
-
-      val sessionsBeforeDelete = sessionManager.getAllSessions()
-      assertEquals(1, sessionsBeforeDelete.size)
-      assertEquals(2, sessionsBeforeDelete[0].metrics.size)
-
-      // Act
-      sessionManager.removeSessions(sessionsBeforeDelete)
-
-      // Assert
-      val sessionsAfterDelete = sessionManager.getAllSessions()
-      assertEquals(0, sessionsAfterDelete.size)
-    }
 
   @Test
   fun `clearAllData removes all sessions and metrics`() =
@@ -585,13 +564,191 @@ class SessionManagerTest {
       )
 
       // Verify data exists
-      assertEquals(2, sessionManager.getAllSessions().size)
+      assertNotNull(database.sessionDao().getSessionWithMetricsBySessionId(session1Id))
+      assertNotNull(database.sessionDao().getSessionWithMetricsBySessionId(session2Id))
 
       // Act
       sessionManager.clearAllData()
 
       // Assert
-      assertEquals(0, sessionManager.getAllSessions().size)
+      assertNull(database.sessionDao().getSessionWithMetricsBySessionId(session1Id))
+      assertNull(database.sessionDao().getSessionWithMetricsBySessionId(session2Id))
+    }
+
+  @Test
+  fun `cleanupOldSessions removes inactive sessions older than the retention window`() =
+    runTest {
+      // Arrange — three sessions across the cutoff. We can't pick a static
+      // timestamp like the other tests because the retention window is computed
+      // from `now`, so we anchor against the current time.
+      val now = System.currentTimeMillis()
+      val retentionMs = MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS * 1000
+      val isoFormatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US)
+        .apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
+
+      val staleStoppedId = "stale-stopped"
+      val staleActiveId = "stale-active"
+      val freshStoppedId = "fresh-stopped"
+
+      val staleStart = isoFormatter.format(java.util.Date(now - retentionMs - 60_000))
+      val freshStart = isoFormatter.format(java.util.Date(now - 60_000))
+
+      sessionManager.startSessionWithIdAt(staleStoppedId, staleStart)
+      sessionManager.stopSession(staleStoppedId)
+
+      sessionManager.startSessionWithIdAt(staleActiveId, staleStart)
+      // Intentionally not stopped — simulates a long-running session.
+
+      sessionManager.startSessionWithIdAt(freshStoppedId, freshStart)
+      sessionManager.stopSession(freshStoppedId)
+
+      // Act
+      sessionManager.cleanupOldSessions()
+
+      // Assert — only the stopped, stale session is gone. The active stale
+      // session is preserved (we don't pull a session out from under a
+      // long-running process), and the fresh stopped session is preserved.
+      assertNull(
+        "stale stopped session should be cleaned up",
+        database.sessionDao().getSessionWithMetricsBySessionId(staleStoppedId)
+      )
+      assertNotNull(
+        "stale but active session should be preserved",
+        database.sessionDao().getSessionWithMetricsBySessionId(staleActiveId)
+      )
+      assertNotNull(
+        "fresh stopped session should be preserved",
+        database.sessionDao().getSessionWithMetricsBySessionId(freshStoppedId)
+      )
+    }
+
+  @Test
+  fun `getSessionWithMetricsBySessionId populates the logs relation alongside metrics`() =
+    runTest {
+      // Arrange — exercises the Room `@Relation` for `LogRecord` end-to-end.
+      // Unit-level mapper tests construct `SessionWithMetrics` directly and
+      // never hit the DAO, so this is the only path that catches a schema or
+      // foreign-key misconfiguration.
+      val sessionId = "session-with-mixed-events"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.metricDao().insertAll(
+        listOf(
+          createMetric("metric-a", sessionId),
+          createMetric("metric-b", sessionId)
+        )
+      )
+      database.logDao().insertAll(
+        listOf(
+          createLog("log-a", sessionId, name = "auth.login_failed", severity = "warn"),
+          createLog("log-b", sessionId, name = "user.signed_in", severity = "info"),
+          createLog("log-c", sessionId, name = "cache.miss", severity = "debug")
+        )
+      )
+
+      // Act
+      val session = database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!
+
+      // Assert
+      assertEquals(2, session.metrics.size)
+      assertEquals(3, session.logs.size)
+      assertEquals(setOf("log-a", "log-b", "log-c"), session.logs.map { it.logId }.toSet())
+    }
+
+  @Test
+  fun `getSessionWithMetricsBySessionId yields an empty logs list when no logs exist for the session`() =
+    runTest {
+      // Arrange — a session with metrics but no logs. The relation should
+      // populate as an empty list, not null.
+      val sessionId = "session-no-logs"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.metricDao().insertAll(listOf(createMetric("metric-1", sessionId)))
+
+      // Act
+      val session = database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!
+
+      // Assert
+      assertEquals(emptyList<LogRecord>(), session.logs)
+    }
+
+  // endregion
+
+  // region Live Session Reader Tests
+
+  @Test
+  fun `getSessionRow reflects live isActive and endTimestamp`() =
+    runTest {
+      // Arrange
+      val sessionId = "test-session"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      // Assert: live row reports the session as active with no end timestamp
+      val active = sessionManager.getSessionRow(sessionId)
+      assertNotNull(active)
+      assertTrue(active!!.isActive)
+      assertNull(active.endTimestamp)
+
+      // Act: end the session
+      sessionManager.stopSession(sessionId)
+
+      // Assert: the same query now reflects the ended state
+      val ended = sessionManager.getSessionRow(sessionId)
+      assertNotNull(ended)
+      assertFalse(ended!!.isActive)
+      assertNotNull(ended.endTimestamp)
+    }
+
+  @Test
+  fun `getSessionRow returns null for an unknown session`() =
+    runTest {
+      assertNull(sessionManager.getSessionRow("does-not-exist"))
+    }
+
+  @Test
+  fun `getMetricsForSession returns only that session's metrics`() =
+    runTest {
+      // Arrange
+      val sessionId = "session-1"
+      val otherId = "session-2"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      sessionManager.startSessionWithIdAt(otherId, "2025-01-01T01:00:00.000Z")
+      database.metricDao().insertAll(
+        listOf(
+          createMetric("metric-1", sessionId),
+          createMetric("metric-2", sessionId),
+          createMetric("metric-3", otherId)
+        )
+      )
+
+      // Act
+      val metrics = sessionManager.getMetricsForSession(sessionId)
+
+      // Assert
+      assertEquals(setOf("metric-1", "metric-2"), metrics.map { it.metricId }.toSet())
+      assertTrue(metrics.all { it.sessionId == sessionId })
+    }
+
+  @Test
+  fun `getLogsForSession returns only that session's logs`() =
+    runTest {
+      // Arrange
+      val sessionId = "session-1"
+      val otherId = "session-2"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      sessionManager.startSessionWithIdAt(otherId, "2025-01-01T01:00:00.000Z")
+      database.logDao().insertAll(
+        listOf(
+          createLog("log-1", sessionId),
+          createLog("log-2", sessionId),
+          createLog("log-3", otherId)
+        )
+      )
+
+      // Act
+      val logs = sessionManager.getLogsForSession(sessionId)
+
+      // Assert
+      assertEquals(setOf("log-1", "log-2"), logs.map { it.logId }.toSet())
+      assertTrue(logs.all { it.sessionId == sessionId })
     }
 
   // endregion
@@ -616,12 +773,30 @@ class SessionManagerTest {
       params = null
     )
 
+  private fun createLog(
+    logId: String,
+    sessionId: String,
+    name: String = "test.event",
+    severity: String = "info",
+    attributes: String? = null
+  ): LogRecord =
+    LogRecord(
+      logId = logId,
+      sessionId = sessionId,
+      timestamp = "2025-01-01T00:00:00.000Z",
+      name = name,
+      body = null,
+      severity = severity,
+      attributes = attributes,
+      droppedAttributesCount = 0
+    )
+
   private fun createTestMetadata(
     appName: String? = "TestApp",
     appIdentifier: String = "com.test.app",
     appVersion: String? = "1.0.0",
     appBuildNumber: String? = "1",
-    appUpdateId: String? = null,
+    appUpdatesInfo: AppUpdatesInfo? = null,
     appEasBuildId: String? = null,
     deviceOs: String? = "Android",
     deviceOsVersion: String? = "14",
@@ -637,7 +812,7 @@ class SessionManagerTest {
       appIdentifier = appIdentifier,
       appVersion = appVersion,
       appBuildNumber = appBuildNumber,
-      appUpdateId = appUpdateId,
+      appUpdatesInfo = appUpdatesInfo,
       appEasBuildId = appEasBuildId,
       languageTag = languageTag,
       deviceOs = deviceOs,

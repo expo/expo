@@ -1,0 +1,1 @@
+{"version":3,"file":"server.js","sourceRoot":"","sources":["../../src/internal/server.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,2DAAyC","sourcesContent":["export * from '../server/ServerDocument';\n"]}

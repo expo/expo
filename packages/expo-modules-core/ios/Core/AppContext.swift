@@ -429,12 +429,34 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   // MARK: - Runtime
 
   /**
-   Sets the JavaScript runtime from a raw pointer to a `facebook::jsi::Runtime` instance.
-   Called from ObjC++ (e.g. `ExpoReactNativeFactory`) when React Native initializes the runtime.
+   Sets the JavaScript runtime from raw pointers. Called by `ExpoReactNativeFactory`
+   when React Native initializes the runtime. When `scheduler` and `dispatch`
+   are both provided, `JavaScriptRuntime.schedule(...)` / `.execute(...)` dispatch
+   onto the JS thread through them. When either is `nil`, the runtime falls back
+   to a synchronous no-op scheduler — callers can detect this via
+   `JavaScriptRuntime.supportsAsyncScheduling`.
+
+   `dispatch` is a raw pointer to a C function with signature
+   `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
+   to the typed pointer inside `ExpoModulesJSI`. It's typed as `UnsafeRawPointer`
+   here rather than `@convention(c)` so the symbol can cross the Objective-C
+   bridge without needing a Swift-typed entry point.
    */
   @objc
-  public func setRuntime(_ runtimePointer: UnsafeMutableRawPointer) {
-    _runtime = ExpoRuntime(unsafePointer: runtimePointer)
+  public func setRuntime(
+    _ runtimePointer: UnsafeMutableRawPointer,
+    scheduler: UnsafeMutableRawPointer?,
+    dispatch: UnsafeRawPointer?
+  ) {
+    if let scheduler, let dispatch {
+      _runtime = ExpoRuntime(
+        unsafePointer: runtimePointer,
+        scheduler: scheduler,
+        dispatch: dispatch
+      )
+    } else {
+      _runtime = ExpoRuntime(unsafePointer: runtimePointer)
+    }
   }
 
   @JavaScriptActor
@@ -507,8 +529,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @JavaScriptActor
   private func installModuleClasses(in runtime: JavaScriptRuntime) throws {
-    let coreObject = runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
-    let sharedObjectClass = coreObject.getPropertyAsObject("SharedObject")
+    let coreObject = try runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
+    let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
     let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
 
     // Stored as JavaScriptValue (a class) because JavaScriptObject is ~Copyable

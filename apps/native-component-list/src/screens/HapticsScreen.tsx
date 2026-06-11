@@ -219,7 +219,6 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 16,
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   list: {
     flex: 1,

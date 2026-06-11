@@ -5,4 +5,3 @@ export declare function wrapDevelopmentCSS(props: {
     filename: string;
     reactServer: boolean;
 }): string;
-export declare function escapeBackticksAndOctals(str: string): string;

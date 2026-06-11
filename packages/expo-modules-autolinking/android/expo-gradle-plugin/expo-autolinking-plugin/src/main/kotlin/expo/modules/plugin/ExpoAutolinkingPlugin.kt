@@ -1,8 +1,8 @@
 package expo.modules.plugin
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import expo.modules.plugin.configuration.ExpoModule
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
@@ -84,7 +84,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     // Ensures that the task is executed before the build.
     project.tasks
       .named("preBuild", Task::class.java)
-      .dependsOn(generatePackagesList)
+      .configure { it.dependsOn(generatePackagesList) }
 
     // Adds the generated file to the source set.
     project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
@@ -101,7 +101,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
   }
 
   fun getInlineModulesDir(project: Project): Provider<Directory> {
-    return project.layout.buildDirectory.dir("inline/modules");
+    return project.layout.buildDirectory.dir("inline/modules")
   }
 
   fun getPackageListFile(project: Project): Provider<RegularFile> {
@@ -130,10 +130,10 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project: Project,
     appProject: Project
   ) {
-    val appAndroid = appProject.extensions.findByName("android") as? BaseExtension ?: run {
+    val appAndroid = appProject.extensions.findByName("android") as? ApplicationExtension ?: run {
       return
     }
-    val consumerAndroid = project.extensions.findByName("android") as? BaseExtension ?: run {
+    val consumerAndroid = project.extensions.findByName("android") as? LibraryExtension ?: run {
       return
     }
 
@@ -143,15 +143,15 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
   private fun syncFlavorDimensions(
     project: Project,
-    consumerAndroid: BaseExtension,
-    appAndroid: BaseExtension
+    consumerAndroid: LibraryExtension,
+    appAndroid: ApplicationExtension
   ): List<String> {
     val appDimensions = appAndroid
-      .flavorDimensionList
+      .flavorDimensions
       .takeIf { it.isNotEmpty() }
       ?: return emptyList()
 
-    val consumerDimensions = (consumerAndroid.flavorDimensionList).toMutableList()
+    val consumerDimensions = (consumerAndroid.flavorDimensions).toMutableList()
     val dimensionsAdded = appDimensions.any { dimension ->
       if (dimension !in consumerDimensions) {
         consumerDimensions.add(dimension)
@@ -162,7 +162,8 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     }
 
     if (dimensionsAdded) {
-      consumerAndroid.flavorDimensions(*consumerDimensions.toTypedArray())
+      consumerAndroid.flavorDimensions.clear()
+      consumerAndroid.flavorDimensions.addAll(consumerDimensions)
       project.logger.quiet("  -> Copied/merged flavorDimensions: ${consumerDimensions.joinToString()}")
     }
 
@@ -171,8 +172,8 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
   private fun copyMissingProductFlavors(
     project: Project,
-    consumerAndroid: BaseExtension,
-    appAndroid: BaseExtension,
+    consumerAndroid: LibraryExtension,
+    appAndroid: ApplicationExtension,
     appDimensions: List<String>
   ) {
     val appFlavors = appAndroid.productFlavors

@@ -1,5 +1,11 @@
 import { Image } from 'expo-image';
-import { MediaType, requestPermissionsAsync, Query, AssetField } from 'expo-media-library/next';
+import {
+  MediaType,
+  requestPermissionsAsync,
+  Query,
+  AssetField,
+  AssetInfo,
+} from 'expo-media-library';
 import { useEffect, useState } from 'react';
 import {
   View,
@@ -16,25 +22,6 @@ const numColumns = 3;
 const screenWidth = Dimensions.get('window').width;
 const imageSize = screenWidth / numColumns - 8;
 
-type AssetInfo = {
-  id: string;
-  height: number;
-  width: number;
-  mediaType: MediaType;
-  creationTime: number | null;
-  modificationTime: number | null;
-  duration: number | null;
-};
-
-const sortFields: AssetField[] = [
-  AssetField.CREATION_TIME,
-  AssetField.MODIFICATION_TIME,
-  AssetField.MEDIA_TYPE,
-  AssetField.HEIGHT,
-  AssetField.WIDTH,
-  AssetField.DURATION,
-];
-
 const sortLabels: Record<AssetField, string> = {
   [AssetField.CREATION_TIME]: 'Creation Time',
   [AssetField.MODIFICATION_TIME]: 'Modification Time',
@@ -42,6 +29,7 @@ const sortLabels: Record<AssetField, string> = {
   [AssetField.HEIGHT]: 'Height',
   [AssetField.WIDTH]: 'Width',
   [AssetField.DURATION]: 'Duration',
+  [AssetField.IS_FAVORITE]: 'Is Favorite',
 };
 
 const SortScreen = () => {
@@ -60,12 +48,15 @@ const SortScreen = () => {
       const assetInfos = await Promise.all(
         rawAssets.map(async (asset) => ({
           id: asset.id,
+          filename: await asset.getFilename(),
+          uri: await asset.getUri(),
           height: await asset.getHeight(),
           width: await asset.getWidth(),
           mediaType: await asset.getMediaType(),
           creationTime: await asset.getCreationTime(),
           modificationTime: await asset.getModificationTime(),
           duration: await asset.getDuration(),
+          isFavorite: await asset.getFavorite(),
         }))
       );
       setAssets(assetInfos);
@@ -133,6 +124,12 @@ const SortScreen = () => {
                 {item.mediaType}
               </Text>
             );
+          case AssetField.IS_FAVORITE:
+            return (
+              <Text style={styles.assetLabel} numberOfLines={1}>
+                {item.isFavorite ? 'Yes' : 'No'}
+              </Text>
+            );
 
           default:
             return null;
@@ -142,6 +139,7 @@ const SortScreen = () => {
   );
 
   const cycleSortField = () => {
+    const sortFields = Object.values(AssetField);
     const currentIndex = sortFields.indexOf(sortingBy);
     const nextIndex = (currentIndex + 1) % sortFields.length;
     setSortingBy(sortFields[nextIndex]);
@@ -179,7 +177,6 @@ const SortScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fafafa',
     paddingTop: 20,
   },
   status: {

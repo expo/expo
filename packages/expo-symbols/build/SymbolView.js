@@ -1,6 +1,6 @@
 import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
-import { useFonts } from '@expo-google-fonts/material-symbols';
-import { useMemo } from 'react';
+import { loadAsync } from 'expo-font';
+import { useState, useEffect, useMemo } from 'react';
 import { Platform, PlatformColor, Text, View } from 'react-native';
 import { androidSymbolToString } from './android';
 import { getFont } from './utils';
@@ -11,12 +11,19 @@ export function SymbolView(props) {
     const name = typeof props.name === 'object'
         ? props.name[Platform.OS === 'android' ? 'android' : 'web']
         : null;
-    const [loaded] = useFonts({
-        [font.name]: {
-            uri: font.font,
-            testString: name ? androidSymbolToString(name) : null,
-        },
-    });
+    const [loaded, setLoaded] = useState(false);
+    useEffect(() => {
+        loadAsync({
+            [font.name]: {
+                uri: font.font,
+                testString: name ? androidSymbolToString(name) : undefined,
+            },
+        })
+            .then(() => setLoaded(true))
+            .catch(() => {
+            /* noop */
+        });
+    }, []);
     if (!name) {
         return _jsx(_Fragment, { children: props.fallback });
     }

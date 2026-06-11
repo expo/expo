@@ -1,9 +1,11 @@
 package expo.modules.appmetrics.updates
 
 import android.util.Log
+import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.MetricCategory
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.storage.SessionSharedObject
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
@@ -14,32 +16,37 @@ import expo.modules.updatesinterface.UpdatesStateChangeSubscription
  * The subscription lifecycle and state change listening are managed by AppMetricsModule.
  */
 class UpdatesMonitoring(
-  private val sessionId: String
+  private val session: SessionSharedObject
 ) {
 
   /**
-   * Returns the launched OTA update ID, or null if the app was launched from the embedded bundle.
+   * Returns the current updates info (update ID, runtime version, request headers) for the
+   * launched app, or an empty info object when updates is not available.
    */
-  fun getLaunchedUpdateId(): String? {
-    val controller = UpdatesControllerRegistry.controller?.get() ?: return null
-    val launchedUpdateId = controller.launchedUpdateId ?: return null
-    val embeddedUpdateId = controller.embeddedUpdateId ?: return null
-
-    // Ignore embedded launches
-    if (launchedUpdateId == embeddedUpdateId) {
-      return null
-    }
-    return launchedUpdateId.toString().lowercase()
+  fun getUpdatesMetricsInfo(): AppUpdatesInfo {
+    val controller = UpdatesControllerRegistry.controller?.get()
+      ?: return AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null)
+    val launchedUpdateId = controller.launchedUpdateId
+    val embeddedUpdateId = controller.embeddedUpdateId
+    // Ignore embedded launches – they are not available on the website anyway.
+    val updateId = if (launchedUpdateId == embeddedUpdateId) null else launchedUpdateId?.toString()?.lowercase()
+    return AppUpdatesInfo(
+      updateId = updateId,
+      runtimeVersion = controller.runtimeVersion,
+      requestHeaders = controller.requestHeaders
+    )
   }
 
   /**
-   * Patches the app metadata with the OTA update ID if applicable.
+   * Patches the app metadata with the OTA updates info if applicable.
    */
   fun patchAppInfoIfNeeded(currentMetadata: expo.modules.appmetrics.AppMetadata?): expo.modules.appmetrics.AppMetadata? {
-    val updateId = getLaunchedUpdateId() ?: return currentMetadata
-    if (currentMetadata == null || currentMetadata.appUpdateId != null) return currentMetadata
-    Log.d(TAG, "OTA update ID found, patching AppMetadata")
-    return currentMetadata.copy(appUpdateId = updateId)
+    if (currentMetadata == null) return currentMetadata
+    val updatesInfo = getUpdatesMetricsInfo()
+    if (updatesInfo.updateId == null && updatesInfo.runtimeVersion == null) return currentMetadata
+    if (currentMetadata.appUpdatesInfo?.updateId != null) return currentMetadata
+    Log.d(TAG, "OTA update info found, patching AppMetadata")
+    return currentMetadata.copy(appUpdatesInfo = updatesInfo)
   }
 
   /**
@@ -56,7 +63,7 @@ class UpdatesMonitoring(
     val downloadTimeSeconds = (finishTime.time - startTime.time).toDouble() / 1000.0
 
     return Metric(
-      sessionId = sessionId,
+      sessionId = session.sessionId,
       timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
       category = MetricCategory.Updates.categoryName,
       name = "updateDownloadTime",

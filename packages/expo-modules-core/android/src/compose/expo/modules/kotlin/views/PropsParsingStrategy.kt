@@ -54,7 +54,7 @@ sealed interface PropsParsingStrategy<Props : ComposeProps> {
         prop.name to ComposeViewProp(
           prop.name,
           AnyType(propType),
-          prop.getter as (Any) -> Any?
+          prop::get as (Any) -> Any?
         )
       }
     }
@@ -76,7 +76,7 @@ sealed interface PropsParsingStrategy<Props : ComposeProps> {
         prop.name to ComposeViewProp(
           prop.name,
           AnyType(propType),
-          prop.getter as (Any) -> Any?
+          prop::get as (Any) -> Any?
         )
       }
     }

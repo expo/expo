@@ -21,28 +21,48 @@ Expo Skills are structured instruction files that teach AI agents how to build, 
 
 <Tab label="Claude Code">
 
-Run the following commands to add and install Expo Skills from the plugin marketplace:
+Run the following command to install the official Expo plugin from the `claude-plugins-official` marketplace:
 
-<Terminal cmd={['$ /plugin marketplace add expo/skills', '', '$ /plugin install expo']} />
+<Terminal cmd={['$ /plugin install expo@claude-plugins-official']} />
+
+</Tab>
+
+<Tab label="Codex">
+
+From the command line, run the following command to install the official Expo plugin:
+
+<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+
+You can also open `/plugins` in Codex and install `expo` from the `openai-curated` marketplace.
 
 </Tab>
 
 <Tab label="Cursor">
 
-Follow the steps below in your Cursor app to add Expo Skills as a remote rule:
-
 {/* vale off */}
 
-- Open **Settings** > **Rules & Command** > **Project Rules** > **Add Rule** and select **Remote Rule**.
-- Enter the following URL of the remote rule and click **Add**.
+If you have already installed Expo Skills for Claude Code, Codex, or another agent, recent versions of Cursor import them automatically. Open **Settings** > **Rules, Skills, Subagents**, make sure **Include third-party Plugins, Skills, and other configs** is enabled (it is on by default), and the Expo Skills appear in the **Skills** list.
 
 {/* vale on */}
 
-```text Remote URL
-https://github.com/expo/skills.git
-```
+If you have not installed Expo Skills yet, run one of the following with the [skills CLI](https://skills.sh/docs/cli):
 
-> **important** **Note:** Skills in Cursor are not shown in the slash command (`/`) menu. They work via auto-discovery when you ask the agent Expo-related questions.
+<Terminal
+  cmd={{
+    npm: ['$ npx skills add expo/skills'],
+    yarn: ['$ yarn dlx skills add expo/skills'],
+    pnpm: ['$ pnpm dlx skills add expo/skills'],
+    bun: ['$ bunx skills add expo/skills'],
+  }}
+/>
+
+{/* vale off */}
+
+Then reopen Cursor and verify the skills appear under **Settings** > **Rules, Skills, Subagents** > **Skills**.
+
+{/* vale on */}
+
+> **important** Skills in Cursor are not shown in the slash command (`/`) menu. They work via auto-discovery when you ask the agent Expo-related questions.
 
 </Tab>
 
@@ -100,6 +120,6 @@ Try the following prompts after installing Expo Skills. Your AI agent will autom
 <BoxLink
   title="Expo MCP Server"
   description="Companion AI tooling that gives coding agents direct access to Expo and EAS services."
-  href="/eas/ai/mcp/"
+  href="/mcp/"
   Icon={BookOpen02Icon}
 />

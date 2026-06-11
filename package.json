@@ -20,15 +20,12 @@
     ]
   },
   "resolutions": {
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-native": "0.85.2",
+    "react-native": "0.86.0-rc.3",
     "@types/babel__core": "^7.20.5",
     "@types/babel__code-frame": "^7.27.0",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",
-    "@types/babel__traverse": "^7.20.7",
-    "util": "~0.12.4"
+    "@types/babel__traverse": "^7.20.7"
   },
   "dependencies": {
     "eslint": "^8.57.1",
@@ -36,13 +33,14 @@
     "expo-modules-core": "workspace:*",
     "jest-expo": "workspace:*",
     "jsc-android": "^250231.0.0",
-    "prettier": "~3.5.3"
+    "prettier": "~3.8.3"
   },
   "volta": {
     "node": "22.14.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
+    "@types/node": "^22.14.0",
     "@vercel/ncc": "^0.38.4",
     "expo-module-scripts": "workspace:*",
     "expotools": "workspace:*",

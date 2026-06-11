@@ -4,14 +4,13 @@ description: A library to build iOS home screen widgets and Live Activities usin
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-widgets'
 packageName: 'expo-widgets'
 platforms: ['ios']
-isAlpha: true
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
-> **important** This library is currently in [alpha](/more/release-statuses/#alpha) and subject to breaking changes. It is not available in the Expo Go app, use [development builds](/develop/development-builds/introduction) to try it out.
+> **important** This library is not available in the Expo Go app — use [development builds](/develop/development-builds/introduction) to try it out.
 
 `expo-widgets` enables the creation of iOS home screen widgets and Live Activities using Expo UI components, without writing native code. It provides a simple API for creating and updating widgets timeline, as well as starting and managing Live Activities. Layout can be built using [`expo/ui`](/versions/latest/sdk/ui/swift-ui/) components and modifiers.
 
@@ -108,6 +107,11 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
         '* `accessoryInline` - Inline text widget for Lock Screen',
       ].join('\n'),
     },
+    {
+      name: 'widgets[].ios.initialLayout',
+      description:
+        'A path to the file that registers this widget with `createWidget`. The path is relative to the project root. Set this so the widget appears in the widget gallery before the app is open for the first time.',
+    },
   ]}
 />
 
@@ -180,10 +184,11 @@ const MyWidget = (props: MyWidgetProps, environment: WidgetEnvironment) => {
   );
 };
 
-export default createWidget('MyWidget', MyWidget);
+export default createWidget('MyWidget', MyWidget, { count: 0 });
 ```
 
 The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in the [app config](/workflow/configuration/).
+The optional third argument provides the initial props used before the widget timeline is updated.
 
 #### Basic widget
 

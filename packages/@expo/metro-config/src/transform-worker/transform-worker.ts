@@ -8,11 +8,7 @@
 
 import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import countLines from '@expo/metro/metro/lib/countLines';
-import type {
-  JsTransformerConfig,
-  JsTransformOptions,
-  JsOutput,
-} from '@expo/metro/metro-transform-worker';
+import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { relative, dirname } from 'node:path';
 
 import { getBrowserslistTargets } from './browserslist';
@@ -27,12 +23,17 @@ import { parseEnvFile } from './dot-env-development';
 import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
+import { transformShim } from './transformShim';
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
 
 export interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];
-  readonly output: readonly JsOutput[];
+  // `ExpoJsOutput` widens `data.map` to `SerializableSourceMap |
+  // MetroSourceMapSegmentTuple[]`. Metro readers still see plain tuples
+  // because the `Bundler.transformFile` wrapper swaps the
+  // `SerializableSourceMap` for an `Array.isArray`-true Proxy first.
+  readonly output: readonly ExpoJsOutput[];
 }
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
@@ -219,14 +220,8 @@ async function transformCss(
   // If the platform is not web, then return an empty module.
   if (options.platform !== 'web') {
     const code = matchCssModule(filename) ? 'module.exports={ unstable_styles: {} };' : '';
-    return worker.transform(
-      config,
-      projectRoot,
-      filename,
-      // TODO: Native CSS Modules
-      Buffer.from(code),
-      options
-    );
+    // TODO: Native CSS Modules
+    return transformShim(config, filename, code);
   }
 
   let code = data.toString('utf8');
@@ -264,13 +259,7 @@ async function transformCss(
       },
     });
 
-    const jsModuleResults = await worker.transform(
-      config,
-      projectRoot,
-      filename,
-      Buffer.from(results.output),
-      options
-    );
+    const jsModuleResults = transformShim(config, filename, results.output);
 
     const cssCode = results.css.toString();
     const output: ExpoJsOutput[] = [
@@ -344,14 +333,10 @@ async function transformCss(
 
   // Create a mock JS module that exports an empty object,
   // this ensures Metro dependency graph is correct.
-  const jsModuleResults = await worker.transform(
+  const jsModuleResults = transformShim(
     config,
-    projectRoot,
     filename,
-    options.dev
-      ? Buffer.from(wrapDevelopmentCSS({ src: cssCode, filename, reactServer }))
-      : Buffer.from(''),
-    options
+    options.dev ? wrapDevelopmentCSS({ src: cssCode, filename, reactServer }) : ''
   );
 
   // In production, we export the CSS as a string and use a special type to prevent

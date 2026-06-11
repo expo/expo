@@ -26,72 +26,36 @@ export function ProgressTracker({
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
-  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
-    useTutorialChapterCompletion();
-  const isGetStartedTutorial = name === 'GET_STARTED';
-  const currentChapter = isGetStartedTutorial
-    ? getStartedChapters[currentChapterIndex]
-    : chapters[currentChapterIndex];
+  const {
+    chapters,
+    setChapters,
+    getStartedChapters,
+    setGetStartedChapters,
+    buildWithAiChapters,
+    setBuildWithAiChapters,
+  } = useTutorialChapterCompletion();
 
-  const handleChapterComplete = () => {
-    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setChapters(updatedChapters);
+  const tracks: Record<string, [Chapter[], (chapters: Chapter[]) => void]> = {
+    EAS_TUTORIAL: [chapters, setChapters],
+    GET_STARTED: [getStartedChapters, setGetStartedChapters],
+    BUILD_WITH_AI: [buildWithAiChapters, setBuildWithAiChapters],
   };
-
-  const handleGetStartedChapterComplete = () => {
-    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setGetStartedChapters(updatedChapters);
-  };
-
-  const handleChapterIncomplete = () => {
-    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setChapters(updatedChapters);
-  };
-
-  const handleGetStartedChapterIncomplete = () => {
-    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setGetStartedChapters(updatedChapters);
-  };
+  const [trackChapters, setTrackChapters] = tracks[name] ?? tracks.EAS_TUTORIAL;
+  const currentChapter = trackChapters[currentChapterIndex];
 
   const handleCheckboxChange = () => {
-    if (currentChapter.completed) {
-      handleChapterIncomplete();
-    } else {
-      handleChapterComplete();
-    }
-  };
-
-  const handleCheckboxChangeForGetStarted = () => {
-    if (currentChapter.completed) {
-      handleGetStartedChapterIncomplete();
-    } else {
-      handleGetStartedChapterComplete();
-    }
+    const updatedChapters = trackChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: !currentChapter.completed };
+      }
+      return chapter;
+    });
+    setTrackChapters(updatedChapters);
   };
 
   return (
     <>
-      <div className="border-palette-gray4 mx-auto flex w-full flex-col gap-4 rounded-lg border-2 px-4 py-5">
+      <div className="mx-auto flex w-full flex-col gap-4 rounded-lg border-2 border-palette-gray4 px-4 py-5">
         <SuccessCheckmark
           size="sm"
           className={mergeClasses(
@@ -100,11 +64,11 @@ export function ProgressTracker({
           )}
         />
         <div className="flex flex-col items-center justify-center gap-2">
-          <p className="text-default heading-lg flex items-center text-center">
-            <BookOpen02Icon className="text-icon-secondary max-md-gutters:hidden mr-2 size-6!" />{' '}
+          <p className="flex items-center text-center heading-lg text-default">
+            <BookOpen02Icon className="mr-2 size-6! text-icon-secondary max-md:hidden" />{' '}
             {currentChapter.title}
           </p>
-          <p className="text-secondary max-w-[60ch] pb-2 text-center leading-normal">{summary}</p>
+          <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">{summary}</p>
         </div>
         <div className="flex items-center justify-center">
           <Checkbox
@@ -113,9 +77,7 @@ export function ProgressTracker({
             label={
               currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
             }
-            onChange={
-              isGetStartedTutorial ? handleCheckboxChangeForGetStarted : handleCheckboxChange
-            }
+            onChange={handleCheckboxChange}
           />
         </div>
       </div>

@@ -66,7 +66,14 @@ The most straightforward approach to leverage Expo's tooling is to use `expo` an
 - `expo` provides a config plugin API and types that your plugin will use.
 - `expo-module-scripts` provides build tooling specifically designed for Expo modules and config plugins. It also handles TypeScript compilation.
 
-<Terminal cmd={['$ npx expo install package']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install package'],
+    yarn: ['$ yarn expo install package'],
+    pnpm: ['$ pnpm expo install package'],
+    bun: ['$ bun expo install package'],
+  }}
+/>
 
 When using `expo-module-scripts`, it requires the following **package.json** configuration. For any already existing script with the same script name, replace it.
 

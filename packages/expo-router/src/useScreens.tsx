@@ -1,16 +1,17 @@
 'use client';
 
-import React, { use, useEffect, useMemo } from 'react';
+import React, { use, useEffect } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
+// Direct import to prevent a require cycle
+import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { unstable_navigationEvents } from './navigationEvents';
-import { generateStringUrlForState, getPathAndParamsFromStringUrl } from './navigationEvents/utils';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -36,6 +37,12 @@ import {
   type SuspenseFallbackProps,
 } from './views/SuspenseFallback';
 import { Try } from './views/Try';
+
+declare module 'react' {
+  export function lazy<T extends React.ComponentType<any>>(
+    load: () => PromiseLike<{ default: T }> | Promise<{ default: T }>
+  ): React.LazyExoticComponent<T>;
+}
 
 export type ScreenProps<
   TOptions extends Record<string, any> = Record<string, any>,
@@ -236,15 +243,7 @@ function fromImport(
     }
   }
 
-  return { default: component.default, SuspenseFallback };
-}
-
-function fromLoadedRoute(value: RouteNode, res: LoadedRoute) {
-  if (!(res instanceof Promise)) {
-    return fromImport(value, res);
-  }
-
-  return res.then(fromImport.bind(null, value));
+  return { default: component.default!, SuspenseFallback };
 }
 
 // TODO: Maybe there's a more React-y way to do this?
@@ -257,26 +256,33 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     return qualifiedStore.get(value)!;
   }
 
-  let ScreenComponent:
-    | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
-    | React.ComponentType<{ segment?: string }>;
-
+  let ScreenComponent: React.ComponentType<any>;
   let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
-    ScreenComponent = React.lazy(async () => {
-      const res = value.loadRoute();
-      return fromLoadedRoute(value, res) as Promise<{
-        default: React.ComponentType<any>;
-      }>;
+    ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
+      const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
+      // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
+      // the route is synchronously available, if the `loadRoute` method returns a loaded route
+      // synchronously
+      if (!('then' in res)) {
+        return {
+          then(resolve) {
+            const ret = fromImport(value, res);
+            return Promise.resolve(resolve ? resolve(ret) : ret);
+          },
+        } as PromiseLike<{ default: React.ComponentType<any> }>;
+      } else {
+        return res.then(fromImport.bind(null, value));
+      }
     });
 
     if (__DEV__) {
       ScreenComponent.displayName = `AsyncRoute(${value.route})`;
     }
   } else {
-    const res = value.loadRoute();
+    const res = value.loadRoute() as LoadedRoute;
     const result = fromImport(value, res);
     ScreenComponent = result.default!;
     LayoutSuspenseFallback = value.type === 'layout' ? result.SuspenseFallback : undefined;
@@ -369,6 +375,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           <ZoomTransitionTargetContextProvider route={route}>
             <ZoomTransitionEnabler route={route} />
             <React.Suspense
+              name={route ? `Route(${route.name})` : undefined}
               fallback={
                 <ResolvedSuspenseFallback
                   route={value.contextKey}
@@ -405,51 +412,62 @@ function AnalyticsListeners({
   };
   screenId: string;
 }) {
-  const stateForPath = useStateForPath();
   const isFirstRenderRef = React.useRef(true);
   const hasBlurredRef = React.useRef(true);
-  const stringUrl = useMemo(() => generateStringUrlForState(stateForPath), [stateForPath]);
+  const routeInfo = useCurrentRouteInfo();
+
+  const isFocused = navigation.isFocused();
 
   if (isFirstRenderRef.current) {
     isFirstRenderRef.current = false;
-    if (stringUrl) {
-      unstable_navigationEvents.emit('pageWillRender', {
-        ...getPathAndParamsFromStringUrl(stringUrl),
+    if (routeInfo && !isFocused) {
+      unstable_navigationEvents.emit('pagePreloaded', {
+        pathname: routeInfo.pathname,
+        params: routeInfo.params,
+        segments: routeInfo.segments,
         screenId,
       });
     }
   }
 
   useEffect(() => {
-    if (stringUrl) {
+    if (routeInfo) {
       return () => {
         unstable_navigationEvents.emit('pageRemoved', {
-          ...getPathAndParamsFromStringUrl(stringUrl),
+          pathname: routeInfo.pathname,
+          params: routeInfo.params,
+          segments: routeInfo.segments,
           screenId,
         });
       };
     }
     return () => {};
-  }, [stringUrl, screenId]);
+  }, [routeInfo?.params, routeInfo?.pathname, routeInfo?.segments, screenId]);
 
-  const isFocused = navigation.isFocused();
-
-  if (isFocused && stringUrl) {
-    unstable_navigationEvents.emit('pageFocused', {
-      ...getPathAndParamsFromStringUrl(stringUrl),
-      screenId,
-    });
-    hasBlurredRef.current = false;
-  }
+  // Emit `pageFocused` from an effect — not during render — so it fires after the
+  // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
+  useEffect(() => {
+    if (isFocused && routeInfo && hasBlurredRef.current) {
+      unstable_navigationEvents.emit('pageFocused', {
+        pathname: routeInfo.pathname,
+        params: routeInfo.params,
+        segments: routeInfo.segments,
+        screenId,
+      });
+      hasBlurredRef.current = false;
+    }
+  }, [isFocused, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
 
   useEffect(() => {
-    if (stringUrl) {
+    if (routeInfo) {
       const cleanFocus = navigation.addListener('focus', () => {
         // If the screen was not blurred, don't emit focused again
         // hasBlurredRef will be false when the screen was initially focused
         if (hasBlurredRef.current) {
           unstable_navigationEvents.emit('pageFocused', {
-            ...getPathAndParamsFromStringUrl(stringUrl),
+            pathname: routeInfo.pathname,
+            params: routeInfo.params,
+            segments: routeInfo.segments,
             screenId,
           });
           hasBlurredRef.current = false;
@@ -457,7 +475,9 @@ function AnalyticsListeners({
       });
       const cleanBlur = navigation.addListener('blur', () => {
         unstable_navigationEvents.emit('pageBlurred', {
-          ...getPathAndParamsFromStringUrl(stringUrl),
+          pathname: routeInfo.pathname,
+          params: routeInfo.params,
+          segments: routeInfo.segments,
           screenId,
         });
         hasBlurredRef.current = true;
@@ -468,7 +488,7 @@ function AnalyticsListeners({
       };
     }
     return () => {};
-  }, [navigation, stringUrl, screenId]);
+  }, [navigation, routeInfo?.pathname, routeInfo?.params, routeInfo?.segments, screenId]);
 
   return null;
 }

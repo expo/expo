@@ -36,7 +36,14 @@ Enable static rendering in your project's [app config](/versions/latest/config/a
 
 Start the development server:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
@@ -44,12 +51,26 @@ Start the development server:
 
 To bundle your static website for production, run the export command:
 
-<Terminal cmd={['$ npx expo export --platform web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 This will create a **dist** directory with your statically rendered website. If you have files in a local **public** directory, these will be copied over as well.
 You can test the production build locally by running the following command and opening the linked URL in your browser:
 
-<Terminal cmd={['$ npx serve dist']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx serve dist'],
+    yarn: ['$ yarn dlx serve dist'],
+    pnpm: ['$ pnpm dlx serve dist'],
+    bun: ['$ bunx serve dist'],
+  }}
+/>
 
 This project can be deployed to almost every hosting service. Note that this is not a single-page application, nor does it contain a custom server API. This means dynamic routes (for example, **src/app/[id].tsx**) will not arbitrarily work. You may need to build a serverless function to handle dynamic routes.
 
@@ -99,7 +120,7 @@ export async function generateStaticParams(): Promise<Record<string, string>[]> 
 
 ```tsx src/app/[id]/_layout.tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
-  /* @info Any dynamic children that export <CODE>generateStaticParams</CODE> will be invoked once for every entry in the array. */
+  /* @info Any dynamic children that export `generateStaticParams` will be invoked once for every entry in the array. */
   return [{ id: 'one' }, { id: 'two' }];
   /* @end */
 }

@@ -90,7 +90,7 @@ export const Dependencies = {
    * @returns Whether downloading artifacts should be skipped.
    */
   cleanArtifactsAsync: async (artifactsPath: string): Promise<void> => {
-    logger.info(
+    logger.verbose(
       `🧹 Clearing artifacts folder: ${chalk.gray(path.relative(process.cwd(), artifactsPath))}`
     );
     await fs.remove(artifactsPath);
@@ -122,7 +122,7 @@ export const Dependencies = {
       react: `${currentVersions.reactNativeVersion}-${currentVersions.buildFlavor}`,
     };
 
-    logger.info(`🧹 Pruning unused cache entries from ${chalk.gray(cachePath)}...`);
+    logger.verbose(`🧹 Pruning unused cache entries from ${chalk.gray(cachePath)}...`);
 
     // Iterate through artifact directories (hermes, react-native-dependencies, react)
     const artifactDirs = await fs.readdir(cachePath, { withFileTypes: true });
@@ -153,12 +153,12 @@ export const Dependencies = {
         if (versionDir.name === currentVersion) {
           // This is the current version - keep it
           keptCount++;
-          logger.info(
+          logger.verbose(
             `  ✓ Keeping ${chalk.green(artifactDir.name)}/${chalk.cyan(versionDir.name)}`
           );
         } else {
           // Old version - remove it
-          logger.info(
+          logger.verbose(
             `  🗑  Removing ${chalk.yellow(artifactDir.name)}/${chalk.gray(versionDir.name)}`
           );
           await fs.remove(versionPath);
@@ -168,9 +168,9 @@ export const Dependencies = {
     }
 
     if (removed.length > 0) {
-      logger.info(`🧹 Pruned ${chalk.yellow(removed.length)} old cache entries`);
+      logger.verbose(`🧹 Pruned ${chalk.yellow(removed.length)} old cache entries`);
     } else {
-      logger.info(`🧹 Cache is clean - no old entries to prune`);
+      logger.verbose(`🧹 Cache is clean - no old entries to prune`);
     }
 
     return { removed, keptCount };
@@ -196,7 +196,7 @@ export const Dependencies = {
       skipArtifacts,
     } = options;
 
-    logger.info(
+    logger.verbose(
       `⬇️  ${options.skipArtifacts ? 'Verifying' : 'Preparing'} centralized cache at ${chalk.gray(path.relative(process.cwd(), cachePath))}...`
     );
 
@@ -250,7 +250,7 @@ export const Dependencies = {
     const reactNativeSourcePath = resolvePackagePath('react-native');
     const xcframeworkPath = path.join(reactNativePath, 'React.xcframework');
     if (fs.existsSync(xcframeworkPath) && !isVFSGenerated(reactNativePath, reactNativeSourcePath)) {
-      logger.info('🔄 Generating VFS overlay for stock React.xcframework...');
+      logger.verbose('🔄 Generating VFS overlay for stock React.xcframework...');
       await transformReactXCFrameworkAsync({
         outputPath: reactNativePath,
         reactNativePath: reactNativeSourcePath,
@@ -287,7 +287,7 @@ export const Dependencies = {
     depsDestinationPath: string,
     copyDependencies: boolean
   ): Promise<void> => {
-    logger.info(
+    logger.verbose(
       `📋 ${copyDependencies ? 'Syncing' : 'Checking'} package dependencies for ${chalk.green(pkg.packageName)}`
     );
 
@@ -349,7 +349,9 @@ export const Dependencies = {
    * @param pkg Package
    */
   cleanDependenciesFolderAsync: async (pkg: SPMPackageSource): Promise<void> => {
-    logger.info(`🧹 Cleaning dependencies folder for package ${chalk.green(pkg.packageName)}...`);
+    logger.verbose(
+      `🧹 Cleaning dependencies folder for package ${chalk.green(pkg.packageName)}...`
+    );
     const buildFolderToClean = Dependencies.getPackageDependenciesPath(pkg);
     await fs.remove(buildFolderToClean);
   },
@@ -367,7 +369,7 @@ export const Dependencies = {
     const outputPath = path.join(pkg.buildPath, 'output', flavor.toLowerCase());
 
     if (fs.existsSync(outputPath)) {
-      logger.info(
+      logger.verbose(
         `🧹 Cleaning output folder for package ${chalk.green(pkg.packageName)}/${flavor}...`
       );
       await fs.remove(outputPath);
@@ -382,7 +384,7 @@ export const Dependencies = {
   cleanGeneratedFolderAsync: async (pkg: SPMPackageSource): Promise<void> => {
     const generatedPath = path.join(pkg.path, '.generated');
     if (fs.existsSync(generatedPath)) {
-      logger.info(`🧹 Cleaning generated folder for package ${chalk.green(pkg.packageName)}...`);
+      logger.verbose(`🧹 Cleaning generated folder for package ${chalk.green(pkg.packageName)}...`);
       await fs.remove(generatedPath);
     }
   },

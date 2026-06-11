@@ -19,5 +19,6 @@ export default {
             return '';
         return window.location.href;
     },
+    clearInitialURL() { },
 };
 //# sourceMappingURL=ExpoLinking.web.js.map

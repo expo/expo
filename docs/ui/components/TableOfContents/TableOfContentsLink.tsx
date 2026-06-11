@@ -52,7 +52,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
             )}>
             <TitleElement
               className={mergeClasses(
-                'text-secondary! hocus:text-link! w-full',
+                'w-full text-secondary! hocus:text-link!',
                 isCodeOrFilePath && 'truncate text-xs!',
                 isActive && 'text-link!',
                 isDeprecated && 'line-through opacity-80'
@@ -60,7 +60,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
               {displayTitle}
               {hasOverloads && (
                 <>
-                  <BracketsEllipsesDuotoneIcon className="icon-xs text-icon-secondary ml-1 inline" />
+                  <BracketsEllipsesDuotoneIcon className="ml-1 inline icon-xs text-icon-secondary" />
                   <span className="sr-only">Has overloads</span>
                 </>
               )}

@@ -28,9 +28,16 @@ In this tutorial, you build a module that stores the user's preferred app theme:
 
 First, create a new module. For this tutorial, the module is named `expo-settings` or `ExpoSettings`. You can choose a different name, but adjust the instructions to match your choice.
 
-<Terminal cmd={['$ npx create-expo-module expo-settings']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-settings'],
+    yarn: ['$ yarn create expo-module expo-settings'],
+    pnpm: ['$ pnpm create expo-module expo-settings'],
+    bun: ['$ bun create expo-module expo-settings'],
+  }}
+/>
 
-> **info** Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all the prompts to accept the default values.
+> **info** Since you aren't going to actually ship this library, you can hit <kbd>Return</kbd> for all the prompts to accept the default values.
 
 </Step>
 
@@ -131,24 +138,59 @@ export default function App() {
 Start the TypeScript compiler to watch for changes.
 
 <Terminal
-  cmdCopy="npm run build"
-  cmd={[
-    '# Run this in the root of the project to start the TypeScript compiler',
-    '$ npm run build',
-  ]}
+  cmd={{
+    npm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ npm run build',
+    ],
+    yarn: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ yarn run build',
+    ],
+    pnpm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ pnpm run build',
+    ],
+    bun: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ bun run build',
+    ],
+  }}
 />
 
 In a separate terminal window, run the example app.
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
-  cmd={[
-    '$ cd example',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 You should see the text "Theme: system" in the center of the screen when you launch the example app. The value `"system"` comes from synchronously calling the `getTheme()` function in the native module. You will change this value in the next step.

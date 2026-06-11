@@ -12,7 +12,7 @@ import { validateURL } from './validateURL';
 // @needsAudit
 /**
  * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
- * It is recommended to use the [`useURL()`](#useurl) hook instead.
+ * It is recommended to use the [`useLinkingURL()`](#uselinkingurl) hook instead.
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventtype).
@@ -88,6 +88,18 @@ export async function getInitialURL(): Promise<string | null> {
  */
 export function getLinkingURL(): string | null {
   return ExpoLinking.getLinkingURL();
+}
+
+/**
+ * Clears the cached initial URL used to launch the app, subsequent
+ * calls to [`getLinkingURL()`] return `null` until a new deep link is received.
+ *
+ * On web this is a no-op.
+ * @platform android
+ * @platform ios
+ */
+export function clearInitialURL(): void {
+  ExpoLinking.clearInitialURL?.();
 }
 
 // @needsAudit

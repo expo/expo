@@ -8,8 +8,19 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`Text`](../universal/text) — it renders the appropriate native component per platform.
 
 Expo UI Text matches the official SwiftUI [Text API](https://developer.apple.com/documentation/swiftui/text).
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/text/ios-light.webp"
+  darkSrc="/static/images/expo-ui/text/ios-dark.webp"
+  alt="Text rendered with different font sizes, weights, and a hierarchical secondary style"
+/>
 
 ## Installation
 

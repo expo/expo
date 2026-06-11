@@ -1,6 +1,5 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
-import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
@@ -11,7 +10,6 @@ import Git from '../../Git';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
 import { promptOtp, withOtpRetry } from '../../NpmOtp';
-import { Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { sleepAsync } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
@@ -49,20 +47,21 @@ export const publishPackages = new Task<TaskArgs>(
         `${green(pkg.packageName)} version ${cyan(releaseVersion)} as ${yellow(options.tag)}`
       );
 
-      // If there is a tarball already built, use it instead of packing it again
-      const packageSource = await findPackageSource(pkg, state.packageTarballFilename);
-
       // Update `gitHead` property so it will be available to read using `npm view --json`.
       // Next publish will depend on this to properly get changes made after that.
       if (!pkg.isTemplate()) {
         await JsonFile.setAsync(packageJsonPath, 'gitHead', gitHead);
       }
 
-      // Publish the package.
+      // Publish the package directly from its directory. pnpm publish handles
+      // pack-and-publish atomically and resolves `workspace:` specs at pack
+      // time. We deliberately don't pass a pre-packed tarball: when the
+      // directory contains multiple .tgz files (e.g. the embedded
+      // template.tgz inside packages/expo/), pnpm picks the wrong one
+      // (pnpm/pnpm#7950 and variants), causing publishes to be misdirected.
       try {
         await withOtpRetry(() =>
           Npm.publishPackageAsync(pkg.path, {
-            source: packageSource,
             tagName: options.tag,
             dryRun: options.dry,
           })
@@ -104,18 +103,3 @@ export const publishPackages = new Task<TaskArgs>(
     }
   }
 );
-
-/**
- * Finds the package source to publish from. If the tarball filename is provided and the file exists, it's returned.
- * Otherwise the source is the current directory.
- */
-async function findPackageSource(pkg: Package, tarballFilename?: string): Promise<string> {
-  if (tarballFilename) {
-    const tarballPath = path.join(pkg.path, tarballFilename);
-
-    if (await fs.pathExists(tarballPath)) {
-      return tarballFilename;
-    }
-  }
-  return '.';
-}

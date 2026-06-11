@@ -209,6 +209,10 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     return config.updateUrl
   }
 
+  public var requestHeaders: [String : String]? {
+    return config.requestHeaders
+  }
+
   public var launchedUpdateId: UUID? {
     return startupProcedure.launchedUpdate()?.updateId
   }

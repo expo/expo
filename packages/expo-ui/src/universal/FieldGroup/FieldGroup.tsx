@@ -1,8 +1,23 @@
-import { ScrollView, useColorScheme, type ViewStyle } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import { groupFieldGroupChildren } from './groupChildren';
 import type { FieldGroupProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
+import { colors } from '../webUtils';
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.gray[50],
+    flex: 1,
+  },
+  hidden: {
+    display: 'none',
+  },
+  contentContainer: {
+    gap: 24,
+    padding: 16,
+  },
+});
 
 /**
  * A scrollable container for grouped settings-style rows, mirroring the look
@@ -16,46 +31,17 @@ export function FieldGroup({
   style,
   onAppear,
   onDisappear,
-  hidden,
+  hidden = false,
   testID,
 }: FieldGroupProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
-  const isDarkScheme = useColorScheme() === 'dark';
-
   return (
     <ScrollView
-      style={[
-        containerBaseStyle,
-        isDarkScheme ? containerDarkStyle : containerLightStyle,
-        style,
-        hidden ? hiddenStyle : null,
-      ]}
-      contentContainerStyle={contentContainerStyle}
+      style={[styles.container, style, hidden && styles.hidden]}
+      contentContainerStyle={styles.contentContainer}
       testID={testID}>
       {groupFieldGroupChildren(children)}
     </ScrollView>
   );
 }
-
-const containerBaseStyle: ViewStyle = {
-  flex: 1,
-};
-
-const containerLightStyle: ViewStyle = {
-  backgroundColor: '#f2f2f7',
-};
-
-const containerDarkStyle: ViewStyle = {
-  backgroundColor: '#000000',
-};
-
-const hiddenStyle: ViewStyle = {
-  display: 'none',
-};
-
-const contentContainerStyle: ViewStyle = {
-  paddingHorizontal: 16,
-  paddingVertical: 16,
-  gap: 24,
-};

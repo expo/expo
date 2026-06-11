@@ -1,7 +1,7 @@
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import { FileStore } from './binary-file-store';
 import { INTERNAL_CALLSITES_REGEX } from './customizeFrame';
-import { FileStore } from './file-store';
 export interface DefaultConfigOptions {
     /** @deprecated */
     mode?: 'exotic';
@@ -37,6 +37,8 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         unstable_conditionsByPlatform: {
             ios: string[];
             android: string[];
+            tvos: string[];
+            macos: string[];
             web: string[];
         };
         resolverMainFields: string[];
@@ -97,6 +99,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         asyncRequireModulePath: string;
         assetRegistryPath: string;
         enableBabelRuntime: string | undefined;
+        enableBabelRCLookup: undefined;
         getTransformOptions: () => Promise<{
             transform: {
                 experimentalImportSupport: true;

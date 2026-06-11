@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import type { FieldSectionFooterProps, FieldSectionHeaderProps } from './types';
 /**
  * Marker component that designates its children as the header of the
  * enclosing [`FieldGroup.Section`](#fieldgroupsection). Used via the
@@ -6,9 +7,7 @@ import { type ReactNode } from 'react';
  * Its only job is to tag a slot — the parent `FieldGroup.Section` extracts
  * and renders the children in the header position.
  */
-export declare function Header(props: {
-    children?: ReactNode;
-}): import("react/jsx-runtime").JSX.Element;
+export declare function Header(props: FieldSectionHeaderProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Marker component that designates its children as the footer of the
  * enclosing [`FieldGroup.Section`](#fieldgroupsection). Used via the
@@ -16,9 +15,7 @@ export declare function Header(props: {
  * Its only job is to tag a slot — the parent `FieldGroup.Section` extracts
  * and renders the children in the footer position.
  */
-export declare function Footer(props: {
-    children?: ReactNode;
-}): import("react/jsx-runtime").JSX.Element;
+export declare function Footer(props: FieldSectionFooterProps): import("react/jsx-runtime").JSX.Element;
 export type ExtractedFieldSectionSlots = {
     header?: ReactNode;
     footer?: ReactNode;

@@ -17,6 +17,10 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
     return type is Self
   }
 
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    return try cast(jsValue.getAny(), appContext: appContext)
+  }
+
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     if let value = value as? InnerType {
       return value
@@ -34,6 +38,10 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try castToJS(value, appContext: appContext, in: try appContext.runtime)
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if Optional.isNil(value) {
       return .null
     }
@@ -42,9 +50,9 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
     // handlers like `DynamicEnumType.castToJS`. Guarded against infinite recursion: the
     // dispatch only kicks in when the value's runtime type differs from `innerType`.
     if InnerType.self != type(of: value as Any), let argument = value as? AnyArgument {
-      return try type(of: argument).getDynamicType().castToJS(argument, appContext: appContext)
+      return try type(of: argument).getDynamicType().castToJS(argument, appContext: appContext, in: runtime)
     }
-    return try Conversions.unknownToJavaScriptValue(value, appContext: appContext)
+    return try Conversions.unknownToJavaScriptValue(value, appContext: appContext, in: runtime)
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {

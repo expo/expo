@@ -16,14 +16,25 @@ import type {
 /**
  * Represents a widget instance. Provides methods to manage the widget's timeline.
  */
-export class Widget<T extends object = object> {
+export class Widget<
+  PropsType extends object = object,
+  ConfigurationType extends object | undefined = undefined,
+> {
   /** @hidden */
   private nativeWidgetObject: NativeWidgetObject;
   constructor(
     name: string,
-    layout: (props: T, environment: WidgetEnvironment) => React.JSX.Element
+    layout: (
+      props: PropsType,
+      environment: WidgetEnvironment<ConfigurationType>
+    ) => React.JSX.Element,
+    initialProps?: PropsType
   ) {
-    this.nativeWidgetObject = new ExpoWidgetsModule.Widget(name, layout as unknown as string);
+    this.nativeWidgetObject = new ExpoWidgetsModule.Widget(
+      name,
+      layout as unknown as string,
+      initialProps
+    );
   }
 
   /**
@@ -37,7 +48,7 @@ export class Widget<T extends object = object> {
    * Schedules a series of updates for the widget's content and reloads the widget.
    * @param entries Timeline entries, each specifying a date and the props to display at that time.
    */
-  updateTimeline(entries: WidgetTimelineEntry<T>[]) {
+  updateTimeline(entries: WidgetTimelineEntry<PropsType>[]) {
     this.nativeWidgetObject.updateTimeline(
       entries.map((entry) => ({ timestamp: entry.date.getTime(), props: entry.props }))
     );
@@ -47,17 +58,17 @@ export class Widget<T extends object = object> {
    * Sets the widget's content to the given props immediately, without scheduling a timeline.
    * @param props The properties to display in the widget.
    */
-  updateSnapshot(props: T) {
+  updateSnapshot(props: PropsType) {
     this.nativeWidgetObject.updateTimeline([{ timestamp: Date.now(), props }]);
   }
 
   /**
    * Returns the current timeline entries for the widget, including past and future entries.
    */
-  async getTimeline(): Promise<WidgetTimelineEntry<T>[]> {
+  async getTimeline(): Promise<WidgetTimelineEntry<PropsType>[]> {
     return (await this.nativeWidgetObject.getTimeline()).map((entry) => ({
       date: new Date(entry.timestamp),
-      props: entry.props as T,
+      props: entry.props as PropsType,
     }));
   }
 }
@@ -174,12 +185,17 @@ export function after(date: Date): { after: Date } {
  * Creates a Widget instance.
  * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.
  * @param widget The widget component, marked with the `'widget'` directive.
+ * @param initialProps The initial properties to display before the widget timeline is updated.
  */
-export function createWidget<T extends object = object>(
+export function createWidget<
+  PropsType extends object = object,
+  ConfigurationType extends object | undefined = undefined,
+>(
   name: string,
-  widget: (props: T, context: WidgetEnvironment) => React.JSX.Element
-): Widget<T> {
-  return new Widget<T>(name, widget);
+  widget: (props: PropsType, context: WidgetEnvironment<ConfigurationType>) => React.JSX.Element,
+  initialProps?: PropsType
+): Widget<PropsType, ConfigurationType> {
+  return new Widget<PropsType, ConfigurationType>(name, widget, initialProps);
 }
 
 /**
@@ -216,3 +232,9 @@ export function addPushToStartTokenListener(
 ): EventSubscription {
   return ExpoWidgetsModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
 }
+
+/**
+ * A directory that can be used to store shared images for widgets.
+ * The contents of this directory are accessible by both the main app and widgets.
+ */
+export const widgetsDirectory = ExpoWidgetsModule.widgetsDirectory;

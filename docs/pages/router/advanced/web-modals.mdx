@@ -384,7 +384,7 @@ export default function Layout() {
 Here's the result of the above example:
 
 <ContentSpotlight
-  src="/static/images/expo-router/web-modal-with-corner-radius.png"
+  src="/static/images/expo-router/web-modal-with-corner-radius.webp"
   alt="Web modal with corner radius."
 />
 
@@ -459,7 +459,7 @@ Modify your project's root layout (**src/app/\_layout.tsx**) to add an `options`
 ```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
-/* @info <CODE>unstable_settings</CODE> can be set in any stack's <CODE>_layout.tsx</CODE> file. It is used to define the initial route name for the stack, which ensures that users have a consistent starting point, especially when deep linking. */
+/* @info `unstable_settings` can be set in any stack's `_layout.tsx` file. It is used to define the initial route name for the stack, which ensures that users have a consistent starting point, especially when deep linking. */
 export const unstable_settings = {
   initialRouteName: 'index',
 };
@@ -472,10 +472,10 @@ export default function Layout() {
       <Stack.Screen
         name="modal"
         options={{
-          /* @info Set the <CODE>presentation</CODE> mode to <CODE>transparentModal</CODE> for the modal route.*/
+          /* @info Set the `presentation` mode to `transparentModal` for the modal route.*/
           presentation: 'transparentModal',
           /* @end */
-          /* @info (Optional) Set the <CODE>animation</CODE> to <CODE>fade</CODE>.*/
+          /* @info (Optional) Set the `animation` to `fade`.*/
           animation: 'fade',
           /* @end */
           /* @info Prevents showing the header. Useful for the behavior of web modals.*/

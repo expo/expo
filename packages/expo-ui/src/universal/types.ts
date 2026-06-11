@@ -5,6 +5,7 @@ import type { ModifierConfig } from '../types';
 /**
  * Subset of React Native `ViewStyle` that maps cleanly to both SwiftUI modifiers
  * and Jetpack Compose modifiers. On web, passes through to React Native StyleSheet.
+ * @docsInline
  */
 export type UniversalStyle = Pick<
   ViewStyle,
@@ -26,6 +27,7 @@ export type UniversalStyle = Pick<
 
 /**
  * Base props inherited by all universal components.
+ * @docsInline
  */
 export interface UniversalBaseProps {
   // -- Style --
@@ -103,6 +105,7 @@ export interface UniversalBaseProps {
 }
 
 /**
- * Cross-axis alignment for layout components such as [`Column`](#column) and [`Row`](#row).
+ * Cross-axis alignment for layout components such as `Column` and `Row`.
+ * @docsInline
  */
 export type UniversalAlignment = 'start' | 'center' | 'end';

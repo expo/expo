@@ -94,6 +94,15 @@ export function getRoutes(contextModule: RequireContext, options: Options): Rout
 
   const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
 
+  const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
+  if (
+    process.env.NODE_ENV === 'development' &&
+    importMode === 'sync' &&
+    !options.ignoreRequireErrors
+  ) {
+    validateRouteTreeExports(rootNode);
+  }
+
   if (middleware) {
     rootNode.middleware = middleware;
   }
@@ -359,6 +368,16 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           routeModule = contextModule(filePath);
         }
 
+        // See: expo/src/async-require/asyncRequireModule.ts
+        // The "lazy" async require function returns  a thenable that may carry
+        // a raw `_result` value that's either a promise or the synchronously resolved module
+        if (importMode === 'lazy' || importMode === 'lazy-once') {
+          routeModule =
+            '_result' in routeModule && routeModule._result != null
+              ? routeModule._result
+              : routeModule;
+        }
+
         if (process.env.NODE_ENV === 'development' && importMode === 'sync') {
           // In development mode, when async routes are disabled, add some extra error handling to improve the developer experience.
           // This can be useful when you accidentally use an async function in a route file for the default export.
@@ -390,6 +409,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           const loaderExport = routeModule?.loader;
           if (loaderExport && typeof loaderExport !== 'function') {
             throw new Error(`Route "${filePath}" exports a loader that is not a function.`);
+          }
+
+          const metadataExport = routeModule?.generateMetadata;
+          if (metadataExport && typeof metadataExport !== 'function') {
+            throw new Error(`Route "${filePath}" exports generateMetadata that is not a function.`);
           }
         }
 
@@ -446,28 +470,6 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       }
       node.type = 'rewrite';
       processedRedirectsRewrites.add(meta.route);
-    }
-
-    if (process.env.NODE_ENV === 'development') {
-      // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
-      // filter the missing routes.
-      if (node.type !== 'api' && importMode === 'sync') {
-        const routeItem = node.loadRoute();
-        // Have a warning for nullish ex
-        const route = routeItem?.default;
-        if (route == null) {
-          // Do not throw an error since a user may just be creating a new route.
-          console.warn(
-            `Route "${filePath}" is missing the required default export. Ensure a React component is exported as default.`
-          );
-          continue;
-        }
-        if (['boolean', 'number', 'string'].includes(typeof route)) {
-          throw new Error(
-            `The default export from route "${filePath}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
-          );
-        }
-      }
     }
 
     /**
@@ -675,6 +677,34 @@ function flattenDirectoryTreeToRoutes(
   }
 
   return layout;
+}
+
+function validateRouteTreeExports(node: RouteNode) {
+  if (process.env.NODE_ENV !== 'development' || node.type === 'api') {
+    return;
+  }
+
+  function runtimeValidateRouteNode(node: RouteNode) {
+    const routeItem = node.loadRoute();
+    // Have a warning for nullish ex
+    const route = routeItem?.default;
+    if (route == null) {
+      // Do not throw an error since a user may just be creating a new route.
+      console.warn(
+        `Route "${node.contextKey}" is missing the required default export. Ensure a React component is exported as default.`
+      );
+    }
+    if (['boolean', 'number', 'string'].includes(typeof route)) {
+      throw new Error(
+        `The default export from route "${node.contextKey}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
+      );
+    }
+  }
+
+  runtimeValidateRouteNode(node);
+  for (const child of node.children) {
+    validateRouteTreeExports(child);
+  }
 }
 
 function getFileMeta(

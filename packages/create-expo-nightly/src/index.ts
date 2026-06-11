@@ -60,9 +60,6 @@ async function runAsync(programName: string) {
   );
   const expoRepoPath = await createExpoApp(projectRoot, projectProps);
 
-  // NOTE(@kitten): We used to set dependencies to `workspace:*` specifiers here manually for all packages
-  // However, this isn't needed as long as `preferWorkspacePackages: true` is set in `pnpm-workspace.yaml`
-
   console.log(chalk.cyan(`Reinstalling packages`));
   await reinstallPackagesAsync(projectRoot);
 

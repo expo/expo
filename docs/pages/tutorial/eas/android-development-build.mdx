@@ -39,7 +39,7 @@ To create a **.apk**:
 
 This command prompts us with the following questions:
 
-- **What would you like your Android application id to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`android.package`](/versions/latest/config/app/#package) in **app.json**.
+- **What would you like your Android application id to be?** Press <kbd>Return</kbd> to select the default value provided for this prompt. This will add [`android.package`](/versions/latest/config/app/#package) in **app.json**.
 - **Generate a new Android Keystore**? Press <kbd>Y</kbd>.
 
 After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the EAS dashboard:
@@ -128,9 +128,16 @@ The **Install** button in the **Build artifact** generates a QR code for install
 
 ### Run development build
 
-Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>a</kbd> in the terminal window to open the project:
+Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>A</kbd> in the terminal window to open the project:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
@@ -160,9 +167,16 @@ Alternatively, [Expo Orbit](/build/orbit/) can be used for installation. From **
 
 ### Run the development build
 
-Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>a</kbd> in the terminal window to open the project:
+Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>A</kbd> in the terminal window to open the project:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 

@@ -8,8 +8,19 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`Slider`](../universal/slider) — it renders the appropriate native component per platform.
 
 Expo UI Slider matches the official Jetpack Compose [Slider API](https://developer.android.com/develop/ui/compose/components/slider) and allows selecting values from a bounded range.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/slider/android-light.webp"
+  darkSrc="/static/images/expo-ui/slider/android-dark.webp"
+  alt="Two Material 3 sliders at different positions"
+/>
 
 ## Installation
 

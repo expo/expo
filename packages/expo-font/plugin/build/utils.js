@@ -6,7 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.toValidAndroidResourceName = toValidAndroidResourceName;
 exports.resolveFontPaths = resolveFontPaths;
 const promises_1 = __importDefault(require("fs/promises"));
+const node_module_1 = __importDefault(require("node:module"));
 const path_1 = __importDefault(require("path"));
+function isErrorWithCode(error, code) {
+    return typeof error === 'object' && error !== null && 'code' in error && error.code === code;
+}
+function resolveFontPath(p, projectRoot) {
+    return node_module_1.default.createRequire(path_1.default.join(projectRoot, 'package.json')).resolve(p);
+}
 // rule: File-based resource names must contain only lowercase a-z, 0-9, or underscore
 function toValidAndroidResourceName(value) {
     const valueWithoutFileExtension = path_1.default.parse(value).name;
@@ -20,8 +27,18 @@ function toValidAndroidResourceName(value) {
 }
 async function resolveFontPaths(fonts, projectRoot) {
     const promises = fonts.map(async (p) => {
-        const resolvedPath = path_1.default.resolve(projectRoot, p);
-        const stat = await promises_1.default.stat(resolvedPath);
+        let resolvedPath = path_1.default.resolve(projectRoot, p);
+        let stat;
+        try {
+            stat = await promises_1.default.stat(resolvedPath);
+        }
+        catch (error) {
+            if (!isErrorWithCode(error, 'ENOENT')) {
+                throw error;
+            }
+            resolvedPath = resolveFontPath(p, projectRoot);
+            stat = await promises_1.default.stat(resolvedPath);
+        }
         if (stat.isDirectory()) {
             const dir = await promises_1.default.readdir(resolvedPath);
             return dir.map((file) => path_1.default.join(resolvedPath, file));

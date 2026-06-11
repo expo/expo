@@ -7,7 +7,7 @@
       "targetSdkVersion": "36",
       "buildToolsVersion": "36.0.0",
       "ios": "16.4+",
-      "xcode": "26.2+",
+      "xcode": "26.4+",
       "react-native": "0.85",
       "react-native-web": "0.21.0",
       "react-native-tvos": "0.85-stable",
@@ -69,20 +69,6 @@
       "react-native-tvos": "0.77-stable",
       "react": "18.3.1",
       "node": "20.18.x"
-    },
-    {
-      "sdk": "51.0.0",
-      "android": "6+",
-      "compileSdkVersion": "34",
-      "targetSdkVersion": "34",
-      "buildToolsVersion": "34.0.0",
-      "ios": "13.4+",
-      "xcode": "15.4 - 16.2",
-      "react-native": "0.74",
-      "react-native-web": "0.19.10",
-      "react-native-tvos": "0.74-stable",
-      "react": "18.2.0",
-      "node": "18.20.x"
     }
   ]
 }

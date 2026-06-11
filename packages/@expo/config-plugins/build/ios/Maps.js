@@ -13,16 +13,16 @@ exports.removeGoogleMapsAppDelegateInit = removeGoogleMapsAppDelegateInit;
 exports.removeMapsCocoaPods = removeMapsCocoaPods;
 exports.setGoogleMapsApiKey = setGoogleMapsApiKey;
 exports.withMaps = void 0;
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
+function _requireUtils() {
+  const data = require("@expo/require-utils");
+  _requireUtils = function () {
     return data;
   };
   return data;
 }
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+  _path = function () {
     return data;
   };
   return data;
@@ -134,7 +134,7 @@ function removeMapsCocoaPods(src) {
   });
 }
 function isReactNativeMapsInstalled(projectRoot) {
-  const resolved = _resolveFrom().default.silent(projectRoot, 'react-native-maps/package.json');
+  const resolved = (0, _requireUtils().resolveFrom)(projectRoot, 'react-native-maps/package.json');
   return resolved ? _path().default.dirname(resolved) : null;
 }
 function isReactNativeMapsAutolinked(config) {

@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "55.0.1",
+  "version": "56.0.14",
   "description": "A collection of UI components",
   "sideEffects": [
     "*.fx.js"
@@ -42,6 +42,26 @@
     "./community/picker": {
       "types": "./build/community/picker/index.d.ts",
       "default": "./src/community/picker/index.tsx"
+    },
+    "./community/slider": {
+      "types": "./build/community/slider/index.d.ts",
+      "default": "./src/community/slider/index.tsx"
+    },
+    "./community/masked-view": {
+      "types": "./build/community/masked-view/index.d.ts",
+      "default": "./src/community/masked-view/index.tsx"
+    },
+    "./community/menu": {
+      "types": "./build/community/menu/index.d.ts",
+      "default": "./src/community/menu/index.tsx"
+    },
+    "./community/pager-view": {
+      "types": "./build/community/pager-view/index.d.ts",
+      "default": "./src/community/pager-view/index.tsx"
+    },
+    "./babel-plugin": {
+      "types": "./plugin/babel-plugin.d.ts",
+      "default": "./plugin/babel-plugin.js"
     }
   },
   "scripts": {
@@ -76,17 +96,22 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
     "@testing-library/react-native": "^13.3.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react-native-reanimated": "4.3.0",
-    "react-native-worklets": "0.8.1"
+    "react-native-reanimated": "4.3.1",
+    "react-native-worklets": "0.8.3"
   },
   "jest": {
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "@babel/core": "*",
+    "expo": "*",
     "react": "*",
     "react-dom": "*",
     "react-native": "*",
@@ -94,6 +119,9 @@
     "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
+    "@babel/core": {
+      "optional": true
+    },
     "react-dom": {
       "optional": true
     },

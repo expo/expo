@@ -11,8 +11,12 @@ struct OpenTelemetryTests {
     appIdentifier: "dev.expo.observe.demo",
     appVersion: "1.0.0",
     appBuildNumber: "1",
-    appUpdateId: "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
     appEasBuildId: nil,
+    appUpdatesInfo: AppInfo.UpdatesInfo(
+      updateId: "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
+      runtimeVersion: "1.0.0",
+      requestHeaders: ["expo-channel-name": "production"]
+    ),
     deviceName: "iPhone (Simulator)",
     deviceModel: "iPhone18,1",
     deviceOs: "iOS",
@@ -49,7 +53,8 @@ struct OpenTelemetryTests {
         makeMetric(name: "bundleLoadTime", value: 0.29883666667342185, timestamp: "2026-01-09T12:08:09Z"),
         makeMetric(name: "launchTime", value: 5.689726694341516, timestamp: "2026-01-09T12:08:06Z"),
         makeMetric(name: "loadTime", value: 5.2590179443359375, timestamp: "2026-01-09T12:08:05Z"),
-      ]
+      ],
+      logs: []
     )
   }
 
@@ -83,7 +88,36 @@ struct OpenTelemetryTests {
   @Test
   func `unknown metric names use fallback pattern`() {
     let custom = makeMetric(name: "customMetric", value: 1.0, timestamp: "2026-01-01T00:00:00Z")
-    #expect(custom.toOTMetric().name == "expo.app_startup.customMetric")
+    #expect(custom.toOTMetric().name == "expo.unknown.customMetric")
+  }
+
+  @Test
+  func `navigation metric names are mapped correctly`() {
+    let cold = Event.Metric(
+      category: "navigation",
+      name: "cold_ttr",
+      value: 1.0,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      updateId: nil,
+      customParams: nil
+    )
+    #expect(cold.toOTMetric().name == "expo.navigation.cold_ttr")
+
+    let warm = Event.Metric(
+      category: "navigation",
+      name: "warm_ttr",
+      value: 1.0,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      updateId: nil,
+      customParams: nil
+    )
+    #expect(warm.toOTMetric().name == "expo.navigation.warm_ttr")
   }
 
   // MARK: - Metric structure
@@ -133,11 +167,45 @@ struct OpenTelemetryTests {
     #expect(attrs["telemetry.sdk.language"] == "swift")
     #expect(attrs["expo.app.name"] == "Observe")
     #expect(attrs["expo.app.build_number"] == "1")
+    // Backward-compat key
     #expect(attrs["expo.app.update_id"] == "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9")
+    // New keys
+    #expect(attrs["expo.app.updates.id"] == "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9")
+    #expect(attrs["expo.app.updates.runtime_version"] == "1.0.0")
+    #expect(attrs["expo.app.updates.channel"] == "production")
     #expect(attrs["expo.sdk.version"] == "55.0.0")
     #expect(attrs["expo.react_native.version"] == "0.83.1")
     #expect(attrs["expo.eas_client.id"] == testEasClientId)
     #expect(attrs["expo.eas_build.id"] == nil)
+  }
+
+  @Test
+  func `toOTMetadata excludes updates attributes when updatesInfo is nil`() {
+    let metadataWithoutUpdates = Event.Metadata(
+      appName: "Observe",
+      appIdentifier: "dev.expo.observe.demo",
+      appVersion: "1.0.0",
+      appBuildNumber: "1",
+      appEasBuildId: nil,
+      appUpdatesInfo: nil,
+      deviceName: "iPhone (Simulator)",
+      deviceModel: "iPhone18,1",
+      deviceOs: "iOS",
+      deviceOsVersion: "26.2",
+      reactNativeVersion: "0.83.1",
+      expoSdkVersion: "55.0.0",
+      clientVersion: "0.0.8",
+      languageTag: "en-US",
+      environment: nil
+    )
+    let event = Event(metadata: metadataWithoutUpdates, metrics: [], logs: [])
+    let metadata = event.toOTMetadata(testEasClientId)
+    let keys = metadata.attributes.map { $0.key }
+
+    #expect(keys.contains("expo.app.update_id") == false)
+    #expect(keys.contains("expo.app.updates.id") == false)
+    #expect(keys.contains("expo.app.updates.runtime_version") == false)
+    #expect(keys.contains("expo.app.updates.channel") == false)
   }
 
   // MARK: - Full OTEvent
@@ -285,7 +353,7 @@ struct OpenTelemetryTests {
   }
 
   @Test
-  func `toOTMetric includes custom params as JSON string`() {
+  func `toOTMetric includes custom params as JSON string`() throws {
     let metric = Event.Metric(
       category: "appStartup",
       name: "bundleLoadTime",
@@ -300,7 +368,7 @@ struct OpenTelemetryTests {
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
 
-    let jsonString = attrs["expo.custom_params"]!
+    let jsonString = try #require(attrs["expo.custom_params"] ?? nil)
     let parsed = try! JSONSerialization.jsonObject(with: jsonString.data(using: .utf8)!) as! [String: String]
     #expect(parsed["screen"] == "dashboard")
     #expect(parsed["variant"] == "A")
@@ -321,11 +389,13 @@ struct OpenTelemetryTests {
   func `multiple events produce multiple resourceMetrics entries`() {
     let event1 = Event(
       metadata: testMetadata,
-      metrics: [makeMetric(name: "bundleLoadTime", value: 1.0, timestamp: "2026-01-01T00:00:00Z")]
+      metrics: [makeMetric(name: "bundleLoadTime", value: 1.0, timestamp: "2026-01-01T00:00:00Z")],
+      logs: []
     )
     let event2 = Event(
       metadata: testMetadata,
-      metrics: [makeMetric(name: "coldLaunchTime", value: 2.0, timestamp: "2026-01-01T00:00:00Z")]
+      metrics: [makeMetric(name: "coldLaunchTime", value: 2.0, timestamp: "2026-01-01T00:00:00Z")],
+      logs: []
     )
 
     let requestBody = OTRequestBody(resourceMetrics: [
@@ -336,5 +406,19 @@ struct OpenTelemetryTests {
     #expect(requestBody.resourceMetrics.count == 2)
     #expect(requestBody.resourceMetrics[0].scopeMetrics[0].metrics[0].name == "expo.app_startup.bundle_load_time")
     #expect(requestBody.resourceMetrics[1].scopeMetrics[0].metrics[0].name == "expo.app_startup.cold_launch_time")
+  }
+}
+
+/**
+ Test-only convenience for pulling the inner string out of an `OTAnyValue`.
+ Returns `nil` for non-string variants — the metric tests in this file only
+ produce string-valued attributes, so a nil result is a real assertion failure.
+ */
+private extension OTAnyValue {
+  var stringValue: String? {
+    if case .string(let value) = self {
+      return value
+    }
+    return nil
   }
 }

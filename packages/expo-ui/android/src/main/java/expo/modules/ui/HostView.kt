@@ -157,10 +157,10 @@ internal class HostView(context: Context, appContext: AppContext) :
     ) { measurables, constraints ->
       val useViewportSizeMeasurement = props.useViewportSizeMeasurement.value
 
-      // useViewportSizeMeasurement: clamp Infinity/0 maxConstraints to the safe area so the                                                               
-      // content has a concrete size to fill. 
-      // matchContents: pass through, so children measure 
-      // at intrinsic size (the unbounded constraint comes from onMeasure's UNSPECIFIED). 
+      // useViewportSizeMeasurement: clamp Infinity/0 maxConstraints to the safe area so the
+      // content has a concrete size to fill.
+      // matchContents: pass through, so children measure
+      // at intrinsic size (the unbounded constraint comes from onMeasure's UNSPECIFIED).
       val boundedConstraints = Constraints(
         minWidth = constraints.minWidth,
         maxWidth = if (useViewportSizeMeasurement &&

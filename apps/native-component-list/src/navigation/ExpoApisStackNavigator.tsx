@@ -1,6 +1,7 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
+import { isRunningInExpoGo } from 'expo';
 import * as React from 'react';
 
 import { optionalRequire } from './routeBuilder';
@@ -9,7 +10,7 @@ import TabIcon from '../components/TabIcon';
 import getStackNavWithConfig from '../navigation/StackConfig';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
 import { BlobScreens } from '../screens/Blob/BlobScreen';
-import { CalendarsNextScreens } from '../screens/CalendarsNextScreen';
+import { CalendarNextScreens } from '../screens/Calendar@Next/CalendarNextScreens';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { apiScreensToListElements } from '../screens/ComponentListScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
@@ -24,6 +25,13 @@ import { type ScreenConfig } from '../types/ScreenConfig';
 const Stack = createNativeStackNavigator();
 
 export const ScreensList: ScreenConfig[] = [
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/CameraPermissions/CameraPermissionsScreen'));
+    },
+    name: 'CameraPermissions',
+    options: { title: 'Camera Permissions' },
+  },
   {
     getComponent() {
       return optionalRequire(() => require('../screens/ModulesCore/ModulesCoreScreen'));
@@ -75,14 +83,17 @@ export const ScreensList: ScreenConfig[] = [
     name: 'ActionSheet',
     options: { title: 'Action Sheet' },
   },
-  // TODO: fix this, module not available in Expo Go
-  // {
-  //   getComponent() {
-  //     return optionalRequire(() => require('../screens/AgeRangeScreen'));
-  //   },
-  //   name: 'AgeRange',
-  //   options: { title: 'Age Range' },
-  // },
+  ...(isRunningInExpoGo()
+    ? []
+    : [
+        {
+          getComponent() {
+            return optionalRequire(() => require('../screens/AgeRangeScreen'));
+          },
+          name: 'AgeRange',
+          options: { title: 'Age Range' },
+        },
+      ]),
   {
     getComponent() {
       return optionalRequire(() => require('../screens/AppearanceScreen'));
@@ -102,6 +113,13 @@ export const ScreensList: ScreenConfig[] = [
     },
     name: 'AppleAuthentication',
     options: { title: 'Apple Authentication' },
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/AppMetricsScreen'));
+    },
+    name: 'AppMetrics',
+    options: { title: 'App Metrics' },
   },
   {
     getComponent() {
@@ -218,7 +236,7 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/CalendarsNextScreen'));
+      return optionalRequire(() => require('../screens/Calendar@Next/CalendarNextScreens'));
     },
     name: 'Calendars@next',
   },
@@ -500,7 +518,7 @@ export const Screens: ScreenConfig[] = [
   ...ContactsScreens,
   ...ContactsNextScreens,
   ...CalendarsScreens,
-  ...CalendarsNextScreens,
+  ...CalendarNextScreens,
   ...CryptoScreens,
   ...WorkletsScreens,
 ];

@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { type AnimatedValue } from './animation';
+import { type AnimatedValue, type AnimationSpec } from './animation';
 export { type ExpoModifier, type ModifierConfig } from '../../types';
 export { animated, spring, tween, snap, keyframes, type AnimationSpec, type AnimatedValue, } from './animation';
 export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
@@ -82,9 +82,13 @@ export declare const imePadding: () => import("./createModifier").ModifierConfig
 export declare const offset: (x: number, y: number) => import("./createModifier").ModifierConfig;
 /**
  * Sets the background color.
- * @param color - Color string (hex, e.g., '#FF0000').
+ * Pass an `animationSpec` to smoothly animate between colors when the prop changes (backed by `animateColorAsState`).
+ * @param color - A color string (hex, e.g., `'#FF0000'`).
+ * @param options.animationSpec - Optional spec — animate between color changes.
  */
-export declare const background: (color: ColorValue) => import("./createModifier").ModifierConfig;
+export declare const background: (color: ColorValue, options?: {
+    animationSpec?: AnimationSpec;
+}) => import("./createModifier").ModifierConfig;
 /**
  * Adds a border around the view.
  * @param borderWidth - Border width in dp.
@@ -96,6 +100,37 @@ export declare const border: (borderWidth: number, borderColor: ColorValue) => i
  * @param elevation - Shadow elevation in dp.
  */
 export declare const shadow: (elevation: number) => import("./createModifier").ModifierConfig;
+/**
+ * Options for the `dropShadow` and `innerShadow` modifiers.
+ */
+export type ShadowConfig = {
+    /** Blur radius of the shadow in dp. */
+    radius?: number;
+    /** Amount to expand (positive) or contract (negative) the shadow geometry in dp. */
+    spread?: number;
+    /** Shadow color string (hex). Defaults to black. */
+    color?: ColorValue;
+    /** Horizontal offset of the shadow in dp. */
+    offsetX?: number;
+    /** Vertical offset of the shadow in dp. */
+    offsetY?: number;
+    /** Shadow opacity, from 0.0 to 1.0. */
+    alpha?: number;
+};
+/**
+ * Draws a shadow behind the view with control over the blur radius, spread, offset, and color. Unlike
+ * `shadow`, it does not require an elevation value.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export declare const dropShadow: (shape: BuiltinShape, config?: ShadowConfig) => import("./createModifier").ModifierConfig;
+/**
+ * Draws a shadow inside the view to create an inset effect. The view's `background` must come before
+ * this modifier for the shadow to render.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export declare const innerShadow: (shape: BuiltinShape, config?: ShadowConfig) => import("./createModifier").ModifierConfig;
 /**
  * Sets the opacity/alpha of the view.
  * @param alpha - Opacity value (0.0 to 1.0).
@@ -195,6 +230,21 @@ export declare const clickable: (handler: () => void, options?: {
     indication?: boolean;
 }) => import("./createModifier").ModifierConfig;
 /**
+ * Makes the view respond to both click and long-click gestures.
+ * Wraps Compose's `Modifier.combinedClickable`. Useful for triggering a `DropdownMenu`
+ * on long-press while keeping a separate short-press action.
+ * @param handlers.onClick - Function to call on a short tap.
+ * @param handlers.onLongClick - Function to call on a long press.
+ * @param options - Optional configuration.
+ * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
+ */
+export declare const combinedClickable: (handlers: {
+    onClick?: () => void;
+    onLongClick?: () => void;
+}, options?: {
+    indication?: boolean;
+}) => import("./createModifier").ModifierConfig;
+/**
  * Makes the view selectable, like a radio button row.
  * @param selected - Whether the item is currently selected.
  * @param handler - Function to call when the item is clicked.
@@ -229,10 +279,35 @@ export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void
     minFractionVisible?: number;
 }) => import("./createModifier").ModifierConfig;
 /**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export declare const onSizeChanged: (handler: (size: {
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
+ * Calls the handler whenever the composable is positioned, with its position and size.
+ * `x` and `y` are relative to the window. All values are in dp.
+ * @param handler - Function called with the new layout.
+ */
+export declare const onGloballyPositioned: (handler: (layout: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.
  */
 export declare const testID: (tag: string) => import("./createModifier").ModifierConfig;
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export declare const semantics: (params: {
+    contentType?: string;
+}) => import("./createModifier").ModifierConfig;
 type MaterialShapeName = 'cookie4Sided' | 'cookie6Sided' | 'cookie7Sided' | 'cookie9Sided' | 'cookie12Sided' | 'clover4Leaf' | 'clover8Leaf' | 'softBurst' | 'boom' | 'oval' | 'pill' | 'triangle' | 'diamond' | 'pentagon' | 'sunny' | 'verySunny' | 'fan' | 'pixelCircle' | 'pixelTriangle' | 'ghostish' | 'bun' | 'heart' | 'arch' | 'slanted' | 'puffy' | 'puffyDiamond';
 type CornerRadii = {
     topStart?: number;
@@ -327,4 +402,6 @@ export declare const verticalScroll: () => import("./createModifier").ModifierCo
  * Use on a Row to create a non-lazy scrollable container.
  */
 export declare const horizontalScroll: () => import("./createModifier").ModifierConfig;
+export { createModifier, createModifierWithEventListener } from './createModifier';
+export { createViewModifierEventListener } from './utils';
 //# sourceMappingURL=index.d.ts.map

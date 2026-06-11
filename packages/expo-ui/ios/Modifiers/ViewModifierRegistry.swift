@@ -486,6 +486,38 @@ internal struct AccessibilityValueModifier: ViewModifier, Record {
   }
 }
 
+internal struct AccessibilityInputLabelsModifier: ViewModifier, Record {
+  @Field var inputLabels: [String]?
+
+  func body(content: Content) -> some View {
+    if let inputLabels = inputLabels {
+      content.accessibilityInputLabels(inputLabels.map { Text($0) })
+    } else {
+      content
+    }
+  }
+}
+
+internal struct AccessibilityIdentifierModifier: ViewModifier, Record {
+  @Field var identifier: String?
+
+  func body(content: Content) -> some View {
+    if let identifier = identifier {
+      content.accessibilityIdentifier(identifier)
+    } else {
+      content
+    }
+  }
+}
+
+internal struct AccessibilityHiddenModifier: ViewModifier, Record {
+  @Field var hidden: Bool = true
+
+  func body(content: Content) -> some View {
+    content.accessibilityHidden(hidden)
+  }
+}
+
 internal struct LayoutPriorityModifier: ViewModifier, Record {
   @Field var priority: Double = 0
 
@@ -621,38 +653,12 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
-internal enum AnimationType: String, Enumerable {
-  case easeInOut
-  case easeIn
-  case easeOut
-  case linear
-  case spring
-  case interpolatingSpring
-  case `default`
-}
-
-internal struct AnimationConfig: Record {
-  @Field var type: AnimationType = .default
-  @Field var duration: Double?
-  @Field var response: Double?
-  @Field var dampingFraction: Double?
-  @Field var blendDuration: Double?
-  @Field var bounce: Double?
-  @Field var mass: Double?
-  @Field var stiffness: Double?
-  @Field var damping: Double?
-  @Field var initialVelocity: Double?
-  @Field var delay: Double?
-  @Field var repeatCount: Int?
-  @Field var autoreverses: Bool?
-}
-
 internal struct AnimationModifier: ViewModifier, Record {
   @Field var animation: AnimationConfig
   @Field var animatedValue: Either<Double, Bool>?
 
   func body(content: Content) -> some View {
-    let animationValue = parseAnimation(animation)
+    let animationValue = animation.toSwiftUIAnimation()
     if let value: Bool = animatedValue?.get() {
       content.animation(animationValue, value: value)
     } else if let value: Double = animatedValue?.get() {
@@ -660,91 +666,6 @@ internal struct AnimationModifier: ViewModifier, Record {
     } else {
       content
     }
-  }
-
-  private func parseAnimation(_ config: AnimationConfig) -> Animation {
-    let type = config.type
-
-    var animation: Animation
-
-    switch type {
-    case .easeIn:
-      if let duration = config.duration {
-        animation = .easeIn(duration: duration)
-      } else {
-        animation = .easeIn
-      }
-
-    case .easeOut:
-      if let duration = config.duration {
-        animation = .easeOut(duration: duration)
-      } else {
-        animation = .easeOut
-      }
-
-    case .linear:
-      if let duration = config.duration {
-        animation = .linear(duration: duration)
-      } else {
-        animation = .linear
-      }
-
-    case .easeInOut:
-      if let duration = config.duration {
-        animation = .easeInOut(duration: duration)
-      } else {
-        animation = .easeInOut
-      }
-
-    case .spring:
-      let duration = config.duration
-      let bounce = config.bounce
-      let response = config.response
-      let dampingFraction = config.dampingFraction
-      let blendDuration = config.blendDuration
-
-      if response != nil || dampingFraction != nil {
-        // default values are 0.5, 0.825, 0.0
-        animation = .spring(response: response ?? 0.5, dampingFraction: dampingFraction ?? 0.825, blendDuration: blendDuration ?? 0.0)
-      } else if duration != nil || bounce != nil {
-        // default values are 0.5, 0.0, 0.0
-        animation = .spring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, blendDuration: blendDuration ?? 0.0)
-      } else if let blendDuration = blendDuration {
-        animation = .spring(blendDuration: blendDuration)
-      } else {
-        animation = .spring
-      }
-
-    case .interpolatingSpring:
-      let duration = config.duration
-      let bounce = config.bounce
-      let mass = config.mass
-      let stiffness = config.stiffness
-      let damping = config.damping
-      let initialVelocity = config.initialVelocity
-
-      if duration != nil || bounce != nil {
-        animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
-      } else if let stiffness, let damping {
-        animation = .interpolatingSpring(mass: mass ?? 1.0, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity ?? 0.0)
-      } else {
-        animation = .interpolatingSpring
-      }
-
-    default:
-      animation = .default
-    }
-
-    if let delay = config.delay {
-      animation = animation.delay(delay)
-    }
-
-    if let repeatCount = config.repeatCount {
-      let autoreverses = config.autoreverses ?? false
-      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
-    }
-
-    return animation
   }
 }
 
@@ -823,6 +744,22 @@ internal struct ListRowSeparator: ViewModifier, Record {
   }
 }
 
+internal struct ListRowSpacing: ViewModifier, Record {
+  @Field var spacing: Double?
+
+  func body(content: Content) -> some View {
+#if os(iOS)
+    if #available(iOS 15.0, *) {
+      content.listRowSpacing(spacing.map { CGFloat($0) })
+    } else {
+      content
+    }
+#else
+    content
+#endif
+  }
+}
+
 internal enum TextTruncationModeTypes: String, Enumerable {
   case head
   case middle
@@ -865,6 +802,14 @@ internal struct TextAllowsTightening: ViewModifier, Record {
     } else {
       content
     }
+  }
+}
+
+internal struct MinimumScaleFactorModifier: ViewModifier, Record {
+  @Field var factor: CGFloat = 1.0
+
+  func body(content: Content) -> some View {
+    content.minimumScaleFactor(factor)
   }
 }
 
@@ -994,6 +939,22 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal struct LineHeight: ViewModifier, Record {
+  @Field var value: CGFloat?
+
+  func body(content: Content) -> some View {
+    if let value {
+      if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+        content.lineHeight(.exact(points: value))
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal enum Prominence: String, Enumerable {
   case standard
   case increased
@@ -1099,23 +1060,6 @@ internal struct ListSectionMargins: ViewModifier, Record {
 #else
     content
 #endif
-  }
-}
-
-internal enum AxisOptions: String, Enumerable {
-  case horizontal
-  case vertical
-  case both
-
-  func toAxis() -> Axis.Set {
-    switch self {
-    case .vertical:
-      return .vertical
-    case .horizontal:
-      return .horizontal
-    case .both:
-      return [.vertical, .horizontal]
-    }
   }
 }
 
@@ -1324,14 +1268,7 @@ public class ViewModifierRegistry {
       return text.monospacedDigit()
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
-      if let family = modifier.family {
-        return text.font(Font.custom(family, size: modifier.size ?? 17))
-      }
-      return text.font(.system(
-        size: modifier.size ?? 17,
-        weight: modifier.weight?.toSwiftUI() ?? .regular,
-        design: modifier.design?.toSwiftUI() ?? .default
-      ))
+      return text.font(modifier.resolveFont())
     case "foregroundColor":
       guard let modifier = try? ForegroundColorModifier(from: params, appContext: appContext),
             let color = modifier.color else { return text }
@@ -1623,6 +1560,10 @@ extension ViewModifierRegistry {
       return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("onGeometryChange") { params, appContext, eventDispatcher in
+      return try OnGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("refreshable") { params, appContext, eventDispatcher in
       return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
@@ -1641,6 +1582,18 @@ extension ViewModifierRegistry {
 
     register("accessibilityValue") { params, appContext, _ in
       return try AccessibilityValueModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityInputLabels") { params, appContext, _ in
+      return try AccessibilityInputLabelsModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityIdentifier") { params, appContext, _ in
+      return try AccessibilityIdentifierModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityHidden") { params, appContext, _ in
+      return try AccessibilityHiddenModifier(from: params, appContext: appContext)
     }
 
     register("layoutPriority") { params, appContext, _ in
@@ -1707,6 +1660,10 @@ extension ViewModifierRegistry {
       return try ButtonStyleModifier(from: params, appContext: appContext)
     }
 
+    register("buttonBorderShape") { params, appContext, _ in
+      return try ButtonBorderShapeModifier(from: params, appContext: appContext)
+    }
+
     register("toggleStyle") { params, appContext, _ in
       return try ToggleStyleModifier(from: params, appContext: appContext)
     }
@@ -1735,6 +1692,10 @@ extension ViewModifierRegistry {
       return try ListRowSeparator(from: params, appContext: appContext)
     }
 
+    register("listRowSpacing") { params, appContext, _ in
+      return try ListRowSpacing(from: params, appContext: appContext)
+    }
+
     register("truncationMode") { params, appContext, _ in
       return try TextTruncationMode(from: params, appContext: appContext)
     }
@@ -1745,6 +1706,10 @@ extension ViewModifierRegistry {
 
     register("allowsTightening") { params, appContext, _ in
       return try TextAllowsTightening(from: params, appContext: appContext)
+    }
+
+    register("minimumScaleFactor") { params, appContext, _ in
+      return try MinimumScaleFactorModifier(from: params, appContext: appContext)
     }
 
     register("textCase") { params, appContext, _ in
@@ -1769,6 +1734,10 @@ extension ViewModifierRegistry {
 
     register("lineSpacing") { params, appContext, _ in
       return try LineSpacing(from: params, appContext: appContext)
+    }
+
+    register("lineHeight") { params, appContext, _ in
+      return try LineHeight(from: params, appContext: appContext)
     }
 
     register("lineLimit") { params, appContext, _ in
@@ -1807,6 +1776,14 @@ extension ViewModifierRegistry {
       return try FontModifier(from: params, appContext: appContext)
     }
 
+    register("dynamicTypeSize") { params, appContext, _ in
+      return try DynamicTypeSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("imageScale") { params, appContext, _ in
+      return try ImageScaleModifier(from: params, appContext: appContext)
+    }
+
     register("gridCellUnsizedAxes") { params, appContext, _ in
       return try GridCellUnsizedAxes(from: params, appContext: appContext)
     }
@@ -1835,6 +1812,14 @@ extension ViewModifierRegistry {
       return try ScrollTargetLayoutModifier(from: params, appContext: appContext)
     }
 
+    register("id") { params, appContext, _ in
+      return try IDModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollPosition") { params, appContext, eventDispatcher in
+      return try ScrollPositionModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
@@ -1857,6 +1842,10 @@ extension ViewModifierRegistry {
 
     register("scrollDisabled") { params, appContext, _ in
       return try ScrollDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollIndicators") { params, appContext, _ in
+      return try ScrollIndicatorsModifier(from: params, appContext: appContext)
     }
 
     register("tabViewStyle") { params, appContext, _ in
@@ -1898,6 +1887,10 @@ extension ViewModifierRegistry {
     register("interactiveDismissDisabled") { params, appContext, _ in
       return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
     }
+    
+    register("presentationBackground") { params, appContext, _ in
+      return try PresentationBackgroundModifier(from: params, appContext: appContext)
+    }
 
     register("listStyle") { params, appContext, _ in
       return try ListStyleModifier(from: params, appContext: appContext)
@@ -1923,6 +1916,10 @@ extension ViewModifierRegistry {
       return try WidgetURLModifier(from: params, appContext: appContext)
     }
 
+    register("activityBackgroundTint") { params, appContext, _ in
+      return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
+    }
+
     register("keyboardType") { params, appContext, _ in
       return try KeyboardTypeModifier(from: params, appContext: appContext)
     }
@@ -1937,6 +1934,18 @@ extension ViewModifierRegistry {
 
     register("containerBackground") { params, appContext, _ in
       return try ContainerBackgroundModifier(from: params, appContext: appContext)
+    }
+
+    register("symbolEffect") { params, appContext, _ in
+      return try SymbolEffectModifier(from: params, appContext: appContext)
+    }
+
+    register("onScrollPhaseChange") { params, appContext, eventDispatcher in
+      return try OnScrollPhaseChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("onScrollGeometryChange") { params, appContext, eventDispatcher in
+      return try OnScrollGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
   }
 }

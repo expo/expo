@@ -19,8 +19,7 @@ internal struct DynamicEitherType<EitherType: AnyEither>: AnyDynamicType {
     let types = eitherType.dynamicTypes()
 
     for type in types {
-      if let preliminaryValue = try? type.cast(jsValue: jsValue, appContext: appContext),
-        let value = try? type.cast(preliminaryValue, appContext: appContext) {
+      if let value = try? type.cast(jsValue: jsValue, appContext: appContext) {
         return EitherType(value)
       }
     }
