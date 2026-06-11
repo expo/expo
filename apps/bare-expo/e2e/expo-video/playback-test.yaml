@@ -30,6 +30,12 @@ jsEngine: graaljs
 - tapOn: Pause
 - tapOn: Seek to 30s
 - assertVisible: 'currentTime = 30'
+# The player reports currentTime = 30 before the paused surface repaints the
+# seeked frame. Wait for the screen to settle so the screenshot captures the
+# t=30s frame and not a stale/blank one. Safe only because the player is paused
+# here (a playing video never settles and would burn the full timeout).
+- waitForAnimationToEnd:
+    timeout: 5000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:
