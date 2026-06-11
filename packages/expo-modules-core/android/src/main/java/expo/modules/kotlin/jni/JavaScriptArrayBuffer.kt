@@ -27,8 +27,7 @@ class JavaScriptArrayBuffer @DoNotStrip private constructor(@DoNotStrip private 
   /**
    * Creates a native-owned copy of this ArrayBuffer.
    */
-  @Suppress("DEPRECATION")
-  fun copy(): NativeArrayBuffer = NativeArrayBuffer.copyOf(toDirectBuffer())
+  fun copy(): ArrayBuffer = ArrayBuffer.copyOf(toDirectBuffer())
 
   @Throws(Throwable::class)
   protected fun finalize() {
