@@ -5,6 +5,7 @@
   "main": "default.js",
   "scripts": {
     "lint": "eslint .",
+    "pretest": "pnpm --filter eslint-plugin-expo build",
     "test": "jest"
   },
   "repository": {
