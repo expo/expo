@@ -36,11 +36,13 @@ class Query(
   private var offset: Int? = null
 
   fun eq(field: AssetField, value: String) = apply {
+    if (field == AssetField.IS_FAVORITE && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return@apply
     clauses.add("${field.toMediaStoreColumn()} = ?")
     args.add(value)
   }
 
   fun within(field: AssetField, values: List<String>) = apply {
+    if (field == AssetField.IS_FAVORITE && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return@apply
     val questionMarks = values.joinToString(", ") { "?" }
     clauses.add("${field.toMediaStoreColumn()} IN ($questionMarks)")
     args.addAll(values)

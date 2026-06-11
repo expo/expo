@@ -9,6 +9,7 @@ import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
 import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.album.AlbumQuery
@@ -260,11 +261,11 @@ class MediaLibraryNextModule : Module() {
         self.album(album)
       }
 
-      Function("eq") { self: Query, field: AssetField, value: Either<MediaType, Long> ->
+      Function("eq") { self: Query, field: AssetField, value: EitherOfThree<MediaType, Long, Boolean> ->
         self.eq(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("within") { self: Query, field: AssetField, values: List<Either<MediaType, Long>> ->
+      Function("within") { self: Query, field: AssetField, values: List<EitherOfThree<MediaType, Long, Boolean>> ->
         val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(field, value) }
         self.within(field, stringValues)
       }
