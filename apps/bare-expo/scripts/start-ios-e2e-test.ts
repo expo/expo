@@ -264,9 +264,6 @@ async function testAsync(
       console.log('\n\n');
       throw new Error('e2e tests have failed.', { cause: error });
     }
-  } catch (e: unknown) {
-    console.error('Uncaught Error', e);
-    throw e;
   } finally {
     endGroup();
     stopLogCollectionController.abort();
