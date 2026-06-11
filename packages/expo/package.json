@@ -64,13 +64,13 @@
       "source": "./src/dom/global-events.ts",
       "default": "./build/dom/global-events.js"
     },
-    "./dom/*": {
+    "./dom/internal": {
       "types": {
-        "source": "./src/dom/*.ts",
-        "default": "./build/dom/*.d.ts"
+        "source": "./src/dom/internal.ts",
+        "default": "./build/dom/internal.d.ts"
       },
-      "source": "./src/dom/*.ts",
-      "default": "./build/dom/*.js"
+      "source": "./src/dom/internal.ts",
+      "default": "./build/dom/internal.js"
     },
     "./fetch": {
       "types": {
@@ -112,6 +112,8 @@
       "source": "./src/*.ts",
       "default": "./build/*.js"
     },
+    "./dom/entry.js": "./dom/entry.js",
+    "./dom/entry": "./dom/entry.js",
     "./AppEntry.js": "./AppEntry.js",
     "./virtual/*.js": "./virtual/*.js",
     "./virtual/*": "./virtual/*.js",
