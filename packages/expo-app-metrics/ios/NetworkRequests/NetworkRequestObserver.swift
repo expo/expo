@@ -18,31 +18,26 @@ let REQUEST_COMPLETED_EVENT = "requestCompleted"
  in-process API for that.
  */
 public final class NetworkRequestObserver: SharedObject, NetworkRequestObserverDelegate, @unchecked Sendable {
-  /// The active filter, or `nil` to observe every request. Isolated to `AppMetricsActor` (the same
-  /// isolation as the monitor's fan-out and `shouldObserveRequest`), so the read during fan-out and the
-  /// write from `setFilter` are serialized: a request is never evaluated under a half-applied
-  /// filter. Not `private` so actor-isolated tests can set it without racing the `setFilter` hop.
-  @AppMetricsActor
-  var filter: NetworkRequestFilter?
+  /// The active filter, or `nil` to observe every request. Held in a `Mutex` so the read from the
+  /// monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
+  /// `setFilter` call never leaves a request evaluated under a half-applied filter.
+  private let filter = Mutex<NetworkRequestFilter?>(nil)
 
   public init(filter: NetworkRequestFilter? = nil) {
     super.init()
+    self.filter.withLock { $0 = filter }
     AppMetricsActor.isolated { [weak self] in
       guard let self else {
         return
       }
-      self.filter = filter
       NetworkRequestMonitor.shared.addDelegate(self)
     }
   }
 
-  /// Replaces the active filter. Pass `nil` to observe every request. The swap happens on
-  /// `AppMetricsActor`, so a request mid-fan-out is evaluated against either the old or the new
-  /// filter, never a mix.
+  /// Replaces the active filter. Pass `nil` to observe every request. The swap is atomic: a request
+  /// mid-fan-out is evaluated against either the old or the new filter, never a mix.
   public func setFilter(_ filter: NetworkRequestFilter?) {
-    AppMetricsActor.isolated { [weak self] in
-      self?.filter = filter
-    }
+    self.filter.withLock { $0 = filter }
   }
 
   public override func sharedObjectWillRelease() {
@@ -68,7 +63,7 @@ public final class NetworkRequestObserver: SharedObject, NetworkRequestObserverD
   }
 
   public func shouldObserveRequest(url: URL, method: String) -> Bool {
-    guard let filter else {
+    guard let filter = filter.withLock({ $0 }) else {
       return true
     }
     return filter.matches(url: url, method: method)

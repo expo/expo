@@ -232,30 +232,24 @@ struct NetworkRequestFilterTests {
   }
 }
 
-@AppMetricsActor
 @Suite("NetworkRequestObserver filtering")
 struct NetworkRequestObserverFilterTests {
   @Test
-  func `shouldObserveRequest reflects the active filter`() {
-    // The suite is `@AppMetricsActor`-isolated, so the actor-isolated `filter` is set and read
-    // here synchronously — exercising `shouldObserveRequest`'s logic without racing the `Task` hop that the
-    // public `setFilter`/`init` use to reach the actor.
-    let observer = NetworkRequestObserver()
-
+  func `setFilter swaps the active filter synchronously`() {
     var post = NetworkRequestFilter()
     post.methods = ["POST"]
-    observer.filter = post
+    let observer = NetworkRequestObserver(filter: post)
     #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
     #expect(!observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "GET"))
 
     var get = NetworkRequestFilter()
     get.methods = ["GET"]
-    observer.filter = get
+    observer.setFilter(get)
     #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "GET"))
     #expect(!observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
 
     // No filter falls back to observing everything.
-    observer.filter = nil
+    observer.setFilter(nil)
     #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
   }
 }

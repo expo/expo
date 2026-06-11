@@ -16,11 +16,6 @@ public protocol NetworkRequestObserverDelegate: AnyObject, Sendable {
   /// built. Only the URL and method are passed because those are the only attributes available at
   /// both start and completion, which keeps the started/completed decision consistent. The default
   /// implementation accepts every request.
-  ///
-  /// Isolated to `AppMetricsActor` (the same isolation as the fan-out) so a delegate can read
-  /// actor-isolated filter state here without locking, and a concurrent `setFilter` can't be
-  /// observed mid-update.
-  @AppMetricsActor
   func shouldObserveRequest(url: URL, method: String) -> Bool
 }
 
@@ -28,7 +23,6 @@ public extension NetworkRequestObserverDelegate {
   func onNetworkRequestStarted(_ request: NetworkRequestStarted) {}
   func onNetworkRequestCompleted(_ request: NetworkRequest) {}
 
-  @AppMetricsActor
   func shouldObserveRequest(url: URL, method: String) -> Bool {
     return true
   }

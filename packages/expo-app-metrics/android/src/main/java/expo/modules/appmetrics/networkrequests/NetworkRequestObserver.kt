@@ -5,6 +5,7 @@ package expo.modules.appmetrics.networkrequests
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import java.util.concurrent.atomic.AtomicReference
 
 /** Event names emitted by `NetworkRequestObserver`, matching the keys in the JS `NetworkRequestObserverEvents` type. */
 internal const val REQUEST_STARTED_EVENT = "requestStarted"
@@ -23,13 +24,10 @@ class NetworkRequestObserver(appContext: AppContext, filter: NetworkRequestFilte
   SharedObject(appContext),
   NetworkRequestObserverDelegate {
 
-  // The active filter, or null to observe every request. Guarded by `filterLock` so a read from
-  // the monitor's fan-out (`shouldObserveRequest`) and a write from `setFilter` are atomic: a
-  // `setFilter` call never leaves a request observed under a half-applied filter. `@Volatile` alone
-  // would make each field read atomic, but the lock keeps the read and the swap a single
-  // indivisible step.
-  private val filterLock = Any()
-  private var filter: NetworkRequestFilter? = filter
+  // The active filter, or null to observe every request. An `AtomicReference` so the read from the
+  // monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
+  // `setFilter` call never leaves a request observed under a half-applied filter.
+  private val filter = AtomicReference(filter)
 
   init {
     NetworkRequestMonitor.shared.addDelegate(this)
@@ -43,12 +41,12 @@ class NetworkRequestObserver(appContext: AppContext, filter: NetworkRequestFilte
   /**
    * Replaces the active filter. Pass null to observe every request. The swap is atomic.
    */
-  fun setFilter(filter: NetworkRequestFilter?) = synchronized(filterLock) {
-    this.filter = filter
+  fun setFilter(filter: NetworkRequestFilter?) {
+    this.filter.set(filter)
   }
 
-  override fun shouldObserveRequest(url: String, method: String): Boolean = synchronized(filterLock) {
-    filter?.matches(url, method) ?: true
+  override fun shouldObserveRequest(url: String, method: String): Boolean {
+    return filter.get()?.matches(url, method) ?: true
   }
 
   override fun onNetworkRequestStarted(request: NetworkRequestStarted) {
