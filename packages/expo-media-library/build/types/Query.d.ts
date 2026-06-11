@@ -1,6 +1,7 @@
 import type { Album } from './Album';
 import type { Asset } from './Asset';
 import type { AssetField, AssetFieldValueMap } from './AssetField';
+import type { AssetMetadata } from './AssetMetadata';
 import type { SortDescriptor } from './SortDescriptor';
 /**
  * Represents a query to fetch data from the media library.
@@ -89,5 +90,24 @@ export declare class Query {
      * ```
      */
     exe(): Promise<Asset[]>;
+    /**
+     * Executes the query and retrieves lightweight metadata for the matching assets.
+     *
+     * Returns fields that can be read cheaply from the media store, without resolving file paths or
+     * decoding files.
+     *
+     * @returns A promise that resolves to an array of [AssetMetadata](#assetmetadata) objects that match the query criteria.
+     *
+     * @example
+     * ```ts
+     * const assets = await new Query()
+     *  .eq(AssetField.MEDIA_TYPE, MediaType.IMAGE)
+     *  .lte(AssetField.HEIGHT, 1080)
+     *  .orderBy(AssetField.CREATION_TIME)
+     *  .limit(20)
+     *  .exeForMetadata();
+     * ```
+     */
+    exeForMetadata(): Promise<AssetMetadata[]>;
 }
 //# sourceMappingURL=Query.d.ts.map
