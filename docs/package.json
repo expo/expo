@@ -68,7 +68,6 @@
     "prismjs": "^1.30.0",
     "prop-types": "^15.8.1",
     "react": "^19.2.6",
-    "react-confetti-explosion": "^3.0.3",
     "react-diff-view": "^3.3.3",
     "react-dom": "^19.2.6",
     "react-markdown": "^10.1.0",
