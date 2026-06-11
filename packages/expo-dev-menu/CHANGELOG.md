@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner.
+
 ### 💡 Others
 
 ## 57.0.0 — 2026-06-25
