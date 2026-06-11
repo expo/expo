@@ -1,11 +1,14 @@
 import NextHead from 'next/head';
 import type { PropsWithChildren } from 'react';
 
+import type { SupportedLocale } from '~/common/i18n';
+
 type HeadProps = PropsWithChildren<{
   title?: string;
   description?: string;
   canonicalUrl?: string;
   markdownPath?: string;
+  locale?: SupportedLocale;
 }>;
 
 const BASE_OG_URL = 'https://og.expo.dev/?theme=docs';
@@ -18,6 +21,7 @@ const DocumentationHead = ({
   description,
   canonicalUrl,
   markdownPath,
+  locale = 'en',
   children,
 }: HeadProps) => {
   const OGImageURL = `${BASE_OG_URL}&title=${encodeURIComponent(title ?? BASE_TITLE)}&description=${encodeURIComponent(description ?? BASE_DESCRIPTION)}`;
@@ -38,7 +42,7 @@ const DocumentationHead = ({
       <meta property="og:image" content={OGImageURL} />
       <meta property="og:image:url" content={OGImageURL} />
       <meta property="og:image:secure_url" content={OGImageURL} />
-      <meta property="og:locale" content="en_US" />
+      <meta property="og:locale" content={locale === 'ja' ? 'ja_JP' : 'en_US'} />
       <meta property="og:site_name" content={BASE_TITLE} />
       <meta
         property="og:description"
