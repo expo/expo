@@ -20,7 +20,11 @@ jsEngine: graaljs
 
 - tapOn: Play
 
-- assertVisible: 'isPlaying = true'
+# Playback takes a moment to start after tapping Play; wait instead of
+# asserting instantly to avoid a startup race.
+- extendedWaitUntil:
+    visible: 'isPlaying = true'
+    timeout: 10000
 - assertVisible: 'isAtStart = false'
 
 - tapOn: Pause
