@@ -183,6 +183,7 @@
     "./_ctx-shared": "./_ctx-shared.js",
     "./_ctx": {
       "types": "./_ctx.d.ts",
+      "browser": "./_ctx.web.js",
       "default": "./_ctx.js"
     },
     "./_error.js": "./_error.js",
