@@ -104,7 +104,7 @@ function createBuildHost(baseDir, outDir, typecheck) {
   return { parsed, compilerHost, writtenFiles, writeFileIfChanged };
 }
 
-async function transformSources(files, srcDir, outDir, format, writeFileIfChanged) {
+async function transformSources(files, srcDir, outDir, format, writeFileIfChanged, opts) {
   const moduleConfig =
     format === 'cjs'
       ? { type: 'commonjs', lazy: true, importInterop: 'swc', exportInteropAnnotation: true }
@@ -129,6 +129,13 @@ async function transformSources(files, srcDir, outDir, format, writeFileIfChange
             : { syntax: 'ecmascript', jsx: file.endsWith('.jsx'), dynamicImport: true },
           transform: {
             react: { runtime: 'automatic' },
+            optimizer: {
+              globals: {
+                envs: {
+                  __EXPO_VERSION: opts.version ? JSON.stringify(opts.version) : undefined,
+                },
+              },
+            },
           },
         },
       });
@@ -267,6 +274,18 @@ async function copyAssetFiles(assetFiles, srcDir, outDir, writeFileIfChanged) {
   );
 }
 
+async function makePackageOpts() {
+  const metaSrc = await fs.promises.readFile(path.join(cwd, 'package.json'), 'utf8');
+  try {
+    const meta = JSON.parse(metaSrc);
+    return { version: meta.version };
+  } catch {
+    return {};
+  }
+}
+
+const opts = await makePackageOpts();
+
 // Run declarations + all SWC targets + .d.ts copies in parallel
 await Promise.all([
   allFiles.length > 0
@@ -277,7 +296,7 @@ await Promise.all([
     if (!files || files.length === 0) return;
     const srcDir = path.resolve(baseDir, target.input);
     const outDir = path.resolve(baseDir, target.output);
-    return transformSources(files, srcDir, outDir, target.format, writeFileIfChanged);
+    return transformSources(files, srcDir, outDir, target.format, writeFileIfChanged, opts);
   }),
   ...targets.map((target) => {
     const declFiles = declFilesByInput.get(target.input);
