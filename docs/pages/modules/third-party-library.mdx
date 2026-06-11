@@ -45,7 +45,14 @@ The following steps assume that the new module is created inside a new Expo proj
 
 Alternatively, you can use the new module as a view inside the existing Expo project directory. Run the following command in your project's directory:
 
-<Terminal cmd={['$ npx create-expo-module --local expo-radial-chart']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module --local expo-radial-chart'],
+    yarn: ['$ yarn create expo-module --local expo-radial-chart'],
+    pnpm: ['$ pnpm create expo-module --local expo-radial-chart'],
+    bun: ['$ bun create expo-module --local expo-radial-chart'],
+  }}
+/>
 
 Now, open the newly created `modules/expo-radial-chart` directory to start editing the native code.
 
@@ -55,7 +62,14 @@ Now, open the newly created `modules/expo-radial-chart` directory to start editi
 
 Create a new empty Expo module that can be published on npm and utilized in any Expo app by running the following command:
 
-<Terminal cmd={['$ npx create-expo-module expo-radial-chart']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-radial-chart'],
+    yarn: ['$ yarn create expo-module expo-radial-chart'],
+    pnpm: ['$ pnpm create expo-module expo-radial-chart'],
+    bun: ['$ bun create expo-module expo-radial-chart'],
+  }}
+/>
 
 > **info** **Tip**: If you aren't going to ship this library, press <kbd>Return</kbd> for all the prompts to accept the default values in the terminal window.
 
@@ -80,13 +94,36 @@ To verify that everything is functioning correctly, let's run the example projec
 If you started with an existing Expo project, run the following commands from your Expo project's root directory:
 
 <Terminal
-  cmd={[
-    '# Run the example-expo-app on Android',
-    '$ npx expo run:android',
-    '',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Run the example-expo-app on Android',
+      '$ npx expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Run the example-expo-app on Android',
+      '$ yarn expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Run the example-expo-app on Android',
+      '$ pnpm expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Run the example-expo-app on Android',
+      '$ bun expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 </Tab>
@@ -96,24 +133,67 @@ If you started with an existing Expo project, run the following commands from yo
 If you started with a new module project, open a terminal window, start the TypeScript compiler to watch for changes, and rebuild the module JavaScript:
 
 <Terminal
-  cmd={[
-    '# Ensure you are inside expo-radial-chart directory before running the command below',
-    '$ npm run build',
-  ]}
+  cmd={{
+    npm: [
+      '# Ensure you are inside expo-radial-chart directory before running the command below',
+      '$ npm run build',
+    ],
+    yarn: [
+      '# Ensure you are inside expo-radial-chart directory before running the command below',
+      '$ yarn run build',
+    ],
+    pnpm: [
+      '# Ensure you are inside expo-radial-chart directory before running the command below',
+      '$ pnpm run build',
+    ],
+    bun: [
+      '# Ensure you are inside expo-radial-chart directory before running the command below',
+      '$ bun run build',
+    ],
+  }}
 />
 
 In another terminal window, compile and run the example app:
 
 <Terminal
-  cmd={[
-    '$ cd example-expo-app',
-    '',
-    '# Run the example-expo-app on Android',
-    '$ npx expo run:android',
-    '',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '$ cd example-expo-app',
+      '',
+      '# Run the example-expo-app on Android',
+      '$ npx expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '$ cd example-expo-app',
+      '',
+      '# Run the example-expo-app on Android',
+      '$ yarn expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ cd example-expo-app',
+      '',
+      '# Run the example-expo-app on Android',
+      '$ pnpm expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '$ cd example-expo-app',
+      '',
+      '# Run the example-expo-app on Android',
+      '$ bun expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 </Tab>
