@@ -19,9 +19,17 @@ internal const val REQUEST_COMPLETED_EVENT = "requestCompleted"
  * The class only forwards events — it doesn't store request history. Use
  * `NetworkRequestMonitor.shared.recent` for that.
  */
-class NetworkRequestObserver(appContext: AppContext) :
+class NetworkRequestObserver(appContext: AppContext, filter: NetworkRequestFilter? = null) :
   SharedObject(appContext),
   NetworkRequestObserverDelegate {
+
+  // The active filter, or null to observe every request. Guarded by `filterLock` so a read from
+  // the monitor's fan-out (`shouldObserveRequest`) and a write from `setFilter` are atomic: a
+  // `setFilter` call never leaves a request observed under a half-applied filter. `@Volatile` alone
+  // would make each field read atomic, but the lock keeps the read and the swap a single
+  // indivisible step.
+  private val filterLock = Any()
+  private var filter: NetworkRequestFilter? = filter
 
   init {
     NetworkRequestMonitor.shared.addDelegate(this)
@@ -30,6 +38,17 @@ class NetworkRequestObserver(appContext: AppContext) :
   override fun sharedObjectDidRelease() {
     NetworkRequestMonitor.shared.removeDelegate(this)
     super.sharedObjectDidRelease()
+  }
+
+  /**
+   * Replaces the active filter. Pass null to observe every request. The swap is atomic.
+   */
+  fun setFilter(filter: NetworkRequestFilter?) = synchronized(filterLock) {
+    this.filter = filter
+  }
+
+  override fun shouldObserveRequest(url: String, method: String): Boolean = synchronized(filterLock) {
+    filter?.matches(url, method) ?: true
   }
 
   override fun onNetworkRequestStarted(request: NetworkRequestStarted) {

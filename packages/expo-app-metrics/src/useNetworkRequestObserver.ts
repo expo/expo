@@ -1,14 +1,23 @@
 import { useEventListener } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
+import { useEffect } from 'react';
 
 import AppMetrics from './module';
 import type {
   NetworkRequestCompletedEvent,
+  NetworkRequestFilter,
   NetworkRequestObserver,
   NetworkRequestStartedEvent,
 } from './types';
 
 export type UseNetworkRequestObserverOptions = {
+  /**
+   * Restricts which requests fire events. Applied natively so non-matching requests never cross
+   * into JS. Omit to observe every request. Updating it re-applies the filter on the existing
+   * observer without dropping subscriptions.
+   */
+  filter?: NetworkRequestFilter | null;
+
   /**
    * Called when a request begins. Fired before any response or timing data exists; correlate
    * with the matching `onCompleted` call via the shared `id`.
@@ -30,7 +39,19 @@ export type UseNetworkRequestObserverOptions = {
 export function useNetworkRequestObserver(
   options: UseNetworkRequestObserverOptions = {}
 ): NetworkRequestObserver {
-  const observer = useReleasingSharedObject(() => new AppMetrics.NetworkRequestObserver(), []);
+  // Serialized so a fresh object literal with the same contents doesn't re-run the effect every
+  // render. The observer is created once with the initial filter; later changes go through
+  // `setFilter` so subscriptions survive.
+  const filterKey = JSON.stringify(options.filter ?? null);
+  const observer = useReleasingSharedObject(
+    () => new AppMetrics.NetworkRequestObserver(options.filter),
+    []
+  );
+
+  useEffect(() => {
+    observer.setFilter(options.filter ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [observer, filterKey]);
 
   useEventListener(observer, 'requestStarted', (event) => options.onStarted?.(event));
   useEventListener(observer, 'requestCompleted', (event) => options.onCompleted?.(event));

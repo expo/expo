@@ -151,8 +151,12 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     Class(NetworkRequestObserver.self) {
-      Constructor {
-        return NetworkRequestObserver()
+      Constructor { (filter: NetworkRequestFilter?) in
+        return NetworkRequestObserver(filter: filter)
+      }
+
+      Function("setFilter") { (observer: NetworkRequestObserver, filter: NetworkRequestFilter?) in
+        observer.setFilter(filter)
       }
     }
   }

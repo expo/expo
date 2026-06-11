@@ -10,11 +10,28 @@ import Foundation
 public protocol NetworkRequestObserverDelegate: AnyObject, Sendable {
   func onNetworkRequestStarted(_ request: NetworkRequestStarted)
   func onNetworkRequestCompleted(_ request: NetworkRequest)
+
+  /// Whether this delegate wants events for a request with the given URL and method. Consulted by
+  /// the monitor before each fan-out call so a delegate's filter is evaluated before the payload is
+  /// built. Only the URL and method are passed because those are the only attributes available at
+  /// both start and completion, which keeps the started/completed decision consistent. The default
+  /// implementation accepts every request.
+  ///
+  /// Isolated to `AppMetricsActor` (the same isolation as the fan-out) so a delegate can read
+  /// actor-isolated filter state here without locking, and a concurrent `setFilter` can't be
+  /// observed mid-update.
+  @AppMetricsActor
+  func shouldObserveRequest(url: URL, method: String) -> Bool
 }
 
 public extension NetworkRequestObserverDelegate {
   func onNetworkRequestStarted(_ request: NetworkRequestStarted) {}
   func onNetworkRequestCompleted(_ request: NetworkRequest) {}
+
+  @AppMetricsActor
+  func shouldObserveRequest(url: URL, method: String) -> Bool {
+    return true
+  }
 }
 
 /**
@@ -104,7 +121,12 @@ public final class NetworkRequestMonitor: Sendable {
     }
     pruneDelegates()
     for entry in delegates {
-      entry.value?.onNetworkRequestCompleted(request)
+      guard let delegate = entry.value else {
+        continue
+      }
+      if delegate.shouldObserveRequest(url: request.url, method: request.method) {
+        delegate.onNetworkRequestCompleted(request)
+      }
     }
   }
 
@@ -116,7 +138,12 @@ public final class NetworkRequestMonitor: Sendable {
   func recordStart(_ request: NetworkRequestStarted) {
     pruneDelegates()
     for entry in delegates {
-      entry.value?.onNetworkRequestStarted(request)
+      guard let delegate = entry.value else {
+        continue
+      }
+      if delegate.shouldObserveRequest(url: request.url, method: request.method) {
+        delegate.onNetworkRequestStarted(request)
+      }
     }
   }
 

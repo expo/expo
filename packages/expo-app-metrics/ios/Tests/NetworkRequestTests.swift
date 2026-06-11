@@ -134,6 +134,130 @@ struct NetworkRequestMonitorTests {
     }
     #expect(monitor.recent.count == 200)
   }
+
+  @Test
+  func `does not fan out events the delegate filters out`() {
+    let monitor = NetworkRequestMonitor()
+    let collector = FilteringDelegate(allowedHost: "api.expo.dev")
+    monitor.addDelegate(collector)
+
+    monitor.recordStart(makeStarted(url: "https://api.expo.dev/v2/sessions", method: "POST"))
+    monitor.recordStart(makeStarted(url: "https://cdn.example.com/asset.png", method: "GET"))
+    monitor.record(makeRequest(url: "https://api.expo.dev/v2/sessions"))
+    monitor.record(makeRequest(url: "https://cdn.example.com/asset.png"))
+
+    // Only the matching host reaches the delegate, on both the start and the completion path.
+    #expect(collector.receivedStarts.count == 1)
+    #expect(collector.receivedStarts.first?.url.host == "api.expo.dev")
+    #expect(collector.received.count == 1)
+    #expect(collector.received.first?.url.host == "api.expo.dev")
+  }
+
+  private func makeStarted(url: String, method: String) -> NetworkRequestStarted {
+    return NetworkRequestStarted(id: UUID(), url: URL(string: url)!, method: method, startedAt: Date())
+  }
+
+  private func makeRequest(url: String) -> NetworkRequest {
+    return NetworkRequest.from(
+      id: UUID(),
+      request: URLRequest(url: URL(string: url)!),
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: Date(),
+      fallbackEnd: Date(),
+      error: nil
+    )
+  }
+}
+
+@Suite("NetworkRequestFilter")
+struct NetworkRequestFilterTests {
+  @Test
+  func `a filter with no fields set matches every request`() {
+    let filter = NetworkRequestFilter()
+    #expect(filter.matches(url: URL(string: "https://anything.example.com/path")!, method: "GET"))
+    #expect(filter.matches(url: URL(string: "https://other.test/x")!, method: "DELETE"))
+  }
+
+  @Test
+  func `an empty array allows nothing through that dimension`() {
+    var emptyHosts = NetworkRequestFilter()
+    emptyHosts.hosts = []
+    #expect(!emptyHosts.matches(url: URL(string: "https://api.expo.dev/x")!, method: "GET"))
+
+    var emptyMethods = NetworkRequestFilter()
+    emptyMethods.methods = []
+    #expect(!emptyMethods.matches(url: URL(string: "https://api.expo.dev/x")!, method: "GET"))
+  }
+
+  @Test
+  func `hosts match exactly and case-insensitively`() {
+    var filter = NetworkRequestFilter()
+    filter.hosts = ["API.Expo.dev"]
+    #expect(filter.matches(url: URL(string: "https://api.expo.dev/v2")!, method: "GET"))
+    // Exact host only — subdomains and unrelated hosts are excluded.
+    #expect(!filter.matches(url: URL(string: "https://cdn.expo.dev/v2")!, method: "GET"))
+    #expect(!filter.matches(url: URL(string: "https://example.com/v2")!, method: "GET"))
+  }
+
+  @Test
+  func `hosts is an OR across the listed entries`() {
+    var filter = NetworkRequestFilter()
+    filter.hosts = ["api.expo.dev", "u.expo.dev"]
+    #expect(filter.matches(url: URL(string: "https://api.expo.dev/x")!, method: "GET"))
+    #expect(filter.matches(url: URL(string: "https://u.expo.dev/x")!, method: "GET"))
+    #expect(!filter.matches(url: URL(string: "https://cdn.expo.dev/x")!, method: "GET"))
+  }
+
+  @Test
+  func `methods match case-insensitively`() {
+    var filter = NetworkRequestFilter()
+    filter.methods = ["post", "PUT"]
+    #expect(filter.matches(url: URL(string: "https://expo.dev/x")!, method: "POST"))
+    #expect(filter.matches(url: URL(string: "https://expo.dev/x")!, method: "put"))
+    #expect(!filter.matches(url: URL(string: "https://expo.dev/x")!, method: "GET"))
+  }
+
+  @Test
+  func `fields combine with AND`() {
+    var filter = NetworkRequestFilter()
+    filter.hosts = ["api.expo.dev"]
+    filter.methods = ["POST"]
+    // Both the host and the method must match.
+    #expect(filter.matches(url: URL(string: "https://api.expo.dev/x")!, method: "POST"))
+    #expect(!filter.matches(url: URL(string: "https://api.expo.dev/x")!, method: "GET"))
+    #expect(!filter.matches(url: URL(string: "https://cdn.expo.dev/x")!, method: "POST"))
+  }
+}
+
+@AppMetricsActor
+@Suite("NetworkRequestObserver filtering")
+struct NetworkRequestObserverFilterTests {
+  @Test
+  func `shouldObserveRequest reflects the active filter`() {
+    // The suite is `@AppMetricsActor`-isolated, so the actor-isolated `filter` is set and read
+    // here synchronously — exercising `shouldObserveRequest`'s logic without racing the `Task` hop that the
+    // public `setFilter`/`init` use to reach the actor.
+    let observer = NetworkRequestObserver()
+
+    var post = NetworkRequestFilter()
+    post.methods = ["POST"]
+    observer.filter = post
+    #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
+    #expect(!observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "GET"))
+
+    var get = NetworkRequestFilter()
+    get.methods = ["GET"]
+    observer.filter = get
+    #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "GET"))
+    #expect(!observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
+
+    // No filter falls back to observing everything.
+    observer.filter = nil
+    #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
+  }
 }
 
 @Suite("NetworkRequestSummary")
@@ -668,6 +792,55 @@ private final class CollectingDelegate: NetworkRequestObserverDelegate, @uncheck
       lock.unlock()
     }
     return started
+  }
+
+  func onNetworkRequestStarted(_ request: NetworkRequestStarted) {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    started.append(request)
+  }
+
+  func onNetworkRequestCompleted(_ request: NetworkRequest) {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    completed.append(request)
+  }
+}
+
+/** Collecting delegate that only accepts requests for a single host, exercising the monitor's
+ per-delegate `shouldObserveRequest` consult at the fan-out site. */
+private final class FilteringDelegate: NetworkRequestObserverDelegate, @unchecked Sendable {
+  private let allowedHost: String
+  private let lock = NSLock()
+  private var completed: [NetworkRequest] = []
+  private var started: [NetworkRequestStarted] = []
+
+  init(allowedHost: String) {
+    self.allowedHost = allowedHost
+  }
+
+  var received: [NetworkRequest] {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    return completed
+  }
+
+  var receivedStarts: [NetworkRequestStarted] {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    return started
+  }
+
+  func shouldObserveRequest(url: URL, method: String) -> Bool {
+    return url.host == allowedHost
   }
 
   func onNetworkRequestStarted(_ request: NetworkRequestStarted) {
