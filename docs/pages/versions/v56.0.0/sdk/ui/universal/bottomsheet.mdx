@@ -115,7 +115,7 @@ export default function BottomSheetScrollableExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents>
       <Button label="Open" onPress={() => setIsPresented(true)} />
       <BottomSheet
         isPresented={isPresented}
