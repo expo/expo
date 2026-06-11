@@ -162,8 +162,6 @@ function HomeScreen() {
         shouldDownloadFromNetwork: true,
       });
 
-      // navigation.navigate('UploadDemo');
-
 
       if (result.canceled) {
         return;
