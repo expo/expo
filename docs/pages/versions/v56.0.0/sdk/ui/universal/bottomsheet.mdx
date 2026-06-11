@@ -100,6 +100,42 @@ export default function BottomSheetSnapPointsExample() {
 
 > On Android, `{ fraction }` and `{ height }` snap to the nearest of `'half'` / `'full'` — the underlying `ModalBottomSheet` only supports two resting states. The partial state is only visible when content is tall enough to exceed Material's partial threshold; give the content an explicit height or fill the available space if you need the half state on short content.
 
+### Scrollable React Native content
+
+The bottom sheet supports a React Native list such as `FlatList` (or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list)) as a child when wrapped in [`RNHostView`](rnhostview). [`snapPoints`](#snappoints) sizes the sheet, and the list scrolls within that height. With `nestedScrollEnabled`, the list scrolls its own content first; once it reaches the top edge, the remaining drag moves the sheet.
+
+```tsx BottomSheetScrollableExample.tsx
+import { useState } from 'react';
+import { FlatList, Text } from 'react-native';
+import { Host, BottomSheet, Button, RNHostView } from '@expo/ui';
+
+const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
+
+export default function BottomSheetScrollableExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Button label="Open" onPress={() => setIsPresented(true)} />
+      <BottomSheet
+        isPresented={isPresented}
+        onDismiss={() => setIsPresented(false)}
+        snapPoints={['half', 'full']}>
+        <RNHostView>
+          <FlatList
+            nestedScrollEnabled
+            style={{ flex: 1 }}
+            data={DATA}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => <Text style={{ padding: 16 }}>{item}</Text>}
+          />
+        </RNHostView>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
