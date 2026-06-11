@@ -18,7 +18,7 @@ jobs:
         api-level: [36]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🍺 Install required tools
@@ -27,7 +27,7 @@ jobs:
           brew install applesimutils
           brew install watchman
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
+        uses: ruby/setup-ruby@12fd324f1d0b43274fdc8130f6980590a667c455 # v1
         with:
           bundler-cache: true
           ruby-version: 3.2.2
@@ -69,7 +69,7 @@ jobs:
         working-directory: packages/expo-dev-client
       - name: 💾 Store artifacts of build failures
         if: failure()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: expo-dev-client-latest-e2e-artifacts
           path: packages/expo-dev-client/artifacts
