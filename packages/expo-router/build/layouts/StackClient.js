@@ -5,17 +5,42 @@ exports.StackRouter = exports.stackRouterOverride = void 0;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
-const withLayoutContext_1 = require("./withLayoutContext");
-const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeStackNavigator");
+const createStandardNativeStackNavigator_1 = require("../fork/native-stack/createStandardNativeStackNavigator");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
 const stack_utils_1 = require("./stack-utils");
 const native_1 = require("../react-navigation/native");
+const standard_navigation_1 = require("../standard-navigation");
 const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
-const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
-const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
+const RNStack = (0, standard_navigation_1.unstable_integrateWithRouter)(createStandardNativeStackNavigator_1.createStandardNativeStackNavigator, native_1.StackRouter, {
+    createProps: ({ state, dispatch, navigation }) => {
+        const target = state.key;
+        return {
+            pop: (count, sourceRouteKey) => dispatch({ ...native_1.StackActions.pop(count), source: sourceRouteKey, target }),
+            subscribeTabPressPopToTop: () => 
+            // @ts-expect-error: there may not be a tab navigator in parent
+            navigation.addListener?.('tabPress', (e) => {
+                const isFocused = navigation.isFocused();
+                // Run the operation in the next frame so we're sure all listeners have been run
+                // This is necessary to know if preventDefault() has been called
+                requestAnimationFrame(() => {
+                    // The popToTop is automatically triggered on the native side for native tabs,
+                    // hence the `__internalTabsType` guard
+                    if (state.index > 0 &&
+                        isFocused &&
+                        !e.defaultPrevented &&
+                        e.data?.__internalTabsType !== 'native') {
+                        // When user taps on already focused tab and we're inside the tab,
+                        // reset the stack to replicate native behaviour
+                        dispatch({ ...native_1.StackActions.popToTop(), target });
+                    }
+                });
+            }),
+        };
+    },
+});
 function isStackAction(action) {
     return (action.type === 'PUSH' ||
         action.type === 'NAVIGATE' ||
