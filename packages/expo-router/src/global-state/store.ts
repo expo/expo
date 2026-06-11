@@ -70,7 +70,7 @@ export const store = {
   get rootComponent() {
     return storeRef.current.rootComponent;
   },
-  getStateForHref(href: Href, options?: LinkToOptions) {
+  getStateForHref(href: Href | string, options?: LinkToOptions) {
     href = resolveHref(href);
 
     href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
