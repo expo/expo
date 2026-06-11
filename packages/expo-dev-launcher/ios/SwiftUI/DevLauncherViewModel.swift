@@ -260,9 +260,12 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func refreshIfNeeded() async {
+    guard let browser else {
+      return
+    }
     if devServers.isEmpty {
       await restartBrowser()
-    } else if browser?.browseResults.isEmpty ?? true {
+    } else if browser.browseResults.isEmpty {
       updateDevServers([])
     } else {
       await pingCurrentBrowseResults()
