@@ -5,7 +5,8 @@ export declare enum AssetField {
     MEDIA_TYPE = "mediaType",
     WIDTH = "width",
     HEIGHT = "height",
-    DURATION = "duration"
+    DURATION = "duration",
+    IS_FAVORITE = "isFavorite"
 }
 export type AssetFieldValueMap = {
     [AssetField.CREATION_TIME]: number;
@@ -14,5 +15,6 @@ export type AssetFieldValueMap = {
     [AssetField.WIDTH]: number;
     [AssetField.HEIGHT]: number;
     [AssetField.DURATION]: number;
+    [AssetField.IS_FAVORITE]: boolean;
 };
 //# sourceMappingURL=AssetField.d.ts.map
