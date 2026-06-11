@@ -29,6 +29,7 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix `ModalBottomSheet` imperative calls (`expand()`, `partialExpand()`, `hide()`) being no-opped or overridden by the entrance animation when called right after presenting, which left a multi-snap-point `BottomSheet` at the wrong snap point. ([#46302](https://github.com/expo/expo/issues/46302) by [@vladcristianmarin](https://github.com/vladcristianmarin)) ([#46789](https://github.com/expo/expo/pull/46789) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Fix React Native `ScrollView` nested scrolling inside `BottomSheet`. ([#46544](https://github.com/expo/expo/pull/46544) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Fix layout shift when `Host` with `matchContents` is used inside React Native Screens. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `PagerView` offsetting `ScrollView` by safe area insets. ([#46637](https://github.com/expo/expo/pull/46637) by [@nishan](https://github.com/intergalacticspacehighway))
