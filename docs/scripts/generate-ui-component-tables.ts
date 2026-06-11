@@ -21,19 +21,19 @@ interface SectionConfig {
 
 const SECTIONS: SectionConfig[] = [
   {
+    dir: 'drop-in-replacements',
+    label: 'Drop-in replacements',
+    platformPrefix: null,
+    generateSectionTable: false,
+  },
+  { dir: 'universal', label: 'Universal', platformPrefix: null, generateSectionTable: false },
+  {
     dir: 'jetpack-compose',
     label: 'Jetpack Compose',
     platformPrefix: 'Jetpack Compose',
     generateSectionTable: true,
   },
   { dir: 'swift-ui', label: 'SwiftUI', platformPrefix: 'SwiftUI', generateSectionTable: true },
-  { dir: 'universal', label: 'Universal', platformPrefix: null, generateSectionTable: false },
-  {
-    dir: 'drop-in-replacements',
-    label: 'Drop-in replacements',
-    platformPrefix: null,
-    generateSectionTable: false,
-  },
 ];
 
 // Non-component pages (overview, concepts, hooks) excluded from every table.
