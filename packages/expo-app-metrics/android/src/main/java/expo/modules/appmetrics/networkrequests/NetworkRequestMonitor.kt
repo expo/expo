@@ -13,6 +13,15 @@ import java.util.Date
 interface NetworkRequestObserverDelegate {
   fun onNetworkRequestStarted(request: NetworkRequestStarted) {}
   fun onNetworkRequestCompleted(request: NetworkRequest) {}
+
+  /**
+   * Whether this delegate wants events for a request with the given URL and method. Consulted by
+   * the monitor before each fan-out call so a delegate's filter is evaluated before the payload is
+   * built. Only the URL and method are passed because those are the only attributes available at
+   * both start and completion, which keeps the started/completed decision consistent. Defaults to
+   * accepting every request.
+   */
+  fun shouldObserveRequest(url: String, method: String): Boolean = true
 }
 
 /**
@@ -79,7 +88,9 @@ class NetworkRequestMonitor internal constructor() {
       delegates.mapNotNull { it.get() }
     }
     for (delegate in snapshot) {
-      delegate.onNetworkRequestCompleted(request)
+      if (delegate.shouldObserveRequest(request.url, request.method)) {
+        delegate.onNetworkRequestCompleted(request)
+      }
     }
   }
 
@@ -94,7 +105,9 @@ class NetworkRequestMonitor internal constructor() {
       delegates.mapNotNull { it.get() }
     }
     for (delegate in snapshot) {
-      delegate.onNetworkRequestStarted(request)
+      if (delegate.shouldObserveRequest(request.url, request.method)) {
+        delegate.onNetworkRequestStarted(request)
+      }
     }
   }
 

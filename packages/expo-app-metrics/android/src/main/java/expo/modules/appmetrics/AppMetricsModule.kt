@@ -3,6 +3,7 @@ package expo.modules.appmetrics
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.logevents.LogEventOptions
+import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
@@ -200,8 +201,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       Class(NetworkRequestObserver::class) {
-        Constructor {
-          NetworkRequestObserver(appContext)
+        Constructor { filter: NetworkRequestFilter? ->
+          NetworkRequestObserver(appContext, filter)
+        }
+
+        Function("setFilter") { observer: NetworkRequestObserver, filter: NetworkRequestFilter? ->
+          observer.setFilter(filter)
         }
       }
       

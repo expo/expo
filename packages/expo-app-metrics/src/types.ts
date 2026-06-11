@@ -331,6 +331,33 @@ export type NetworkRequestCompletedEvent = {
 };
 
 /**
+ * Declares which requests a `NetworkRequestObserver` should emit events for. The filter is
+ * evaluated natively, before the request payload crosses into JS, so requests that don't match
+ * never materialize a `requestStarted`/`requestCompleted` event.
+ *
+ * Only request attributes that are known the moment a request starts are supported, so a request
+ * that matches always emits both its `requestStarted` and `requestCompleted` events as a pair —
+ * the filter decision never changes between the two.
+ *
+ * A field left unset (`undefined` or `null`) places no constraint on that dimension. A field set
+ * to an empty array allows nothing through it, so it drops every request. Different fields combine
+ * with AND (host **and** method must match); entries within a single field combine with OR (any
+ * listed host matches). A filter with no fields set, or a `null` filter, matches every request.
+ */
+export type NetworkRequestFilter = {
+  /**
+   * Allowed hosts, compared for exact, case-insensitive equality against the request URL's host.
+   * Subdomains are not implied: `['expo.dev']` matches `expo.dev` but not `api.expo.dev`. List each
+   * host you want to observe.
+   */
+  hosts?: string[] | null;
+  /**
+   * Allowed HTTP methods (`GET`, `POST`, …), compared case-insensitively.
+   */
+  methods?: string[] | null;
+};
+
+/**
  * Map of events emitted by `NetworkRequestObserver`. Used by the underlying `SharedObject`
  * event-emitter to type listener callbacks.
  */
@@ -346,11 +373,15 @@ export type NetworkRequestObserverEvents = {
  *
  * Subscribe to events via `addListener`/`removeListener` (inherited from the SharedObject base).
  *
+ * Pass a `NetworkRequestFilter` to only receive events for matching requests; the filter is
+ * applied natively so non-matching payloads never cross into JS. Omit it (or pass `null`) to
+ * observe every request.
+ *
  * @example
  * ```ts
  * import AppMetrics from 'expo-app-metrics';
  *
- * const observer = new AppMetrics.NetworkRequestObserver();
+ * const observer = new AppMetrics.NetworkRequestObserver({ hosts: ['api.expo.dev'] });
  * const sub = observer.addListener('requestCompleted', event => {
  *   console.log(event.url, event.totalDuration);
  * });
@@ -359,7 +390,14 @@ export type NetworkRequestObserverEvents = {
  * ```
  */
 export declare class NetworkRequestObserver extends SharedObject<NetworkRequestObserverEvents> {
-  constructor();
+  constructor(filter?: NetworkRequestFilter | null);
+
+  /**
+   * Replaces the active filter. Pass `null` to observe every request. The change applies
+   * atomically: events already mid-flight are emitted under either the old or the new filter,
+   * never a partially-applied mix.
+   */
+  setFilter(filter: NetworkRequestFilter | null): void;
 }
 
 /**

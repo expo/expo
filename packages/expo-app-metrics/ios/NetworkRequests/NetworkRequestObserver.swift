@@ -18,14 +18,26 @@ let REQUEST_COMPLETED_EVENT = "requestCompleted"
  in-process API for that.
  */
 public final class NetworkRequestObserver: SharedObject, NetworkRequestObserverDelegate, @unchecked Sendable {
-  public override init() {
+  /// The active filter, or `nil` to observe every request. Held in a `Mutex` so the read from the
+  /// monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
+  /// `setFilter` call never leaves a request evaluated under a half-applied filter.
+  private let filter = Mutex<NetworkRequestFilter?>(nil)
+
+  public init(filter: NetworkRequestFilter? = nil) {
     super.init()
+    self.filter.withLock { $0 = filter }
     AppMetricsActor.isolated { [weak self] in
       guard let self else {
         return
       }
       NetworkRequestMonitor.shared.addDelegate(self)
     }
+  }
+
+  /// Replaces the active filter. Pass `nil` to observe every request. The swap is atomic: a request
+  /// mid-fan-out is evaluated against either the old or the new filter, never a mix.
+  public func setFilter(_ filter: NetworkRequestFilter?) {
+    self.filter.withLock { $0 = filter }
   }
 
   public override func sharedObjectWillRelease() {
@@ -48,6 +60,13 @@ public final class NetworkRequestObserver: SharedObject, NetworkRequestObserverD
 
   public func onNetworkRequestCompleted(_ request: NetworkRequest) {
     emit(event: REQUEST_COMPLETED_EVENT, payload: NetworkRequestObserver.completedPayload(for: request))
+  }
+
+  public func shouldObserveRequest(url: URL, method: String) -> Bool {
+    guard let filter = filter.withLock({ $0 }) else {
+      return true
+    }
+    return filter.matches(url: url, method: method)
   }
 
   /** Internal so tests can assert the payload shape without going through `emit`, which needs a
