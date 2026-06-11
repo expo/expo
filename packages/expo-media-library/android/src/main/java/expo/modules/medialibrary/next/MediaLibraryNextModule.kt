@@ -15,6 +15,7 @@ import expo.modules.medialibrary.next.objects.album.AlbumQuery
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
+import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetLegacyDeleter
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetModernDeleter
 import expo.modules.medialibrary.next.objects.asset.factories.AssetModernFactory
@@ -75,11 +76,15 @@ class MediaLibraryNextModule : Module() {
     }
   }
 
+  private val assetMapper by lazy {
+    AssetMapper(context.contentResolver)
+  }
+
   private val assetFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      AssetModernFactory(assetDeleter, assetMover, mediaStorePermissionsDelegate, context)
+      AssetModernFactory(assetDeleter, assetMover, assetMapper, mediaStorePermissionsDelegate, context)
     } else {
-      AssetLegacyFactory(assetDeleter, assetMover, systemPermissionsDelegate, context)
+      AssetLegacyFactory(assetDeleter, assetMover, assetMapper, systemPermissionsDelegate, context)
     }
   }
 
@@ -240,7 +245,7 @@ class MediaLibraryNextModule : Module() {
 
     Class(Query::class) {
       Constructor {
-        Query(assetFactory, context)
+        Query(assetFactory, assetMapper, context.contentResolver)
       }
 
       Function("limit") { self: Query, limit: Int ->
@@ -291,7 +296,11 @@ class MediaLibraryNextModule : Module() {
       }
 
       AsyncFunction("exe") Coroutine { self: Query ->
-        return@Coroutine self.exe()
+        self.exe()
+      }
+
+      AsyncFunction("exeForMetadata") Coroutine { self: Query ->
+        self.exeForMetadata()
       }
     }
 
