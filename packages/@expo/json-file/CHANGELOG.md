@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 10.2.0 — 2026-05-20
+
+### 🎉 New features
+
+- Add `mode` option to `JsonFile` for writing files with restricted permissions ([#45873](https://github.com/expo/expo/pull/45873) by [@kitten](https://github.com/kitten))
+
+## 10.1.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 10.1.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.14 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.13 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.12 — 2026-02-03
 
 ### 💡 Others

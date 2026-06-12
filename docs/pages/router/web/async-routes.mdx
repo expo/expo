@@ -78,7 +78,12 @@ You can set platform-specific settings (`default`, `android`, `ios` or `web`) fo
 Then, when you are about to start your project, you can use the `--clear` flag to clear the Metro cache. This will ensure that the routes are loaded asynchronously:
 
 <Terminal
-  cmd={['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear']}
+  cmd={{
+    npm: ['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear'],
+    yarn: ['$ yarn expo start --clear', '', '# Or when exporting', '$ yarn expo export --clear'],
+    pnpm: ['$ pnpm expo start --clear', '', '# Or when exporting', '$ pnpm expo export --clear'],
+    bun: ['$ bun expo start --clear', '', '# Or when exporting', '$ bun expo export --clear'],
+  }}
 />
 
 ## Static rendering
@@ -93,6 +98,6 @@ All initial routes, defined with `unstable_settings = { initialRouteName: '...' 
 
 Async Routes represents an early preview of how we plan to support [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components) in the future. As such, there are some caveats to be aware of:
 
-- Async Routes do not support native production apps yet.
+- Async routes do not support native production apps yet.
 - In development, the runtime JavaScript is lazily bundled so you may encounter cases where the HTML doesn't match the available JavaScript.
-- The loading state cannot be customized at this time.
+- Custom [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) exports do not work with async routes.

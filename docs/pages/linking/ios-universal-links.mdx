@@ -41,11 +41,11 @@ If you're using Expo Router to build your website (or any other modern React fra
     "details": [
       {
         // Syntax: "<APPLE_TEAM_ID>.<BUNDLE_ID>"
-        /* @info Replace <CODE>QQ57RJ5UTD.com.example.myapp</CODE> with your own Apple Team ID and bundle identifier. */
+        /* @info Replace `QQ57RJ5UTD.com.example.myapp` with your own Apple Team ID and bundle identifier. */
         "appID": "QQ57RJ5UTD.com.example.myapp",
         /* @end */
         // All paths that should support redirecting.
-        /* @info Replace <CODE>/records/*</CODE> with your own path. */
+        /* @info Replace `/records/*` with your own path. */
         "paths": ["/records/*"]
         /* @end */
       }
@@ -177,7 +177,14 @@ To enable the banner, add the following meta tag to the `<head>` of your website
 
 If you're having trouble setting up the banner, run the following command to automatically generate the meta tag for your project:
 
-<Terminal cmd={['$ npx setup-safari']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx setup-safari'],
+    yarn: ['$ yarn dlx setup-safari'],
+    pnpm: ['$ pnpm dlx setup-safari'],
+    bun: ['$ bunx setup-safari'],
+  }}
+/>
 
 ### Add the meta tag to your statically rendered website
 
@@ -223,7 +230,14 @@ Add `associatedDomains` to your app config as [described above](#native-app-conf
 
 Start your dev server with the `--tunnel` flag:
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --tunnel'],
+    yarn: ['$ yarn expo start --tunnel'],
+    pnpm: ['$ pnpm expo start --tunnel'],
+    bun: ['$ bun expo start --tunnel'],
+  }}
+/>
 
 </Step>
 
@@ -231,7 +245,14 @@ Start your dev server with the `--tunnel` flag:
 
 Compile the development build on your device:
 
-<Terminal cmd={['$ npx expo run:ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
 
 </Step>
 

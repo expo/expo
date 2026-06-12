@@ -3,15 +3,118 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shipSwiftPackage = exports.shipFrameworks = exports.printIosConfig = exports.makeArtifactsDirectory = exports.binaryTarget = exports.libraryProduct = exports.getSupportedPlatforms = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXCframework = exports.createSwiftPackage = exports.copyXCFrameworks = exports.buildFramework = exports.cleanUpArtifacts = void 0;
+exports.shipSwiftPackage = exports.shipFrameworks = exports.validateHostProvided = exports.printIosConfig = exports.makeArtifactsDirectory = exports.binaryTarget = exports.libraryProduct = exports.getSupportedPlatforms = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXCframework = exports.createSwiftPackage = exports.copyXCFrameworks = exports.buildFramework = exports.cleanUpArtifacts = exports.enumerateSourceBuiltDeps = void 0;
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const commands_1 = require("./commands");
 const constants_1 = require("./constants");
 const error_1 = __importDefault(require("./error"));
 const precompiled_1 = require("./precompiled");
 const spinner_1 = require("./spinner");
+/**
+ * Inspect the built brownfield framework binary and return the names of `@rpath`-linked
+ * dynamic frameworks that are NOT already covered by the fixed XCFramework set, the
+ * brownfield target itself, or precompiled-module enumeration.
+ *
+ * Source-built pods (e.g. `ExpoModulesJSI` from a local podspec) are produced as dynamic
+ * `.framework`s alongside the brownfield framework, and the brownfield binary holds an
+ * `@rpath/<X>.framework/<X>` reference to each. Without shipping these as standalone
+ * xcframeworks the host app crashes at runtime with `dyld: Library not loaded: @rpath/…`.
+ *
+ * Returns names without the `.framework` suffix, deduped, in `otool -L` order.
+ */
+const enumerateSourceBuiltDeps = async (config, alreadyCovered) => {
+    const frameworkBinary = node_path_1.default.join(config.simulator, `${config.scheme}.framework`, config.scheme);
+    if (!node_fs_1.default.existsSync(frameworkBinary)) {
+        return [];
+    }
+    let stdout;
+    try {
+        ({ stdout } = await (0, spawn_async_1.default)('otool', ['-L', frameworkBinary]));
+    }
+    catch {
+        // otool failure is non-fatal — degrade gracefully and let the user catch the missing dep
+        // at runtime rather than blocking the whole build.
+        return [];
+    }
+    const hostProvided = new Set(config.hostProvidedFrameworks);
+    const names = new Set();
+    for (const line of stdout.split('\n')) {
+        const match = line.trim().match(/^@rpath\/([^/]+)\.framework\//);
+        if (match?.[1]) {
+            names.add(match[1]);
+        }
+    }
+    return Array.from(names).filter((name) => name !== config.scheme && !alreadyCovered.has(name) && !hostProvided.has(name));
+};
+exports.enumerateSourceBuiltDeps = enumerateSourceBuiltDeps;
+/**
+ * Build the `-framework <path>` (+ optional `-debug-symbols <dSYM-path>`) arg
+ * sequence for one slice of a `xcodebuild -create-xcframework` invocation.
+ *
+ * `-debug-symbols` is strict — pointing it at a non-existent path fails the
+ * whole create step — so we only attach the flag when the dSYM has actually
+ * been produced for that slice. dSYMs land at `<framework>.dSYM` next to the
+ * `.framework` in the products dir whenever
+ * `DEBUG_INFORMATION_FORMAT=dwarf-with-dsym` is in effect (forced for
+ * brownfield builds in `buildFramework`, but not guaranteed for transitive
+ * source-built deps that build under their own pod build settings).
+ */
+const xcframeworkSliceArgs = (frameworkPath) => {
+    const args = ['-framework', frameworkPath];
+    const dsymPath = `${frameworkPath}.dSYM`;
+    if (node_fs_1.default.existsSync(dsymPath)) {
+        args.push('-debug-symbols', dsymPath);
+    }
+    return args;
+};
+/**
+ * Locate a source-built `.framework` for `name` inside one of the brownfield build product
+ * slices. Pods that set `FRAMEWORK_SEARCH_PATHS` to `${PODS_CONFIGURATION_BUILD_DIR}/XCFrameworkIntermediates/<name>`
+ * (e.g. `ExpoModulesJSI`) land in `XCFrameworkIntermediates/<name>/<name>.framework` rather
+ * than at the slice root, so we check both locations.
+ */
+const findSourceBuiltFramework = (slicePath, name) => {
+    const candidates = [
+        node_path_1.default.join(slicePath, `${name}.framework`),
+        node_path_1.default.join(slicePath, 'XCFrameworkIntermediates', name, `${name}.framework`),
+    ];
+    return candidates.find((candidate) => node_fs_1.default.existsSync(candidate)) ?? null;
+};
+/**
+ * Build an xcframework from the device + simulator slices of a source-built `.framework`
+ * sitting in the brownfield build products dir, and copy it into `dest`. Returns whether
+ * the xcframework was produced (false when one or both slices are missing — typically a
+ * harmless skip for a system framework or a transitive dep that isn't actually built).
+ */
+const bundleSourceBuiltFramework = async (config, name, dest) => {
+    const deviceFramework = findSourceBuiltFramework(config.device, name);
+    const simulatorFramework = findSourceBuiltFramework(config.simulator, name);
+    if (!deviceFramework || !simulatorFramework) {
+        console.warn(`expo-brownfield: source-built dependency '${name}' is linked by ${config.scheme}.framework ` +
+            `but its device/simulator slices were not found under the brownfield build products dir. ` +
+            `Skipping. The host app may fail at runtime with 'Library not loaded: @rpath/${name}.framework/${name}'.`);
+        return false;
+    }
+    const outputPath = node_path_1.default.join(dest, `${name}.xcframework`);
+    if (node_fs_1.default.existsSync(outputPath)) {
+        node_fs_1.default.rmSync(outputPath, { recursive: true, force: true });
+    }
+    const args = [
+        '-create-xcframework',
+        ...xcframeworkSliceArgs(deviceFramework),
+        ...xcframeworkSliceArgs(simulatorFramework),
+        '-output',
+        outputPath,
+    ];
+    if (config.dryRun) {
+        console.log(`xcodebuild ${args.join(' ')}`);
+        return true;
+    }
+    await (0, spawn_async_1.default)('xcodebuild', args, { stdio: config.verbose ? 'inherit' : 'pipe' });
+    return true;
+};
 const cleanUpArtifacts = async (config) => {
     if (config.dryRun) {
         console.log('Cleaning up previous artifacts');
@@ -47,13 +150,18 @@ const buildFramework = async (config) => {
         'generic/platform=iphonesimulator',
         '-configuration',
         config.buildConfiguration,
+        // Ensure dSYMs are produced for both Debug and Release so they can be
+        // bundled into the resulting xcframework via `-create-xcframework
+        // -debug-symbols`. Release defaults to `dwarf-with-dsym`; Debug defaults
+        // to plain `dwarf` and would otherwise leave us with no dSYM to ship.
+        'DEBUG_INFORMATION_FORMAT=dwarf-with-dsym',
     ];
     if (config.dryRun) {
         console.log(`xcodebuild ${args.join(' ')}`);
         return;
     }
     return (0, spinner_1.withSpinner)({
-        operation: () => (0, commands_1.runCommand)('xcodebuild', args, { verbose: config.verbose }),
+        operation: () => (0, spawn_async_1.default)('xcodebuild', args, { stdio: config.verbose ? 'inherit' : 'pipe' }),
         loaderMessage: 'Compiling framework...',
         successMessage: 'Compiling framework succeeded',
         errorMessage: 'Compiling framework failed',
@@ -91,7 +199,9 @@ const copyXCFrameworks = async (config, dest) => {
         // Single source of truth: enumerates all three layers (pod → bundled-npm → shared
         // `.spm-deps/`) and runs the strict completeness check. Failing here surfaces missing
         // deps at packaging time (rather than as `Library not loaded: @rpath/...` at runtime).
-        const modules = (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration);
+        // Host-provided frameworks are filtered out here so they're neither copied to the artifact
+        // dir nor counted as a missing SPM-dep.
+        const modules = (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration, config.hostProvidedFrameworks);
         // Reconcile flavor once per pod — replace-xcframework.js extracts the whole tarball
         // (main + sibling SPM-dep xcframeworks) in one shot, so re-running per-xcframework would
         // unpack the same tarball repeatedly. SPM-dep entries (mainProduct === name, no artifacts/)
@@ -114,8 +224,36 @@ const copyXCFrameworks = async (config, dest) => {
             });
         }
     }
+    // Bundle any source-built dynamic frameworks the brownfield binary links against
+    // (e.g. `ExpoModulesJSI` from a local podspec). Without this the host app crashes at
+    // runtime with `dyld: Library not loaded: @rpath/<X>.framework/<X>`.
+    const alreadyCovered = collectCoveredFrameworkNames(config);
+    const sourceBuiltDeps = await (0, exports.enumerateSourceBuiltDeps)(config, alreadyCovered);
+    for (const depName of sourceBuiltDeps) {
+        await (0, spinner_1.withSpinner)({
+            operation: () => bundleSourceBuiltFramework(config, depName, dest),
+            loaderMessage: `Bundling source-built ${depName} as xcframework...`,
+            successMessage: `Bundling source-built ${depName} as xcframework succeeded`,
+            errorMessage: `Bundling source-built ${depName} as xcframework failed`,
+            verbose: config.verbose,
+        });
+    }
 };
 exports.copyXCFrameworks = copyXCFrameworks;
+/**
+ * Set of xcframework names the brownfield CLI already plans to ship (fixed XCFrameworks +
+ * prebuilt modules when enabled). Used to dedupe against `enumerateSourceBuiltDeps` so a
+ * dep that's already covered by a prebuilt artifact isn't re-built from source.
+ */
+const collectCoveredFrameworkNames = (config) => {
+    const covered = new Set([config.scheme, ...(0, precompiled_1.resolvedFixedXCFrameworks)()]);
+    if (config.usePrebuilds) {
+        for (const module of (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration, config.hostProvidedFrameworks)) {
+            covered.add(module.name);
+        }
+    }
+    return covered;
+};
 const createSwiftPackage = async (config) => {
     if (config.dryRun && config.output !== 'frameworks') {
         console.log(`Creating Swift package with name: ${config.output.packageName} at path: ${config.artifacts}`);
@@ -146,10 +284,8 @@ const createXCframework = async (config, at) => {
     const outputPath = node_path_1.default.join(at, frameworkName);
     const args = [
         '-create-xcframework',
-        '-framework',
-        `${config.device}/${config.scheme}.framework`,
-        '-framework',
-        `${config.simulator}/${config.scheme}.framework`,
+        ...xcframeworkSliceArgs(`${config.device}/${config.scheme}.framework`),
+        ...xcframeworkSliceArgs(`${config.simulator}/${config.scheme}.framework`),
         '-output',
         outputPath,
     ];
@@ -158,7 +294,7 @@ const createXCframework = async (config, at) => {
         return;
     }
     return (0, spinner_1.withSpinner)({
-        operation: () => (0, commands_1.runCommand)('xcodebuild', args, { verbose: config.verbose }),
+        operation: () => (0, spawn_async_1.default)('xcodebuild', args, { stdio: config.verbose ? 'inherit' : 'pipe' }),
         loaderMessage: 'Packaging framework into an XCFramework...',
         successMessage: 'Packaging framework into an XCFramework succeeded',
         errorMessage: 'Packaging framework into an XCFramework failed',
@@ -176,9 +312,23 @@ const findScheme = () => {
             .readdirSync(iosPath, { withFileTypes: true })
             .filter((item) => item.isDirectory());
         const scheme = subdirectories.find((directory) => {
-            const directoryPath = node_path_1.default.join(iosPath, directory.name);
-            const files = node_fs_1.default.readdirSync(directoryPath, { recursive: true });
-            return files.some((file) => typeof file === 'string' && file.endsWith('ReactNativeHostManager.swift'));
+            const directoryPath = node_path_1.default.resolve(iosPath, directory.name);
+            const directories = [directoryPath];
+            let target;
+            while ((target = directories.shift()) != null) {
+                const entries = node_fs_1.default.readdirSync(target, { withFileTypes: true });
+                for (const entry of entries) {
+                    const childPath = node_path_1.default.join(target, entry.name);
+                    if (entry.isDirectory()) {
+                        directories.push(childPath);
+                    }
+                    else if (entry.isFile()) {
+                        if (entry.name === 'ReactNativeHostManager.swift')
+                            return true;
+                    }
+                }
+            }
+            return false;
         });
         if (scheme) {
             return scheme.name;
@@ -231,12 +381,21 @@ const generatePackageMetadataFile = async (config, packagePath) => {
     // xcframework that lands on disk is also declared as a `.binaryTarget` here (and vice-versa).
     // The check fails fast — Package.swift never gets written if a declared SPM dep is missing.
     const precompiledModules = config.usePrebuilds
-        ? (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration).map(({ name }) => ({
+        ? (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration, config.hostProvidedFrameworks).map(({ name }) => ({
             name,
             targets: [name],
         }))
         : [];
-    const xcframeworks = [...baseFrameworks, ...precompiledModules];
+    // Source-built dynamic deps the brownfield framework links against (e.g. ExpoModulesJSI).
+    // `copyXCFrameworks` writes their xcframeworks to disk; we need to declare matching
+    // `.binaryTarget`s here so SPM consumers actually link them.
+    const sourceBuiltDepNames = await (0, exports.enumerateSourceBuiltDeps)(config, new Set([
+        config.scheme,
+        ...baseFrameworks.map(({ name }) => name),
+        ...precompiledModules.map(({ name }) => name),
+    ]));
+    const sourceBuiltDeps = sourceBuiltDepNames.map((name) => ({ name, targets: [name] }));
+    const xcframeworks = [...baseFrameworks, ...precompiledModules, ...sourceBuiltDeps];
     // With prebuilds the module graph is large; expose a single aggregate library so consumers
     // `import <PackageName>` once and Xcode links every underlying binary target automatically.
     // Without prebuilds keep one `.library` per framework for backwards compatibility.
@@ -266,7 +425,7 @@ const getSupportedPlatforms = async (config) => {
     // Try to infer `IPHONEOS_DEPLOYMENT_TARGET` from the project
     const args = ['-workspace', config.workspace, '-scheme', config.scheme, '-showBuildSettings'];
     try {
-        const { stdout } = await (0, commands_1.runCommand)('xcodebuild', args, { verbose: false });
+        const { stdout } = await (0, spawn_async_1.default)('xcodebuild', args);
         const regex = /^\s*IPHONEOS_DEPLOYMENT_TARGET = (.+)$/m;
         const value = regex.exec(stdout)?.[1]?.trim();
         if (value) {
@@ -321,9 +480,95 @@ const printIosConfig = (config) => {
         console.log(` - Package name: ${chalk_1.default.blue(config.output.packageName)}`);
     }
     console.log(` - Bundle precompiled modules: ${chalk_1.default.blue(config.usePrebuilds)}`);
+    if (config.hostProvidedFrameworks.length > 0) {
+        console.log(` - Host-provided frameworks: ${chalk_1.default.blue(config.hostProvidedFrameworks.join(', '))}`);
+    }
     console.log();
 };
 exports.printIosConfig = printIosConfig;
+const validateHostProvided = (config) => {
+    if (config.hostProvidedFrameworks.length === 0) {
+        return;
+    }
+    if (!config.usePrebuilds) {
+        error_1.default.handle('ios-host-provided-without-prebuilds');
+        return;
+    }
+    // Use the same three-layer enumeration the build path uses, so a host-provided framework
+    // resolved out of `node_modules/<pkg>/prebuilds/output/` or `packages/precompile/.build/.spm-deps/`
+    // (rather than `ios/Pods/`) is still detected and doesn't spuriously trigger the unused-entry
+    // warning. `enumeratePrebuildModulesRaw` skips the host-provided filter and missing-dep check
+    // that `enumerateAllPrebuildModules` would otherwise apply.
+    const { modules } = (0, precompiled_1.enumeratePrebuildModulesRaw)(process.cwd(), config.buildConfiguration);
+    const pathsByName = new Map();
+    for (const module of modules) {
+        if (!pathsByName.has(module.name)) {
+            pathsByName.set(module.name, module.xcframeworkPath);
+        }
+    }
+    for (const name of config.hostProvidedFrameworks) {
+        const xcframeworkPath = pathsByName.get(name);
+        if (xcframeworkPath === undefined) {
+            console.warn(chalk_1.default.yellow(`expo-brownfield: '${name}' is listed in ios.hostProvidedFrameworks but no matching xcframework was found in ios/Pods/, node_modules/<pkg>/prebuilds/output/, or the shared .spm-deps/ cache. Remove it from the config, or re-run \`pod install\` if the source module isn't installed yet.`));
+            continue;
+        }
+        const version = readXcframeworkShortVersion(xcframeworkPath);
+        const versionLabel = version ?? 'unknown version';
+        console.log(chalk_1.default.dim(`expo-brownfield: excluding ${name} (${versionLabel}) — the host iOS app must provide ${name} at a compatible version at link time.`));
+    }
+};
+exports.validateHostProvided = validateHostProvided;
+/**
+ * Reads the first `Info.plist` we can find inside an xcframework and returns
+ * the `CFBundleShortVersionString` value.
+ */
+const readXcframeworkShortVersion = (xcframeworkPath) => {
+    let slices;
+    try {
+        slices = node_fs_1.default.readdirSync(xcframeworkPath, { withFileTypes: true });
+    }
+    catch {
+        return null;
+    }
+    for (const slice of slices) {
+        if (!slice.isDirectory()) {
+            continue;
+        }
+        const sliceDir = node_path_1.default.join(xcframeworkPath, slice.name);
+        let frameworks;
+        try {
+            frameworks = node_fs_1.default.readdirSync(sliceDir, { withFileTypes: true });
+        }
+        catch {
+            continue;
+        }
+        for (const fw of frameworks) {
+            if (!fw.isDirectory() || !fw.name.endsWith('.framework')) {
+                continue;
+            }
+            const infoPlistCandidates = [
+                node_path_1.default.join(sliceDir, fw.name, 'Info.plist'),
+                node_path_1.default.join(sliceDir, fw.name, 'Resources', 'Info.plist'),
+            ];
+            for (const plist of infoPlistCandidates) {
+                if (!node_fs_1.default.existsSync(plist)) {
+                    continue;
+                }
+                try {
+                    const xml = node_fs_1.default.readFileSync(plist, 'utf8');
+                    const match = xml.match(/<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/);
+                    if (match?.[1]) {
+                        return match[1].trim();
+                    }
+                }
+                catch {
+                    // Ignore — this is best-effort.
+                }
+            }
+        }
+    }
+    return null;
+};
 const shipFrameworks = async (config) => {
     // Create artifacts directory
     await (0, exports.cleanUpArtifacts)(config);

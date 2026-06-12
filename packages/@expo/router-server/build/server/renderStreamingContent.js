@@ -81,9 +81,6 @@ function prepareRenderContext(location, options) {
         context: _ctx_1.ctx,
         wrapper: ({ children }) => ((0, jsx_runtime_1.jsx)(Root, { children: (0, jsx_runtime_1.jsx)("div", { id: "root", children: children }) })),
     });
-    // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-    // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-    Font.resetServerContext();
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
@@ -96,6 +93,8 @@ function prepareRenderContext(location, options) {
     return { headContext, element, getStyleElement, loadedData };
 }
 function FontResources() {
+    // NOTE(@hassankhan): runs once during the shell pass; fonts loaded inside late-resolving
+    // Suspense boundaries register after this and won't be emitted.
     const descriptors = Font.getServerResourceDescriptors();
     debug(`Pushing fonts: (count: ${descriptors.length})`, descriptors);
     return (0, react_1.createInjectedFontsAsNodes)(descriptors);
@@ -105,23 +104,37 @@ function FontResources() {
  * that emits the full HTML document with head injections applied.
  */
 async function getStreamingContent(location, options) {
-    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
-    const { headNodes: headCssNodes } = (0, react_1.createInjectedCssAsNodes)(options?.assets?.css ?? []);
-    const serverDocumentData = {
-        headNodes: [
-            ...(options?.metadata?.headNodes ?? []),
-            getStyleElement({ key: 'rnw-style-element' }),
-            ...(headCssNodes ?? []),
-        ],
-        bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {})],
-    };
-    return await server_2.default.renderToReadableStream((0, jsx_runtime_1.jsx)(server_1.ServerDocument, { data: serverDocumentData, children: (0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }) }), {
-        // TODO(@hassankhan): Experiment and see if we can calculate a better default
-        // We're doubling the default here so non-JavaScript renders show some content
-        progressiveChunkSize: 12800 * 2,
-        bootstrapScriptContent: (0, react_1.getBootstrapContents)({ hydrate: true, loadedData }),
-        bootstrapScripts: options?.assets?.js,
-        signal: options?.request?.signal,
+    return Font.withServerContext(() => {
+        const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
+        const { headNodes: headCssNodes } = (0, react_1.createInjectedCssAsNodes)(options?.assets?.css ?? []);
+        const { headNodes: inlineCssNodes } = (0, react_1.createInjectedInlineCssAsNodes)(options?.assets?.inlineCss);
+        const faviconNode = options?.assets?.favicon
+            ? (0, react_1.createFaviconAsNode)(options?.assets?.favicon)
+            : undefined;
+        const serverDocumentData = {
+            headNodes: [
+                ...(options?.metadata?.headNodes ?? []),
+                faviconNode,
+                getStyleElement({ key: 'rnw-style-element' }),
+                ...(headCssNodes ?? []),
+                ...(inlineCssNodes ?? []),
+            ].filter(Boolean),
+            bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {}, "font-resources")],
+        };
+        return server_2.default.renderToReadableStream((0, jsx_runtime_1.jsx)(server_1.ServerDocument, { data: serverDocumentData, children: (0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }) }), {
+            // TODO(@hassankhan): Experiment and see if we can calculate a better default
+            // We're doubling the default here so non-JavaScript renders show some content
+            progressiveChunkSize: 12800 * 2,
+            bootstrapScriptContent: (0, react_1.getBootstrapContents)({ hydrate: true, loadedData }),
+            bootstrapScripts: options?.assets?.js,
+            signal: options?.request?.signal,
+            onError(error) {
+                if (options?.request?.signal.aborted) {
+                    return;
+                }
+                console.error('SSR streaming render error:', error);
+            },
+        });
     });
 }
 var metadata_1 = require("./metadata");

@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Tabs = exports.unstable_navigationEvents = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useScrollToTop = exports.useRoutePath = exports.useTheme = exports.ThemeProvider = exports.DefaultTheme = exports.DarkTheme = exports.useIsFocused = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.SuspenseFallback = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.router = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.ExperimentalStack = exports.Tabs = exports.unstable_navigationEvents = exports.TabRouter = exports.StackRouter = exports.unstable_integrateWithRouter = exports.unstable_createStandardRouterNavigator = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useRoute = exports.useScrollToTop = exports.useRoutePath = exports.useTheme = exports.ThemeProvider = exports.DefaultTheme = exports.DarkTheme = exports.useIsFocused = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.SuspenseFallback = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.router = exports.useCurrentRouteInfo = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -49,6 +49,7 @@ Object.defineProperty(exports, "useSegments", { enumerable: true, get: function 
 Object.defineProperty(exports, "useRootNavigation", { enumerable: true, get: function () { return hooks_1.useRootNavigation; } });
 Object.defineProperty(exports, "useRootNavigationState", { enumerable: true, get: function () { return hooks_1.useRootNavigationState; } });
 Object.defineProperty(exports, "useLoaderData", { enumerable: true, get: function () { return hooks_1.useLoaderData; } });
+Object.defineProperty(exports, "useCurrentRouteInfo", { enumerable: true, get: function () { return hooks_1.useCurrentRouteInfo; } });
 var imperative_api_1 = require("./imperative-api");
 Object.defineProperty(exports, "router", { enumerable: true, get: function () { return imperative_api_1.router; } });
 var withLayoutContext_1 = require("./layouts/withLayoutContext");
@@ -90,11 +91,20 @@ var useRoutePath_1 = require("./react-navigation/native/useRoutePath");
 Object.defineProperty(exports, "useRoutePath", { enumerable: true, get: function () { return useRoutePath_1.useRoutePath; } });
 var useScrollToTop_1 = require("./react-navigation/native/useScrollToTop");
 Object.defineProperty(exports, "useScrollToTop", { enumerable: true, get: function () { return useScrollToTop_1.useScrollToTop; } });
+var useRoute_1 = require("./react-navigation/core/useRoute");
+Object.defineProperty(exports, "useRoute", { enumerable: true, get: function () { return useRoute_1.useRoute; } });
 var primitives_1 = require("./primitives");
 Object.defineProperty(exports, "Badge", { enumerable: true, get: function () { return primitives_1.Badge; } });
 Object.defineProperty(exports, "Icon", { enumerable: true, get: function () { return primitives_1.Icon; } });
 Object.defineProperty(exports, "Label", { enumerable: true, get: function () { return primitives_1.Label; } });
 Object.defineProperty(exports, "VectorIcon", { enumerable: true, get: function () { return primitives_1.VectorIcon; } });
+var standard_navigation_1 = require("./standard-navigation");
+Object.defineProperty(exports, "unstable_createStandardRouterNavigator", { enumerable: true, get: function () { return standard_navigation_1.unstable_createStandardRouterNavigator; } });
+Object.defineProperty(exports, "unstable_integrateWithRouter", { enumerable: true, get: function () { return standard_navigation_1.unstable_integrateWithRouter; } });
+// Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
+var routers_1 = require("./react-navigation/routers");
+Object.defineProperty(exports, "StackRouter", { enumerable: true, get: function () { return routers_1.StackRouter; } });
+Object.defineProperty(exports, "TabRouter", { enumerable: true, get: function () { return routers_1.TabRouter; } });
 var navigationEvents_1 = require("./navigationEvents");
 Object.defineProperty(exports, "unstable_navigationEvents", { enumerable: true, get: function () { return navigationEvents_1.unstable_navigationEvents; } });
 /**
@@ -102,4 +112,6 @@ Object.defineProperty(exports, "unstable_navigationEvents", { enumerable: true, 
  */
 var Tabs_1 = require("./layouts/Tabs");
 Object.defineProperty(exports, "Tabs", { enumerable: true, get: function () { return Tabs_1.Tabs; } });
+var experimental_stack_1 = require("./layouts/experimental-stack");
+Object.defineProperty(exports, "ExperimentalStack", { enumerable: true, get: function () { return experimental_stack_1.ExperimentalStack; } });
 //# sourceMappingURL=exports.js.map

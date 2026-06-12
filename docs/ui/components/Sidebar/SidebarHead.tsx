@@ -5,6 +5,7 @@ import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/Gradu
 import { Home02DuotoneIcon } from '@expo/styleguide-icons/duotone/Home02DuotoneIcon';
 import { Stars02DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars02DuotoneIcon';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
+import { useIntl } from 'react-intl';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
 import { Search } from '~/ui/components/Search';
@@ -17,22 +18,28 @@ type SidebarHeadProps = {
 };
 
 export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
+  const intl = useIntl();
   const isPreviewVisible = shouldShowFeaturePreviewLink();
+  const homeLabel = intl.formatMessage({ id: 'navHome' });
+  const guidesLabel = intl.formatMessage({ id: 'navGuides' });
+  const easLabel = intl.formatMessage({ id: 'navEas' });
+  const referenceLabel = intl.formatMessage({ id: 'navReference' });
+  const learnLabel = intl.formatMessage({ id: 'navLearn' });
   const mainSectionMap: Record<string, string> = {
-    home: 'Home',
-    general: 'Guides',
+    home: homeLabel,
+    general: guidesLabel,
     eas: 'Expo Application Services',
-    reference: 'Reference',
-    learn: 'Learn',
+    reference: referenceLabel,
+    learn: learnLabel,
   };
   const mainSection = mainSectionMap[sidebarActiveGroup];
 
   if (sidebarActiveGroup === 'archive') {
     return (
-      <div className="border-default bg-default flex flex-col gap-0.5 border-b p-1.5">
+      <div className="flex flex-col gap-0.5 border-b border-default bg-default p-1.5">
         <LinkBase
           href="/"
-          className="text-secondary hocus:bg-element flex items-center gap-3 rounded-md p-2.5">
+          className="flex items-center gap-3 rounded-md p-2.5 text-secondary hocus:bg-element">
           <ArrowLeftIcon className="text-icon-secondary" />
           Back
         </LinkBase>
@@ -42,7 +49,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
 
   return (
     <>
-      <div className="border-default bg-default compact-height:pb-3 flex flex-col gap-0.5 border-b p-4">
+      <div className="flex flex-col gap-0.5 border-b border-default bg-default p-4 compact-height:pb-3">
         <Search mainSection={mainSection} />
         <div
           className={mergeClasses(
@@ -52,43 +59,43 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
           )}>
           <SidebarSingleEntry
             href="/"
-            title="Home"
+            title={homeLabel}
             Icon={Home02DuotoneIcon}
             isActive={sidebarActiveGroup === 'home'}
             allowCompactDisplay
-            mainSection="Home"
+            mainSection={homeLabel}
           />
           <SidebarSingleEntry
             href="/guides/overview/"
-            title="Guides"
+            title={guidesLabel}
             Icon={BookOpen02DuotoneIcon}
             isActive={sidebarActiveGroup === 'general'}
             allowCompactDisplay
-            mainSection="Guides"
+            mainSection={guidesLabel}
           />
           <SidebarSingleEntry
             href="/eas/"
-            title="EAS"
+            title={easLabel}
             Icon={PlanEnterpriseIcon}
             isActive={sidebarActiveGroup === 'eas'}
             allowCompactDisplay
-            mainSection="EAS"
+            mainSection={easLabel}
           />
           <SidebarSingleEntry
             href="/versions/latest/"
-            title="Reference"
+            title={referenceLabel}
             Icon={DocsLogo}
             isActive={sidebarActiveGroup === 'reference'}
             allowCompactDisplay
-            mainSection="Reference"
+            mainSection={referenceLabel}
           />
           <SidebarSingleEntry
             href="/tutorial/overview/"
-            title="Learn"
+            title={learnLabel}
             Icon={GraduationHat02DuotoneIcon}
             isActive={sidebarActiveGroup === 'learn'}
             allowCompactDisplay
-            mainSection="Learn"
+            mainSection={learnLabel}
           />
           {isPreviewVisible && (
             <SidebarSingleEntry

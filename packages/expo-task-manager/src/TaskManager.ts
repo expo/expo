@@ -72,7 +72,12 @@ export interface TaskManagerTask {
   taskName: string;
 
   /**
-   * Type of the task which depends on how the task was registered.
+   * Type of the task which depends on how the task was registered. Standard
+   * values emitted by Expo SDK libraries are `'location'` and `'geofencing'`
+   * (`expo-location`), `'backgroundFetch'` (`expo-background-fetch`),
+   * `'expo-background-task'` on Android or `'backgroundTask'` on iOS
+   * (`expo-background-task`), and `'remote-notification'`
+   * (`expo-notifications`). User-registered tasks may have any string value.
    */
   taskType: string;
 
@@ -107,11 +112,10 @@ function _validate(taskName: unknown) {
 
 // @needsAudit
 /**
- * Defines task function. It must be called in the global scope of your JavaScript bundle.
- * In particular, it cannot be called in any of React lifecycle methods like `componentDidMount`.
- * This limitation is due to the fact that when the application is launched in the background,
- * we need to spin up your JavaScript app, run your task and then shut down — no views are mounted
- * in this scenario.
+ * Defines task function. It must be called in the global scope of your JavaScript bundle,
+ * not inside a React component. When the application is launched in
+ * the background, no components are mounted, so the task must already be registered at
+ * module load time.
  *
  * @param taskName Name of the task. It must be the same as the name you provided when registering the task.
  * @param taskExecutor A function that will be invoked when the task with given `taskName` is executed.

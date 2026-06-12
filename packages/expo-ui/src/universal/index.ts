@@ -8,10 +8,15 @@ export * from './Switch';
 export * from './Slider';
 export * from './Checkbox';
 export * from './BottomSheet';
+export * from './Collapsible';
 export * from './FieldGroup';
 export * from './Icon';
+export * from './List';
+export * from './ListItem';
+export * from './Picker';
+export * from './RNHostView';
 export * from './Spacer';
 export * from './State';
-export * from './TextInput';
+export { TextInput, type TextInputProps, type TextInputRef } from './TextInput';
 
 export type { UniversalStyle, UniversalAlignment, UniversalBaseProps } from './types';

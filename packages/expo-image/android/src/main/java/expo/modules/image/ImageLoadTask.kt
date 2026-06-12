@@ -1,8 +1,6 @@
 package expo.modules.image
 
 import android.graphics.drawable.BitmapDrawable
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.Glide
 import expo.modules.image.records.ImageLoadOptions
@@ -17,7 +15,6 @@ open class ImageLoadTask(
   private val source: SourceMap,
   private val options: ImageLoadOptions
 ) {
-  @RequiresApi(Build.VERSION_CODES.O)
   suspend fun load(): Image {
     val context =
       this@ImageLoadTask.appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -33,14 +30,14 @@ open class ImageLoadTask(
           .load(model)
           .centerInside()
           .customize(options.tintColor) {
-            apply(RequestOptions().set(CustomOptions.tintColor, it.toArgb()))
+            apply(RequestOptions().set(CustomOptions.tintColor, it))
           }
           .submit(options.maxWidth, options.maxHeight)
           .get()
       }
 
       if (drawable is BitmapDrawable && options.tintColor != null) {
-        drawable.setTint(options.tintColor.toArgb())
+        drawable.setTint(options.tintColor)
       }
 
       return Image(drawable)

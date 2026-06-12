@@ -4,13 +4,27 @@
 
 ### 🛠 Breaking changes
 
-- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- [Android] Use `javaObjectType` in `JSONObject.require<T>` so primitive type arms (`Long`/`Int`/`Double`/`Boolean`) match instead of silently falling into the catch-all `else` and throwing `ClassCastException`. ([#46181](https://github.com/expo/expo/pull/46181) by [@jakequade-pc](https://github.com/jakequade-pc))
+
 ### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.2 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.0 — 2026-01-21
 

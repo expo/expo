@@ -31,6 +31,8 @@ export function getLinkingURL() {
   return '';
 }
 
+export function clearInitialURL(): void {}
+
 export async function openURL(url: string): Promise<true> {
   return true;
 }

@@ -34,17 +34,19 @@ jobs:
       platform: android | ios # required
       profile: string # optional - default: production
       message: string # optional
+      refresh_ad_hoc_provisioning_profile: boolean # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                                                                   |
-| --------- | ------ | ------------------------------------------------------------------------------------------------------------- |
-| platform  | string | **Required.** The platform to build for. Can be either `android` or `ios`.                                    |
-| profile   | string | Optional. The build profile to use. Defaults to `production`.                                                 |
-| message   | string | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`. |
+| Parameter                           | Type    | Description                                                                                                                                                                                                                                                                                                   |
+| ----------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| platform                            | string  | **Required.** The platform to build for. Can be either `android` or `ios`.                                                                                                                                                                                                                                    |
+| profile                             | string  | Optional. The build profile to use. Defaults to `production`.                                                                                                                                                                                                                                                 |
+| message                             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                                                                                                                                                                                                 |
+| refresh_ad_hoc_provisioning_profile | boolean | Optional. Refreshes the managed ad hoc provisioning profile before an iOS internal build starts. Corresponds to the [`--refresh-ad-hoc-provisioning-profile`](/eas/cli/#eas-build) flag when running `eas build`. See [internal distribution on CI](/build/internal-distribution/#automation-on-ci-optional). |
 
 #### Environment variables
 
@@ -175,6 +177,29 @@ jobs:
     params:
       platform: android
       profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Internal iOS build with refreshed ad hoc profile">
+
+This workflow builds your iOS app for internal distribution and refreshes the ad hoc provisioning profile when you push to the main branch.
+
+```yaml .eas/workflows/build-ios-internal.yml
+name: Build iOS internal
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_ios:
+    name: Build iOS Internal
+    type: build
+    params:
+      platform: ios
+      profile: preview
+      refresh_ad_hoc_provisioning_profile: true
 ```
 
 </Collapsible>
@@ -412,7 +437,7 @@ You can pass the following parameters into the `params` list:
 | simulator            | boolean | Optional. Whether to get a simulator build.                                    |
 | wait_for_in_progress | boolean | Optional. Whether to wait for a matching in-progress build. Default: `false`.  |
 
-If `wait_for_in_progress` is set to `true`, the job will still prioritize continuing immediately with a successful build, but it will also look for in-progress builds. If no successful build is found, the job will wait for an in-progress build to complete before continuing. If the matched build succeeds, the job will be marked as successful and will return the successful build. If the matched build fails, the job will be marked as successful and its outputs will be empty &mdash; as if the build has not been matched.
+If `wait_for_in_progress` is set to `true`, the job will still prioritize continuing immediately with a successful build, but it will also look for in-progress builds. If no successful build is found, the job will wait for an in-progress build to complete before continuing. If the matched build succeeds, the job will be marked as successful and will return the successful build. If the matched build fails, the job will be marked as successful and its outputs will be empty — as if the build has not been matched.
 
 #### Outputs
 
@@ -521,6 +546,9 @@ jobs:
     params:
       build_id: string # required
       profile: string # optional - default: production
+    hooks:
+      before_submit: step[] # optional - steps to run before the submission starts.
+      after_submit: step[] # optional - steps to run after the submission completes.
 ```
 
 #### Parameters
@@ -541,6 +569,15 @@ You can reference the following outputs in subsequent jobs:
 | apple_app_id          | string | The Apple App ID of the submitted build.          |
 | ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
 | android_package_id    | string | The Android package ID of the submitted build.    |
+
+#### Hooks
+
+The following hooks are supported for the Submit job:
+
+- `before_submit`: steps to run before the submission starts.
+- `after_submit`: steps to run after the submission completes.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -839,7 +876,7 @@ jobs:
 
 ## Maestro
 
-Run Maestro tests on a Android emulator or iOS Simulator build.
+Run Maestro tests on an Android Emulator or iOS Simulator build.
 
 > **important** Maestro tests are in [alpha](/more/release-statuses/#alpha).
 
@@ -855,14 +892,18 @@ jobs:
       build_id: string # required
       flow_path: string | string[] # required
       shards: number # optional - defaults to 1
-      retries: number # optional - defaults to 1
+      retries: number # optional - defaults to 0
+      retry_failed_only: boolean # optional - defaults to true
       record_screen: boolean # optional - defaults to false
       include_tags: string | string[] # optional
       exclude_tags: string | string[] # optional
       maestro_version: string # optional - defaults to latest
       android_system_image_package: string # optional
-      device_identifier: string | { android: string, ios: string } # optional
+      device_identifier: string | { android?: string, ios?: string } # optional
       output_format: string # optional - defaults to junit
+    hooks:
+      before_maestro_tests: step[] # optional - steps to run before the tests start.
+      after_maestro_tests: step[] # optional - steps to run after the tests complete.
 ```
 
 #### Parameters
@@ -874,7 +915,8 @@ You can pass the following parameters into the `params` list:
 | build_id                     | string                                                | Required. The ID of the build to test.                                                                                                                                                                                                                                                                                                                                                                                                |
 | flow_path                    | string or string[]                                    | Required. The path to the Maestro flow file(s) or directory to run.                                                                                                                                                                                                                                                                                                                                                                   |
 | shards                       | number                                                | Optional and experimental. The number of shards to split the tests into. Defaults to 1.                                                                                                                                                                                                                                                                                                                                               |
-| retries                      | number                                                | Optional. The number of times to retry failed tests. Defaults to 1.                                                                                                                                                                                                                                                                                                                                                                   |
+| retries                      | number                                                | Optional. The number of times to retry the tests if they fail. Defaults to 0.                                                                                                                                                                                                                                                                                                                                                         |
+| retry_failed_only            | boolean                                               | Optional. When true (default), retries will attempt to re-run only the flows that failed on the previous attempt when applicable. Set to false to re-run all flows on every retry.                                                                                                                                                                                                                                                    |
 | record_screen                | boolean                                               | Optional. Whether to record the screen. Defaults to false. Note: recording screen may impact emulator performance. You may want to use large runners when recording screen.                                                                                                                                                                                                                                                           |
 | include_tags                 | string or string[]                                    | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
 | exclude_tags                 | string or string[]                                    | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
@@ -883,6 +925,15 @@ You can pass the following parameters into the `params` list:
 | android_system_image_package | string                                                | Optional. Android Emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note that newer images require more computing resources, for which you may want to use large runners.                                                 |
 | device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
 | skip_build_check             | boolean                                               | Optional. Skip validation of the build (whether an iOS build is a simulator build). Defaults to false.                                                                                                                                                                                                                                                                                                                                |
+
+#### Hooks
+
+The following hooks are supported for the Maestro job:
+
+- `before_maestro_tests`: steps to run before the tests start.
+- `after_maestro_tests`: steps to run after the tests complete.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -909,7 +960,7 @@ jobs:
 
 <Collapsible summary="Maestro test with sharding">
 
-This workflow runs Maestro tests on an Android emulator build with 3 shards and 2 retries for failed tests.
+This workflow runs Maestro tests on an Android Emulator build with 3 shards and 2 retries for failed tests.
 
 ```yaml .eas/workflows/maestro-sharded.yml
 name: Sharded Maestro Test
@@ -948,9 +999,32 @@ jobs:
 
 </Collapsible>
 
+<Collapsible summary="Generate Maestro flows before running tests">
+
+This workflow uses a hook to generate the `maestro_tests` directory right before Maestro starts running tests.
+
+```yaml .eas/workflows/maestro-hooks.yml
+name: Maestro Hooks
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    environment: preview
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      flow_path: ./maestro_tests
+    hooks:
+      before_maestro_tests:
+        - name: Generate Maestro flows
+          run: npx tsx scripts/generate-maestro-tests.ts
+```
+
+</Collapsible>
+
 <Collapsible summary="Recording screen and using a specific device">
 
-This workflow runs Maestro tests on an Android emulator build with a specific device and records the screen.
+This workflow runs Maestro tests on an Android Emulator build with a specific device and records the screen.
 
 ```yaml .eas/workflows/maestro-sharded.yml
 name: Pixel E2E Test
@@ -990,6 +1064,32 @@ The assets will be available within the "Maestro Test Results" artifact in the A
 
 </Collapsible>
 
+<Collapsible summary="Report Maestro artifacts to Slack">
+
+This workflow saves screenshots and recordings to `MAESTRO_TESTS_DIR`, then runs a script after the tests finish to upload those files or send a summary to Slack.
+
+```yaml .eas/workflows/maestro-report-artifacts.yml
+name: Maestro Artifact Reporting
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    environment: preview
+    env:
+      SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      flow_path: ./maestro/flows
+      record_screen: true
+    hooks:
+      after_maestro_tests:
+        - name: Report Maestro artifacts
+          run: npx tsx scripts/report-maestro-artifacts.ts "$MAESTRO_TESTS_DIR"
+```
+
+</Collapsible>
+
 ## Maestro Cloud
 
 Run Maestro tests on Maestro Cloud.
@@ -1012,14 +1112,16 @@ jobs:
       include_tags: string | string[] # optional - tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional - tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
       maestro_version: string # optional - version of Maestro to use for the tests. If not provided, the latest version will be used.
-      android_api_level: string # optional - Android API level to use for the tests. Will be passed to Maestro as `--android-api-level`.
       maestro_config: string # optional - path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
-      device_locale: string # optional - device locale to use for the tests. Will be passed to Maestro as `--device-locale`. Run `maestro cloud --help` for a list of supported values.
-      device_model: string # optional - model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro cloud --help` for a list of supported values.
-      device_os: string # optional - OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro cloud --help` for a list of supported values.
+      device_locale: string # optional - device locale to use for the tests. Will be passed to Maestro as `--device-locale`.
+      device_model: string # optional - model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro list-cloud-devices` for a list of supported values.
+      device_os: string # optional - OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro list-cloud-devices` for a list of supported values.
       name: string # optional - name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
       branch: string # optional - override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional - run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
+    hooks:
+      before_maestro_cloud: step[] # optional - steps to run before the Maestro Cloud upload.
+      after_maestro_cloud: step[] # optional - steps to run after the Maestro Cloud upload.
 ```
 
 #### Parameters
@@ -1035,16 +1137,24 @@ You can pass the following parameters into the `params` list:
 | include_tags       | string  | Optional. The tags to include in the tests. Corresponds to `--include-tags` param to `maestro cloud`. Example: `"pull,push"`.                                                                                                                |
 | exclude_tags       | string  | Optional. The tags to exclude from the tests. Corresponds to `--exclude-tags` param to `maestro cloud`. Example: `"disabled"`.                                                                                                               |
 | maestro_version    | string  | Optional. The version of Maestro to use. Example: `1.30.0`.                                                                                                                                                                                  |
-| android_api_level  | string  | Optional. The Android API level to use. Corresponds to `--android-api-level` param to `maestro cloud`. Example: `29`.                                                                                                                        |
 | maestro_config     | string  | Optional. The path to the Maestro `config.yaml` file to use. Corresponds to `--config` param to `maestro cloud`. Example: `.maestro/config.yaml`.                                                                                            |
 | device_locale      | string  | Optional. The locale that will be set on devices used for the tests. Corresponds to `--device-locale` param to `maestro cloud`. Example: `pl_PL`.                                                                                            |
-| device_model       | string  | Optional. The model of the device to use for the tests. Corresponds to `--device-model` param to `maestro cloud`. Example: `iPhone-11`. Run `maestro cloud --help` for a list of supported values.                                           |
-| device_os          | string  | Optional. The OS of the device to use for the tests. Corresponds to `--device-os` param to `maestro cloud`. Example: `iOS-18-2`. Run `maestro cloud --help` for a list of supported values.                                                  |
+| device_model       | string  | Optional. The model of the device to use for the tests. Corresponds to `--device-model` param to `maestro cloud`. Example: `iPhone-11`. Run `maestro list-cloud-devices` for a list of supported values.                                     |
+| device_os          | string  | Optional. The OS of the device to use for the tests. Corresponds to `--device-os` param to `maestro cloud`. Example: `iOS-18-2`. Run `maestro list-cloud-devices` for a list of supported values.                                            |
 | name               | string  | Optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.                                                                                                                                               |
 | branch             | string  | Optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`. |
 | async              | boolean | Optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.               |
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
+
+#### Hooks
+
+The following hooks are supported for the Maestro Cloud job:
+
+- `before_maestro_cloud`: steps to run before the Maestro Cloud upload.
+- `after_maestro_cloud`: steps to run after the Maestro Cloud upload.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 #### Outputs
 
@@ -1061,9 +1171,11 @@ You can reference the following outputs in subsequent jobs:
 
 > **Note:** When using `async: true` mode, only the `maestro_cloud_url` output is guaranteed to be valid. Other outputs (flow counts and flow names) may be invalid or empty because the job does not wait for the upload to complete and the flows have not been executed yet.
 
+You can also define additional outputs for this job using [`jobs.<job_id>.outputs`](/eas/workflows/syntax/#jobsjob_idoutputs).
+
 ### Examples
 
-Here are some practical examples of using the Maestro job:
+Here are some practical examples of using the Maestro Cloud job:
 
 <Collapsible summary="Basic Maestro Cloud test">
 
@@ -1509,6 +1621,103 @@ jobs:
 
         Please check the [workflow logs](https://expo.dev/accounts/[account]/projects/[project]/workflows) for details.
 ```
+
+</Collapsible>
+
+## Apple device registration request
+
+Pause a workflow run until an iOS device enrolls for a specific [Apple Team](https://expo.fyi/apple-team) and a team member approves that enrollment on [expo.dev](https://expo.dev). Use this job to automate registering a device for [internal distribution](/build/internal-distribution/) inside EAS Workflows.
+
+When the workflow reaches this job, the job and the run enter `action-required` and stay paused until the flow completes:
+
+1. The workflow run page shows a QR code and a registration link for the device being enrolled.
+2. On the iPhone or iPad, the device downloads a provisioning profile and installs it through Settings. Only one profile is ready at a time, and it is removed if not installed within eight minutes.
+3. After installation, the unique device identifier (UDID) and metadata are collected.
+4. On the workflow run page, a team member approves or rejects the enrollment. Approval marks the job successful and exposes outputs (UDID, model, and more) to downstream jobs. Rejection fails the job and blocks jobs that use `needs`.
+
+If the UDID is already registered on your account, the job still waits for enrollment and approval before continuing.
+
+### Syntax
+
+```yaml
+jobs:
+  register_device:
+    type: apple-device-registration-request
+    params:
+      apple_team_identifier: string # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter             | Type   | Description                                                                                                                                                                                                                                                                                                                    |
+| --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| apple_team_identifier | string | Optional. The Apple Team ID (for example, `ABCDE12345`). If you omit this parameter and your Expo account has exactly one Apple Team, that team is used. You must set this parameter when your account has no Apple Teams or has two or more Apple Teams. When provided, EAS resolves or creates the team from the identifier. |
+
+#### Outputs
+
+After a team member approves the enrolled device, you can reference the following outputs in subsequent jobs:
+
+| Output           | Type   | Description                                                      |
+| ---------------- | ------ | ---------------------------------------------------------------- |
+| apple_device_id  | string | Expo internal device ID.                                         |
+| identifier       | string | Device UDID.                                                     |
+| name             | string | Device name. May be empty.                                       |
+| model            | string | Hardware model string (for example, `iPhone11,2`). May be empty. |
+| device_class     | string | Device class: `iphone`, `ipad`, or `mac`. May be empty.          |
+| software_version | string | iOS version string. May be empty.                                |
+
+If a team member rejects the enrollment, the job fails and does not set outputs. Downstream jobs that use `needs` will not run.
+
+### Examples
+
+Here are some practical examples of using the Apple device registration request job:
+
+<Collapsible summary="Register a device and notify Slack">
+
+This workflow registers an iOS device and sends a Slack message with the device UDID and model from the job outputs.
+
+```yaml .eas/workflows/register-device-slack.yml
+name: Register iOS device and notify Slack
+
+jobs:
+  register_device:
+    type: apple-device-registration-request
+    params:
+      apple_team_identifier: XX33YYZ44Z
+  notify_slack:
+    needs: [register_device]
+    type: slack
+    params:
+      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      message: 'Registered device ${{ needs.register_device.outputs.identifier }} (${{ needs.register_device.outputs.model }})'
+```
+
+</Collapsible>
+
+<Collapsible summary="Register a device, then run an internal iOS build">
+
+This workflow registers a device and then runs an iOS internal distribution build that refreshes the ad hoc provisioning profile so the new device is included.
+
+```yaml .eas/workflows/register-device-build.yml
+name: Register device and build iOS internal
+
+jobs:
+  register_device:
+    type: apple-device-registration-request
+    params:
+      apple_team_identifier: ABCDE12345
+  build_ios:
+    needs: [register_device]
+    type: build
+    params:
+      platform: ios
+      profile: preview
+      refresh_ad_hoc_provisioning_profile: true
+```
+
+The `preview` profile must set [`distribution: internal`](/eas/json/#distribution) and use [credentials managed by EAS](/app-signing/app-credentials/). For CI, you also need an App Store Connect API key. See [internal distribution on CI](/build/internal-distribution/#automation-on-ci-optional) and [trigger builds from CI](/build/building-on-ci/).
 
 </Collapsible>
 

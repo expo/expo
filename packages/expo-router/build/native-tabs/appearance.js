@@ -2,58 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createStandardAppearanceFromOptions = createStandardAppearanceFromOptions;
 exports.createScrollEdgeAppearanceFromOptions = createScrollEdgeAppearanceFromOptions;
-exports.appendSelectedStyleToAppearance = appendSelectedStyleToAppearance;
-exports.appendStyleToAppearance = appendStyleToAppearance;
-exports.convertStyleToAppearance = convertStyleToAppearance;
-exports.convertStyleToItemStateAppearance = convertStyleToItemStateAppearance;
 exports.createAndroidScreenAppearance = createAndroidScreenAppearance;
-const types_1 = require("./types");
-const color_1 = require("../color");
-const style_1 = require("../utils/style");
-const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
-function createStandardAppearanceFromOptions(options) {
-    let blurEffect = options.blurEffect;
-    if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
-        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
-        blurEffect = undefined;
-    }
-    const appearance = appendStyleToAppearance({
-        ...options.labelStyle,
-        iconColor: options.iconColor,
-        backgroundColor: options.backgroundColor,
-        blurEffect,
-        badgeBackgroundColor: options.badgeBackgroundColor,
-        titlePositionAdjustment: options.titlePositionAdjustment,
-        shadowColor: options.shadowColor,
-    }, {}, ['normal', 'focused', 'selected']);
-    return appendSelectedStyleToAppearance({
-        ...(options.selectedLabelStyle ?? {}),
-        iconColor: options.selectedIconColor,
-        badgeBackgroundColor: options.selectedBadgeBackgroundColor,
-        titlePositionAdjustment: options.selectedTitlePositionAdjustment,
-    }, appearance);
+function createStandardAppearanceFromOptions(_options) {
+    return {};
 }
-function createScrollEdgeAppearanceFromOptions(options) {
-    let blurEffect = options.disableTransparentOnScrollEdge ? options.blurEffect : 'none';
-    if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
-        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
-        blurEffect = undefined;
-    }
-    const appearance = appendStyleToAppearance({
-        ...options.labelStyle,
-        iconColor: options.iconColor,
-        blurEffect,
-        backgroundColor: options.disableTransparentOnScrollEdge ? options.backgroundColor : null,
-        shadowColor: options.disableTransparentOnScrollEdge ? options.shadowColor : 'transparent',
-        badgeBackgroundColor: options.badgeBackgroundColor,
-        titlePositionAdjustment: options.titlePositionAdjustment,
-    }, {}, ['normal', 'focused', 'selected']);
-    return appendSelectedStyleToAppearance({
-        ...(options.selectedLabelStyle ?? {}),
-        iconColor: options.selectedIconColor,
-        badgeBackgroundColor: options.selectedBadgeBackgroundColor,
-        titlePositionAdjustment: options.selectedTitlePositionAdjustment,
-    }, appearance);
+function createScrollEdgeAppearanceFromOptions(_options) {
+    return {};
 }
 function appendSelectedStyleToAppearance(selectedStyle, appearance) {
     return appendStyleToAppearance(selectedStyle, appearance, ['selected', 'focused']);
@@ -166,5 +120,7 @@ function createAndroidScreenAppearance({ options, tintColor, rippleColor, disabl
         normal,
         selected,
     };
+function createAndroidScreenAppearance(_options) {
+    return {};
 }
 //# sourceMappingURL=appearance.js.map

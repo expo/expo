@@ -20,7 +20,7 @@ export const Cell = ({
 }: CellProps) => (
   <td
     className={mergeClasses(
-      'border-secondary border-r p-4',
+      'border-r border-secondary p-4',
       convertAlignToClass(align),
       fitContent && 'w-fit',
       'last:border-r-0',

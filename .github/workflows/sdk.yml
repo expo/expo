@@ -31,13 +31,14 @@ concurrency:
 
 jobs:
   check-packages:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: filter
         with:
           filters: |
@@ -48,15 +49,15 @@ jobs:
         run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
         if: github.event_name == 'pull_request'
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
           version: 10
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
       - name: 📦 Install dependencies
@@ -75,29 +76,29 @@ jobs:
         run: pnpm expotools check-packages --since $SINCE --core
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
-        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-')) && github.repository == 'expo/expo'
         with:
           webhook: ${{ secrets.slack_webhook_api }}
           author_name: Check packages
 
   check-packages-windows:
     runs-on: windows-latest
-    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.repository == 'expo/expo') }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
           version: 10
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
       - name: 📦 Install dependencies
@@ -106,7 +107,7 @@ jobs:
         run: pnpm expotools check-packages --all
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
-        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-')) && github.repository == 'expo/expo'
         with:
           webhook: ${{ secrets.slack_webhook_api }}
           author_name: Check packages

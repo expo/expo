@@ -1,15 +1,12 @@
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JNIDeallocator.h"
 #include "JSIContext.h"
 
 #include <fbjni/ByteBuffer.h>
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
 
 #include "TypedArray.h"
-
-#include <memory>
 
 namespace expo {
 
@@ -26,6 +23,11 @@ class ByteBufferJSIWrapper: public jsi::MutableBuffer {
 public:
   explicit ByteBufferJSIWrapper(const jni::alias_ref<jni::JByteBuffer>& byteBuffer);
 
+  ByteBufferJSIWrapper(
+    const jni::alias_ref<jni::JByteBuffer>& byteBuffer,
+    std::shared_ptr<jsi::MutableBuffer> retainedBuffer
+  );
+
   ~ByteBufferJSIWrapper() override;
 
   [[nodiscard]] uint8_t* data() override;
@@ -36,6 +38,7 @@ public:
 
 private:
   jni::global_ref<jni::JByteBuffer> _byteBuffer;
+  std::shared_ptr<jsi::MutableBuffer> _retainedBuffer;
 };
 
 class NativeArrayBuffer : public jni::HybridClass<NativeArrayBuffer, Destructible> {
@@ -52,7 +55,8 @@ public:
   );
 
   /**
-   * Allocates a new NativeArrayBuffer by copying the contents of the given ArrayBuffer.
+   * Creates a NativeArrayBuffer from the given ArrayBuffer. Uses zero-copy when the
+   * buffer is native-backed (tryGetMutableBuffer), otherwise copies the data.
    */
   static jni::local_ref<NativeArrayBuffer::javaobject> newInstance(
     JSIContext *jsiContext,
@@ -61,8 +65,8 @@ public:
   );
 
   /**
-   * Allocates a new NativeArrayBuffer by copying only the bytes within the typed array's
-   * view range — not the entire backing buffer.
+   * Creates a NativeArrayBuffer from the typed array's view range. Uses zero-copy
+   * when the backing buffer is native-backed, otherwise copies only the viewed bytes.
    */
   static jni::local_ref<NativeArrayBuffer::javaobject> newInstance(
     JSIContext *jsiContext,
@@ -71,6 +75,11 @@ public:
   );
 
   explicit NativeArrayBuffer(const jni::alias_ref<jni::JByteBuffer>& byteBuffer);
+
+  NativeArrayBuffer(
+    const jni::alias_ref<jni::JByteBuffer>& byteBuffer,
+    std::shared_ptr<jsi::MutableBuffer> retainedBuffer
+  );
 
   [[nodiscard]] int size();
 

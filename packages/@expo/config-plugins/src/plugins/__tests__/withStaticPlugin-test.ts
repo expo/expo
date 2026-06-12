@@ -15,8 +15,6 @@ function withInternalRemoved(config: ExpoConfig) {
   return config;
 }
 
-jest.unmock('resolve-from');
-
 const projectRoot = join(__dirname, 'fixtures/project-files');
 
 // Not using in-memory fs because the node resolution isn't mocked out.

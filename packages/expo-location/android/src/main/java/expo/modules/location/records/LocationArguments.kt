@@ -14,6 +14,21 @@ enum class GeofencingRegionState : Enumerable {
   OUTSIDE
 }
 
+enum class MotionActivityType(val value: String) : Enumerable {
+  AUTOMOTIVE("automotive"),
+  CYCLING("cycling"),
+  RUNNING("running"),
+  WALKING("walking"),
+  STATIONARY("stationary"),
+  UNKNOWN("unknown")
+}
+
+enum class MotionActivityConfidence(val value: Int) : Enumerable {
+  LOW(0),
+  MEDIUM(1),
+  HIGH(2)
+}
+
 @OptimizedRecord
 internal class LocationLastKnownOptions(
   @Field var maxAge: Double? = null,

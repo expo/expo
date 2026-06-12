@@ -5,13 +5,14 @@ description: Learn how to monitor the usage of your Expo and React Native app af
 
 import { LogrocketIcon } from '@expo/styleguide-icons/custom/LogrocketIcon';
 import { SentryIcon } from '@expo/styleguide-icons/custom/SentryIcon';
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-Once your app is released, you can track anonymized usage data to give you insights on how users use your app. This data includes which updates are in use, when users experience bugs, and more.
+Once your app is released, you can track anonymized usage data to give you insights on how users use your app. This data includes which updates are in use, when users experience bugs, how the app performs in production, and more.
 
 ## EAS Insights
 
@@ -19,7 +20,7 @@ Expo provides the [`expo-insights`](/eas-insights/introduction/) library, which 
 
 <ContentSpotlight
   alt="Active user insights on the EAS dashboard."
-  src="/static/images/monitoring/monitor-your-app/expo-insights.png"
+  src="/static/images/monitoring/monitor-your-app/expo-insights.webp"
 />
 
 Get started with the following guide:
@@ -31,13 +32,32 @@ Get started with the following guide:
   Icon={DataIcon}
 />
 
+## EAS Observe
+
+[EAS Observe](/eas/observe/introduction/) is a performance monitoring service from Expo that tracks how your app performs in production. It gives you visibility in startup metrics (such as cold launch time, time to first render, and time to interactive) from real app user sessions, rendering performance, and app user experience across different devices, networks, and conditions.
+
+<ContentSpotlight
+  alt="Performance metrics on the EAS Observe dashboard."
+  src="/static/images/expo-observe/observe-dashboard-light.webp"
+  darkSrc="/static/images/expo-observe/observe-dashboard-dark.webp"
+/>
+
+Get started with the following guide:
+
+<BoxLink
+  title="EAS Observe"
+  description="Learn how to use EAS Observe to monitor your app's performance."
+  href="/eas/observe/introduction/"
+  Icon={ActivityIcon}
+/>
+
 ## LogRocket
 
 You can get more insights with [LogRocket](https://logrocket.com). LogRocket records user sessions and identifies bugs as your users use your app. You can filter sessions by update IDs and also connect to your LogRocket account on the EAS dashboard to get quick access to your app's session data.
 
 <ContentSpotlight
   alt="User sessions on the LogRocket dashboard."
-  src="/static/images/monitoring/monitor-your-app/logrocket.png"
+  src="/static/images/monitoring/monitor-your-app/logrocket.webp"
 />
 
 Get started with the following guide:
@@ -57,7 +77,7 @@ It notifies you of exceptions or errors that your users run into while using you
 
 <ContentSpotlight
   alt="Issues on the Sentry dashboard."
-  src="/static/images/monitoring/monitor-your-app/sentry.png"
+  src="/static/images/monitoring/monitor-your-app/sentry.webp"
 />
 
 Get started with the following guide:
@@ -75,7 +95,7 @@ Get started with the following guide:
 
 <ContentSpotlight
   alt="The Vexo dashboard."
-  src="/static/images/monitoring/monitor-your-app/vexo.png"
+  src="/static/images/monitoring/monitor-your-app/vexo.webp"
 />
 
 Get started with the following guide:

@@ -9,12 +9,14 @@ import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
 import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.album.AlbumQuery
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
+import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetLegacyDeleter
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetModernDeleter
 import expo.modules.medialibrary.next.objects.asset.factories.AssetModernFactory
@@ -75,11 +77,15 @@ class MediaLibraryNextModule : Module() {
     }
   }
 
+  private val assetMapper by lazy {
+    AssetMapper(context.contentResolver)
+  }
+
   private val assetFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      AssetModernFactory(assetDeleter, assetMover, mediaStorePermissionsDelegate, context)
+      AssetModernFactory(assetDeleter, assetMover, assetMapper, mediaStorePermissionsDelegate, context)
     } else {
-      AssetLegacyFactory(assetDeleter, assetMover, systemPermissionsDelegate, context)
+      AssetLegacyFactory(assetDeleter, assetMover, assetMapper, systemPermissionsDelegate, context)
     }
   }
 
@@ -165,6 +171,14 @@ class MediaLibraryNextModule : Module() {
         self.getWidth()
       }
 
+      AsyncFunction("getFavorite") Coroutine { self: Asset ->
+        self.getFavorite()
+      }
+
+      AsyncFunction("setFavorite") Coroutine { self: Asset, isFavorite: Boolean ->
+        self.setFavorite(isFavorite)
+      }
+
       AsyncFunction("delete") Coroutine { self: Asset ->
         self.delete()
       }
@@ -232,7 +246,7 @@ class MediaLibraryNextModule : Module() {
 
     Class(Query::class) {
       Constructor {
-        Query(assetFactory, context)
+        Query(assetFactory, assetMapper, context.contentResolver)
       }
 
       Function("limit") { self: Query, limit: Int ->
@@ -247,11 +261,11 @@ class MediaLibraryNextModule : Module() {
         self.album(album)
       }
 
-      Function("eq") { self: Query, field: AssetField, value: Either<MediaType, Long> ->
+      Function("eq") { self: Query, field: AssetField, value: EitherOfThree<MediaType, Long, Boolean> ->
         self.eq(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("within") { self: Query, field: AssetField, values: List<Either<MediaType, Long>> ->
+      Function("within") { self: Query, field: AssetField, values: List<EitherOfThree<MediaType, Long, Boolean>> ->
         val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(field, value) }
         self.within(field, stringValues)
       }
@@ -283,7 +297,11 @@ class MediaLibraryNextModule : Module() {
       }
 
       AsyncFunction("exe") Coroutine { self: Query ->
-        return@Coroutine self.exe()
+        self.exe()
+      }
+
+      AsyncFunction("exeForMetadata") Coroutine { self: Query ->
+        self.exeForMetadata()
       }
     }
 

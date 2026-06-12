@@ -1,0 +1,23 @@
+package <%- project.package %>
+
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+
+data class <%- project.composeModifierName %>Params(
+  @Field val color: Long = 0xFFFF0000,
+  @Field val width: Int = 2,
+  @Field val cornerRadius: Int = 0
+) : Record {
+  fun toModifier(): Modifier {
+    return Modifier.border(
+      width = width.dp,
+      color = Color(color),
+      shape = RoundedCornerShape(cornerRadius.dp)
+    )
+  }
+}

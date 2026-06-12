@@ -10,12 +10,13 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
+import { glob } from 'glob';
 import path from 'path';
 
 import { PACKAGES_DIR } from '../../Constants';
-import { getPrecompileDir } from '../../Directories';
 import logger from '../../Logger';
 import { getPackageByName } from '../../Packages';
+import { getBundledVersionsAsync } from '../../ProjectVersions';
 import { Artifacts } from '../Artifacts';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
@@ -23,7 +24,7 @@ import { getExternalPackageByProductName, isExternalPackage } from '../ExternalP
 import { Frameworks } from '../Frameworks';
 import type { BuildFlavor } from '../Prebuilder.types';
 import { buildSharedSPMDependencyAsync } from '../SPMBuild';
-import type { SPMPackageDependencyConfig } from '../SPMConfig.types';
+import type { SPMPackageDependencyConfig, SPMProduct, SPMTarget } from '../SPMConfig.types';
 import {
   getVersionsInfoAsync,
   setForceNonInteractive,
@@ -31,6 +32,7 @@ import {
   verifyAllPackagesAsync,
   verifyLocalTarballPathsIfSetAsync,
 } from '../Utils';
+import { resolveInstalledPackage } from '../resolvePackage';
 import type { PrebuildContext } from './Context';
 import type { Step } from './Types';
 
@@ -42,6 +44,41 @@ import type { Step } from './Types';
  * Standard external dependencies that come from the cache (not from other packages).
  */
 export const CACHE_DEPS = new Set(['ReactNativeDependencies', 'React', 'Hermes']);
+
+// ---------------------------------------------------------------------------
+// Helper: rebindExternalPackagesToBundledVersions
+// ---------------------------------------------------------------------------
+
+/**
+ * Rebinds each external package's `path` / `packageVersion` to the install in
+ * any monorepo workspace whose version satisfies `packages/expo/bundledNativeModules.json`
+ * — the canonical SDK manifest end users resolve against via `expo install`.
+ * Packages absent from the bundled map are left untouched. Throws when a
+ * bundled-listed package has no satisfying install anywhere in the workspace.
+ */
+export function rebindExternalPackagesToBundledVersions(
+  externalPackages: SPMPackageSource[],
+  bundledNativeModules: Record<string, string>,
+  resolve: (name: string, range: string) => { path: string; version: string } | null
+): void {
+  for (const pkg of externalPackages) {
+    const range = bundledNativeModules[pkg.packageName];
+    if (!range) continue;
+    const resolved = resolve(pkg.packageName, range);
+    if (!resolved) {
+      throw new Error(
+        `No installed version of "${pkg.packageName}" in the monorepo satisfies ${range} ` +
+          `(from packages/expo/bundledNativeModules.json — the canonical SDK manifest for ` +
+          `"expo install" and create-expo templates). Without a satisfying install, the ` +
+          `prebuilt XCFramework would be invisible to precompiled_modules.rb at end-user ` +
+          `pod install. Fix: add "${pkg.packageName}" to some workspace at a version ` +
+          `satisfying ${range} and run "pnpm install".`
+      );
+    }
+    pkg.path = resolved.path;
+    pkg.packageVersion = resolved.version;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Helper: resolveFlavorTemplatedPath
@@ -212,61 +249,115 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
 }
 
 // ---------------------------------------------------------------------------
-// Helper: frameworkExistsAtAnyVersion
+// Helper: dependency framework status
 // ---------------------------------------------------------------------------
 
-/**
- * Checks if an xcframework exists at either a non-versioned or versioned output path.
- * Versioned paths have the format: output/<packageVersion>/<rnVersion>/<hermesVersion>/<flavor>/xcframeworks/
- * Non-versioned paths have the format: output/<flavor>/xcframeworks/
- */
-function frameworkExistsAtAnyVersion(
-  buildPath: string,
-  productName: string,
-  buildType: BuildFlavor
-): boolean {
-  // Check non-versioned path first (quick check)
-  if (fs.existsSync(Frameworks.getFrameworkPath(buildPath, productName, buildType))) {
-    return true;
-  }
+type DependencyFrameworkStatus =
+  | { status: 'fresh' }
+  | { status: 'missing'; flavor: BuildFlavor }
+  | { status: 'stale'; flavor: BuildFlavor };
 
-  // Check versioned paths by scanning the output directory
-  const outputDir = path.join(buildPath, 'output');
-  if (!fs.existsSync(outputDir)) {
-    return false;
-  }
-
-  const flavor = buildType.toLowerCase();
-  const xcframeworkName = `${productName}.xcframework`;
-
-  // Scan top-level entries in output/ — version directories are non-flavor names
+function getPathMtimeMs(filePath: string): number {
   try {
-    for (const entry of fs.readdirSync(outputDir)) {
-      if (entry === 'debug' || entry === 'release') continue;
-      // Walk a known depth: <ver>/<rnVer>/<hermesVer>/<flavor>/xcframeworks/
-      const verDir = path.join(outputDir, entry);
-      if (!fs.statSync(verDir).isDirectory()) continue;
-      for (const rnVer of fs.readdirSync(verDir)) {
-        const rnDir = path.join(verDir, rnVer);
-        if (!fs.statSync(rnDir).isDirectory()) continue;
-        for (const hermesVer of fs.readdirSync(rnDir)) {
-          const candidate = path.join(rnDir, hermesVer, flavor, 'xcframeworks', xcframeworkName);
-          if (fs.existsSync(candidate)) {
-            return true;
-          }
-        }
+    return fs.statSync(filePath).mtimeMs;
+  } catch {
+    // Unreadable input → force a rebuild rather than silently passing as fresh.
+    return Number.POSITIVE_INFINITY;
+  }
+}
+
+function getFrameworkMtimeMs(frameworkPath: string): number {
+  // Info.plist is rewritten on each build; without it the bundle is stale.
+  const infoPlistPath = path.join(frameworkPath, 'Info.plist');
+  try {
+    return fs.statSync(infoPlistPath).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
+
+function getSourceTargetPath(pkg: SPMPackageSource, target: SPMTarget): string | null {
+  if (target.type === 'framework') {
+    return path.resolve(pkg.path, target.path);
+  }
+
+  const isBuildArtifact = target.path.startsWith('.build/');
+  const targetRoot = isBuildArtifact ? pkg.buildPath : pkg.path;
+  const targetPath = isBuildArtifact ? target.path.slice('.build/'.length) : target.path;
+  return path.resolve(targetRoot, targetPath);
+}
+
+function collectTargetInputPaths(pkg: SPMPackageSource, target: SPMTarget): string[] {
+  const targetSourcePath = getSourceTargetPath(pkg, target);
+  if (!targetSourcePath || !fs.existsSync(targetSourcePath)) {
+    return [];
+  }
+
+  if (target.type === 'framework') {
+    return [targetSourcePath];
+  }
+
+  return glob
+    .sync('**/*', {
+      cwd: targetSourcePath,
+      ignore: target.exclude ?? [],
+      nodir: true,
+    })
+    .map((file) => path.join(targetSourcePath, file));
+}
+
+function getNewestProductInputMtimeMs(pkg: SPMPackageSource, product: SPMProduct): number {
+  const inputPaths = [
+    path.join(pkg.path, 'package.json'),
+    path.join(pkg.path, 'spm.config.json'),
+    ...product.targets.flatMap((target) => collectTargetInputPaths(pkg, target)),
+  ];
+
+  for (const target of product.targets) {
+    if (target.type === 'framework') continue;
+    for (const resource of target.resources ?? []) {
+      for (const file of glob.sync(resource.path, {
+        cwd: pkg.path,
+        nodir: true,
+      })) {
+        inputPaths.push(path.join(pkg.path, file));
       }
     }
-  } catch {
-    // If we can't read the directory, assume not found
   }
 
-  return false;
+  return Math.max(...inputPaths.map(getPathMtimeMs));
+}
+
+function getDependencyFrameworkStatus(
+  pkg: SPMPackageSource,
+  product: SPMProduct,
+  buildFlavors: BuildFlavor[]
+): DependencyFrameworkStatus {
+  const newestInputMtimeMs = getNewestProductInputMtimeMs(pkg, product);
+
+  for (const flavor of buildFlavors) {
+    const frameworkPath = Frameworks.findFrameworkAtAnyVersion(pkg.buildPath, product.name, flavor);
+    if (!frameworkPath) {
+      return { status: 'missing', flavor };
+    }
+
+    if (getFrameworkMtimeMs(frameworkPath) < newestInputMtimeMs) {
+      return { status: 'stale', flavor };
+    }
+  }
+
+  return { status: 'fresh' };
 }
 
 // ---------------------------------------------------------------------------
 // Helper: expandWithUnbuiltDependencies
 // ---------------------------------------------------------------------------
+
+type DependencyExpansionOptions = {
+  buildFlavors?: BuildFlavor[];
+  clean?: boolean;
+  resolvePackageByName?: (packageName: string) => SPMPackageSource | null;
+};
 
 /**
  * Expands the package list to include unbuilt dependencies.
@@ -274,7 +365,12 @@ function frameworkExistsAtAnyVersion(
  * and that dependency's xcframework doesn't exist yet, it's automatically added
  * to the build set so the build can succeed without manual intervention.
  */
-export function expandWithUnbuiltDependencies(packages: SPMPackageSource[]): SPMPackageSource[] {
+export function expandWithUnbuiltDependencies(
+  packages: SPMPackageSource[],
+  options: DependencyExpansionOptions = {}
+): SPMPackageSource[] {
+  const buildFlavors = options.buildFlavors ?? ['Debug', 'Release'];
+  const resolvePackageByName = options.resolvePackageByName ?? getPackageByName;
   const packagesByName = new Map(packages.map((p) => [p.packageName, p]));
   const added = new Map<string, SPMPackageSource>();
 
@@ -323,36 +419,40 @@ export function expandWithUnbuiltDependencies(packages: SPMPackageSource[]): SPM
 
           // Resolve the dep package once — needed for both the customBuild check
           // and the auto-add below.
-          const depPkg = getPackageByName(depPackageName);
-          if (!depPkg || !depPkg.hasSwiftPMConfiguration()) continue;
+          const depPkg = resolvePackageByName(depPackageName);
+          if (!depPkg) continue;
+          let depConfig;
+          try {
+            depConfig = depPkg.getSwiftPMConfiguration();
+          } catch {
+            continue;
+          }
 
           // customBuild products own their staleness signal (their build script
           // hashes its own inputs and no-ops on cache hit). Always include them
           // so the script runs and can detect source changes the existence
           // check below cannot.
-          const depProduct = depPkg
-            .getSwiftPMConfiguration()
-            .products.find((p) => p.name === depProductName);
+          const depProduct = depConfig.products.find((p) => p.name === depProductName);
           const isCustomBuild = !!depProduct?.customBuild;
 
-          if (!isCustomBuild) {
-            // Standard SPM products: skip if both flavors are already on disk.
-            // Check both non-versioned and versioned paths (versioned: output/<ver>/<rn>/<hermes>/<flavor>/xcframeworks/)
-            const depBuildPath = path.join(getPrecompileDir(), '.build', depPackageName);
-            const debugExists = frameworkExistsAtAnyVersion(depBuildPath, depProductName, 'Debug');
-            const releaseExists = frameworkExistsAtAnyVersion(
-              depBuildPath,
-              depProductName,
-              'Release'
-            );
+          let reason = 'xcframework not found';
 
-            if (debugExists && releaseExists) continue;
+          if (options.clean) {
+            reason = 'clean requested';
+          } else if (isCustomBuild) {
+            reason = 'customBuild — script decides cache';
+          } else if (depProduct) {
+            const status = getDependencyFrameworkStatus(depPkg, depProduct, buildFlavors);
+            if (status.status === 'fresh') continue;
+
+            reason =
+              status.status === 'stale'
+                ? `${status.flavor} xcframework stale`
+                : `${status.flavor} xcframework not found`;
           }
 
           logger.info(
-            `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}${
-              isCustomBuild ? ', customBuild — script decides cache' : ', xcframework not found'
-            })`
+            `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}, ${reason})`
           );
           added.set(depPackageName, depPkg);
           changed = true;
@@ -382,10 +482,14 @@ export const prepareInputsStep: Step<PrebuildContext> = {
   async run(ctx) {
     const { request } = ctx;
 
-    // Enable verbose output (full build logs instead of spinners).
-    // Also force non-interactive when building in parallel — ora spinners
-    // from concurrent packages would overwrite each other's terminal lines.
-    if (request.verbose || request.concurrency > 1) {
+    // Verbose widens what gets logged but doesn't change interactive vs.
+    // non-interactive — TTY users can opt into the full per-step trace and
+    // still see spinners. CI is non-interactive on its own.
+    logger.setVerbose(request.verbose);
+
+    // Force non-interactive when building in parallel — ora spinners from
+    // concurrent packages would overwrite each other's terminal lines.
+    if (request.concurrency > 1) {
       setForceNonInteractive(true);
     }
 
@@ -406,7 +510,10 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     );
 
     // 2. Auto-add unbuilt dependencies to the build set
-    const unsortedPackages = expandWithUnbuiltDependencies(requestedPackages);
+    const unsortedPackages = expandWithUnbuiltDependencies(requestedPackages, {
+      buildFlavors: request.buildFlavors,
+      clean: request.clean,
+    });
 
     // 3. Validate podName in spm.config.json matches actual .podspec files
     await validateAllPodNamesAsync(unsortedPackages);
@@ -416,11 +523,25 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     ctx.packages = sorted;
     ctx.dependsOn = dependsOn;
 
-    // Log external packages if any
     const externalPackages = ctx.packages.filter((p) => isExternalPackage(p));
+
+    // 4b. Rebind each external package's source path to the install in any
+    // workspace whose version satisfies bundledNativeModules.json. This decouples
+    // the precompile from apps/bare-expo's pin, which drifts. Packages absent
+    // from the bundled map keep their bare-expo-resolved path.
+    rebindExternalPackagesToBundledVersions(
+      externalPackages,
+      await getBundledVersionsAsync(),
+      resolveInstalledPackage
+    );
+
+    // Log external packages with their resolved versions, so the post-rebind
+    // values are visible in the build output.
     if (externalPackages.length > 0) {
       logger.info(
-        `📦 External packages to build:\n${chalk.blue(externalPackages.map((p) => p.packageName).join(', '))}`
+        `📦 External packages to build:\n${chalk.blue(
+          externalPackages.map((p) => `${p.packageName}@${p.packageVersion}`).join(', ')
+        )}`
       );
     }
 

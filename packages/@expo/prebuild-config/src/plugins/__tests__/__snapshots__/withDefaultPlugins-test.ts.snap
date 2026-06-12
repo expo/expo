@@ -151,6 +151,17 @@ exports[`built-in plugins compiles mods 1`] = `
         "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "arm64",
@@ -626,6 +637,12 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
                     },
@@ -826,6 +843,7 @@ exports[`built-in plugins introspects mods 1`] = `
         },
         "expoPlist": {
           "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
           "EXUpdatesRuntimeVersion": "1.0",
@@ -864,6 +882,17 @@ exports[`built-in plugins introspects mods 1`] = `
             "NSAllowsLocalNetworking": true,
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+          "UIApplicationSceneManifest": {
+            "UIApplicationSupportsMultipleScenes": false,
+            "UISceneConfigurations": {
+              "UIWindowSceneSessionRoleApplication": [
+                {
+                  "UISceneConfigurationName": "Default Configuration",
+                  "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+                },
+              ],
+            },
+          },
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "arm64",
@@ -887,6 +916,7 @@ exports[`built-in plugins introspects mods 1`] = `
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{"mainTarget":"mycoolapp","targets":[]}",
           "expo.jsEngine": "hermes",
           "ios.deploymentTarget": "15.1",
         },
@@ -1040,6 +1070,17 @@ exports[`built-in plugins introspects mods 1`] = `
         "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "arm64",
@@ -1263,6 +1304,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
                     },
@@ -1443,6 +1490,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "expoPlist": {
           "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
           "EXUpdatesRuntimeVersion": "1.0",
@@ -1507,6 +1555,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{"mainTarget":"mycoolapp","targets":[]}",
           "ios.deploymentTarget": "15.1",
         },
       },

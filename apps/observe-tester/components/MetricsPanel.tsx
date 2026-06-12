@@ -2,15 +2,26 @@ import type { Metric } from 'expo-app-metrics';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { JSONView } from '@/components/JSONView';
+import { capitalize, categoryRank } from '@/utils/metricCategories';
 import { useTheme } from '@/utils/theme';
 
-export function MetricsPanel({ metrics }: { metrics: Metric[] }) {
+type MetricsPanelProps = {
+  metrics: Metric[];
+  /**
+   * When provided, only metrics whose `name` is in the set are rendered. An empty set hides everything
+   * and falls through to the standard "No metrics recorded" empty state.
+   */
+  filter?: ReadonlySet<string>;
+};
+
+export function MetricsPanel({ metrics, filter }: MetricsPanelProps) {
   const theme = useTheme();
-  if (metrics.length === 0) {
+  const visibleMetrics = filter ? metrics.filter((metric) => filter.has(metric.name)) : metrics;
+  if (visibleMetrics.length === 0) {
     return <Text style={[styles.empty, { color: theme.text.secondary }]}>No metrics recorded</Text>;
   }
 
-  const groups = groupByCategory(metrics);
+  const groups = groupByCategory(visibleMetrics);
 
   return (
     <View style={styles.container}>
@@ -81,9 +92,6 @@ export function MetricsPanel({ metrics }: { metrics: Metric[] }) {
   );
 }
 
-// Categories rendered in this order; anything else falls in alphabetically afterward.
-const CATEGORY_ORDER = ['appStartup', 'frameRate', 'memory', 'updates', 'session'];
-
 function groupByCategory(metrics: Metric[]) {
   const map = new Map<string, Metric[]>();
   for (const metric of metrics) {
@@ -102,20 +110,11 @@ function groupByCategory(metrics: Metric[]) {
     );
 }
 
-function categoryRank(category: string) {
-  const index = CATEGORY_ORDER.indexOf(category);
-  return index === -1 ? CATEGORY_ORDER.length : index;
-}
-
 function formatValue(value: number) {
   if (Number.isInteger(value)) {
     return value.toString();
   }
   return value.toFixed(3);
-}
-
-function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 const styles = StyleSheet.create({

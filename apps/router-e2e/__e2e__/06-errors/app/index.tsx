@@ -32,6 +32,39 @@ export default function App() {
           console.log(undefinedVariable);
         }}
       />
+      <BigButton
+        title="Log unsymbolicated stack trace"
+        onPress={() => {
+          console.log(new Error('').stack);
+        }}
+      />
+      <BigButton
+        title="throw new Error()"
+        onPress={() => {
+          throw new Error('unhandled-throw');
+        }}
+      />
+      <BigButton
+        title="async throw new Error()"
+        onPress={() => {
+          async function throwAsyncError() {
+            throw new Error('unhandled-async-throw');
+          }
+          void throwAsyncError();
+        }}
+      />
+      <BigButton
+        title="throw string"
+        onPress={() => {
+          throw 'unhandled-throw-string';
+        }}
+      />
+      <BigButton
+        title="Promise.reject(string)"
+        onPress={() => {
+          void Promise.reject('unhandled-rejection-string');
+        }}
+      />
       <Headline>From fixtures:</Headline>
       <BigButton
         title="Build error: syntax error"
@@ -53,15 +86,21 @@ export default function App() {
       />
       <Headline>From console:</Headline>
       <BigButton
-        title="console.error: string"
+        title="console.error(new Error())"
         onPress={() => {
-          console.error('Hello');
+          console.error(new Error('console-error-object'));
         }}
       />
       <BigButton
-        title="console.error: Error"
+        title="console.error(string)"
         onPress={() => {
-          console.error(new Error('Hello'));
+          console.error('console-error-string');
+        }}
+      />
+      <BigButton
+        title="console.warn(string)"
+        onPress={() => {
+          console.warn('console-warn-string');
         }}
       />
       <DomButtonWithConsoleError

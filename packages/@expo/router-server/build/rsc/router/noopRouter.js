@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const create_expo_pages_1 = require("./create-expo-pages");
-exports.default = (0, create_expo_pages_1.createExpoPages)(async () => {
-    // noop the router for client-only mode. This ensures we skip loading the routes in react-server mode.
+const createPages_1 = require("./createPages");
+// Used in client-only mode to skip route loading in react-server bundles.
+exports.default = (_getRouteOptions) => ({
+    default: (0, createPages_1.createPages)(async () => { }),
 });
 //# sourceMappingURL=noopRouter.js.map

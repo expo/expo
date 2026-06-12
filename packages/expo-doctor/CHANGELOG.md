@@ -6,19 +6,134 @@
 
 ### 🎉 New features
 
-- Add version to the `--verbose` output ([#44592](https://github.com/expo/expo/pull/44592) by [@kitten](https://github.com/kitten))
-- Add check that warns about invalid `overrides`/`resolutions` for critical package versions ([#44770](https://github.com/expo/expo/pull/44770) by [@kitten](https://github.com/kitten))
-- add a warning when mixing `@expo/vector-icons` and `react-native-vector-icons` or packages from `@react-native-vector-icons` ([#37958](https://github.com/expo/expo/pull/37958) by [@vonovak](https://github.com/vonovak))
+### 🐛 Bug fixes
+
+- Recognize the React Native Directory `new-arch-only` status so New-Architecture-only libraries aren't flagged ([#46755](https://github.com/expo/expo/pull/46755) by [@zoontek](https://github.com/zoontek))
+- Fix SDK 55 Metro config check for missing `metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+## 1.19.8 — 2026-05-23
+
+### 💡 Others
+
+- Switch Metro config loading to `expo/metro-config`'s `loadUserConfig` ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
+
+## 1.19.7 — 2026-05-20
+
+### 🎉 New features
+
+- Add check for committed `*.local` env files ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
+
+- Pass original env to Expo sub-command ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+- Switch React Native Directory compatibility check request from POST to GET. ([#45673](https://github.com/expo/expo/pull/45673) by [@simek](https://github.com/simek))
+
+## 1.19.6 — 2026-05-11
+
+### 🎉 New features
+
+- Skip `watchFolders` check for SDK 56 ([#45567](https://github.com/expo/expo/pull/45567) by [@kitten](https://github.com/kitten))
+- Warn when `blacklistRE` or invalid `blockList` regex are used ([#45567](https://github.com/expo/expo/pull/45567) by [@kitten](https://github.com/kitten))
+
+## 1.19.5 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.2 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.0 — 2026-05-05
+
+### 🎉 New features
+
+- add a warning when mixing `@expo/vector-icons` and `react-native-vector-icons` or packages from `@react-native-vector-icons` ([#37958](https://github.com/expo/expo/pull/37958) by [@vonovak](https://github.com/vonovak))
+- Add check for both expo-router and react-navigation installed in same project ([#45323](https://github.com/expo/expo/pull/45323) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Include `@react-navigation/native` and `@react-navigation/core` in duplicates check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
+
+## 1.18.21 - 2026-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.20 - 2026-04-28
+
+### 💡 Others
+
+- Add explicit Node.js version requirement and make `@expo/env` fault tolerant ([#44985](https://github.com/expo/expo/pull/44985) by [@kitten](https://github.com/kitten))
+
+## 1.18.19 - 2026-04-21
+
+### 🎉 New features
+
+- Add check that warns about invalid `overrides`/`resolutions` for critical package versions ([#44770](https://github.com/expo/expo/pull/44770) by [@kitten](https://github.com/kitten))
+
+## 1.18.18 - 2026-04-09
+
+### 🎉 New features
+
+- Add version to the `--verbose` output ([#44592](https://github.com/expo/expo/pull/44592) by [@kitten](https://github.com/kitten))
+
+## 1.18.17 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.16 - 2026-04-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.15 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.14 - 2026-03-27
 
 ### 💡 Others
 
 - Resolve project config by spawning `expo config` CLI instead of importing `@expo/config` directly ([#44044](https://github.com/expo/expo/pull/44044) by [@entiendonull](https://github.com/entiendonull))
-- Include `@react-navigation/native` and `@react-navigation/core` in duplicates check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
+
+## 1.18.13 - 2026-03-18
+
+### 💡 Others
+
 - Include `web` platform in duplicate packages check ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
 - Use independent native modules API call, instead of reusing `@expo/cli`'s implementation ([#44593](https://github.com/expo/expo/pull/44593) by [@kitten](https://github.com/kitten))
-- Add explicit Node.js version requirement and make `@expo/env` fault tolerant ([#44985](https://github.com/expo/expo/pull/44985) by [@kitten](https://github.com/kitten))
+
+## 1.18.12 - 2026-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.11 - 2026-03-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.10 - 2026-02-27
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.9 - 2026-02-26
+
+_This version does not introduce any user-facing changes._
 
 ## 1.18.8 — 2026-02-25
 

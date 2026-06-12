@@ -18,7 +18,7 @@ To provide a link to your app, add a custom string to the [`scheme`](/versions/l
 ```json app.json
 {
   "expo": {
-    /* @info <CODE>scheme</CODE> property allows you to add a custom scheme to your app. */
+    /* @info `scheme` property allows you to add a custom scheme to your app. */
     "scheme": "myapp"
     /* @end */
   }
@@ -36,13 +36,36 @@ You can test a link that opens your app using [`npx uri-scheme`](https://github.
 For example, if your app has a `/details` screen that you want to open when a user taps on a link (either through another app or a web browser), you can test this behavior by running the following command:
 
 <Terminal
-  cmd={[
-    '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
-    '$ npx uri-scheme open com.example.app://somepath/details --android',
-    '',
-    '# If you have a `scheme` defined in your app.json',
-    '$ npx uri-scheme open myapp://somepath/details --ios',
-  ]}
+  cmd={{
+    npm: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ npx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ npx uri-scheme open myapp://somepath/details --ios',
+    ],
+    yarn: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ yarn dlx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ yarn dlx uri-scheme open myapp://somepath/details --ios',
+    ],
+    pnpm: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ pnpm dlx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ pnpm dlx uri-scheme open myapp://somepath/details --ios',
+    ],
+    bun: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ bunx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ bunx uri-scheme open myapp://somepath/details --ios',
+    ],
+  }}
 />
 
 Running the above command:
@@ -58,7 +81,16 @@ By default, [Expo Go](https://expo.dev/go) uses the `exp://` scheme. If you link
 To open the `/details` screen while testing on Expo Go, you can use `npx uri-scheme`:
 
 <Terminal
-  cmd={['$ npx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios']}
+  cmd={{
+    npm: ['$ npx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios'],
+    yarn: [
+      '$ yarn dlx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios',
+    ],
+    pnpm: [
+      '$ pnpm dlx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios',
+    ],
+    bun: ['$ bunx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios'],
+  }}
 />
 
 In Expo Go, `/--/` is added to the URL when a path is specified. This indicates to Expo Go that the substring after it corresponds to the deep link path and is not part of the path to the app itself.
@@ -71,19 +103,19 @@ By default, `exp://` is replaced with `http://` when opening a URL in Expo Go. Y
 
 > **info** If you are using [Expo Router](/linking/overview/#use-expo-router-to-handle-deep-linking), you can ignore this section.
 
-You can observe links that launch your app using the [`Linking.useURL()`](/versions/latest/sdk/linking/#useurl) hook from [`expo-linking`](/versions/latest/sdk/linking/).
+You can observe links that launch your app using the [`Linking.useLinkingURL()`](/versions/latest/sdk/linking/#uselinkingurl) hook from [`expo-linking`](/versions/latest/sdk/linking/).
 
 ```tsx index.tsx
 import * as Linking from 'expo-linking';
 
 export default function Home() {
-  const url = Linking.useURL();
+  const url = Linking.useLinkingURL();
 
   return <Text>URL: {url}</Text>;
 }
 ```
 
-The `Linking.useURL()` hook works behind the scenes by following these imperative methods:
+The `Linking.useLinkingURL()` hook works behind the scenes by following these imperative methods:
 
 - The link that launched the app is initially returned using [`Linking.getInitialURL()`](/versions/latest/sdk/linking/#linkinggetinitialurl)
 - Any new links triggered while the app is already open are observed with [`Linking.addEventListener('url', callback)`](/versions/latest/sdk/linking/#linkingaddeventlistenertype-handler)
@@ -96,7 +128,7 @@ You can use the [`Linking.parse()`](/versions/latest/sdk/linking/#linkingparseur
 import * as Linking from 'expo-linking';
 
 export default function Home() {
-  const url = Linking.useURL();
+  const url = Linking.useLinkingURL();
 
   if (url) {
     const { hostname, path, queryParams } = Linking.parse(url);

@@ -4,6 +4,7 @@ import ExpoModulesCore
 import Foundation
 import AuthenticationServices
 import Network
+import EXDevMenu
 
 private let selectedAccountKey = "expo-selected-account-id"
 private let sessionKey = "expo-session-secret"
@@ -34,17 +35,19 @@ class DevLauncherViewModel: ObservableObject {
   @Published var hasStoredCrash = false
   @Published var shakeDevice = true {
     didSet {
-      saveMenuPreference(key: "EXDevMenuMotionGestureEnabled", value: shakeDevice)
+      DevMenuManager.shared.setMotionGestureEnabled(shakeDevice)
     }
   }
   @Published var threeFingerLongPress = false {
     didSet {
-      saveMenuPreference(key: "EXDevMenuTouchGestureEnabled", value: threeFingerLongPress)
+      // Route through DevMenuManager so the recognizer is installed/uninstalled immediately
+      DevMenuManager.shared.setTouchGestureEnabled(threeFingerLongPress)
     }
   }
   @Published var showOnLaunch = false {
     didSet {
-      saveMenuPreference(key: "EXDevMenuShowsAtLaunch", value: showOnLaunch)
+      // Route through DevMenuManager so the auto-launch observer is refreshed immediately
+      DevMenuManager.shared.setShowsAtLaunch(showOnLaunch)
     }
   }
   @Published var isAuthenticated = false
@@ -59,6 +62,9 @@ class DevLauncherViewModel: ObservableObject {
 
   private var browser: NWBrowser?
   private var pingTask: Task<Void, Never>?
+  private var periodicRefreshTask: Task<Void, Never>?
+  private var pendingEmptyVerification = false
+  private static let refreshInterval: UInt64 = 10_000_000_000
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -94,6 +100,16 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func updateDevServers(_ servers: [DevServer]) {
+    if servers.isEmpty && !devServers.isEmpty && !pendingEmptyVerification {
+      pendingEmptyVerification = true
+      stopServerDiscovery()
+      startServerDiscovery()
+      return
+    }
+    pendingEmptyVerification = false
+    if !servers.isEmpty {
+      markNetworkPermissionGranted()
+    }
     devServers = servers.sorted(by: <)
   }
 
@@ -201,9 +217,65 @@ class DevLauncherViewModel: ObservableObject {
 
     stopServerDiscovery()
     startDevServerBrowser()
+    startPeriodicRefresh()
   }
-  
+
+  func refreshDevServers() async {
+    await restartBrowser()
+  }
+
+  private func restartBrowser() async {
+    pingTask?.cancel()
+    browser?.cancel()
+    pingTask = nil
+    browser = nil
+    startDevServerBrowser()
+    try? await Task.sleep(nanoseconds: 3_000_000_000)
+    await pingCurrentBrowseResults()
+  }
+
+  private func pingCurrentBrowseResults() async {
+    guard let browser, !browser.browseResults.isEmpty else {
+      return
+    }
+    await pingDiscoveryResults(browser.browseResults.map { result in
+      DiscoveryResult(
+        name: NetworkUtilities.getNWBrowserResultName(result),
+        endpoint: result.endpoint
+      )
+    })
+  }
+
+  private func startPeriodicRefresh() {
+    periodicRefreshTask?.cancel()
+    periodicRefreshTask = Task { [weak self] in
+      while !Task.isCancelled {
+        try? await Task.sleep(nanoseconds: Self.refreshInterval)
+        guard !Task.isCancelled else {
+          return
+        }
+        await self?.refreshIfNeeded()
+      }
+    }
+  }
+
+  private func refreshIfNeeded() async {
+    guard let browser else {
+      return
+    }
+    if devServers.isEmpty {
+      await restartBrowser()
+    } else if browser.browseResults.isEmpty {
+      updateDevServers([])
+    } else {
+      await pingCurrentBrowseResults()
+    }
+  }
+
   func markNetworkPermissionGranted() {
+    guard permissionStatus != .granted else {
+      return
+    }
     UserDefaults.standard.set(true, forKey: networkPermissionGrantedKey)
     permissionStatus = .granted
   }
@@ -269,8 +341,10 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func stopServerDiscovery() {
+    periodicRefreshTask?.cancel()
     pingTask?.cancel()
     browser?.cancel()
+    periodicRefreshTask = nil
     pingTask = nil
     browser = nil
   }
@@ -408,10 +482,6 @@ class DevLauncherViewModel: ObservableObject {
     shakeDevice = defaults.object(forKey: "EXDevMenuMotionGestureEnabled") as? Bool ?? true
     threeFingerLongPress = defaults.object(forKey: "EXDevMenuTouchGestureEnabled") as? Bool ?? true
     showOnLaunch = defaults.object(forKey: "EXDevMenuShowsAtLaunch") as? Bool ?? false
-  }
-
-  private func saveMenuPreference(key: String, value: Bool) {
-    UserDefaults.standard.set(value, forKey: key)
   }
 
   private func checkAuthenticationStatus() {

@@ -28,7 +28,7 @@ export const SnippetHeader = ({
   <div
     data-md="snippet-header"
     className={mergeClasses(
-      'border-default bg-default flex min-h-[40px] justify-between overflow-hidden border pl-4',
+      'flex min-h-10 justify-between overflow-hidden border border-default bg-default pl-4',
       !float && 'rounded-t-md border-b-0',
       float && 'rounded-md',
       Icon && 'pl-3',

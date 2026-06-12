@@ -5,5 +5,14 @@
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "include": ["src/utils.ts"],
+  "include": ["src/**/*"],
+  "exclude": [
+    "app/**/*",
+    "android/**/*",
+    "ios/**/*",
+    "dist/**/*",
+    "build/**/*",
+    "**/__mocks__/*",
+    "**/__tests__/*"
+  ]
 }

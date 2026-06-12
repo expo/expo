@@ -13,17 +13,23 @@ struct ListView: ExpoSwiftUI.View {
   @State private var selection = Set<AnyHashable>()
 
   var body: some View {
-    List(selection: $selection) {
-      Children()
-    }
-    .onAppear {
-      selection = Self.getHashableSetFromEither(props.selection)
-    }
-    .onChange(of: props.selection) { newValue in
-      selection = Self.getHashableSetFromEither(newValue)
-    }
-    .onChange(of: selection) { newSelection in
-      handleSelectionChange(selection: newSelection)
+    if props.selection != nil {
+      List(selection: $selection) {
+        Children()
+      }
+      .onAppear {
+        selection = Self.getHashableSetFromEither(props.selection)
+      }
+      .onChange(of: props.selection) { newValue in
+        selection = Self.getHashableSetFromEither(newValue)
+      }
+      .onChange(of: selection) { newSelection in
+        handleSelectionChange(selection: newSelection)
+      }
+    } else {
+      List {
+        Children()
+      }
     }
   }
 

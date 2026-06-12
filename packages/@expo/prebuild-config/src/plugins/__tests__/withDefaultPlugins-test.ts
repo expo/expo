@@ -317,6 +317,7 @@ describe('built-in plugins', () => {
         'node_modules/react-native-maps/package.json',
         'ios/.xcode.env',
         'ios/HelloWorld/AppDelegate.swift',
+        'ios/HelloWorld/SceneDelegate.swift',
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png',
         'ios/HelloWorld/Images.xcassets/Contents.json',
@@ -380,6 +381,10 @@ describe('built-in plugins', () => {
     );
 
     expect(after['ios/HelloWorld/Info.plist']).toMatch(/com.bacon.todo/);
+    // The scene-based life cycle (required by the iOS 27 SDK) declares a single-scene manifest
+    // pointing at the generated SceneDelegate.
+    expect(after['ios/HelloWorld/Info.plist']).toMatch('UIApplicationSceneManifest');
+    expect(after['ios/HelloWorld/Info.plist']).toMatch('$(PRODUCT_MODULE_NAME).SceneDelegate');
     expect(after['ios/HelloWorld/Supporting/en.lproj/InfoPlist.strings']).toMatch(
       /foo = "uhh bar"/
     );
@@ -409,12 +414,12 @@ describe('built-in plugins', () => {
     const infoPlist = await plist.parse(
       fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/Info.plist'), 'utf8')
     );
-    expect(infoPlist.bar).toStrictEqual({ val: ['foo'] });
+    expect(infoPlist.bar).toEqual({ val: ['foo'] });
     // Ensure the entitlements object is merged correctly
     const entitlements = await plist.parse(
       fsMock.readFileSync(path.join(projectRoot, 'ios/HelloWorld/mycoolapp.entitlements'), 'utf8')
     );
-    expect(entitlements.foo).toStrictEqual('bar');
+    expect(entitlements.foo).toEqual('bar');
 
     // Ensure files are always written in the correct format
     for (const xmlPath of [
@@ -489,6 +494,7 @@ describe('built-in plugins', () => {
       'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
       'ios/HelloWorld/Images.xcassets/Contents.json',
       'ios/HelloWorld/Info.plist',
+      'ios/HelloWorld/SceneDelegate.swift',
       'ios/HelloWorld/SplashScreen.storyboard',
       'ios/HelloWorld/Supporting/Expo.plist',
       'ios/HelloWorld/HelloWorld.entitlements',

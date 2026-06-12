@@ -12,7 +12,7 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
-  func update(props: String) async throws {
+  func update(props: String?) async throws {
     guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
 
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
@@ -66,7 +66,7 @@ final class LiveActivity: SharedObject {
     pushTokenObserverTask = Task {
       for await data in activity.pushTokenUpdates {
         let token = data.reduce("") { $0 + String(format: "%02x", $1) }
-        emit(event: onTokenReceived, arguments: [
+        emit(event: onTokenReceived, payload: [
           "activityId": activity.id,
           "pushToken": token
         ])

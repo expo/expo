@@ -1,48 +1,60 @@
-import { useState } from 'react';
-import { Pressable, Text, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
-import type { ButtonProps, ButtonVariant } from './types';
-import { useUniversalLifecycle } from '../hooks';
+import type { ButtonProps } from './types';
+import { useFocusVisible, useUniversalLifecycle } from '../hooks';
+import { colors, durations, easings, shadows } from '../webUtils';
 
-const variantStyles: Record<ButtonVariant, ViewStyle> = {
-  filled: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+const buttonStyles = StyleSheet.create({
+  base: {
+    alignItems: 'center',
+    backgroundColor: colors.primary[500],
     borderRadius: 8,
+    boxShadow: shadows.button,
+    display: 'inline-flex',
+    height: 40,
+    justifyContent: 'center',
+    outlineStyle: 'solid',
+    outlineWidth: 0,
+    paddingHorizontal: 16,
+    transitionDuration: durations.fast,
+    transitionProperty: 'background-color, color, box-shadow, transform',
+    transitionTimingFunction: easings.standard,
+    whiteSpace: 'nowrap',
   },
   outlined: {
     backgroundColor: 'transparent',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#007AFF',
+    boxShadow: `inset 0 0 0 1px ${colors.gray[300]}`,
   },
   text: {
     backgroundColor: 'transparent',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    boxShadow: 'none',
   },
-};
+  focused: { boxShadow: shadows.focus },
+  disabled: { opacity: 0.5 },
+  hidden: { display: 'none' },
+  hovered: { backgroundColor: colors.primary[600] },
+  hoveredOutlined: { backgroundColor: colors.gray[50] },
+  hoveredText: { backgroundColor: colors.gray[50] },
+  pressed: {
+    backgroundColor: colors.primary[700],
+    transform: 'translateY(0.5px)',
+  },
+  pressedOutlined: { backgroundColor: colors.gray[100] },
+  pressedText: { backgroundColor: colors.gray[100] },
+});
 
-const variantHoverStyles: Record<ButtonVariant, ViewStyle> = {
-  filled: {
-    backgroundColor: '#0066DB',
+const textStyles = StyleSheet.create({
+  base: {
+    color: colors.primary.foreground,
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 14,
+    textAlign: 'center',
+    userSelect: 'none',
   },
-  outlined: {
-    backgroundColor: 'rgba(0, 122, 255, 0.08)',
-  },
-  text: {
-    backgroundColor: 'rgba(0, 122, 255, 0.08)',
-  },
-};
-
-const variantTextColors: Record<ButtonVariant, string> = {
-  filled: '#FFFFFF',
-  outlined: '#007AFF',
-  text: '#007AFF',
-};
+  outlined: { color: colors.gray[900] },
+  text: { color: colors.primary[600] },
+});
 
 /**
  * A pressable button that supports multiple visual variants.
@@ -55,31 +67,54 @@ export function Button({
   style,
   onAppear,
   onDisappear,
-  disabled,
-  hidden,
+  disabled = false,
+  hidden = false,
   testID,
 }: ButtonProps) {
   useUniversalLifecycle(onAppear, onDisappear);
-  const [hovered, setHovered] = useState(false);
 
-  const pressableStyle: ViewStyle = {
-    ...variantStyles[variant],
-    ...style,
-    ...(hovered && !disabled ? variantHoverStyles[variant] : undefined),
-    ...(hidden ? { display: 'none' } : undefined),
-    ...(disabled ? { opacity: 0.5 } : undefined),
-  };
+  const { focusVisible, onFocus, onBlur } = useFocusVisible();
 
   return (
     <Pressable
-      style={pressableStyle}
+      role="button"
+      onFocus={onFocus}
+      onBlur={onBlur}
       onPress={onPress}
-      onHoverIn={() => setHovered(true)}
-      onHoverOut={() => setHovered(false)}
       disabled={disabled}
-      testID={testID}>
+      testID={testID}
+      style={({ hovered, pressed }) => [
+        buttonStyles.base,
+        variant === 'outlined' && buttonStyles.outlined,
+        variant === 'text' && buttonStyles.text,
+
+        hovered && [
+          buttonStyles.hovered,
+          variant === 'outlined' && buttonStyles.hoveredOutlined,
+          variant === 'text' && buttonStyles.hoveredText,
+        ],
+
+        pressed && [
+          buttonStyles.pressed,
+          variant === 'outlined' && buttonStyles.pressedOutlined,
+          variant === 'text' && buttonStyles.pressedText,
+        ],
+
+        style,
+
+        focusVisible && buttonStyles.focused,
+        hidden && buttonStyles.hidden,
+        disabled && buttonStyles.disabled,
+      ]}>
       {children ?? (
-        <Text style={{ color: variantTextColors[variant], textAlign: 'center' }}>{label}</Text>
+        <Text
+          style={[
+            textStyles.base,
+            variant === 'outlined' && textStyles.outlined,
+            variant === 'text' && textStyles.text,
+          ]}>
+          {label}
+        </Text>
       )}
     </Pressable>
   );

@@ -22,8 +22,15 @@ import {
 } from './fixtures/terminal-logs';
 
 const asBundleDetails = (value: any) => value as BundleDetails;
+const DARK_BLOCK_CHAR = '\u2593';
+const LIGHT_BLOCK_CHAR = '\u2591';
 
 jest.useFakeTimers();
+
+const mockIsInteractive = jest.fn(() => false);
+jest.mock('../../../../utils/interactive', () => ({
+  isInteractive: () => mockIsInteractive(),
+}));
 
 jest.mock('../../serverLogLikeMetro', () => {
   const original = jest.requireActual('../../serverLogLikeMetro');
@@ -159,6 +166,50 @@ describe('symbolicate React stacks', () => {
 `);
   });
 
+  it('should symbolicate a web error stack', async () => {
+    let parsedError: any;
+    jest
+      .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
+      .mockImplementationOnce((_projectRoot, _level, error) => {
+        parsedError = error;
+        return Promise.resolve({
+          isFallback: false,
+          stack: '\n\n  at app/index.tsx:1:1',
+        });
+      });
+
+    reporter._log({
+      type: 'client_log',
+      level: 'error',
+      data: [
+        '[Error: Hello]',
+        'Error: Hello\n    at Page (http://localhost:8081/packages/expo-router/entry.bundle?platform=web&dev=true&hot=false:123:45)',
+      ],
+      mode: 'web',
+    } as any);
+
+    expect(parseErrorStringToObject).toHaveBeenCalledWith(
+      expect.stringContaining('/packages/expo-router/entry.bundle?platform=web')
+    );
+    expect(maybeSymbolicateAndFormatJSErrorStackLogAsync).toHaveBeenCalledTimes(1);
+    expect(parsedError.stack[0]).toEqual({
+      arguments: [],
+      column: 44,
+      file: 'http://localhost:8081/packages/expo-router/entry.bundle?platform=web&dev=true&hot=false',
+      lineNumber: 123,
+      methodName: 'Page',
+    });
+
+    await jest.runAllTimersAsync();
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(''))).toMatchInlineSnapshot(`
+"Web  ERROR [Error: Hello]
+
+  at app/index.tsx:1:1"
+`);
+  });
+
   it(`should symbolicate multiple errors stacks - SDK 54 style`, async () => {
     jest
       .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
@@ -194,6 +245,92 @@ describe('symbolicate React stacks', () => {
   at App3.js:1:1
   at index3.js:2:2"
 `);
+  });
+});
+
+describe('client log platform prefix and format substitution', () => {
+  const terminal = {
+    log: jest.fn(),
+    persistStatus: jest.fn(),
+    status: jest.fn(),
+    flush: jest.fn(),
+    _update: jest.fn(),
+  } satisfies Partial<Terminal>;
+
+  const reporter = new MetroTerminalReporter('/', terminal as any);
+
+  beforeEach(() => {
+    terminal.log.mockReset();
+  });
+
+  it(`prefixes web client logs with "Web"`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'log',
+      data: ['hello world'],
+      mode: 'web',
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const output = stripVTControlCharacters(terminal.log.mock.calls[0].join(''));
+    expect(output).toMatch(/^Web /);
+    expect(output).toContain('LOG');
+    expect(output).toContain('hello world');
+  });
+
+  it(`does not prefix native client logs (NOBRIDGE)`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'log',
+      data: ['hello world'],
+      mode: 'NOBRIDGE',
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const output = stripVTControlCharacters(terminal.log.mock.calls[0].join(''));
+    expect(output).not.toMatch(/^(Web|iOS|Android) /);
+    expect(output).toContain('LOG');
+  });
+
+  it(`does not prefix client logs without mode`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'log',
+      data: ['hello world'],
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const output = stripVTControlCharacters(terminal.log.mock.calls[0].join(''));
+    expect(output).not.toMatch(/^(Web|iOS|Android) /);
+  });
+
+  it(`applies printf-style %s format substitution`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'warn',
+      data: ['%s\n\n%s', 'An error occurred.', 'Visit https://react.dev for more info.'],
+      mode: 'web',
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const output = stripVTControlCharacters(terminal.log.mock.calls[0].join(''));
+    expect(output).not.toContain('%s');
+    expect(output).toContain('An error occurred.');
+    expect(output).toContain('Visit https://react.dev for more info.');
+  });
+
+  it(`does not apply format substitution when first arg has no specifiers`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'log',
+      data: ['plain message', 'extra arg'],
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const args = terminal.log.mock.calls[0];
+    // Both items should be passed through as separate arguments
+    expect(args).toContain('plain message');
+    expect(args).toContain('extra arg');
   });
 });
 
@@ -407,6 +544,323 @@ describe(formatUsingNodeStandardLibraryError, () => {
       It failed because the native React runtime does not include the Node standard library.
       Learn more: https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries"
     `);
+  });
+});
+
+describe('non-interactive terminal output', () => {
+  /**
+   * Reproduces the bug where progress bar status lines interleave with "Bundled" log messages
+   * in non-TTY mode. In TTY mode, status lines are overwritten in-place by the Terminal class.
+   * In non-TTY mode, Terminal.log() writes immediately while Terminal.status() writes through
+   * a 3500ms throttle (#writeStatusThrottled), causing progress bars to appear as permanent
+   * output between "Bundled" completion messages:
+   *
+   *   Web Bundled 2967ms node_modules/expo-router/entry.js (964 modules)
+   *   Web node_modules/expo-router/entry.js ▓▓▓░░░░░░░░░░░░░ 21.3% ( 97/210)
+   *   Web Bundled 1185ms node_modules/expo-router/entry.js (965 modules)
+   */
+
+  const buildID1 = 'build-1';
+  const buildID2 = 'build-2';
+  const entryFile = 'node_modules/expo-router/entry.js';
+  const bundleDetails = asBundleDetails({
+    entryFile,
+    platform: 'web',
+    bundleType: 'bundle',
+  });
+
+  function createNonInteractiveReporter() {
+    const terminal = {
+      log: jest.fn(),
+      persistStatus: jest.fn(),
+      status: jest.fn(),
+      flush: jest.fn(),
+    } satisfies Partial<Terminal>;
+
+    const reporter = new MetroTerminalReporter('/', terminal as any);
+    reporter._getElapsedTime = jest.fn(() => BigInt(2_967_000_000));
+    return { reporter, terminal };
+  }
+
+  /**
+   * Helper that collects the interleaved order of terminal.log and terminal.status calls.
+   * Each entry records the call type and stripped content to make assertions readable.
+   */
+  function collectOutputOrder(terminal: { log: jest.Mock; status: jest.Mock }) {
+    const output: { type: 'log' | 'status'; content: string }[] = [];
+    terminal.log.mockImplementation((...args: any[]) => {
+      output.push({ type: 'log', content: stripAnsi(args.join(' ')) });
+    });
+    terminal.status.mockImplementation((...args: any[]) => {
+      const content = stripAnsi(args.join(' '));
+      if (content) {
+        output.push({ type: 'status', content });
+      }
+    });
+    return output;
+  }
+
+  it('progress bar status should not interleave with Bundled log messages', () => {
+    const { reporter, terminal } = createNonInteractiveReporter();
+    const output = collectOutputOrder(terminal);
+
+    // Simulate first bundle: start → progress → done
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...bundleDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+
+    // Progress updates (normally throttled at 100ms, we simulate the throttled event directly)
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 500,
+      totalFileCount: 964,
+    } as any);
+
+    // First bundle completes
+    reporter.update({
+      type: 'bundle_build_done',
+      buildID: buildID1,
+      bundleDetails: { ...bundleDetails, buildID: buildID1 },
+    } as any);
+
+    // Second bundle starts immediately (e.g. HMR rebuild)
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID2,
+      bundleDetails: { ...bundleDetails, buildID: buildID2 },
+      isPrefetch: false,
+    } as any);
+
+    // Progress update for second bundle
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID2,
+      transformedFileCount: 97,
+      totalFileCount: 210,
+    } as any);
+
+    // Second bundle completes
+    reporter._getElapsedTime = jest.fn(() => BigInt(1_185_000_000));
+    reporter.update({
+      type: 'bundle_build_done',
+      buildID: buildID2,
+      bundleDetails: { ...bundleDetails, buildID: buildID2 },
+    } as any);
+
+    // Extract only the log calls (what gets permanently written in non-TTY mode)
+    const logMessages = output.filter((o) => o.type === 'log');
+
+    // Both "Bundled" messages should appear in the logs
+    expect(logMessages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ content: expect.stringContaining('Bundled') }),
+        expect.objectContaining({ content: expect.stringContaining('Bundled') }),
+      ])
+    );
+
+    // No progress bar should appear in the log output (progress bars belong only in status)
+    for (const msg of logMessages) {
+      expect(msg.content).not.toContain(DARK_BLOCK_CHAR);
+      expect(msg.content).not.toContain(LIGHT_BLOCK_CHAR);
+    }
+
+    // Now check the status calls: in non-TTY mode, these become permanent output.
+    // After a bundle completes, the status should not contain progress bars for completed bundles.
+    const statusMessages = output.filter((o) => o.type === 'status');
+
+    // Find the status call that happens right after the first "Bundled" log
+    const firstBundledIndex = output.findIndex(
+      (o) => o.type === 'log' && o.content.includes('Bundled')
+    );
+    const statusAfterFirstBundled = output
+      .slice(firstBundledIndex + 1)
+      .filter((o) => o.type === 'status');
+
+    // The status after the first "Bundled" should not contain a progress bar for the completed bundle
+    for (const msg of statusAfterFirstBundled) {
+      // If there's a progress bar, it should only be for bundle 2 (not stale data from bundle 1)
+      if (msg.content.includes(DARK_BLOCK_CHAR) || msg.content.includes(LIGHT_BLOCK_CHAR)) {
+        // This is the bug: a progress bar status appears in the output stream
+        // between the two "Bundled" messages, which in non-TTY mode is permanent output.
+        // The status should be empty or suppressed in non-interactive mode.
+        expect(msg.content).not.toContain(DARK_BLOCK_CHAR);
+      }
+    }
+  });
+
+  it('_getStatusMessage returns empty string in non-interactive mode', () => {
+    const { reporter } = createNonInteractiveReporter();
+
+    // Start a bundle so there's an active bundle
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...bundleDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+
+    // Add some progress
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 50,
+      totalFileCount: 100,
+    } as any);
+
+    // In non-interactive mode, _getStatusMessage() should return empty
+    // since status lines can't be overwritten and would produce permanent noise.
+    expect(reporter._getStatusMessage()).toBe('');
+  });
+});
+
+describe('status cleared before log lines', () => {
+  beforeEach(() => mockIsInteractive.mockReturnValue(true));
+  afterEach(() => mockIsInteractive.mockReturnValue(false));
+
+  /**
+   * Metro's Terminal.#update() is async and snapshots #nextStatusStr when it starts.
+   * When _log() calls terminal.log(), Terminal starts #update() which captures
+   * whatever status is currently set. If it's a progress bar, that progress bar
+   * gets written as permanent output between log lines (it can't be reliably
+   * cleared before more output arrives).
+   *
+   * The fix: update() clears the status to empty before _log() runs, so Terminal's
+   * #update() captures an empty status and writes no progress bars alongside log lines.
+   */
+
+  const buildID1 = 'build-1';
+  const buildID2 = 'build-2';
+  const entryFile = 'node_modules/expo-router/entry.js';
+  const serverEntry = 'packages/@expo/router-server/node/render.js';
+  const webDetails = asBundleDetails({
+    entryFile,
+    platform: 'web',
+    bundleType: 'bundle',
+  });
+  const serverDetails = asBundleDetails({
+    entryFile: serverEntry,
+    platform: 'web',
+    bundleType: 'bundle',
+    customTransformOptions: { environment: 'node' },
+  });
+
+  function createReporter() {
+    const callOrder: { type: 'log' | 'status'; content: string }[] = [];
+
+    const terminal = {
+      log: jest.fn((...args: any[]) => {
+        const content = stripAnsi(args.join(' '));
+        callOrder.push({ type: 'log', content });
+      }),
+      persistStatus: jest.fn(),
+      status: jest.fn((...args: any[]) => {
+        const content = stripAnsi(args.join(' '));
+        callOrder.push({ type: 'status', content });
+      }),
+      flush: jest.fn(),
+    } satisfies Partial<Terminal>;
+
+    const reporter = new MetroTerminalReporter('/', terminal as any);
+    reporter._getElapsedTime = jest.fn(() => BigInt(100_000_000));
+    return { reporter, terminal, callOrder };
+  }
+
+  it('clears status before any log call during bundle_build_done', () => {
+    const { reporter, callOrder } = createReporter();
+
+    // Start a bundle and add progress
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...webDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 50,
+      totalFileCount: 100,
+    } as any);
+
+    callOrder.length = 0;
+
+    // Bundle completes
+    reporter.update({
+      type: 'bundle_build_done',
+      buildID: buildID1,
+      bundleDetails: { ...webDetails, buildID: buildID1 },
+    } as any);
+
+    // The FIRST call should be status('') to clear progress bars
+    expect(callOrder[0]).toEqual({ type: 'status', content: '' });
+
+    // The log should come after the clear
+    const bundledLog = callOrder.find((c) => c.type === 'log' && c.content.includes('Bundled'));
+    expect(bundledLog).toBeDefined();
+  });
+
+  it('clears status before server log warnings', () => {
+    const { reporter, callOrder } = createReporter();
+
+    // Start a bundle (web) and add progress
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...webDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 883,
+      totalFileCount: 886,
+    } as any);
+
+    callOrder.length = 0;
+
+    // A server log (WARN) comes in while web bundle is still active
+    reporter.update({
+      type: 'unstable_server_log',
+      level: 'warn',
+      data: ['Deep imports from react-native are deprecated'],
+    } as any);
+
+    // The FIRST call should be status('') to clear the web progress bar
+    expect(callOrder[0]).toEqual({ type: 'status', content: '' });
+
+    // Status should be restored at the end (web bundle still active)
+    const lastStatus = [...callOrder].reverse().find((c) => c.type === 'status');
+    expect(lastStatus?.content).toContain(entryFile);
+  });
+
+  it('does not clear status for progress events', () => {
+    const { reporter, callOrder } = createReporter();
+
+    // Start a bundle
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...webDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+
+    callOrder.length = 0;
+
+    // Progress event should NOT clear the status
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 50,
+      totalFileCount: 100,
+    } as any);
+
+    // Should not start with a clear
+    const firstStatus = callOrder.find((c) => c.type === 'status');
+    expect(firstStatus?.content).not.toBe('');
   });
 });
 

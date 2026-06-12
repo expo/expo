@@ -137,7 +137,14 @@ We recommend writing config plugins in TypeScript, since this will provide intel
 
 Install `tsx` library by running the following command:
 
-<Terminal cmd={['$ npm install --save-dev tsx']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev tsx'],
+    yarn: ['$ yarn add --dev tsx'],
+    pnpm: ['$ pnpm add --save-dev tsx'],
+    bun: ['$ bun add --dev tsx'],
+  }}
+/>
 
 Then, change the static app config (**app.json**) to the [dynamic app config (**app.config.ts**)](/workflow/configuration/#dynamic-configuration) file. You can do this by renaming the **app.json** file to **app.config.ts** and changing the content of the file as shown below. Ensure to add the following import statement at the top of your **app.config.ts** file:
 
@@ -176,7 +183,14 @@ module.exports = /* @info */({ config }: { config: ExpoConfig })/* @end */ => {
 
 To see the custom config applied in native projects, run the following command:
 
-<Terminal cmd={['$ npx expo prebuild --clean --no-install']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean --no-install'],
+    yarn: ['$ yarn expo prebuild --clean --no-install'],
+    pnpm: ['$ pnpm expo prebuild --clean --no-install'],
+    bun: ['$ bun expo prebuild --clean --no-install'],
+  }}
+/>
 
 To verify the custom config plugins applied, open **android/app/src/main/AndroidManifest.xml** and **ios/\<your-project-name\>/Info.plist** files:
 
@@ -224,7 +238,7 @@ type AndroidProps = {
 
 const withAndroidPlugin: ConfigPlugin<AndroidProps> = (
   config,
-  /* @info Pass an <code>options</code> object to the plugin. */ options = {}/* @end */
+  /* @info Pass an `options` object to the plugin. */ options = {}/* @end */
 ) => {
   /* @info Use the provided message or fall back to a default */
   const message = options.message || 'Hello world, from Expo plugin!';
@@ -249,7 +263,7 @@ type IosProps = {
   message?: string;
 };
 
-const withIosPlugin: ConfigPlugin<IosProps> = (config, /* @info Pass an <code>options</code> object to the plugin. */ options = {}/* @end */) => {
+const withIosPlugin: ConfigPlugin<IosProps> = (config, /* @info Pass an `options` object to the plugin. */ options = {}/* @end */) => {
    /* @info Use the provided message or fall back to a default */
   const message = options.message || 'Hello world, from Expo plugin!';
   /* @end */
@@ -347,7 +361,14 @@ Expo config plugins are usually included in Node.js modules. You can install the
 
 For example, `expo-camera` has a plugin that adds camera permissions to the **AndroidManifest.xml** and **Info.plist**. To install it in your project, run the following command:
 
-<Terminal cmd={['$ npx expo install expo-camera']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-camera'],
+    yarn: ['$ yarn expo install expo-camera'],
+    pnpm: ['$ pnpm expo install expo-camera'],
+    bun: ['$ bun expo install expo-camera'],
+  }}
+/>
 
 In your [app config](/versions/latest/config/app/), you can add `expo-camera` to the list of plugins:
 

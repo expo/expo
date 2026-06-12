@@ -37,14 +37,40 @@ When developing Expo web apps locally, you may need to use HTTPS with your local
 Create or navigate to your Expo project:
 
 <Terminal
-  cmd={[
-    '# Create a new project (if needed)',
-    '$ npx create-expo-app@latest example-app --template default@sdk-55',
-    '$ cd example-app',
-    '',
-    '# Or navigate to existing project',
-    '$ cd your-expo-project',
-  ]}
+  cmd={{
+    npm: [
+      '# Create a new project (if needed)',
+      '$ npx create-expo-app@latest example-app --template default@sdk-56',
+      '$ cd example-app',
+      '',
+      '# Or navigate to existing project',
+      '$ cd your-expo-project',
+    ],
+    yarn: [
+      '# Create a new project (if needed)',
+      '$ yarn create expo-app example-app --template default@sdk-56',
+      '$ cd example-app',
+      '',
+      '# Or navigate to existing project',
+      '$ cd your-expo-project',
+    ],
+    pnpm: [
+      '# Create a new project (if needed)',
+      '$ pnpm create expo-app example-app --template default@sdk-56',
+      '$ cd example-app',
+      '',
+      '# Or navigate to existing project',
+      '$ cd your-expo-project',
+    ],
+    bun: [
+      '# Create a new project (if needed)',
+      '$ bun create expo example-app --template default@sdk-56',
+      '$ cd example-app',
+      '',
+      '# Or navigate to existing project',
+      '$ cd your-expo-project',
+    ],
+  }}
 />
 
 </Step>
@@ -53,7 +79,14 @@ Create or navigate to your Expo project:
 
 Start your Expo development server:
 
-<Terminal cmd={['$ npx expo start --web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
 
 Your app will be running on `http://localhost:8081`. Keep this terminal window open.
 
@@ -76,9 +109,20 @@ This will generate two signed certificate files: `localhost.pem` (certificate) a
 Inside your project's root directory, run the following command to start the proxy:
 
 <Terminal
-  cmd={[
-    '$ npx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+    ],
+    yarn: [
+      '$ yarn dlx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+    ],
+    pnpm: [
+      '$ pnpm dlx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+    ],
+    bun: [
+      '$ bunx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+    ],
+  }}
 />
 
 > **info** **Tip**: [`local-ssl-proxy`](https://github.com/cameronhunter/local-ssl-proxy) is a tool that creates a proxy server that forwards HTTPS traffic from port 443 to your Expo dev server on port 8081.

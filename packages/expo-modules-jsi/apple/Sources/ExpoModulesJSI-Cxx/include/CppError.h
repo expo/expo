@@ -3,7 +3,8 @@
 #include <exception>
 #include <memory>
 #include <swift/bridging>
-#include <jsi/jsi.h>
+
+#include "IRuntimeCompat.h"
 
 namespace expo {
 
@@ -62,7 +63,7 @@ public:
    Returns the underlying JavaScript value of the wrapped `jsi::JSError`.
    This is a JavaScript Error object with all its properties preserved.
    */
-  inline jsi::Value asValue(jsi::Runtime &runtime) noexcept {
+  inline jsi::Value asValue(jsi::IRuntime &runtime) noexcept {
     return jsi::Value(runtime, jsError.value());
   }
 
@@ -72,7 +73,7 @@ public:
    using `getCurrent()`. The function returns `nullptr` when an exception occurs.
    */
   template <typename Result>
-  inline static Result tryCatch(jsi::Runtime &runtime, Result(^block)(void)) {
+  inline static Result tryCatch(jsi::IRuntime &runtime, Result(^block)(void)) {
     try {
       return block();
     } catch (jsi::JSError e) {
@@ -116,7 +117,7 @@ public:
    Sets the current thread's error by creating a `jsi::JSError` from the given message.
    Called from Swift when a host function closure throws a plain error.
    */
-  inline static void setCurrent(jsi::Runtime &runtime, const std::string &message) {
+  inline static void setCurrent(jsi::IRuntime &runtime, const std::string &message) {
     _current = std::make_unique<CppError>(jsi::JSError(runtime, message));
   }
 

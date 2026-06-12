@@ -198,11 +198,6 @@ describe('e2e: iOS icons with fallback image', () => {
       value.startsWith('ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon')
     );
 
-    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(1);
-    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
-      'icon',
-      'No icon is defined in the Expo config.'
-    );
     expect(icons.length).toBe(1);
 
     // Test the Contents.json file

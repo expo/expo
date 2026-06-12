@@ -20,7 +20,7 @@ describe('createJsInspectorMiddleware', () => {
       >
     ).mockReturnValue(Promise.resolve(app));
 
-    const middlewareAsync = createJsInspectorMiddleware();
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
     await middlewareAsync(req, res as ServerResponse, next);
 
     expectMockedResponse(res, 200, JSON.stringify(app));
@@ -39,7 +39,7 @@ describe('createJsInspectorMiddleware', () => {
       >
     ).mockReturnValue(Promise.resolve(app));
 
-    const middlewareAsync = createJsInspectorMiddleware();
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
     await middlewareAsync(req, res as ServerResponse, next);
 
     expectMockedResponse(res, 200, JSON.stringify(app));
@@ -55,7 +55,7 @@ describe('createJsInspectorMiddleware', () => {
       >
     ).mockReturnValue(Promise.resolve(null));
 
-    const middlewareAsync = createJsInspectorMiddleware();
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
     await middlewareAsync(req, res as ServerResponse, next);
 
     expectMockedResponse(res, 404);
@@ -66,10 +66,46 @@ describe('createJsInspectorMiddleware', () => {
     const res = createMockedResponse();
     const next = jest.fn();
 
-    const middlewareAsync = createJsInspectorMiddleware();
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
     await middlewareAsync(req, res as ServerResponse, next);
 
     expectMockedResponse(res, 400);
+  });
+
+  it('queries the local server origin even when the request URL is absolute-form', async () => {
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const req = createRequest(
+      `http://localhost:8081/_expo/debugger?applicationId=${app.description}`
+    );
+    req.url = `http://192.0.2.66:9010/_expo/debugger?applicationId=${app.description}`;
+    const res = createMockedResponse();
+    const next = jest.fn();
+    (
+      JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+        typeof JsInspector.queryInspectorAppAsync
+      >
+    ).mockReturnValue(Promise.resolve(app));
+
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
+    await middlewareAsync(req, res as ServerResponse, next);
+
+    expect(JsInspector.queryInspectorAppAsync).toHaveBeenCalledWith(
+      'http://localhost:8081',
+      expect.anything()
+    );
+  });
+
+  it('rejects requests from a cross-origin browser page', async () => {
+    const req = createRequest('http://localhost:8081/_expo/debugger?applicationId=any');
+    req.headers.origin = 'http://evil.example';
+    const res = createMockedResponse();
+    const next = jest.fn();
+
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
+    await middlewareAsync(req, res as ServerResponse, next);
+
+    expectMockedResponse(res, 403);
+    expect(JsInspector.queryInspectorAppAsync).not.toHaveBeenCalled();
   });
 
   it('should open browser for PUT request with given applicationId', async () => {
@@ -86,7 +122,7 @@ describe('createJsInspectorMiddleware', () => {
       >
     ).mockReturnValue(Promise.resolve(app));
 
-    const middlewareAsync = createJsInspectorMiddleware();
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
     await middlewareAsync(req, res as ServerResponse, next);
 
     expectMockedResponse(res, 200);
@@ -94,7 +130,11 @@ describe('createJsInspectorMiddleware', () => {
   });
 });
 
-function createRequest(requestUrl: string, method?: 'GET' | 'POST' | 'PUT'): IncomingMessage {
+function createRequest(
+  requestUrl: string,
+  method?: 'GET' | 'POST' | 'PUT',
+  { remoteAddress = '127.0.0.1' }: { remoteAddress?: string } = {}
+): IncomingMessage {
   const url = new URL(requestUrl);
   const req: Partial<IncomingMessage> = {
     method: method || 'GET',
@@ -102,8 +142,10 @@ function createRequest(requestUrl: string, method?: 'GET' | 'POST' | 'PUT'): Inc
       host: url.host,
     },
     socket: {
-      localAddress: url.hostname,
+      localAddress: '127.0.0.1',
       localPort: Number(url.port || 80),
+      remoteAddress,
+      remoteFamily: 'IPv4',
     } as Socket,
     url: `${url.pathname}${url.search}`,
   };

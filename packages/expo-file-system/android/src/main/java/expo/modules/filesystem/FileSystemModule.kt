@@ -8,12 +8,14 @@ import androidx.annotation.RequiresApi
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.services.FilePermissionService
-import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URI
 
@@ -21,7 +23,34 @@ class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
+  private val filesDirectory: File
+    get() = appContext.persistentFilesDirectory
+
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory
+
   private val downloadStore = DownloadTaskStore()
+
+  private fun writeToFile(
+    file: FileSystemFile,
+    content: Either<String, NativeArrayBuffer>,
+    options: WriteOptions?
+  ) {
+    val append = options?.append ?: false
+    if (content.`is`(String::class)) {
+      content.get(String::class).let {
+        if (options?.encoding == EncodingType.BASE64) {
+          file.write(Base64.decode(it, Base64.DEFAULT), append)
+        } else {
+          file.write(it, append)
+        }
+      }
+    } else if (content.`is`(NativeArrayBuffer::class)) {
+      content.get(NativeArrayBuffer::class).let {
+        file.write(it, append)
+      }
+    }
+  }
 
   @RequiresApi(Build.VERSION_CODES.O)
   override fun definition() = ModuleDefinition {
@@ -30,11 +59,11 @@ class FileSystemModule : Module() {
     Events("downloadProgress")
 
     Constant("documentDirectory") {
-      Uri.fromFile(context.filesDir).toString() + "/"
+      Uri.fromFile(filesDirectory).toString() + "/"
     }
 
     Constant("cacheDirectory") {
-      Uri.fromFile(context.cacheDir).toString() + "/"
+      Uri.fromFile(cacheDirectory).toString() + "/"
     }
 
     Constant("bundleDirectory") {
@@ -42,11 +71,11 @@ class FileSystemModule : Module() {
     }
 
     Property("totalDiskSpace") {
-      File(context.filesDir.path).totalSpace
+      filesDirectory.totalSpace
     }
 
     Property("availableDiskSpace") {
-      File(context.filesDir.path).freeSpace
+      filesDirectory.freeSpace
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUUID: String? ->
@@ -132,42 +161,40 @@ class FileSystemModule : Module() {
         file.create(options ?: CreateOptions())
       }
 
-      Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
-        val append = options?.append ?: false
-        if (content.`is`(String::class)) {
-          content.get(String::class).let {
-            if (options?.encoding == EncodingType.BASE64) {
-              file.write(Base64.decode(it, Base64.DEFAULT), append)
-            } else {
-              file.write(it, append)
-            }
-          }
-        }
-        if (content.`is`(TypedArray::class)) {
-          content.get(TypedArray::class).let {
-            file.write(it, append)
-          }
+      AsyncFunction("write") Coroutine { file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions? ->
+        withContext(Dispatchers.IO) {
+          writeToFile(file, content, options)
         }
       }
 
-      AsyncFunction("text") { file: FileSystemFile ->
-        file.text()
+      Function("writeSync") { file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions? ->
+        writeToFile(file, content, options)
+      }
+
+      AsyncFunction("text") Coroutine { file: FileSystemFile ->
+        withContext(Dispatchers.IO) {
+          file.text()
+        }
       }
 
       Function("textSync") { file: FileSystemFile ->
         file.text()
       }
 
-      AsyncFunction("base64") { file: FileSystemFile ->
-        file.base64()
+      AsyncFunction("base64") Coroutine { file: FileSystemFile ->
+        withContext(Dispatchers.IO) {
+          file.base64()
+        }
       }
 
       Function("base64Sync") { file: FileSystemFile ->
         file.base64()
       }
 
-      AsyncFunction("bytes") { file: FileSystemFile ->
-        file.bytes()
+      AsyncFunction("bytes") Coroutine { file: FileSystemFile ->
+        withContext(Dispatchers.IO) {
+          file.bytes()
+        }
       }
 
       Function("bytesSync") { file: FileSystemFile ->
@@ -255,10 +282,16 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
-      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
+      AsyncFunction("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
-      Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+      Function("readBytesSync") { fileHandle: FileSystemFileHandle, bytes: Long ->
+        fileHandle.read(bytes)
+      }
+      AsyncFunction("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        fileHandle.write(data)
+      }
+      Function("writeBytesSync") { fileHandle: FileSystemFileHandle, data: ByteArray ->
         fileHandle.write(data)
       }
       Function("close") { fileHandle: FileSystemFileHandle ->

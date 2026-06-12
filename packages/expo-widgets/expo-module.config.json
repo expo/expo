@@ -1,6 +1,9 @@
 {
-  "platforms": ["apple"],
+  "platforms": ["apple", "android"],
   "apple": {
     "modules": ["WidgetsModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.widgets.WidgetsModule"]
   }
 }

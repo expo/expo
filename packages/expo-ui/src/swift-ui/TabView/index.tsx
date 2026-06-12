@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 
+import { Tab } from './Tab';
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { Tab } from './Tab';
 
 export type TabViewProps = {
   /**

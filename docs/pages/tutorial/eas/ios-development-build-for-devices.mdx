@@ -112,7 +112,7 @@ To create a development build on an iOS device, make sure that under the `build.
 
 This command prompts us with the following questions when we create the build for the first time:
 
-- **What would you like your iOS bundle identifier to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`ios.bundleIdentifier`](/versions/latest/config/app/#package) in **app.json** if it isn't already defined.
+- **What would you like your iOS bundle identifier to be?** Press <kbd>Return</kbd> to select the default value provided for this prompt. This will add [`ios.bundleIdentifier`](/versions/latest/config/app/#package) in **app.json** if it isn't already defined.
 - **Do you want to log in to your Apple account?**. Since we are creating a development build for the first time, it will ask us to **Generate a new Apple Distribution Certificate**. Press <kbd>Y</kbd> both times.
 - **Select a device for ad hoc build**. This is the key part, which is why we had to register a provisioning profile before. We can select one or all of our registered devices here and then press return to install that build on those devices later.
 
@@ -197,7 +197,14 @@ The **Install** button in the **Build artifact** section generates a QR code for
 
 Start the development server by running the `npx expo start` command from the project directory:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 - On the device, tap the app icon to open the development build.
 

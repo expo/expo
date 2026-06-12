@@ -26,3 +26,5 @@ export declare function updateAndroidSettingsGradle({ contents, buildFromSource,
     contents: string;
     buildFromSource?: boolean;
 }): string;
+export declare const withAndroidPrecompiledHeaders: ConfigPlugin<PluginConfigType>;
+export declare function updateBuildGradleForPCH(contents: string): string;

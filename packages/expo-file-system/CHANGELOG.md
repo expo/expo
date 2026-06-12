@@ -4,6 +4,69 @@
 
 ### 🛠 Breaking changes
 
+- `File.write()` is now asynchronous and returns a Promise. Use `File.writeSync()` for synchronous behavior. ([#45992](https://github.com/expo/expo/pull/45992) by [@wh201906](https://github.com/wh201906))
+- `FileHandle.readBytes()` and `FileHandle.writeBytes()` are now asynchronous and return a Promise. Use `FileHandle.readBytesSync()` and `FileHandle.writeBytesSync()` for synchronous behavior. ([#46280](https://github.com/expo/expo/pull/46280) by [@wh201906](https://github.com/wh201906))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376) by [@wh201906](https://github.com/wh201906))
+
+## 56.0.7 — 2026-05-20
+
+### 🛠 Breaking changes
+
+- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
+
+## 56.0.6 — 2026-05-19
+
+### 🎉 New features
+
+- Added `File.json()` and `File.formData()` to satisfy `Blob` type augmentations in consumer projects. ([#45685](https://github.com/expo/expo/pull/45685) by [@mvincentong](https://github.com/mvincentong))
+
+### 🐛 Bug fixes
+
+- Fixed the jest mock's `FileSystemFileHandle` to honor `FileMode` string values (`'r'`, `'w'`, `'wa'`, `'wt'`, `'rw'`) instead of the obsolete name table, expose handle and file metadata, and match the documented default mode for `content://` URIs. The dispatch is now exhaustive over `FileMode`, so future enum additions fail to compile in the mock. (by [@radko93](https://github.com/radko93))
+- [Android] Added missing permission checks to `delete()` and `openHandle()` in the next-gen File System API. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+- [Android] Fixed path traversal vulnerability in `createFile`, `createDirectory`, and `rename` that allowed escaping the parent directory. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+- [Android] Fixed `Paths.cache` and `Paths.document` pointing to wrong directory in Expo Go. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+- [Android] Remove unused native dependencies. ([#45939](https://github.com/expo/expo/pull/45939) by [@jakex7](https://github.com/jakex7))
+
+## 56.0.5 — 2026-05-15
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.4 — 2026-05-08
+
+### 💡 Others
+
+- Improved public API docs. ([#45530](https://github.com/expo/expo/pull/45530) by [@barthap](https://github.com/barthap))
+- Re-organized package TypeScript code. ([#45531](https://github.com/expo/expo/pull/45531) by [@barthap](https://github.com/barthap))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 - `copy()` and `move()` methods of `File` and `Directory` are now asynchronous and return a Promise. Use `copySync()` and `moveSync()` for synchronous behavior. ([#44359](https://github.com/expo/expo/pull/44359) by [@barthap](https://github.com/barthap))
 
@@ -29,9 +92,50 @@
 
 ### 💡 Others
 
+- Add behavioral Jest mocks for the class-based `File` / `Directory` / `Paths` API, backed by an in-memory filesystem so tests can exercise create/write/read/move/copy/delete roundtrips without hand-rolling a `jest.mock`. ([#45027](https://github.com/expo/expo/pull/45027) by [@radko93](https://github.com/radko93))
 - Deprecate `modificationTime` in favor of new `lastModified`, compatible with web `File` interface. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
 - Deprecate `File.pickFileAsync(arg1, arg2)` in favour of new `File.pickFileAsync(options)`. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
 - [Android] Optimized performance of copy and move operations. ([#44357](https://github.com/expo/expo/pull/44357), [#44358](https://github.com/expo/expo/pull/44358) by [@barthap](https://github.com/barthap))
+
+## 55.0.19 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.18 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.17 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-02-26
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.9 — 2026-02-25
 

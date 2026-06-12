@@ -12,6 +12,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useIntl } from 'react-intl';
 
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink';
@@ -38,6 +39,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
     );
     const numberOfRequirements = requirementChildren.length;
     const router = useRouter();
+    const intl = useIntl();
     const [isOpen, setIsOpen] = useState(open);
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const anchorId = 'prerequisites';
@@ -67,7 +69,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
       <details
         id={heading.current.slug}
         className={mergeClasses(
-          'border-default mb-3 scroll-m-4 rounded-md border p-0',
+          'mb-3 scroll-m-4 rounded-md border border-default p-0',
           '[[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
@@ -100,7 +102,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
                   'relative inline scroll-m-5',
                   'group-hover:text-secondary group-hover:[&_code]:text-secondary'
                 )}>
-                Prerequisites
+                {intl.formatMessage({ id: 'prerequisitesHeading' })}
               </p>
             </div>
             <LinkBase
@@ -109,14 +111,20 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               onClick={() => {
                 setIsOpen(true);
               }}
-              className="hocus:bg-element ml-1 inline rounded-md p-1"
+              className="ml-1 inline rounded-md p-1 hocus:bg-element"
               aria-label="Permalink">
-              <PermalinkIcon className="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible" />
+              <PermalinkIcon className="invisible inline-flex icon-sm group-hover:visible group-focus-visible:visible" />
             </LinkBase>
           </div>
           <div>
-            <p className="text-secondary text-sm">
-              {numberOfRequirements} requirement{numberOfRequirements === 1 ? '' : 's'}
+            <p className="text-sm text-secondary">
+              {numberOfRequirements}{' '}
+              {intl.formatMessage({
+                id:
+                  numberOfRequirements === 1
+                    ? 'prerequisitesRequirementSingular'
+                    : 'prerequisitesRequirementPlural',
+              })}
             </p>
           </div>
         </summary>
@@ -131,7 +139,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             {requirementChildren.map((child, index) => (
               <div
                 key={index}
-                className={mergeClasses('border-default flex items-baseline gap-1.5 border-t p-5')}>
+                className={mergeClasses('flex items-baseline gap-1.5 border-t border-default p-5')}>
                 {numberOfRequirements > 1 && (
                   <p className="mb-2 text-right font-medium">{index + 1}.</p>
                 )}

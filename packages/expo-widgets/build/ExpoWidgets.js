@@ -1,7 +1,7 @@
 const noopSubscription = { remove() { } };
 class WidgetStub {
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor(_name, _layout) { }
+    constructor(_name, _layout, _initialProps) { }
     reload() { }
     updateTimeline(_entries) { }
     async getTimeline() {
@@ -29,6 +29,7 @@ class LiveActivityFactoryStub {
     }
 }
 const ExpoWidgetsModule = {
+    widgetsDirectory: '',
     reloadAllWidgets() { },
     Widget: WidgetStub,
     LiveActivityFactory: LiveActivityFactoryStub,

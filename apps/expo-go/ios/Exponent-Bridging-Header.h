@@ -30,3 +30,4 @@
 #import "EXReactAppManager.h"
 #import "EXAbstractLoader.h"
 #import "EXProgressHUD.h"
+#import "EXConstantsBinding.h"

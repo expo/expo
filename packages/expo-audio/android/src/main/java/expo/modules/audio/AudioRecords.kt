@@ -41,8 +41,14 @@ data class RecordingOptions(
   @Field val audioEncoder: AndroidAudioEncoder?,
   @Field val maxFileSize: Int?,
   @Field val isMeteringEnabled: Boolean = false,
-  @Field val audioSource: RecordingSource?
+  @Field val audioSource: RecordingSource?,
+  @Field val directory: RecordingDirectory?
 ) : Record
+
+enum class RecordingDirectory(val value: String) : Enumerable {
+  CACHE("cache"),
+  DOCUMENT("document")
+}
 
 @OptimizedRecord
 class Metadata(
@@ -124,6 +130,7 @@ enum class AudioStreamEncoding(val value: String) : Enumerable {
   INT16("int16")
 }
 
+@OptimizedRecord
 class AudioStreamOptions : Record {
   @Field var sampleRate: Int = 48000
 

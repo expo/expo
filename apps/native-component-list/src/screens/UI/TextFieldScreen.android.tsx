@@ -4,7 +4,6 @@ import {
   TextFieldKeyboardType,
   TextFieldImeAction,
   TextFieldCapitalization,
-  TextFieldValue,
   OutlinedTextField,
   Button,
   Host,
@@ -15,6 +14,7 @@ import {
   Row,
   Column,
   FlowRow,
+  Shape,
   Text as ComposeText,
   useNativeState,
 } from '@expo/ui/jetpack-compose';
@@ -28,10 +28,8 @@ export default function TextFieldScreen() {
   const [lastAction, setLastAction] = React.useState('');
   const textRef = React.useRef<TextFieldRef>(null);
 
-  const maskedPhone = useNativeState<TextFieldValue>({
-    text: '',
-    selection: { start: 0, end: 0 },
-  });
+  const maskedPhoneText = useNativeState('');
+  const maskedPhoneSelection = useNativeState({ start: 0, end: 0 });
 
   const imperativeText = useNativeState('Select me!');
   const imperativeSelection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
@@ -57,7 +55,30 @@ export default function TextFieldScreen() {
   const [imeAction, setImeAction] = React.useState<TextFieldImeAction>('default');
   const [capitalization, setCapitalization] = React.useState<TextFieldCapitalization>('none');
 
+  const [shapeVariant, setShapeVariant] = React.useState<'default' | 'pill' | 'rounded' | 'mixed'>(
+    'pill'
+  );
+  const shapeJSX =
+    shapeVariant === 'pill'
+      ? Shape.Pill({})
+      : shapeVariant === 'rounded'
+        ? Shape.RoundedCorner({
+            cornerRadii: { topStart: 16, topEnd: 16, bottomStart: 16, bottomEnd: 16 },
+          })
+        : shapeVariant === 'mixed'
+          ? Shape.RoundedCorner({
+              cornerRadii: { topStart: 24, topEnd: 4, bottomStart: 4, bottomEnd: 24 },
+            })
+          : undefined;
+
   const TextFieldComponent = outlined ? OutlinedTextField : TextField;
+
+  React.useEffect(() => {
+    fieldValue.onChange = (newValue) => {
+      'worklet';
+      console.log('Value changed to:', newValue);
+    };
+  }, []);
 
   const sharedProps = {
     ref: textRef,
@@ -151,12 +172,13 @@ export default function TextFieldScreen() {
           <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
             <ComposeText style={{ typography: 'labelLarge' }}>Worklet Phone Masking</ComposeText>
             <TextField
-              value={maskedPhone}
+              value={maskedPhoneText}
+              selection={maskedPhoneSelection}
               keyboardOptions={{ keyboardType: 'phone' }}
               modifiers={[fillMaxWidth()]}
               onValueChange={(v) => {
                 'worklet';
-                const digits = v.text.replace(/\D/g, '').slice(0, 10);
+                const digits = v.replace(/\D/g, '').slice(0, 10);
                 let formatted: string;
                 if (digits.length === 0) {
                   formatted = '';
@@ -167,11 +189,9 @@ export default function TextFieldScreen() {
                 } else {
                   formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
                 }
-                if (formatted !== v.text) {
-                  maskedPhone.value = {
-                    text: formatted,
-                    selection: { start: formatted.length, end: formatted.length },
-                  };
+                if (formatted !== v) {
+                  maskedPhoneText.value = formatted;
+                  maskedPhoneSelection.value = { start: formatted.length, end: formatted.length };
                 }
               }}>
               <TextField.Placeholder>
@@ -213,6 +233,34 @@ export default function TextFieldScreen() {
                 <ComposeText>Cursor to end</ComposeText>
               </Button>
             </Row>
+          </Column>
+        </Card>
+
+        {/* Shape */}
+        <Card modifiers={cardModifiers}>
+          <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
+            <ComposeText style={{ typography: 'labelLarge' }}>Shape</ComposeText>
+            <OutlinedTextField
+              singleLine
+              shape={shapeJSX}
+              modifiers={[fillMaxWidth()]}
+              keyboardOptions={{ keyboardType: 'text' }}>
+              <OutlinedTextField.Placeholder>
+                <ComposeText>Search…</ComposeText>
+              </OutlinedTextField.Placeholder>
+              <OutlinedTextField.LeadingIcon>
+                <ComposeText>🔍</ComposeText>
+              </OutlinedTextField.LeadingIcon>
+            </OutlinedTextField>
+            <ChipGroup
+              options={['default', 'pill', 'rounded', 'mixed']}
+              selected={shapeVariant}
+              onSelect={setShapeVariant}
+            />
+            <ComposeText style={{ typography: 'bodySmall' }}>
+              `default` uses `OutlinedTextFieldDefaults.shape`; the others come from the `Shape` JSX
+              helpers (`Shape.Pill`, `Shape.RoundedCorner`).
+            </ComposeText>
           </Column>
         </Card>
 

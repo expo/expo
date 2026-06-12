@@ -8,6 +8,7 @@ maxHeadingDepth: 5
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -311,19 +312,19 @@ on:
     # @end #
 ```
 
-| Property      | Type       | Required                 | Description                                                                 |
-| ------------- | ---------- | ------------------------ | --------------------------------------------------------------------------- |
-| `type`        | `string`   | Yes                      | The input type (`string`, `boolean`, `number`, `choice`, or `environment`). |
-| `description` | `string`   | No                       | Description for the input.                                                  |
-| `required`    | `boolean`  | No                       | Whether the input is required. Defaults to `false`.                         |
-| `default`     | varies     | No                       | Default value for the input. Must match the input type.                     |
-| `options`     | `string[]` | Yes (for `type: choice`) | Available options for choice inputs.                                        |
+| Property      | Type       | Required                         | Description                                                                 |
+| ------------- | ---------- | -------------------------------- | --------------------------------------------------------------------------- |
+| `type`        | `string`   | <YesIcon />                      | The input type (`string`, `boolean`, `number`, `choice`, or `environment`). |
+| `description` | `string`   | <NoIcon />                       | Description for the input.                                                  |
+| `required`    | `boolean`  | <NoIcon />                       | Whether the input is required. Defaults to `false`.                         |
+| `default`     | varies     | <NoIcon />                       | Default value for the input. Must match the input type.                     |
+| `options`     | `string[]` | <YesIcon /> (for `type: choice`) | Available options for choice inputs.                                        |
 
 #### Providing inputs
 
 When running a workflow with inputs, you can provide them in several ways:
 
-1. Command line flags:
+1. Command-line flags:
 
    <Terminal
      cmd={[
@@ -427,7 +428,7 @@ jobs:
 
 ### `jobs.<job_id>.env`
 
-Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `require-approval`, `doc`, `get-build` and `slack` jobs).
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `require-approval`, `doc`, `get-build`, and `slack` jobs).
 
 ```yaml
 jobs:
@@ -438,6 +439,25 @@ jobs:
       RETRY_COUNT: 3
       PREV_JOB_OUTPUT: ${{ needs.previous_job.outputs.some_output }}
     # @end #
+```
+
+### `jobs.<job_id>.hooks`
+
+Some pre-packaged jobs support hooks to run additional steps before or after the main job action (for example, `maestro-cloud`, `maestro`, and `submit`). Hook names are job-specific. See the job's documentation for the available hook keys.
+
+```yaml
+jobs:
+  maestro_test:
+    type: maestro-cloud
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+    hooks:
+      before_maestro_cloud:
+        - run: echo "Before upload"
+      after_maestro_cloud:
+        - run: echo "After upload"
 ```
 
 ### `jobs.<job_id>.defaults.run.working_directory`
@@ -581,7 +601,7 @@ jobs:
 
 ## Interpolation
 
-You can customize the behavior of a workflow &mdash; commands to execute, control flow, environment variables, build profile, app version, and more &mdash; based on the workflow run's context.
+You can customize the behavior of a workflow — commands to execute, control flow, environment variables, build profile, app version, and more — based on the workflow run's context.
 
 Use the `${{ expression }}` syntax to access context properties and functions. For example: `${{ github.ref_name }}` or `${{ needs.build_ios.outputs.build_id }}`.
 
@@ -1018,6 +1038,7 @@ jobs:
       platform: ios | android # required
       profile: string # optional, default: production
       message: string # optional
+      refresh_ad_hoc_provisioning_profile: boolean # optional
 ```
 
 This job outputs the following properties:
@@ -1152,6 +1173,9 @@ jobs:
       build_id: string # required
       profile: string # optional, default: production
       groups: string[] # optional
+    hooks:
+      before_submit: step[] # optional
+      after_submit: step[] # optional
 ```
 
 This job outputs the following properties:
@@ -1239,14 +1263,18 @@ jobs:
       build_id: string # required
       flow_path: string | string[] # required
       shards: number # optional, defaults to 1
-      retries: number # optional, defaults to 1
+      retries: number # optional, defaults to 0
+      retry_failed_only: boolean # optional, defaults to true. When true, retries will attempt to re-run only the flows that failed on the previous attempt when applicable.
       record_screen: boolean # optional, defaults to false. If true, uploads a screen recording of the tests.
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
-      android_system_image_package: string # optional. Android emulator system image package to use.
+      android_system_image_package: string # optional. Android Emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
       output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+    hooks:
+      before_maestro_tests: step[] # optional
+      after_maestro_tests: step[] # optional
 ```
 
 #### `maestro-cloud`
@@ -1271,14 +1299,16 @@ jobs:
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
-      android_api_level: string # optional. Android API level to use for the tests. Will be passed to Maestro as `--android-api-level`.
       maestro_config: string # optional. Path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
-      device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`. Run `maestro cloud --help` for a list of supported values.
-      device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro cloud --help` for a list of supported values.
-      device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro cloud --help` for a list of supported values.
+      device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`.
+      device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro list-cloud-devices` for a list of supported values.
+      device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro list-cloud-devices` for a list of supported values.
       name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
       branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, *not* whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
+    hooks:
+      before_maestro_cloud: step[] # optional. Steps to run before the Maestro Cloud upload.
+      after_maestro_cloud: step[] # optional. Steps to run after the Maestro Cloud upload.
 ```
 
 #### `slack`
@@ -1326,6 +1356,20 @@ This job outputs the following properties:
 {
   "comment_url": string | undefined  // URL of the posted GitHub comment
 }
+```
+
+#### `apple-device-registration-request`
+
+Pauses the workflow until an iOS device enrolls for an Apple Team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
+
+```yaml
+jobs:
+  register_device:
+    # @info #
+    type: apple-device-registration-request
+    params:
+      apple_team_identifier: string # optional
+    # @end #
 ```
 
 #### `require-approval`
@@ -1622,10 +1666,10 @@ jobs:
           extensions: [apk, aab, ipa, app] # Optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
 ```
 
-| Property     | Type     | Required | Default                        | Description                                                                |
-| ------------ | -------- | -------- | ------------------------------ | -------------------------------------------------------------------------- |
-| `build_id`   | string   | Yes      | –                              | The ID of the build to download. Must be a valid UUID.                     |
-| `extensions` | string[] | No       | `["apk", "aab", "ipa", "app"]` | List of file extensions to look for in the downloaded artifact or archive. |
+| Property     | Type     | Required    | Default                        | Description                                                                |
+| ------------ | -------- | ----------- | ------------------------------ | -------------------------------------------------------------------------- |
+| `build_id`   | string   | <YesIcon /> | –                              | The ID of the build to download. Must be a valid UUID.                     |
+| `extensions` | string[] | <NoIcon />  | `["apk", "aab", "ipa", "app"]` | List of file extensions to look for in the downloaded artifact or archive. |
 
 **Outputs:**
 
@@ -1738,11 +1782,11 @@ jobs:
       # @end #
 ```
 
-| Property       | Type     | Required | Description                                                                                                                                              |
-| -------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `key`          | `string` | Yes      | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
-| `restore_keys` | `string` | No       | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
-| `path`         | `string` | Yes      | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
+| Property       | Type     | Required    | Description                                                                                                                                              |
+| -------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`          | `string` | <YesIcon /> | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
+| `restore_keys` | `string` | <NoIcon />  | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
+| `path`         | `string` | <YesIcon /> | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
 
 <BoxLink
   title="eas/restore_cache source code"
@@ -1776,10 +1820,10 @@ jobs:
       # @end #
 ```
 
-| Property | Type     | Required | Description                                                                                                                                                                                                       |
-| -------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `key`    | `string` | Yes      | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
-| `path`   | `string` | Yes      | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
+| Property | Type     | Required    | Description                                                                                                                                                                                                       |
+| -------- | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`    | `string` | <YesIcon /> | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
+| `path`   | `string` | <YesIcon /> | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
 
 <BoxLink
   title="eas/save_cache source code"
@@ -1863,10 +1907,10 @@ jobs:
 
 ##### Properties
 
-| Property      | Type   | Required | Description                                                                      |
-| ------------- | ------ | -------- | -------------------------------------------------------------------------------- |
-| `name`        | string | No       | The name of the artifact to download. Required if `artifact_id` is not provided. |
-| `artifact_id` | string | No       | The ID of the artifact to download. Required if `name` is not provided.          |
+| Property      | Type   | Required   | Description                                                                      |
+| ------------- | ------ | ---------- | -------------------------------------------------------------------------------- |
+| `name`        | string | <NoIcon /> | The name of the artifact to download. Required if `artifact_id` is not provided. |
+| `artifact_id` | string | <NoIcon /> | The ID of the artifact to download. Required if `name` is not provided.          |
 
 ##### Outputs
 

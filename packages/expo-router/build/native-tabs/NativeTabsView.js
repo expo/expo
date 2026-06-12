@@ -160,5 +160,7 @@ function TabsHostWrapper(props) {
         }
     }
     return (0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Host, { ...props, ios: validatedIos });
+function NativeTabsView(_props) {
+    throw new Error('You are using NativeTabs on unsupported platform. This is likely an internal Expo Router bug.');
 }
 //# sourceMappingURL=NativeTabsView.js.map

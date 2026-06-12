@@ -4,6 +4,69 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- [web] Improved `static` image source selection on web to be based on the rendered layout size by leading the generated `sizes` with `auto`, and default `static` images to `loading="lazy"` (opt out with `loading="eager"`). ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+- [web] Deprecated `webMaxViewportWidth`. With layout-based selection it is now only used to emit fallback `sizes` breakpoints for browsers that don't yet support `sizes="auto"`. ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
+
+## 56.0.9 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `placeholder` failing to load images from the asset catalog (xcassets). ([#46170](https://github.com/expo/expo/pull/46170) by [@zhelezkov](https://github.com/zhelezkov))
+- [iOS] Fix xcasset images not loading from JS due to `file://` scheme mismatch. ([#46170](https://github.com/expo/expo/pull/46170) by [@zhelezkov](https://github.com/zhelezkov))
+
+## 56.0.8 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- [Android] Fixed `useImage` crashing on SVG sources, and made `maxWidth`/`maxHeight` preserve the SVG's aspect ratio. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 56.0.7 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `tintColor` in `loadAsync`/`useImage` requiring API 26. ([#45981](https://github.com/expo/expo/pull/45981) by [@lukmccall](https://github.com/lukmccall))
+
+## 56.0.5 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `recyclingKey` not clearing cached `placeholderImage`, causing stale blurhash placeholders in recycled list cells. ([#44762](https://github.com/expo/expo/pull/44762) by [@simonronec](https://github.com/simonronec))
+- [iOS] Fixed loading Xcode asset catalog images by resource name. ([#45686](https://github.com/expo/expo/pull/45686) by [@mvincentong](https://github.com/mvincentong))
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -12,14 +75,39 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `contentPosition` misalignment by using the unrounded cover/contain layout size for offset math. ([#44497](https://github.com/expo/expo/pull/44497) by [@alicenoknow](https://github.com/alicenoknow))
 - [Android] Apply `ApplicationVersionSignature` to local resource URIs (`res:/` scheme) to prevent stale cached images after app updates. by [@linkeryoon](https://github.com/linkeryoon) ([#44355](https://github.com/expo/expo/pull/44355) by [@Yoon-Hae-Min](https://github.com/Yoon-Hae-Min))
-- Added `tintColor` option to `ImageLoadOptions`. This resolves [#42007](https://github.com/expo/expo/issues/42007). ([#42821](https://github.com/expo/expo/pull/42821)) by [@HubertBer](https://github.com/HubertBer).
+
+### 💡 Others
+
+- [android] Use react natives `OKHttpClient`. ([#44431](https://github.com/expo/expo/pull/44431) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.10 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `contentPosition` misalignment by using the unrounded cover/contain layout size for offset math. ([#44497](https://github.com/expo/expo/pull/44497) by [@alicenoknow](https://github.com/alicenoknow))
+
+## 55.0.8 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 - 2026-03-05
+
+### 🐛 Bug fixes
+
+- Added `tintColor` option to `ImageLoadOptions`. This resolves [#42007](https://github.com/expo/expo/issues/42007). ([#42821](https://github.com/expo/expo/pull/42821)) by [@HubertBer](https://github.com/HubertBer). ([#42821](https://github.com/expo/expo/pull/42821) by [@HubertBer](https://github.com/HubertBer))
 
 ### 💡 Others
 
 - [iOS] Use `internal import SDWebImage` to hide third-party dependency from public module interface. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
-- [android] Use react natives `OKHttpClient`. ([#44431](https://github.com/expo/expo/pull/44431) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.5 — 2026-02-25
 

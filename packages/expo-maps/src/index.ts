@@ -1,4 +1,4 @@
-import { createPermissionHook } from 'expo-modules-core';
+import { createPermissionHook } from 'expo';
 
 import ExpoMaps from './ExpoMaps';
 import * as AppleTypes from './apple/AppleMaps.types';

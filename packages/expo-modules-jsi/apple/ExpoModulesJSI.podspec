@@ -51,7 +51,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon'
-  s.dependency 'React-runtimescheduler'
 
   # Create a stub xcframework if needed, so CocoaPods generates the
   # "[CP] Copy XCFrameworks" and "[CP] Embed Pods Frameworks" build phases.

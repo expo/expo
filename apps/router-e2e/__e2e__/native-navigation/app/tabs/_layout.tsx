@@ -16,6 +16,8 @@ export default function Layout() {
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <NativeTabs
         minimizeBehavior="onScrollDown"
+        rippleColor="#a6c1ee"
+        labelVisibilityMode="labeled"
         screenListeners={({ route }) => ({
           tabPress: () => {
             console.log(`Tab Pressed: ${route.name}`);
@@ -31,6 +33,8 @@ export default function Layout() {
         </NativeTabs.Trigger>
         <NativeTabs.Trigger
           name="faces"
+          rippleColor="#fbc2eb"
+          disableIndicator
           listeners={{
             focus: () => {
               console.log('Faces tab focused');
@@ -46,7 +50,7 @@ export default function Layout() {
           <NativeTabs.Trigger.Label hidden />
           <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="dynamic">
+        <NativeTabs.Trigger name="dynamic" labelVisibilityMode="unlabeled">
           <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
           <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
           <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>

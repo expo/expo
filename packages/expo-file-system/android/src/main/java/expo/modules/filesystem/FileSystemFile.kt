@@ -5,10 +5,16 @@ import android.util.Base64
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.services.FilePermissionService
-import expo.modules.kotlin.typedarray.TypedArray
 import java.io.FileOutputStream
 import java.security.MessageDigest
+
+internal fun FileMode.requiredPermissions(): List<FilePermissionService.Permission> = when (this) {
+  FileMode.READ -> listOf(FilePermissionService.Permission.READ)
+  FileMode.WRITE, FileMode.APPEND, FileMode.TRUNCATE -> listOf(FilePermissionService.Permission.WRITE)
+  FileMode.READ_WRITE -> listOf(FilePermissionService.Permission.READ, FilePermissionService.Permission.WRITE)
+}
 
 class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   private val contentResolver
@@ -36,12 +42,12 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
+    if (uri.isContentUri) {
+      throw UnableToCreateException("File.create function does not work with SAF content:// uris, use `Directory.createFile` instead")
+    }
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     validateCanCreate(options)
-    if (uri.isContentUri) {
-      throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
-    }
     if (options.overwrite && exists) {
       javaFile.delete()
     }
@@ -56,9 +62,13 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun openHandle(mode: FileMode?): FileSystemFileHandle {
     val fileImpl = file
+    val resolvedMode = mode ?: if (fileImpl is SAFDocumentFile) FileMode.READ else FileMode.READ_WRITE
+    for (permission in resolvedMode.requiredPermissions()) {
+      validatePermission(permission)
+    }
     return when (fileImpl) {
-      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, mode ?: FileMode.READ_WRITE)
-      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, mode ?: FileMode.READ, contentResolver)
+      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, resolvedMode)
+      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
       else -> throw Exceptions.IllegalStateException("File handle is not supported for ${file.uri}")
     }
   }
@@ -74,7 +84,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
-  fun write(content: TypedArray, append: Boolean = false) {
+  fun write(content: NativeArrayBuffer, append: Boolean = false) {
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     if (!exists) {
@@ -82,7 +92,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
     if (uri.isContentUri) {
       file.outputStream(append).use { outputStream ->
-        val array = ByteArray(content.length)
+        val array = ByteArray(content.size())
         content.toDirectBuffer().get(array)
         outputStream.write(array)
       }

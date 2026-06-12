@@ -1,9 +1,13 @@
-export * from './FileSystem';
+export { Paths } from './Paths';
+export { File } from './File';
+export { Directory } from './Directory';
+export { UploadTask, DownloadTask } from './NetworkTasks';
 
 export {
   DEFAULT_DEBOUNCE_MS,
   type FileCreateOptions,
   type DirectoryCreateOptions,
+  type RelocationOptions,
   type FileHandle,
   type FileInfo,
   type FileWriteOptions,
@@ -36,6 +40,6 @@ export {
   type WatchEvent,
   type WatchOptions,
   type WatchSubscription,
-} from './ExpoFileSystem.types';
+} from './FileSystem.types';
 
 export * from './legacyWarnings';

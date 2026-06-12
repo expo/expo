@@ -4,7 +4,81 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Add `ios`, `android`, `macos`, `tvos` per-platform override support ([#46508](https://github.com/expo/expo/pull/46508) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+## 56.0.13 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-19
+
+### 💡 Others
+
+- Enforce `routerRoot` to be within `projectRoot` ([#45892](https://github.com/expo/expo/pull/45892) by [@kitten](https://github.com/kitten))
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-11
+
+### 🐛 Bug fixes
+
+- Apply fix-up transform for Hermes v1 250829098 resolving undefined for async arrow functions with non-simple params ([#45601](https://github.com/expo/expo/pull/45601) by [@kitten](https://github.com/kitten))
+- Apply fix-up transform for Hermes v1 250829098 misdeclaring classes in finally blocks ([#45601](https://github.com/expo/expo/pull/45601) by [@kitten](https://github.com/kitten))
+- Apply fix-up transform for Hermes v1 250829098 mishandling super.prop accesses in computed object property methods ([#45601](https://github.com/expo/expo/pull/45601) by [@kitten](https://github.com/kitten))
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Enable `import.meta` transform by default and rename option to `transformImportMeta` ([#44239](https://github.com/expo/expo/pull/44239) by [@kitten](https://github.com/kitten))
+- Refactor to split Hermes v0/v1 configs and fork away from `@react-native/babel-preset` ([#45337](https://github.com/expo/expo/pull/45337) by [@kitten](https://github.com/kitten))
+- Trim Hermes v1 preset to remove transforms for syntax that Hermes now supports ([#45345](https://github.com/expo/expo/pull/45345) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
 
@@ -12,8 +86,6 @@
 
 ### 🐛 Bug fixes
 
-- Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
-- Fix `"use no memo"` and `"use no forget"` default opt-out directives being ineffective in react-compiler transform ([#43521](https://github.com/expo/expo/pull/43521) by [@Titozzz](https://github.com/Titozzz), [@kitten](https://github.com/kitten))
 - Update plugin detection to resolve from project root ([#44197](https://github.com/expo/expo/pull/44197) by [@kitten](https://github.com/kitten))
 - Fixed DOM Components rendering issues on Android 9 devices. ([#43156](https://github.com/expo/expo/pull/43156) by [@kudo](https://github.com/kudo))
 
@@ -22,10 +94,70 @@
 - Remove @babel/plugin-transform-parameters require when using Hermes v1 ([#43080](https://github.com/expo/expo/pull/43080) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Delete Hermes v1 detection as it's the default ([#45263](https://github.com/expo/expo/pull/45263) by [@kitten](https://github.com/kitten))
 - Added `@expo/ui/babel-plugin` when `@expo/ui` is installed. ([#45217](https://github.com/expo/expo/pull/45217) by [@kudo](https://github.com/kudo))
+- Update JSX (`react-jsx`) transform to skip deprecated `react-display-name` transform, only apply pure annotations to production builds, and skip legacy source/self transforms when the automatic runtime is used ([#45351](https://github.com/expo/expo/pull/45351) by [@kitten](https://github.com/kitten))
+- Apply `@babel/plugin-proposal-decorators` lazily ([#45353](https://github.com/expo/expo/pull/45353) by [@kitten](https://github.com/kitten))
+- Optimize vendored `warn-on-deep-rn-imports` plugin ([#45354](https://github.com/expo/expo/pull/45354) by [@kitten](https://github.com/kitten))
+- [Internal] Cache `resolveModule` results in case of Babel config reevaluations ([#45405](https://github.com/expo/expo/pull/45405) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.21 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.20 - 2026-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.19 - 2026-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.18 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.17 - 2026-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-02-27
+
+### 🐛 Bug fixes
+
+- Fix `"use no memo"` and `"use no forget"` default opt-out directives being ineffective in react-compiler transform ([#43521](https://github.com/expo/expo/pull/43521) by [@Titozzz](https://github.com/Titozzz), [@kitten](https://github.com/kitten))
+
+## 55.0.9 - 2026-02-26
+
+### 🐛 Bug fixes
+
+- Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
 
 ## 55.0.8 — 2026-02-25
 

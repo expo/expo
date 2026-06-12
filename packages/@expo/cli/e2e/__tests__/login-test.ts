@@ -38,10 +38,11 @@ it('runs `npx expo login --help`', async () => {
 
       Options
         -u, --username <string>  Username
-        -p, --password <string>  Password
+        -p, --password <string>  Password ("-" for stdin)
         --otp <string>           One-time password from your 2FA device
         -s, --sso                Log in with SSO
-        -b, --browser            Log in with a browser
+        -b, --browser            Log in with a browser (default)
+        --no-browser             Log in with username and password instead of a browser
         -h, --help               Usage info
     "
   `);

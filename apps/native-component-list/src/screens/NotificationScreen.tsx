@@ -3,9 +3,10 @@ import { EventSubscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React from 'react';
-import { Alert, Text, ScrollView, View, Platform } from 'react-native';
+import { Alert, ScrollView, View, Platform } from 'react-native';
 
 import { sendPushNotificationsAsync } from '../api/sendPushNotificationsAsync';
+import { BodyText } from '../components/BodyText';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
@@ -143,10 +144,10 @@ export default class NotificationScreen extends React.Component<
 
         <HeadingText>Push Notifications</HeadingText>
         {!remotePushSupported && (
-          <Text>
+          <BodyText>
             ⚠️ Remote push notifications are not supported in the simulator, the following tests
             should warn accordingly.
-          </Text>
+          </BodyText>
         )}
         <ListButton
           onPress={this._sendNotificationAsync}

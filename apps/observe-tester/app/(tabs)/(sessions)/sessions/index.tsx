@@ -1,6 +1,7 @@
-import AppMetrics, { type Session } from 'expo-app-metrics';
-import { router, Stack, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import AppMetrics, { type DebugSession, type Session, type SessionType } from 'expo-app-metrics';
+import { useObserve } from 'expo-observe';
+import { type Href, router, Stack, useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -14,19 +15,54 @@ import {
 
 import { useTheme } from '@/utils/theme';
 
+// A row's worth of session data, normalized from a `Session` record — the live
+// main session or an inactive one.
+type SessionRowData = {
+  id: string;
+  type: SessionType;
+  startDate: string;
+  endDate: string | null;
+  isActive: boolean;
+  metricCount: number;
+  crashed: boolean;
+  // Detail route: the live sessions have dedicated `main`/`foreground` screens;
+  // inactive ones are looked up by id via the `[id]` screen.
+  href: Href;
+};
+
+type Section = { title: string; data: SessionRowData[] };
+
 export default function SessionsList() {
   const theme = useTheme();
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const currentMainStart = sessions.find((s) => s.type === 'main')?.startDate;
-  const isActive = (s: Session) =>
-    !s.endDate && currentMainStart != null && s.startDate >= currentMainStart;
+
+  const { markInteractive } = useObserve();
+  useEffect(() => {
+    setTimeout(() => {
+      markInteractive();
+    }, 100);
+  }, []);
 
   const refresh = useCallback(async () => {
-    const result = await AppMetrics.getAllSessions();
-    const sorted = [...result].sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
-    setSessions(sorted);
+    const live = await Promise.all([
+      AppMetrics.getMainSession(),
+      AppMetrics.getForegroundSession(),
+    ]);
+    const active = await Promise.all(
+      live.filter((session): session is Session => session != null).map(liveSessionToRow)
+    );
+
+    const records = await AppMetrics.getInactiveSessions();
+    const inactive: SessionRowData[] = records
+      .map(inactiveSessionToRow)
+      .sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
+
+    setSections([
+      ...(active.length ? [{ title: 'Active', data: active }] : []),
+      ...(inactive.length ? [{ title: 'Inactive', data: inactive }] : []),
+    ]);
     setLoaded(true);
   }, []);
 
@@ -41,15 +77,11 @@ export default function SessionsList() {
 
   useFocusEffect(
     useCallback(() => {
-      if (Platform.OS === 'ios') {
-        refresh();
-      } else {
-        setLoaded(true);
-      }
+      refresh();
     }, [refresh])
   );
 
-  if (typeof AppMetrics.getAllSessions !== 'function') {
+  if (typeof AppMetrics.getInactiveSessions !== 'function') {
     return (
       <View style={[styles.container, styles.center, { backgroundColor: theme.background.screen }]}>
         <Text style={[styles.emptyText, { color: theme.text.default }]}>
@@ -59,9 +91,8 @@ export default function SessionsList() {
     );
   }
 
-  const sections = groupByDay(sessions);
-
-  const title = sessions.length > 0 ? `Sessions (${sessions.length})` : 'Sessions';
+  const total = sections.reduce((sum, section) => sum + section.data.length, 0);
+  const title = total > 0 ? `Sessions (${total})` : 'Sessions';
 
   return (
     <>
@@ -106,46 +137,41 @@ export default function SessionsList() {
             {section.title}
           </Text>
         )}
-        renderItem={({ item }) => <SessionRow session={item} isActive={isActive(item)} />}
+        renderItem={({ item }) => <SessionRow session={item} />}
       />
     </>
   );
 }
 
-function groupByDay(sessions: Session[]): { title: string; data: Session[] }[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
-  const sectionsByKey = new Map<string, { title: string; data: Session[] }>();
-  for (const session of sessions) {
-    const date = new Date(session.startDate);
-    const day = new Date(date);
-    day.setHours(0, 0, 0, 0);
-
-    let title: string;
-    if (day.getTime() === today.getTime()) {
-      title = 'Today';
-    } else if (day.getTime() === yesterday.getTime()) {
-      title = 'Yesterday';
-    } else {
-      title = sectionDateFormatter.format(date);
-    }
-
-    const key = day.toISOString();
-    const existing = sectionsByKey.get(key);
-    if (existing) {
-      existing.data.push(session);
-    } else {
-      sectionsByKey.set(key, { title, data: [session] });
-    }
-  }
-  return Array.from(sectionsByKey.values());
+async function liveSessionToRow(session: Session): Promise<SessionRowData> {
+  return {
+    id: session.id,
+    type: session.type,
+    startDate: session.startDate,
+    endDate: null,
+    isActive: true,
+    metricCount: (await session.getMetrics()).length,
+    crashed: false,
+    href: `/sessions/${session.type}`,
+  };
 }
 
-function SessionRow({ session, isActive }: { session: Session; isActive: boolean }) {
+function inactiveSessionToRow(session: DebugSession): SessionRowData {
+  return {
+    id: session.id,
+    type: session.type,
+    startDate: session.startDate,
+    endDate: session.endDate ?? null,
+    isActive: false,
+    metricCount: session.metrics.length,
+    crashed: !!session.crashReport,
+    href: `/sessions/${session.id}`,
+  };
+}
+
+function SessionRow({ session }: { session: SessionRowData }) {
   const theme = useTheme();
+  const { metricCount, isActive } = session;
   const startDate = new Date(session.startDate);
   const endDate = session.endDate ? new Date(session.endDate) : null;
   const duration = endDate ? formatDuration(endDate.getTime() - startDate.getTime()) : null;
@@ -153,7 +179,7 @@ function SessionRow({ session, isActive }: { session: Session; isActive: boolean
 
   return (
     <Pressable
-      onPress={() => router.push(`/sessions/${session.id}`)}
+      onPress={() => router.push(session.href)}
       style={({ pressed }) => [
         styles.row,
         {
@@ -174,7 +200,7 @@ function SessionRow({ session, isActive }: { session: Session; isActive: boolean
           {formatDate(startDate)}
         </Text>
         <View style={styles.badges}>
-          {session.type === 'main' && session.crashReport ? (
+          {session.crashed ? (
             <View style={[styles.badge, { backgroundColor: theme.background.danger }]}>
               <Text style={[styles.badgeText, { color: theme.text.danger }]}>Crashed</Text>
             </View>
@@ -191,8 +217,8 @@ function SessionRow({ session, isActive }: { session: Session; isActive: boolean
         numberOfLines={1}
         ellipsizeMode="tail">
         {shortId}
-        {duration ? ` · ${duration}` : isActive ? ' · active' : ''} · {session.metrics.length}{' '}
-        metric{session.metrics.length === 1 ? '' : 's'}
+        {duration ? ` · ${duration}` : isActive ? ' · active' : ''} · {metricCount} metric
+        {metricCount === 1 ? '' : 's'}
       </Text>
     </Pressable>
   );
@@ -205,13 +231,6 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', {
   hour: '2-digit',
   minute: '2-digit',
   second: '2-digit',
-});
-
-const sectionDateFormatter = new Intl.DateTimeFormat('en-GB', {
-  weekday: 'short',
-  day: '2-digit',
-  month: 'short',
-  year: 'numeric',
 });
 
 function formatDate(date: Date) {

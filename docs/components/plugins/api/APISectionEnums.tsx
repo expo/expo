@@ -35,10 +35,10 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
       <APICommentTextBlock comment={comment} includePlatforms={false} />
       {children.sort(sortByValue).map((enumValue: EnumValueData) => (
         <div
-          className="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
+          className="border-t border-t-palette-gray4 px-4 pt-3 pb-0 [&_h4]:mb-0.5"
           key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
-          <div className="max-md-gutters:flex-col flex flex-wrap justify-between">
+          <div className="flex flex-wrap justify-between max-md:flex-col">
             <H4 hideInSidebar className="font-medium!">
               <MONOSPACE className="text-sm! font-medium! wrap-anywhere!">
                 {enumValue.name}
@@ -46,7 +46,7 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
             </H4>
             <APISectionPlatformTags comment={enumValue.comment} disableFallback className="mb-1" />
           </div>
-          <MONOSPACE className="text-tertiary mb-2 inline-flex text-xs wrap-anywhere">
+          <MONOSPACE className="mb-2 inline-flex text-xs wrap-anywhere text-tertiary">
             {`${name}.${enumValue.name} ＝ ${renderEnumValue(
               enumValue.type.value,
               enumValue.type.name

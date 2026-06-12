@@ -1,17 +1,17 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 public protocol MetricsReceiver {
-  /**
-   Receives a group of metrics.
-   */
+  /// Receives a group of metrics.
   @AppMetricsActor
   func receiveMetrics<MetricsType: Metrics>(_ metrics: MetricsType)
 
-  /**
-   Receives a single metric.
-   */
+  /// Receives a single metric.
   @AppMetricsActor
   func receiveMetric(_ metric: Metric)
+
+  /// Receives a single log record.
+  @AppMetricsActor
+  func receiveLog(_ log: LogRecord)
 }
 
 extension MetricsReceiver {
@@ -20,4 +20,7 @@ extension MetricsReceiver {
 
   @AppMetricsActor
   public func receiveMetric(_ metric: Metric) {}
+
+  @AppMetricsActor
+  public func receiveLog(_ log: LogRecord) {}
 }

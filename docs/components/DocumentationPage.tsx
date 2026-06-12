@@ -3,8 +3,14 @@ import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
+import { getLocaleFromPath } from '~/common/i18n';
 import * as RoutesUtils from '~/common/routes';
-import { appendSectionToRoute, getBreadcrumbTrail, isRouteActive } from '~/common/routes';
+import {
+  appendSectionToRoute,
+  getBreadcrumbTrail,
+  isRouteActive,
+  localizeRoutes,
+} from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
@@ -61,7 +67,8 @@ export default function DocumentationPage({
   const tableOfContentsRef = useRef<TableOfContentsHandles>(null);
 
   const pathname = router?.pathname ?? '/';
-  const routes = RoutesUtils.getRoutes(pathname, version);
+  const locale = getLocaleFromPath(pathname);
+  const routes = localizeRoutes(RoutesUtils.getRoutes(pathname, version), locale);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
   const breadcrumbTrail = getBreadcrumbTrail(routes, pathname);
   const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbTrail);
@@ -329,7 +336,9 @@ export default function DocumentationPage({
           title={title}
           description={description}
           canonicalUrl={canonicalUrl}
-          markdownPath={markdownPath}>
+          markdownPath={markdownPath}
+          locale={locale}
+          pathname={pathname}>
           {hideFromSearch !== true && (
             <meta
               name="docsearch:version"
@@ -346,14 +355,10 @@ export default function DocumentationPage({
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'from-default bg-linear-to-b to-transparent opacity-90'
+            'bg-linear-to-b from-default to-transparent opacity-90'
           )}
         />
-        <main
-          className={mergeClasses(
-            'mx-auto px-14 pt-10',
-            'max-lg-gutters:px-4 max-lg-gutters:pt-5'
-          )}>
+        <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>
           {version && version === 'unversioned' && (
             <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}

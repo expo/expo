@@ -3,16 +3,21 @@
  *  - resolveFlavorTemplatedPath
  *  - sortPackagesByDependencies
  *  - collectSharedSPMDependencies
- *  - expandWithUnbuiltDependencies (with mocked fs/getPackageByName)
+ *  - expandWithUnbuiltDependencies
  */
+import fs from 'fs';
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import os from 'os';
+import path from 'path';
 
 import {
   resolveFlavorTemplatedPath,
   sortPackagesByDependencies,
   collectSharedSPMDependencies,
   CACHE_DEPS,
+  expandWithUnbuiltDependencies,
+  rebindExternalPackagesToBundledVersions,
 } from './RunSteps';
 import type { SPMPackageSource } from '../ExternalPackage';
 import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
@@ -48,6 +53,80 @@ function makeProduct(name: string, externalDeps: string[] = []): SPMProduct {
 
 function makeSourceOnlyProduct(name: string, externalDeps: string[] = []): SPMProduct {
   return { ...makeProduct(name, externalDeps), sourceOnly: true };
+}
+
+function makeSwiftProduct(
+  name: string,
+  externalDeps: string[] = [],
+  targetPath: string = 'ios'
+): SPMProduct {
+  return {
+    ...makeProduct(name, externalDeps),
+    targets: [
+      {
+        type: 'swift',
+        name,
+        path: targetPath,
+        pattern: '**/*.swift',
+      },
+    ],
+  };
+}
+
+function withTempDir<T>(fn: (dir: string) => T): T {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'runsteps-'));
+  try {
+    return fn(dir);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+function writeFileWithMtime(filePath: string, content: string, mtime: Date) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content);
+  fs.utimesSync(filePath, mtime, mtime);
+}
+
+function writeFrameworkWithMtime(
+  buildPath: string,
+  productName: string,
+  flavor: 'debug' | 'release',
+  mtime: Date
+) {
+  const frameworkPath = path.join(
+    buildPath,
+    'output',
+    flavor,
+    'xcframeworks',
+    `${productName}.xcframework`
+  );
+  writeFileWithMtime(path.join(frameworkPath, 'Info.plist'), '<plist />', mtime);
+}
+
+function makeTempPackage(
+  root: string,
+  name: string,
+  products: SPMProduct[],
+  sourceMtime: Date
+): SPMPackageSource {
+  const packagePath = path.join(root, name.replace('/', '__'));
+  const buildPath = path.join(root, '.build', name);
+  writeFileWithMtime(path.join(packagePath, 'package.json'), JSON.stringify({ name }), sourceMtime);
+  writeFileWithMtime(path.join(packagePath, 'spm.config.json'), '{}', sourceMtime);
+
+  for (const product of products) {
+    for (const target of product.targets) {
+      if (target.type === 'framework') continue;
+      writeFileWithMtime(
+        path.join(packagePath, target.path, `${target.name}.swift`),
+        'public struct Example {}',
+        sourceMtime
+      );
+    }
+  }
+
+  return makePkg(name, products, { path: packagePath, buildPath });
 }
 
 // ---------------------------------------------------------------------------
@@ -92,6 +171,47 @@ describe('resolveFlavorTemplatedPath', () => {
       resolveFlavorTemplatedPath('{flavor}/path/{flavor}.tar.gz', 'Release'),
       'Release/path/Release.tar.gz'
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// rebindExternalPackagesToBundledVersions
+// ---------------------------------------------------------------------------
+
+describe('rebindExternalPackagesToBundledVersions', () => {
+  it('rewrites path and packageVersion for packages listed in bundledNativeModules', () => {
+    const pkg = makePkg('rn-safe-area', [], { path: '/before', packageVersion: '5.6.2' });
+    rebindExternalPackagesToBundledVersions([pkg], { 'rn-safe-area': '~5.7.0' }, () => ({
+      path: '/after',
+      version: '5.7.0',
+    }));
+    assert.equal(pkg.packageVersion, '5.7.0');
+    assert.equal(pkg.path, '/after');
+  });
+
+  it('throws with an actionable error when no installed version satisfies the bundled range', () => {
+    const pkg = makePkg('rn-safe-area', [], { path: '/before', packageVersion: '5.6.2' });
+    assert.throws(
+      () =>
+        rebindExternalPackagesToBundledVersions([pkg], { 'rn-safe-area': '~5.7.0' }, () => null),
+      (err: Error) =>
+        err.message.includes('rn-safe-area') &&
+        err.message.includes('~5.7.0') &&
+        err.message.includes('bundledNativeModules.json') &&
+        err.message.includes('pnpm install')
+    );
+  });
+
+  it('leaves packages absent from the bundled map untouched', () => {
+    const pkg = makePkg('private-pkg', [], { path: '/before', packageVersion: '0.0.1' });
+    let resolverCalled = false;
+    rebindExternalPackagesToBundledVersions([pkg], { 'something-else': '1.0.0' }, () => {
+      resolverCalled = true;
+      return null;
+    });
+    assert.equal(resolverCalled, false);
+    assert.equal(pkg.packageVersion, '0.0.1');
+    assert.equal(pkg.path, '/before');
   });
 });
 
@@ -244,6 +364,235 @@ describe('sortPackagesByDependencies', () => {
     const { dependsOn } = sortPackagesByDependencies([a, b]);
     assert.equal(dependsOn.get('a')!.size, 0);
     assert.equal(dependsOn.get('b')!.size, 0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// expandWithUnbuiltDependencies
+// ---------------------------------------------------------------------------
+
+describe('expandWithUnbuiltDependencies', () => {
+  it('skips a dependency when requested flavor output is fresh', () => {
+    withTempDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'release', newer);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug', 'Release'],
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer']
+      );
+    });
+  });
+
+  it('auto-adds a dependency when requested flavor output is missing', () => {
+    withTempDir((dir) => {
+      const mtime = new Date('2026-01-01T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        mtime
+      );
+      const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], mtime);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+    });
+  });
+
+  it('auto-adds a scoped dependency when requested flavor output is missing', () => {
+    withTempDir((dir) => {
+      const mtime = new Date('2026-01-01T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['@expo/ui/ExpoUI'])],
+        mtime
+      );
+      const ui = makeTempPackage(dir, '@expo/ui', [makeSwiftProduct('ExpoUI')], mtime);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        resolvePackageByName: (name) => (name === '@expo/ui' ? ui : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', '@expo/ui']
+      );
+    });
+  });
+
+  it('auto-adds a dependency when requested flavor output is stale', () => {
+    withTempDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], newer);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', old);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+    });
+  });
+
+  it('auto-adds a fresh dependency when clean is requested', () => {
+    withTempDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        clean: true,
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+    });
+  });
+
+  it('only requires requested flavors', () => {
+    withTempDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer']
+      );
+    });
+  });
+
+  it('auto-adds a dependency when a bundled resource is newer than the framework', () => {
+    withTempDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      const depProduct: SPMProduct = {
+        ...makeProduct('DepProduct'),
+        targets: [
+          {
+            type: 'swift',
+            name: 'DepProduct',
+            path: 'ios',
+            pattern: '**/*.swift',
+            resources: [{ path: 'ios/Resources/**/*', rule: 'process' }],
+          },
+        ],
+      };
+      const dep = makeTempPackage(dir, 'dep', [depProduct], old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', old);
+      // A bundled resource was modified after the framework was last built.
+      writeFileWithMtime(path.join(dep.path, 'ios/Resources/icon.png'), 'x', newer);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+    });
+  });
+
+  it('treats a framework with no Info.plist as stale', () => {
+    withTempDir((dir) => {
+      const mtime = new Date('2026-01-02T00:00:00Z');
+      const frameworkDirMtime = new Date('2026-01-03T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        mtime
+      );
+      const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], mtime);
+      // Create the xcframework directory but omit Info.plist — even though the
+      // directory mtime is newer than sources, freshness must not be inferred
+      // from the bundle dir mtime alone.
+      const frameworkPath = path.join(
+        dep.buildPath,
+        'output',
+        'debug',
+        'xcframeworks',
+        'DepProduct.xcframework'
+      );
+      fs.mkdirSync(frameworkPath, { recursive: true });
+      fs.utimesSync(frameworkPath, frameworkDirMtime, frameworkDirMtime);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+    });
   });
 });
 

@@ -27,7 +27,14 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
   <Requirement title="A React Native project">
     Don't have a project yet? It's quick and easy to create a "Hello world" app you can use with this guide. Run the following command to create a new project:
 
-    <Terminal cmd={['$ npx create-expo-app@latest my-app --template default@sdk-55']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npx create-expo-app@latest my-app --template default@sdk-56'],
+        yarn: ['$ yarn create expo-app my-app --template default@sdk-56'],
+        pnpm: ['$ pnpm create expo-app my-app --template default@sdk-56'],
+        bun: ['$ bun create expo my-app --template default@sdk-56'],
+      }}
+    />
 
     EAS Update also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
@@ -64,9 +71,16 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 <Step label="1">
 ## Install the latest EAS CLI
 
-EAS CLI is the command line app you will use to interact with EAS services from your terminal. To install it, run the command:
+EAS CLI is the command-line app you will use to interact with EAS services from your terminal. To install it, run the command:
 
-<Terminal cmd={['$ npm install --global eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
@@ -231,7 +245,14 @@ Once you have a build running on your device or a simulator, you are ready to se
 
 After creating the build, you are ready to iterate on the project. Start a local development server with the following command:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 Then, make any desired changes to your project's JavaScript, styling, or image assets.
 

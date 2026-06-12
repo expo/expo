@@ -1,7 +1,7 @@
 import { useEvent } from 'expo';
 import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useRef, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { Platform, View, StyleSheet, Text } from 'react-native';
 
 import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
 import { styles } from './videoStyles';
@@ -12,7 +12,10 @@ import TitledSwitch from '../../components/TitledSwitch';
 const playerFactory = (player: VideoPlayer) => {
   player.loop = true;
   player.muted = true;
-  player.play();
+
+  // Don't auto-play: on iOS the Maestro driver waits for the app to be idle before each interaction,
+  // and continuously playing video never lets the screen settle, so the e2e taps hang for minutes.
+  // The players still load and the flow seeks them to a fixed frame via "Prepare for e2e".
 };
 
 export default function VideoChangePlayerOutputScreen() {
@@ -36,6 +39,27 @@ export default function VideoChangePlayerOutputScreen() {
 
   const [viewPlayers, setViewPlayers] = useState([player, player2, null, null]);
 
+  // Per-view "frame painted" state to gate e2e screenshots: a swapped iOS VideoView stays blank until
+  // ready, so we mark it not-ready on swap and flip it back from `onFirstFrameRender`. Optimistic so
+  // other platforms don't gate.
+  const [readyViews, setReadyViews] = useState([true, true, true, true]);
+
+  const framesSettled = viewPlayers.every(
+    (viewPlayer, index) => viewPlayer == null || readyViews[index]
+  );
+
+  const markViewRendered = useCallback((viewIndex: number) => {
+    setReadyViews((prev) => {
+      if (prev[viewIndex]) {
+        return prev;
+      }
+
+      const next = [...prev];
+      next[viewIndex] = true;
+      return next;
+    });
+  }, []);
+
   const advancePlayer = useCallback(
     (playerIndex: number) => {
       const currentIndex = players.current[playerIndex].viewIndex;
@@ -55,6 +79,15 @@ export default function VideoChangePlayerOutputScreen() {
       }
       newViewPlayers[newViewIndex] = players.current[playerIndex].ref;
       setViewPlayers(newViewPlayers);
+
+      // The view receiving the player must repaint; mark it not-ready until `onFirstFrameRender` fires.
+      if (Platform.OS === 'ios') {
+        setReadyViews((prev) => {
+          const next = [...prev];
+          next[newViewIndex] = false;
+          return next;
+        });
+      }
 
       players.current[playerIndex].viewIndex = newViewIndex;
     },
@@ -76,6 +109,7 @@ export default function VideoChangePlayerOutputScreen() {
               player={viewPlayers[i]}
               nativeControls={nativeControls}
               allowsVideoFrameAnalysis={false}
+              onFirstFrameRender={() => markViewRendered(i)}
             />
           ))}
       </E2EViewShotContainer>
@@ -109,6 +143,7 @@ export default function VideoChangePlayerOutputScreen() {
         }}
       />
       {e2eSetupDone && bothReady && <Text>Players ready</Text>}
+      {framesSettled && <Text testID="viewshot-ready">Viewshot ready</Text>}
     </View>
   );
 }

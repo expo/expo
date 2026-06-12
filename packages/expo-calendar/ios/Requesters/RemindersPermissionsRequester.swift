@@ -27,7 +27,6 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
     if Bundle.main.object(forInfoDictionaryKey: description) != nil {
       permissions = EKEventStore.authorizationStatus(for: .reminder)
     } else {
-      RCTFatal(MissingCalendarPListValueException(description))
       permissions = .denied
     }
 

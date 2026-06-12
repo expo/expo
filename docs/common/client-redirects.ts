@@ -1,14 +1,20 @@
 import versions from '~/public/static/constants/versions.json';
 
 export function getRedirectPath(redirectPath: string): string {
-  // index.html is no longer a thing in our docs
+  // Collapse leading slashes so the path can't become a protocol-relative
+  // URL when assigned to window.location.href downstream.
+  redirectPath = redirectPath.replace(/^\/+/, '/');
+
+  // index.html is no longer a thing in our docs. Anchor to end of string so
+  // a repeated segment (e.g. /index.html/x/index.html) can't strip the first
+  // occurrence and leave a protocol-relative `//x/...` path behind.
   if (pathIncludesIndexHtml(redirectPath)) {
-    redirectPath = redirectPath.replace('index.html', '');
+    redirectPath = redirectPath.replace(/index\.html$/, '');
   }
 
   // Remove the .html extension if it is included in the path
   if (pathIncludesHtmlExtension(redirectPath)) {
-    redirectPath = redirectPath.replace('.html', '');
+    redirectPath = redirectPath.replace(/\.html$/, '');
   }
 
   // Unsure why this is happening, but sometimes URLs end up with /null in
@@ -177,6 +183,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/testing-with-jest/': '/develop/unit-testing/',
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
+
+  // MCP server moved out of the EAS section to the top-level /mcp route
+  '/eas/ai/mcp/': '/mcp/',
 
   // Picker replaced by SegmentedButton
   '/versions/latest/sdk/ui/jetpack-compose/picker/':
@@ -540,12 +549,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
 
   // After merging registerRootComponent info in `expo` API reference
-  '/versions/v53.0.0/sdk/register-root-component/':
-    '/versions/v53.0.0/sdk/expo/#registerrootcomponentcomponent',
   '/versions/latest/sdk/register-root-component/':
     '/versions/latest/sdk/expo/#registerrootcomponentcomponent',
-  '/versions/v53.0.0/sdk/url/': '/versions/v53.0.0/sdk/expo/#url-api',
-  '/versions/v53.0.0/sdk/encoding/': '/versions/v53.0.0/sdk/expo/#encoding-api',
 
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
@@ -638,4 +643,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
   '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
     '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
+
+  // After archiving Configure JS engines guide
+  '/guides/configuring-js-engines/': '/archive/configuring-js-engines/',
 };

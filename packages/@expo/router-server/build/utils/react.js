@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createInjectedCssAsNodes = createInjectedCssAsNodes;
+exports.createInjectedInlineCssAsNodes = createInjectedInlineCssAsNodes;
 exports.createInjectedScriptAsNodes = createInjectedScriptAsNodes;
 exports.getBootstrapContents = getBootstrapContents;
+exports.createFaviconAsNode = createFaviconAsNode;
 exports.createInjectedFontsAsNodes = createInjectedFontsAsNodes;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const html_1 = require("./html");
@@ -12,6 +14,11 @@ function createInjectedCssAsNodes(hrefs) {
             (0, jsx_runtime_1.jsx)("link", { rel: "preload", href: href, as: "style" }, `css-preload-${href}`),
             (0, jsx_runtime_1.jsx)("link", { rel: "stylesheet", href: href }, `css-stylesheet-${href}`),
         ]),
+    };
+}
+function createInjectedInlineCssAsNodes(inlineCss = []) {
+    return {
+        headNodes: inlineCss.map(({ source, hmrId }, index) => ((0, jsx_runtime_1.jsx)("style", { "data-expo-css-hmr": hmrId, dangerouslySetInnerHTML: { __html: source } }, hmrId ? `inline-css-${hmrId}` : `inline-css-${index}`))),
     };
 }
 function createInjectedScriptAsNodes(srcs) {
@@ -29,6 +36,9 @@ function getBootstrapContents({ hydrate = true, loadedData, }) {
         parts.push((0, html_1.getLoaderDataScriptContents)(loadedData));
     }
     return parts.join('\n');
+}
+function createFaviconAsNode(href) {
+    return (0, jsx_runtime_1.jsx)("link", { rel: "icon", href: href }, "favicon");
 }
 function createInjectedFontsAsNodes(descriptors) {
     return descriptors.map((descriptor) => {

@@ -22,15 +22,23 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
     return null;
   }
 
+  // `tint={null}` tells `<Icon>` to draw the source in its original colors.
+  // `undefined` would fall back to `LocalContentColor`, i.e. the IconButton's
+  // content color, which is still a tint.
   const tintColor =
     props.imageRenderingMode === 'original'
-      ? undefined
+      ? null
       : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
 
   return (
     <AnimatedItemContainer visible={!props.hidden}>
       <IconButton onClick={props.onPress} enabled={!props.disabled}>
-        <Icon source={props.source} tint={tintColor} size={24} />
+        <Icon
+          source={props.source}
+          tint={tintColor}
+          size={24}
+          contentDescription={props.accessibilityLabel}
+        />
       </IconButton>
     </AnimatedItemContainer>
   );

@@ -4,6 +4,74 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Added support for storing recordings in the app document directory on Android and iOS. ([#46189](https://github.com/expo/expo/pull/46189) by [@shubh73](https://github.com/shubh73))
+
+### 🐛 Bug fixes
+
+- [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+## 56.0.11 — 2026-05-26
+
+### 💡 Others
+
+- [web] Added a warning when setting volume in browsers on iOS, where Apple does not allow programmatic volume control. ([#44474](https://github.com/expo/expo/pull/44474) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.10 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`. ([#46147](https://github.com/expo/expo/pull/46147) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.9 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.8 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-15
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.6 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+### 💡 Others
+
+- Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.4 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -16,17 +84,44 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Improve looping support. ([#43600](https://github.com/expo/expo/pull/43600) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Prevent stale lock screen artwork updates from crashing or overwriting newer metadata. ([#44498](https://github.com/expo/expo/pull/44498) by [@kotadd](https://github.com/kotadd))
-- [Android] Fix lock screen controls on android 12 and earlier. ([#44754](https://github.com/expo/expo/pull/44754) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix playback progress continuing after pause by setting correct playback rate in now playing info. ([#44974](https://github.com/expo/expo/pull/44974) by [@JstUsername](https://github.com/JstUsername))
 - [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin. ([#45131](https://github.com/expo/expo/pull/45131) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix pixelated lock screen artwork on Android 13+ by setting `artworkUri` on the session's `MediaMetadata`. ([#44953](https://github.com/expo/expo/pull/44953) by [@radko93](https://github.com/radko93))
 
 ### 💡 Others
 
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Bump media3 version to 1.9.0. ([#44823](https://github.com/expo/expo/pull/44823) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.14 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix lock screen controls on android 12 and earlier. ([#44754](https://github.com/expo/expo/pull/44754) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.8 — 2026-02-25
 

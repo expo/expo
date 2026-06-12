@@ -22,18 +22,19 @@ concurrency:
 
 jobs:
   docs-pr:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
           version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
           cache-dependency-path: docs/pnpm-lock.yaml
       - name: ♻️ Restore caches
@@ -58,7 +59,7 @@ jobs:
         id: vale-version
         run: echo "version=$(node -p "require('./.vale-version.json').version")" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
-        uses: vale-cli/vale-action@v2.1.1
+        uses: vale-cli/vale-action@85f9f7f2c5f449ac0ae5b66662961bae3f77ca6a # 2.1.2
         with:
           version: ${{ steps.vale-version.outputs.version }}
           reporter: github-pr-check
@@ -79,15 +80,16 @@ jobs:
       - name: 🚀 Deploy Docs website
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         id: deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy --branch=pr-${{ github.event.pull_request.number }}
           workingDirectory: docs
+          wranglerVersion: '3'
       - name: 💬 Comment with preview URL
         if: contains(github.event.pull_request.labels.*.name, 'preview')
-        uses: actions/github-script@v8
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |

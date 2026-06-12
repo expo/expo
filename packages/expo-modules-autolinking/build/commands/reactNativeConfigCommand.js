@@ -12,7 +12,10 @@ function reactNativeConfigCommand(cli) {
         .action(async (searchPaths, commandArguments) => {
         // TODO(@kitten): Do we need to restrict this?
         const platform = commandArguments.platform ?? 'ios';
-        if (platform !== 'android' && platform !== 'ios') {
+        if (platform !== 'android' &&
+            platform !== 'ios' &&
+            platform !== 'tvos' &&
+            platform !== 'macos') {
             throw new Error(`Unsupported platform: ${platform}`);
         }
         const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)({

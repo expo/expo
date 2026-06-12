@@ -4,6 +4,80 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.15 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fix precompiled XCFramework builds resolving the task service helper. ([#46188](https://github.com/expo/expo/pull/46188) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.14 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.11 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -12,11 +86,43 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed background task execution failing with "Could not find TaskService module" due to broken `ModuleRegistryProvider.singletonModules()` lookup after `EXTaskService` was migrated from `EXSingletonModule` to `NSObject`. ([#44646](https://github.com/expo/expo/pull/44646) by [@xTMNTxRaphaelx](https://github.com/xTMNTxRaphaelx))
 - [Android] Preserve WorkManager cancellation semantics when a background task worker is cancelled. ([#44667](https://github.com/expo/expo/pull/44667) by [@chrfalch](https://github.com/chrfalch))- [Android] Prevent background task registration from replacing an already scheduled or running worker. ([#44663](https://github.com/expo/expo/pull/44663) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.17 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed background task execution failing with "Could not find TaskService module" due to broken `ModuleRegistryProvider.singletonModules()` lookup after `EXTaskService` was migrated from `EXSingletonModule` to `NSObject`. ([#44646](https://github.com/expo/expo/pull/44646) by [@xTMNTxRaphaelx](https://github.com/xTMNTxRaphaelx))
+
+## 55.0.15 - 2026-04-10
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed a race when rescheduling background tasks concurrently. ([#44666](https://github.com/expo/expo/pull/44666) by [@chrfalch](https://github.com/chrfalch))
 
-### 💡 Others
+## 55.0.14 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-02-26
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-25
 

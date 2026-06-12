@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include <concepts>
-#include <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;
 

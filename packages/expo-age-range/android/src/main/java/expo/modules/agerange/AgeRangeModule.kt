@@ -29,6 +29,10 @@ class AgeRangeModule : Module() {
         onCancelled = { promise.reject(AgeRangeTaskCancelledException()) }
       )
     }
+
+    AsyncFunction("isEligibleForAgeFeaturesAsync") {
+      null as Boolean?
+    }
   }
 }
 

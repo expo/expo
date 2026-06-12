@@ -182,13 +182,15 @@ platform :ios do
     run_tests(
       workspace: workspace,
       scheme: generated_scheme,
-      devices: ["iPhone 17 Pro"],
+      # Bypass fastlane's `simctl runtime match list` lookup, which crashes on
+      # Xcode 26.4. xcodebuild resolves the destination directly.
+      destination: "platform=iOS Simulator,name=iPhone 17 Pro",
+      skip_detect_devices: true,
       configuration: 'Debug',
       clean: false,
       skip_build: true,
       # .github/workflows/ios-unit-tests.yml runs XCTests w/o needing a simulator
       prelaunch_simulator: false,
-      skip_detect_devices: false,
       skip_package_dependencies_resolution: true,
       derived_data_path: "/tmp/ExpoUnitTestsDerivedData",
       result_bundle: true,

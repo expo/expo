@@ -8,8 +8,19 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`BottomSheet`](../universal/bottomsheet) — it renders the appropriate native component per platform.
 
 Expo UI ModalBottomSheet matches the official Jetpack Compose [Bottom Sheet API](https://developer.android.com/develop/ui/compose/components/bottom-sheets) and displays content in a modal sheet that slides up from the bottom.
+
+<ContentSpotlight
+  variant="component"
+  aspect="portrait"
+  src="/static/images/expo-ui/bottomsheet/android-light.webp"
+  darkSrc="/static/images/expo-ui/bottomsheet/android-dark.webp"
+  alt="Modal bottom sheet with title, description, and action buttons"
+/>
 
 ## Installation
 
@@ -65,7 +76,7 @@ When `skipPartiallyExpanded` is set, the sheet opens directly in the fully expan
 import { useRef, useState } from 'react';
 import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
-import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+import { paddingAll, height } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SkipPartiallyExpandedExample() {
   const [visible, setVisible] = useState(false);
@@ -86,9 +97,55 @@ export default function SkipPartiallyExpandedExample() {
           ref={sheetRef}
           onDismissRequest={() => setVisible(false)}
           skipPartiallyExpanded>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24), height(600)]}>
             <Text>This sheet skips the partially expanded state.</Text>
             <Text>It opens directly in the fully expanded position.</Text>
+            <Button onClick={hideSheet}>
+              <Text>Close</Text>
+            </Button>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
+### Initial fully expanded state
+
+When `initialFullyExpanded` is `true`, the sheet opens directly in the fully expanded state on first composition while leaving the partial state reachable. Unlike `skipPartiallyExpanded`, the user can still drag down to the partial state. The `partialExpand()` method also continues to work.
+
+```tsx InitialFullyExpandedExample.tsx
+import { useRef, useState } from 'react';
+import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function InitialFullyExpandedExample() {
+  const [visible, setVisible] = useState(false);
+  const sheetRef = useRef<ModalBottomSheetRef>(null);
+
+  const hideSheet = async () => {
+    await sheetRef.current?.hide();
+    setVisible(false);
+  };
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Sheet</Text>
+      </Button>
+      {visible && (
+        <ModalBottomSheet
+          ref={sheetRef}
+          onDismissRequest={() => setVisible(false)}
+          initialFullyExpanded>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
+            <Text>This sheet opened fully expanded.</Text>
+            <Text>You can still drag it down to the partial state.</Text>
+            <Button onClick={() => sheetRef.current?.partialExpand()}>
+              <Text>Collapse to partial</Text>
+            </Button>
             <Button onClick={hideSheet}>
               <Text>Close</Text>
             </Button>
@@ -228,7 +285,7 @@ export default function RNContentBottomSheetExample() {
           skipPartiallyExpanded={false}>
           <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
             <Text>Mixing Compose + RN in a Bottom Sheet</Text>
-            <RNHostView matchContents>
+            <RNHostView>
               <View>
                 <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
                   React Native Content
@@ -297,6 +354,46 @@ export default function FlexRNContentExample() {
                   React Native Content (flex: 1)
                 </RNText>
               </View>
+            </RNHostView>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
+### Scrollable React Native content
+
+Nest a scrollable React Native list such as `FlatList`, `ScrollView`, or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list) inside the sheet with `RNHostView`. Set `nestedScrollEnabled` on the scrollable so it scrolls its own content first. Once it reaches the top edge, the remaining drag moves the sheet. Without `nestedScrollEnabled` the list consumes the gesture and the sheet stays put.
+
+```tsx ScrollableContentBottomSheetExample.tsx
+import { useState } from 'react';
+import { Host, ModalBottomSheet, Button, Column, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import { fillMaxHeight, padding } from '@expo/ui/jetpack-compose/modifiers';
+import { FlatList, Text as RNText } from 'react-native';
+
+const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
+
+export default function ScrollableContentBottomSheetExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Scrollable Sheet</Text>
+      </Button>
+      {visible && (
+        <ModalBottomSheet onDismissRequest={() => setVisible(false)}>
+          <Column modifiers={[fillMaxHeight(), padding(16, 16, 16, 16)]}>
+            <RNHostView>
+              <FlatList
+                nestedScrollEnabled
+                style={{ flex: 1 }}
+                data={DATA}
+                keyExtractor={item => item}
+                renderItem={({ item }) => <RNText style={{ paddingVertical: 16 }}>{item}</RNText>}
+              />
             </RNHostView>
           </Column>
         </ModalBottomSheet>

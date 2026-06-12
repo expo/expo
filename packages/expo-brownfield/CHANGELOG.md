@@ -4,26 +4,121 @@
 
 ### 🛠 Breaking changes
 
-- [ios] rename option from 'usePrebuiltReactNative' to 'buildReactNativeFromSource' ([#43574](https://github.com/expo/expo/pull/43574) by [@pmleczek](https://github.com/pmleczek))
+### 🎉 New features
+
+- [iOS] Add hostProvidedFrameworks option to skip Frameworks provided by the host app ([#46355](https://github.com/expo/expo/pull/46355) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.15 — 2026-05-26
+
+### 🎉 New features
+
+- [iOS] Make `ReactNativeHostManager` accessible directly to Objective-C. ([#46227](https://github.com/expo/expo/pull/46227) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [iOS] `build:ios` now detects a missing iOS workspace and prompts to run `pod install` instead of failing with a vague "Could not find brownfield iOS workspace". ([#46247](https://github.com/expo/expo/pull/46247) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix following prebuilt symlinks when using SPM ([#46311](https://github.com/expo/expo/pull/46311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 56.0.14 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed brownfield mangling builds writing products outside the Pods build directory. (by [@ry-allan](https://github.com/ry-allan))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 56.0.11 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Fix `addSharedStateListener` callback type to match the native event shape ([#44401](https://github.com/expo/expo/pull/44401) by [@mberube09](https://github.com/mberube09))
+
+### 💡 Others
+
+- [Internal] Replace command invocation with `@expo/spawn-async` ([#45891](https://github.com/expo/expo/pull/45891) by [@kitten](https://github.com/kitten))
+
+## 56.0.10 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Fixed POM rewriter appending a duplicate `<version>` element instead of replacing the existing one, which caused `publish*PublicationToMavenLocal` to fail with `POM file is invalid` for dependencies declared with a placeholder version. ([#45783](https://github.com/expo/expo/pull/45783) by [@tsapeta](https://github.com/tsapeta))
+- Validate and sanitize values passed to `otool`, Gradle, and as iOS bundle identifier ([#45836](https://github.com/expo/expo/pull/45836) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.9 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-11
+
+### 🐛 Bug fixes
+
+- Fix reading updates app.manifest and meta-data tags ([#45655](https://github.com/expo/expo/pull/45655) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-07
+
+### 🐛 Bug fixes
+
+- Adjust CLI Android/iOS library file discovery to remove symlink following ([#44280](https://github.com/expo/expo/pull/44280) by [@kitten](https://github.com/kitten))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
-- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
-- [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
 - [ios] enable optional usage of prebuilt RN frameworks ([#43356](https://github.com/expo/expo/pull/43356) by [@pmleczek](https://github.com/pmleczek))
 - align using custom components between the platforms ([#43633](https://github.com/expo/expo/pull/43633) by [@pmleczek](https://github.com/pmleczek))
 - [state] shared state implementation improvements ([#43279](https://github.com/expo/expo/pull/43279) by [@pmleczek](https://github.com/pmleczek))
 - Use react-native prebuilds by default ([#44332](https://github.com/expo/expo/pull/44332) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Added `Expo.plist` to the brownfield framework target. ([#44645](https://github.com/expo/expo/pull/44645) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [iOS] Add `DEFINE_MODULES=TRUE` build setting ([#44672](https://github.com/expo/expo/pull/44672) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [ios] Fix loading assets in brownfield. ([#44724](https://github.com/expo/expo/pull/44724) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Support rendering multiple ReactNativeView simultaneously ([#44891](https://github.com/expo/expo/pull/44891) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Support registering custom turbo modules from the hosting app ([#44929](https://github.com/expo/expo/pull/44929) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add support for iOS prebuilds. ([#45148](https://github.com/expo/expo/pull/45148) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 🐛 Bug fixes
+- [iOS] Add support for using multiple inner app frameworks in one host app via the new `multipleFrameworks` property. ([#45347](https://github.com/expo/expo/pull/45347) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -32,6 +127,55 @@
 - [android] set react native version for all published artfacts ([#43693](https://github.com/expo/expo/pull/43693) by [@pmleczek](https://github.com/pmleczek))
 - [test] add fixes to ios debug e2es ([#43703](https://github.com/expo/expo/pull/43703) by [@pmleczek](https://github.com/pmleczek))
 - Validate package installation before running CLI commands ([#44210](https://github.com/expo/expo/pull/44210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.22 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.21 - 2026-04-21
+
+### 🎉 New features
+
+- Added `Expo.plist` to the brownfield framework target. ([#44645](https://github.com/expo/expo/pull/44645) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add `DEFINE_MODULES=TRUE` build setting ([#44672](https://github.com/expo/expo/pull/44672) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [ios] Fix loading assets in brownfield. ([#44724](https://github.com/expo/expo/pull/44724) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.20 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.19 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.18 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.17 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-03-05
+
+### 🛠 Breaking changes
+
+- [ios] rename option from 'usePrebuiltReactNative' to 'buildReactNativeFromSource' ([#43574](https://github.com/expo/expo/pull/43574) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.12 - 2026-02-26
+
+### 🎉 New features
+
+- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
+- [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
 
 ## 55.0.11 — 2026-02-25
 

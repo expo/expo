@@ -48,13 +48,12 @@ async function main() {
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
-  logger.info('Yarning...');
+  logger.info('Installing...');
   await workspaceInstallAsync();
 
   const patches = [
     'datetimepicker.patch',
     'lottie-react-native.patch',
-    'react-native-gesture-handler.patch',
     'react-native-pager-view.patch',
     'react-native-screens.patch',
     'react-native-reanimated.patch',
@@ -100,7 +99,7 @@ async function addBareExpoOptionalPackagesAsync() {
     logger.log('  ', pkg);
   }
 
-  await spawnAsync('yarn', ['add', ...installPackages], { cwd: bareExpoRoot });
+  await spawnAsync('pnpm', ['add', ...installPackages], { cwd: bareExpoRoot });
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {

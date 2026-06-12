@@ -2,40 +2,31 @@
 
 import ExpoAppMetrics
 
-/**
- Snapshot of the last `configure(...)` payload.
- */
+/// Snapshot of the last `configure(...)` payload.
 internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?
   var dispatchInDebug: Bool?
   var sampleRate: Double?
 }
 
-/**
- Bundle-derived facts pushed from the JS layer at package import time.
-
- Set atomically by `setBundleDefaults`.
- */
+/// Bundle-derived facts pushed from the JS layer at package import time.
+///
+/// Set atomically by `setBundleDefaults`.
 internal struct PersistedBundleDefaults: Codable {
   var environment: String
   var isJsDev: Bool
 }
 
-/**
- Class that manages a custom `UserDefaults` database with `"dev.expo.observe"` suite name.
- */
+/// Class that manages a custom `UserDefaults` database with `"dev.expo.observe"` suite name.
 @AppMetricsActor
 internal final class ObserveUserDefaults: UserDefaults {
-  /**
-   Singleton instance of the user defaults for EAS Observe.
-   */
+  /// Singleton instance of the user defaults for EAS Observe.
   private static let defaults = ObserveUserDefaults()
 
-  /**
-   Enum with keys used within this user defaults database.
-   */
+  /// Enum with keys used within this user defaults database.
   private enum Keys: String {
-    case lastDispatchedEntryId
+    case lastDispatchedMetricId
+    case lastDispatchedLogId
     case lastDispatchDate
     case config
     case bundleDefaults
@@ -47,9 +38,7 @@ internal final class ObserveUserDefaults: UserDefaults {
     super.init(suiteName: "dev.expo.observe")!
   }
 
-  /**
-   Date when events with metrics were last sent and received by the backend.
-   */
+  /// Date when events with metrics were last sent and received by the backend.
   static var lastDispatchDate: Date? {
     get {
       if let dateString = defaults.string(forKey: Keys.lastDispatchDate.rawValue) {
@@ -63,16 +52,26 @@ internal final class ObserveUserDefaults: UserDefaults {
     }
   }
 
-  /**
-   Id of the last dispatched entry. It is used to prevent dispatching entries multiple times. The ids reflect the order of creation.
-   Using the creation date is not the best idea as the device's date can be changed by the user or shift along with the timezone.
-   */
-  static var lastDispatchedEntryId: Int {
+  /// Id of the last metric row dispatched. Each successful dispatch advances this past the largest id
+  /// in the batch so the next dispatch reads only newer rows. Auto-increment ids are monotonic in
+  /// SQLite, so a date-independent cursor avoids drift when the device clock changes.
+  static var lastDispatchedMetricId: Int64 {
     get {
-      return defaults.object(forKey: Keys.lastDispatchedEntryId.rawValue) as? Int ?? -1
+      return (defaults.object(forKey: Keys.lastDispatchedMetricId.rawValue) as? Int64) ?? -1
     }
     set {
-      defaults.set(newValue, forKey: Keys.lastDispatchedEntryId.rawValue)
+      defaults.set(newValue, forKey: Keys.lastDispatchedMetricId.rawValue)
+    }
+  }
+
+  /// Id of the last log row dispatched. Tracked separately from the metric cursor so a logs request
+  /// failure does not block metrics dispatch (and vice versa) — both signals move forward independently.
+  static var lastDispatchedLogId: Int64 {
+    get {
+      return (defaults.object(forKey: Keys.lastDispatchedLogId.rawValue) as? Int64) ?? -1
+    }
+    set {
+      defaults.set(newValue, forKey: Keys.lastDispatchedLogId.rawValue)
     }
   }
 

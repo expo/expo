@@ -14,14 +14,14 @@ To create a new project, run the following command:
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-55'],
-    yarn: ['$ yarn create expo-app --template default@sdk-55'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-55'],
-    bun: ['$ bun create expo --template default@sdk-55'],
+    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
+    bun: ['$ bun create expo --template default@sdk-56'],
   }}
 />
 
-> **Note:** During the SDK 55 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-55` to create an SDK 55 project.
+> **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project.
 
 Running the above command will prompt you to enter the app name of your project. This app name is also used in the app config's [`name`](/versions/latest/config/app/#name) property.
 
@@ -65,6 +65,7 @@ Use this option to initialize a project using an example from [expo/examples](ht
 
 For example:
 
+- Running `npx create-expo-app --example` shows an interactive list of available examples to choose from
 - Running `npx create-expo-app --example with-router` sets up a project with the Expo Router library
 - Running `npx create-expo-app --example with-react-navigation` sets up a project similar to the default template, but configured with plain React Navigation library
 

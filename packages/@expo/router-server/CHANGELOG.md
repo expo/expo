@@ -6,15 +6,122 @@
 
 ### 🎉 New features
 
-- Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
-- Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+### 🐛 Bug fixes
+
+- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
+- Wrap `getStaticContent` and `getStreamingContent` in `expo-font`'s per-render `withServerContext` scope so concurrent server renders cannot share font registry state. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
+
+### 💡 Others
+
+- [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
+
+## 56.0.12 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-20
 
 ### 🐛 Bug fixes
+
+- Add missing HTML attribute escaping for inserted asset URLs ([#45848](https://github.com/expo/expo/pull/45848) by [@kitten](https://github.com/kitten))
+
+## 56.0.9 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Reject RSC server-action invocations that aren't HTTP POST ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+- Enforce `Sec-Fetch-Site` or `expo-platform` header values ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
+- Fix RSC falling through on lookup causing unexpected errors ([#45895](https://github.com/expo/expo/pull/45895) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- [Internal] Align RSC server routing with expo-server/expo-router's canonical matchers ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+- Enforce that RSC `skip` parameter cannot skip layouts anymore ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+- [Internal] Remove RSC render context and remove render store global ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `react-server-dom-webpack@~19.0.6` ([#45645](https://github.com/expo/expo/pull/45645) by [@kitten](https://github.com/kitten))
+
+## 56.0.6 — 2026-05-12
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🎉 New features
+
+- Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
+- Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+- Support streaming SSR in development ([#45362](https://github.com/expo/expo/pull/45362) by [@hassankhan](https://github.com/hassankhan))
+
+### 💡 Others
+
+- Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.16 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-11
 
 ### 💡 Others
 
 - Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
-- Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.9 - 2026-02-26
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-25
 

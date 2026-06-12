@@ -54,6 +54,6 @@ class UpdatesLogReader(
   }
 
   companion object {
-    private const val ONE_DAY_MILLISECONDS = 86400
+    private const val ONE_DAY_MILLISECONDS = 86_400_000L
   }
 }

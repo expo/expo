@@ -17,17 +17,48 @@ import { Terminal } from '~/ui/components/Snippet';
 Get your app into the hands of users by submitting it to the app stores or with [Internal Distribution](/build/internal-distribution).
 
 <Terminal
-  cmd={[
-    '# Install the CLI',
-    '$ npm i -g eas-cli',
-    '',
-    '# Build and submit your app',
-    '$ eas build --auto-submit',
-    '',
-    '# OR -- Submit existing binaries',
-    '$ eas submit',
-  ]}
-  cmdCopy="npm i -g eas-cli && eas build --auto-submit"
+  cmd={{
+    npm: [
+      '# Install the CLI',
+      '$ npm install --global eas-cli',
+      '',
+      '# Build and submit your app',
+      '$ eas build --auto-submit',
+      '',
+      '# OR -- Submit existing binaries',
+      '$ eas submit',
+    ],
+    yarn: [
+      '# Install the CLI',
+      '$ yarn global add eas-cli',
+      '',
+      '# Build and submit your app',
+      '$ eas build --auto-submit',
+      '',
+      '# OR -- Submit existing binaries',
+      '$ eas submit',
+    ],
+    pnpm: [
+      '# Install the CLI',
+      '$ pnpm add --global eas-cli',
+      '',
+      '# Build and submit your app',
+      '$ eas build --auto-submit',
+      '',
+      '# OR -- Submit existing binaries',
+      '$ eas submit',
+    ],
+    bun: [
+      '# Install the CLI',
+      '$ bun add --global eas-cli',
+      '',
+      '# Build and submit your app',
+      '$ eas build --auto-submit',
+      '',
+      '# OR -- Submit existing binaries',
+      '$ eas submit',
+    ],
+  }}
 />
 
 You can run `eas build --auto-submit` with [EAS CLI](/eas) to build your app and automatically upload the binary for distribution on the Google Play Store and Apple App Store.

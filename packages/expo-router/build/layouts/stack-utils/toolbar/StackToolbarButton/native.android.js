@@ -19,10 +19,13 @@ const NativeToolbarButton = (props) => {
         }
         return null;
     }
+    // `tint={null}` tells `<Icon>` to draw the source in its original colors.
+    // `undefined` would fall back to `LocalContentColor`, i.e. the IconButton's
+    // content color, which is still a tint.
     const tintColor = props.imageRenderingMode === 'original'
-        ? undefined
+        ? null
         : (props.tintColor ?? toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)());
-    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: props.onPress, enabled: !props.disabled, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24 }) }) }));
+    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: props.onPress, enabled: !props.disabled, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24, contentDescription: props.accessibilityLabel }) }) }));
 };
 exports.NativeToolbarButton = NativeToolbarButton;
 //# sourceMappingURL=native.android.js.map

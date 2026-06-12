@@ -7,6 +7,7 @@ import { getUserAsync, loginAsync, browserLoginAsync } from './user';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { isInteractive } from '../../utils/interactive';
 import { learnMore } from '../../utils/link';
 import type { Question } from '../../utils/prompts';
 import promptAsync, { selectAsync } from '../../utils/prompts';
@@ -30,7 +31,9 @@ export async function showLoginPromptAsync({
   }
   const hasCredentials = options.username && options.password;
   const sso = options.sso;
-  const browser = options.browser;
+
+  // Browser-based login is the default.
+  const browser = options.browser ?? (!hasCredentials && isInteractive());
 
   if (printNewLine) {
     Log.log();
@@ -38,6 +41,7 @@ export async function showLoginPromptAsync({
 
   if (sso || browser) {
     await browserLoginAsync({ sso: !!sso });
+    Log.log('Logged in');
     return;
   }
 
@@ -93,6 +97,8 @@ export async function showLoginPromptAsync({
       throw e;
     }
   }
+
+  Log.log('Logged in');
 }
 
 export async function tryGetUserAsync(): Promise<Actor | null> {
@@ -100,6 +106,13 @@ export async function tryGetUserAsync(): Promise<Actor | null> {
 
   if (user) {
     return user;
+  }
+
+  // In non-interactive environments (CI, non-TTY) we can't prompt for login. Proceed
+  // anonymously so callers like the Expo Go manifest code-signing flow degrade
+  // gracefully instead of bubbling a NON_INTERACTIVE error to the client.
+  if (!isInteractive()) {
+    return null;
   }
 
   const choices = [

@@ -4,15 +4,18 @@ import {
   buildFramework,
   printIosConfig,
   resolveBuildConfigIos,
+  validateHostProvided,
   validatePrebuild,
   shipSwiftPackage,
   shipFrameworks,
 } from '../utils';
 
 const buildIos = async (command: Command) => {
-  await validatePrebuild('ios');
-  const config = resolveBuildConfigIos(command.opts());
+  const opts = command.opts();
+  await validatePrebuild('ios', { dryRun: !!opts.dryRun });
+  const config = resolveBuildConfigIos(opts);
   printIosConfig(config);
+  validateHostProvided(config);
 
   await buildFramework(config);
 

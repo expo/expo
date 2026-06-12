@@ -13,6 +13,7 @@ export const expoLogin: Command = async (argv) => {
       '--otp': String,
       '--sso': Boolean,
       '--browser': Boolean,
+      '--no-browser': Boolean,
       // Aliases
       '-h': '--help',
       '-u': '--username',
@@ -29,22 +30,39 @@ export const expoLogin: Command = async (argv) => {
       `npx expo login`,
       [
         `-u, --username <string>  Username`,
-        `-p, --password <string>  Password`,
+        `-p, --password <string>  Password ("-" for stdin)`,
         `--otp <string>           One-time password from your 2FA device`,
         `-s, --sso                Log in with SSO`,
-        `-b, --browser            Log in with a browser`,
+        `-b, --browser            Log in with a browser (default)`,
+        `--no-browser             Log in with username and password instead of a browser`,
         `-h, --help               Usage info`,
       ].join('\n')
     );
   }
 
+  const password = args['--password'] === '-' ? await readWordFromStdin() : args['--password'];
+
+  const browser = args['--no-browser'] ? false : args['--browser'] ? true : undefined;
+
   const { showLoginPromptAsync } = await import('../api/user/actions.js');
   return showLoginPromptAsync({
     // Parsed options
     username: args['--username'],
-    password: args['--password'],
+    password,
     otp: args['--otp'],
     sso: !!args['--sso'],
-    browser: !!args['--browser'],
+    browser,
   }).catch(logCmdError);
 };
+
+export async function readWordFromStdin(): Promise<string> {
+  let buffer = '';
+  for await (const chunk of process.stdin) {
+    buffer += chunk;
+    const newlineIndex = buffer.indexOf('\n');
+    if (newlineIndex !== -1) {
+      return buffer.slice(0, newlineIndex).replace(/\r$/, '');
+    }
+  }
+  return buffer;
+}

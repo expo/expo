@@ -39,7 +39,14 @@ Learn more from the [Set up environment guide](/get-started/set-up-your-environm
 
 Run the following command to create a new directory named **my-project** that contains your new Expo project. While you can name the project anything, this guide uses **my-project** for consistency.
 
-<Terminal cmd={['$ npx create-expo-app@latest my-project --template default@sdk-55']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest my-project --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app my-project --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app my-project --template default@sdk-56'],
+    bun: ['$ bun create expo my-project --template default@sdk-56'],
+  }}
+/>
 
 The **my-project** does not need to live inside your existing native app and can be created in a separate repository or a monorepo. The new project includes an example TypeScript application to help you get started.
 
@@ -50,7 +57,14 @@ The **my-project** does not need to live inside your existing native app and can
 
 Navigate to your new Expo project and install the `expo-brownfield` library, which provides the tools to build your React Native code as native libraries and integrate them into your existing native app.
 
-<Terminal cmd={['$ npx expo install expo-brownfield']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-brownfield'],
+    yarn: ['$ yarn expo install expo-brownfield'],
+    pnpm: ['$ pnpm expo install expo-brownfield'],
+    bun: ['$ bun expo install expo-brownfield'],
+  }}
+/>
 
 </Step>
 
@@ -95,7 +109,7 @@ The defaults are derived from your app config (for example, target names are bas
 ```
 </Collapsible>
 
-See the [`expo-brownfield` API reference](/versions/v55.0.0/sdk/brownfield/) for details on all available options.
+See the [`expo-brownfield` API reference](/versions/latest/sdk/brownfield/) for details on all available options.
 
 </Step>
 
@@ -108,19 +122,33 @@ Once you have your Expo project set up, use the `expo-brownfield` CLI to build y
 
 From your Expo project directory, run:
 
-<Terminal cmd={['$ npx expo-brownfield build:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-brownfield build:android'],
+    yarn: ['$ yarn dlx expo-brownfield build:android'],
+    pnpm: ['$ pnpm dlx expo-brownfield build:android'],
+    bun: ['$ bunx expo-brownfield build:android'],
+  }}
+/>
 
 This will build the AAR and publish it to a Maven repository. By default, it publishes to your local Maven repository (`~/.m2`), but it can also be configured to publish to a remote repository.
 The produced artifact name will be determined by your config plugin settings, in this case `com.username.myproject:brownfield:1.0.0`.
 
-See the [API reference](/versions/v55.0.0/sdk/brownfield/) for more details on build options, such as building only debug or release, specifying a custom output directory, and more.
+See the [API reference](/versions/latest/sdk/brownfield/) for more details on build options, such as building only debug or release, specifying a custom output directory, and more.
 
 </Tab>
 <Tab label="iOS">
 
 From your Expo project directory, run:
 
-<Terminal cmd={['$ npx expo-brownfield build:ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-brownfield build:ios'],
+    yarn: ['$ yarn dlx expo-brownfield build:ios'],
+    pnpm: ['$ pnpm dlx expo-brownfield build:ios'],
+    bun: ['$ bunx expo-brownfield build:ios'],
+  }}
+/>
 
 This will build the XCFramework artifacts: compile the framework target for both device and simulator architectures, package them into XCFrameworks, and copy the Hermes engine framework.
 
@@ -129,13 +157,20 @@ When the build process is completed, the output is placed in the **./artifacts**
 - **\{TargetName\}.xcframework** - Your Expo project as a native library
 - **hermesvm.xcframework** - The Hermes JavaScript engine
 
-See the [`expo-brownfield` API reference](/versions/v55.0.0/sdk/brownfield/) for more details on build options, such as building only debug or release, specifying a custom output directory, and more.
+See the [`expo-brownfield` API reference](/versions/latest/sdk/brownfield/) for more details on build options, such as building only debug or release, specifying a custom output directory, and more.
 
 ### Ship the artifacts as a Swift Package
 
 Pass the `--package [name]` flag to bundle the build output as a self-contained Swift Package instead of separate **.xcframework** directories. You can then add it to your host app as a local dependency in Xcode rather than manually dragging frameworks into the project.
 
-<Terminal cmd={['$ npx expo-brownfield build:ios --release --package MyAppPackage']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-brownfield build:ios --release --package MyAppPackage'],
+    yarn: ['$ yarn dlx expo-brownfield build:ios --release --package MyAppPackage'],
+    pnpm: ['$ pnpm dlx expo-brownfield build:ios --release --package MyAppPackage'],
+    bun: ['$ bunx expo-brownfield build:ios --release --package MyAppPackage'],
+  }}
+/>
 
 The flag accepts an optional name. If omitted, the package defaults to **\{TargetName\}Artifacts**. The resulting directory is a complete Swift Package with this layout:
 
@@ -156,7 +191,14 @@ The flag accepts an optional name. If omitted, the package defaults to **\{Targe
 
 If you need to debug native code of the Expo project targets, you can run `npx expo prebuild` to generate the native projects with the brownfield library targets, inside the **android** and **ios`** directories.
 
-<Terminal cmd={['$ npx expo prebuild']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild'],
+    yarn: ['$ yarn expo prebuild'],
+    pnpm: ['$ pnpm expo prebuild'],
+    bun: ['$ bun expo prebuild'],
+  }}
+/>
 
 The above command generates the following:
 
@@ -357,7 +399,14 @@ You have completed all the basic steps to integrate React Native with your appli
 
 Now run the following command in the React Native directory to start the [Metro bundler](https://metrobundler.dev/)
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 Then, build and run the native app from Android Studio or Xcode. When you navigate to the React Native screen, it will load from the Metro dev server with hot reloading support.
 
@@ -376,6 +425,6 @@ In release builds, the JavaScript bundle is embedded in the artifact (AAR or XCF
 <BoxLink
   title="expo-brownfield API reference"
   description="Explore the full JavaScript API for communication, navigation, and more."
-  href="/versions/v55.0.0/sdk/brownfield/"
+  href="/versions/latest/sdk/brownfield/"
   Icon={BookOpen02Icon}
 />

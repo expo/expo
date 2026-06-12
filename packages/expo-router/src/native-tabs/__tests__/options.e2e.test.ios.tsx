@@ -5,7 +5,6 @@ import { Tabs, type TabsScreenProps } from 'react-native-screens';
 
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
-import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import type {
   DrawableIcon,
@@ -15,6 +14,7 @@ import type {
   SrcIcon,
 } from '../common/elements';
 import type { NativeTabOptions } from '../types';
+import { appendIconOptions } from '../utils/optionsIconConverter';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -79,7 +79,11 @@ it('can pass options via elements', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-    ios: { icon: { type: 'sfSymbol', name: 'homepod.2.fill' }, selectedIcon: undefined },
+    ios: {
+      icon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+      // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+    },
   } as TabsScreenProps);
 });
 
@@ -101,6 +105,62 @@ it('when no options are passed, default ones are used', () => {
     screenKey: expect.stringMatching(/^index-[-\w]+/),
     children: expect.objectContaining({}),
   } as TabsScreenProps);
+});
+
+describe('disabled', () => {
+  it.each([true, false] as const)(
+    'forwards disabled=%p to Tabs.Screen as preventNativeSelection',
+    (value) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" disabled={value} />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalled();
+      expect(TabsScreen.mock.calls.at(-1)![0]).toMatchObject({
+        preventNativeSelection: value,
+      } as TabsScreenProps);
+    }
+  );
+
+  it('does not forward preventNativeSelection when disabled is not set', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].preventNativeSelection).toBeUndefined();
+  });
+
+  it('lets unstable_nativeProps.preventNativeSelection override disabled', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger
+            name="index"
+            disabled
+            unstable_nativeProps={{ preventNativeSelection: false }}
+          />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].preventNativeSelection).toBe(false);
+  });
 });
 
 describe('Icons', () => {
@@ -198,7 +258,11 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-      ios: { icon: { type: 'sfSymbol', name: 'homepod.2.fill' }, selectedIcon: undefined },
+      ios: {
+        icon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+      },
     } as TabsScreenProps);
   });
 
@@ -241,7 +305,11 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-      ios: { icon: { type: 'sfSymbol', name: '0.circle.ar' }, selectedIcon: undefined },
+      ios: {
+        icon: { type: 'sfSymbol', name: '0.circle.ar' },
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: { type: 'sfSymbol', name: '0.circle.ar' },
+      },
     } as TabsScreenProps);
   });
 
@@ -888,7 +956,11 @@ describe('Dynamic options', () => {
           type: 'sfSymbol',
           name: 'homepod.2.fill',
         },
-        selectedIcon: undefined,
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: {
+          type: 'sfSymbol',
+          name: 'homepod.2.fill',
+        },
       },
     } as TabsScreenProps);
   });

@@ -24,14 +24,23 @@ import {
   tag,
   buttonStyle,
   foregroundStyle,
+  textFieldStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { runOnJS } from 'react-native-worklets';
 
 export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
 
   const username = useNativeState('johndoe');
+  React.useEffect(() => {
+    username.onChange = (newUsername) => {
+      'worklet';
+      console.log('Username changed to:', newUsername);
+    };
+    return () => {
+      username.onChange = null;
+    };
+  }, []);
   const imperativeText = useNativeState('Select me!');
   const imperativeSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
   const [imperativeSelDisplay, setImperativeSelDisplay] = React.useState<TextFieldSelection>({
@@ -40,13 +49,6 @@ export default function TextFieldScreen() {
   });
   const maskedPhone = useNativeState('');
   const phoneSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
-
-  const setPhoneCursor = React.useCallback(
-    (position: number) => {
-      phoneSelection.value = { start: position, end: position };
-    },
-    [phoneSelection]
-  );
 
   const submitLabelOptions = [
     'continue',
@@ -70,7 +72,7 @@ export default function TextFieldScreen() {
           <TextField
             text={username}
             placeholder="Username"
-            modifiers={[autocorrectionDisabled()]}
+            modifiers={[autocorrectionDisabled(), textFieldStyle('plain')]}
             onTextChange={(v) => console.log('username:', v)}
           />
           <TextField
@@ -128,8 +130,7 @@ export default function TextFieldScreen() {
               }
               if (formatted !== v) {
                 maskedPhone.value = formatted;
-                // To keep selection at the end of the input while typing
-                runOnJS(setPhoneCursor)(formatted.length);
+                phoneSelection.value = { start: formatted.length, end: formatted.length };
               }
             }}
           />

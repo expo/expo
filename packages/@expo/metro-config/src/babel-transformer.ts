@@ -7,11 +7,18 @@
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
-import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
+import type {
+  BabelTransformer,
+  BabelTransformerArgs,
+  BabelTransformerCacheKeyOptions,
+} from '@expo/metro/metro-babel-transformer';
+import { getCacheKey as getFileCacheKey } from '@expo/metro/metro-cache-key';
 import assert from 'node:assert';
+import path from 'node:path';
 
 import type { TransformOptions } from './babel-core';
-import { loadBabelConfig } from './loadBabelConfig';
+import { loadPartialConfigSync } from './babel-core';
+import { loadBabelConfig, resolveBabelrcName } from './loadBabelConfig';
 import { transformSync } from './transformSync';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
@@ -169,9 +176,10 @@ const transform: BabelTransformer['transform'] = ({
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
 
-  const { enableBabelRCLookup = true } = options;
-
   try {
+    const { enableBabelRCLookup } = options;
+    const { exts, presets } = loadBabelConfig(options);
+
     const babelConfig: TransformOptions = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
@@ -190,12 +198,19 @@ const transform: BabelTransformer['transform'] = ({
       filename,
       highlightCode: true,
 
-      // Load the project babel config file.
-      ...loadBabelConfig(options),
+      root: options.projectRoot, // Default value
 
-      babelrc: enableBabelRCLookup,
-      ...(enableBabelRCLookup === false && { configFile: false }),
+      babelrcRoots: enableBabelRCLookup ? options.projectRoot : false, // Default value
+      // NOTE(@kitten): This will and has always only searched `projectRoot`, excluding node_modules and other workspaces
+      // As such, we'll only enable it when `enableBabelRCLookup` is explicitly enabled for non-node_modules
+      babelrc: enableBabelRCLookup ? !filename.includes('node_modules') : false,
+      // NOTE(@kitten): This used to duplicate the config file, which is already piped into `extends`
+      // However, for deprecated/legacy behaviour, we'll still enable it when `enableBabelRCLookup` is explicitly enabled
+      configFile: !!enableBabelRCLookup, // Otherwise duplicates our search below
 
+      // Add the discovered config file
+      extends: exts,
+      presets,
       plugins,
 
       // NOTE(EvanBacon): We heavily leverage the caller functionality to mutate the babel config.
@@ -234,8 +249,46 @@ const transform: BabelTransformer['transform'] = ({
   }
 };
 
+/**
+ * Generates a cache key component based on the user's Babel configuration files.
+ * This uses Babel's loadPartialConfig to resolve which config files apply
+ * to the project, and includes their contents in the cache key so that changes
+ * to babel.config.js, .babelrc, or any file they reference will invalidate the
+ * transform cache.
+ *
+ * This is called once by the main thread (not on worker instances).
+ */
+function getCacheKey(options?: BabelTransformerCacheKeyOptions): string {
+  if (options?.projectRoot == null || options.enableBabelRCLookup === false) {
+    return '';
+  }
+
+  // In Expo, we pass the `extendsBabelConfigPath` ourselves, but if we're not using this with the Expo CLI
+  // we re-resolve the Babel config, same as in `loadBabelConfig`
+  const configName = options.extendsBabelConfigPath ?? resolveBabelrcName(options.projectRoot);
+  if (!configName) {
+    return '';
+  }
+
+  const partialConfig = loadPartialConfigSync({
+    cwd: options.projectRoot,
+    root: options.projectRoot,
+    extends: path.resolve(options.projectRoot, configName),
+    configFile: false,
+    babelrc: false,
+  });
+
+  const files = partialConfig?.files;
+  if (files == null || files.size === 0) {
+    return '';
+  }
+
+  return getFileCacheKey([...files].sort());
+}
+
 const babelTransformer: BabelTransformer = {
   transform,
+  getCacheKey,
 };
 
 module.exports = babelTransformer;

@@ -12,15 +12,25 @@ async function runTests(testTargets: string[]) {
   });
 }
 
-function getTestSpecNames(pkg: Packages.Package): string[] {
-  const podspec = fs.readFileSync(path.join(pkg.path, pkg.podspecPath!), 'utf8');
-  const regex = new RegExp("test_spec\\s'([^']*)'", 'g');
-  const testSpecNames: string[] = [];
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(podspec)) !== null) {
-    testSpecNames.push(match[1]);
+// Computes the Xcode unit-test target names for a package by scanning every podspec it
+// declares — a package like expo-modules-core ships several (ExpoModulesCore,
+// ExpoModulesWorklets, …), each potentially with its own test specs. Each test spec becomes
+// `<PodName>-Unit-<TestSpecName>`, named after the podspec that owns it (not the package's
+// primary podspec), which is how CocoaPods generates the targets.
+function getUnitTestTargets(pkg: Packages.Package): string[] {
+  const targets: string[] = [];
+  for (const podspecRelPath of pkg.podspecPaths) {
+    const podspecAbsPath = path.join(pkg.path, podspecRelPath);
+    if (!fs.existsSync(podspecAbsPath)) {
+      continue;
+    }
+    const podName = path.basename(podspecRelPath, '.podspec');
+    const contents = fs.readFileSync(podspecAbsPath, 'utf8');
+    for (const match of contents.matchAll(/test_spec\s'([^']*)'/g)) {
+      targets.push(`${podName}-Unit-${match[1]}`);
+    }
   }
-  return testSpecNames;
+  return targets;
 }
 
 export async function iosNativeUnitTests({ packages }: { packages?: string }) {
@@ -41,16 +51,14 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
       continue;
     }
 
-    const testSpecNames = getTestSpecNames(pkg);
-    if (!testSpecNames.length) {
+    const pkgTargets = getUnitTestTargets(pkg);
+    if (!pkgTargets.length) {
       throw new Error(
-        `Failed to test package ${pkg.packageName}: no test specs were found in podspec file.`
+        `Failed to test package ${pkg.packageName}: no test specs were found in its podspec file(s).`
       );
     }
 
-    for (const testSpecName of testSpecNames) {
-      targetsToTest.push(`${pkg.podspecName}-Unit-${testSpecName}`);
-    }
+    targetsToTest.push(...pkgTargets);
     packagesToTest.push(pkg.packageName);
   }
 

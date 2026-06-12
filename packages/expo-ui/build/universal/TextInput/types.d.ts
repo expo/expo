@@ -2,9 +2,9 @@ import type { Ref } from 'react';
 import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 import type { ModifierConfig } from '../../types';
 import type { ObservableState } from '../State';
+import type { AutoComplete, EnterKeyHint, InputMode } from './utils';
 import type { UniversalTextStyle } from '../Text/types';
 import type { UniversalStyle } from '../types';
-import type { AutoComplete, EnterKeyHint, InputMode } from './utils';
 /**
  * Imperative methods exposed via the `TextInput` ref.
  */
@@ -167,7 +167,11 @@ export interface TextInputProps {
      */
     rows?: number;
     /**
-     * Color of the underline indicator on Android. iOS / web ignore this.
+     * Color of the underline indicator on Android.
+     *
+     * @deprecated The Android `TextInput` renders an unstyled `BasicTextField` that
+     * has no underline indicator, so this has no effect. To draw your own border,
+     * pass it through `style` or `modifiers`.
      * @platform android
      */
     underlineColorAndroid?: ColorValue;

@@ -12,6 +12,7 @@ import {
   getStartMode,
   retryAsync,
   prettyPrintTestSuiteLogs,
+  printImageComparisonServerLogs,
   setupLogger,
   runCustomMaestroFlowsAsync,
   MAESTRO_ENV_VARS,
@@ -119,12 +120,13 @@ async function testAsync(
       },
     });
     console.timeEnd(TEST_DURATION_LABEL);
-  } catch {
+  } catch (error: unknown) {
     stopLogCollectionController.abort();
     console.timeEnd(TEST_DURATION_LABEL);
     console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
     const logs = await getLogs();
     console.log(prettyPrintTestSuiteLogs(logs));
+    await printImageComparisonServerLogs();
     if (!(await isAppRunning())) {
       if (logs.length > 0) {
         console.warn(
@@ -138,7 +140,7 @@ async function testAsync(
       }
     }
     console.log('\n\n');
-    throw new Error('e2e tests have failed.');
+    throw new Error('e2e tests have failed.', { cause: error });
   } finally {
     endGroup();
     stopLogCollectionController.abort();

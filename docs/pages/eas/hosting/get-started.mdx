@@ -33,7 +33,14 @@ This guide will walk you through the process of creating your first web deployme
   <Requirement title="An Expo Router web project">
     Don't have a project yet? It's quick and easy to create a "Hello world" app you can use with this guide. Run the following command to create a new project:
 
-    <Terminal cmd={['$ npx create-expo-app@latest my-app --template default@sdk-55']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npx create-expo-app@latest my-app --template default@sdk-56'],
+        yarn: ['$ yarn create expo-app my-app --template default@sdk-56'],
+        pnpm: ['$ pnpm create expo-app my-app --template default@sdk-56'],
+        bun: ['$ bun create expo my-app --template default@sdk-56'],
+      }}
+    />
 
   </Requirement>
 </Prerequisites>
@@ -41,9 +48,16 @@ This guide will walk you through the process of creating your first web deployme
 <Step label="1">
 ## Install the latest EAS CLI
 
-EAS CLI is the command line app you will use to interact with EAS services from your terminal. To install it, run the command:
+EAS CLI is the command-line app you will use to interact with EAS services from your terminal. To install it, run the command:
 
-<Terminal cmd={['$ npm install --global eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
@@ -80,7 +94,14 @@ For your app config file's [`expo.web.output`](/versions/latest/config/app/#outp
 
 You need to export your web project into a **dist** directory. To do this, run:
 
-<Terminal cmd={['$ npx expo export --platform web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 > Remember to re-run this command every time before deploying.
 

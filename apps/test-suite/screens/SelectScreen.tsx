@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Checkbox } from 'expo-checkbox';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
+import { useObserve } from 'expo-observe';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -46,6 +47,7 @@ function ListItem({
 
 export default function SelectScreen({ navigation }) {
   const { theme } = useTheme();
+  const { markInteractive } = useObserve();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [modules, setModules] = useState<Module[]>([]);
   const [footerHeight, setFooterHeight] = useState(0);
@@ -53,6 +55,14 @@ export default function SelectScreen({ navigation }) {
   const onFooterLayout = useCallback((e) => {
     setFooterHeight(e.nativeEvent.layout.height);
   }, []);
+
+  const hasMarkedInteractive = useRef(false);
+  useEffect(() => {
+    if (modules.length > 0 && !hasMarkedInteractive.current) {
+      hasMarkedInteractive.current = true;
+      markInteractive();
+    }
+  }, [modules, markInteractive]);
 
   useEffect(() => {
     AsyncStorage.getItem(SELECTION_STORAGE_KEY).then((value) => {
@@ -77,6 +87,20 @@ export default function SelectScreen({ navigation }) {
     ({ url }: { url: string }) => {
       url = url || '';
       // TODO: Use Expo Linking library once parseURL is implemented for web
+
+      // Run a specific set of tests, e.g. bareexpo://test-suite/run?tests=basic,blur
+      // React Navigation linking also maps this URL to the run screen, but on a cold
+      // start the two race and this handler used to win by falling through to the
+      // selection list below. Handle the query explicitly so the deep link always runs.
+      const testsQueryMatch = url.match(/[?&]tests=([^&]+)/);
+
+      if (testsQueryMatch) {
+        const tests = getSelectedTestNames(decodeURIComponent(testsQueryMatch[1]));
+        const query = createQueryString(tests);
+        navigation.navigate(routeNames.run, { tests: query });
+        return;
+      }
+
       if (url.includes(`/${routeNames.select}/`)) {
         const selectedTests = url.split('/').pop();
         if (selectedTests) {

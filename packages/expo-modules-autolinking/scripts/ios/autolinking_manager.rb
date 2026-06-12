@@ -22,16 +22,18 @@ module Expo
 
       validate_target_definition()
 
-      # Clear stale CocoaPods download cache for precompiled pods.
-      Expo::PrecompiledModules.clear_cocoapods_cache
-
       resolve_result = resolve()
 
       Expo::PackagesConfig.instance.coreFeatures = resolve_result['coreFeatures']
 
-      # Pass buildFromSource configuration to PrecompiledModules
       configuration = resolve_result['configuration'] || {}
-      Expo::PrecompiledModules.build_from_source = configuration['buildFromSource'] || []
+      Expo::PrecompiledModules.configure(
+        target_platform: @target_definition.platform,
+        build_from_source: configuration['buildFromSource'] || []
+      )
+
+      # Clear stale CocoaPods download cache for precompiled pods.
+      Expo::PrecompiledModules.clear_cocoapods_cache
 
       @packages = resolve_result['modules'].map { |json_package| Package.new(json_package) }
       @extraPods = resolve_result['extraDependencies']
@@ -106,6 +108,7 @@ module Expo
 
             # Install the pod.
             @podfile.pod(pod.pod_name, pod_options)
+            @podfile.expo_autolinked_pod_names << pod.pod_name
 
             # TODO: Can remove this once we move all the interfaces into the core.
             next if pod.pod_name.end_with?('Interface')

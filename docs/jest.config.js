@@ -9,6 +9,9 @@ const jestConfig = {
   clearMocks: true,
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/$1',
+    // Stub react-intl in tests so components that call useIntl() don't
+    // require an <IntlProvider> ancestor. See __mocks__/react-intl.tsx.
+    '^react-intl$': '<rootDir>/__mocks__/react-intl.tsx',
     // note(simek): force Jest to use non ESM bundle
     '^@radix-ui/react-dropdown-menu$':
       '<rootDir>/node_modules/@radix-ui/react-dropdown-menu/dist/index.js',
@@ -25,6 +28,10 @@ const jestConfig = {
       '<rootDir>/node_modules/@expo/styleguide-cookie-consent/mock.js',
   },
   transform: {},
+  // next/jest's default `transform` runs SWC on `.mjs` and converts ESM
+  // exports to CJS-style `Object.defineProperty(exports, ...)`, which then
+  // links as zero named exports. Skip transforming native ESM files.
+  transformIgnorePatterns: ['\\.mjs$'],
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };
 

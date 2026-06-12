@@ -70,7 +70,7 @@ export function PageHeader({
             {iconUrl && (
               <img
                 src={iconUrl}
-                className="relative -top-0.5 float-left mr-3.5 size-[42px]"
+                className="relative -top-0.5 float-left mr-3.5 size-10.5"
                 alt={`Expo ${title} icon`}
               />
             )}
@@ -88,12 +88,12 @@ export function PageHeader({
         <div
           className={mergeClasses(
             'mt-4 flex flex-wrap items-center justify-between gap-3 pb-1',
-            'max-md-gutters:flex-col max-md-gutters:items-stretch max-md-gutters:gap-0 max-md-gutters:pb-0'
+            'max-md:flex-col max-md:items-stretch max-md:gap-0 max-md:pb-0'
           )}>
           <div
             className={mergeClasses(
               'flex flex-wrap items-center gap-2',
-              'max-md-gutters:w-full max-md-gutters:items-center max-md-gutters:justify-between max-md-gutters:border-b max-md-gutters:border-default max-md-gutters:py-3'
+              'max-md:w-full max-md:items-center max-md:justify-between max-md:border-b max-md:border-default max-md:py-3'
             )}>
             <div className="flex flex-wrap items-center">{renderAskAIButton()}</div>
             <div className="flex items-center gap-1.5">
@@ -103,13 +103,13 @@ export function PageHeader({
           <div
             className={mergeClasses(
               'flex flex-wrap items-center gap-3',
-              'max-md-gutters:w-full max-md-gutters:justify-between max-md-gutters:py-3'
+              'max-md:w-full max-md:justify-between max-md:py-3'
             )}>
             <PagePackageVersion
               packageName={packageName}
               testRequire={testRequire}
               showMarkdownActions={showPackageMarkdown}
-              className="max-md-gutters:w-full max-md-gutters:justify-between"
+              className="max-md:w-full max-md:justify-between"
             />
           </div>
         </div>
@@ -122,20 +122,20 @@ export function PageHeader({
       <div
         className={mergeClasses(
           'mt-2 flex items-start justify-between gap-4',
-          'max-xl-gutters:flex-col max-xl-gutters:items-start'
+          'max-xl:flex-col max-xl:items-start'
         )}>
         <H1 className="my-0!">
           {iconUrl && (
             <img
               src={iconUrl}
-              className="relative -top-0.5 float-left mr-3.5 size-[42px]"
+              className="relative -top-0.5 float-left mr-3.5 size-10.5"
               alt={`Expo ${title} icon`}
             />
           )}
           {packageName && packageName.startsWith('expo-') && 'Expo '}
           {title}
         </H1>
-        <span className="max-xl-gutters:hidden -mt-0.5 flex items-center gap-1">
+        <span className="-mt-0.5 flex items-center gap-1 max-xl:hidden">
           <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
           {(showMarkdownActions || hasAskAIButton) && (
             <span className="flex items-center gap-1">
@@ -155,10 +155,8 @@ export function PageHeader({
           {description}
         </P>
       )}
-      {cliVersion && (
-        <PageCliVersion cliVersion={cliVersion} className="max-xl-gutters:mt-2 mt-3" />
-      )}
-      <span className="max-xl-gutters:flex mt-3 mb-1 hidden items-center gap-1">
+      {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3 max-xl:mt-2" />}
+      <span className="mt-3 mb-1 hidden items-center gap-1 max-xl:flex">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
         {(showMarkdownActions || hasAskAIButton) && (
           <span className="ml-1 flex items-center gap-1">
@@ -175,7 +173,7 @@ export function PageHeader({
       <div
         className={mergeClasses(
           'mt-3 flex items-center justify-between',
-          'max-md-gutters:flex-col-reverse max-md-gutters:items-start max-md-gutters:gap-3',
+          'max-md:flex-col-reverse max-md:items-start max-md:gap-3',
           'empty:hidden'
         )}>
         {platforms && <PagePlatformTags platforms={platforms} />}

@@ -1,17 +1,17 @@
-import type { Session } from 'expo-app-metrics';
+import type { DebugSession } from 'expo-app-metrics';
 import * as Clipboard from 'expo-clipboard';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '@/utils/theme';
 
-export function SessionHeader({ session }: { session: Session }) {
+export function SessionHeader({ session }: { session: DebugSession }) {
   const theme = useTheme();
   const startDate = new Date(session.startDate);
   const endDate = session.endDate ? new Date(session.endDate) : null;
   const duration = endDate
     ? formatDuration(endDate.getTime() - startDate.getTime())
     : 'still running';
-  const crashed = session.type === 'main' && !!session.crashReport;
+  const routeName = session.metrics.find((m) => m.name === 'timeToInteractive')?.routeName;
 
   return (
     <View style={styles.container}>
@@ -21,7 +21,7 @@ export function SessionHeader({ session }: { session: Session }) {
           background={theme.background.info}
           color={theme.text.info}
         />
-        {crashed ? (
+        {session.crashReport ? (
           <Badge label="Crashed" background={theme.background.danger} color={theme.text.danger} />
         ) : !session.endDate ? (
           <Badge label="Active" background={theme.background.success} color={theme.text.success} />
@@ -32,6 +32,7 @@ export function SessionHeader({ session }: { session: Session }) {
       <Field label="Ended" value={endDate ? formatDateTime(endDate) : '—'} />
       <Field label="Duration" value={duration} />
       <Field label="Metrics" value={String(session.metrics.length)} />
+      {routeName ? <Field label="Initial route" value={routeName} monospace /> : null}
       <Field
         label="Session ID"
         value={session.id}

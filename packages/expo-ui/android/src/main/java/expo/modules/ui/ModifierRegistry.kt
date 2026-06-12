@@ -1,15 +1,21 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package expo.modules.ui
 
 import android.graphics.Color
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -36,10 +42,13 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.CompositingStrategy
@@ -47,12 +56,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.onVisibilityChanged
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
@@ -145,6 +158,24 @@ internal data class BackgroundParams(
   @Field val color: Color? = null
 ) : Record
 
+// Color animation specs reuse the JS `$type` shape from `@expo/ui/jetpack-compose/modifiers/animation` (spring / tween / snap).
+// Keyframes are float-only and aren't supported for colors.
+private fun parseColorAnimationSpec(raw: Any?): AnimationSpec<androidx.compose.ui.graphics.Color>? {
+  if (raw !is Map<*, *>) return null
+  return when (raw["\$type"]) {
+    "spring" -> spring(
+      dampingRatio = (raw["dampingRatio"] as? Number)?.toFloat() ?: Spring.DampingRatioNoBouncy,
+      stiffness = (raw["stiffness"] as? Number)?.toFloat() ?: Spring.StiffnessMedium
+    )
+    "tween" -> tween(
+      durationMillis = (raw["durationMillis"] as? Number)?.toInt() ?: 300,
+      delayMillis = (raw["delayMillis"] as? Number)?.toInt() ?: 0
+    )
+    "snap" -> snap(delayMillis = (raw["delayMillis"] as? Number)?.toInt() ?: 0)
+    else -> null
+  }
+}
+
 @OptimizedRecord
 internal data class BorderParams(
   @Field val borderWidth: Int = 1,
@@ -154,6 +185,17 @@ internal data class BorderParams(
 @OptimizedRecord
 internal data class ShadowParams(
   @Field val elevation: Int = 0
+) : Record
+
+@OptimizedRecord
+internal data class ShadowGeometryParams(
+  @Field val shape: BuiltinShapeRecord? = null,
+  @Field val radius: Float = 0f,
+  @Field val spread: Float = 0f,
+  @Field val color: Color? = null,
+  @Field val offsetX: Float = 0f,
+  @Field val offsetY: Float = 0f,
+  @Field val alpha: Float = 1f
 ) : Record
 
 @OptimizedRecord
@@ -455,9 +497,14 @@ object ModifierRegistry {
     // Appearance modifiers
     register("background") { map, _, _, _ ->
       val params = recordFromMap<BackgroundParams>(map)
-      params.color?.let { color ->
-        Modifier.background(color.compose)
-      } ?: Modifier
+      val color = params.color?.compose ?: return@register Modifier
+      val spec = parseColorAnimationSpec(map["animationSpec"])
+      if (spec != null) {
+        val animated by animateColorAsState(color, spec, label = "background-color")
+        Modifier.background(animated)
+      } else {
+        Modifier.background(color)
+      }
     }
 
     register("border") { map, _, _, _ ->
@@ -470,6 +517,36 @@ object ModifierRegistry {
     register("shadow") { map, _, _, _ ->
       val params = recordFromMap<ShadowParams>(map)
       Modifier.shadow(params.elevation.dp)
+    }
+
+    register("dropShadow") { map, _, _, _ ->
+      val params = recordFromMap<ShadowGeometryParams>(map)
+      val shape = params.shape?.let { resolveShape(it) } ?: RectangleShape
+      Modifier.dropShadow(
+        shape,
+        Shadow(
+          radius = params.radius.dp,
+          spread = params.spread.dp,
+          color = params.color.composeOrNull ?: androidx.compose.ui.graphics.Color.Black,
+          offset = DpOffset(params.offsetX.dp, params.offsetY.dp),
+          alpha = params.alpha
+        )
+      )
+    }
+
+    register("innerShadow") { map, _, _, _ ->
+      val params = recordFromMap<ShadowGeometryParams>(map)
+      val shape = params.shape?.let { resolveShape(it) } ?: RectangleShape
+      Modifier.innerShadow(
+        shape,
+        Shadow(
+          radius = params.radius.dp,
+          spread = params.spread.dp,
+          color = params.color.composeOrNull ?: androidx.compose.ui.graphics.Color.Black,
+          offset = DpOffset(params.offsetX.dp, params.offsetY.dp),
+          alpha = params.alpha
+        )
+      )
     }
 
     register("alpha") { map, _, _, _ ->
@@ -617,6 +694,24 @@ object ModifierRegistry {
       }
     }
 
+    register("onGloballyPositioned") { _, _, _, eventDispatcher ->
+      val density = LocalDensity.current
+      Modifier.onGloballyPositioned { coordinates ->
+        val position = coordinates.positionInWindow()
+        with(density) {
+          eventDispatcher(
+            "onGloballyPositioned",
+            mapOf(
+              "x" to position.x.toDp().value,
+              "y" to position.y.toDp().value,
+              "width" to coordinates.size.width.toDp().value,
+              "height" to coordinates.size.height.toDp().value
+            )
+          )
+        }
+      }
+    }
+
     register("clickable") { map, _, _, eventDispatcher ->
       val params = recordFromMap<ClickableParams>(map)
       if (params.indication) {
@@ -630,6 +725,22 @@ object ModifierRegistry {
         ) {
           eventDispatcher("clickable", emptyMap())
         }
+      }
+    }
+
+    register("combinedClickable") { map, _, _, eventDispatcher ->
+      val params = recordFromMap<ClickableParams>(map)
+      val onClick = { eventDispatcher("combinedClickable", mapOf("event" to "click")) }
+      val onLongClick = { eventDispatcher("combinedClickable", mapOf("event" to "longClick")) }
+      if (params.indication) {
+        Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
+      } else {
+        Modifier.combinedClickable(
+          interactionSource = null,
+          indication = null,
+          onClick = onClick,
+          onLongClick = onLongClick
+        )
       }
     }
 

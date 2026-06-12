@@ -29,6 +29,14 @@ const LOCAL_REQUIREMENTS = {
 };
 
 /**
+ * Requirements for server tools that have plan-specific availability.
+ * Keyed by tool name.
+ */
+const SERVER_REQUIREMENTS = {
+  search_documentation: 'requires an EAS paid plan',
+};
+
+/**
  * Example prompts for server tools (docs-only, not from MCP server).
  * Keyed by tool name.
  */
@@ -125,6 +133,7 @@ async function fetchServerTools() {
       description: ensureTrailingPeriod(tool.description),
       examplePrompt: SERVER_EXAMPLE_PROMPTS[tool.name] ?? '',
       availability: 'Server',
+      ...(SERVER_REQUIREMENTS[tool.name] && { requirements: SERVER_REQUIREMENTS[tool.name] }),
     }));
 }
 

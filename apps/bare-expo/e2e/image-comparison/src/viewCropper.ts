@@ -31,13 +31,22 @@ interface ViewNode {
 
 async function dumpViewHierarchy(platform: 'ios' | 'android'): Promise<ViewNode> {
   const startTime = Date.now();
-  const result = await spawnAsync('maestro', [`--platform=${platform}`, 'hierarchy'], {
-    stdio: 'pipe',
-    env: {
-      ...process.env,
-      ...MAESTRO_ENV_VARS,
-    },
-  });
+  let result;
+  try {
+    result = await spawnAsync('maestro', [`--platform=${platform}`, 'hierarchy'], {
+      stdio: 'pipe',
+      env: {
+        ...process.env,
+        ...MAESTRO_ENV_VARS,
+      },
+    });
+  } catch (e: any) {
+    throw new Error(
+      `maestro --platform=${platform} hierarchy failed (exit ${e?.status}, signal ${e?.signal}):\n` +
+        `--- stderr ---\n${e?.stderr ?? '(empty)'}\n` +
+        `--- stdout ---\n${e?.stdout ?? '(empty)'}`
+    );
+  }
   const duration = Date.now() - startTime;
 
   console.log(`Maestro took ${duration}ms to capture the ${platform} view hierarchy`);

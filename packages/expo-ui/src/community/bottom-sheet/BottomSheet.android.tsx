@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { BottomSheetContext, BottomSheetInternalContext } from './context';
 import type { BottomSheetMethods, BottomSheetProps } from './types';
@@ -65,6 +65,7 @@ export function BottomSheet(props: BottomSheetProps) {
     backgroundStyle,
     children,
   } = props;
+  const { width } = useWindowDimensions();
 
   const hasMultipleSnapPoints = snapPointsProp != null && snapPointsProp.length > 1;
   const fitToContents = enableDynamicSizing && (!snapPointsProp || snapPointsProp.length === 0);
@@ -116,18 +117,6 @@ export function BottomSheet(props: BottomSheetProps) {
       setIsOpen(true);
     }
   }, [clampIndex, indexProp, fireCloseCallbacks]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const targetIndex = pendingIndexRef.current ?? 0;
-    if (hasMultipleSnapPoints && targetIndex === maxIndex) {
-      sheetRef.current?.expand();
-    } else if (hasMultipleSnapPoints) {
-      sheetRef.current?.partialExpand();
-    }
-    pendingIndexRef.current = null;
-  }, [hasMultipleSnapPoints, isOpen, maxIndex]);
 
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
@@ -196,11 +185,12 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host matchContents>
+        <Host style={{ position: 'absolute', width }} pointerEvents="none">
           <ModalBottomSheet
             ref={sheetRef}
             onDismissRequest={handleDismiss}
             skipPartiallyExpanded={skipPartially}
+            initialFullyExpanded={hasMultipleSnapPoints && pendingIndexRef.current === maxIndex}
             showDragHandle={handleComponent !== null}
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}

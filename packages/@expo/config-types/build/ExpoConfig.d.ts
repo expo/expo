@@ -169,7 +169,7 @@ export interface ExpoConfig {
          */
         useNativeDebug?: boolean;
         /**
-         * Whether to enable support for downloading and applying bundle diffs using bsdiff. Defaults to false.
+         * Whether to enable support for downloading and applying bundle diffs using bsdiff. Defaults to true.
          */
         enableBsdiffPatchSupport?: boolean;
     };
@@ -206,6 +206,14 @@ export interface ExpoConfig {
      */
     experiments?: {
         /**
+         * Enable experimental support for select out-of-tree platforms, if their support packages are installed.
+         */
+        outOfTreePlatforms?: boolean;
+        /**
+         * Enables Expo's On-Demand Filesystem allowing Metro bundling outside of the watchFolders and with package manager global virtual stores.
+         */
+        onDemandFilesystem?: boolean;
+        /**
          * Apply Expo Autolinking's search results to Metro's module resolution. This forces your project's dependencies on `react`, `react-dom`, and `react-native`, and the autolinked versions of any Expo and React Native modules to be resolved when bundling your app. This prevents version misalignment and is useful for monorepos and to prevent conflicts.
          */
         autolinkingModuleResolution?: boolean;
@@ -226,10 +234,6 @@ export interface ExpoConfig {
          * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
          */
         supportsTVOnly?: boolean;
-        /**
-         * Enable React-based CSS support for native platforms. Only supports a subset of CSS properties, class names selectors, and has no cascading.
-         */
-        functionalCSS?: boolean;
         /**
          * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
          */
@@ -266,6 +270,10 @@ export interface ExpoConfig {
              * List of directories watched for inline modules.
              */
             watchedDirectories: string[];
+            /**
+             * List of targets to which inline modules files are added. If undefined defaults to the main target only.
+             */
+            xcodeProjectTargets?: string[];
         };
     };
     /**
@@ -603,9 +611,17 @@ export interface AndroidIntentFiltersData {
      */
     pathPattern?: string;
     /**
+     * Advanced pattern for paths that should be matched by the filter. Available on Android 12 (API level 31) and later.
+     */
+    pathAdvancedPattern?: string;
+    /**
      * Prefix for paths that should be matched by the filter, e.g. `/records/` will match `/records/123`
      */
     pathPrefix?: string;
+    /**
+     * Suffix for paths that should be matched by the filter. Available on Android 12 (API level 31) and later.
+     */
+    pathSuffix?: string;
     /**
      * MIME type for URLs that should be matched by the filter
      */

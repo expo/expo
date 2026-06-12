@@ -91,8 +91,9 @@ const withAndroidIcons = config => {
     backgroundImage,
     monochromeImage
   } = getAdaptiveIcon(config);
-  const icon = foregroundImage ?? getIcon(config);
-  if (!icon) {
+  const icon = getIcon(config);
+  const hasIcon = icon ?? foregroundImage;
+  if (!hasIcon) {
     return config;
   }
   config = (0, _withAndroidManifestIcons().withAndroidManifestIcons)(config);
@@ -101,6 +102,7 @@ const withAndroidIcons = config => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
     await setIconAsync(config.modRequest.projectRoot, {
       icon,
+      foregroundImage,
       backgroundColor,
       backgroundImage,
       monochromeImage,
@@ -145,29 +147,34 @@ function getAdaptiveIcon(config) {
  */
 async function setIconAsync(projectRoot, {
   icon,
+  foregroundImage,
   backgroundColor,
   backgroundImage,
   monochromeImage,
   isAdaptive
 }) {
-  if (!icon) {
+  const legacyIcon = icon ?? foregroundImage;
+  const adaptiveForegroundImage = foregroundImage ?? legacyIcon;
+  if (!legacyIcon || !adaptiveForegroundImage) {
     return null;
   }
-  await configureLegacyIconAsync(projectRoot, icon, backgroundImage, backgroundColor);
+  const legacyBackgroundImage = icon ? null : backgroundImage;
+  const legacyBackgroundColor = icon ? null : backgroundColor;
+  await configureLegacyIconAsync(projectRoot, legacyIcon, legacyBackgroundImage, legacyBackgroundColor);
   if (isAdaptive) {
-    await generateRoundIconAsync(projectRoot, icon, backgroundImage, backgroundColor);
+    await generateRoundIconAsync(projectRoot, legacyIcon, legacyBackgroundImage, legacyBackgroundColor);
   } else {
     await deleteIconNamedAsync(projectRoot, IC_LAUNCHER_ROUND_WEBP);
   }
-  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, monochromeImage, isAdaptive);
+  await configureAdaptiveIconAsync(projectRoot, adaptiveForegroundImage, backgroundImage, monochromeImage, isAdaptive);
   return true;
 }
 
 /**
- * Configures legacy icon files to be used on Android 7 and earlier. If adaptive icon configuration
- * was provided, we create a pseudo-adaptive icon by layering the provided files (or background
- * color if no backgroundImage is provided. If no backgroundImage and no backgroundColor are provided,
- * the background is set to transparent.)
+ * Configures legacy icon files to be used on Android 7 and earlier. If only adaptive icon
+ * configuration was provided, we create a pseudo-adaptive icon by layering the provided files (or
+ * background color if no backgroundImage is provided. If no backgroundImage and no backgroundColor
+ * are provided, the background is set to transparent.)
  */
 async function configureLegacyIconAsync(projectRoot, icon, backgroundImage, backgroundColor) {
   return generateMultiLayerImageAsync(projectRoot, {

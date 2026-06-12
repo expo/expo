@@ -1,924 +1,264 @@
-import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
-import ExpoCalendar from './ExpoCalendar';
-import { stringifyDateValues, stringifyIfDate } from './utils';
-// @docsMissing
+import InternalExpoCalendar from './ExpoCalendar';
+import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from './utils';
 /**
- * @platform ios
+ * Represents a calendar attendee object.
  */
-export var DayOfTheWeek;
-(function (DayOfTheWeek) {
-    DayOfTheWeek[DayOfTheWeek["Sunday"] = 1] = "Sunday";
-    DayOfTheWeek[DayOfTheWeek["Monday"] = 2] = "Monday";
-    DayOfTheWeek[DayOfTheWeek["Tuesday"] = 3] = "Tuesday";
-    DayOfTheWeek[DayOfTheWeek["Wednesday"] = 4] = "Wednesday";
-    DayOfTheWeek[DayOfTheWeek["Thursday"] = 5] = "Thursday";
-    DayOfTheWeek[DayOfTheWeek["Friday"] = 6] = "Friday";
-    DayOfTheWeek[DayOfTheWeek["Saturday"] = 7] = "Saturday";
-})(DayOfTheWeek || (DayOfTheWeek = {}));
-// @docsMissing
-/**
- * @platform ios
- */
-export var MonthOfTheYear;
-(function (MonthOfTheYear) {
-    MonthOfTheYear[MonthOfTheYear["January"] = 1] = "January";
-    MonthOfTheYear[MonthOfTheYear["February"] = 2] = "February";
-    MonthOfTheYear[MonthOfTheYear["March"] = 3] = "March";
-    MonthOfTheYear[MonthOfTheYear["April"] = 4] = "April";
-    MonthOfTheYear[MonthOfTheYear["May"] = 5] = "May";
-    MonthOfTheYear[MonthOfTheYear["June"] = 6] = "June";
-    MonthOfTheYear[MonthOfTheYear["July"] = 7] = "July";
-    MonthOfTheYear[MonthOfTheYear["August"] = 8] = "August";
-    MonthOfTheYear[MonthOfTheYear["September"] = 9] = "September";
-    MonthOfTheYear[MonthOfTheYear["October"] = 10] = "October";
-    MonthOfTheYear[MonthOfTheYear["November"] = 11] = "November";
-    MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
-})(MonthOfTheYear || (MonthOfTheYear = {}));
-/**
- * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
- * */
-export var CalendarDialogResultActions;
-(function (CalendarDialogResultActions) {
-    /**
-     * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
-     * the user may have canceled the dialog, modified the event, or deleted it.
-     *
-     * On iOS, this means the user simply closed the dialog.
-     * */
-    CalendarDialogResultActions["done"] = "done";
-    /**
-     * The user canceled or dismissed the dialog.
-     * @platform ios
-     * */
-    CalendarDialogResultActions["canceled"] = "canceled";
-    /**
-     * The user deleted the event.
-     * @platform ios
-     * */
-    CalendarDialogResultActions["deleted"] = "deleted";
-    /**
-     * The user responded to and saved a pending event invitation.
-     * @platform ios
-     * */
-    CalendarDialogResultActions["responded"] = "responded";
-    /**
-     * The user saved a new event or modified an existing one.
-     * @platform ios
-     * */
-    CalendarDialogResultActions["saved"] = "saved";
-})(CalendarDialogResultActions || (CalendarDialogResultActions = {}));
-/**
- * Launches the calendar UI provided by the OS to create a new event.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.addEventWithForm()` from `expo-calendar/next` instead.
- * @param eventData A map of details for the event to be created.
- * @param presentationOptions Configuration that influences how the calendar UI is presented.
- * @return A promise which resolves with information about the dialog result.
- * @header systemProvidedUI
- */
-export async function createEventInCalendarAsync(eventData = {}, presentationOptions) {
-    if (!ExpoCalendar.createEventInCalendarAsync) {
-        throw new UnavailabilityError('Calendar', 'createEventInCalendarAsync');
-    }
-    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object literal
-    if (eventData.id) {
-        console.warn('You attempted to create an event with an id. Event ids are assigned by the system.');
-    }
-    const params = stringifyDateValues(eventData);
-    Object.assign(params, presentationOptions);
-    return ExpoCalendar.createEventInCalendarAsync(params);
-}
-/**
- * Launches the calendar UI provided by the OS to preview an event.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.openInCalendar()` from `expo-calendar/next` instead.
- * @return A promise which resolves with information about the dialog result.
- * @header systemProvidedUI
- */
-export async function openEventInCalendarAsync(params, presentationOptions) {
-    if (!ExpoCalendar.openEventInCalendarAsync) {
-        throw new UnavailabilityError('Calendar', 'openEventInCalendarAsync');
-    }
-    if (!params.id) {
-        throw new Error('openEventInCalendarAsync must be called with an id (string) of the target event');
-    }
-    const newParams = { ...params, ...presentationOptions };
-    return ExpoCalendar.openEventInCalendarAsync(newParams);
-}
-/**
- * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.editInCalendar()` from `expo-calendar/next` instead.
- * @return A promise which resolves with information about the dialog result.
- * @header systemProvidedUI
- */
-export async function editEventInCalendarAsync(params, presentationOptions) {
-    if (!ExpoCalendar.editEventInCalendarAsync) {
-        throw new UnavailabilityError('Calendar', 'editEventInCalendarAsync');
-    }
-    if (!params.id) {
-        throw new Error('editEventInCalendarAsync must be called with an id (string) of the target event');
-    }
-    const newParams = { ...params, ...presentationOptions };
-    return ExpoCalendar.editEventInCalendarAsync(newParams);
-}
-// @needsAudit
-/**
- * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
- * @deprecated This legacy `expo-calendar` API is deprecated. This feature will be removed in `expo-calendar/next`.
- * @returns Async `boolean`, indicating whether the Calendar API is available on the current device.
- * Currently, this resolves `true` on iOS and Android only.
- */
-export async function isAvailableAsync() {
-    return !!ExpoCalendar.getCalendarsAsync;
-}
-// @needsAudit
-/**
- * Gets an array of calendar objects with details about the different calendars stored on the device.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `getCalendars()` from `expo-calendar/next` instead.
- * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
- * a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in
- * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
- * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
- * @return An array of [calendar objects](#calendar 'Calendar') matching the provided entity type (if provided).
- */
-export async function getCalendarsAsync(entityType) {
-    if (!ExpoCalendar.getCalendarsAsync) {
-        throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
-    }
-    if (!entityType) {
-        return ExpoCalendar.getCalendarsAsync(null);
-    }
-    return ExpoCalendar.getCalendarsAsync(entityType);
-}
-// @needsAudit
-/**
- * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `createCalendar()` from `expo-calendar/next` instead.
- * @param details A map of details for the calendar to be created.
- * @return A string representing the ID of the newly created calendar.
- */
-export async function createCalendarAsync(details = {}) {
-    if (!ExpoCalendar.saveCalendarAsync) {
-        throw new UnavailabilityError('Calendar', 'createCalendarAsync');
-    }
-    const color = details.color ? processColor(details.color) : undefined;
-    const newDetails = { ...details, id: undefined, color };
-    return ExpoCalendar.saveCalendarAsync(newDetails);
-}
-// @needsAudit
-/**
- * Updates the provided details of an existing calendar stored on the device. To remove a property,
- * explicitly set it to `null` in `details`.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.update()` from `expo-calendar/next` instead.
- * @param id ID of the calendar to update.
- * @param details A map of properties to be updated.
- */
-export async function updateCalendarAsync(id, details = {}) {
-    if (!ExpoCalendar.saveCalendarAsync) {
-        throw new UnavailabilityError('Calendar', 'updateCalendarAsync');
-    }
-    if (!id) {
-        throw new Error('updateCalendarAsync must be called with an id (string) of the target calendar');
-    }
-    const color = details.color ? processColor(details.color) : undefined;
-    if (Platform.OS === 'android') {
-        if (details.hasOwnProperty('source') ||
-            details.hasOwnProperty('color') ||
-            details.hasOwnProperty('allowsModifications') ||
-            details.hasOwnProperty('allowedAvailabilities') ||
-            details.hasOwnProperty('isPrimary') ||
-            details.hasOwnProperty('ownerAccount') ||
-            details.hasOwnProperty('timeZone') ||
-            details.hasOwnProperty('allowedReminders') ||
-            details.hasOwnProperty('allowedAttendeeTypes') ||
-            details.hasOwnProperty('accessLevel')) {
-            console.warn('updateCalendarAsync was called with one or more read-only properties, which will not be updated');
+export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
+    async update(details) {
+        if (!super.update) {
+            throw new UnavailabilityError('ExpoCalendarAttendee', 'update');
         }
+        const nullableDetailsFields = getNullableDetailsFields(details);
+        return super.update(stringifyDateValues(details), nullableDetailsFields);
     }
-    else {
-        if (details.hasOwnProperty('source') ||
-            details.hasOwnProperty('type') ||
-            details.hasOwnProperty('entityType') ||
-            details.hasOwnProperty('allowsModifications') ||
-            details.hasOwnProperty('allowedAvailabilities')) {
-            console.warn('updateCalendarAsync was called with one or more read-only properties, which will not be updated');
+    async delete() {
+        if (!super.delete) {
+            throw new UnavailabilityError('ExpoCalendarAttendee', 'delete');
         }
-    }
-    const newDetails = { ...details, id, color };
-    return ExpoCalendar.saveCalendarAsync(newDetails);
-}
-// @needsAudit
-/**
- * Deletes an existing calendar and all associated events/reminders/attendees from the device. __Use with caution.__
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.delete()` from `expo-calendar/next` instead.
- * @param id ID of the calendar to delete.
- */
-export async function deleteCalendarAsync(id) {
-    if (!ExpoCalendar.deleteCalendarAsync) {
-        throw new UnavailabilityError('Calendar', 'deleteCalendarAsync');
-    }
-    if (!id) {
-        throw new Error('deleteCalendarAsync must be called with an id (string) of the target calendar');
-    }
-    return ExpoCalendar.deleteCalendarAsync(id);
-}
-// @needsAudit
-/**
- * Returns all events in a given set of calendars over a specified time period. The filtering has
- * slightly different behavior per-platform - on iOS, all events that overlap at all with the
- * `[startDate, endDate]` interval are returned, whereas on Android, only events that begin on or
- * after the `startDate` and end on or before the `endDate` will be returned.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `listEvents()` from `expo-calendar/next` instead.
- * @param calendarIds Array of IDs of calendars to search for events in.
- * @param startDate Beginning of time period to search for events in.
- * @param endDate End of time period to search for events in.
- * @return A promise which fulfils with an array of [`Event`](#event) objects matching the search criteria.
- */
-export async function getEventsAsync(calendarIds, startDate, endDate) {
-    if (!ExpoCalendar.getEventsAsync) {
-        throw new UnavailabilityError('Calendar', 'getEventsAsync');
-    }
-    if (!startDate) {
-        throw new Error('getEventsAsync must be called with a startDate (date) to search for events');
-    }
-    if (!endDate) {
-        throw new Error('getEventsAsync must be called with an endDate (date) to search for events');
-    }
-    if (!calendarIds || !calendarIds.length) {
-        throw new Error('getEventsAsync must be called with a non-empty array of calendarIds to search');
-    }
-    return ExpoCalendar.getEventsAsync(stringifyIfDate(startDate), stringifyIfDate(endDate), calendarIds);
-}
-// @needsAudit
-/**
- * Returns a specific event selected by ID. If a specific instance of a recurring event is desired,
- * the start date of this instance must also be provided, as instances of recurring events do not
- * have their own unique and stable IDs on either iOS or Android.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `ExpoCalendarEvent.get()` from `expo-calendar/next` instead.
- * @param id ID of the event to return.
- * @param recurringEventOptions A map of options for recurring events.
- * @return A promise which fulfils with an [`Event`](#event) object matching the provided criteria, if one exists.
- */
-export async function getEventAsync(id, recurringEventOptions = {}) {
-    if (!ExpoCalendar.getEventByIdAsync) {
-        throw new UnavailabilityError('Calendar', 'getEventAsync');
-    }
-    if (!id) {
-        throw new Error('getEventAsync must be called with an id (string) of the target event');
-    }
-    if (Platform.OS === 'ios') {
-        return ExpoCalendar.getEventByIdAsync(id, recurringEventOptions.instanceStartDate);
-    }
-    else {
-        return ExpoCalendar.getEventByIdAsync(id);
+        await super.delete();
     }
 }
-// @needsAudit
 /**
- * Creates a new event on the specified calendar.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.createEvent()` from `expo-calendar/next` instead.
- * @param calendarId ID of the calendar to create this event in.
- * @param eventData A map of details for the event to be created.
- * @return A promise which fulfils with a string representing the ID of the newly created event.
+ * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
-export async function createEventAsync(calendarId, eventData = {}) {
-    if (!ExpoCalendar.saveEventAsync) {
-        throw new UnavailabilityError('Calendar', 'createEventAsync');
+export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+    getOccurrenceSync(recurringEventOptions = {}) {
+        const result = super.getOccurrenceSync(stringifyDateValues(recurringEventOptions));
+        Object.setPrototypeOf(result, ExpoCalendarEvent.prototype);
+        return result;
     }
-    if (!calendarId) {
-        throw new Error('createEventAsync must be called with an id (string) of the target calendar');
+    async getAttendees() {
+        const attendees = await super.getAttendees();
+        return attendees.map((attendee) => {
+            Object.setPrototypeOf(attendee, ExpoCalendarAttendee.prototype);
+            return attendee;
+        });
     }
-    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object literal
-    const { id, ...details } = eventData;
-    if (id) {
-        console.warn('You attempted to create an event with an id. Event ids are assigned by the system.');
-    }
-    if (Platform.OS === 'android') {
-        if (!details.startDate) {
-            throw new Error('createEventAsync requires a startDate (Date)');
+    async createAttendee(attendee) {
+        if (!super.createAttendee) {
+            throw new UnavailabilityError('ExpoCalendarEvent', 'createAttendee');
         }
-        if (!details.endDate) {
-            throw new Error('createEventAsync requires an endDate (Date)');
+        const newAttendee = await super.createAttendee(attendee);
+        Object.setPrototypeOf(newAttendee, ExpoCalendarAttendee.prototype);
+        return newAttendee;
+    }
+    async update(details) {
+        const nullableDetailsFields = getNullableDetailsFields(details);
+        return await super.update(stringifyDateValues(details), nullableDetailsFields);
+    }
+    async delete() {
+        await super.delete();
+    }
+    static async get(eventId) {
+        const event = await InternalExpoCalendar.getEventById(eventId);
+        Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
+        return event;
+    }
+}
+/**
+ * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
+ */
+export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
+    async update(details) {
+        const nullableDetailsFields = getNullableDetailsFields(details);
+        await super.update(stringifyDateValues(details), nullableDetailsFields);
+    }
+    static async get(reminderId) {
+        const reminder = await InternalExpoCalendar.getReminderById(reminderId);
+        Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
+        return reminder;
+    }
+}
+/**
+ * Represents a calendar object that can be accessed and modified using the Expo Calendar Next API.
+ *
+ * This class provides properties and methods for interacting with a specific calendar on the device,
+ * such as retrieving its events, updating its details, and accessing its metadata.
+ */
+export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
+    async createEvent(details) {
+        const newEvent = await super.createEvent(stringifyDateValues(details));
+        Object.setPrototypeOf(newEvent, ExpoCalendarEvent.prototype);
+        return newEvent;
+    }
+    async createReminder(details) {
+        const newReminder = await super.createReminder(stringifyDateValues(details));
+        Object.setPrototypeOf(newReminder, ExpoCalendarReminder.prototype);
+        return newReminder;
+    }
+    async listEvents(startDate, endDate) {
+        if (!startDate) {
+            throw new Error('listEvents must be called with a startDate (date) to search for events');
         }
-    }
-    const newDetails = {
-        ...details,
-        calendarId,
-    };
-    return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
-}
-// @needsAudit
-/**
- * Updates the provided details of an existing calendar stored on the device. To remove a property,
- * explicitly set it to `null` in `details`.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.update()` from `expo-calendar/next` instead.
- * @param id ID of the event to be updated.
- * @param details A map of properties to be updated.
- * @param recurringEventOptions A map of options for recurring events.
- */
-export async function updateEventAsync(id, details = {}, recurringEventOptions = {}) {
-    if (!ExpoCalendar.saveEventAsync) {
-        throw new UnavailabilityError('Calendar', 'updateEventAsync');
-    }
-    if (!id) {
-        throw new Error('updateEventAsync must be called with an id (string) of the target event');
-    }
-    if (Platform.OS === 'ios') {
-        if (details.hasOwnProperty('creationDate') ||
-            details.hasOwnProperty('lastModifiedDate') ||
-            details.hasOwnProperty('originalStartDate') ||
-            details.hasOwnProperty('isDetached') ||
-            details.hasOwnProperty('status') ||
-            details.hasOwnProperty('organizer')) {
-            console.warn('updateEventAsync was called with one or more read-only properties, which will not be updated');
+        if (!endDate) {
+            throw new Error('listEvents must be called with an endDate (date) to search for events');
         }
+        const events = await super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
+        return events.map((event) => {
+            Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
+            return event;
+        });
     }
-    const { futureEvents = false, instanceStartDate } = recurringEventOptions;
-    const newDetails = { ...details, id, instanceStartDate };
-    return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), { futureEvents });
+    async listReminders(startDate = null, endDate = null, status = null) {
+        const reminders = await super.listReminders(startDate ? stringifyIfDate(startDate) : null, endDate ? stringifyIfDate(endDate) : null, status);
+        return reminders.map((reminder) => {
+            Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
+            return reminder;
+        });
+    }
+    async update(details) {
+        const color = details.color ? processColor(details.color) : undefined;
+        const newDetails = { ...details, color: color || undefined };
+        return await super.update(newDetails);
+    }
+    async addEventWithForm(options) {
+        if (!super.addEventWithForm) {
+            throw new UnavailabilityError('ExpoCalendar', 'addEventWithForm');
+        }
+        return super.addEventWithForm(options && stringifyDateValues(options));
+    }
+    static async get(calendarId) {
+        const calendar = await InternalExpoCalendar.getCalendarById(calendarId);
+        Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+        return calendar;
+    }
 }
-// @needsAudit
-/**
- * Deletes an existing event from the device. Use with caution.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.delete()` from `expo-calendar/next` instead.
- * @param id ID of the event to be deleted.
- * @param recurringEventOptions A map of options for recurring events.
- */
-export async function deleteEventAsync(id, recurringEventOptions = {}) {
-    if (!ExpoCalendar.deleteEventAsync) {
-        throw new UnavailabilityError('Calendar', 'deleteEventAsync');
-    }
-    if (!id) {
-        throw new Error('deleteEventAsync must be called with an id (string) of the target event');
-    }
-    const { futureEvents = false, instanceStartDate } = recurringEventOptions;
-    return ExpoCalendar.deleteEventAsync({ id, instanceStartDate }, { futureEvents });
-}
-// @needsAudit
-/**
- * Gets all attendees for a given event (or instance of a recurring event).
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.getAttendees()` from `expo-calendar/next` instead.
- * @param id ID of the event to return attendees for.
- * @param recurringEventOptions A map of options for recurring events.
- * @return A promise which fulfils with an array of [`Attendee`](#attendee) associated with the
- * specified event.
- */
-export async function getAttendeesForEventAsync(id, recurringEventOptions = {}) {
-    if (!ExpoCalendar.getAttendeesForEventAsync) {
-        throw new UnavailabilityError('Calendar', 'getAttendeesForEventAsync');
-    }
-    if (!id) {
-        throw new Error('getAttendeesForEventAsync must be called with an id (string) of the target event');
-    }
-    const { instanceStartDate } = recurringEventOptions;
-    // Android only takes an ID, iOS takes an object
-    const params = Platform.OS === 'ios' ? { id, instanceStartDate } : id;
-    return ExpoCalendar.getAttendeesForEventAsync(params);
-}
-// @needsAudit
-/**
- * Creates a new attendee record and adds it to the specified event. Note that if `eventId` specifies
- * a recurring event, this will add the attendee to every instance of the event.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.createAttendee()` from `expo-calendar/next` instead.
- * @param eventId ID of the event to add this attendee to.
- * @param details A map of details for the attendee to be created.
- * @return A string representing the ID of the newly created attendee record.
- * @platform android
- */
-export async function createAttendeeAsync(eventId, details = {}) {
-    if (!ExpoCalendar.saveAttendeeForEventAsync) {
-        throw new UnavailabilityError('Calendar', 'createAttendeeAsync');
-    }
-    if (!eventId) {
-        throw new Error('createAttendeeAsync must be called with an id (string) of the target event');
-    }
-    if (!details.email) {
-        throw new Error('createAttendeeAsync requires an email (string)');
-    }
-    if (!details.role) {
-        throw new Error('createAttendeeAsync requires a role (string)');
-    }
-    if (!details.type) {
-        throw new Error('createAttendeeAsync requires a type (string)');
-    }
-    if (!details.status) {
-        throw new Error('createAttendeeAsync requires a status (string)');
-    }
-    const newDetails = { ...details, id: undefined };
-    return ExpoCalendar.saveAttendeeForEventAsync(newDetails, eventId);
-}
-// @needsAudit
-/**
- * Updates an existing attendee record. To remove a property, explicitly set it to `null` in `details`.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `attendee.update()` from `expo-calendar/next` instead.
- * @param id ID of the attendee record to be updated.
- * @param details A map of properties to be updated.
- * @platform android
- */
-export async function updateAttendeeAsync(id, details = {}) {
-    if (!ExpoCalendar.saveAttendeeForEventAsync) {
-        throw new UnavailabilityError('Calendar', 'updateAttendeeAsync');
-    }
-    if (!id) {
-        throw new Error('updateAttendeeAsync must be called with an id (string) of the target event');
-    }
-    const newDetails = { ...details, id };
-    return ExpoCalendar.saveAttendeeForEventAsync(newDetails, null);
-}
-// @needsAudit
 /**
  * Gets an instance of the default calendar object.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `getDefaultCalendarSync()` from `expo-calendar/next` instead.
- * @return A promise resolving to the [Calendar](#calendar) object that is the user's default calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
+ */
+export function getDefaultCalendarSync() {
+    if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendarSync) {
+        throw new UnavailabilityError('Calendar', 'getDefaultCalendar');
+    }
+    const defaultCalendar = InternalExpoCalendar.getDefaultCalendarSync();
+    Object.setPrototypeOf(defaultCalendar, ExpoCalendar.prototype);
+    return defaultCalendar;
+}
+/**
+ * Gets an array of [`ExpoCalendar`](#expocalendar) shared objects with details about the different calendars stored on the device.
+ * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
+ * a specific [entity type](#entitytypes). Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in
+ * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
+ * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
+ * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
+ */
+export async function getCalendars(entityType) {
+    if (!InternalExpoCalendar.getCalendars) {
+        throw new UnavailabilityError('Calendar', 'getCalendars');
+    }
+    const calendars = await InternalExpoCalendar.getCalendars(entityType);
+    return calendars.map((calendar) => {
+        Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+        return calendar;
+    });
+}
+/**
+ * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
+ * @param details A map of details for the calendar to be created.
+ * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
+ */
+export async function createCalendar(details = {}) {
+    const color = details.color ? processColor(details.color) : undefined;
+    const newDetails = { ...details, id: undefined, color: color || undefined };
+    const createdCalendar = await InternalExpoCalendar.createCalendar(newDetails);
+    Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
+    return createdCalendar;
+}
+/**
+ * Presents the OS calendar picker and returns the selected calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object or `null` when the picker is cancelled.
  * @platform ios
  */
-export async function getDefaultCalendarAsync() {
-    if (!ExpoCalendar.getDefaultCalendarAsync) {
-        throw new UnavailabilityError('Calendar', 'getDefaultCalendarAsync');
+export async function presentPicker() {
+    if (!InternalExpoCalendar.presentPicker) {
+        throw new UnavailabilityError('Calendar', 'presentPicker');
     }
-    return ExpoCalendar.getDefaultCalendarAsync();
+    const calendar = await InternalExpoCalendar.presentPicker();
+    if (calendar) {
+        Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+    }
+    return calendar;
 }
-// @needsAudit
 /**
- * Deletes an existing attendee record from the device. __Use with caution.__
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `attendee.delete()` from `expo-calendar/next` instead.
- * @param id ID of the attendee to delete.
- * @platform android
+ * Lists events from the device's calendar. It can be used to search events in multiple calendars.
+ * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
+ * @param calendars An array of calendar IDs (`string[]`) or [`ExpoCalendar`](#expocalendar) objects to search for events.
+ * @param startDate The start date of the time range to search for events.
+ * @param endDate The end date of the time range to search for events.
+ * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export async function deleteAttendeeAsync(id) {
-    if (!ExpoCalendar.deleteAttendeeAsync) {
-        throw new UnavailabilityError('Calendar', 'deleteAttendeeAsync');
+export async function listEvents(calendars, startDate, endDate) {
+    if (!InternalExpoCalendar.listEvents) {
+        throw new UnavailabilityError('Calendar', 'listEvents');
     }
-    if (!id) {
-        throw new Error('deleteAttendeeAsync must be called with an id (string) of the target event');
-    }
-    return ExpoCalendar.deleteAttendeeAsync(id);
+    const calendarIds = Array.isArray(calendars)
+        ? calendars.map((c) => (typeof c === 'string' ? c : c.id))
+        : [];
+    return InternalExpoCalendar.listEvents(calendarIds, stringifyIfDate(startDate), stringifyIfDate(endDate));
 }
-// @needsAudit
-/**
- * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
- * returns all reminders that overlap at all with the [startDate, endDate] interval - i.e. all reminders
- * that end after the `startDate` or begin before the `endDate`.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.listReminders()` from `expo-calendar/next` instead.
- * @param calendarIds Array of IDs of calendars to search for reminders in.
- * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`.
- * @param startDate Beginning of time period to search for reminders in. Required if `status` is defined.
- * @param endDate End of time period to search for reminders in. Required if `status` is defined.
- * @return A promise which fulfils with an array of [`Reminder`](#reminder) objects matching the search criteria.
- * @platform ios
- */
-export async function getRemindersAsync(calendarIds, status, startDate, endDate) {
-    if (!ExpoCalendar.getRemindersAsync) {
-        throw new UnavailabilityError('Calendar', 'getRemindersAsync');
-    }
-    if (status && !startDate) {
-        throw new Error('getRemindersAsync must be called with a startDate (date) to search for reminders');
-    }
-    if (status && !endDate) {
-        throw new Error('getRemindersAsync must be called with an endDate (date) to search for reminders');
-    }
-    if (!calendarIds || !calendarIds.length) {
-        throw new Error('getRemindersAsync must be called with a non-empty array of calendarIds to search');
-    }
-    const formattedStartDate = startDate ? stringifyIfDate(startDate) : null;
-    const formattedEndDate = endDate ? stringifyIfDate(endDate) : null;
-    return ExpoCalendar.getRemindersAsync(formattedStartDate, formattedEndDate, calendarIds, status || null);
-}
-// @needsAudit
-/**
- * Returns a specific reminder selected by ID.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `ExpoCalendarReminder.get()` from `expo-calendar/next` instead.
- * @param id ID of the reminder to return.
- * @return A promise which fulfils with a [`Reminder`](#reminder) matching the provided ID, if one exists.
- * @platform ios
- */
-export async function getReminderAsync(id) {
-    if (!ExpoCalendar.getReminderByIdAsync) {
-        throw new UnavailabilityError('Calendar', 'getReminderAsync');
-    }
-    if (!id) {
-        throw new Error('getReminderAsync must be called with an id (string) of the target reminder');
-    }
-    return ExpoCalendar.getReminderByIdAsync(id);
-}
-// @needsAudit
-/**
- * Creates a new reminder on the specified calendar.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `calendar.createReminder()` from `expo-calendar/next` instead.
- * @param calendarId ID of the calendar to create this reminder in (or `null` to add the calendar to
- * the OS-specified default calendar for reminders).
- * @param reminder A map of details for the reminder to be created
- * @return A promise which fulfils with a string representing the ID of the newly created reminder.
- * @platform ios
- */
-export async function createReminderAsync(calendarId, reminder = {}) {
-    if (!ExpoCalendar.saveReminderAsync) {
-        throw new UnavailabilityError('Calendar', 'createReminderAsync');
-    }
-    const { id, ...details } = reminder;
-    const newDetails = {
-        ...details,
-        calendarId: calendarId === null ? undefined : calendarId,
-    };
-    return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
-}
-// @needsAudit
-/**
- * Updates the provided details of an existing reminder stored on the device. To remove a property,
- * explicitly set it to `null` in `details`.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `reminder.update()` from `expo-calendar/next` instead.
- * @param id ID of the reminder to be updated.
- * @param details A map of properties to be updated.
- * @platform ios
- */
-export async function updateReminderAsync(id, details = {}) {
-    if (!ExpoCalendar.saveReminderAsync) {
-        throw new UnavailabilityError('Calendar', 'updateReminderAsync');
-    }
-    if (!id) {
-        throw new Error('updateReminderAsync must be called with an id (string) of the target reminder');
-    }
-    if (details.hasOwnProperty('creationDate') || details.hasOwnProperty('lastModifiedDate')) {
-        console.warn('updateReminderAsync was called with one or more read-only properties, which will not be updated');
-    }
-    const newDetails = { ...details, id };
-    return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
-}
-// @needsAudit
-/**
- * Deletes an existing reminder from the device. __Use with caution.__
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `reminder.delete()` from `expo-calendar/next` instead.
- * @param id ID of the reminder to be deleted.
- * @platform ios
- */
-export async function deleteReminderAsync(id) {
-    if (!ExpoCalendar.deleteReminderAsync) {
-        throw new UnavailabilityError('Calendar', 'deleteReminderAsync');
-    }
-    if (!id) {
-        throw new Error('deleteReminderAsync must be called with an id (string) of the target reminder');
-    }
-    return ExpoCalendar.deleteReminderAsync(id);
-}
-// @needsAudit @docsMissing
-/**
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `getSourcesSync()` from `expo-calendar/next` instead.
- * @return A promise which fulfils with an array of [`Source`](#source) objects all sources for
- * calendars stored on the device.
- * @platform ios
- */
-export async function getSourcesAsync() {
-    if (!ExpoCalendar.getSourcesAsync) {
-        throw new UnavailabilityError('Calendar', 'getSourcesAsync');
-    }
-    return ExpoCalendar.getSourcesAsync();
-}
-// @needsAudit
-/**
- * Returns a specific source selected by ID.
- * @deprecated This legacy `expo-calendar` API is deprecated. This feature will be removed in `expo-calendar/next`.
- * @param id ID of the source to return.
- * @return A promise which fulfils with an array of [`Source`](#source) object matching the provided
- * ID, if one exists.
- * @platform ios
- */
-export async function getSourceAsync(id) {
-    if (!ExpoCalendar.getSourceByIdAsync) {
-        throw new UnavailabilityError('Calendar', 'getSourceAsync');
-    }
-    if (!id) {
-        throw new Error('getSourceAsync must be called with an id (string) of the target source');
-    }
-    return ExpoCalendar.getSourceByIdAsync(id);
-}
-// @needsAudit
-/**
- * Sends an intent to open the specified event in the OS Calendar app.
- * @param id ID of the event to open.
- * @platform android
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `event.openInCalendar()` from `expo-calendar/next` instead.
- * @header systemProvidedUI
- */
-export function openEventInCalendar(id) {
-    if (!ExpoCalendar.openEventInCalendar) {
-        console.warn(`openEventInCalendar is not available on platform: ${Platform.OS}`);
-        return;
-    }
-    if (!id) {
-        throw new Error('openEventInCalendar must be called with an id (string) of the target event');
-    }
-    return ExpoCalendar.openEventInCalendar(id);
-} // Android
-// @needsAudit
-/**
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `requestCalendarPermissions()` from `expo-calendar/next` instead.
- */
-export async function requestPermissionsAsync() {
-    console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');
-    return requestCalendarPermissionsAsync();
-}
-// @needsAudit
-/**
- * Checks user's permissions for accessing user's calendars.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `getCalendarPermissions()` from `expo-calendar/next` instead.
- * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- */
-export async function getCalendarPermissionsAsync() {
-    if (!ExpoCalendar.getCalendarPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'getCalendarPermissionsAsync');
-    }
-    return ExpoCalendar.getCalendarPermissionsAsync();
-}
-// @needsAudit
-/**
- * Checks user's permissions for accessing user's reminders.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `getRemindersPermissions()` from `expo-calendar/next` instead.
- * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- * @platform ios
- */
-export async function getRemindersPermissionsAsync() {
-    if (!ExpoCalendar.getRemindersPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAsync');
-    }
-    return ExpoCalendar.getRemindersPermissionsAsync();
-}
-// @needsAudit
 /**
  * Asks the user to grant permissions for accessing user's calendars.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `requestCalendarPermissions()` from `expo-calendar/next` instead.
+ * @param writeOnly - On iOS, whether to request write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export async function requestCalendarPermissionsAsync() {
-    if (!ExpoCalendar.requestCalendarPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
-    }
-    return await ExpoCalendar.requestCalendarPermissionsAsync();
-}
-// @needsAudit
+export const requestCalendarPermissions = InternalExpoCalendar.requestCalendarPermissions;
+/**
+ * Checks user's permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to check write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ */
+export const getCalendarPermissions = InternalExpoCalendar.getCalendarPermissions;
 /**
  * Asks the user to grant permissions for accessing user's reminders.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `requestRemindersPermissions()` from `expo-calendar/next` instead.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- * @platform ios
  */
-export async function requestRemindersPermissionsAsync() {
-    if (!ExpoCalendar.requestRemindersPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'requestRemindersPermissionsAsync');
-    }
-    return await ExpoCalendar.requestRemindersPermissionsAsync();
-}
-// @needsAudit
+export const requestRemindersPermissions = InternalExpoCalendar.requestRemindersPermissions;
 /**
- * Check or request permissions to access the calendar.
- * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
+ * Checks user's permissions for accessing user's reminders.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ */
+export const getRemindersPermissions = InternalExpoCalendar.getRemindersPermissions;
+/**
+ * Gets an array of Source objects with details about the different sources stored on the device.
+ * @returns An array of Source objects representing the sources found.
+ */
+export const getSourcesSync = InternalExpoCalendar.getSourcesSync;
+export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, } from './legacy/Calendar';
+/**
+ * Check or request permissions to access the user's calendars.
+ * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
  * with the permissions.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `useCalendarPermissions()` from `expo-calendar/next` instead.
+ * On iOS, `writeOnly` requests permission to create calendar events without reading
+ * existing calendars or events. It does not grant permission to create, update, or delete calendars.
+ *
  * @example
  * ```ts
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
 export const useCalendarPermissions = createPermissionHook({
-    getMethod: getCalendarPermissionsAsync,
-    requestMethod: requestCalendarPermissionsAsync,
+    getMethod: (options) => getCalendarPermissions(options?.writeOnly),
+    requestMethod: (options) => requestCalendarPermissions(options?.writeOnly),
 });
-// @needsAudit
 /**
- * Check or request permissions to access reminders.
- * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact
+ * Check or request permissions to access the user's reminders.
+ * This uses both `getRemindersPermissions` and `requestRemindersPermissions` to interact
  * with the permissions.
- * @deprecated This legacy `expo-calendar` API is deprecated. Use `useRemindersPermissions()` from `expo-calendar/next` instead.
+ *
  * @example
  * ```ts
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
  */
 export const useRemindersPermissions = createPermissionHook({
-    getMethod: getRemindersPermissionsAsync,
-    requestMethod: requestRemindersPermissionsAsync,
+    getMethod: getRemindersPermissions,
+    requestMethod: requestRemindersPermissions,
 });
-// @docsMissing
-/**
- * @platform ios
- */
-export var EntityTypes;
-(function (EntityTypes) {
-    EntityTypes["EVENT"] = "event";
-    EntityTypes["REMINDER"] = "reminder";
-})(EntityTypes || (EntityTypes = {}));
-// @docsMissing
-export var Frequency;
-(function (Frequency) {
-    Frequency["DAILY"] = "daily";
-    Frequency["WEEKLY"] = "weekly";
-    Frequency["MONTHLY"] = "monthly";
-    Frequency["YEARLY"] = "yearly";
-})(Frequency || (Frequency = {}));
-// @docsMissing
-export var Availability;
-(function (Availability) {
-    /**
-     * @platform ios
-     */
-    Availability["NOT_SUPPORTED"] = "notSupported";
-    Availability["BUSY"] = "busy";
-    Availability["FREE"] = "free";
-    Availability["TENTATIVE"] = "tentative";
-    /**
-     * @platform ios
-     */
-    Availability["UNAVAILABLE"] = "unavailable";
-})(Availability || (Availability = {}));
-/**
- * @platform ios
- */
-export var CalendarType;
-(function (CalendarType) {
-    CalendarType["LOCAL"] = "local";
-    CalendarType["CALDAV"] = "caldav";
-    CalendarType["EXCHANGE"] = "exchange";
-    CalendarType["SUBSCRIBED"] = "subscribed";
-    CalendarType["BIRTHDAYS"] = "birthdays";
-    CalendarType["UNKNOWN"] = "unknown";
-})(CalendarType || (CalendarType = {}));
-// @docsMissing
-export var EventStatus;
-(function (EventStatus) {
-    EventStatus["NONE"] = "none";
-    EventStatus["CONFIRMED"] = "confirmed";
-    EventStatus["TENTATIVE"] = "tentative";
-    EventStatus["CANCELED"] = "canceled";
-})(EventStatus || (EventStatus = {}));
-// @docsMissing
-/**
- * @platform ios
- */
-export var SourceType;
-(function (SourceType) {
-    SourceType["LOCAL"] = "local";
-    SourceType["EXCHANGE"] = "exchange";
-    SourceType["CALDAV"] = "caldav";
-    SourceType["MOBILEME"] = "mobileme";
-    SourceType["SUBSCRIBED"] = "subscribed";
-    SourceType["BIRTHDAYS"] = "birthdays";
-})(SourceType || (SourceType = {}));
-// @docsMissing
-export var AttendeeRole;
-(function (AttendeeRole) {
-    /**
-     * @platform ios
-     */
-    AttendeeRole["UNKNOWN"] = "unknown";
-    /**
-     * @platform ios
-     */
-    AttendeeRole["REQUIRED"] = "required";
-    /**
-     * @platform ios
-     */
-    AttendeeRole["OPTIONAL"] = "optional";
-    /**
-     * @platform ios
-     */
-    AttendeeRole["CHAIR"] = "chair";
-    /**
-     * @platform ios
-     */
-    AttendeeRole["NON_PARTICIPANT"] = "nonParticipant";
-    /**
-     * @platform android
-     */
-    AttendeeRole["ATTENDEE"] = "attendee";
-    /**
-     * @platform android
-     */
-    AttendeeRole["ORGANIZER"] = "organizer";
-    /**
-     * @platform android
-     */
-    AttendeeRole["PERFORMER"] = "performer";
-    /**
-     * @platform android
-     */
-    AttendeeRole["SPEAKER"] = "speaker";
-    /**
-     * @platform android
-     */
-    AttendeeRole["NONE"] = "none";
-})(AttendeeRole || (AttendeeRole = {}));
-// @docsMissing
-export var AttendeeStatus;
-(function (AttendeeStatus) {
-    /**
-     * @platform ios
-     */
-    AttendeeStatus["UNKNOWN"] = "unknown";
-    /**
-     * @platform ios
-     */
-    AttendeeStatus["PENDING"] = "pending";
-    AttendeeStatus["ACCEPTED"] = "accepted";
-    AttendeeStatus["DECLINED"] = "declined";
-    AttendeeStatus["TENTATIVE"] = "tentative";
-    /**
-     * @platform ios
-     */
-    AttendeeStatus["DELEGATED"] = "delegated";
-    /**
-     * @platform ios
-     */
-    AttendeeStatus["COMPLETED"] = "completed";
-    /**
-     * @platform ios
-     */
-    AttendeeStatus["IN_PROCESS"] = "inProcess";
-    /**
-     * @platform android
-     */
-    AttendeeStatus["INVITED"] = "invited";
-    /**
-     * @platform android
-     */
-    AttendeeStatus["NONE"] = "none";
-})(AttendeeStatus || (AttendeeStatus = {}));
-// @docsMissing
-export var AttendeeType;
-(function (AttendeeType) {
-    /**
-     * @platform ios
-     */
-    AttendeeType["UNKNOWN"] = "unknown";
-    /**
-     * @platform ios
-     */
-    AttendeeType["PERSON"] = "person";
-    /**
-     * @platform ios
-     */
-    AttendeeType["ROOM"] = "room";
-    /**
-     * @platform ios
-     */
-    AttendeeType["GROUP"] = "group";
-    AttendeeType["RESOURCE"] = "resource";
-    /**
-     * @platform android
-     */
-    AttendeeType["OPTIONAL"] = "optional";
-    /**
-     * @platform android
-     */
-    AttendeeType["REQUIRED"] = "required";
-    /**
-     * @platform android
-     */
-    AttendeeType["NONE"] = "none";
-})(AttendeeType || (AttendeeType = {}));
-// @docsMissing
-/**
- * @platform android
- */
-export var AlarmMethod;
-(function (AlarmMethod) {
-    AlarmMethod["ALARM"] = "alarm";
-    AlarmMethod["ALERT"] = "alert";
-    AlarmMethod["EMAIL"] = "email";
-    AlarmMethod["SMS"] = "sms";
-    AlarmMethod["DEFAULT"] = "default";
-})(AlarmMethod || (AlarmMethod = {}));
-// @docsMissing
-/**
- * @platform android
- */
-export var EventAccessLevel;
-(function (EventAccessLevel) {
-    EventAccessLevel["CONFIDENTIAL"] = "confidential";
-    EventAccessLevel["PRIVATE"] = "private";
-    EventAccessLevel["PUBLIC"] = "public";
-    EventAccessLevel["DEFAULT"] = "default";
-})(EventAccessLevel || (EventAccessLevel = {}));
-// @docsMissing
-/**
- * @platform android
- */
-export var CalendarAccessLevel;
-(function (CalendarAccessLevel) {
-    CalendarAccessLevel["CONTRIBUTOR"] = "contributor";
-    CalendarAccessLevel["EDITOR"] = "editor";
-    CalendarAccessLevel["FREEBUSY"] = "freebusy";
-    CalendarAccessLevel["OVERRIDE"] = "override";
-    CalendarAccessLevel["OWNER"] = "owner";
-    CalendarAccessLevel["READ"] = "read";
-    CalendarAccessLevel["RESPOND"] = "respond";
-    CalendarAccessLevel["ROOT"] = "root";
-    CalendarAccessLevel["NONE"] = "none";
-})(CalendarAccessLevel || (CalendarAccessLevel = {}));
-// @docsMissing
-/**
- * @platform ios
- */
-export var ReminderStatus;
-(function (ReminderStatus) {
-    ReminderStatus["COMPLETED"] = "completed";
-    ReminderStatus["INCOMPLETE"] = "incomplete";
-})(ReminderStatus || (ReminderStatus = {}));
+export * from './legacyWarnings';
 //# sourceMappingURL=Calendar.js.map

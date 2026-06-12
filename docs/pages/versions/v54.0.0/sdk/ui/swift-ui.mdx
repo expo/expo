@@ -18,7 +18,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-> **important** **This library is currently in beta and subject to breaking changes.** It is not available in the Expo Go app &mdash; use [development builds](/develop/development-builds/introduction/) to try it out.
+> **important** **This library is currently in beta and subject to breaking changes.** It is not available in the Expo Go app — use [development builds](/develop/development-builds/introduction/) to try it out.
 
 The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iOS interfaces using SwiftUI from React Native.
 
@@ -186,7 +186,7 @@ For an in-depth explanation of how `Host` works, see the following resources:
   <Tab label="iOS">
     <ContentSpotlight
       alt="ContextMenu component on iOS."
-      src="/static/images/expo-ui/contextMenu/ios.png"
+      src="/static/images/expo-ui/contextmenu/ios.png"
       className="max-w-[380px]"
     />
   </Tab>
@@ -332,7 +332,7 @@ For an in-depth explanation of how `Host` works, see the following resources:
 
 ### Host
 
-A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which underlying uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
+A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which internally uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
 
 Since the `Host` component is a React Native [`View`](https://reactnative.dev/docs/view), you can pass the [`style`](https://reactnative.dev/docs/style) prop to it or `matchContents` prop to make the `Host` component match the contents' size.
 

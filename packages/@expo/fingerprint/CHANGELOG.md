@@ -6,13 +6,90 @@
 
 ### 🎉 New features
 
-- Include expo-font plugin font files in fingerprint hash calculation ([#43575](https://github.com/expo/expo/pull/43575) by [@vonovak](https://github.com/vonovak))
+### 🐛 Bug fixes
+
+- Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 0.19.3 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- Fixed unstable fingerprint on Windows. ([#46196](https://github.com/expo/expo/pull/46196) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint from `expo-modules-jsi`. ([#46187](https://github.com/expo/expo/pull/46187), [#46201](https://github.com/expo/expo/pull/46201) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated E2E test to use SDK 56 templates. ([#46194](https://github.com/expo/expo/pull/46194) by [@kudo](https://github.com/kudo))
+
+## 0.19.2 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.1 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Prevent ENOENT on virtual Node module paths in `ExpoConfigLoader` and check whether module paths correspond to files on disk ([#46092](https://github.com/expo/expo/pull/46092) by [@kitten](https://github.com/kitten))
+
+## 0.19.0 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- Pass original env to Expo / Community CLI sub-commands ([#45834](https://github.com/expo/expo/pull/45834) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 0.18.3 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.2 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.1 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.0 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.4 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.0 — 2026-05-05
 
 ### 🐛 Bug fixes
 
 - Use `expo-splash-screen` plugin config type and remove legacy `splash` properties from fingerprint sources. ([#44598](https://github.com/expo/expo/pull/44598) by [@zoontek](https://github.com/zoontek))
 
-### 💡 Others
+## 0.16.7 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.6 - 2026-03-11
+
+### 🎉 New features
+
+- Include expo-font plugin font files in fingerprint hash calculation ([#43575](https://github.com/expo/expo/pull/43575) by [@vonovak](https://github.com/vonovak))
 
 ## 0.16.5 — 2026-02-25
 

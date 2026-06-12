@@ -1,5 +1,5 @@
 import { Children, isValidElement, type Ref, type ReactNode, type ReactElement } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 export type PickerItemValue = string | number | null;
 
@@ -7,7 +7,7 @@ export type PickerItemValue = string | number | null;
  * Props for the `Picker.Item` component.
  * Compatible with `@react-native-picker/picker`.
  */
-export type PickerItemProps<T extends PickerItemValue> = {
+export type PickerItemProps<T extends PickerItemValue = PickerItemValue> = {
   /**
    * Display text for the item.
    */
@@ -17,15 +17,19 @@ export type PickerItemProps<T extends PickerItemValue> = {
    */
   value?: T;
   /**
-   * Text color for the item.
-   * @platform ios
+   * Text color for the item. Equivalent to setting `color` in the `style` prop.
    */
   color?: string;
   /**
-   * Custom font family for the item.
-   * @platform ios
+   * Custom font family for the item. Equivalent to setting `fontFamily` in the `style` prop.
    */
   fontFamily?: string;
+  /**
+   * Style applied to the item label. Only the following values take effect:
+   * `color`, `backgroundColor`, `fontFamily`, and `fontSize`. When also set
+   * via the top-level `color` or `fontFamily` props, values from `style` win.
+   */
+  style?: StyleProp<TextStyle>;
   /**
    * Whether the item is enabled.
    * @platform android
@@ -99,16 +103,13 @@ export type PickerRef = {
   blur: () => void;
 };
 
-export type PickerWithItems = {
-  <T extends PickerItemValue>(props: PickerProps<T>): ReactElement | null;
-  Item: typeof PickerItem;
-};
-
 export type ExtractedPickerItem<T extends PickerItemValue = PickerItemValue> = {
   label: string;
   value: T;
   color?: string;
+  backgroundColor?: string;
   fontFamily?: string;
+  fontSize?: number;
   enabled?: boolean;
 };
 
@@ -123,11 +124,16 @@ export function extractPickerItems<T extends PickerItemValue>(
       (child): child is ReactElement<PickerItemProps<T>> =>
         isValidElement(child) && child.type === PickerItem
     )
-    .map(({ props: { label = '', value, color, fontFamily, enabled } }) => ({
-      label,
-      value: value as T,
-      color,
-      fontFamily,
-      enabled,
-    }));
+    .map(({ props: { label = '', value, color, fontFamily, style, enabled } }) => {
+      const flat = StyleSheet.flatten(style);
+      return {
+        label,
+        value: value as T,
+        color: (flat?.color as string | undefined) ?? color,
+        backgroundColor: flat?.backgroundColor as string | undefined,
+        fontFamily: flat?.fontFamily ?? fontFamily,
+        fontSize: flat?.fontSize,
+        enabled,
+      };
+    });
 }

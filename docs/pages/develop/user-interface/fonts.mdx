@@ -70,7 +70,14 @@ To embed a font in a project, follow the steps below:
 
 After adding a custom font file in your project, install the `expo-font` library.
 
-<Terminal cmd={['$ npx expo install expo-font']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font'],
+    yarn: ['$ yarn expo install expo-font'],
+    pnpm: ['$ pnpm expo install expo-font'],
+    bun: ['$ bun expo install expo-font'],
+  }}
+/>
 
 </Step>
 
@@ -179,7 +186,14 @@ It works with all Expo SDK versions and with Expo Go. To load a font in a projec
 
 After adding a custom font file in your project, install the `expo-font` and `expo-splash-screen` libraries.
 
-<Terminal cmd={['$ npx expo install expo-font expo-splash-screen']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font expo-splash-screen'],
+    yarn: ['$ yarn expo install expo-font expo-splash-screen'],
+    pnpm: ['$ pnpm expo install expo-font expo-splash-screen'],
+    bun: ['$ bun expo install expo-font expo-splash-screen'],
+  }}
+/>
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides `SplashScreen` component that you can use to prevent rendering the app until the font is loaded and ready.
 
@@ -190,16 +204,16 @@ The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides
 Map the font file using the `useFonts` hook in a top-level component such as the root layout (**src/app/\_layout.tsx**) file in your project:
 
 ```tsx src/app/_layout.tsx
-/* @info Import <CODE>useFonts</CODE> hook from <CODE>expo-font</CODE>. */ import { useFonts } from 'expo-font'; /* @end */
-/* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
+/* @info Import `useFonts` hook from `expo-font`. */ import { useFonts } from 'expo-font'; /* @end */
+/* @info Import `SplashScreen` so that when the fonts are not loaded, we can continue to show `SplashScreen`. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
 import {useEffect} from 'react';
 
-/* @info This prevents <CODE>SplashScreen</CODE> from auto hiding while the fonts are in loading state. */
+/* @info This prevents `SplashScreen` from auto hiding while the fonts are in loading state. */
 SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function RootLayout() {
-  /* @info Map the font file using <CODE>useFonts</CODE> hook. */
+  /* @info Map the font file using `useFonts` hook. */
   const [loaded, error] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
@@ -252,7 +266,14 @@ Two ways to use a Google Font in your project:
 
 Install the font package. For example, to use Inter Black font, install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
 
-<Terminal cmd={['$ npx expo install expo-font @expo-google-fonts/inter']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font @expo-google-fonts/inter'],
+    yarn: ['$ yarn expo install expo-font @expo-google-fonts/inter'],
+    pnpm: ['$ pnpm expo install expo-font @expo-google-fonts/inter'],
+    bun: ['$ bun expo install expo-font @expo-google-fonts/inter'],
+  }}
+/>
 
 </Step>
 
@@ -313,7 +334,14 @@ Each Google Fonts package provides the `useFonts` hook to load the fonts asynchr
 
 Install the Google Fonts package, `expo-font` and `expo-splash-screen` libraries.
 
-<Terminal cmd={['$ npx expo install @expo-google-fonts/inter expo-font expo-splash-screen']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    yarn: ['$ yarn expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    pnpm: ['$ pnpm expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    bun: ['$ bun expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+  }}
+/>
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides `SplashScreen` component that you can use to prevent rendering the app until the font is loaded and ready.
 
@@ -325,20 +353,20 @@ After installing the font package, map the font using the `useFonts` hook in a t
 
 ```tsx src/app/_layout.tsx
 // Rest of the import statements
-/* @info Import <CODE>Inter_900Black</CODE> and <CODE>useFonts</CODE> hook from <CODE>@expo-google-fonts/inter</CODE>*/
+/* @info Import `Inter_900Black` and `useFonts` hook from `@expo-google-fonts/inter`*/
 import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
 /* @end */
-/* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */
+/* @info Import `SplashScreen` so that when the fonts are not loaded, we can continue to show `SplashScreen`. */
 import * as SplashScreen from 'expo-splash-screen';
 /* @end */
 import {useEffect} from 'react';
 
-/* @info This prevents <CODE>SplashScreen</CODE> from auto hiding while the fonts are in loading state. */
+/* @info This prevents `SplashScreen` from auto hiding while the fonts are in loading state. */
 SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function RootLayout() {
-  /* @info Map the font file using <CODE>useFonts</CODE> hook. */
+  /* @info Map the font file using `useFonts` hook. */
   const [loaded, error] = useFonts({
     Inter_900Black,
   });

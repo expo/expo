@@ -1,7 +1,7 @@
 import Slider from '@react-native-community/slider';
 import * as React from 'react';
-import { Text } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
 
@@ -11,11 +11,11 @@ export default function SliderScreen() {
   return (
     <Page>
       <Section title="Standard">
-        <Text>Value: {value && +value.toFixed(3)}</Text>
+        <BodyText>Value: {value && +value.toFixed(3)}</BodyText>
         <Slider value={value} onValueChange={setValue} />
       </Section>
       <Section title="Custom Color">
-        <Text>Value: {value && +value.toFixed(3)}</Text>
+        <BodyText>Value: {value && +value.toFixed(3)}</BodyText>
         <Slider
           value={value}
           minimumTrackTintColor="red"

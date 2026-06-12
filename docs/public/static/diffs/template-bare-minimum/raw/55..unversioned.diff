@@ -139,7 +139,7 @@ index 8a390c764af..39fa5afe55b 100644
  					/usr/lib/swift,
  					"$(inherited)",
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 03484edf156..a2af7b4a5de 100644
+index 03484edf156..c3158e3fb9b 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
 @@ -13,10 +13,11 @@ def ccache_enabled?(podfile_properties)
@@ -148,39 +148,44 @@ index 03484edf156..a2af7b4a5de 100644
  ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 -ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
 -ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
-+ENV['RCT_USE_RN_DEP'] ||= '0' if podfile_properties['ios.buildReactNativeFromSource'] == 'true'
-+ENV['RCT_USE_PREBUILT_RNCORE'] ||= '0' if podfile_properties['ios.buildReactNativeFromSource'] == 'true'
++ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
++ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
  ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
 -platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
-+ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == '1'
++ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
  
  prepare_react_native_project!
  
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 7d81baed15d..e6346b6d456 100644
+index 0c1036ba548..8843d0fcae7 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "55.0.26",
-+  "version": "55.0.14",
+-  "version": "55.0.38",
++  "version": "56.0.17",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -11,9 +11,9 @@
+@@ -11,9 +11,14 @@
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~55.0.14",
--    "expo-status-bar": "~55.0.5",
+-    "expo": "~55.0.26",
+-    "expo-status-bar": "~55.0.6",
 -    "react": "19.2.0",
--    "react-native": "0.83.4"
-+    "expo": "~55.0.2",
-+    "expo-status-bar": "~55.0.4",
+-    "react-native": "0.83.6"
++    "expo": "~56.0.3",
++    "expo-status-bar": "~56.0.4",
 +    "react": "19.2.3",
-+    "react-native": "0.85.0"
++    "react-native": "0.85.3"
++  },
++  "publishConfig": {
++    "executableFiles": [
++      "./android/gradlew"
++    ]
    }
  }

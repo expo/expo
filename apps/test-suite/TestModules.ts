@@ -51,6 +51,7 @@ export function getTestModules() {
     require('./tests/JSUnicodeRegexes'),
     require('./tests/JSNullishCoalescing'),
     require('./tests/JSOptionalChaining'),
+    require('./tests/JSHermesMisc'),
   ];
 
   // Expo core modules should run everywhere
@@ -84,6 +85,7 @@ export function getTestModules() {
   }
 
   if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));
     modules.push(require('./tests/CalendarNext'));

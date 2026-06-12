@@ -1,0 +1,74 @@
+---
+title: Text
+description: A component for displaying styled text content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A component for displaying text. Adapts to the platform color scheme (light/dark) by default and exposes a focused subset of typography knobs through [`textStyle`](#textstyle).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic text
+
+```tsx TextExample.tsx
+import { Host, Text } from '@expo/ui';
+
+export default function TextExample() {
+  return (
+    <Host matchContents>
+      <Text>Hello, world!</Text>
+    </Host>
+  );
+}
+```
+
+### Styled text
+
+Use [`textStyle`](#textstyle) for typography-specific properties (font size, weight, alignment).
+
+```tsx StyledTextExample.tsx
+import { Host, Text } from '@expo/ui';
+
+export default function StyledTextExample() {
+  return (
+    <Host matchContents>
+      <Text textStyle={{ fontSize: 24, fontWeight: '700', textAlign: 'center' }}>Headline</Text>
+    </Host>
+  );
+}
+```
+
+### Truncating long text
+
+Use [`numberOfLines`](#numberoflines) to clamp long text with a trailing ellipsis.
+
+```tsx TruncatedTextExample.tsx
+import { Host, Text } from '@expo/ui';
+
+export default function TruncatedTextExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Text numberOfLines={1}>
+        A very long line of text that will be truncated when it does not fit on a single line.
+      </Text>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Text } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/text" apiName="Text" />

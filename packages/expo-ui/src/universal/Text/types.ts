@@ -3,6 +3,7 @@ import type { UniversalBaseProps } from '../types';
 /**
  * Font weight for text content. Accepts named values (`'normal'`, `'bold'`) or
  * numeric string values from `'100'` (thin) to `'900'` (black).
+ * @docsInline
  */
 export type UniversalFontWeight =
   | 'normal'
@@ -19,6 +20,7 @@ export type UniversalFontWeight =
 
 /**
  * Text-specific styling options for the [`Text`](#text) component.
+ * @docsInline
  */
 export interface UniversalTextStyle {
   /**

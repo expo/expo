@@ -390,6 +390,30 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 <ContentSpotlight file="guides/color-schemes.mp4" />;
 ```
 
+### Add Expo UI component previews
+
+For documenting `@expo/ui` components (Jetpack Compose and SwiftUI) with a fixed-size, theme-aware preview frame, use the `component` variant of `ContentSpotlight`. It renders a bordered dot-grid card and swaps between light and dark sources based on the active theme.
+
+```tsx
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/badgedbox/android-light.webp"
+  darkSrc="/static/images/expo-ui/badgedbox/android-dark.webp"
+  alt="Mail icon with a count badge of 5 and a wifi icon with a small dot badge"
+/>;
+```
+
+| Param     | Description                                                                                                                                                |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant` | Set to `"component"` to render the SDK UI preview chrome. Defaults to `"screenshot"`, which keeps the original lightbox-on-click behavior used elsewhere.  |
+| `aspect`  | **Required** when `variant="component"`. Use `"landscape"` (3:2, 540px wide) for wide previews or `"portrait"` (9:16, 220px wide) for phone-shaped mocks.  |
+| `src`     | **Required**. Path to the light-theme image. Place assets under `/public/static/images/expo-ui/<component>/` and reference them from `/static/images/...`. |
+| `darkSrc` | Optional. Path to the dark-theme image. Rendered via `<picture>` and shown when the user has the dark theme active.                                        |
+| `alt`     | **Required**. Alt text describing the component preview for screen readers.                                                                                |
+
 ### Add video links from Expo's YouTube channel
 
 To reference a video from Expo's YouTube channel, use the `VideoBoxLink` component. This component is imported from `~/ui/components/VideoBoxLink`.
@@ -653,7 +677,7 @@ modificationDate: April 8th, 2024
 ---
 ```
 
-This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](/docs/pages/build-reference/infrastructure.mdx).
+This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](/docs/pages/build-reference/infrastructure.mdx). When updating build image details on that page, update its `modificationDate` in the same change.
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 

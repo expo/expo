@@ -1,4 +1,4 @@
-import type { ExpoObserveModuleType } from './types';
-declare const _default: ExpoObserveModuleType;
-export default _default;
+import type { ObserveModule } from './types';
+declare const Observe: ObserveModule;
+export default Observe;
 //# sourceMappingURL=module.d.ts.map

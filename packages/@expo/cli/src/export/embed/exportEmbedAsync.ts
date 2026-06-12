@@ -10,6 +10,8 @@ import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
@@ -22,6 +24,7 @@ import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompiler
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
+import { replaceMetroFileMap } from '../../start/server/metro/createFileMap-fork';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
@@ -32,7 +35,7 @@ import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
-import { copyPublicFolderAsync } from '../publicFolder';
+import { copyPublicFolderAsync, getPublicFolderPath } from '../publicFolder';
 import type { BundleAssetWithFileHashes, ExportAssetMap } from '../saveAssets';
 import { persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
@@ -89,10 +92,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       // Copy the eager bundleOutput and assets to the new locations.
       await removeAsync(options.bundleOutput);
 
-      copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
+      await copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
 
       if (eagerBundleOptions.options.assetsDest && options.assetsDest) {
-        copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
+        await copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
       }
 
       console.log('info: Copied output to binary:', options.bundleOutput);
@@ -112,13 +115,18 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   ensureProcessExitsAfterDelay();
 }
 
+// Apple platforms (ios/tvos/macos) all build via Xcode and share the same bundle output and
+// error-reporting handling.
+const isApplePlatform = (platform: string): boolean =>
+  platform === 'ios' || platform === 'tvos' || platform === 'macos';
+
 export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
   await removeAsync(options.bundleOutput);
 
   // The iOS bundle is copied in to the Xcode project, so we need to remove the old one
   // to prevent Xcode from loading the old one after a build failure.
-  if (options.platform === 'ios') {
+  if (isApplePlatform(options.platform)) {
     const previousPath = guessCopiedAppleBundlePath(options.bundleOutput);
     if (previousPath && fs.existsSync(previousPath)) {
       debug('Removing previous iOS bundle:', previousPath);
@@ -145,7 +153,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
     // Copy public folder for dom components only if
     hasDomComponents
       ? copyPublicFolderAsync(
-          path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER),
+          getPublicFolderPath(projectRoot),
           path.join(domComponentProxyOutputDir, DOM_COMPONENTS_BUNDLE_DIR)
         )
       : null,
@@ -290,7 +298,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     if (isError(error)) {
       // Log using Xcode error format so the errors are picked up by xcodebuild.
       // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
-      if (options.platform === 'ios') {
+      if (isApplePlatform(options.platform)) {
         // If the error is about to be presented in Xcode, strip the ansi characters from the message.
         if ('message' in error && isExecutingFromXcodebuild()) {
           error.message = stripAnsi(error.message) as string;
@@ -335,7 +343,7 @@ export async function createMetroServerAndBundleRequestAsync(
       exp,
       isExporting: true,
       getMetroBundler() {
-        return server.getBundler().getBundler();
+        return metro.getBundler().getBundler();
       },
     }
   );
@@ -376,11 +384,19 @@ export async function createMetroServerAndBundleRequestAsync(
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
 
-  const server = new Server(config, {
-    watch: false,
-  });
+  const { metro } = await replaceMetroFileMap(() => ({
+    metro: new Server(config, {
+      watch: false,
+    }),
+  }));
 
-  return { server, bundleRequest };
+  // The dev server applies the same patch from `instantiateMetro.ts`;
+  // this is the export-embed / `expo-updates` path, where `data.map`
+  // would otherwise reach Metro's readers in the unwrapped wire shape.
+  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
+  patchMetroSourceMapStringForPackedMaps();
+
+  return { server: metro, bundleRequest };
 }
 
 export async function exportEmbedAssetsAsync(
@@ -421,7 +437,7 @@ export async function exportEmbedAssetsAsync(
     if (isError(error)) {
       // Log using Xcode error format so the errors are picked up by xcodebuild.
       // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
-      if (options.platform === 'ios') {
+      if (isApplePlatform(options.platform)) {
         // If the error is about to be presented in Xcode, strip the ansi characters from the message.
         if ('message' in error && isExecutingFromXcodebuild()) {
           error.message = stripAnsi(error.message) as string;

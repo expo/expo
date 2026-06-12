@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 
-import { buildAndroid, buildIos, tasksAndroid } from './commands';
+import { buildAndroid, buildIos, mangle, tasksAndroid } from './commands';
 import packageJson from '../../package.json';
 
 const program = new Command();
@@ -43,8 +43,23 @@ program
     '-p, --package [package]',
     'package artifacts as a Swift Package (with an optionally specified name)'
   )
+  .option(
+    '--host-provided <frameworks...>',
+    'framework names the host iOS app already provides, these will be stripped from the artifact (e.g. SDWebImage,SDWebImageWebPCoder)'
+  )
   .action(async function (this: Command) {
     await buildIos(this);
+  });
+
+// mangle (internal: invoked by scripts/ios/mangle.rb during pod install)
+program
+  .command('mangle', { hidden: true })
+  .description('Internal: regenerate brownfield mangling xcconfig')
+  .option('--context-json <json>', 'inline JSON describing the mangling context')
+  .option('--context-file <path>', 'path to a JSON file describing the mangling context')
+  .option('--verbose', 'forward all output to the terminal')
+  .action(async function (this: Command) {
+    await mangle(this);
   });
 
 // tasks:android

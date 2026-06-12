@@ -7,23 +7,11 @@ import type { ExpoMetroOptions } from './metroOptions';
 import { createBundleUrlPath } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
 import { toPosixPath } from '../../../utils/filePath';
-import { memoize } from '../../../utils/fn';
 import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export const DOM_COMPONENTS_BUNDLE_DIR = 'www.bundle';
-
-const checkWebViewInstalled = memoize((projectRoot: string) => {
-  const webViewInstalled =
-    resolveFrom.silent(projectRoot, 'react-native-webview') ||
-    resolveFrom.silent(projectRoot, '@expo/dom-webview');
-  if (!webViewInstalled) {
-    throw new Error(
-      `To use DOM Components, you must install the 'react-native-webview' package. Run 'npx expo install react-native-webview' to install it.`
-    );
-  }
-});
 
 type CreateDomComponentsMiddlewareOptions = {
   /** The absolute project root, used to resolve the `expo/dom/entry.js` path */
@@ -52,8 +40,6 @@ export function createDomComponentsMiddleware(
       res.statusMessage = 'Invalid file path: ' + file;
       return res.end();
     }
-
-    checkWebViewInstalled(projectRoot);
 
     // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
     // Generate a unique entry file for the webview.

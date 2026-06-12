@@ -45,22 +45,22 @@ describe.each(['0', '1'])(
 
     it('injects correct scripts', async () => {
       expect(await getScriptTagsAsync('index.html')).toEqual(
-        ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index'].map(
+        ['__expo-metro-runtime', '_layout', 'index', '__common', 'entry'].map(
           expectChunkPathMatching
         )
       );
       expect(await getScriptTagsAsync('modal.html')).toEqual(
-        ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal'].map(
+        ['__expo-metro-runtime', '_layout', 'index', 'modal', '__common', 'entry'].map(
           expectChunkPathMatching
         )
       );
       expect(await getScriptTagsAsync('modal-multi.html')).toEqual(
-        ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal-multi'].map(
+        ['__expo-metro-runtime', '_layout', 'index', 'modal-multi', '__common', 'entry'].map(
           expectChunkPathMatching
         )
       );
       expect(await getScriptTagsAsync('modal-scroll.html')).toEqual(
-        ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal-scroll'].map(
+        ['__expo-metro-runtime', '_layout', 'index', 'modal-scroll', '__common', 'entry'].map(
           expectChunkPathMatching
         )
       );

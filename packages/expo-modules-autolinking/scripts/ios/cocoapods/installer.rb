@@ -19,6 +19,14 @@ module Pod
     def expo_add_modules_to_patch(modules)
       framework_modules_to_patch.concat(modules)
     end
+
+    # Pod names of Expo modules registered by `use_expo_modules!`.
+    # Used at post-install time to reconcile their deployment targets
+    # with ExpoModulesCore's, so an adapter declaring a lower platform
+    # value in its podspec doesn't fail the Swift module-import check.
+    def expo_autolinked_pod_names
+      @expo_autolinked_pod_names ||= []
+    end
   end
 
   class Installer
@@ -50,6 +58,14 @@ module Pod
 
       # Run all precompiled module post-install configuration
       Expo::PrecompiledModules.perform_post_install(self)
+
+      # Raise every autolinked Expo module's deployment target to at least
+      # ExpoModulesCore's. CocoaPods + react_native_post_install only raise
+      # pods to RN's iOS floor, which can leave Expo adapters declaring a
+      # lower platform value below ExpoModulesCore's requirement, leading to
+      # "Compiling for iOS 15.1, but module 'ExpoModulesCore' has a minimum deployment target of iOS 16.4"
+      # type of message
+      reconcile_expo_module_deployment_targets()
     end
 
     define_method(:run_podfile_pre_install_hooks) do
@@ -84,19 +100,86 @@ module Pod
 
     private
 
-    # Creates the stub xcframework for ExpoModulesJSI if it doesn't exist.
-    # CocoaPods only runs prepare_command when a pod is freshly downloaded or
-    # its podspec changes, so CI cache hits skip it. This method runs on every
-    # pod install to guarantee the stub is always present.
+    # See call site in perform_post_install_actions for rationale.
+    # This runs AFTER the user's `post_install` hook, so it will overwrite any
+    # deployment target a consumer set there for an Expo module. That is
+    # intentional — the bumped pod list is logged so the override is visible.
+    def reconcile_expo_module_deployment_targets
+      # Mapping from Pod::Platform symbol to the Xcode build setting key
+      # that stores its deployment target and a human-readable label.
+      deployment_targets = {
+        ios:  { key: 'IPHONEOS_DEPLOYMENT_TARGET', label: 'iOS'   },
+        osx:  { key: 'MACOSX_DEPLOYMENT_TARGET',   label: 'macOS' },
+        tvos: { key: 'TVOS_DEPLOYMENT_TARGET',     label: 'tvOS'  },
+      }
+
+      expo_pod_names = @podfile.expo_autolinked_pod_names.to_set
+      return if expo_pod_names.empty?
+
+      core_target = self.pod_targets.find { |t| t.pod_name == 'ExpoModulesCore' }
+      core_spec = core_target&.root_spec
+      return if core_spec.nil?
+
+      required = deployment_targets
+        .map { |platform, info| [info[:key], { label: info[:label], version: core_spec.deployment_target(platform) }] }
+        .reject { |_, info| info[:version].nil? || info[:version].empty? }
+        .to_h
+      return if required.empty?
+
+      bumped = {} # pod_name => Array of bumped platform labels
+      self.target_installation_results.pod_target_installation_results.each_value do |result|
+        # Keys in pod_target_installation_results are target names, which can
+        # differ from pod names under scoped targets — use pod_name explicitly.
+        pod_name = result.target.pod_name
+        next unless expo_pod_names.include?(pod_name)
+        next if pod_name == 'ExpoModulesCore'
+
+        bumped_platforms = []
+        result.native_target.build_configurations.each do |config|
+          required.each do |key, info|
+            current = config.build_settings[key]
+            # nil means the pod doesn't target this platform — don't create a setting for it.
+            # Empty string or an xcconfig reference (e.g. `$(inherited)`) means we can't
+            # compare versions, so leave it alone.
+            next if current.nil? || current.empty? || current.start_with?('$')
+            next unless Gem::Version.new(current) < Gem::Version.new(info[:version])
+            config.build_settings[key] = info[:version]
+            bumped_platforms << info[:label] unless bumped_platforms.include?(info[:label])
+          end
+        end
+        bumped[pod_name] = bumped_platforms unless bumped_platforms.empty?
+      end
+
+      unless bumped.empty?
+        versions_by_label = required.values.map { |info| [info[:label], info[:version]] }.to_h
+        Pod::UI.puts "[Expo] ".blue + "Raised deployment target for Expo modules matching ExpoModulesCore:".yellow
+        bumped.each do |pod_name, platforms|
+          summary = platforms.map { |label| "#{label}=#{versions_by_label[label]}" }.join(' ')
+          Pod::UI.puts "  #{pod_name} (#{summary})".yellow
+        end
+        self.pods_project.save
+      end
+    end
+
+    # Ensures every slice declared by ExpoModulesJSI's podspec exists in
+    # `Products/ExpoModulesJSI.xcframework`. CocoaPods only runs
+    # prepare_command when a pod is freshly downloaded or its podspec
+    # changes, so CI cache hits skip it. This method runs on every pod
+    # install to guarantee every declared slice is present — an xcframework
+    # with only some slices (e.g. simulator-only after a prior Debug build)
+    # breaks the per-slice copy script CocoaPods generates from Info.plist,
+    # which then leaves XCFrameworkIntermediates empty for the missing slice
+    # and surfaces as `No such module 'ExpoModulesJSI'`.
+    #
+    # The script itself is idempotent and only stamps slices that are
+    # missing, so always invoking it is cheaper than maintaining a separate
+    # completeness check that would have to mirror the script's slice list.
     def ensure_expo_modules_jsi_stub_xcframework
       jsi_target = self.pod_targets.find { |t| t.name == 'ExpoModulesJSI' }
       return if jsi_target.nil?
 
       pod_dir = jsi_target.sandbox.pod_dir('ExpoModulesJSI')
       return unless File.directory?(pod_dir)
-
-      xcframework_path = File.join(pod_dir, 'Products', 'ExpoModulesJSI.xcframework')
-      return if File.directory?(xcframework_path)
 
       system('./scripts/create-stub-xcframework.sh', chdir: pod_dir.to_s)
     end

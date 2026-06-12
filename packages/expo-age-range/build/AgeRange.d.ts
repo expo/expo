@@ -1,4 +1,4 @@
-import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
+import type { AgeRangeRequest, AgeRangeResponse, AgeRangeRegulatoryFeature } from './ExpoAgeRange.types';
 /**
  * Prompts the user to share their age range with the app. Responses may be cached by the OS for future requests.
  * @return A promise that resolves with user's age range response, or rejects with an error.
@@ -10,4 +10,67 @@ import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
  * @platform ios 26.0+
  */
 export declare function requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
+/**
+ * Asks the OS whether age-assurance regulation applies to the current user. Apple
+ * uses this to signal that the account region is covered by a law such as
+ * Utah's or Louisiana's age-assurance requirements, so apps can avoid gating
+ * users in jurisdictions where the rules do not apply.
+ *
+ * - Resolves with `true` only when Apple confirms regulation applies.
+ * - Resolves with `false` when the OS confirms regulation does not apply.
+ * - Resolves with `null` on iOS earlier than 26.2, and on Android and web.
+ *   Treat `null` as "unknown" rather than a definitive `false`.
+ * - Rejects when the request fails — see [AgeRangeService.Error](https://developer.apple.com/documentation/declaredagerange/agerangeservice/error)
+ *   for more information. Treat rejection as "unknown" and fall through to [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions)
+ *   or your own gating logic.
+ *
+ * Recommended pattern: call this first and only prompt the user for their age
+ * range when the result is not `false`. When it is `false`, the user is outside
+ * a regulated jurisdiction and you can skip the age gate entirely.
+ *
+ * @example
+ * ```ts
+ * try {
+ *   const eligible = await isEligibleForAgeFeaturesAsync();
+ *   if (eligible === false) {
+ *     // Regulation does not apply — no age gate needed.
+ *     return;
+ *   }
+ * } catch {
+ *   // Treat errors as "unknown" and fall through to the prompt below or your own gating logic.
+ * }
+ *
+ * const ageRange = await requestAgeRangeAsync({ threshold1: 18 });
+ * ```
+ *
+ * @platform ios 26.2+
+ */
+export declare function isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
+/**
+ * Displays a system-provided interface for people to acknowledge a significant app update.
+ *
+ * Only on iOS 26.4+, this presents an update acknowledgement dialog and resolves once the user confirms it, or rejects with an error.
+ * On unsupported platforms this resolves immediately without showing any UI.
+ *
+ * Call [`getRequiredRegulatoryFeaturesAsync`](#agerangegetrequiredregulatoryfeaturesasync) first to
+ * determine whether the user actually needs to acknowledge a significant change — only invoke
+ * this function when the returned features include `'significantAppChangeRequiresAdultNotification'`.
+ * Doing so avoids prompting users who are not subject to the regulation.
+ *
+ * @param updateDescription A description of the significant update to show to the user.
+ *
+ * @platform ios 26.4+
+ */
+export declare function showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
+/**
+ * Returns the set of regulatory features that the OS reports as required for the current user.
+ *
+ * Use this to discover which age-assurance obligations apply.
+ *
+ * Resolves with `null` on iOS earlier than 26.4 and on Android and web — treat
+ * `null` as "unknown" rather than "no features required".
+ *
+ * @platform ios 26.4+
+ */
+export declare function getRequiredRegulatoryFeaturesAsync(): Promise<AgeRangeRegulatoryFeature[] | null>;
 //# sourceMappingURL=AgeRange.d.ts.map

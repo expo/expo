@@ -50,6 +50,8 @@ object RelationshipLabelMapper {
       is RelationLabel.Sister -> "sister"
       is RelationLabel.Spouse -> "spouse"
       is RelationLabel.Custom -> label.label
+      is RelationLabel.MalformedType -> label.label
+      is RelationLabel.MalformedCustom -> null
     }
   }
 }

@@ -1,5 +1,5 @@
 import type { Ref } from 'react';
-import type { ObservableState } from '../../State/useNativeState';
+import { type ObservableState } from '../../State';
 import type { ViewEvent } from '../../types';
 import type { CommonViewModifierProps } from '../types';
 /**
@@ -101,4 +101,5 @@ export declare namespace TextField {
         children: React.ReactNode;
     }) => import("react/jsx-runtime").JSX.Element;
 }
+export { type ObservableState };
 //# sourceMappingURL=index.d.ts.map

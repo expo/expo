@@ -1,0 +1,1 @@
+{"version":3,"file":"emitTTI.d.ts","sourceRoot":"","sources":["../../../src/integrations/react-navigation/emitTTI.ts"],"names":[],"mappings":"AAEA,wBAAgB,OAAO,CAAC,IAAI,EAAE;IAC5B,SAAS,EAAE,MAAM,CAAC;IAClB,SAAS,EAAE,MAAM,CAAC;IAClB,SAAS,EAAE,MAAM,GAAG,SAAS,CAAC;IAC9B,KAAK,EAAE,MAAM,CAAC;IACd,WAAW,EAAE,MAAM,CAAC;CACrB,GAAG,OAAO,CAAC,IAAI,CAAC,CAUhB"}

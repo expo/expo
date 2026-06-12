@@ -4,37 +4,39 @@ import { ThumbsUpDuotoneIcon } from '@expo/styleguide-icons/duotone/ThumbsUpDuot
 import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
 import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import { reportPageVote } from '~/providers/Analytics';
 import { CALLOUT } from '~/ui/components/Text';
 
 export const PageVote = () => {
+  const intl = useIntl();
   const [userVoted, setUserVoted] = useState(false);
 
   return (
     <div
       className={mergeClasses(
-        'mb-4 flex min-h-[32px] items-center',
+        'mb-4 flex min-h-8 items-center',
         userVoted ? 'content-start' : 'content-center',
-        'max-md-gutters:mx-auto max-md-gutters:mb-8 max-md-gutters:justify-center'
+        'max-md:mx-auto max-md:mb-8 max-md:justify-center'
       )}>
       {userVoted ? (
-        <CALLOUT theme="secondary">Thank you for your vote! 💙</CALLOUT>
+        <CALLOUT theme="secondary">{intl.formatMessage({ id: 'footerThankYouForVote' })}</CALLOUT>
       ) : (
-        <div className="max-md-gutters:flex-col flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-2 max-md:flex-col">
           <CALLOUT theme="secondary" weight="medium">
-            Was this doc helpful?
+            {intl.formatMessage({ id: 'footerWasHelpful' })}
           </CALLOUT>
           <div>
             <Button
               theme="secondary"
               size="xs"
               aria-label="Vote up"
-              className="group mx-1 min-w-[40px] text-center"
+              className="group mx-1 min-w-10 text-center"
               leftSlot={
                 <>
                   <ThumbsUpIcon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                  <ThumbsUpDuotoneIcon className="icon-sm text-icon-success hidden group-hover:flex group-focus-visible:flex" />
+                  <ThumbsUpDuotoneIcon className="hidden icon-sm text-icon-success group-hover:flex group-focus-visible:flex" />
                 </>
               }
               onClick={() => {
@@ -46,11 +48,11 @@ export const PageVote = () => {
               theme="secondary"
               size="xs"
               aria-label="Vote down"
-              className="group mx-1 min-w-[40px] text-center"
+              className="group mx-1 min-w-10 text-center"
               leftSlot={
                 <>
                   <ThumbsDownIcon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                  <ThumbsDownDuotoneIcon className="icon-sm text-icon-danger hidden group-hover:flex group-focus-visible:flex" />
+                  <ThumbsDownDuotoneIcon className="hidden icon-sm text-icon-danger group-hover:flex group-focus-visible:flex" />
                 </>
               }
               onClick={() => {

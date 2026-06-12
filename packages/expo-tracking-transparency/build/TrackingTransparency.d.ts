@@ -1,4 +1,4 @@
-import { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions } from 'expo';
 /**
  * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
  * frequency capping, attribution, conversion events, estimating the number of unique users,
@@ -25,7 +25,8 @@ import { type PermissionResponse, PermissionStatus, type PermissionExpiration, t
  * advertising identifier.
  *
  * @return Returns either a UUID `string` or `null`. It returns null in the following cases:
- * - On Android, when `isLimitAdTrackingEnabled()` is `true`
+ * - On Android, when the system's [Limit Ad Tracking setting](https://support.google.com/googleplay/android-developer/answer/6048248)
+ * is enabled (the app user has opted out of ad personalization)
  * - In the iOS simulator, regardless of any settings
  * - On iOS if you haven't received permission using [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync)
  * - On iOS, if you've requested permission and the user declines
@@ -34,7 +35,7 @@ import { type PermissionResponse, PermissionStatus, type PermissionExpiration, t
  *
  * @example
  * ```ts
- * TrackingTransparency.getAdvertisingId();
+ * ExpoTrackingTransparency.getAdvertisingId();
  * // "E9228286-4C4E-4789-9D95-15827DCB291B"
  * ```
  */
@@ -48,7 +49,7 @@ export declare function getAdvertisingId(): string | null;
  * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
  * reinstalls the app on the device.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, this method always returns that the permission was granted.
  * @example
  * ```typescript
  * const { granted } = await requestTrackingPermissionsAsync();
@@ -63,7 +64,7 @@ export declare function requestTrackingPermissionsAsync(): Promise<PermissionRes
  * Checks whether or not the user has authorized the app to access app-related data that can be used
  * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, this method always returns that the permission was granted.
  *
  * @example
  * ```typescript
@@ -84,7 +85,7 @@ export declare function getTrackingPermissionsAsync(): Promise<PermissionRespons
  * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
  * reinstalls the app on the device.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, this method always returns that the permission was granted.
  * @example
  * ```ts
  * const [status, requestPermission] = useTrackingPermissions();

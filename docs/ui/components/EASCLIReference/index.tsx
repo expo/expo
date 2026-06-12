@@ -1,5 +1,7 @@
+import { type ReactNode } from 'react';
+
 import { Terminal } from '~/ui/components/Snippet';
-import { CODE, H3, H4, LI, P, UL } from '~/ui/components/Text';
+import { CODE, H3, LI, P, UL } from '~/ui/components/Text';
 
 import easCliData from './data/eas-cli-commands.json';
 import {
@@ -24,6 +26,12 @@ type CommandData = {
 type EasCliReferenceData = {
   commands: CommandData[];
 };
+
+const SubsectionLabel = ({ children }: { children: ReactNode }) => (
+  <p className="mt-0 mb-2 text-base leading-relaxed font-semibold tracking-[-0.011rem]">
+    {children}
+  </p>
+);
 
 const ListSection = ({ entries }: { entries: ListEntry[] }) => {
   if (entries.length === 0) {
@@ -73,49 +81,45 @@ const CommandSection = ({ command }: { command: CommandData }) => {
   const flagsList = sections.flags ? parseListEntries(sections.flags) : [];
 
   return (
-    <section className="border-secondary border-b pb-8 last:border-0 last:pb-0">
-      <H3 id={slug} className="translate-y-[2px] self-center">
-        <CODE className="font-mono text-[inherit]">{command.command}</CODE>
+    <section className="border-b border-secondary pb-8 last:border-0 last:pb-0">
+      <H3 id={slug} className="translate-y-0.5 self-center">
+        <CODE className="font-mono text-inherit">{command.command}</CODE>
       </H3>
       <P className="mt-2 mb-5">{renderInlineContent(description)}</P>
 
       {sections.usage && (
         <div className="mb-6">
-          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">Usage</H4>
+          <SubsectionLabel>Usage</SubsectionLabel>
           <Terminal cmd={toTerminalLines(sections.usage)} />
         </div>
       )}
 
       {argumentsList.length > 0 && (
         <div className="mb-6">
-          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">
-            {argumentsList.length === 1 ? 'Argument' : 'Arguments'}
-          </H4>
+          <SubsectionLabel>{argumentsList.length === 1 ? 'Argument' : 'Arguments'}</SubsectionLabel>
           <ListSection entries={argumentsList} />
         </div>
       )}
 
       {flagsList.length > 0 && (
         <div className="mb-6">
-          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">
-            {flagsList.length === 1 ? 'Flag' : 'Flags'}
-          </H4>
+          <SubsectionLabel>{flagsList.length === 1 ? 'Flag' : 'Flags'}</SubsectionLabel>
           <ListSection entries={flagsList} />
         </div>
       )}
 
       {sections.aliases && (
         <div className="mb-6">
-          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">
+          <SubsectionLabel>
             {countNonEmptyLines(sections.aliases) === 1 ? 'Alias' : 'Aliases'}
-          </H4>
+          </SubsectionLabel>
           <Terminal cmd={toTerminalLines(sections.aliases)} />
         </div>
       )}
 
       {sections.examples && (
         <div className="mb-4">
-          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">Examples</H4>
+          <SubsectionLabel>Examples</SubsectionLabel>
           <Terminal cmd={toTerminalLines(sections.examples)} />
         </div>
       )}

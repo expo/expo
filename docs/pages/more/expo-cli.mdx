@@ -53,7 +53,7 @@ Expo CLI is included in the `expo` package. You can install it with npm or yarn:
 
 <Terminal cmd={['$ yarn add expo']} />
 
-> Projects that are not using [Expo Prebuild](#prebuild) (also referred to as _Bare projects_) will need to perform additional setup to ensure all custom Expo bundling features work: [Metro: Bare workflow setup](/versions/latest/config/metro#bare-workflow-setup).
+> Projects that are not using [Expo Prebuild](#prebuild) will need to perform additional setup to ensure all custom Expo bundling features work: [Metro: Bare workflow setup](/versions/latest/config/metro/#existing-react-native-apps).
 
 ## Develop
 
@@ -153,6 +153,88 @@ When you start the development server in a project for the first time, a **.expo
 - **settings.json**: Contains information about server configuration that is used to serve the project's manifest.
 
 Both of these files have information that is specific to your local computer. This is the reason why **.expo** directory is included in the **.gitignore** file, by default, when a new project is created. It is not meant to be shared with other developers.
+
+### Open endpoint
+
+The dev server exposes `/_expo/open` so external tools, such as cloud agents, remote preview services, CI scripts, can introspect the deep links the CLI would use, and optionally trigger the same action as pressing <kbd>I</kbd> / <kbd>A</kbd> / <kbd>W</kbd> in the **Terminal UI**. It supplements the legacy `/_expo/link` endpoint, which returns a `307` redirect to a deep link scheme that non-mobile clients can't follow.
+
+| Method | Effect                                                                                                                                                    |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET`  | Dry run: returns the deep link as JSON. Safe to call across tunnels.                                                                                      |
+| `POST` | Opens the project locally — equivalent to pressing <kbd>I</kbd> / <kbd>A</kbd> / <kbd>W</kbd> in the **Terminal UI**. Restricted to same-origin requests. |
+
+#### Query params
+
+- `platform` (or `expo-platform` header): `ios`, `android`, or `web`. Omit on `GET` for a discovery response that lists every platform.
+- `runtime`: choose how the URL is resolved.
+  - `default` (omitted): mirrors what pressing <kbd>I</kbd> / <kbd>A</kbd> does. It picks the dev client when the server was started with `--dev-client`, falls back to a disambiguation page when the project has both Expo Go and a development build, otherwise opens Expo Go.
+  - `expo`: force the Expo Go deep link (`exp://…`).
+  - `custom`: force the development-build deep link (`<scheme>://expo-development-client/?url=…`).
+  - `unknown`: force the disambiguation `/_expo/loading` page, letting the device decide between Expo Go and the dev build.
+
+The endpoint reflects mid-run state changes — pressing <kbd>S</kbd> to toggle between Expo Go and the dev client, or installing `expo-dev-client` while the server is running, both show up on the next request.
+
+#### GET response
+
+For a specific platform:
+
+```json
+{
+  "runtime": "expo",
+  "url": "exp://192.168.1.71:8081",
+  "scheme": "myapp",
+  "availableRuntimes": ["expo", "custom"],
+  "appId": "com.example.app"
+}
+```
+
+- `runtime`: the resolved runtime (`expo`, `custom`, or `web`). Omitted when `url` is the disambiguation page; the device determines the eventual runtime.
+- `url`: the deep link (or disambiguation page URL for `runtime: 'unknown'` and the `default`-with-both-runtimes case). Routes through the ngrok host when `--tunnel` is active.
+- `scheme`: the project's URL scheme used for development-build deep links, or `null` when none is configured.
+- `availableRuntimes`: `['expo']`, `['custom']`, or `['expo', 'custom']`. When `.length > 1`, the caller should either pick a runtime explicitly or let the device disambiguate.
+- `appId`: the iOS bundle identifier or Android package name resolved from the project config (or native files). `null` for web, or when the project hasn't set `ios.bundleIdentifier` / `android.package`. Useful for verifying a build is installed on a remote device before opening the deep link.
+
+Without `platform`, the response is keyed by platform for discovery:
+
+```json
+{
+  "scheme": "myapp",
+  "availableRuntimes": ["expo", "custom"],
+  "platforms": {
+    "ios": {
+      "url": "http://192.168.1.71:8081/_expo/loading?platform=ios",
+      "appId": "com.example.app"
+    },
+    "android": {
+      "url": "http://192.168.1.71:8081/_expo/loading?platform=android",
+      "appId": "com.example.app"
+    },
+    "web": { "runtime": "web", "url": "http://192.168.1.71:8081", "appId": null }
+  }
+}
+```
+
+#### POST behavior
+
+`POST /_expo/open?platform=ios` opens the project locally on the requested platform (`ios` → iOS Simulator, `android` → Android emulator, `web` → desktop browser). Responses:
+
+- `200`: `{ "platform", "runtime", "url" }` describing what was opened.
+- `403`: cross-origin POST. The body's `error` explains the host mismatch and points at `GET /_expo/open` as the safe alternative.
+- `501`: host can't launch the requested platform (for example, `platform=ios` on Linux/Windows). The response carries a `details` field explaining why and suggesting the GET-then-launch-remotely workflow.
+- `500`: `openPlatformAsync` threw. The body forwards the underlying error code and message.
+
+#### Examples
+
+```sh
+# Get the deep link for iOS (works over a tunnel, no Expo Go install required).
+curl http://localhost:8081/_expo/open?platform=ios
+
+# Force the disambiguation page so a device or external picker chooses.
+curl 'http://localhost:8081/_expo/open?platform=android&runtime=unknown'
+
+# Trigger an iOS Simulator launch (only works on the dev server's host).
+curl -X POST http://localhost:8081/_expo/open?platform=ios
+```
 
 ## Building
 
@@ -519,10 +601,10 @@ Sometimes you may want to customize a project file that would otherwise be gener
 
 From here, you can choose to generate basic project files like:
 
-- **babel.config.js** -- The Babel configuration. This is required to be present if you plan to use tooling other than Expo CLI to bundle your project.
-- **webpack.config.js** -- The default webpack config for web development.
-- **metro.config.js** -- The default Metro config for universal development. This is required for usage with `npx react-native`.
-- **tsconfig.json** -- Create a TypeScript config file and install the required dependencies.
+- **babel.config.js** — The Babel configuration. This is required to be present if you plan to use tooling other than Expo CLI to bundle your project.
+- **webpack.config.js** — The default webpack config for web development.
+- **metro.config.js** — The default Metro config for universal development. This is required for usage with `npx react-native`.
+- **tsconfig.json** — Create a TypeScript config file and install the required dependencies.
 
 ## Environment variables
 
@@ -541,7 +623,7 @@ From here, you can choose to generate basic project files like:
 | `EXPO_NO_GIT_STATUS`                 | **boolean** | Skips warning about git status during potentially dangerous actions like `npx expo prebuild --clean`.                                                                                                                                                                                                                                                                                                                           |
 | `EXPO_NO_REDIRECT_PAGE`              | **boolean** | Disables the redirect page for selecting an app, that shows when a user has `expo-dev-client` installed, and starts the project with `npx expo start` instead of `npx expo start --dev-client`.                                                                                                                                                                                                                                 |
 | `EXPO_PUBLIC_FOLDER`                 | **string**  | Public directory path to use with Metro for web. [Learn more about customizing Metro](/guides/customizing-metro/).<br/>Default: `public`                                                                                                                                                                                                                                                                                        |
-| `EDITOR`                             | **string**  | Name of the editor to open when pressing <kbd>O</kbd> in the Terminal UI. This value is used across many command line tools.                                                                                                                                                                                                                                                                                                    |
+| `EDITOR`                             | **string**  | Name of the editor to open when pressing <kbd>O</kbd> in the Terminal UI. This value is used across many command-line tools.                                                                                                                                                                                                                                                                                                    |
 | `EXPO_EDITOR`                        | **string**  | An Expo-specific version of the `EDITOR` variable which takes higher priority when defined.                                                                                                                                                                                                                                                                                                                                     |
 | `EXPO_IMAGE_UTILS_NO_SHARP`          | **boolean** | Disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.                                                                                                                                                                                                                                        |
 | `EXPO_TUNNEL_SUBDOMAIN`              | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /></div>Disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`. |
