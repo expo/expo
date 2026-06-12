@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix a crash on reload (`EXC_BAD_ACCESS` in `ModuleHolder.deinit` → ExpoModulesJSI) when the previous `AppContext` was deallocated before the old runtime finished tearing down. ([#TBD](https://github.com/expo/expo/pull/TBD) by [@HaiyiMei](https://github.com/HaiyiMei))
+- [iOS] Fix a crash on reload (`EXC_BAD_ACCESS` in `ModuleHolder.deinit` → ExpoModulesJSI) when the previous `AppContext` was deallocated before the old runtime finished tearing down. ([#46853](https://github.com/expo/expo/pull/46853) by [@HaiyiMei](https://github.com/HaiyiMei))
 - Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))
 - Fix iOS build against React Native 0.87+ by dropping the legacy architecture (bridge) `RCTRootViewFactoryConfiguration` setup. ([#46641](https://github.com/expo/expo/pull/46641) by [@zoontek](https://github.com/zoontek))
 - Include JavaScript and React component stacks in web dev server error logs. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
