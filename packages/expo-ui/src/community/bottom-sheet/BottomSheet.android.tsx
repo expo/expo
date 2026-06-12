@@ -118,18 +118,6 @@ export function BottomSheet(props: BottomSheetProps) {
     }
   }, [clampIndex, indexProp, fireCloseCallbacks]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const targetIndex = pendingIndexRef.current ?? 0;
-    if (hasMultipleSnapPoints && targetIndex === maxIndex) {
-      sheetRef.current?.expand();
-    } else if (hasMultipleSnapPoints) {
-      sheetRef.current?.partialExpand();
-    }
-    pendingIndexRef.current = null;
-  }, [hasMultipleSnapPoints, isOpen, maxIndex]);
-
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
     fireCloseCallbacks();
@@ -202,6 +190,7 @@ export function BottomSheet(props: BottomSheetProps) {
             ref={sheetRef}
             onDismissRequest={handleDismiss}
             skipPartiallyExpanded={skipPartially}
+            initialFullyExpanded={hasMultipleSnapPoints && pendingIndexRef.current === maxIndex}
             showDragHandle={handleComponent !== null}
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}
