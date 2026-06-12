@@ -14,7 +14,6 @@ import expo.modules.appmetrics.storage.JsDebugSession
 import expo.modules.appmetrics.storage.JsLogRecord
 import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.LogRecord
-import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.storage.SessionMetricInput
 import expo.modules.appmetrics.storage.SessionSharedObject
@@ -209,7 +208,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           observer.setFilter(filter)
         }
       }
-      
+
       Class("Session", SessionSharedObject::class) {
         // TODO(@ubax): Allow for user session creation from JS
         Constructor { ->
