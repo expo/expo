@@ -71,8 +71,13 @@ async function openSimulatorAppAsync(device: { udid?: string }) {
     }
     await spawnAsync('open', args);
   } catch {
-    // Device Hub does not allow us to focus to the right device
-    await spawnAsync('open', ['-a', 'DeviceHub']).catch(() => {
+    // Xcode 27+ replaces Simulator.app with DeviceHub, so `open -a Simulator` fails.
+    // DeviceHub registers the `devices://` URL scheme, which lets us focus the right
+    // device by its UDID — `open -a DeviceHub` can only bring the app forward.
+    const deviceHubArgs = device.udid
+      ? [`devices://device/open?id=${device.udid}`]
+      : ['-a', 'DeviceHub'];
+    await spawnAsync('open', deviceHubArgs).catch(() => {
       // Noop - we can't do much more here
     });
   }

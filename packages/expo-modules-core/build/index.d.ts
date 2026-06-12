@@ -17,6 +17,7 @@ export * from './PermissionsInterface';
 export * from './PermissionsHook';
 export * from './Refs';
 export * from './hooks/useReleasingSharedObject';
+export * from './hooks/useReleasingSharedObjectWithLifecycle';
 export * from './reload';
 export { CodedError } from './errors/CodedError';
 export { UnavailabilityError } from './errors/UnavailabilityError';

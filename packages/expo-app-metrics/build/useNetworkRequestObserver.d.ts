@@ -1,5 +1,11 @@
-import type { NetworkRequestCompletedEvent, NetworkRequestObserver, NetworkRequestStartedEvent } from './types';
+import type { NetworkRequestCompletedEvent, NetworkRequestFilter, NetworkRequestObserver, NetworkRequestStartedEvent } from './types';
 export type UseNetworkRequestObserverOptions = {
+    /**
+     * Restricts which requests fire events. Applied natively so non-matching requests never cross
+     * into JS. Omit to observe every request. Updating it re-applies the filter on the existing
+     * observer without dropping subscriptions.
+     */
+    filter?: NetworkRequestFilter | null;
     /**
      * Called when a request begins. Fired before any response or timing data exists; correlate
      * with the matching `onCompleted` call via the shared `id`.

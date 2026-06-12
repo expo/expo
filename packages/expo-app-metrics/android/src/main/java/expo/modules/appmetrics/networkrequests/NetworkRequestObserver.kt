@@ -5,6 +5,7 @@ package expo.modules.appmetrics.networkrequests
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import java.util.concurrent.atomic.AtomicReference
 
 /** Event names emitted by `NetworkRequestObserver`, matching the keys in the JS `NetworkRequestObserverEvents` type. */
 internal const val REQUEST_STARTED_EVENT = "requestStarted"
@@ -19,9 +20,14 @@ internal const val REQUEST_COMPLETED_EVENT = "requestCompleted"
  * The class only forwards events — it doesn't store request history. Use
  * `NetworkRequestMonitor.shared.recent` for that.
  */
-class NetworkRequestObserver(appContext: AppContext) :
+class NetworkRequestObserver(appContext: AppContext, filter: NetworkRequestFilter? = null) :
   SharedObject(appContext),
   NetworkRequestObserverDelegate {
+
+  // The active filter, or null to observe every request. An `AtomicReference` so the read from the
+  // monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
+  // `setFilter` call never leaves a request observed under a half-applied filter.
+  private val filter = AtomicReference(filter)
 
   init {
     NetworkRequestMonitor.shared.addDelegate(this)
@@ -30,6 +36,17 @@ class NetworkRequestObserver(appContext: AppContext) :
   override fun sharedObjectDidRelease() {
     NetworkRequestMonitor.shared.removeDelegate(this)
     super.sharedObjectDidRelease()
+  }
+
+  /**
+   * Replaces the active filter. Pass null to observe every request. The swap is atomic.
+   */
+  fun setFilter(filter: NetworkRequestFilter?) {
+    this.filter.set(filter)
+  }
+
+  override fun shouldObserveRequest(url: String, method: String): Boolean {
+    return filter.get()?.matches(url, method) ?: true
   }
 
   override fun onNetworkRequestStarted(request: NetworkRequestStarted) {

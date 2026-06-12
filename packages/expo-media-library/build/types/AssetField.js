@@ -6,5 +6,6 @@ export var AssetField;
     AssetField["WIDTH"] = "width";
     AssetField["HEIGHT"] = "height";
     AssetField["DURATION"] = "duration";
+    AssetField["IS_FAVORITE"] = "isFavorite";
 })(AssetField || (AssetField = {}));
 //# sourceMappingURL=AssetField.js.map

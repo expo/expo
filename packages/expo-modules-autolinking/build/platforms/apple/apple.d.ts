@@ -12,6 +12,11 @@ export declare function resolveModuleAsync(packageName: string, revision: Packag
 export declare function resolveExtraBuildDependenciesAsync(projectNativeRoot: string): Promise<ExtraDependencies | null>;
 interface GenerateModulesProviderParams {
     watchedDirectories: string[];
+    inlineModulesTargets: {
+        mainTarget?: string;
+        targets: string[];
+    };
+    targetPath: string;
     appRoot: string;
 }
 /**

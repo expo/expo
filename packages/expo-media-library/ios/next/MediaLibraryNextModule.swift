@@ -140,11 +140,11 @@ public final class MediaLibraryNextModule: Module {
         return Query(assetMapper: assetMapper)
       }
 
-      Function("eq") { (this: Query, assetField: AssetField, value: Either<MediaTypeNext, Int>) in
+      Function("eq") { (this: Query, assetField: AssetField, value: EitherOfThree<MediaTypeNext, Int, Bool>) in
         try this.eq(assetField, value)
       }
 
-      Function("within") { (this: Query, assetField: AssetField, values: Either<[MediaTypeNext], [Int]>) in
+      Function("within") { (this: Query, assetField: AssetField, values: EitherOfThree<[MediaTypeNext], [Int], [Bool]>) in
         try this.within(assetField, values)
       }
 

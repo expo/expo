@@ -48,8 +48,8 @@ export function initListeners(
 
   const unsubscribeFocus = navigationEvents.addListener('pageFocused', async (e) => {
     // Snapshot both clocks once so every metric written below is stamped with
-    // the moment the focus event fired, not the moment `addCustomMetricToSession`
-    // happens to run after the awaited `getMainSession()` round-trip.
+    // the moment the focus event fired, not the moment `addMetric` happens to run
+    // after the surrounding async work.
     const now = performance.now();
     const timestamp = new Date().toISOString();
 
@@ -101,7 +101,7 @@ export function initListeners(
     }
 
     // All async work happens after storage is updated.
-    const mainSessionId = (await AppMetrics.getMainSession())?.id;
+    const mainSessionId = AppMetrics.getMainSession()?.id;
     if (!mainSessionId) return;
 
     AppMetrics.addCustomMetricToSession({
