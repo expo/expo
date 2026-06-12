@@ -2087,7 +2087,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNGestureHandler (2.31.2):
+  - RNGestureHandler (2.32.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2424,7 +2424,7 @@ DEPENDENCIES:
   - "ReactCommon/turbomodule/core (from `../../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/ReactCommon`)"
   - "ReactNativeDependencies (from `../../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)"
   - "RNCMaskedView (from `../../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0-rc.3_@babel+core@7.29.0_b287539fe49ed5c16e1f5a35b43cdf77/node_modules/@react-native-masked-view/masked-view`)"
-  - "RNGestureHandler (from `../../../../node_modules/.pnpm/react-native-gesture-handler@2.31.2_patch_hash=e8fb2a67f1fa221dc758c27292b3ee21ed737178_ae4bd3b9eacd55f76fcbeda380f2c6c2/node_modules/react-native-gesture-handler`)"
+  - "RNGestureHandler (from `../../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-_ca887e9234b849eb7759534fc37b34b6/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../../node_modules/.pnpm/react-native-reanimated@4.3.1_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_63efc6dcd9f06abe16d862207d24882e/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../../node_modules/.pnpm/react-native-screens@4.25.2_react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+j_1caf6d0de913e20dc62f3784cee8a325/node_modules/react-native-screens`)"
   - "RNWorklets (from `../../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_14c70bd0e88f024ff3028384c1d4acce/node_modules/react-native-worklets`)"
@@ -2647,7 +2647,7 @@ EXTERNAL SOURCES:
   RNCMaskedView:
     :path: "../../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0-rc.3_@babel+core@7.29.0_b287539fe49ed5c16e1f5a35b43cdf77/node_modules/@react-native-masked-view/masked-view"
   RNGestureHandler:
-    :path: "../../../../node_modules/.pnpm/react-native-gesture-handler@2.31.2_patch_hash=e8fb2a67f1fa221dc758c27292b3ee21ed737178_ae4bd3b9eacd55f76fcbeda380f2c6c2/node_modules/react-native-gesture-handler"
+    :path: "../../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-_ca887e9234b849eb7759534fc37b34b6/node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../../node_modules/.pnpm/react-native-reanimated@4.3.1_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_63efc6dcd9f06abe16d862207d24882e/node_modules/react-native-reanimated"
   RNScreens:
@@ -2675,9 +2675,9 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
   ExpoLinking: 82458b046854a5802092a37a5228a8a228f928a4
   ExpoLogBox: 7aa03244fe5eeced5129e4ec7ad5bd9a3994378e
-  ExpoModulesCore: 282743e45a8da9844fac713bdb14427d584b6d6e
+  ExpoModulesCore: 7ee5c9715b287b20ec9caa7f2577007597adf25a
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
-  ExpoModulesWorklets: c755176116ae553ede2268ca6837c31eb4081f8a
+  ExpoModulesWorklets: 874ceeb92a8da1dfa32adf197aa65f926e74b9c5
   ExpoModulesWorkletsAdapter: d39cf2fa668e1f8940cc0c65ef7c4e8566df2872
   ExpoRouter: 06524ed53f9833aabf49053a119bcc92c1442098
   ExpoSymbols: b3c964ddc1f1c8d8ddb0eeb830e3a8e42b77ed2d
@@ -2763,7 +2763,7 @@ SPEC CHECKSUMS:
   ReactCommon: 99c616c9c4ab3119765aef7b190ee1fd850f29e7
   ReactNativeDependencies: 433d597bb42b6198313fcee60a265d749e19468e
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
-  RNGestureHandler: 12ed45d9c6f0dada7bf9d1023769ad388fe7115d
+  RNGestureHandler: 92172e79df6e88e0e93b6341f9dcd8b5a02746ba
   RNReanimated: ee39e47dd4a63a6258b0e43526018bdbff00eb45
   RNScreens: 991cc417cd396602a6cf59a42139e5a9d91462a9
   RNWorklets: f8235564bb41484c62ddab7157139121f812f7ba

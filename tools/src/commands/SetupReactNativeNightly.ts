@@ -54,7 +54,6 @@ async function main() {
   const patches = [
     'datetimepicker.patch',
     'lottie-react-native.patch',
-    'react-native-gesture-handler.patch',
     'react-native-pager-view.patch',
     'react-native-screens.patch',
     'react-native-reanimated.patch',
