@@ -11,19 +11,13 @@ public struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sen
 
   public static let category: Metric.Category? = .frameRate
 
-  /**
-   Threshold in seconds to recognize a frame as slow.
-   */
+  /// Threshold in seconds to recognize a frame as slow.
   private static let slowFrameThreshold: TimeInterval = 0.017
 
-  /**
-   Threshold in seconds to recognize a frame as frozen.
-   */
+  /// Threshold in seconds to recognize a frame as frozen.
   private static let frozenFrameThreshold: TimeInterval = 0.7
 
-  /**
-   Threshold below which a frame is still considered as valid, i.e. rendered in time.
-   */
+  /// Threshold below which a frame is still considered as valid, i.e. rendered in time.
   static let refreshRateDurationThreshold: TimeInterval = 0.001
 
   let renderedFrames: UInt
@@ -34,9 +28,7 @@ public struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sen
   let freezeTime: TimeInterval
   let sessionDuration: TimeInterval
 
-  /**
-   Frozen frames divided by the number of rendered frames.
-   */
+  /// Frozen frames divided by the number of rendered frames.
   var frozenFramesRatio: Double {
     guard renderedFrames > 0 else {
       return 0.0
@@ -44,9 +36,7 @@ public struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sen
     return Double(frozenFrames) / Double(renderedFrames)
   }
 
-  /**
-   Slow frames divided by the number of rendered frames.
-   */
+  /// Slow frames divided by the number of rendered frames.
   var slowFramesRatio: Double {
     guard renderedFrames > 0 else {
       return 0.0
@@ -54,9 +44,7 @@ public struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sen
     return Double(slowFrames) / Double(renderedFrames)
   }
 
-  /**
-   Dropped frames divided by expected frames.
-   */
+  /// Dropped frames divided by expected frames.
   var droppedFramesRatio: Double {
     guard expectedFrames > 0 else {
       return 0.0
@@ -66,14 +54,14 @@ public struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sen
 
   public var description: String {
     return """
-FrameRateMetrics {
-  \(expectedFrames) expected,
-  \(renderedFrames) rendered,
-  \(droppedFrames) dropped,
-  \(slowFrames) slow,
-  \(frozenFrames) frozen
-}
-"""
+      FrameRateMetrics {
+        \(expectedFrames) expected,
+        \(renderedFrames) rendered,
+        \(droppedFrames) dropped,
+        \(slowFrames) slow,
+        \(frozenFrames) frozen
+      }
+      """
   }
 
   // MARK: - Encodable
@@ -103,7 +91,8 @@ FrameRateMetrics {
   }
 
   static func metrics(frameDuration: TimeInterval, targetDuration: TimeInterval) -> FrameRateMetrics {
-    let expectedFrames, droppedFrames: UInt
+    let expectedFrames: UInt
+    let droppedFrames: UInt
 
     if frameDuration > (targetDuration + refreshRateDurationThreshold) {
       expectedFrames = UInt(round(frameDuration / targetDuration))

@@ -14,7 +14,9 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     }
   }
 
-  public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+  public func application(
+    _ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
     AppMetrics.mainSession.appStartupMonitor.markDidFinishLaunching()
     return true
   }

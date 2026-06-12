@@ -1,6 +1,6 @@
-import Foundation
-import ExpoModulesCore
 import EXUpdatesInterface
+import ExpoModulesCore
+import Foundation
 
 internal let logger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
@@ -161,9 +161,10 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
   }
 
-  public func updatesStateDidChange(_ event: [String : Any]) {
+  public func updatesStateDidChange(_ event: [String: Any]) {
     if UpdatesStateEvent.fromDict(event)?.type ?? .restart == .downloadCompleteWithUpdate,
-      let metric = AppMetrics.mainSession.updatesMonitor.downloadTimeMetric(subscription) {
+      let metric = AppMetrics.mainSession.updatesMonitor.downloadTimeMetric(subscription)
+    {
       Task { @AppMetricsActor in
         AppMetrics.mainSession.updatesMonitor.reportMetric(metric)
       }

@@ -315,7 +315,7 @@ struct MetricsDatabaseTests {
       try database.insertAll(metrics: [
         makeMetricRow(sessionId: "s", name: "a"),
         makeMetricRow(sessionId: "s", name: "b"),
-        makeMetricRow(sessionId: "s", name: "c")
+        makeMetricRow(sessionId: "s", name: "c"),
       ])
 
       let rows = try database.getMetrics(sessionId: "s")
@@ -337,16 +337,17 @@ struct MetricsDatabaseTests {
   func `getMetrics returns rows in insertion order with full payload`() throws {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "s"))
-      try database.insert(metric: makeMetricRow(
-        sessionId: "s",
-        timestamp: "2026-05-07T12:00:00Z",
-        category: "frameRate",
-        name: "slowFrames",
-        value: 1.5,
-        routeName: "/home",
-        updateId: "update-1",
-        params: "{\"k\":1}"
-      ))
+      try database.insert(
+        metric: makeMetricRow(
+          sessionId: "s",
+          timestamp: "2026-05-07T12:00:00Z",
+          category: "frameRate",
+          name: "slowFrames",
+          value: 1.5,
+          routeName: "/home",
+          updateId: "update-1",
+          params: "{\"k\":1}"
+        ))
 
       let row = try #require(try database.getMetrics(sessionId: "s").first)
       #expect(row.id != nil)
@@ -370,7 +371,7 @@ struct MetricsDatabaseTests {
         try database.insertAll(metrics: [
           makeMetricRow(sessionId: "real", name: "first"),
           makeMetricRow(sessionId: "missing-session", name: "orphan"),
-          makeMetricRow(sessionId: "real", name: "third")
+          makeMetricRow(sessionId: "real", name: "third"),
         ])
       }
 
@@ -411,7 +412,7 @@ struct MetricsDatabaseTests {
       try database.insert(session: makeSessionRow(id: "s"))
       try database.insertAll(logs: [
         makeLogRow(sessionId: "s", name: "a"),
-        makeLogRow(sessionId: "s", name: "b")
+        makeLogRow(sessionId: "s", name: "b"),
       ])
 
       let rows = try database.getLogs(sessionId: "s")
@@ -423,15 +424,16 @@ struct MetricsDatabaseTests {
   func `getLogs returns rows with full payload`() throws {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "s"))
-      try database.insert(log: makeLogRow(
-        sessionId: "s",
-        timestamp: "2026-05-07T12:00:00Z",
-        severity: "error",
-        name: "boom",
-        body: "something exploded",
-        attributes: "{\"key\":\"value\"}",
-        droppedAttributesCount: 3
-      ))
+      try database.insert(
+        log: makeLogRow(
+          sessionId: "s",
+          timestamp: "2026-05-07T12:00:00Z",
+          severity: "error",
+          name: "boom",
+          body: "something exploded",
+          attributes: "{\"key\":\"value\"}",
+          droppedAttributesCount: 3
+        ))
 
       let row = try #require(try database.getLogs(sessionId: "s").first)
       #expect(row.id != nil)
@@ -454,7 +456,7 @@ struct MetricsDatabaseTests {
         try database.insertAll(logs: [
           makeLogRow(sessionId: "real", name: "first"),
           makeLogRow(sessionId: "missing-session", name: "orphan"),
-          makeLogRow(sessionId: "real", name: "third")
+          makeLogRow(sessionId: "real", name: "third"),
         ])
       }
 
@@ -563,11 +565,9 @@ struct MetricsDatabaseTests {
 
 // MARK: - Test fixtures and temporary-directory helpers
 
-/**
- Runs `body` against a fresh `MetricsDatabase` backed by a unique temporary directory that is
- removed once the closure returns. Keeps tests isolated and prevents the user's documents directory
- from accumulating leftover `.db` files across test runs.
- */
+/// Runs `body` against a fresh `MetricsDatabase` backed by a unique temporary directory that is
+/// removed once the closure returns. Keeps tests isolated and prevents the user's documents directory
+/// from accumulating leftover `.db` files across test runs.
 @AppMetricsActor
 private func withTemporaryDatabase(_ body: (MetricsDatabase) throws -> Void) throws {
   try withTemporaryDirectory { directoryUrl in
