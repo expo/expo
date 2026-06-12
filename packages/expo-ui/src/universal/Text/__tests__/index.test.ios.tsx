@@ -1,31 +1,13 @@
 import { render } from '@testing-library/react-native';
 
 import { Text } from '..';
+import { findNativeViewProps } from '../../../__mocks__/expo';
 import { font, foregroundStyle, lineLimit, opacity } from '../../../swift-ui/modifiers';
 
-const mockNativeViewFn = jest.fn();
-
-jest.mock('expo', () => ({
-  requireNativeModule: jest.fn(() => ({})),
-  requireNativeView: jest.fn((moduleName: string, viewName: string) => {
-    const { View } = require('react-native');
-    const { createElement } = require('react');
-    const MockView = (props: any) => {
-      mockNativeViewFn(viewName, props);
-      // Swallow string children — the RN mock View can't render raw text.
-      return createElement(View, { ...props, children: undefined });
-    };
-    return MockView;
-  }),
-}));
-
-beforeEach(() => {
-  mockNativeViewFn.mockClear();
-});
+jest.mock('expo');
 
 function nativeTextModifiers() {
-  const call = mockNativeViewFn.mock.calls.find(([viewName]) => viewName === 'TextView');
-  return call?.[1].modifiers;
+  return findNativeViewProps('TextView')?.modifiers;
 }
 
 describe('Text', () => {

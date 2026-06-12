@@ -1,30 +1,13 @@
 import { render } from '@testing-library/react-native';
 
 import { Button } from '..';
+import { findNativeViewProps } from '../../../__mocks__/expo';
 import { buttonStyle, controlSize } from '../../../swift-ui/modifiers';
 
-const mockNativeViewFn = jest.fn();
-
-jest.mock('expo', () => ({
-  requireNativeModule: jest.fn(() => ({})),
-  requireNativeView: jest.fn((moduleName: string, viewName: string) => {
-    const { View } = require('react-native');
-    const { createElement } = require('react');
-    const MockView = (props: any) => {
-      mockNativeViewFn(viewName, props);
-      return createElement(View, props);
-    };
-    return MockView;
-  }),
-}));
-
-beforeEach(() => {
-  mockNativeViewFn.mockClear();
-});
+jest.mock('expo');
 
 function nativeButtonModifiers() {
-  const call = mockNativeViewFn.mock.calls.find(([viewName]) => viewName === 'Button');
-  return call?.[1].modifiers;
+  return findNativeViewProps('Button')?.modifiers;
 }
 
 describe('Button', () => {
