@@ -295,6 +295,49 @@ struct MetricsDatabaseTests {
     }
   }
 
+  @Test
+  func `periodic cleanup prunes metric and log rows older than the retention window`() async throws {
+    try await withTemporaryDirectory { directoryUrl in
+      // Tighten the loop's interval so the test finishes quickly; restore it after the test so
+      // later tests see production behavior. Both `cleanupInterval` and `cleanupRetentionSeconds`
+      // are `@AppMetricsActor`-isolated, and this test runs on that actor, so the writes are safe.
+      let previousInterval = MetricsDatabase.cleanupInterval
+      let previousRetention = MetricsDatabase.cleanupRetentionSeconds
+      MetricsDatabase.cleanupInterval = 0.05
+      defer {
+        MetricsDatabase.cleanupInterval = previousInterval
+        MetricsDatabase.cleanupRetentionSeconds = previousRetention
+      }
+
+      let database = try MetricsDatabase(directoryUrl: directoryUrl)
+      let retentionSeconds: TimeInterval = 30 * 60
+
+      // Seed: one live session, with metric and log rows split across the retention cutoff.
+      try database.insert(session: makeSessionRow(id: "live"))
+      let oldTimestamp = Date.now.addingTimeInterval(-retentionSeconds - 60).ISO8601Format()
+      let freshTimestamp = Date.now.addingTimeInterval(-60).ISO8601Format()
+      try database.insert(metric: makeMetricRow(sessionId: "live", timestamp: oldTimestamp, name: "m-old"))
+      try database.insert(metric: makeMetricRow(sessionId: "live", timestamp: freshTimestamp, name: "m-fresh"))
+      try database.insert(log: makeLogRow(sessionId: "live", timestamp: oldTimestamp, name: "l-old"))
+      try database.insert(log: makeLogRow(sessionId: "live", timestamp: freshTimestamp, name: "l-fresh"))
+
+      // Start the periodic loop.
+      database.setCleanupRetentionSeconds(retentionSeconds)
+
+      // Wait several intervals so at least one cleanup pass has run.
+      try await Task.sleep(nanoseconds: 300_000_000)
+
+      let metricNames = try database.getMetrics(sessionId: "live").map(\.name)
+      let logNames = try database.getLogs(sessionId: "live").map(\.name)
+      let liveSession = try database.getSession(id: "live")
+      #expect(metricNames == ["m-fresh"])
+      #expect(logNames == ["l-fresh"])
+      // The live session must not be deleted even though its startTimestamp may predate the window —
+      // it's `cleanupInactiveSessions` that runs, and the live row has `isActive = 1`.
+      #expect(liveSession != nil)
+    }
+  }
+
   // MARK: - Metrics
 
   @Test

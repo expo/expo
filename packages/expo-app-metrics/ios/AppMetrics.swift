@@ -79,6 +79,17 @@ public struct AppMetrics {
     return try database?.getMaxLogId() ?? nil
   }
 
+  /// Configures the periodic cleanup loop on the metrics database. Passing a positive number of
+  /// seconds starts the loop (on its first call) and tells it to keep metric/log rows from the last
+  /// `retentionSeconds` while tidying dead inactive session rows older than the same cutoff.
+  /// Subsequent calls update the retention window in place — the next pass uses the new value. Passing
+  /// nil or zero leaves the loop idle (no-ops at each wake). Driven by
+  /// `Observe.configure({ scheduledCleanupRetentionWindow })`.
+  @AppMetricsActor
+  public static func setCleanupRetentionSeconds(_ retentionSeconds: TimeInterval?) {
+    database?.setCleanupRetentionSeconds(retentionSeconds)
+  }
+
   // MARK: - Environment
 
   @AppMetricsActor

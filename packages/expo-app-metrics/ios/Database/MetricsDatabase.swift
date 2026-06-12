@@ -13,8 +13,25 @@ final class MetricsDatabase: Sendable {
   /// is local-only and short-lived, so wiping is preferable to maintaining migration code.
   static let currentSchemaVersion = 3
 
-  /// How long a session (and its metrics, logs, crash report) is retained before `init` prunes it.
-  static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60  // 7 days
+  /// How long a session (and its metrics, logs, crash report) is retained before it is pruned.
+  static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60 // 7 days
+
+  /// How often the periodic cleanup runs while the process is alive once
+  /// `setCleanupRetentionSeconds(_:)` has been called with a positive value. Not exposed through
+  /// `Observe.configure(...)` — the JS surface only configures the retention window — but writable
+  /// internally so tests can drive the loop without waiting for the production interval to elapse.
+  @AppMetricsActor
+  static var cleanupInterval: TimeInterval = 60 * 60 // 1 hour
+
+  /// Retention window (in seconds) for the periodic cleanup loop. `nil` (the default) means the loop
+  /// is a no-op; set via `setCleanupRetentionSeconds(_:)` from `Observe.configure(...)`. Stored on the
+  /// class rather than the instance so the loop can outlive any single `MetricsDatabase` while still
+  /// reading the latest configured value at each wake.
+  @AppMetricsActor
+  static var cleanupRetentionSeconds: TimeInterval?
+
+  @AppMetricsActor
+  private static var periodicCleanupStarted = false
 
   let database: SQLiteDatabase
 
@@ -102,6 +119,53 @@ final class MetricsDatabase: Sendable {
         try self.cleanupSessions(olderThan: cutoff)
       } catch {
         logger.warn("[AppMetrics] Failed to prune expired sessions: \(error.localizedDescription)")
+      }
+    }
+  }
+
+  /// Sets the retention window (in seconds) used by the periodic cleanup loop. Passing a positive
+  /// value starts the loop on its first non-nil call. A subsequent call updates the window in place;
+  /// the next pass reads the new value. Passing `nil` (or `0`) leaves any in-flight wake to no-op
+  /// and keeps the loop idle until a positive value arrives. Driven by
+  /// `Observe.configure({ scheduledCleanupRetentionWindow })`.
+  @AppMetricsActor
+  func setCleanupRetentionSeconds(_ seconds: TimeInterval?) {
+    Self.cleanupRetentionSeconds = seconds
+    if !Self.periodicCleanupStarted, let seconds, seconds > 0 {
+      Self.periodicCleanupStarted = true
+      schedulePeriodicCleanup()
+    }
+  }
+
+  /// Runs a repeating cleanup loop on `AppMetricsActor` for the lifetime of the database, so a
+  /// long-running process prunes retention-expired rows without relying on the next `init`. Each
+  /// wake reads `Self.cleanupRetentionSeconds`, so a `configure(...)` change takes effect on the next
+  /// pass; the loop quietly no-ops while the value is `nil` or non-positive. `Task.sleep` releases
+  /// the actor between passes, and `weak self` lets a discarded database end the loop on its next
+  /// wake.
+  private func schedulePeriodicCleanup() {
+    AppMetricsActor.isolated { [weak self] in
+      while !Task.isCancelled {
+        // Compute nanoseconds *before* the UInt64 cast so sub-second intervals (used by tests)
+        // survive the conversion — `UInt64(0.05) * 1_000_000_000` would otherwise be zero.
+        try? await Task.sleep(nanoseconds: UInt64(Self.cleanupInterval * 1_000_000_000))
+        guard let self else {
+          return
+        }
+        guard let retention = Self.cleanupRetentionSeconds, retention > 0 else {
+          continue
+        }
+        let cutoff = Date.now.addingTimeInterval(-retention).ISO8601Format()
+        do {
+          // Prune metric/log ROWS by timestamp — bounds a long-lived active session without
+          // deleting it — then tidy dead inactive session rows. Deliberately not `cleanupSessions`,
+          // which deletes regardless of `isActive` and would drop the live session once it outlives
+          // the window.
+          try self.cleanupMetricsAndLogs(olderThan: cutoff)
+          try self.cleanupInactiveSessions(olderThan: cutoff)
+        } catch {
+          logger.warn("[AppMetrics] Periodic cleanup failed: \(error.localizedDescription)")
+        }
       }
     }
   }
@@ -400,6 +464,45 @@ final class MetricsDatabase: Sendable {
       try dropCrashReports.run()
 
       let dropSessions = try database.prepare("DELETE FROM sessions WHERE startTimestamp < ?1")
+      try dropSessions.bindAll([cutoff])
+      try dropSessions.run()
+    }
+  }
+
+  /// Deletes metric and log rows older than `cutoff` (an ISO-8601 timestamp), independent of which
+  /// session they belong to. Unlike pruning whole sessions, this bounds the growth of a single
+  /// long-lived session (e.g. a TV app left running) without deleting the active session row, and
+  /// keys on the `timestamp` column so behavior is identical regardless of primary-key type.
+  @AppMetricsActor
+  func cleanupMetricsAndLogs(olderThan cutoff: String) throws {
+    try database.transaction {
+      let dropMetrics = try database.prepare("DELETE FROM metrics WHERE timestamp < ?1")
+      try dropMetrics.bindAll([cutoff])
+      try dropMetrics.run()
+
+      let dropLogs = try database.prepare("DELETE FROM logs WHERE timestamp < ?1")
+      try dropLogs.bindAll([cutoff])
+      try dropLogs.run()
+    }
+  }
+
+  /// Deletes only *inactive* sessions whose start timestamp is older than `cutoff`, tidying dead
+  /// session rows left by past foreground cycles without ever removing the live session (whose
+  /// `startTimestamp` may itself predate the window on a long-running process). Crash reports for the
+  /// dropped sessions are removed in the same transaction (they don't FK-cascade).
+  @AppMetricsActor
+  func cleanupInactiveSessions(olderThan cutoff: String) throws {
+    try database.transaction {
+      let dropCrashReports = try database.prepare("""
+        DELETE FROM crash_reports
+        WHERE sessionId IN (SELECT id FROM sessions WHERE startTimestamp < ?1 AND isActive = 0)
+        """)
+      try dropCrashReports.bindAll([cutoff])
+      try dropCrashReports.run()
+
+      let dropSessions = try database.prepare("""
+        DELETE FROM sessions WHERE startTimestamp < ?1 AND isActive = 0
+        """)
       try dropSessions.bindAll([cutoff])
       try dropSessions.run()
     }

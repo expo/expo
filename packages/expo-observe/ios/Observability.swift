@@ -10,6 +10,45 @@ internal struct ObservabilityManager {
   private static var projectId: String? = nil
   private static var useOpenTelemetry = false
 
+  /// Interval (in seconds) between periodic dispatches while the process is alive. `nil` (the
+  /// default) means the loop is a no-op; set via `setDispatchIntervalSeconds(_:)` from
+  /// `Observe.configure({ scheduledDispatchInterval })`. The loop reads this on each wake, so a
+  /// `configure(...)` change takes effect on the next pass.
+  private static var dispatchIntervalSeconds: TimeInterval?
+
+  private static var periodicDispatchStarted = false
+
+  /// Sets the dispatch interval for the periodic dispatch loop. Passing a positive number of seconds
+  /// starts the loop (on its first call), so a long-running process flushes pending metrics and logs
+  /// without waiting for resign-active. Subsequent calls update the interval in place; the next wake
+  /// uses the new value. Passing `nil` (or `0`) leaves the loop idle.
+  internal nonisolated static func setDispatchIntervalSeconds(_ intervalSeconds: TimeInterval?) {
+    AppMetricsActor.isolated {
+      self.dispatchIntervalSeconds = intervalSeconds
+      if !periodicDispatchStarted, let intervalSeconds, intervalSeconds > 0 {
+        periodicDispatchStarted = true
+        startPeriodicDispatchLoop()
+      }
+    }
+  }
+
+  /// Runs the repeating dispatch loop on `AppMetricsActor`. `Task.sleep` releases the actor between
+  /// passes, and `dispatch()` no-ops until the endpoint is configured, so this is safe to start at
+  /// any time. The loop reads `dispatchIntervalSeconds` at each wake — if cleared, it idles in a
+  /// 1-minute heartbeat until a positive value is restored.
+  private static func startPeriodicDispatchLoop() {
+    AppMetricsActor.isolated {
+      while !Task.isCancelled {
+        let interval = dispatchIntervalSeconds.map { max($0, 1) } ?? 60
+        try? await Task.sleep(nanoseconds: UInt64(interval) * 1_000_000_000)
+        guard let configured = dispatchIntervalSeconds, configured > 0 else {
+          continue
+        }
+        await dispatch()
+      }
+    }
+  }
+
   internal static func dispatch() async {
     // Compute once and reuse for both signals — `shouldDispatch()` reads the persisted config, the
     // bundle defaults, and computes a sample-rate hash. Both halves of dispatch want the same answer.
