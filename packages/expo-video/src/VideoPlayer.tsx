@@ -1,4 +1,5 @@
 import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
+import { useState } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import type { VideoSource, VideoPlayer, PlayerBuilderOptions } from './VideoPlayer.types';
@@ -52,6 +53,7 @@ export function useVideoPlayer(
   const parsedSource = parseSource(source);
   const parsedSourceKey = JSON.stringify(parsedSource);
   const playerBuilderOptionsKey = JSON.stringify(playerBuilderOptions);
+  const [forceRecreateCount, setForceRecreateCount] = useState(0);
 
   return useReleasingSharedObjectWithLifecycle(
     {
@@ -61,19 +63,21 @@ export function useVideoPlayer(
         return player;
       },
       shouldRecreate: (_player, { previousDependencies, dependencies }) => {
-        // Factory options differ
-        return previousDependencies[1] !== dependencies[1];
+        // Recreate if builder options ([1]) changed or if replaceAsync failed ([2]).
+        return (
+          previousDependencies[1] !== dependencies[1] || previousDependencies[2] !== dependencies[2]
+        );
       },
       update: (player, { previousDependencies, dependencies }) => {
-        // Sources differ
+        // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
         if (previousDependencies[0] !== dependencies[0]) {
-          player.replaceAsync(parsedSource).catch((error) => {
-            console.error('expo-video: Failed to replace video source:', error);
+          player.replaceAsync(parsedSource).catch(() => {
+            setForceRecreateCount((c) => c + 1);
           });
         }
       },
     },
-    [parsedSourceKey, playerBuilderOptionsKey]
+    [parsedSourceKey, playerBuilderOptionsKey, forceRecreateCount] // [0] source, [1] options, [2] recreate counter
   );
 }
 
