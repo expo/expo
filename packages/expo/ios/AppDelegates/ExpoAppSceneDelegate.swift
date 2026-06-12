@@ -15,6 +15,7 @@ import React
  - Re-feed scene life-cycle, URL, and user-activity events to the existing
    `ExpoAppDelegateSubscriberManager`, so app delegate subscribers keep working unchanged.
  */
+@available(iOSApplicationExtension, unavailable)
 @objc(EXExpoAppSceneDelegate)
 open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   open var window: UIWindow?
