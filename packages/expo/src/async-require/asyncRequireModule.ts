@@ -68,16 +68,30 @@ function asyncRequireImpl<T>(
   moduleName?: string
 ): Promise<T> | T {
   const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID, moduleName);
-  try {
-    // Try importing first to prevent double-loading script when the page already preloaded it
-    return importAll();
-  } catch (error) {
-    const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
-    if (maybeLoadBundlePromise != null) {
-      return maybeLoadBundlePromise.then(importAll);
+
+  // NOTE(@hassankhan): We need to come back and improve this, ideally we shouldn't need to have a
+  // separate conditional specifically for web
+  // On web, split chunks may already be preloaded via `<script>` tags, so importing
+  // synchronously first prevents double-loading the script
+  if (process.env.EXPO_OS === 'web') {
+    try {
+      return importAll();
+    } catch (error) {
+      const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+      if (maybeLoadBundlePromise != null) {
+        return maybeLoadBundlePromise.then(importAll);
+      }
+      throw error;
     }
-    throw error;
   }
+
+  // On native, requiring a missing module reports a fatal error via `global.ErrorUtils`
+  // instead of throwing, so the split bundle must be loaded before importing
+  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+  if (maybeLoadBundlePromise != null) {
+    return maybeLoadBundlePromise.then(importAll);
+  }
+  return importAll();
 }
 
 function asyncRequire<T>(
