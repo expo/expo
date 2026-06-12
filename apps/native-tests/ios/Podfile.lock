@@ -435,6 +435,13 @@ PODS:
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
+  - ExpoModulesWorklets (56.0.13):
+    - ExpoModulesCore
+    - ExpoModulesJSI
+  - ExpoModulesWorklets/Tests (56.0.13):
+    - ExpoModulesCore
+    - ExpoModulesJSI
+    - ExpoModulesTestCore
   - ExpoNotifications (56.0.14):
     - ExpoModulesCore
   - ExpoNotifications/Tests (56.0.14):
@@ -2513,7 +2520,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNGestureHandler (2.31.2):
+  - RNGestureHandler (2.32.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2779,6 +2786,8 @@ DEPENDENCIES:
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
+  - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
+  - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
@@ -2869,7 +2878,7 @@ DEPENDENCIES:
   - "ReactCommon/turbomodule/core (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/ReactCommon`)"
   - "ReactNativeDependencies (from `../../../node_modules/.pnpm/react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+jest-preset@0.86.0-rc.3_@babe_fa57ac2619226ae98026112d284d2cba/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)"
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0-rc.3_@babel+core@7.29.0_b287539fe49ed5c16e1f5a35b43cdf77/node_modules/@react-native-masked-view/masked-view`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.31.2_patch_hash=e8fb2a67f1fa221dc758c27292b3ee21ed737178_ae4bd3b9eacd55f76fcbeda380f2c6c2/node_modules/react-native-gesture-handler`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-_ca887e9234b849eb7759534fc37b34b6/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.1_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_63efc6dcd9f06abe16d862207d24882e/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.25.2_react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-native+j_1caf6d0de913e20dc62f3784cee8a325/node_modules/react-native-screens`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_14c70bd0e88f024ff3028384c1d4acce/node_modules/react-native-worklets`)"
@@ -2934,6 +2943,9 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-jsi/apple"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
+  ExpoModulesWorklets:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-modules-core"
   ExpoNotifications:
     inhibit_warnings: false
     :path: "../../../packages/expo-notifications/ios"
@@ -3109,7 +3121,7 @@ EXTERNAL SOURCES:
   RNCMaskedView:
     :path: "../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0-rc.3_@babel+core@7.29.0_b287539fe49ed5c16e1f5a35b43cdf77/node_modules/@react-native-masked-view/masked-view"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.31.2_patch_hash=e8fb2a67f1fa221dc758c27292b3ee21ed737178_ae4bd3b9eacd55f76fcbeda380f2c6c2/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0-rc.3_@babel+core@7.29.0_@react-_ca887e9234b849eb7759534fc37b34b6/node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.1_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_63efc6dcd9f06abe16d862207d24882e/node_modules/react-native-reanimated"
   RNScreens:
@@ -3135,9 +3147,10 @@ SPEC CHECKSUMS:
   ExpoClipboard: 40221903a1caa68259e022517af49d12962821fe
   ExpoImage: 3f44073bf450afdb87333f9671ffe7b9bfa5f70e
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
-  ExpoModulesCore: 282743e45a8da9844fac713bdb14427d584b6d6e
+  ExpoModulesCore: 7ee5c9715b287b20ec9caa7f2577007597adf25a
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
   ExpoModulesTestCore: 768a9a2b0401e87090bc7280cdb0607ab4cad382
+  ExpoModulesWorklets: 874ceeb92a8da1dfa32adf197aa65f926e74b9c5
   ExpoNotifications: 4f6324955cea640a65f40c67a8e42505a6a514b7
   ExpoObserve: ebc1555f8538f65727dfe9208ae39a3111077d4f
   ExpoRouter: 06524ed53f9833aabf49053a119bcc92c1442098
@@ -3228,7 +3241,7 @@ SPEC CHECKSUMS:
   ReactCommon: 99c616c9c4ab3119765aef7b190ee1fd850f29e7
   ReactNativeDependencies: 433d597bb42b6198313fcee60a265d749e19468e
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
-  RNGestureHandler: 12ed45d9c6f0dada7bf9d1023769ad388fe7115d
+  RNGestureHandler: 92172e79df6e88e0e93b6341f9dcd8b5a02746ba
   RNReanimated: 71f76da8b61687f1cf225de572209c4968be1f5e
   RNScreens: 991cc417cd396602a6cf59a42139e5a9d91462a9
   RNWorklets: 948d670b3ad75fcdefb1c28ab0c6fb4d8af8e089
