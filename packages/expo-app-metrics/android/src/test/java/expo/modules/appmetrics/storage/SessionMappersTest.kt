@@ -184,6 +184,7 @@ class SessionMappersTest {
     // Both should decode the nested user object the same way.
     @Suppress("UNCHECKED_CAST")
     val metricUser = metricResult?.get("user") as? Map<String, Any?>
+
     @Suppress("UNCHECKED_CAST")
     val logUser = logResult?.get("user") as? Map<String, Any?>
     assertEquals(metricUser, logUser)

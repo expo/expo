@@ -213,7 +213,9 @@ internal fun buildSnapshot(
       ?: originalRequest.body?.contentLength()?.takeIf { it > 0 }
       ?: 0L
     requestHeaderBytes + body
-  } else null
+  } else {
+    null
+  }
   val responseBytesReceived: Long? = response?.let {
     val body = phases?.responseBodyBytes?.takeIf { it > 0 }
       ?: it.body?.contentLength()?.takeIf { it > 0 }
@@ -548,4 +550,3 @@ private fun serializedHeaderBytes(headers: Headers): Long {
   }
   return total
 }
-

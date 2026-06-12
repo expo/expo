@@ -26,7 +26,7 @@ data class MediaStoreAudio(
         displayName = getNullableString(columnIndexes.displayName),
         dateTaken = getNullableLong(columnIndexes.dateTaken),
         dateModified = getNullableLong(columnIndexes.dateModified),
-        duration =  getNullableLong(columnIndexes.duration),
+        duration = getNullableLong(columnIndexes.duration),
         data = getNullableString(columnIndexes.data),
         isFavorite = columnIndexes.isFavorite?.let { getNullableInt(it) }
       )
