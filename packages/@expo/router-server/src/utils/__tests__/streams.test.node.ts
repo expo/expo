@@ -1,4 +1,7 @@
-import { createDocumentMetadataInjectionTransform } from '../streams';
+import {
+  createDocumentMetadataInjectionTransform,
+  createServerInsertedHTMLTransform,
+} from '../streams';
 
 async function readStream(stream: ReadableStream<Uint8Array>): Promise<string> {
   return await new Response(stream).text();
@@ -98,5 +101,98 @@ describe(createDocumentMetadataInjectionTransform, () => {
     await expect(readStream(stream)).rejects.toThrow(
       'Streaming SSR head injection failed: missing </head> in HTML output.'
     );
+  });
+});
+
+describe(createServerInsertedHTMLTransform, () => {
+  function drainOnce(insertion: string): () => string {
+    let drained = false;
+    return () => {
+      if (drained) return '';
+      drained = true;
+      return insertion;
+    };
+  }
+
+  it('splices the first insertion before the closing head tag', async () => {
+    const stream = createStream([
+      '<!DOCTYPE html><html><head><title>Test</title></head><body><div>hello</div></body></html>',
+    ]).pipeThrough(createServerInsertedHTMLTransform(drainOnce('<script>first()</script>')));
+
+    await expect(readStream(stream)).resolves.toBe(
+      '<!DOCTYPE html><html><head><title>Test</title><script>first()</script></head><body><div>hello</div></body></html>'
+    );
+  });
+
+  it('drains the inserted HTML once per emitted flush, before the React chunk of that flush', async () => {
+    const insertions = ['<script>shell()</script>', '<script>boundary()</script>', ''];
+    let drainCount = 0;
+
+    const stream = createStream([
+      '<!DOCTYPE html><html><head><title>Test</title></head><body><div>shell</div>',
+      '<div hidden>boundary content</div><script>$RC("B:0","S:0")</script>',
+      '</body></html>',
+    ]).pipeThrough(createServerInsertedHTMLTransform(() => insertions[drainCount++] ?? ''));
+
+    await expect(readStream(stream)).resolves.toBe(
+      '<!DOCTYPE html><html><head><title>Test</title><script>shell()</script></head><body><div>shell</div>' +
+        '<script>boundary()</script><div hidden>boundary content</div><script>$RC("B:0","S:0")</script>' +
+        '</body></html>'
+    );
+  });
+
+  it('emits a final insertion when content arrives only after the last React chunk', async () => {
+    const insertions = ['', '', '<script>late()</script>'];
+    let drainCount = 0;
+
+    const stream = createStream([
+      '<!DOCTYPE html><html><head></head><body>',
+      '</body></html>',
+    ]).pipeThrough(createServerInsertedHTMLTransform(() => insertions[drainCount++] ?? ''));
+
+    await expect(readStream(stream)).resolves.toBe(
+      '<!DOCTYPE html><html><head></head><body></body></html><script>late()</script>'
+    );
+  });
+
+  it('passes chunks through untouched when no HTML is inserted', async () => {
+    const stream = createStream([
+      '<!DOCTYPE html><html><head></head><body><div>a</div>',
+      '<div>b</div>',
+      '</body></html>',
+    ]).pipeThrough(createServerInsertedHTMLTransform(() => ''));
+
+    await expect(readStream(stream)).resolves.toBe(
+      '<!DOCTYPE html><html><head></head><body><div>a</div><div>b</div></body></html>'
+    );
+  });
+
+  it('buffers until the closing head tag even when it is split across chunks', async () => {
+    const stream = createStream([
+      '<!DOCTYPE html><html><head><title>Test</title></he',
+      'ad><body><div>hello</div>',
+      '</body></html>',
+    ]).pipeThrough(createServerInsertedHTMLTransform(drainOnce('<script>first()</script>')));
+
+    await expect(readStream(stream)).resolves.toBe(
+      '<!DOCTYPE html><html><head><title>Test</title><script>first()</script></head><body><div>hello</div>' +
+        '</body></html>'
+    );
+  });
+
+  it('passes buffered output through when the head never completes', async () => {
+    const stream = createStream(['<!DOCTYPE html><html><head><title>Aborted', '...']).pipeThrough(
+      createServerInsertedHTMLTransform(() => '')
+    );
+
+    await expect(readStream(stream)).resolves.toBe('<!DOCTYPE html><html><head><title>Aborted...');
+  });
+
+  it('discards pending insertions when the head never completes', async () => {
+    const stream = createStream(['<!DOCTYPE html><html><head><title>Aborted']).pipeThrough(
+      createServerInsertedHTMLTransform(() => '<script>pending()</script>')
+    );
+
+    await expect(readStream(stream)).resolves.toBe('<!DOCTYPE html><html><head><title>Aborted');
   });
 });

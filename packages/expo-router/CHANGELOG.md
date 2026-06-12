@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `useServerInsertedHTML()` hook for injecting HTML into the streaming SSR response at React flush boundaries, enabling streamed data hydration for suspense-based data libraries and CSS-in-JS style collection ([#46858](https://github.com/expo/expo/pull/46858) by [@jtomaszewski](https://github.com/jtomaszewski))
 - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))
 - Re-export drawer content components and types (`DrawerContentScrollView`, `DrawerItem`, `DrawerItemList`, `DrawerContentComponentProps`, `DrawerNavigationProp`, and more) from `expo-router/drawer` ([#46635](https://github.com/expo/expo/pull/46635) by [@Ubax](https://github.com/Ubax))
 - [native-tabs] Emit a `tabPress` event with `isPrevented: true` when a `disabled` tab is tapped, without selecting it. ([#46445](https://github.com/expo/expo/pull/46445) by [@Ubax](https://github.com/Ubax))

@@ -220,6 +220,37 @@ The `generateMetadata` function executes on the server and is stripped from the 
 
 You can also use the `<Head>` component from `expo-router/head` to add `<meta>` tags. Both approaches can co-exist in the same route. However, `generateMetadata` is the recommended approach for server rendering because it resolves metadata before the HTML stream begins, ensuring that `<meta>` tags are included in the earliest bytes of the response. `<Head>` can be used to update `<meta>` tags dynamically after the app has hydrated.
 
+## Inserting HTML into the stream
+
+The [`useServerInsertedHTML`](/versions/latest/sdk/router/#useserverinsertedhtmlcallback) hook from `expo-router` registers a callback that is rendered to static HTML and injected into the streamed response on every React flush. The first injection is placed before `</head>`, and subsequent injections are emitted right before the React chunk of the flush that produced them — for example, when a `<Suspense>` boundary resolves.
+
+This is the primitive that suspense-based data libraries (such as urql, Apollo Client, or TanStack Query) and CSS-in-JS libraries use to transport per-request data alongside the streamed HTML: each query result (or collected style) is serialized into a `<script>` (or `<style>`) tag that arrives in the document before the Suspense content using it hydrates, so the client can restore the data into its cache without fetching it again.
+
+```tsx
+import { useServerInsertedHTML } from 'expo-router';
+
+function StreamedDataTransport() {
+  const queue = useDataQueue();
+
+  useServerInsertedHTML(() => {
+    /* @info Drain the data that resolved since the previous flush. Return null when there is nothing new. */
+    const payload = queue.flushSerialized();
+    /* @end */
+    if (!payload) return null;
+    return <script dangerouslySetInnerHTML={{ __html: payload }} />;
+  });
+
+  return null;
+}
+```
+
+A few rules apply to the callback:
+
+- It is invoked outside your app's React tree, so it cannot read your app's context providers.
+- It must render synchronously and cannot suspend.
+- It runs once per flush, so it should return `null` once its content has already been emitted.
+- On the client and on native platforms, the hook is a no-op.
+
 ## Deployment
 
 Server-side rendering requires a runtime server to render pages on each request. Server-side rendered Expo apps **cannot** be deployed to static hosting services like GitHub Pages.

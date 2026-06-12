@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Inject HTML registered via `useServerInsertedHTML()` into the streaming SSR response at React flush boundaries ([#46858](https://github.com/expo/expo/pull/46858) by [@jtomaszewski](https://github.com/jtomaszewski))
+
 ### 🐛 Bug fixes
 
 - Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))

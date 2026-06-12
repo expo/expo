@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createDocumentMetadataInjectionTransform = createDocumentMetadataInjectionTransform;
+exports.createServerInsertedHTMLTransform = createServerInsertedHTMLTransform;
 const HEAD_CLOSE_TAG = '</head>';
 const BODY_OPEN_TAG = '<body';
 function injectTagAttributes(html, tagName, attributes) {
@@ -62,6 +63,66 @@ function createDocumentMetadataInjectionTransform(options) {
             }
             if (!injected) {
                 controller.error(new Error(`Streaming SSR head injection failed: missing ${HEAD_CLOSE_TAG} in HTML output.`));
+            }
+        },
+    });
+}
+/**
+ * Injects dynamically-rendered HTML into the stream at React flush boundaries, for
+ * `useServerInsertedHTML()` support. `getInsertedHTML()` drains the HTML produced by the
+ * currently registered callbacks and is invoked once per emitted flush:
+ *
+ * - The first injection is spliced in before `</head>` (buffering until the document head
+ *   is complete, which React emits with the shell).
+ * - Each subsequent injection is emitted immediately before the React chunk for that flush,
+ *   so transported data is available before React's inline scripts reveal the Suspense
+ *   content of the same flush.
+ * - A final injection is drained when the stream ends.
+ */
+function createServerInsertedHTMLTransform(getInsertedHTML) {
+    let buffer = '';
+    let headInjected = false;
+    const decoder = new TextDecoder();
+    const encoder = new TextEncoder();
+    return new TransformStream({
+        transform(chunk, controller) {
+            const decodedChunk = decoder.decode(chunk, { stream: true });
+            if (headInjected) {
+                const insertion = getInsertedHTML();
+                if (insertion) {
+                    controller.enqueue(encoder.encode(insertion));
+                }
+                controller.enqueue(encoder.encode(decodedChunk));
+                return;
+            }
+            buffer += decodedChunk;
+            // Buffering only lasts until the document head completes, which React emits
+            // as part of the shell, so the first emit is not meaningfully delayed.
+            const headCloseIdx = buffer.indexOf(HEAD_CLOSE_TAG);
+            if (headCloseIdx === -1) {
+                return;
+            }
+            const insertion = getInsertedHTML();
+            headInjected = true;
+            const output = buffer.slice(0, headCloseIdx) + insertion + buffer.slice(headCloseIdx);
+            buffer = '';
+            controller.enqueue(encoder.encode(output));
+        },
+        flush(controller) {
+            const trailing = decoder.decode();
+            if (!headInjected) {
+                // The head never completed (e.g. the render was aborted before the shell was
+                // emitted). Pass the buffered output through unmodified rather than appending
+                // insertions to an incomplete document or erroring the response.
+                const remaining = buffer + trailing;
+                if (remaining) {
+                    controller.enqueue(encoder.encode(remaining));
+                }
+                return;
+            }
+            const remaining = trailing + getInsertedHTML();
+            if (remaining) {
+                controller.enqueue(encoder.encode(remaining));
             }
         },
     });

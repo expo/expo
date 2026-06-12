@@ -11,7 +11,11 @@ import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
-import { ServerDocument } from 'expo-router/internal/server';
+import {
+  ServerDocument,
+  ServerInsertedHTMLContext,
+  type ServerInsertedHTMLCallback,
+} from 'expo-router/internal/server';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
 import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -25,6 +29,7 @@ import {
   createInjectedInlineCssAsNodes,
   getBootstrapContents,
 } from '../utils/react';
+import { createServerInsertedHTMLTransform } from '../utils/streams';
 
 const debug = createDebug('expo:router:server:renderStreamingContent');
 
@@ -112,6 +117,26 @@ function FontResources() {
 }
 
 /**
+ * Renders the currently registered `useServerInsertedHTML()` callbacks to static HTML.
+ * Callbacks are rendered outside the app's React tree (matching Next.js semantics), so
+ * they cannot rely on app context and must not suspend. Each callback is responsible
+ * for returning `null` once its content has already been flushed.
+ */
+function renderServerInsertedHTML(callbacks: Set<ServerInsertedHTMLCallback>): string {
+  if (callbacks.size === 0) {
+    return '';
+  }
+
+  return ReactDOMServer.renderToStaticMarkup(
+    <>
+      {[...callbacks].map((callback, index) => (
+        <React.Fragment key={index}>{callback()}</React.Fragment>
+      ))}
+    </>
+  );
+}
+
+/**
  * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
  * that emits the full HTML document with head injections applied.
  */
@@ -141,13 +166,20 @@ export async function getStreamingContent(
     bodyNodes: [<FontResources key="font-resources" />],
   };
 
-  return await ReactDOMServer.renderToReadableStream(
-    <ServerDocument data={serverDocumentData}>
-      {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
-      <Head.Provider context={headContext}>
-        <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-      </Head.Provider>
-    </ServerDocument>,
+  const serverInsertedHTMLCallbacks = new Set<ServerInsertedHTMLCallback>();
+
+  const stream = await ReactDOMServer.renderToReadableStream(
+    <ServerInsertedHTMLContext.Provider
+      value={(callback) => {
+        serverInsertedHTMLCallbacks.add(callback);
+      }}>
+      <ServerDocument data={serverDocumentData}>
+        {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
+        <Head.Provider context={headContext}>
+          <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
+        </Head.Provider>
+      </ServerDocument>
+    </ServerInsertedHTMLContext.Provider>,
     {
       // TODO(@hassankhan): Experiment and see if we can calculate a better default
       // We're doubling the default here so non-JavaScript renders show some content
@@ -163,6 +195,10 @@ export async function getStreamingContent(
         console.error('SSR streaming render error:', error);
       },
     }
+  );
+
+  return stream.pipeThrough(
+    createServerInsertedHTMLTransform(() => renderServerInsertedHTML(serverInsertedHTMLCallbacks))
   );
 }
 
