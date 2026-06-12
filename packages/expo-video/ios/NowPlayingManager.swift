@@ -226,6 +226,14 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
         }
         return .commandFailed
       }
+
+      // `MPRemoteCommandCenter` is a process-wide singleton that other modules (e.g. expo-audio) disable on
+      // teardown, so re-enable the commands we handle to keep the lock screen controls working. (issue #46711)
+      commandCenter.playCommand.isEnabled = true
+      commandCenter.pauseCommand.isEnabled = true
+      commandCenter.skipForwardCommand.isEnabled = true
+      commandCenter.skipBackwardCommand.isEnabled = true
+      commandCenter.changePlaybackPositionCommand.isEnabled = true
     }
   }
 

@@ -17,6 +17,10 @@ import androidx.annotation.UiThread
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.types.enforceType
@@ -52,9 +56,13 @@ abstract class ExpoComposeView<T : ComposeProps>(
   context: Context,
   appContext: AppContext,
   private val withHostingView: Boolean = false
-) : ExpoView(context, appContext) {
+) : ExpoView(context, appContext), ComposeHostingView {
   open val props: T? = null
   protected var recomposeScope: RecomposeScope? = null
+
+  // Retained so the composition can be disposed on unmount: its strategy is
+  // pinned to the Activity lifecycle, so nothing disposes it on window detach.
+  private var hostingComposeView: ComposeView? = null
 
   private val globalEvent = ViewEvent<Pair<String, Map<String, Any?>>>(GLOBAL_EVENT_NAME, this, null)
 
@@ -191,20 +199,54 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   private fun addComposeView() {
     val composeView = ComposeView(context).also {
+      // Give each Host a unique id so its rememberSaveable state gets its own key.
+      // All Hosts share the Activity's SavedStateRegistry (set below), so without an id
+      // they'd collide on one key and only the first could save/restore state.
+      it.id = generateViewId()
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-      it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      // Pin the composition to the Activity lifecycle so it survives
+      // react-native-screens detaching inactive screens on every switch.
+      // The strategy alone isn't enough: Compose's WrappedComposition also
+      // observes the view-tree lifecycle owner found at first attach — the
+      // screen fragment's, which RN-screens destroys per switch — and
+      // self-disposes on its ON_DESTROY, leaving a dead composition that
+      // never recreates. Overriding the owners on the ComposeView (nearest
+      // tag wins) points both at the Activity. Unmount disposes explicitly
+      // via disposeHostedComposition().
+      val activity = appContext.currentActivity
+      if (activity is LifecycleOwner && activity is SavedStateRegistryOwner) {
+        it.setViewTreeLifecycleOwner(activity)
+        it.setViewTreeSavedStateRegistryOwner(activity)
+        it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(activity.lifecycle))
+      } else {
+        // No Activity to pin to: keep the prior behavior, including the
+        // dispose-on-reattach workaround for blank compositions after
+        // navigation (https://github.com/expo/expo/pull/34689).
+        it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        it.addOnAttachStateChangeListener(
+          OnAttachAfterDetachmentListener(onAttachAfterDetachment = {
+            it.disposeComposition()
+          })
+        )
+      }
       it.setContent {
         with(ComposableScope()) {
           Content()
         }
       }
-      it.addOnAttachStateChangeListener(
-        OnAttachAfterDetachmentListener(onAttachAfterDetachment = {
-          it.disposeComposition()
-        })
-      )
     }
+    hostingComposeView = composeView
     addView(composeView)
+  }
+
+  override fun disposeHostedComposition() {
+    hostingComposeView?.let {
+      // disposeComposition() alone leaves the composition strategy's lifecycle observer
+      // registered on the Activity, which leaks this view.
+      // Swapping the strategy first detaches that observer, then we dispose.
+      it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
+      it.disposeComposition()
+    }
   }
 
   override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {

@@ -9,7 +9,7 @@ import type { NavigationStateLike } from '../types';
 
 jest.mock('expo-app-metrics', () => {
   const addCustomMetricToSession = jest.fn();
-  const getMainSession = jest.fn(async () => ({ id: 'session-1' }));
+  const getMainSession = jest.fn(() => ({ id: 'session-1' }));
   return {
     __esModule: true,
     default: {

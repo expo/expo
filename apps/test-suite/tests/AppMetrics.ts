@@ -1,6 +1,7 @@
 import { fetch } from 'expo/fetch';
 import AppMetrics, {
   type NetworkRequestCompletedEvent,
+  type NetworkRequestFilter,
   type NetworkRequestObserver,
   type NetworkRequestStartedEvent,
 } from 'expo-app-metrics';
@@ -8,6 +9,7 @@ import AppMetrics, {
 export const name = 'AppMetrics';
 
 const TEST_HOST = 'https://httpbin.io';
+const TEST_HOSTNAME = 'httpbin.io';
 const EVENT_TIMEOUT_MS = 5_000;
 
 type EventCapture = {
@@ -18,14 +20,18 @@ type EventCapture = {
 /**
  * Subscribes to a fresh `NetworkRequestObserver` and returns the capture buffer plus a teardown
  * function. The buffer is populated as events fire on the native side. Filters by URL so tests
- * don't see events from unrelated background traffic.
+ * don't see events from unrelated background traffic. Pass a native `filter` to exercise the
+ * native-side filtering; it is applied on top of (before) the JS `filterUrl` predicate.
  */
-function captureEvents(filterUrl: (url: string) => boolean): {
+function captureEvents(
+  filterUrl: (url: string) => boolean,
+  filter?: NetworkRequestFilter | null
+): {
   capture: EventCapture;
   observer: NetworkRequestObserver;
   release: () => void;
 } {
-  const observer = new AppMetrics.NetworkRequestObserver();
+  const observer = new AppMetrics.NetworkRequestObserver(filter);
   const capture: EventCapture = { started: [], completed: [] };
 
   const startedSub = observer.addListener('requestStarted', (event) => {
@@ -53,18 +59,24 @@ function captureEvents(filterUrl: (url: string) => boolean): {
   };
 }
 
+/**
+ * Waits until a `requestCompleted` event lands in the capture buffer. With a `url`, waits for a
+ * completion matching that URL specifically; otherwise waits for any completion.
+ */
 async function waitForCompletion(
   capture: EventCapture,
+  url?: string,
   timeoutMs = EVENT_TIMEOUT_MS
 ): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    if (capture.completed.length > 0) {
+    if (url ? capture.completed.some((event) => event.url === url) : capture.completed.length > 0) {
       return;
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  throw new Error(`Timed out after ${timeoutMs}ms waiting for requestCompleted event`);
+  const target = url ? `requestCompleted for ${url}` : 'requestCompleted event';
+  throw new Error(`Timed out after ${timeoutMs}ms waiting for ${target}`);
 }
 
 export function test({ describe, expect, it, beforeAll }) {
@@ -178,6 +190,125 @@ export function test({ describe, expect, it, beforeAll }) {
       } finally {
         release();
       }
+    });
+
+    describe('filtering', () => {
+      it('emits only requests matching the hosts filter', async () => {
+        const matchingUrl = `${TEST_HOST}/get?case=hosts-match`;
+        const { capture, release } = captureEvents((u) => u === matchingUrl, {
+          hosts: [TEST_HOSTNAME],
+        });
+        try {
+          await fetch(matchingUrl);
+          await waitForCompletion(capture);
+          expect(capture.completed.length).toBe(1);
+          expect(capture.completed[0].url).toBe(matchingUrl);
+          expect(capture.started.length).toBe(1);
+        } finally {
+          release();
+        }
+      });
+
+      it('drops requests whose host is not in the hosts filter', async () => {
+        const url = `${TEST_HOST}/get?case=hosts-miss`;
+        const { capture, release } = captureEvents((u) => u === url, {
+          hosts: ['some-other-host.example.com'],
+        });
+        try {
+          await fetch(url);
+          // No matching event will ever arrive — wait a window, then assert nothing leaked through.
+          await new Promise((resolve) => setTimeout(resolve, 1_500));
+          expect(capture.started.length).toBe(0);
+          expect(capture.completed.length).toBe(0);
+        } finally {
+          release();
+        }
+      });
+
+      it('emits only requests matching the methods filter', async () => {
+        const postUrl = `${TEST_HOST}/post?case=methods-post`;
+        const getUrl = `${TEST_HOST}/get?case=methods-get`;
+        const { capture, release } = captureEvents((u) => u === postUrl || u === getUrl, {
+          methods: ['POST'],
+        });
+        try {
+          await fetch(getUrl);
+          await fetch(postUrl, { method: 'POST' });
+          await waitForCompletion(capture, postUrl);
+          // Only the POST passes the filter; the GET is dropped natively.
+          expect(capture.completed.map((event) => event.url)).toEqual([postUrl]);
+          expect(capture.completed.every((event) => event.method === 'POST')).toBe(true);
+        } finally {
+          release();
+        }
+      });
+
+      it('combines hosts and methods with AND', async () => {
+        const postUrl = `${TEST_HOST}/post?case=combined-post`;
+        const getUrl = `${TEST_HOST}/get?case=combined-get`;
+        const { capture, release } = captureEvents((u) => u === postUrl || u === getUrl, {
+          hosts: [TEST_HOSTNAME],
+          methods: ['POST'],
+        });
+        try {
+          await fetch(getUrl);
+          await fetch(postUrl, { method: 'POST' });
+          await waitForCompletion(capture, postUrl);
+          // Host matches both, but only the POST satisfies the method constraint.
+          expect(capture.completed.map((event) => event.url)).toEqual([postUrl]);
+        } finally {
+          release();
+        }
+      });
+
+      it('emits every request when the filter is empty', async () => {
+        const url = `${TEST_HOST}/get?case=empty-filter`;
+        const { capture, release } = captureEvents((u) => u === url, {});
+        try {
+          await fetch(url);
+          await waitForCompletion(capture);
+          expect(capture.completed.length).toBe(1);
+        } finally {
+          release();
+        }
+      });
+
+      it('applies a filter set at runtime via setFilter', async () => {
+        const beforeUrl = `${TEST_HOST}/get?case=set-filter-before`;
+        const afterUrl = `${TEST_HOST}/get?case=set-filter-after`;
+        const { capture, observer, release } = captureEvents(
+          (u) => u === beforeUrl || u === afterUrl
+        );
+        try {
+          // Starts unfiltered: the first request is observed.
+          await fetch(beforeUrl);
+          await waitForCompletion(capture);
+          expect(capture.completed.length).toBe(1);
+
+          // Narrow to a host that doesn't match; the next request must be dropped. `setFilter` is
+          // applied before the fetch is issued, and the request's full network round-trip dwarfs
+          // the time the native side needs to apply the filter, so it's in effect by the time the
+          // request is recorded.
+          observer.setFilter({ hosts: ['some-other-host.example.com'] });
+          await fetch(afterUrl);
+          await new Promise((resolve) => setTimeout(resolve, 1_500));
+          expect(capture.completed.filter((event) => event.url === afterUrl).length).toBe(0);
+
+          // Clearing the filter resumes observing everything.
+          observer.setFilter(null);
+          const lastUrl = `${TEST_HOST}/get?case=set-filter-cleared`;
+          const cleared = captureEvents((u) => u === lastUrl);
+          try {
+            await fetch(lastUrl);
+            await waitForCompletion(cleared.capture);
+            expect(cleared.capture.completed.length).toBe(1);
+          } finally {
+            cleared.release();
+          }
+        } finally {
+          release();
+        }
+      });
     });
   });
 }

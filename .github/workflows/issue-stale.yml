@@ -9,7 +9,7 @@ jobs:
     if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/stale@a20b814fb01b71def3bd6f56e7494d667ddf28da # v4
+      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10.3.0
         with:
           ascending: false
           operations-per-run: 300

@@ -60,7 +60,14 @@ Firebase JS SDK does not support all services for mobile apps. Some of these ser
 
 After you have created your [Expo project](/get-started/create-a-project/), you can install the Firebase JS SDK using the following command:
 
-<Terminal cmd={['$ npx expo install firebase']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install firebase'],
+    yarn: ['$ yarn expo install firebase'],
+    pnpm: ['$ pnpm expo install firebase'],
+    bun: ['$ bun expo install firebase'],
+  }}
+/>
 
 </Step>
 
@@ -187,7 +194,14 @@ It allows configuring any native code required by React Native Firebase using [C
 
 To install [`expo-dev-client`](/develop/development-builds/create-a-build/), run the following command in your project:
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 </Step>
 
 <Step label="2">
@@ -196,7 +210,14 @@ To install [`expo-dev-client`](/develop/development-builds/create-a-build/), run
 To use React Native Firebase, it is necessary to install the `@react-native-firebase/app` module. This module provides the core functionality for all other modules.
 It also adds custom native code in your project using a config plugin. You can install it using the following command:
 
-<Terminal cmd={['$ npx expo install @react-native-firebase/app']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @react-native-firebase/app'],
+    yarn: ['$ yarn expo install @react-native-firebase/app'],
+    pnpm: ['$ pnpm expo install @react-native-firebase/app'],
+    bun: ['$ bun expo install @react-native-firebase/app'],
+  }}
+/>
 
 **At this point, you must follow the instructions from [React Native Firebase documentation](https://rnfirebase.io/#managed-workflow)** as it covers all the steps required to configure your project with the library.
 

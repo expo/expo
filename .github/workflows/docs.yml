@@ -25,17 +25,17 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 30000
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
           version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
@@ -82,6 +82,11 @@ jobs:
           fail_on_error: true
           # Override vale-action's older bundled reviewdog to avoid large-diff limits.
           reviewdog_url: https://github.com/reviewdog/reviewdog/releases/download/v0.21.0/reviewdog_0.21.0_Linux_x86_64.tar.gz
+      - name: 🔄 Sync bundled native module versions
+        working-directory: docs
+        run: pnpm versions-schema-sync
+        continue-on-error: true
+        timeout-minutes: 1
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
         run: pnpm export
@@ -95,12 +100,13 @@ jobs:
       - name: 🚀 Deploy Docs website
         if: github.ref == 'refs/heads/main'
         id: deploy
-        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy --branch=main
           workingDirectory: docs
+          wranglerVersion: '3'
       - name: 🧹 Prune old production deployments
         if: github.ref == 'refs/heads/main'
         working-directory: docs

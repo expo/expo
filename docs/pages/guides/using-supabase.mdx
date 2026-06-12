@@ -39,7 +39,14 @@ Using [`supabase-js`](https://supabase.com/docs/reference/javascript/introductio
 
 After you have created your [Expo project](/get-started/create-a-project/), install `@supabase/supabase-js` and the required dependencies using the following command:
 
-<Terminal cmd={['$ npx expo install @supabase/supabase-js expo-sqlite']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @supabase/supabase-js expo-sqlite'],
+    yarn: ['$ yarn expo install @supabase/supabase-js expo-sqlite'],
+    pnpm: ['$ pnpm expo install @supabase/supabase-js expo-sqlite'],
+    bun: ['$ bun expo install @supabase/supabase-js expo-sqlite'],
+  }}
+/>
 </Step>
 
 <Step label="2">

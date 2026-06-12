@@ -39,11 +39,13 @@ function generateModulesProviderCommand(cli) {
             .then((file) => JSON.parse(file))
             .catch(() => ({}));
         const watchedDirectories = JSON.parse(podfileProperties['expo.inlineModules.watchedDirectories'] ?? '[]');
+        const inlineModulesTargets = JSON.parse(podfileProperties['expo.inlineModules.xcodeProjectTargets'] ?? '{"targets":[]}');
         await (0, generatePackageList_1.generateModulesProviderAsync)(filteredModules, {
             platform,
             targetPath: commandArguments.target,
             entitlementPath: commandArguments.entitlement ?? null,
             watchedDirectories,
+            inlineModulesTargets,
             appRoot,
         });
     });

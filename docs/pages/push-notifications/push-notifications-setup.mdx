@@ -50,7 +50,14 @@ The following steps in this guide use [EAS Build](/build/introduction/). This is
 
 Run the following command to install the `expo-notifications` and `expo-constants` libraries:
 
-<Terminal cmd={['$ npx expo install expo-notifications expo-constants']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-notifications expo-constants'],
+    yarn: ['$ yarn expo install expo-notifications expo-constants'],
+    pnpm: ['$ pnpm expo install expo-notifications expo-constants'],
+    bun: ['$ bun expo install expo-notifications expo-constants'],
+  }}
+/>
 
 - [`expo-notifications`](/versions/latest/sdk/notifications) library is used to request a user's permission and to obtain the `ExpoPushToken` for sending push notifications.
 - [`expo-constants`](/versions/latest/sdk/constants) is used to get the `projectId` value from the app config.
@@ -274,7 +281,14 @@ After creating and installing the development build, you can use [Expo push noti
 
 1. Start the development server for your project:
 
-   <Terminal cmd={['$ npx expo start']} />
+   <Terminal
+     cmd={{
+       npm: ['$ npx expo start'],
+       yarn: ['$ yarn expo start'],
+       pnpm: ['$ pnpm expo start'],
+       bun: ['$ bun expo start'],
+     }}
+   />
 
 2. Open the development build on your device.
 

@@ -9,6 +9,9 @@ import type { UniversalBaseProps, UniversalStyle } from './types';
  * To match React Native's box model (background fills the full box):
  *   padding → sizing → background → clip → border → opacity
  *   → events → lifecycle → behavior → user escape-hatch
+ *
+ * Style-derived modifiers yield to user-supplied modifiers of the same
+ * `$type`, so the escape hatch can override anything derived from props.
  */
 export declare function transformToModifiers(style: UniversalStyle | undefined, props: Pick<UniversalBaseProps, 'onPress' | 'onAppear' | 'onDisappear' | 'disabled' | 'hidden' | 'testID'>, extraModifiers?: ModifierConfig[], options?: {
     /** Alignment for the frame modifier (used by Column/Row). */

@@ -44,6 +44,7 @@ export default function BottomSheetScreen() {
 
   // Configurable props
   const [skipPartiallyExpanded, setSkipPartiallyExpanded] = React.useState(false);
+  const [initialFullyExpanded, setInitialFullyExpanded] = React.useState(false);
   const [showDragHandle, setShowDragHandle] = React.useState(true);
   const [useCustomDragHandle, setUseCustomDragHandle] = React.useState(false);
   const [sheetGesturesEnabled, setSheetGesturesEnabled] = React.useState(true);
@@ -90,6 +91,15 @@ export default function BottomSheetScreen() {
                   Skip partially expanded
                 </ComposeText>
                 <Switch value={skipPartiallyExpanded} onCheckedChange={setSkipPartiallyExpanded} />
+              </Row>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>
+                  Initial fully expanded
+                </ComposeText>
+                <Switch value={initialFullyExpanded} onCheckedChange={setInitialFullyExpanded} />
               </Row>
               <Row
                 modifiers={[fillMaxWidth()]}
@@ -201,6 +211,7 @@ export default function BottomSheetScreen() {
           ref={sheetRef}
           onDismissRequest={() => setShowSheet(false)}
           skipPartiallyExpanded={skipPartiallyExpanded}
+          initialFullyExpanded={initialFullyExpanded}
           showDragHandle={showDragHandle}
           sheetGesturesEnabled={sheetGesturesEnabled}
           properties={{

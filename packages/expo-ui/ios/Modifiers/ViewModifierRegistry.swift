@@ -1780,6 +1780,10 @@ extension ViewModifierRegistry {
       return try DynamicTypeSizeModifier(from: params, appContext: appContext)
     }
 
+    register("imageScale") { params, appContext, _ in
+      return try ImageScaleModifier(from: params, appContext: appContext)
+    }
+
     register("gridCellUnsizedAxes") { params, appContext, _ in
       return try GridCellUnsizedAxes(from: params, appContext: appContext)
     }
@@ -1910,6 +1914,10 @@ extension ViewModifierRegistry {
 
     register("widgetURL") { params, appContext, _ in
       return try WidgetURLModifier(from: params, appContext: appContext)
+    }
+
+    register("activityBackgroundTint") { params, appContext, _ in
+      return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
     }
 
     register("keyboardType") { params, appContext, _ in

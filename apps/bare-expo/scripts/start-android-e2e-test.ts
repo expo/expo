@@ -120,7 +120,7 @@ async function testAsync(
       },
     });
     console.timeEnd(TEST_DURATION_LABEL);
-  } catch {
+  } catch (error: unknown) {
     stopLogCollectionController.abort();
     console.timeEnd(TEST_DURATION_LABEL);
     console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
@@ -140,7 +140,7 @@ async function testAsync(
       }
     }
     console.log('\n\n');
-    throw new Error('e2e tests have failed.');
+    throw new Error('e2e tests have failed.', { cause: error });
   } finally {
     endGroup();
     stopLogCollectionController.abort();

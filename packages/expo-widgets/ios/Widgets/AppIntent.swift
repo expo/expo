@@ -53,7 +53,9 @@ struct WidgetUserInteraction: AppIntent {
       return .result()
     }
 
-    let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(source)_layout") ?? ""
+    guard let layout = WidgetsLayoutRegistry.layout(for: source) else {
+      return .result()
+    }
     let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(source)_timeline")
 
     guard let timeline,

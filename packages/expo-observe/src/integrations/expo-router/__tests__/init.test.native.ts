@@ -7,7 +7,7 @@ import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '.
 
 jest.mock('expo-app-metrics', () => {
   const addCustomMetricToSession = jest.fn();
-  const getMainSession = jest.fn(async () => ({ id: 'session-1' }));
+  const getMainSession = jest.fn(() => ({ id: 'session-1' }));
   return {
     __esModule: true,
     default: {
@@ -385,7 +385,7 @@ describe('initListeners', () => {
   });
 
   it('uses getMainSession from AppMetrics for the metric session id', async () => {
-    mockGetMainSession.mockResolvedValueOnce({ id: 'custom-session' });
+    mockGetMainSession.mockReturnValueOnce({ id: 'custom-session' });
     dispatch(events, 'NAVIGATE');
     focus(events, 'a');
     await new Promise((resolve) => setImmediate(resolve));

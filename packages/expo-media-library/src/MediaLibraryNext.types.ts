@@ -5,6 +5,7 @@ export * from './types/MediaType';
 export * from './types/MediaTypeFilter';
 export * from './types/GranularPermission';
 export * from './types/AssetInfo';
+export * from './types/AssetMetadata';
 export * from './types/Location';
 export * from './types/MediaLibraryAssetsChangeEvent';
 export * from './types/Shape';
