@@ -76,6 +76,12 @@ public struct DevLauncherRootView: View {
 #endif
 
     navigationStack
+    .onAppear {
+      viewModel.startServerDiscovery()
+    }
+    .onDisappear {
+      viewModel.stopServerDiscovery()
+    }
     .sheet(isPresented: $showingUserProfile) {
       AccountSheet()
         .environmentObject(viewModel)
