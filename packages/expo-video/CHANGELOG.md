@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Re-enable the shared remote command center commands so lock screen controls keep working after expo-audio playback. ([#46753](https://github.com/expo/expo/pull/46753) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 ## 56.1.3 — 2026-06-10
