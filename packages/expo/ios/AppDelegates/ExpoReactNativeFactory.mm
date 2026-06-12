@@ -39,6 +39,25 @@
 // [JS thread]
 - (void)host:(nonnull RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
+  // On reload, this callback runs on the new instance's JS thread while the
+  // previous instance may still be tearing down its runtime on another thread.
+  // Replacing the ivar must not drop the last strong reference to the previous
+  // AppContext at this point: if it deallocates before the old runtime's
+  // teardown reaches the `expo.modules` host object finalizer, the finalizer's
+  // weak reference is already nil so `AppContext.destroy()` never runs, and the
+  // deinit cascade releases the module holders' cached JavaScriptObjects
+  // against a runtime that is being destroyed (EXC_BAD_ACCESS in
+  // `ModuleHolder.deinit` → ExpoModulesJSI). Defer the release so the old
+  // runtime can finish tearing down — its finalizer runs `destroy()` and
+  // clears all JSI wrappers — making the deferred deinit JSI-free.
+  if (_appContext != nil) {
+    EXAppContext *previousAppContext = _appContext;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      // The block's strong capture keeps the previous context alive until here;
+      // it deallocates with the block right after this runs.
+      (void)previousAppContext;
+    });
+  }
   _appContext = [[EXAppContext alloc] init];
 
   // Resolve the React runtime scheduler so ExpoModulesJSI can dispatch work onto
