@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `asyncRoutes` failing on Android and iOS with `Requiring unknown module` ([#46870](https://github.com/expo/expo/pull/46870) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 56.0.11 — 2026-06-10
