@@ -138,11 +138,11 @@ const listWorkspaces = async (): Promise<Record<string, string>> => {
   const { stdout } = await spawnAsync('pnpm', ['list', '--depth=-1', '-r', '--json'], {
     cwd: path.join(__dirname, '../../'),
   });
-  const workspaces: { name: string; path: string; }[] = JSON.parse(stdout);
-  return workspaces.reduce((acc, entry) => {
+  const workspaces: { name: string; path: string }[] = JSON.parse(stdout);
+  return workspaces.reduce<Record<string, string>>((acc, entry) => {
     acc[entry.name] = entry.path;
     return acc;
-  }, {} as Record<string, string>);
+  }, {});
 };
 
 /**
