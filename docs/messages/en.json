@@ -20,6 +20,8 @@
   "codeCopied": "Copied!",
   "codeUseDarkTheme": "Use dark theme",
   "codeWrapLines": "Wrap long lines",
+  "footerPrevious": "Previous",
+  "footerNext": "Next",
   "footerWasHelpful": "Was this doc helpful?",
   "footerThankYouForVote": "Thank you for your vote! 💙",
   "footerShareFeedback": "Share your feedback",
@@ -31,5 +33,11 @@
   "footerThankYouSignUp": "Thank you for the sign up! 💙",
   "footerUnsubscribePrefix": "Unsubscribe at any time. Read our ",
   "footerPrivacyPolicy": "privacy policy",
-  "footerUnsubscribeSuffix": "."
+  "footerUnsubscribeSuffix": ".",
+  "progressTrackerMarkAsRead": "Mark this chapter as read",
+  "progressTrackerMarkAsUnread": "Mark this chapter as unread",
+  "progressTrackerNext": "Next: {title}",
+  "prerequisitesHeading": "Prerequisites",
+  "prerequisitesRequirementSingular": "requirement",
+  "prerequisitesRequirementPlural": "requirements"
 }

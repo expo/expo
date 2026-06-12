@@ -1,5 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { useIntl } from 'react-intl';
 
 import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -13,6 +14,7 @@ type ProgressTrackerProps = {
   currentChapterIndex: number;
   name: string;
   summary: string;
+  chapterTitle?: string;
   nextChapterTitle?: string;
   nextChapterDescription?: string;
   nextChapterLink?: string;
@@ -22,10 +24,12 @@ export function ProgressTracker({
   currentChapterIndex,
   name,
   summary,
+  chapterTitle,
   nextChapterTitle,
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
+  const intl = useIntl();
   const {
     chapters,
     setChapters,
@@ -66,7 +70,7 @@ export function ProgressTracker({
         <div className="flex flex-col items-center justify-center gap-2">
           <p className="flex items-center text-center heading-lg text-default">
             <BookOpen02Icon className="mr-2 size-6! text-icon-secondary max-md:hidden" />{' '}
-            {currentChapter.title}
+            {chapterTitle ?? currentChapter.title}
           </p>
           <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">{summary}</p>
         </div>
@@ -74,16 +78,25 @@ export function ProgressTracker({
           <Checkbox
             id={`chapter-${currentChapterIndex}`}
             checked={currentChapter.completed}
-            label={
-              currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
-            }
+            label={intl.formatMessage({
+              id: currentChapter.completed
+                ? 'progressTrackerMarkAsUnread'
+                : 'progressTrackerMarkAsRead',
+            })}
             onChange={handleCheckboxChange}
           />
         </div>
       </div>
       <>
         <P className="my-4">{nextChapterDescription}</P>
-        <BoxLink href={nextChapterLink} title={`Next: ${nextChapterTitle}`} Icon={BookOpen02Icon} />
+        <BoxLink
+          href={nextChapterLink}
+          title={intl.formatMessage(
+            { id: 'progressTrackerNext' },
+            { title: nextChapterTitle ?? '' }
+          )}
+          Icon={BookOpen02Icon}
+        />
       </>
     </>
   );

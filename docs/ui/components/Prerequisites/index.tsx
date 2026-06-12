@@ -12,6 +12,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useIntl } from 'react-intl';
 
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink';
@@ -38,6 +39,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
     );
     const numberOfRequirements = requirementChildren.length;
     const router = useRouter();
+    const intl = useIntl();
     const [isOpen, setIsOpen] = useState(open);
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const anchorId = 'prerequisites';
@@ -100,7 +102,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
                   'relative inline scroll-m-5',
                   'group-hover:text-secondary group-hover:[&_code]:text-secondary'
                 )}>
-                Prerequisites
+                {intl.formatMessage({ id: 'prerequisitesHeading' })}
               </p>
             </div>
             <LinkBase
@@ -116,7 +118,13 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
           </div>
           <div>
             <p className="text-sm text-secondary">
-              {numberOfRequirements} requirement{numberOfRequirements === 1 ? '' : 's'}
+              {numberOfRequirements}{' '}
+              {intl.formatMessage({
+                id:
+                  numberOfRequirements === 1
+                    ? 'prerequisitesRequirementSingular'
+                    : 'prerequisitesRequirementPlural',
+              })}
             </p>
           </div>
         </summary>

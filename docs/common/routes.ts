@@ -1,7 +1,9 @@
 import {
   buildLocalePath,
+  getJapaneseSectionTitle,
   getCanonicalPath,
   getJapaneseSidebarTitle,
+  hasJapaneseTranslation,
   type SupportedLocale,
 } from '~/common/i18n';
 import * as Utilities from '~/common/utilities';
@@ -221,10 +223,10 @@ function localizeRoute<T extends NavigationRoute | NavigationRouteWithSection>(
   locale: SupportedLocale
 ): T {
   const next: T = { ...route };
-  if (isInternalHref(next.href)) {
+  if (isInternalHref(next.href) && hasJapaneseTranslation(next.href)) {
     next.href = buildLocalePath(next.href, locale);
   }
-  if (isInternalHref(next.as)) {
+  if (isInternalHref(next.as) && hasJapaneseTranslation(next.as as string)) {
     next.as = buildLocalePath(next.as as string, locale);
   }
   if (locale === 'ja' && next.type === 'page' && route.href) {
@@ -232,6 +234,12 @@ function localizeRoute<T extends NavigationRoute | NavigationRouteWithSection>(
     if (translatedTitle) {
       next.name = translatedTitle;
       next.sidebarTitle = translatedTitle;
+    }
+  }
+  if (locale === 'ja' && next.type !== 'page' && route.name) {
+    const translatedSection = getJapaneseSectionTitle(route.name);
+    if (translatedSection) {
+      next.sidebarTitle = translatedSection;
     }
   }
   if (next.children) {
@@ -242,10 +250,11 @@ function localizeRoute<T extends NavigationRoute | NavigationRouteWithSection>(
 
 export function appendSectionToRoute(route?: NavigationRouteWithSection) {
   if (route?.children) {
+    const sectionName = route.sidebarTitle ?? route.name;
     return route.children.map((entry: NavigationRouteWithSection) =>
       route.type !== 'page'
         ? Object.assign(entry, {
-            section: route.section ? `${route.section} - ${route.name}` : route.name,
+            section: route.section ? `${route.section} - ${sectionName}` : sectionName,
           })
         : route
     );
