@@ -79,9 +79,6 @@ function prepareRenderContext(location, options) {
         context: _ctx_1.ctx,
         wrapper: ({ children }) => ((0, jsx_runtime_1.jsx)(Root, { children: (0, jsx_runtime_1.jsx)("div", { id: "root", children: children }) })),
     });
-    // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-    // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-    Font.resetServerContext();
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
@@ -94,35 +91,37 @@ function prepareRenderContext(location, options) {
     return { headContext, element, getStyleElement, loadedData };
 }
 async function getStaticContent(location, options) {
-    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
-    const html = server_1.default.renderToString((0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }));
-    // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-    const css = server_1.default.renderToStaticMarkup(getStyleElement());
-    let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
-    output = output.replace('</head>', `${css}</head>`);
-    const fonts = Font.getServerResources();
-    debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-    // Inject static fonts loaded with expo-font
-    output = output.replace('</head>', `${fonts.join('')}</head>`);
-    if (loadedData) {
-        output = output.replace('</head>', `${(0, html_1.createLoaderDataScriptAsString)(loadedData)}</head>`);
-    }
-    // Inject favicon link tag. Mirrors `assets.favicon` handling in `getStreamingContent`.
-    if (options?.assets?.favicon) {
-        output = output.replace('</head>', `${(0, html_1.createFaviconAsString)(options.assets.favicon)}</head>`);
-    }
-    // Inject hydration assets (JS/CSS bundles). Used in SSR mode
-    if (options?.assets) {
-        if (options.assets.css.length > 0) {
-            const injectedCSS = (0, html_1.createInjectedCssAsString)(options.assets.css);
-            output = output.replace('</head>', `${injectedCSS}\n</head>`);
+    return Font.withServerContext(() => {
+        const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
+        const html = server_1.default.renderToString((0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }));
+        // Eval the CSS after the HTML is rendered so that the CSS is in the same order
+        const css = server_1.default.renderToStaticMarkup(getStyleElement());
+        let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
+        output = output.replace('</head>', `${css}</head>`);
+        const fonts = Font.getServerResources();
+        debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
+        // Inject static fonts loaded with expo-font
+        output = output.replace('</head>', `${fonts.join('')}</head>`);
+        if (loadedData) {
+            output = output.replace('</head>', `${(0, html_1.createLoaderDataScriptAsString)(loadedData)}</head>`);
         }
-        if (options.assets.js.length > 0) {
-            // In non-streaming mode, use deferred scripts in the body
-            output = output.replace('</body>', `${(0, html_1.createInjectedScriptsAsString)(options.assets.js)}\n</body>`);
+        // Inject favicon link tag. Mirrors `assets.favicon` handling in `getStreamingContent`.
+        if (options?.assets?.favicon) {
+            output = output.replace('</head>', `${(0, html_1.createFaviconAsString)(options.assets.favicon)}</head>`);
         }
-    }
-    return '<!DOCTYPE html>' + output;
+        // Inject hydration assets (JS/CSS bundles). Used in SSR mode
+        if (options?.assets) {
+            if (options.assets.css.length > 0) {
+                const injectedCSS = (0, html_1.createInjectedCssAsString)(options.assets.css);
+                output = output.replace('</head>', `${injectedCSS}\n</head>`);
+            }
+            if (options.assets.js.length > 0) {
+                // In non-streaming mode, use deferred scripts in the body
+                output = output.replace('</body>', `${(0, html_1.createInjectedScriptsAsString)(options.assets.js)}\n</body>`);
+            }
+        }
+        return '<!DOCTYPE html>' + output;
+    });
 }
 function mixHeadComponentsWithStaticResults(helmet, html) {
     const { headTags, htmlAttributes, bodyAttributes } = (0, html_1.serializeHelmetToHtml)(helmet);
