@@ -49,11 +49,17 @@ struct DevServersView: View {
 
       LazyVStack(alignment: .leading, spacing: 6) {
         if viewModel.devServers.isEmpty {
-          Text("No development servers found")
-            .foregroundColor(.primary)
-            .multilineTextAlignment(.leading)
+          if viewModel.permissionStatus != .denied {
+            HStack {
+              Text("Searching for development servers...")
+                .foregroundColor(.secondary)
+              Spacer()
+              ProgressView()
+                .controlSize(.small)
+            }
             .padding()
-          Divider()
+            Divider()
+          }
         } else {
           ForEach(viewModel.devServers, id: \.self) { server in
             DevServerRow(server: server) {
@@ -66,12 +72,6 @@ struct DevServersView: View {
         }
         enterUrl
       }
-    }
-    .onAppear {
-      viewModel.startServerDiscovery()
-    }
-    .onDisappear {
-      viewModel.stopServerDiscovery()
     }
   }
 

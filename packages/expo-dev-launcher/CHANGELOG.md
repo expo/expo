@@ -12,6 +12,7 @@
 - [iOS] Improve the Updates tab empty state with clearer guidance on how to publish an update.
 - [iOS] Present the development server info dialog as a native sheet.
 - [iOS] Reduce accidental logout in the account selector with a confirmation step and a less prominent button, and add more spacing around the header title.
+- [iOS] Make the development server list reliable, keep discovery running across tab switches, periodically re-verify discovered servers, add pull-to-refresh on the Home tab, and show a searching state instead of "No development servers found".
 
 ### 💡 Others
 
