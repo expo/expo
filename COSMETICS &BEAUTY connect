@@ -1,0 +1,18 @@
+# 1. Install EAS CLI
+npm install -g eas-cli
+
+# 2. Login to your Expo account
+eas login
+
+# 3. Go into the mobile folder
+cd apps/mobile
+
+# 4. Open eas-setup.sh, fill in your real values, then run it
+nano eas-setup.sh        # edit the values at the top
+bash eas-setup.sh        # push all secrets to EAS
+
+# 5. Build the production .aab for Google Play
+eas build --platform android --profile production
+
+# 6. (Optional) Submit directly to Play Store
+eas submit --platform android --profile productioncom.cbconnect.app
