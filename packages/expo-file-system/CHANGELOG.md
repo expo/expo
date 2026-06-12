@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- Add `File.preview()` and `File.canPreview()` methods for opening files with platform-native preview flows. (by [@eliotgevers](https://github.com/eliotgevers))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

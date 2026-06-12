@@ -48,6 +48,26 @@ export type FileWriteOptions = {
   append?: boolean;
 };
 
+export type FileCanPreviewOptions = {
+  /**
+   * MIME type of the file. Android uses this value to find a matching app for the preview intent.
+   * If omitted, the MIME type defaults to the file's `type` property.
+   */
+  mimeType?: string;
+};
+
+export type FilePreviewOptions = {
+  /**
+   * Optional display title for the preview when the platform supports one.
+   */
+  title?: string;
+  /**
+   * MIME type of the file. Android uses this value to find a matching app for the preview intent.
+   * If omitted, the MIME type defaults to the file's `type` property.
+   */
+  mimeType?: string;
+};
+
 /**
  * Specifies the access mode when opening a file handle.
  */
