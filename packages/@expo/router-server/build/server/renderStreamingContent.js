@@ -53,10 +53,12 @@ const _ctx_1 = require("expo-router/_ctx");
 const head_1 = __importDefault(require("expo-router/head"));
 const server_1 = require("expo-router/internal/server");
 const static_1 = require("expo-router/internal/static");
+const react_1 = __importDefault(require("react"));
 const server_2 = __importDefault(require("react-dom/server"));
 const getRootComponent_1 = require("../static/getRootComponent");
 const debug_1 = require("../utils/debug");
-const react_1 = require("../utils/react");
+const react_2 = require("../utils/react");
+const streams_1 = require("../utils/streams");
 const debug = (0, debug_1.createDebug)('expo:router:server:renderStreamingContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
@@ -98,7 +100,19 @@ function prepareRenderContext(location, options) {
 function FontResources() {
     const descriptors = Font.getServerResourceDescriptors();
     debug(`Pushing fonts: (count: ${descriptors.length})`, descriptors);
-    return (0, react_1.createInjectedFontsAsNodes)(descriptors);
+    return (0, react_2.createInjectedFontsAsNodes)(descriptors);
+}
+/**
+ * Renders the currently registered `useServerInsertedHTML()` callbacks to static HTML.
+ * Callbacks are rendered outside the app's React tree (matching Next.js semantics), so
+ * they cannot rely on app context and must not suspend. Each callback is responsible
+ * for returning `null` once its content has already been flushed.
+ */
+function renderServerInsertedHTML(callbacks) {
+    if (callbacks.size === 0) {
+        return '';
+    }
+    return server_2.default.renderToStaticMarkup((0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: [...callbacks].map((callback, index) => ((0, jsx_runtime_1.jsx)(react_1.default.Fragment, { children: callback() }, index))) }));
 }
 /**
  * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
@@ -106,10 +120,10 @@ function FontResources() {
  */
 async function getStreamingContent(location, options) {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
-    const { headNodes: headCssNodes } = (0, react_1.createInjectedCssAsNodes)(options?.assets?.css ?? []);
-    const { headNodes: inlineCssNodes } = (0, react_1.createInjectedInlineCssAsNodes)(options?.assets?.inlineCss);
+    const { headNodes: headCssNodes } = (0, react_2.createInjectedCssAsNodes)(options?.assets?.css ?? []);
+    const { headNodes: inlineCssNodes } = (0, react_2.createInjectedInlineCssAsNodes)(options?.assets?.inlineCss);
     const faviconNode = options?.assets?.favicon
-        ? (0, react_1.createFaviconAsNode)(options?.assets?.favicon)
+        ? (0, react_2.createFaviconAsNode)(options?.assets?.favicon)
         : undefined;
     const serverDocumentData = {
         headNodes: [
@@ -121,11 +135,14 @@ async function getStreamingContent(location, options) {
         ].filter(Boolean),
         bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {}, "font-resources")],
     };
-    return await server_2.default.renderToReadableStream((0, jsx_runtime_1.jsx)(server_1.ServerDocument, { data: serverDocumentData, children: (0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }) }), {
+    const serverInsertedHTMLCallbacks = new Set();
+    const stream = await server_2.default.renderToReadableStream((0, jsx_runtime_1.jsx)(server_1.ServerInsertedHTMLContext.Provider, { value: (callback) => {
+            serverInsertedHTMLCallbacks.add(callback);
+        }, children: (0, jsx_runtime_1.jsx)(server_1.ServerDocument, { data: serverDocumentData, children: (0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }) }) }), {
         // TODO(@hassankhan): Experiment and see if we can calculate a better default
         // We're doubling the default here so non-JavaScript renders show some content
         progressiveChunkSize: 12800 * 2,
-        bootstrapScriptContent: (0, react_1.getBootstrapContents)({ hydrate: true, loadedData }),
+        bootstrapScriptContent: (0, react_2.getBootstrapContents)({ hydrate: true, loadedData }),
         bootstrapScripts: options?.assets?.js,
         signal: options?.request?.signal,
         onError(error) {
@@ -135,6 +152,7 @@ async function getStreamingContent(location, options) {
             console.error('SSR streaming render error:', error);
         },
     });
+    return stream.pipeThrough((0, streams_1.createServerInsertedHTMLTransform)(() => renderServerInsertedHTML(serverInsertedHTMLCallbacks)));
 }
 var metadata_1 = require("./metadata");
 Object.defineProperty(exports, "resolveMetadata", { enumerable: true, get: function () { return metadata_1.resolveMetadata; } });

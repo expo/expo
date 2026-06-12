@@ -11,6 +11,7 @@ export type { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
 export { SuspenseFallback, type SuspenseFallbackProps } from './views/SuspenseFallback';
 export type { ScreenProps } from './useScreens';
+export { useServerInsertedHTML, type ServerInsertedHTMLCallback, } from './server/ServerInsertedHTML';
 /**
  * @hidden
  */

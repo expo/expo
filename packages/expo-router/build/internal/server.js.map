@@ -1,1 +1,1 @@
-{"version":3,"file":"server.js","sourceRoot":"","sources":["../../src/internal/server.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,2DAAyC","sourcesContent":["export * from '../server/ServerDocument';\n"]}
+{"version":3,"file":"server.js","sourceRoot":"","sources":["../../src/internal/server.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,2DAAyC;AACzC,+DAA6C","sourcesContent":["export * from '../server/ServerDocument';\nexport * from '../server/ServerInsertedHTML';\n"]}
