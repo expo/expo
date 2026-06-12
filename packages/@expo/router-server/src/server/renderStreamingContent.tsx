@@ -86,10 +86,6 @@ function prepareRenderContext(location: URL, options?: GetStreamingContentOption
     ),
   });
 
-  // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-  // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-  Font.resetServerContext();
-
   // This MUST be run before `ReactDOMServer.renderToString` to prevent
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
@@ -106,6 +102,8 @@ function prepareRenderContext(location: URL, options?: GetStreamingContentOption
 }
 
 function FontResources() {
+  // NOTE(@hassankhan): runs once during the shell pass; fonts loaded inside late-resolving
+  // Suspense boundaries register after this and won't be emitted.
   const descriptors = Font.getServerResourceDescriptors();
   debug(`Pushing fonts: (count: ${descriptors.length})`, descriptors);
   return createInjectedFontsAsNodes(descriptors);
@@ -119,51 +117,55 @@ export async function getStreamingContent(
   location: URL,
   options?: GetStreamingContentOptions
 ): Promise<ReadableStream<Uint8Array>> {
-  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
-    location,
-    options
-  );
+  return Font.withServerContext(() => {
+    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
+      location,
+      options
+    );
 
-  const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
-  const { headNodes: inlineCssNodes } = createInjectedInlineCssAsNodes(options?.assets?.inlineCss);
-  const faviconNode = options?.assets?.favicon
-    ? createFaviconAsNode(options?.assets?.favicon)
-    : undefined;
+    const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
+    const { headNodes: inlineCssNodes } = createInjectedInlineCssAsNodes(
+      options?.assets?.inlineCss
+    );
+    const faviconNode = options?.assets?.favicon
+      ? createFaviconAsNode(options?.assets?.favicon)
+      : undefined;
 
-  const serverDocumentData = {
-    headNodes: [
-      ...(options?.metadata?.headNodes ?? []),
-      faviconNode,
-      getStyleElement({ key: 'rnw-style-element' }),
-      ...(headCssNodes ?? []),
-      ...(inlineCssNodes ?? []),
-    ].filter(Boolean),
-    bodyNodes: [<FontResources key="font-resources" />],
-  };
+    const serverDocumentData = {
+      headNodes: [
+        ...(options?.metadata?.headNodes ?? []),
+        faviconNode,
+        getStyleElement({ key: 'rnw-style-element' }),
+        ...(headCssNodes ?? []),
+        ...(inlineCssNodes ?? []),
+      ].filter(Boolean),
+      bodyNodes: [<FontResources key="font-resources" />],
+    };
 
-  return await ReactDOMServer.renderToReadableStream(
-    <ServerDocument data={serverDocumentData}>
-      {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
-      <Head.Provider context={headContext}>
-        <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-      </Head.Provider>
-    </ServerDocument>,
-    {
-      // TODO(@hassankhan): Experiment and see if we can calculate a better default
-      // We're doubling the default here so non-JavaScript renders show some content
-      progressiveChunkSize: 12800 * 2,
-      bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
-      bootstrapScripts: options?.assets?.js,
-      signal: options?.request?.signal,
-      onError(error) {
-        if (options?.request?.signal.aborted) {
-          return;
-        }
+    return ReactDOMServer.renderToReadableStream(
+      <ServerDocument data={serverDocumentData}>
+        {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
+        <Head.Provider context={headContext}>
+          <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
+        </Head.Provider>
+      </ServerDocument>,
+      {
+        // TODO(@hassankhan): Experiment and see if we can calculate a better default
+        // We're doubling the default here so non-JavaScript renders show some content
+        progressiveChunkSize: 12800 * 2,
+        bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
+        bootstrapScripts: options?.assets?.js,
+        signal: options?.request?.signal,
+        onError(error) {
+          if (options?.request?.signal.aborted) {
+            return;
+          }
 
-        console.error('SSR streaming render error:', error);
-      },
-    }
-  );
+          console.error('SSR streaming render error:', error);
+        },
+      }
+    );
+  });
 }
 
 export { resolveMetadata } from './metadata';
