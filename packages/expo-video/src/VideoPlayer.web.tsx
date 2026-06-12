@@ -1,8 +1,10 @@
 import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
+import { useState } from 'react';
 
 import type {
   BufferOptions,
   PlayerError,
+  PlayerBuilderOptions,
   VideoPlayerStatus,
   VideoSource,
   VideoPlayer,
@@ -20,9 +22,10 @@ import resolveAssetSource from './resolveAssetSource';
 export function useVideoPlayer(
   source: VideoSource,
   setup?: (player: VideoPlayer) => void,
-  _playerBuilderOptions?: unknown
+  _playerBuilderOptions?: PlayerBuilderOptions
 ): VideoPlayer {
   const parsedSource = typeof source === 'string' ? { uri: source } : source;
+  const [forceRecreateCount, setForceRecreateCount] = useState(0);
 
   return useReleasingSharedObjectWithLifecycle(
     {
@@ -31,14 +34,18 @@ export function useVideoPlayer(
         setup?.(player);
         return player;
       },
-      shouldRecreate: () => false,
+      shouldRecreate: (_player, { previousDependencies, dependencies }) => {
+        // Recreate if replaceAsync failed ([1]).
+        return previousDependencies[1] !== dependencies[1];
+      },
       update: (player) => {
-        player.replaceAsync(parsedSource).catch((error) => {
-          console.error('expo-video: Failed to replace video source:', error);
+        // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
+        player.replaceAsync(parsedSource).catch(() => {
+          setForceRecreateCount((c) => c + 1);
         });
       },
     },
-    [JSON.stringify(source)]
+    [JSON.stringify(source), forceRecreateCount] // [0] source, [1] recreate counter
   );
 }
 
