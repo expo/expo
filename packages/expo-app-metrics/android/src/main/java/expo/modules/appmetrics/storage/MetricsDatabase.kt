@@ -23,8 +23,8 @@ object MetricsConstants {
 }
 
 @Database(
-  entities = [Metric::class, LogRecord::class, Session::class],
-  version = 15,
+  entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class],
+  version = 16,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -33,6 +33,8 @@ abstract class MetricsDatabase : RoomDatabase() {
   abstract fun logDao(): LogDao
 
   abstract fun sessionDao(): SessionDao
+
+  abstract fun crashReportDao(): CrashReportDao
 
   companion object {
     @Volatile
@@ -166,6 +168,46 @@ data class SessionWithLogs(
   val logs: List<LogRecord>
 )
 
+@Entity(
+  tableName = "crash_reports",
+  indices = [Index(value = ["sessionId"], unique = true)],
+  foreignKeys = [
+    ForeignKey(
+      entity = Session::class,
+      parentColumns = ["id"],
+      childColumns = ["sessionId"],
+      onDelete = ForeignKey.CASCADE
+    )
+  ]
+)
+data class CrashReportEntity(
+  /** unique id, so that orphaned crash reports can be identified */
+  @PrimaryKey val id: String = UUID.randomUUID().toString(),
+  /** Owning session id, or `null` for an orphan report. Unique among non-null values. */
+  val sessionId: String? = null,
+  /** JSON-encoded `CrashReport` payload. */
+  val payload: String,
+  /**
+   * ISO 8601 insert time. Only used to age out orphan reports (`sessionId` is
+   * null) — attributed reports are pruned with their session via the FK cascade.
+   */
+  val createdAt: String
+)
+
+data class SessionWithChildren(
+  @Embedded val session: Session,
+  @Relation(parentColumn = "id", entityColumn = "sessionId")
+  val metrics: List<Metric>,
+  @Relation(parentColumn = "id", entityColumn = "sessionId")
+  val logs: List<LogRecord> = emptyList(),
+  @Relation(parentColumn = "id", entityColumn = "sessionId")
+  val crashReports: List<CrashReportEntity> = emptyList()
+) {
+  /** The session's attributed crash report payload, or `null` if it didn't crash. */
+  val crashReportPayload: String?
+    get() = crashReports.firstOrNull()?.payload
+}
+
 @Dao
 interface MetricDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -197,12 +239,44 @@ interface LogDao {
 }
 
 @Dao
+interface CrashReportDao {
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun upsert(crashReport: CrashReportEntity)
+
+  @Query("SELECT * FROM crash_reports WHERE sessionId = :sessionId")
+  suspend fun getBySessionId(sessionId: String): CrashReportEntity?
+
+  // Orphan reports — crashes not attributed to any session (startup crashes
+  // before the session existed, or native crashes that couldn't be attributed).
+  @Query("SELECT * FROM crash_reports WHERE sessionId IS NULL ORDER BY createdAt DESC")
+  suspend fun getOrphans(): List<CrashReportEntity>
+
+  // Ages out orphan reports (no owning session) past the retention window.
+  // Attributed reports need no query here — the FK cascade prunes them with
+  // their session in `deleteSessionsOlderThan`.
+  @Query("DELETE FROM crash_reports WHERE createdAt < :cutoffTimestamp AND sessionId IS NULL")
+  suspend fun deleteOrphansOlderThan(cutoffTimestamp: String)
+
+  @Query("DELETE FROM crash_reports")
+  suspend fun deleteAll()
+}
+
+@Dao
 interface SessionDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   suspend fun insert(session: Session)
 
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getById(id: String): Session?
+
+  // The most recent session other than `:currentSessionId` (null matches all
+  // rows, so it returns the latest of any).
+  @Query(
+    "SELECT id FROM sessions " +
+      "WHERE :currentSessionId IS NULL OR id != :currentSessionId " +
+      "ORDER BY startTimestamp DESC LIMIT 1"
+  )
+  suspend fun getPreviousMainSessionId(currentSessionId: String?): String?
 
   @Query("UPDATE sessions SET isActive = 0, endTimestamp = :endTimestamp WHERE id = :id")
   suspend fun stopSessionAt(
@@ -237,7 +311,7 @@ interface SessionDao {
 
   @Transaction
   @Query("SELECT * FROM sessions WHERE isActive = 0 ORDER BY startTimestamp DESC")
-  suspend fun getInactive(): List<SessionWithMetrics>
+  suspend fun getInactive(): List<SessionWithChildren>
 
   @Transaction
   @Query("SELECT * FROM sessions WHERE id = :id")

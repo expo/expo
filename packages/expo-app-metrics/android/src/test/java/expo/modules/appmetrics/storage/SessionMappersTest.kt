@@ -52,13 +52,13 @@ class SessionMappersTest {
   )
 
   @Test
-  fun `JsSession_fromSessionWithMetrics exposes the JS-facing field names`() {
-    val swm = SessionWithMetrics(
+  fun `JsSession_fromSessionWithChildren exposes the JS-facing field names`() {
+    val swc = SessionWithChildren(
       session = makeSession(id = "abc", startTimestamp = "2025-06-15T10:00:00.000Z"),
       metrics = emptyList()
     )
 
-    val js = JsDebugSession.fromSessionWithMetrics(swm)
+    val js = JsDebugSession.fromSessionWithChildren(swc)
 
     assertEquals("abc", js.id)
     assertEquals("main", js.type)
@@ -68,13 +68,13 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `JsSession_fromSessionWithMetrics surfaces endDate when set`() {
-    val swm = SessionWithMetrics(
+  fun `JsSession_fromSessionWithChildren surfaces endDate when set`() {
+    val swc = SessionWithChildren(
       session = makeSession(endTimestamp = "2025-01-02T00:00:00.000Z"),
       metrics = emptyList()
     )
 
-    val js = JsDebugSession.fromSessionWithMetrics(swm)
+    val js = JsDebugSession.fromSessionWithChildren(swc)
 
     assertEquals("2025-01-02T00:00:00.000Z", js.endDate)
   }
@@ -118,8 +118,8 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `JsSession_fromSessionWithMetrics surfaces stored logs`() {
-    val swm = SessionWithMetrics(
+  fun `JsSession_fromSessionWithChildren surfaces stored logs`() {
+    val swc = SessionWithChildren(
       session = makeSession(),
       metrics = emptyList(),
       logs = listOf(
@@ -128,7 +128,7 @@ class SessionMappersTest {
       )
     )
 
-    val js = JsDebugSession.fromSessionWithMetrics(swm)
+    val js = JsDebugSession.fromSessionWithChildren(swc)
 
     assertEquals(2, js.logs.size)
     assertEquals("first.event", js.logs[0].name)
@@ -260,5 +260,48 @@ class SessionMappersTest {
     val metric = input.toMetric("session-42")
 
     assertNull(metric.params)
+  }
+
+  @Test
+  fun `JsSession_fromSessionWithChildren decodes the crash report payload`() {
+    val payload =
+      """{"appVersion":"1.0.0","timestampBegin":"2026-06-12T10:00:00Z",""" +
+        """"exceptionReason":"java.lang.IllegalStateException: boom"}"""
+    val value = SessionWithChildren(
+      session = makeSession(),
+      metrics = emptyList(),
+      crashReports = listOf(CrashReportEntity(payload = payload, createdAt = "2026-06-12T10:00:00Z"))
+    )
+
+    val js = JsDebugSession.fromSessionWithChildren(value)
+
+    val crashReport = js.crashReport
+    assertEquals("1.0.0", crashReport?.get("appVersion"))
+    assertEquals("java.lang.IllegalStateException: boom", crashReport?.get("exceptionReason"))
+  }
+
+  @Test
+  fun `JsSession_fromSessionWithChildren yields null crashReport when no payload is stored`() {
+    val value = SessionWithChildren(
+      session = makeSession(),
+      metrics = emptyList()
+    )
+
+    val js = JsDebugSession.fromSessionWithChildren(value)
+
+    assertNull(js.crashReport)
+  }
+
+  @Test
+  fun `JsSession_fromSessionWithChildren yields null crashReport for a malformed payload`() {
+    val value = SessionWithChildren(
+      session = makeSession(),
+      metrics = emptyList(),
+      crashReports = listOf(CrashReportEntity(payload = "{ this is not valid json", createdAt = "2026-06-12T10:00:00Z"))
+    )
+
+    val js = JsDebugSession.fromSessionWithChildren(value)
+
+    assertNull(js.crashReport)
   }
 }

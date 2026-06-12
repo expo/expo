@@ -791,6 +791,37 @@ class SessionManagerTest {
       droppedAttributesCount = 0
     )
 
+  // region getPreviousMainSessionId
+
+  @Test
+  fun `getPreviousMainSessionId returns the most recent session excluding the current one`() =
+    runTest {
+      sessionManager.startSessionWithIdAt("older", "2025-01-01T00:00:00.000Z")
+      sessionManager.startSessionWithIdAt("previous", "2025-01-01T01:00:00.000Z")
+      sessionManager.startSessionWithIdAt("current", "2025-01-01T02:00:00.000Z")
+
+      assertEquals("previous", sessionManager.getPreviousMainSessionId("current"))
+    }
+
+  @Test
+  fun `getPreviousMainSessionId returns the latest session when none is current`() =
+    runTest {
+      sessionManager.startSessionWithIdAt("older", "2025-01-01T00:00:00.000Z")
+      sessionManager.startSessionWithIdAt("newer", "2025-01-01T01:00:00.000Z")
+
+      assertEquals("newer", sessionManager.getPreviousMainSessionId(null))
+    }
+
+  @Test
+  fun `getPreviousMainSessionId returns null when only the current session exists`() =
+    runTest {
+      sessionManager.startSessionWithIdAt("current", "2025-01-01T00:00:00.000Z")
+
+      assertNull(sessionManager.getPreviousMainSessionId("current"))
+    }
+
+  // endregion
+
   private fun createTestMetadata(
     appName: String? = "TestApp",
     appIdentifier: String = "com.test.app",
