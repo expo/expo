@@ -8,12 +8,14 @@ import androidx.annotation.RequiresApi
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.services.FilePermissionService
-import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URI
 
@@ -31,7 +33,7 @@ class FileSystemModule : Module() {
 
   private fun writeToFile(
     file: FileSystemFile,
-    content: Either<String, TypedArray>,
+    content: Either<String, NativeArrayBuffer>,
     options: WriteOptions?
   ) {
     val append = options?.append ?: false
@@ -43,8 +45,8 @@ class FileSystemModule : Module() {
           file.write(it, append)
         }
       }
-    } else if (content.`is`(TypedArray::class)) {
-      content.get(TypedArray::class).let {
+    } else if (content.`is`(NativeArrayBuffer::class)) {
+      content.get(NativeArrayBuffer::class).let {
         file.write(it, append)
       }
     }
@@ -159,32 +161,40 @@ class FileSystemModule : Module() {
         file.create(options ?: CreateOptions())
       }
 
-      AsyncFunction("write") Coroutine { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
+      AsyncFunction("write") Coroutine { file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions? ->
+        withContext(Dispatchers.IO) {
+          writeToFile(file, content, options)
+        }
+      }
+
+      Function("writeSync") { file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions? ->
         writeToFile(file, content, options)
       }
 
-      Function("writeSync") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
-        writeToFile(file, content, options)
-      }
-
-      AsyncFunction("text") { file: FileSystemFile ->
-        file.text()
+      AsyncFunction("text") Coroutine { file: FileSystemFile ->
+        withContext(Dispatchers.IO) {
+          file.text()
+        }
       }
 
       Function("textSync") { file: FileSystemFile ->
         file.text()
       }
 
-      AsyncFunction("base64") { file: FileSystemFile ->
-        file.base64()
+      AsyncFunction("base64") Coroutine { file: FileSystemFile ->
+        withContext(Dispatchers.IO) {
+          file.base64()
+        }
       }
 
       Function("base64Sync") { file: FileSystemFile ->
         file.base64()
       }
 
-      AsyncFunction("bytes") { file: FileSystemFile ->
-        file.bytes()
+      AsyncFunction("bytes") Coroutine { file: FileSystemFile ->
+        withContext(Dispatchers.IO) {
+          file.bytes()
+        }
       }
 
       Function("bytesSync") { file: FileSystemFile ->
