@@ -273,7 +273,7 @@ export type LiveActivityEvents = {
 };
 
 export declare class NativeWidgetObject extends SharedObject {
-  constructor(name: string, layout: string);
+  constructor(name: string, layout: string, initialProps?: Record<string, any>);
   reload(): void;
   updateTimeline(entries: ExpoTimelineEntry[]): void;
   getTimeline(): Promise<ExpoTimelineEntry[]>;
@@ -281,12 +281,12 @@ export declare class NativeWidgetObject extends SharedObject {
 
 export declare class NativeLiveActivityFactory extends SharedObject {
   constructor(name: string, layout: string);
-  start(props: string, url?: string): NativeLiveActivity;
+  start(props?: string, url?: string): NativeLiveActivity;
   getInstances(): NativeLiveActivity[];
 }
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
-  update(props: string): Promise<void>;
+  update(props?: string): Promise<void>;
   end(
     dismissalPolicy?: string,
     afterDate?: number,

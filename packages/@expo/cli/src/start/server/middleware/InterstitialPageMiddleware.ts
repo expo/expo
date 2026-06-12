@@ -81,7 +81,13 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
 
     const { exp } = getConfig(this.projectRoot);
     const { appName } = getNameFromConfig(exp);
-    const runtimeVersion = await getRuntimeVersionNullableAsync(this.projectRoot, exp, platform);
+    const runtimeVersion = await getRuntimeVersionNullableAsync(
+      this.projectRoot,
+      exp,
+      // TODO(@kitten): Runtime-version resolution only reads ios/android config
+      // tvos/macos fall back to the shared `runtimeVersion` until they get explicit support
+      platform as 'android' | 'ios'
+    );
     const sdkVersion = exp.sdkVersion ?? null;
 
     return {

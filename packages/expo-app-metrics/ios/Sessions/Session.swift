@@ -1,9 +1,10 @@
 import Foundation
+import ExpoModulesCore
 
 /**
  Session is a time frame during the app's lifetime that tracks various metrics from its start till its end.
  */
-public class Session: MetricsReceiver, @unchecked Sendable {
+public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
   /**
    Unique ID of the session in UUID v4 format.
    */
@@ -28,6 +29,7 @@ public class Session: MetricsReceiver, @unchecked Sendable {
     self.id = UUID().uuidString
     self.startDate = Date.now
     self.type = type
+    super.init()
 
     // The session-row INSERT is fire-and-forget on `AppMetricsActor`. Subsequent writes for this
     // session (metrics, logs, `stop()`, crash reports) all go through the same actor, and tasks on
@@ -56,6 +58,7 @@ public class Session: MetricsReceiver, @unchecked Sendable {
     self.type = type
     self.startDate = startDate
     self.endDate = endDate
+    super.init()
   }
 
   /**
@@ -122,12 +125,47 @@ public class Session: MetricsReceiver, @unchecked Sendable {
 
   let memoryMeter = MemoryMonitoring()
 
+  // MARK: - Reading and recording session data
+
+  /**
+   Metrics recorded against this session, decoded from storage.
+   */
+  @AppMetricsActor
+  func getMetrics() throws -> [Metric] {
+    let rows = try AppMetrics.database?.getMetrics(sessionId: id) ?? []
+    return decodeMetrics(from: rows)
+  }
+
+  /**
+   Log records recorded against this session, decoded from storage.
+   */
+  @AppMetricsActor
+  func getLogs() throws -> [LogRecord] {
+    let rows = try AppMetrics.database?.getLogs(sessionId: id) ?? []
+    return decodeLogs(from: rows)
+  }
+
+  /**
+   Records a metric against this session. JS-facing: errors propagate so the caller's promise rejects.
+   */
+  @AppMetricsActor
+  func addMetric(_ input: SessionMetricInput) throws {
+    try insert(input.toMetric(sessionId: id))
+  }
+
+  // Persists a metric row for this session. Shared by the throwing JS path (`addMetric`) and the
+  // fire-and-forget native push path (`receiveMetric`), which differ only in error handling.
+  @AppMetricsActor
+  private func insert(_ metric: Metric) throws {
+    try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: id))
+  }
+
   // MARK: - MetricsReceiver
 
   @AppMetricsActor
   public func receiveMetric(_ metric: Metric) {
     do {
-      try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: self.id))
+      try insert(metric)
     } catch {
       logger.warn("[AppMetrics] Failed to insert metric \"\(metric.getMetricKey())\" for session \(self.id): \(error.localizedDescription)")
     }

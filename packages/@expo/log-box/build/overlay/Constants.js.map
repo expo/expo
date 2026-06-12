@@ -1,0 +1,1 @@
+{"version":3,"file":"Constants.js","sourceRoot":"","sources":["../../src/overlay/Constants.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,wBAAwB,GAAG,GAAG,CAAC","sourcesContent":["export const SHOW_MORE_MESSAGE_LENGTH = 500;\n"]}

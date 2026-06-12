@@ -91,6 +91,7 @@ export function convertRequest(req, res) {
     };
     if (req.method !== 'GET' && req.method !== 'HEAD') {
         init.body = Readable.toWeb(req);
+        // NOTE(@kitten): Depending on if `@types/node` is used this may not be defined
         init.duplex = 'half';
     }
     return new Request(url.href, init);

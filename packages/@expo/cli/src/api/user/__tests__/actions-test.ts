@@ -1,3 +1,4 @@
+import { isInteractive } from '../../../utils/interactive';
 import { promptAsync } from '../../../utils/prompts';
 import { ApiV2Error } from '../../rest/client';
 import { showLoginPromptAsync } from '../actions';
@@ -5,6 +6,7 @@ import { retryUsernamePasswordAuthWithOTPAsync, UserSecondFactorDeviceMethod } f
 import { loginAsync, browserLoginAsync } from '../user';
 
 jest.mock('../../../log');
+jest.mock('../../../utils/interactive');
 jest.mock('../../../utils/prompts');
 jest.mock('../../rest/client', () => {
   const { ApiV2Error } = jest.requireActual('../../rest/client');
@@ -23,6 +25,10 @@ beforeEach(() => {
 
   jest.mocked(loginAsync).mockClear();
   jest.mocked(browserLoginAsync).mockClear();
+
+  // Default to a non-interactive environment so the credential prompt path is
+  // exercised unless a test opts into an interactive terminal.
+  jest.mocked(isInteractive).mockReturnValue(false);
 });
 
 describe(showLoginPromptAsync, () => {
@@ -117,5 +123,53 @@ describe(showLoginPromptAsync, () => {
 
     expect(browserLoginAsync).toHaveBeenCalledTimes(1);
     expect(browserLoginAsync).toHaveBeenCalledWith({ sso: false });
+  });
+
+  it('defaults to browser login in an interactive terminal when browser is unset', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+
+    await showLoginPromptAsync();
+
+    expect(browserLoginAsync).toHaveBeenCalledTimes(1);
+    expect(browserLoginAsync).toHaveBeenCalledWith({ sso: false });
+    expect(loginAsync).not.toHaveBeenCalled();
+  });
+
+  it('falls back to username/password login in a non-interactive environment', async () => {
+    jest.mocked(isInteractive).mockReturnValue(false);
+    jest
+      .mocked(promptAsync)
+      .mockReset()
+      .mockImplementationOnce(async () => ({ username: 'USERNAME', password: 'PASSWORD' }));
+    jest.mocked(loginAsync).mockImplementation(async () => {});
+
+    await showLoginPromptAsync();
+
+    expect(loginAsync).toHaveBeenCalledTimes(1);
+    expect(browserLoginAsync).not.toHaveBeenCalled();
+  });
+
+  it('uses username/password login when credentials are provided, even in an interactive terminal', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    jest.mocked(loginAsync).mockImplementation(async () => {});
+
+    await showLoginPromptAsync({ username: 'hello', password: 'world' });
+
+    expect(loginAsync).toHaveBeenCalledTimes(1);
+    expect(browserLoginAsync).not.toHaveBeenCalled();
+  });
+
+  it('uses username/password login when browser is explicitly false', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    jest
+      .mocked(promptAsync)
+      .mockReset()
+      .mockImplementationOnce(async () => ({ username: 'USERNAME', password: 'PASSWORD' }));
+    jest.mocked(loginAsync).mockImplementation(async () => {});
+
+    await showLoginPromptAsync({ browser: false });
+
+    expect(loginAsync).toHaveBeenCalledTimes(1);
+    expect(browserLoginAsync).not.toHaveBeenCalled();
   });
 });

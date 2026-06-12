@@ -32,7 +32,14 @@ To capture a screenshot on the web and save it as an image, we'll use a third-pa
 
 Stop the development server and run the following command to install the library:
 
-<Terminal cmd={['$ npm install dom-to-image']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install dom-to-image'],
+    yarn: ['$ yarn add dom-to-image'],
+    pnpm: ['$ pnpm add dom-to-image'],
+    bun: ['$ bun add dom-to-image'],
+  }}
+/>
 
 > **Note:** The `dom-to-image` library is used here for illustrative purposes. For production apps, you may want to explore other solutions or APIs that better suit your specific use case.
 

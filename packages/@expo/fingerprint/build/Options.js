@@ -62,6 +62,11 @@ exports.DEFAULT_IGNORE_PATHS = [
     '**/node_modules/**/*.node',
     '**/node_modules/@img/sharp-*/**/*',
     '**/node_modules/sharp/{build,vendor}/**/*',
+    // Precompiled autolinking patches for external packages
+    '**/node_modules/**/*.podspec.json',
+    // Ignore known 3rd party binaries artifacts
+    // It happens mostly on iOS because the autolinking root is the whole package root as its podspec
+    '**/node_modules/@shopify/react-native-skia/libs/**/*',
 ];
 exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {

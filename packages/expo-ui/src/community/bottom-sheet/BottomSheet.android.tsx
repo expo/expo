@@ -185,7 +185,7 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host style={{ position: 'absolute', width }}>
+        <Host style={{ position: 'absolute', width }} pointerEvents="none">
           <ModalBottomSheet
             ref={sheetRef}
             onDismissRequest={handleDismiss}

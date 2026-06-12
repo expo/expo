@@ -5,6 +5,8 @@ import android.provider.ContactsContract.CommonDataKinds.Organization
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.organization.operations.ExistingOrganization
 import expo.modules.contacts.next.domain.wrappers.DataId
+import expo.modules.contacts.next.extensions.getNullableString
+import expo.modules.contacts.next.extensions.getRequiredString
 
 object OrganizationField : ExtractableField.Data<ExistingOrganization> {
   override val mimeType = Organization.CONTENT_ITEM_TYPE
@@ -19,11 +21,11 @@ object OrganizationField : ExtractableField.Data<ExistingOrganization> {
 
   override fun extract(cursor: Cursor): ExistingOrganization = with(cursor) {
     return ExistingOrganization(
-      dataId = DataId(getString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
-      company = getString(getColumnIndexOrThrow(Organization.COMPANY)),
-      department = getString(getColumnIndexOrThrow(Organization.DEPARTMENT)),
-      jobTitle = getString(getColumnIndexOrThrow(Organization.TITLE)),
-      phoneticName = getString(getColumnIndexOrThrow(Organization.PHONETIC_NAME))
+      dataId = DataId(getRequiredString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
+      company = getNullableString(getColumnIndexOrThrow(Organization.COMPANY)),
+      department = getNullableString(getColumnIndexOrThrow(Organization.DEPARTMENT)),
+      jobTitle = getNullableString(getColumnIndexOrThrow(Organization.TITLE)),
+      phoneticName = getNullableString(getColumnIndexOrThrow(Organization.PHONETIC_NAME))
     )
   }
 }

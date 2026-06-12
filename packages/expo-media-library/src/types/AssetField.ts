@@ -7,6 +7,7 @@ export enum AssetField {
   WIDTH = 'width',
   HEIGHT = 'height',
   DURATION = 'duration',
+  IS_FAVORITE = 'isFavorite',
 }
 
 export type AssetFieldValueMap = {
@@ -16,4 +17,5 @@ export type AssetFieldValueMap = {
   [AssetField.WIDTH]: number;
   [AssetField.HEIGHT]: number;
   [AssetField.DURATION]: number;
+  [AssetField.IS_FAVORITE]: boolean;
 };

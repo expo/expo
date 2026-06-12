@@ -63,6 +63,40 @@ export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
   },
 ];
 
+// The following data is for the Build with AI Tutorial (/tutorial/build-with-ai/).
+export const BUILD_WITH_AI_TUTORIAL_CHAPTERS: Chapter[] = [
+  {
+    title: 'Chapter 1: Set up your tools',
+    completed: false,
+    slug: '/tutorial/build-with-ai/set-up-your-tools',
+  },
+  {
+    title: 'Chapter 2: Create your first app',
+    completed: false,
+    slug: '/tutorial/build-with-ai/create-your-first-app',
+  },
+  {
+    title: 'Chapter 3: Build the home screen',
+    completed: false,
+    slug: '/tutorial/build-with-ai/build-the-home-screen',
+  },
+  {
+    title: 'Chapter 4: Add stickers',
+    completed: false,
+    slug: '/tutorial/build-with-ai/add-stickers',
+  },
+  {
+    title: 'Chapter 5: Save your creation',
+    completed: false,
+    slug: '/tutorial/build-with-ai/save-your-creation',
+  },
+  {
+    title: 'Chapter 6: Finishing touches',
+    completed: false,
+    slug: '/tutorial/build-with-ai/finishing-touches',
+  },
+];
+
 // The following data is for the Get started Tutorial (/tutorial/).
 export const GET_STARTED_TUTORIAL_CHAPTERS: Chapter[] = [
   {

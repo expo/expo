@@ -21,7 +21,14 @@ The `expo-type-information` package provides tools to automatically generate Typ
 
 Install the `expo-type-information` library:
 
-<Terminal cmd={['$ npx expo install expo-type-information']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-type-information'],
+    yarn: ['$ yarn expo install expo-type-information'],
+    pnpm: ['$ pnpm expo install expo-type-information'],
+    bun: ['$ bun expo install expo-type-information'],
+  }}
+/>
 
 To use this package you also need to have `sourcekitten` installed. You can use macOS package manager like Homebrew.
 
@@ -39,6 +46,7 @@ Every CLI command in this library uses the following common options for configur
 | `-m --module-path <modulePath>`        | Path to Expo module root directory.                                                                                                                                                                                                                              |                    |
 | `-o, --output-path <filePath>`         | Path to save the generated output. If this option is not provided the generated output is printed to console.                                                                                                                                                    |                    |
 | `-t, --type-inference <typeInference>` | Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`. | `SIMPLE_INFERENCE` |
+| `-s, --skip-unicode-character-mapping` | Skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.                                                                         |                    |
 | `-w --watcher`                         | Starts a watcher that checks for changes in input-path file.                                                                                                                                                                                                     |                    |
 
 ### Main commands

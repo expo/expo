@@ -1,3 +1,4 @@
+import type { Color } from './types';
 /**
  * Specifies the how to render an Image when using the WidgetKit/WidgetRenderingMode/accented mode.
  * @param renderingMode - A constant describing how the Image should be rendered.
@@ -11,4 +12,10 @@ export declare const widgetAccentedRenderingMode: (renderingMode: "fullColor" | 
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/widgetURL(_:)).
  */
 export declare const widgetURL: (url: string) => import("./createModifier").ModifierConfig;
+/**
+ * Sets the background tint color for a Live Activity.
+ * @param color - The background tint color, or `null` to use the system default.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/activitybackgroundtint(_:)).
+ */
+export declare const activityBackgroundTint: (color: Color | null) => import("./createModifier").ModifierConfig;
 //# sourceMappingURL=widgets.d.ts.map

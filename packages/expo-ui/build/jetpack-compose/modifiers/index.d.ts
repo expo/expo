@@ -101,6 +101,37 @@ export declare const border: (borderWidth: number, borderColor: ColorValue) => i
  */
 export declare const shadow: (elevation: number) => import("./createModifier").ModifierConfig;
 /**
+ * Options for the `dropShadow` and `innerShadow` modifiers.
+ */
+export type ShadowConfig = {
+    /** Blur radius of the shadow in dp. */
+    radius?: number;
+    /** Amount to expand (positive) or contract (negative) the shadow geometry in dp. */
+    spread?: number;
+    /** Shadow color string (hex). Defaults to black. */
+    color?: ColorValue;
+    /** Horizontal offset of the shadow in dp. */
+    offsetX?: number;
+    /** Vertical offset of the shadow in dp. */
+    offsetY?: number;
+    /** Shadow opacity, from 0.0 to 1.0. */
+    alpha?: number;
+};
+/**
+ * Draws a shadow behind the view with control over the blur radius, spread, offset, and color. Unlike
+ * `shadow`, it does not require an elevation value.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export declare const dropShadow: (shape: BuiltinShape, config?: ShadowConfig) => import("./createModifier").ModifierConfig;
+/**
+ * Draws a shadow inside the view to create an inset effect. The view's `background` must come before
+ * this modifier for the shadow to render.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export declare const innerShadow: (shape: BuiltinShape, config?: ShadowConfig) => import("./createModifier").ModifierConfig;
+/**
  * Sets the opacity/alpha of the view.
  * @param alpha - Opacity value (0.0 to 1.0).
  */
@@ -252,6 +283,17 @@ export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void
  * @param handler - Function called with the new size.
  */
 export declare const onSizeChanged: (handler: (size: {
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
+ * Calls the handler whenever the composable is positioned, with its position and size.
+ * `x` and `y` are relative to the window. All values are in dp.
+ * @param handler - Function called with the new layout.
+ */
+export declare const onGloballyPositioned: (handler: (layout: {
+    x: number;
+    y: number;
     width: number;
     height: number;
 }) => void) => import("./createModifier").ModifierConfig;

@@ -1,3 +1,4 @@
+import Foundation
 import ExpoModulesCore
 import EXUpdatesInterface
 
@@ -33,6 +34,8 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       )
     }
 
+    // TODO(@ubax): move `logEvent` onto the Session shared object so logs are recorded via a
+    // session handle (like `addMetric`), instead of writing to `mainSession` directly here.
     Function("logEvent") { (name: String, options: LogEventOptions?) in
       guard let validatedName = validateEventName(name) else {
         return
@@ -75,10 +78,11 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       // no-op
     }
 
-    AsyncFunction("getAllSessions") { () -> [StoredSession] in
+    // Debug-only: the inactive (ended) sessions
+    AsyncFunction("getInactiveSessions") { () -> [StoredSession] in
       return try await AppMetricsActor.isolated {
         return try AppMetrics.database?
-          .getAllSessionsWithChildren()
+          .getInactiveSessionsWithChildren()
           .map { StoredSession(from: $0) } ?? []
       }.value
     }
@@ -90,16 +94,44 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }.value
     }
 
-    AsyncFunction("getMainSession") { () -> StoredSession? in
-      return try await AppMetricsActor.isolated {
-        let mainSessionId = AppMetrics.mainSession.id
-        guard let row = try AppMetrics.database?
-          .getAllSessionsWithChildren()
-          .first(where: { $0.session.id == mainSessionId }) else {
-          return nil
-        }
-        return StoredSession(from: row)
-      }.value
+    // Synchronous and never nil: the main session is the process-lifetime singleton, always
+    // available. It's a `SharedObject`, so returning the same instance hands JS the identical shared
+    // object on every call (`getMainSession() === getMainSession()`).
+    Function("getMainSession") { () -> Session in
+      return AppMetrics.mainSession
+    }
+
+    // Returns the current foreground session, or `nil` when the app is not in the foreground.
+    // Reads the actor-isolated `foregroundSession`, so it's async. The instance is the shared object
+    // itself, so JS gets the same object while the session is current and a new one after it rotates.
+    AsyncFunction("getForegroundSession") { () -> Session? in
+      return try await AppMetricsActor.isolated { AppMetrics.foregroundSession }.value
+    }
+
+    Class("Session", Session.self) {
+      Property("id") { $0.id }
+      Property("type") { $0.type.rawValue }
+      Property("startDate") { $0.startDate.ISO8601Format() }
+
+      AsyncFunction("isActive") { (session: Session) -> Bool in
+        return try await AppMetricsActor.isolated { session.isActive }.value
+      }
+
+      AsyncFunction("getEndDate") { (session: Session) -> String? in
+        return try await AppMetricsActor.isolated { session.endDate?.ISO8601Format() }.value
+      }
+
+      AsyncFunction("getMetrics") { (session: Session) -> [Metric] in
+        return try await AppMetricsActor.isolated { try session.getMetrics() }.value
+      }
+
+      AsyncFunction("getLogs") { (session: Session) -> [LogRecord] in
+        return try await AppMetricsActor.isolated { try session.getLogs() }.value
+      }
+
+      AsyncFunction("addMetric") { (session: Session, input: SessionMetricInput) in
+        try await AppMetricsActor.isolated { try session.addMetric(input) }.value
+      }
     }
 
     Function("simulateCrashReport") {
@@ -117,6 +149,16 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       case .stackOverflow: CrashTriggers.stackOverflow()
       }
     }
+
+    Class(NetworkRequestObserver.self) {
+      Constructor { (filter: NetworkRequestFilter?) in
+        return NetworkRequestObserver(filter: filter)
+      }
+
+      Function("setFilter") { (observer: NetworkRequestObserver, filter: NetworkRequestFilter?) in
+        observer.setFilter(filter)
+      }
+    }
   }
 
   public func updatesStateDidChange(_ event: [String : Any]) {
@@ -127,6 +169,16 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
   }
+}
+
+// Loads a session and its children from the database and wraps it as a `StoredSession`,
+// returning `nil` when the database is unavailable or the session no longer exists.
+@AppMetricsActor
+private func storedSession(id: String) throws -> StoredSession? {
+  guard let row = try AppMetrics.database?.getSessionWithChildren(id: id) else {
+    return nil
+  }
+  return StoredSession(from: row)
 }
 
 struct MetricAttributes: Record {

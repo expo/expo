@@ -1,4 +1,9 @@
-import { getExtensions, getBareExtensions, getLanguageExtensionsInOrder } from '../extensions';
+import {
+  getExtensions,
+  getBareExtensions,
+  getLanguageExtensionsInOrder,
+  getPlatformExtensions,
+} from '../extensions';
 
 describe(getExtensions, () => {
   it(`enforces \`string[]\``, async () => {
@@ -20,6 +25,25 @@ describe(getBareExtensions, () => {
 
   it(`creates extensions for iOS`, async () => {
     expect(getBareExtensions(['ios', 'native'])).toMatchSnapshot();
+  });
+});
+
+describe(getPlatformExtensions, () => {
+  it(`expands a platform's extensions in order with platform-less last`, () => {
+    expect(getPlatformExtensions('tvos', ['js', 'ts'])).toStrictEqual([
+      'tvos.js',
+      'tvos.ts',
+      'ios.js',
+      'ios.ts',
+      'native.js',
+      'native.ts',
+      'js',
+      'ts',
+    ]);
+  });
+
+  it(`returns null for platforms without a custom order`, () => {
+    expect(getPlatformExtensions('ios', ['js'])).toBeNull();
   });
 });
 

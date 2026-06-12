@@ -4,6 +4,10 @@ interface GenerateModulesProviderParams {
     targetPath: string;
     entitlementPath: string | null;
     watchedDirectories: string[];
+    inlineModulesTargets: {
+        mainTarget?: string;
+        targets: string[];
+    };
     appRoot: string;
 }
 /** Generates ExpoModulesProvider file listing all packages to link (Apple-only)

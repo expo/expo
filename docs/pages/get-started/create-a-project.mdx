@@ -10,6 +10,8 @@ Expo is a React Native framework that makes developing Android and iOS apps easi
 
 We also make [Expo Application Services (EAS)](https://expo.dev/eas), a set of services that complement the Expo framework in each step of the development process.
 
+> **info** **New to programming?** You can build your first Expo app by prompting an AI coding agent instead of writing code. Follow the [Build with AI tutorial](/tutorial/build-with-ai/introduction/). It covers setup from scratch.
+
 ## System requirements
 
 - [Node.js (LTS)](https://nodejs.org/en/).
@@ -19,9 +21,16 @@ We recommend starting with the default project created by `create-expo-app`. The
 
 To create a new project, run the following command:
 
-<Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-56']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
+    yarn: ['$ yarn create expo-app --template default@sdk-56'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
+    bun: ['$ bun create expo --template default@sdk-56'],
+  }}
+/>
 
-> **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 55 project. If you plan to use Expo Go on a physical device, use an SDK 55 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project. You can also choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+> **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project. You can also choose a different template by adding the [`--template` option](/more/create-expo/#--template).
 
 ## Next step
 

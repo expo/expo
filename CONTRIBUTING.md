@@ -128,6 +128,7 @@ All modules should adhere to the style guides which can be found here:
 
 - [Expo Module Infrastructure](guides/Expo%20Module%20Infrastructure.md)
 - [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
+- [Expo Swift Style Guide](guides/Swift%20Style%20Guide.md)
 - [Updating Changelogs](guides/contributing/Updating%20Changelogs.md)
 
 ### Extra Credit

@@ -45,7 +45,14 @@ EAS CLI is used to log in to your Expo account and compile your app using differ
 
 To use EAS CLI, you need to install it globally on your local machine by running the command:
 
-<Terminal cmd={['$ npm install -g eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 You can use `eas --help` in your terminal window to learn more about the available commands. For a complete reference, see [`eas-cli` npm page](https://www.npmjs.com/package/eas-cli).
 
@@ -53,7 +60,14 @@ You can use `eas --help` in your terminal window to learn more about the availab
 
 Expo Doctor is a command-line tool used to diagnose issues in your Expo project. To use it, run the following command in your project's root directory:
 
-<Terminal cmd={['$ npx expo-doctor']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-doctor'],
+    yarn: ['$ yarn dlx expo-doctor'],
+    pnpm: ['$ pnpm dlx expo-doctor'],
+    bun: ['$ bunx expo-doctor'],
+  }}
+/>
 
 This command performs checks and analyzes your project's codebase for common issues in [app config](/workflow/configuration/) and **package.json** files, dependency compatibility, configuration files, and the overall health of the project. Once the check is complete, Expo Doctor outputs the results.
 

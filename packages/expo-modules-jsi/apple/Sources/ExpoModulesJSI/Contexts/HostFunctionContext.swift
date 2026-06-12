@@ -1,6 +1,4 @@
-/**
- Context that captures Swift values to pass them to JSI host function as an unmanaged pointer for interoperability with C++.
- */
+/// Context that captures Swift values to pass them to JSI host function as an unmanaged pointer for interoperability with C++.
 internal final class HostFunctionContext: Sendable {
   weak let runtime: JavaScriptRuntime?
   let name: String?

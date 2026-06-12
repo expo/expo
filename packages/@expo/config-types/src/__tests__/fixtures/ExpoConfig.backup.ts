@@ -218,6 +218,10 @@ export interface ExpoConfig {
    */
   experiments?: {
     /**
+     * Enable experimental support for select out-of-tree platforms, if their support packages are installed.
+     */
+    outOfTreePlatforms?: boolean;
+    /**
      * Enables Expo's On-Demand Filesystem allowing Metro bundling outside of the watchFolders and with package manager global virtual stores.
      */
     onDemandFilesystem?: boolean;
@@ -280,6 +284,10 @@ export interface ExpoConfig {
        * List of directories watched for inline modules.
        */
       watchedDirectories: string[];
+      /**
+       * List of targets to which inline modules files are added. If undefined defaults to the main target only.
+       */
+      xcodeProjectTargets?: string[];
     };
   };
   /**

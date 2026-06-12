@@ -12,7 +12,7 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
-  func update(props: String) async throws {
+  func update(props: String?) async throws {
     guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
 
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {

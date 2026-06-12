@@ -13,6 +13,14 @@ export type ObservableState<T> = SharedObject & {
      */
     value: T;
     /**
+     * Reads the current value. A React Compiler compliant alternative to reading `.value`
+     */
+    get(): T;
+    /**
+     * Writes a new value. A React Compiler-compliant alternative to assigning `.value`
+     */
+    set(value: T): void;
+    /**
      * A single listener invoked on the native UI runtime whenever the value changes
      * (after iOS `didSet` and Android's setter). Assigning replaces the previous
      * listener; assign `null` to clear. The initial value does not fire `onChange`.
@@ -29,9 +37,6 @@ export type ObservableState<T> = SharedObject & {
      *   state.onChange = (value) => {
      *     'worklet';
      *     console.log('changed to', value);
-     *   };
-     *   return () => {
-     *     state.onChange = null;
      *   };
      * }, []);
      * ```

@@ -72,13 +72,39 @@ function reduceExpoObject(config?: any): SplitConfigs | null {
  * @param projectRoot
  * @param exp
  */
-function getSupportedPlatforms(projectRoot: string): Platform[] {
+function getSupportedPlatforms(projectRoot: string, exp: Partial<ExpoConfig>): Platform[] {
   const platforms: Platform[] = [];
   if (resolveFrom(projectRoot, 'react-native/package.json')) {
     platforms.push('ios', 'android');
   }
   if (resolveFrom(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
+  }
+  if (exp.experiments?.outOfTreePlatforms) {
+    if (resolveFrom(projectRoot, 'react-native-tvos/package.json')) {
+      platforms.push('tvos');
+    }
+    if (resolveFrom(projectRoot, 'react-native-macos/package.json')) {
+      platforms.push('macos');
+    }
+  }
+  return platforms;
+}
+
+/**
+ * Resolves the platforms a project targets, as configured or detected.
+ *
+ * @param projectRoot
+ * @param exp
+ */
+export function getPlatformsFromConfig(projectRoot: string, exp: Partial<ExpoConfig>): Platform[] {
+  let platforms =
+    (exp?.platforms as Platform[] | undefined) ?? getSupportedPlatforms(projectRoot, exp);
+  // TODO(@kitten): Update when XDL schema is modified
+  if (!exp.experiments?.outOfTreePlatforms) {
+    platforms = platforms.filter(
+      (platform) => platform === 'android' || platform === 'ios' || platform === 'web'
+    );
   }
   return platforms;
 }
@@ -473,10 +499,10 @@ function ensureConfigHasDefaultValues({
     if (!skipSDKVersionRequirement) throw error;
   }
 
-  let platforms = exp.platforms;
-  if (!platforms) {
-    platforms = getSupportedPlatforms(projectRoot);
-  }
+  // TODO(@kitten): Remove once platforms are updated in XDL schema
+  const platforms = getPlatformsFromConfig(projectRoot, exp) as NonNullable<
+    ExpoConfig['platforms']
+  >;
 
   return {
     exp: { ...expWithDefaults, sdkVersion, platforms },

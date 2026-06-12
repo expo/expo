@@ -7,6 +7,7 @@ type ErrorType =
   | 'ios-directory-not-found'
   | 'ios-directory-unknown-error'
   | 'ios-hermes-framework-not-found'
+  | 'ios-host-provided-without-prebuilds'
   | 'ios-pod-install-cancelled'
   | 'ios-prebuilds-spm-dep-missing'
   | 'ios-scheme-not-found'
@@ -28,6 +29,8 @@ class CLIError {
     'ios-directory-not-found': 'Cannot find `ios` directory in the project',
     'ios-directory-unknown-error': 'Unknown error occurred while finding brownfield iOS scheme',
     'ios-hermes-framework-not-found': 'Could not find hermes framework in the project at path',
+    'ios-host-provided-without-prebuilds':
+      'ios.hostProvidedFrameworks is set but precompiled modules are not enabled. Without precompiled modules, third-party pods (like SDWebImage) are statically linked into the brownfield framework itself, so there is no separate xcframework to strip. Enable `ios.usePrecompiledModules: true` in expo-build-properties (run `pod install` afterwards), or remove ios.hostProvidedFrameworks from the expo-brownfield plugin config.',
     'ios-pod-install-cancelled':
       'Brownfield cannot be built without installing CocoaPods. Run `pod install` in the `ios/` and try again.',
     'ios-prebuilds-spm-dep-missing':

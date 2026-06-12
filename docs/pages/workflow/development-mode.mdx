@@ -33,7 +33,14 @@ Production mode is most useful for two things:
 
 The easiest way to simulate how your project will run on end users' devices is with the command:
 
-<Terminal cmd={['$ npx expo start --no-dev --minify']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --no-dev --minify'],
+    yarn: ['$ yarn expo start --no-dev --minify'],
+    pnpm: ['$ pnpm expo start --no-dev --minify'],
+    bun: ['$ bun expo start --no-dev --minify'],
+  }}
+/>
 
 It runs the JavaScript of your app in production mode (which tells the Metro bundler to set the `__DEV__` environment variable to `false`, among a few other things). The `--minify` flag minifies your app. This flag also eliminates unnecessary data such as comments, formatting, and unused code. If you are getting an error or crash in your standalone app, running your project with this command can save you a lot of time in finding the root cause.
 

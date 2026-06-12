@@ -131,6 +131,16 @@ struct SharedObjectTests {
   // MARK: - Native object
 
   @Test
+  func `releases the native object when release() is called from JS`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    try runtime.eval([
+      "sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()",
+      "sharedObject.release()"
+    ])
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
   func `emits events`() throws {
     // Create the shared object
     let jsObject = try runtime

@@ -3,13 +3,13 @@
 #pragma once
 #ifdef __cplusplus
 
-#include <hermes/hermes.h>
+#include <TargetConditionals.h>
 
 #include "HostFunctionClosure.h"
 #include "CppError.h"
 #include "IRuntimeCompat.h"
 #include "MemoryBuffer.h"
-#include "NativeState.h"
+#include "Public/NativeState.h"
 #include "TypedArray.h"
 
 namespace jsi = facebook::jsi;
@@ -67,6 +67,16 @@ inline void setArrayLength(jsi::IRuntime &runtime, const jsi::Array &array, long
 inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Array &array, const jsi::PropNameID &name) {
   return array.getProperty(runtime, name);
 }
+
+#if TARGET_OS_OSX
+// react-native-macos (RN 0.81) lacks `jsi::Object::getProperty(Runtime&, const Value&)`,
+// so Swift can't look up a property by a JS Value. Provide a `const char*`-keyed wrapper
+// to use when iterating own property names.
+// TODO: remove when react-native-macos catches up to RN 0.85.
+inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Object &object, const char *name) {
+  return object.getProperty(runtime, name);
+}
+#endif
 
 inline jsi::Value valueFromArray(jsi::IRuntime &runtime, const jsi::Array &array) {
   return jsi::Value(runtime, array);
@@ -189,27 +199,106 @@ inline jsi::ArrayBuffer createArrayBuffer(
   return jsi::ArrayBuffer(runtime, std::move(buffer));
 }
 
+// MARK: - Zero-copy ArrayBuffer borrowing
+
+struct BorrowedBuffer {
+  uint8_t *_Nullable data;
+  size_t size;
+  void *_Nullable retainer;
+};
+
+/**
+ * Borrows a native-backed ArrayBuffer. The returned data pointer and size are
+ * captured at borrow time, so resizable or detached buffers are not supported.
+ * A non-null retainer must be passed to releaseBorrowedBuffer exactly once.
+ * The {nullptr, 0, nullptr} failure result must not be released.
+ */
+inline BorrowedBuffer tryBorrowMutableBuffer(
+  jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(runtime);
+  if (!mutableBuffer) {
+    return {nullptr, 0, nullptr};
+  }
+  uint8_t *data = mutableBuffer->data();
+  size_t size = mutableBuffer->size();
+  auto *retained = new std::shared_ptr<jsi::MutableBuffer>(std::move(mutableBuffer));
+  return {data, size, retained};
+#else
+  (void)runtime;
+  (void)arrayBuffer;
+  return {nullptr, 0, nullptr};
+#endif
+}
+
+inline void releaseBorrowedBuffer(void *_Nonnull retainer) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  delete static_cast<std::shared_ptr<jsi::MutableBuffer> *>(retainer);
+#else
+  (void)retainer;
+#endif
+}
+
 // MARK: - Native state
 
 inline bool hasNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
   return object.hasNativeState<expo::NativeState>(runtime);
 }
 
-inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, expo::NativeState &nativeState) {
-  std::shared_ptr<expo::NativeState> nativeStatePtr = std::shared_ptr<expo::NativeState>(&nativeState);
-  object.setNativeState(runtime, nativeStatePtr);
+inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, const expo::NativeStateShared &nativeState) {
+  object.setNativeState(runtime, nativeState);
 }
 
 inline void unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
   object.setNativeState(runtime, nullptr);
 }
 
-inline expo::NativeState *_Nullable getNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
+/**
+ Returns the `expo::NativeState` attached to the object, or `nullptr` if the object
+ has no native state, or its native state isn't an `expo::NativeState` subclass.
+ Adopted native states (those constructed in external C++ code) are recovered too
+ as long as their concrete type derives from `expo::NativeState`.
+ */
+inline expo::NativeState *_Nullable getExpoNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
   if (!object.hasNativeState<expo::NativeState>(runtime)) {
-    // JSI's implementation asserts if `hasNativeState` returns true, but we prefer to make it nullable.
     return nullptr;
   }
   return object.getNativeState<expo::NativeState>(runtime).get();
+}
+
+/**
+ Factory used by the default `JavaScriptNativeState` initializer. Builds a fresh
+ `expo::NativeState` with the given context/deallocator and returns it wrapped in
+ the `expo::NativeStateShared` typedef so Swift can hold it as a single value.
+ */
+inline expo::NativeStateShared makeExpoNativeStateShared(expo::NativeState::Context context,
+                                                         expo::NativeState::ContextDeallocator deallocator) {
+  return std::make_shared<expo::NativeState>(context, deallocator);
+}
+
+/**
+ Builds an `expo::NativeStateWeak` from a strong `expo::NativeStateShared`.
+ Exists because Swift/C++ interop does not expose `std::weak_ptr`'s constructor
+ directly, so Swift can't write `expo.NativeStateWeak(shared)`.
+ */
+inline expo::NativeStateWeak makeNativeStateWeak(const expo::NativeStateShared &shared) {
+  return expo::NativeStateWeak(shared);
+}
+
+/**
+ Moves the heap-allocated `expo::NativeStateShared` at `ptr` into a returned
+ by-value `NativeStateShared`, then `delete`s the heap allocation. Pairs with
+ `new expo::NativeStateShared(...)` performed by no-interop C++ consumers
+ (e.g. `EXSharedObjectUtils.mm`) — using Swift's `UnsafeMutablePointer.deallocate()`
+ on a pointer obtained from C++ `new` would be an allocator mismatch.
+ */
+inline expo::NativeStateShared consumeNativeStateSharedPtr(expo::NativeStateShared *ptr) {
+  expo::NativeStateShared shared = std::move(*ptr);
+  delete ptr;
+  return shared;
 }
 
 } // namespace expo

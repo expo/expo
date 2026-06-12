@@ -23,7 +23,14 @@ While the Expo native runtime generally does not support elements like `<div>` o
         <Collapsible summary="How to opt out of @expo/dom-webview and use react-native-webview instead?">
         If you want to use `react-native-webview` instead, install it and opt out via the `dom` prop:
 
-        <Terminal cmd={['$ npx expo install react-native-webview']} />
+        <Terminal
+          cmd={{
+            npm: ['$ npx expo install react-native-webview'],
+            yarn: ['$ yarn expo install react-native-webview'],
+            pnpm: ['$ pnpm expo install react-native-webview'],
+            bun: ['$ bun expo install react-native-webview'],
+          }}
+        />
 
         ```tsx App.tsx (native)
         import DOMComponent from './my-component';
@@ -37,7 +44,14 @@ While the Expo native runtime generally does not support elements like `<div>` o
       </Tab>
       <Tab label="SDK 55 and earlier">
         Install `react-native-webview` in your project:
-        <Terminal cmd={['$ npx expo install react-native-webview']} />
+        <Terminal
+          cmd={{
+            npm: ['$ npx expo install react-native-webview'],
+            yarn: ['$ yarn expo install react-native-webview'],
+            pnpm: ['$ pnpm expo install react-native-webview'],
+            bun: ['$ bun expo install react-native-webview'],
+          }}
+        />
       </Tab>
     </Tabs>
 
@@ -47,7 +61,14 @@ While the Expo native runtime generally does not support elements like `<div>` o
 
     If you don't have the `expo` package in your project yet, install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
 
-    <Terminal cmd={['$ npx install-expo-modules@latest']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npx install-expo-modules@latest'],
+        yarn: ['$ yarn dlx install-expo-modules@latest'],
+        pnpm: ['$ pnpm dlx install-expo-modules@latest'],
+        bun: ['$ bunx install-expo-modules@latest'],
+      }}
+    />
 
     If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
 
@@ -55,7 +76,14 @@ While the Expo native runtime generally does not support elements like `<div>` o
   <Requirement title="Expo Metro Runtime, React DOM, and React Native Web">
     If you are using Expo Router and Expo Web, you can skip this step. Otherwise, install the following packages:
 
-    <Terminal cmd={['$ npx expo install @expo/metro-runtime react-dom react-native-web']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npx expo install @expo/metro-runtime react-dom react-native-web'],
+        yarn: ['$ yarn expo install @expo/metro-runtime react-dom react-native-web'],
+        pnpm: ['$ pnpm expo install @expo/metro-runtime react-dom react-native-web'],
+        bun: ['$ bun expo install @expo/metro-runtime react-dom react-native-web'],
+      }}
+    />
 
   </Requirement>
 </Prerequisites>
@@ -548,20 +576,64 @@ To ensure your DOM components run within a secure context, follow these guidelin
 **Example commands to tunnel DOM components over HTTPS:**
 
 <Terminal
-  cmd={[
-    '# Install expo-dev-client to enable connection to the remote development server:',
-    '$ npx expo install expo-dev-client',
-    '',
-    '# Run the app on Android:',
-    '$ npx expo run:android',
-    '# Press Ctrl + C to stop the server',
-    '$ npx expo start --tunnel -d -a',
-    '',
-    '# Run the app on iOS:',
-    '$ npx expo run:ios',
-    '# Press Ctrl + C to stop the server',
-    '$ npx expo start --tunnel -d -i',
-  ]}
+  cmd={{
+    npm: [
+      '# Install expo-dev-client to enable connection to the remote development server:',
+      '$ npx expo install expo-dev-client',
+      '',
+      '# Run the app on Android:',
+      '$ npx expo run:android',
+      '# Press Ctrl + C to stop the server',
+      '$ npx expo start --tunnel -d -a',
+      '',
+      '# Run the app on iOS:',
+      '$ npx expo run:ios',
+      '# Press Ctrl + C to stop the server',
+      '$ npx expo start --tunnel -d -i',
+    ],
+    yarn: [
+      '# Install expo-dev-client to enable connection to the remote development server:',
+      '$ yarn expo install expo-dev-client',
+      '',
+      '# Run the app on Android:',
+      '$ yarn expo run:android',
+      '# Press Ctrl + C to stop the server',
+      '$ yarn expo start --tunnel -d -a',
+      '',
+      '# Run the app on iOS:',
+      '$ yarn expo run:ios',
+      '# Press Ctrl + C to stop the server',
+      '$ yarn expo start --tunnel -d -i',
+    ],
+    pnpm: [
+      '# Install expo-dev-client to enable connection to the remote development server:',
+      '$ pnpm expo install expo-dev-client',
+      '',
+      '# Run the app on Android:',
+      '$ pnpm expo run:android',
+      '# Press Ctrl + C to stop the server',
+      '$ pnpm expo start --tunnel -d -a',
+      '',
+      '# Run the app on iOS:',
+      '$ pnpm expo run:ios',
+      '# Press Ctrl + C to stop the server',
+      '$ pnpm expo start --tunnel -d -i',
+    ],
+    bun: [
+      '# Install expo-dev-client to enable connection to the remote development server:',
+      '$ bun expo install expo-dev-client',
+      '',
+      '# Run the app on Android:',
+      '$ bun expo run:android',
+      '# Press Ctrl + C to stop the server',
+      '$ bun expo start --tunnel -d -a',
+      '',
+      '# Run the app on iOS:',
+      '$ bun expo run:ios',
+      '# Press Ctrl + C to stop the server',
+      '$ bun expo start --tunnel -d -i',
+    ],
+  }}
 />
 
 </Collapsible>
