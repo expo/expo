@@ -24,9 +24,9 @@ func simulateCrashReport() {
     exceptionReason: simulateExceptionReason(),
     callStackTree: simulateCallStackTree(),
     appVersion: AppInfo.current.appVersion ?? "unknown",
-    timestampBegin: Date.now.addingTimeInterval(-hoursAgo - 3600),
-    timestampEnd: Date.now.addingTimeInterval(-hoursAgo),
-    ingestedAt: Date.now
+    timestampBegin: Date.now.addingTimeInterval(-hoursAgo - 3600).ISO8601Format(),
+    timestampEnd: Date.now.addingTimeInterval(-hoursAgo).ISO8601Format(),
+    ingestedAt: Date.now.ISO8601Format()
   )
   AppMetricsActor.isolated {
     AppMetrics.mainSession.storeCrashReport(report)

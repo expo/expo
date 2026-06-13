@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix an infinite recursion crash when reading sessions with a crash report by representing `CrashReport` timestamps as ISO 8601 strings instead of `Date`, matching the rest of the public session shape. ([#46889](https://github.com/expo/expo/pull/46889) by [@tsapeta](https://github.com/tsapeta))
 - fix race condition between db inserts ([#46702](https://github.com/expo/expo/pull/46702) by [@Ubax](https://github.com/Ubax))
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
 

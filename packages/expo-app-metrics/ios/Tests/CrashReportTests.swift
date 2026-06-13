@@ -258,8 +258,8 @@ private func makeCrashReport(
     exceptionReason: exceptionReason,
     callStackTree: nil,
     appVersion: "1.0.0",
-    timestampBegin: timestampBegin,
-    timestampEnd: timestampEnd,
-    ingestedAt: Date.now
+    timestampBegin: timestampBegin.ISO8601Format(),
+    timestampEnd: timestampEnd.ISO8601Format(),
+    ingestedAt: Date.now.ISO8601Format()
   )
 }

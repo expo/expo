@@ -74,7 +74,7 @@ private func logCrashEvent(_ crashReport: CrashReport, sessionId: String) {
     name: "expo.session.crashed",
     attributes: crashReport.eventAttributes,
     severity: .fatal,
-    timestamp: crashReport.ingestedAt.ISO8601Format()
+    timestamp: crashReport.ingestedAt
   )
   do {
     try AppMetrics.database?.insert(log: LogRow.from(log: record, sessionId: sessionId))
