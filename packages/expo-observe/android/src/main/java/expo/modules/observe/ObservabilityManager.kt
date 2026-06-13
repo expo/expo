@@ -1,11 +1,19 @@
 package expo.modules.observe
 
 import android.content.Context
+import android.util.Log
 import expo.modules.easclient.EASClientID
 import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.interfaces.constants.ConstantsInterface
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ObservabilityManager(
   // TODO(@lukmccall): Consider saving context as weak reference to avoid potential memory leaks
@@ -67,6 +75,56 @@ class ObservabilityManager(
       baseUrl = baseManager.baseUrl,
       useOpenTelemetry = useOpenTelemetry
     )
+  }
+
+  // Manager-owned scope so the periodic dispatch loop has a lifecycle tied to module destroy
+  // rather than to a single JS-call dispatch (`modulesQueue`, which is per-call). `Dispatchers.IO`
+  // is the right pool: each wake reads pending tables, queries the DB, and POSTs to the endpoint.
+  private val dispatchScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+  private var dispatchJob: Job? = null
+
+  @Volatile
+  private var dispatchIntervalSeconds: Long? = null
+
+  /**
+   * Configures the periodic dispatch loop. A positive `intervalSeconds` starts the loop (on its
+   * first call) and tells it to flush pending metrics and logs that often, so a long-running app
+   * sends in-session telemetry without waiting for `OnActivityEntersBackground`. Subsequent calls
+   * update the interval in place — the next wake uses the new value. Passing `null` or `0` leaves
+   * the loop idle (no-ops at each wake). Driven by
+   * `Observe.configure({ scheduledDispatchInterval })`.
+   */
+  fun setDispatchIntervalSeconds(intervalSeconds: Long?) {
+    dispatchIntervalSeconds = intervalSeconds
+    if (dispatchJob == null && intervalSeconds != null && intervalSeconds > 0) {
+      dispatchJob = dispatchScope.launch {
+        while (true) {
+          // Idle in a 1-minute heartbeat while the interval is cleared, so a later re-configure
+          // resumes promptly. Matches iOS.
+          val interval = dispatchIntervalSeconds?.coerceAtLeast(1) ?: 60
+          delay(interval * 1000)
+          val configured = dispatchIntervalSeconds ?: continue
+          if (configured <= 0) {
+            continue
+          }
+          try {
+            baseManager.dispatchUnsentMetrics()
+            baseManager.dispatchUnsentLogs()
+          } catch (e: Exception) {
+            Log.w(OBSERVE_TAG, "Periodic dispatch failed: ${e.message}")
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Cancels the periodic dispatch loop. Called from `ObserveModule.OnDestroy` so the loop doesn't
+   * try to hit the network or DB after the module's lifecycle has ended.
+   */
+  fun destroy() {
+    dispatchScope.cancel()
+    dispatchJob = null
   }
 }
 

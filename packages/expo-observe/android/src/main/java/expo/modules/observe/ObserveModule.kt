@@ -17,7 +17,9 @@ class Config(
   @Field val environment: String? = null,
   @Field val dispatchingEnabled: Boolean? = null,
   @Field val dispatchInDebug: Boolean? = null,
-  @Field val sampleRate: Double? = null
+  @Field val sampleRate: Double? = null,
+  @Field val scheduledCleanupRetentionWindow: Double? = null,
+  @Field val scheduledDispatchInterval: Double? = null
 ) : Record
 
 @OptimizedRecord
@@ -64,7 +66,9 @@ class ObserveModule : Module() {
           PersistedConfig(
             dispatchingEnabled = config.dispatchingEnabled,
             dispatchInDebug = config.dispatchInDebug,
-            sampleRate = config.sampleRate
+            sampleRate = config.sampleRate,
+            scheduledCleanupRetentionWindow = config.scheduledCleanupRetentionWindow,
+            scheduledDispatchInterval = config.scheduledDispatchInterval
           )
         )
         // Environment falls back to the bundle default (set on JS package import) so an
@@ -72,6 +76,14 @@ class ObserveModule : Module() {
         val resolvedEnvironment = config.environment
           ?: ObservePreferences.getBundleDefaults(context)?.environment
         resolvedEnvironment?.let { appMetricsModule.setEnvironment(it) }
+        // The JS surface speaks Double seconds; native loops want Long seconds. `null`/`0` keep
+        // the loop idle; any positive value starts or updates it.
+        appMetricsModule.setCleanupRetentionSeconds(config.scheduledCleanupRetentionWindow?.toLong())
+        observabilityManager.setDispatchIntervalSeconds(config.scheduledDispatchInterval?.toLong())
+      }
+
+      OnDestroy {
+        observabilityManager.destroy()
       }
 
       Function("setBundleDefaults") { defaults: BundleDefaults ->

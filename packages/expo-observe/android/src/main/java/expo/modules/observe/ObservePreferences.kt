@@ -16,7 +16,9 @@ private const val KEY_BUNDLE_DEFAULTS = "bundleDefaults"
 data class PersistedConfig(
   val dispatchingEnabled: Boolean? = null,
   val dispatchInDebug: Boolean? = null,
-  val sampleRate: Double? = null
+  val sampleRate: Double? = null,
+  val scheduledCleanupRetentionWindow: Double? = null,
+  val scheduledDispatchInterval: Double? = null
 )
 
 /**

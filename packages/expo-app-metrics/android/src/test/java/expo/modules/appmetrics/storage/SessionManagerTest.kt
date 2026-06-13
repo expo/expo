@@ -623,6 +623,48 @@ class SessionManagerTest {
     }
 
   @Test
+  fun `cleanupMetricsAndLogs prunes rows older than the cutoff and preserves the live session`() =
+    runTest {
+      // Arrange — a single live session with metric and log rows split across the cutoff.
+      // Mirrors iOS's `periodic cleanup prunes metric and log rows older than the retention window`.
+      val sessionId = "live"
+      val sessionStart = "2025-01-01T00:00:00.000Z"
+      val oldTimestamp = "2025-01-01T00:30:00.000Z"
+      val freshTimestamp = "2025-01-01T12:00:00.000Z"
+      val cutoffTimestamp = "2025-01-01T01:00:00.000Z"
+
+      sessionManager.startSessionWithIdAt(sessionId, sessionStart)
+      database.metricDao().insertAll(
+        listOf(
+          createMetric("metric-old", sessionId).copy(timestamp = oldTimestamp),
+          createMetric("metric-fresh", sessionId).copy(timestamp = freshTimestamp)
+        )
+      )
+      database.logDao().insertAll(
+        listOf(
+          createLog("log-old", sessionId).copy(timestamp = oldTimestamp),
+          createLog("log-fresh", sessionId).copy(timestamp = freshTimestamp)
+        )
+      )
+
+      // Act
+      sessionManager.cleanupMetricsAndLogs(cutoffTimestamp)
+      sessionManager.cleanupInactiveSessions(cutoffTimestamp)
+
+      // Assert — old metric/log rows pruned, fresh ones remain, live session row intact even
+      // though its `startTimestamp` predates the cutoff (it's active, so `cleanupInactiveSessions`
+      // skips it).
+      val remainingMetrics = sessionManager.getMetricsForSession(sessionId).map { it.metricId }
+      val remainingLogs = sessionManager.getLogsForSession(sessionId).map { it.logId }
+      assertEquals(listOf("metric-fresh"), remainingMetrics)
+      assertEquals(listOf("log-fresh"), remainingLogs)
+      assertNotNull(
+        "live session row must survive even though its startTimestamp is before the cutoff",
+        sessionManager.getSessionRow(sessionId)
+      )
+    }
+
+  @Test
   fun `getSessionWithMetricsBySessionId populates the logs relation alongside metrics`() =
     runTest {
       // Arrange — exercises the Room `@Relation` for `LogRecord` end-to-end.

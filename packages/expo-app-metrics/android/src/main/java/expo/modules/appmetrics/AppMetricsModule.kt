@@ -34,7 +34,11 @@ import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -53,6 +57,31 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   lateinit var sessionManager: SessionManager
 
   lateinit var mainSession: SessionSharedObject
+
+  /**
+   * How often the periodic cleanup loop runs once `setCleanupRetentionSeconds(...)` has been called
+   * with a positive value. Not exposed through `Observe.configure(...)` — the JS surface only
+   * configures the retention window — but writable so tests can drive the loop without waiting for
+   * the production interval to elapse. Reads happen at each iteration so a test override applies on
+   * the very next wake.
+   */
+  @Volatile
+  var cleanupIntervalMillis: Long = 60 * 60 * 1000L // 1 hour
+
+  /**
+   * Retention window (in seconds) for the periodic cleanup loop. `null` (the default) means the
+   * loop is a no-op; set via `setCleanupRetentionSeconds(...)` from
+   * `Observe.configure({ scheduledCleanupRetentionWindow })`. The loop reads this on every wake so
+   * a re-configure takes effect on the next pass without restarting the coroutine.
+   */
+  @Volatile
+  private var cleanupRetentionSeconds: Long? = null
+
+  // Module-owned scope so the periodic cleanup loop has a lifecycle tied to module destroy rather
+  // than to a single JS-call dispatch (`modulesQueue`, which is per-call). `Dispatchers.IO` is the
+  // right pool: every wake hits SQLite via Room.
+  private val cleanupScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+  private var cleanupJob: Job? = null
 
   // Lazy-initialized metadata - created once when first needed
   private val metadata: AppMetadata? by lazy {
@@ -163,6 +192,11 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnDestroy {
+        // Stop the periodic cleanup loop before teardown so it doesn't try to
+        // hit the database after the module's lifecycle has ended.
+        cleanupScope.cancel()
+        cleanupJob = null
+
         // `modulesQueue` is cancelled immediately after this hook returns, so
         // run the UPDATE on the calling thread to make sure the end timestamp
         // is persisted before teardown. `stop` awaits the session-start job
@@ -243,6 +277,38 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     AppMetricsPreferences.setEnvironment(context, environment)
     scope.launch {
       sessionManager.updateEnvironmentForActiveSessions(environment)
+    }
+  }
+
+  /**
+   * Configures the periodic cleanup loop. A positive `retentionSeconds` starts the loop (on its
+   * first call) and tells it to keep metric/log rows from the last `retentionSeconds` while tidying
+   * dead inactive session rows older than the same cutoff. Subsequent calls update the retention
+   * window in place — the next pass uses the new value. Passing `null` or `0` leaves the loop idle
+   * (no-ops at each wake). Driven by `Observe.configure({ scheduledCleanupRetentionWindow })`.
+   */
+  fun setCleanupRetentionSeconds(retentionSeconds: Long?) {
+    cleanupRetentionSeconds = retentionSeconds
+    if (cleanupJob == null && retentionSeconds != null && retentionSeconds > 0) {
+      cleanupJob = cleanupScope.launch {
+        while (true) {
+          delay(cleanupIntervalMillis)
+          val retention = cleanupRetentionSeconds ?: continue
+          if (retention <= 0) {
+            continue
+          }
+          val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(retention)
+          try {
+            sessionManager.cleanupMetricsAndLogs(cutoffTimestamp)
+            sessionManager.cleanupInactiveSessions(cutoffTimestamp)
+          } catch (e: Exception) {
+            android.util.Log.w(
+              "ExpoAppMetrics",
+              "Periodic cleanup failed: ${e.message}"
+            )
+          }
+        }
+      }
     }
   }
 

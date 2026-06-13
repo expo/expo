@@ -177,6 +177,14 @@ interface MetricDao {
   @Delete
   suspend fun delete(metrics: List<Metric>)
 
+  // Bounds the growth of a long-lived live session. Cascade from
+  // `deleteSessionsOlderThan` can't help here — the live session row is
+  // excluded by `isActive = 1` and its metrics would otherwise accumulate
+  // indefinitely. Keying on `timestamp` (not `metricId`, which is a UUID)
+  // keeps the same semantics as the iOS port.
+  @Query("DELETE FROM metrics WHERE timestamp < :cutoffTimestamp")
+  suspend fun deleteMetricsOlderThan(cutoffTimestamp: String)
+
   @Query("SELECT * FROM metrics WHERE sessionId = :sessionId ORDER BY timestamp ASC")
   suspend fun getMetricsForSession(sessionId: String): List<Metric>
 }

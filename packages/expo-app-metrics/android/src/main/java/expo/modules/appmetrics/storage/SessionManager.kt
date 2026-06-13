@@ -168,6 +168,27 @@ class SessionManager(
     database.logDao().deleteLogsOlderThan(cutoffTimestamp)
   }
 
+  /**
+   * Deletes metric and log rows whose `timestamp` is older than `cutoffTimestamp`, independent of
+   * which session owns them. Unlike `cleanupOldSessions`, this bounds the growth of a long-lived
+   * live session (whose row is intentionally excluded from session-level prunes) without deleting
+   * the session itself. Driven by `Observe.configure({ scheduledCleanupRetentionWindow })`.
+   */
+  suspend fun cleanupMetricsAndLogs(cutoffTimestamp: String) {
+    database.metricDao().deleteMetricsOlderThan(cutoffTimestamp)
+    database.logDao().deleteLogsOlderThan(cutoffTimestamp)
+  }
+
+  /**
+   * Deletes only *inactive* sessions whose `startTimestamp` is older than `cutoffTimestamp`,
+   * tidying dead session rows left by past app lifecycles without ever removing the live session
+   * (whose `startTimestamp` may itself predate the window on a long-running process). Their
+   * metrics and logs cascade via the foreign-key relation.
+   */
+  suspend fun cleanupInactiveSessions(cutoffTimestamp: String) {
+    database.sessionDao().deleteSessionsOlderThan(cutoffTimestamp)
+  }
+
   suspend fun updateEnvironmentForActiveSessions(environment: String) {
     database.sessionDao().updateEnvironmentForActiveSessions(environment)
   }
