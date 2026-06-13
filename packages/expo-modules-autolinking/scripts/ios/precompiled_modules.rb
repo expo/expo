@@ -1999,7 +1999,7 @@ module Expo
       # With undefined: true, returns the undefined (imported) symbols attributable
       # to ExpoModulesCore (SWIFT_CORE_SYMBOL_PREFIX); with undefined: false,
       # returns all exported symbols. Returns nil when the binary cannot be
-      # located or inspected — callers treat nil as "skip the check" so a
+      # located or inspected; callers treat nil as "skip the check" so a
       # tooling failure never breaks the install.
       #
       # @param tarball [String] Path to the <Product>.tar.gz artifact
