@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fall back to building from source when a prebuilt module xcframework is ABI-incompatible with the resolved prebuilt `ExpoModulesCore` artifact (expo-modules-core version skew), which would otherwise crash at app launch with dyld `Symbol not found` and trigger ITMS-90863 on App Store uploads. ([#46881](https://github.com/expo/expo/pull/46881) by [@rohan-patra](https://github.com/rohan-patra))
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
 - Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
 
