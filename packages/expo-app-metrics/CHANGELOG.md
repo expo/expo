@@ -8,6 +8,7 @@
 
 - Observe HTTP requests on iOS and Android and expose them to JS via the `NetworkRequestObserver` class and `useNetworkRequestObserver` hook. The TTI metric also carries an `expo.network.requests.*` summary for requests that completed in the launch window. ([#46475](https://github.com/expo/expo/pull/46475) by [@tsapeta](https://github.com/tsapeta))
 - Add native-side filtering to `NetworkRequestObserver` by host and method, configurable at construction or at runtime via `setFilter`, so non-matching requests never cross into JS. ([#46775](https://github.com/expo/expo/pull/46775) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Emit an `expo.session.crashed` log event when a crash report is attributed to a past session, carrying the exception type, signal, and termination reason as `expo.crash.*` attributes. ([#46889](https://github.com/expo/expo/pull/46889) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

@@ -43,6 +43,7 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       for crashReport in crashReports {
         if let session = crashReport.findMatchingSession(in: mainSessions) {
           persistCrashReport(crashReport, sessionId: session.id)
+          logCrashEvent(crashReport, sessionId: session.id)
         } else {
           logger.warn("[AppMetrics] Received crash report with no matching session:\n\(crashReport)")
         }
@@ -60,6 +61,25 @@ private func persistCrashReport(_ crashReport: CrashReport, sessionId: String) {
     try AppMetrics.database?.setCrashReport(sessionId: sessionId, payload: payload)
   } catch {
     logger.warn("[AppMetrics] Failed to persist crash report for session \(sessionId): \(error.localizedDescription)")
+  }
+}
+
+/// Records an `expo.session.crashed` log event on the session the crash was attributed to, marking
+/// that the session ended in a crash. This is an SDK-internal event, so it's built directly rather
+/// than going through the JS-facing `logEvent` path — that path rejects the reserved `expo.` name
+/// prefix and strips `expo.*` attributes, both of which the SDK owns here.
+@AppMetricsActor
+private func logCrashEvent(_ crashReport: CrashReport, sessionId: String) {
+  let record = LogRecord(
+    name: "expo.session.crashed",
+    attributes: crashReport.eventAttributes,
+    severity: .fatal,
+    timestamp: crashReport.ingestedAt.ISO8601Format()
+  )
+  do {
+    try AppMetrics.database?.insert(log: LogRow.from(log: record, sessionId: sessionId))
+  } catch {
+    logger.warn("[AppMetrics] Failed to log crash event for session \(sessionId): \(error.localizedDescription)")
   }
 }
 

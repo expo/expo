@@ -163,6 +163,71 @@ struct CrashReportTests {
       #expect(report.findMatchingSession(in: []) == nil)
     }
   }
+
+  @AppMetricsActor
+  @Suite("eventAttributes")
+  struct EventAttributesTests {
+    @Test
+    func `surfaces exception and signal codes as both raw value and name`() {
+      let report = makeCrashReport(
+        timestampBegin: Date.now,
+        timestampEnd: Date.now,
+        exceptionType: 1,
+        exceptionCode: 2,
+        signal: 11
+      )
+      let attributes = report.eventAttributes
+
+      #expect(attributes["expo.crash.exception_type"] as? String == "EXC_BAD_ACCESS")
+      #expect(attributes["expo.crash.exception_type_code"] as? Int == 1)
+      #expect(attributes["expo.crash.exception_code"] as? Int == 2)
+      #expect(attributes["expo.crash.signal"] as? String == "SIGSEGV")
+      #expect(attributes["expo.crash.signal_code"] as? Int == 11)
+      #expect(attributes["expo.app.version"] as? String == "1.0.0")
+    }
+
+    @Test
+    func `omits absent optional fields`() {
+      let report = makeCrashReport(
+        timestampBegin: Date.now,
+        timestampEnd: Date.now,
+        exceptionType: nil,
+        exceptionCode: nil,
+        signal: nil
+      )
+      let attributes = report.eventAttributes
+
+      #expect(attributes["expo.crash.exception_type"] == nil)
+      #expect(attributes["expo.crash.exception_code"] == nil)
+      #expect(attributes["expo.crash.signal"] == nil)
+      #expect(attributes["expo.crash.termination_reason"] == nil)
+      #expect(attributes["expo.crash.objc_exception_type"] == nil)
+      // App version is always present.
+      #expect(attributes["expo.app.version"] as? String == "1.0.0")
+    }
+
+    @Test
+    func `includes termination reason and ObjC exception details when present`() {
+      let report = makeCrashReport(
+        timestampBegin: Date.now,
+        timestampEnd: Date.now,
+        terminationReason: "Namespace SIGNAL, Code 11",
+        exceptionReason: CrashReport.ExceptionReason(
+          composedMessage: "-[NSNull length]: unrecognized selector",
+          formatString: "%@: unrecognized selector",
+          arguments: ["-[NSNull length]"],
+          exceptionType: "NSInvalidArgumentException",
+          className: "NSException",
+          exceptionName: "NSInvalidArgumentException"
+        )
+      )
+      let attributes = report.eventAttributes
+
+      #expect(attributes["expo.crash.termination_reason"] as? String == "Namespace SIGNAL, Code 11")
+      #expect(attributes["expo.crash.objc_exception_type"] as? String == "NSInvalidArgumentException")
+      #expect(attributes["expo.crash.objc_exception_message"] as? String == "-[NSNull length]: unrecognized selector")
+    }
+  }
 }
 
 private func makeMainSessionRow(id: String, startDate: Date, endDate: Date?) -> SessionRow {
@@ -175,14 +240,22 @@ private func makeMainSessionRow(id: String, startDate: Date, endDate: Date?) -> 
   )
 }
 
-private func makeCrashReport(timestampBegin: Date, timestampEnd: Date) -> CrashReport {
+private func makeCrashReport(
+  timestampBegin: Date,
+  timestampEnd: Date,
+  exceptionType: Int? = 1,
+  exceptionCode: Int? = 1,
+  signal: Int? = 11,
+  terminationReason: String? = nil,
+  exceptionReason: CrashReport.ExceptionReason? = nil
+) -> CrashReport {
   return CrashReport(
-    exceptionType: 1,
-    exceptionCode: 1,
-    signal: 11,
-    terminationReason: nil,
+    exceptionType: exceptionType,
+    exceptionCode: exceptionCode,
+    signal: signal,
+    terminationReason: terminationReason,
     virtualMemoryRegionInfo: nil,
-    exceptionReason: nil,
+    exceptionReason: exceptionReason,
     callStackTree: nil,
     appVersion: "1.0.0",
     timestampBegin: timestampBegin,

@@ -83,6 +83,36 @@ public struct CrashReport: Codable, Sendable {
     return candidates.max(by: { $0.startTimestamp < $1.startTimestamp })
   }
 
+  /// Compact, high-signal attributes describing the crash, attached to the `expo.session.crashed`
+  /// event. Deliberately omits the call stack and VM-region blob — those are large and already
+  /// persisted in full on the crash report row; the event is just a marker that the session ended
+  /// in a crash. Opaque numeric codes are surfaced as both their raw value and a human-readable
+  /// name so consumers don't have to maintain their own lookup tables. All keys live under the
+  /// SDK-owned `expo.*` namespace.
+  var eventAttributes: [String: Any] {
+    var attributes: [String: Any] = ["expo.app.version": appVersion]
+
+    if let exceptionType {
+      attributes["expo.crash.exception_type"] = exceptionName(for: exceptionType)
+      attributes["expo.crash.exception_type_code"] = exceptionType
+    }
+    if let exceptionCode {
+      attributes["expo.crash.exception_code"] = exceptionCode
+    }
+    if let signal {
+      attributes["expo.crash.signal"] = signalName(for: signal)
+      attributes["expo.crash.signal_code"] = signal
+    }
+    if let terminationReason {
+      attributes["expo.crash.termination_reason"] = terminationReason
+    }
+    if let exceptionReason {
+      attributes["expo.crash.objc_exception_type"] = exceptionReason.exceptionType
+      attributes["expo.crash.objc_exception_message"] = exceptionReason.composedMessage
+    }
+    return attributes
+  }
+
   /// Mirrors the shape of `MXCallStackTree.JSONRepresentation()`. Every field is optional so that
   /// silently-renamed or removed Apple fields don't break decoding for the rest of the report.
   public struct CallStackTree: Codable, Sendable {
