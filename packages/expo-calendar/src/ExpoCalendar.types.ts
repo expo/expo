@@ -35,7 +35,6 @@ export type AddEventWithFormOptions = PresentationOptions & {
   notes?: string;
   location?: string;
   /**
-   * URL for the event.
    * @platform ios
    */
   url?: string;
