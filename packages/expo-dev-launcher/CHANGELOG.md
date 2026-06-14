@@ -22,6 +22,7 @@
 - [iOS] Explain why a project failed to load instead of showing a generic "Failed to connect" message. ([#46866](https://github.com/expo/expo/pull/46866) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix tvOS compile error in DevServersView. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
 - [Android] Fix auto-launching into the most recently opened project on startup. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
+- Pass `initialUrl` from dev-launcher deep links through to the loaded app. ([#19846](https://github.com/expo/expo/issues/19846) by [@mvincentong](https://github.com/mvincentong)) ([#46395](https://github.com/expo/expo/pull/46395) by [@mvincentong](https://github.com/mvincentong))
 
 ### 💡 Others
 
