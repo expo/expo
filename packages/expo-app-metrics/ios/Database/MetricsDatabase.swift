@@ -14,14 +14,14 @@ final class MetricsDatabase: Sendable {
   static let currentSchemaVersion = 3
 
   /// How long a session (and its metrics, logs, crash report) is retained before it is pruned.
-  static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60 // 7 days
+  static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60  // 7 days
 
   /// How often the periodic cleanup runs while the process is alive once
   /// `setCleanupRetentionSeconds(_:)` has been called with a positive value. Not exposed through
   /// `Observe.configure(...)` — the JS surface only configures the retention window — but writable
   /// internally so tests can drive the loop without waiting for the production interval to elapse.
   @AppMetricsActor
-  static var cleanupInterval: TimeInterval = 60 * 60 // 1 hour
+  static var cleanupInterval: TimeInterval = 60 * 60  // 1 hour
 
   /// Retention window (in seconds) for the periodic cleanup loop. `nil` (the default) means the loop
   /// is a no-op; set via `setCleanupRetentionSeconds(_:)` from `Observe.configure(...)`. Stored on the
@@ -493,14 +493,16 @@ final class MetricsDatabase: Sendable {
   @AppMetricsActor
   func cleanupInactiveSessions(olderThan cutoff: String) throws {
     try database.transaction {
-      let dropCrashReports = try database.prepare("""
+      let dropCrashReports = try database.prepare(
+        """
         DELETE FROM crash_reports
         WHERE sessionId IN (SELECT id FROM sessions WHERE startTimestamp < ?1 AND isActive = 0)
         """)
       try dropCrashReports.bindAll([cutoff])
       try dropCrashReports.run()
 
-      let dropSessions = try database.prepare("""
+      let dropSessions = try database.prepare(
+        """
         DELETE FROM sessions WHERE startTimestamp < ?1 AND isActive = 0
         """)
       try dropSessions.bindAll([cutoff])
