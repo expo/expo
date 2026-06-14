@@ -61,6 +61,29 @@ public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: An
       setter(view, value)
     }
   }
+
+  // MARK: - JavaScript-thread decoding
+
+  @JavaScriptActor
+  public func decode(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    // Runs on the JavaScript thread. `cast(jsValue:)` produces the final native value
+    // already coerced through the dynamic type; no view is touched here.
+    return try propType.cast(jsValue: jsValue, appContext: appContext)
+  }
+
+  @MainActor
+  public func applyDecoded(value: Any, onView view: UIView, appContext: AppContext) throws {
+    guard let view = view as? ViewType else {
+      throw IncompatibleViewException((propName: name, viewType: ViewType.self))
+    }
+    if Optional.isNil(value), let defaultValue {
+      return setter(view, defaultValue)
+    }
+    guard let value = value as? PropType else {
+      throw Conversions.CastingException<PropType>(value)
+    }
+    setter(view, value)
+  }
 }
 
 /**

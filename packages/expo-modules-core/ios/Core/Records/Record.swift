@@ -189,24 +189,71 @@ internal func allMirrorChildren(_ mirror: Mirror) -> [Mirror.Child] {
 }
 
 /**
+ The static field layout of a record type: for each `@Field`-wrapped property, the index of its
+ child in `allMirrorChildren(...)` (in order) and its resolved dictionary key.
+
+ The layout is the same for every instance of a given record type, so it's computed once (by
+ reflecting the first instance) and cached. Caching skips, on every subsequent decode, the
+ per-child `as? AnyFieldInternal` conformance check on non-field children, the
+ `convertLabelToKey` key derivation, and the key lookup — which a Time Profiler trace showed to
+ be the bulk of `fieldsOf` cost. The `@Field` instances themselves are per-object (they hold the
+ wrapped values), so those are still read from the instance's mirror.
+ */
+private struct RecordFieldLayout {
+  /// For each field child, its index in `allMirrorChildren(...)` and its resolved key.
+  let fields: [(index: Int, key: String)]
+}
+
+private let recordFieldLayoutCache = Mutex<[ObjectIdentifier: RecordFieldLayout]>([:])
+
+private func recordFieldLayout(for children: [Mirror.Child], type: ObjectIdentifier) -> RecordFieldLayout {
+  if let cached = recordFieldLayoutCache.withLock({ $0[type] }) {
+    return cached
+  }
+  var fields: [(index: Int, key: String)] = []
+  for (index, child) in children.enumerated() {
+    guard let field = child.value as? AnyFieldInternal,
+          let key = field.key ?? convertLabelToKey(child.label) else {
+      continue
+    }
+    fields.append((index: index, key: key))
+  }
+  let layout = RecordFieldLayout(fields: fields)
+  recordFieldLayoutCache.withLock { $0[type] = layout }
+  return layout
+}
+
+/**
  Returns an array of fields found in record's mirror. If the field is missing the `key`,
  it gets assigned to the property label, so after all it's safe to enforce unwrapping it (using `key!`).
- This function now supports inheritance by recursively traversing the superclass hierarchy.
+ This function supports inheritance by recursively traversing the superclass hierarchy.
+
+ The field layout (which children are fields, and their keys) is cached per record type; only the
+ per-instance `@Field` objects and the idempotent key injection happen on each call.
  */
 internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
   let mirror = Mirror(reflecting: record)
-  return allMirrorChildren(mirror).compactMap { (label: String?, value: Any) in
-    guard let field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
-      return nil
+  let children = allMirrorChildren(mirror)
+  let layout = recordFieldLayout(for: children, type: ObjectIdentifier(type(of: record)))
+
+  var result: [AnyFieldInternal] = []
+  result.reserveCapacity(layout.fields.count)
+
+  for entry in layout.fields {
+    // The layout was built from a mirror of the same type, so the index maps to the matching
+    // field child here too; the cast is on a known field child (no wasted casts on non-fields).
+    guard let field = children[entry.index].value as? AnyFieldInternal else {
+      continue
     }
     field.withOptions { options in
       let alreadyKeyed = options.contains { $0.rawValue == FieldOption.keyed("").rawValue }
       if !alreadyKeyed {
-        options.insert(.keyed(key))
+        options.insert(.keyed(entry.key))
       }
     }
-    return field
+    result.append(field)
   }
+  return result
 }
 
 /**

@@ -85,6 +85,8 @@ extension ExpoSwiftUI {
     // and there doesn't seem to be a better way to do this right now.
     private lazy var dummyPropsMirror: Mirror = Mirror(reflecting: Props())
 
+    public override var isSwiftUI: Bool { true }
+
     convenience init(_ viewType: ViewType.Type) {
       // We assume SwiftUI views are exported as named views under the class name
       let nameDefinitionElement = ViewNameDefinition(name: String(describing: viewType))
