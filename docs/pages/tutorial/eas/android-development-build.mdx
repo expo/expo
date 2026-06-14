@@ -1,197 +1,146 @@
----
-title: Create and run a cloud build for Android
-sidebar_title: Android development build
-description: Learn how to configure a development build for Android devices and emulators using EAS Build.
-hasVideoLink: true
----
+import arabic_reshaper
+from bidi.algorithm import get_display
+from kivymd.app import MDApp
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDRaisedButton, MDFlatButton
+from kivymd.uix.label import MDLabel
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.toolbar import MDTopAppBar
+from kivymd.uix.card import MDCard
 
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+def ar(text):
+    """دالة معالجة النصوص العربية لضمان ظهورها بشكل صحيح وسليم على الهاتف ومن اليمين لليسار"""
+    return get_display(arabic_reshaper.reshape(text))
 
-In this chapter, we'll create a development build that can run on Android with EAS Build.
+class StudentLoginForm(MDBoxLayout):
+    """واجهة دخول الطلاب وأولياء الأمور - تطلب رقم الهاتف فقط"""
+    def __init__(self, login_callback, **kwargs):
+        super().__init__(orientation='vertical', spacing="20dp", **kwargs)
+        
+        self.add_widget(MDLabel(text=ar("تسجيل دخول الطلاب وأولياء الأمور"), halign="center", font_style="H6"))
+        
+        # حقل رقم الهاتف فقط للطالب أو ولي الأمر
+        self.phone_input = MDTextField(
+            hint_text=ar("أدخل رقم الهاتف المسجل فقط"), 
+            icon_right="phone", 
+            mode="round"
+        )
+        
+        btn_submit = MDRaisedButton(
+            text=ar("دخول حساب الطالب / ولي الأمر"), 
+            pos_hint={"center_x": 0.5}, 
+            size_hint_x=0.9,
+            on_press=lambda inst: login_callback("طالب", self.phone_input.text, None)
+        )
+        
+        self.add_widget(self.phone_input)
+        self.add_widget(btn_submit)
 
-The process for creating and running a build on Android devices or emulators is identical, with differences only in the installation of the development build.
+class TeacherLoginForm(MDBoxLayout):
+    """واجهة دخول الشيخ - تطلب الاسم (الشيخ أحمد) والكود 125"""
+    def __init__(self, login_callback, **kwargs):
+        super().__init__(orientation='vertical', spacing="15dp", **kwargs)
+        
+        self.add_widget(MDLabel(text=ar("تسجيل دخول الشيوخ والمعلمين"), halign="center", font_style="H6"))
+        
+        # حقل الاسم ومثبت فيه تلقائياً "الشيخ أحمد" كما طلبت
+        self.name_input = MDTextField(
+            text=ar("الشيخ أحمد"),
+            hint_text=ar("اسم الشيخ بالكامل"), 
+            icon_right="account", 
+            mode="round"
+        )
+        
+        # حقل الكود المكون من (125)
+        self.code_input = MDTextField(
+            hint_text=ar("أدخل كود الشيخ المكون من (125)"), 
+            icon_right="lock", 
+            password=True, 
+            mode="round"
+        )
+        
+        btn_submit = MDRaisedButton(
+            text=ar("دخول لوحة تحكم الشيخ"), 
+            pos_hint={"center_x": 0.5}, 
+            size_hint_x=0.9,
+            on_press=lambda inst: login_callback("شيخ", self.name_input.text, self.code_input.text)
+        )
+        
+        self.add_widget(self.name_input)
+        self.add_widget(self.code_input)
+        self.add_widget(btn_submit)
 
-<VideoBoxLink
-  videoId="D612BUtvvl8"
-  title="Watch: How to create and run a cloud build for Android"
-  description="Learn how to create an Android development build with EAS Build and install it on a device or emulator."
-/>
+class NoorQuranApp(MDApp):
+    def build(self):
+        # الهوية البصرية الرسمية لمركز نور القرآن (الأخضر الإسلامي والذهبي)
+        self.theme_cls.primary_palette = "Green"
+        self.theme_cls.primary_hue = "800"
+        self.theme_cls.accent_palette = "Amber"
+        
+        main_layout = MDBoxLayout(orientation='vertical', bg_color=self.theme_cls.bg_normal)
+        
+        # شريط العنوان العلوي
+        toolbar = MDTopAppBar(title=ar("مركز نور القرآن"), anchor_title="center", elevation=4)
+        main_layout.add_widget(toolbar)
+        
+        # كارت توثيق المبرمج ياسين محمد أعلى الواجهة بشكل متوسط وبارز
+        header_card = MDCard(orientation='vertical', padding="10dp", size_hint_y=None, height="90dp", elevation=1)
+        designer_text = MDLabel(
+            text=ar("من تصميم وإنشاء النظام المبرمج ياسين محمد"), 
+            halign="center", 
+            font_style="Subtitle1", 
+            theme_text_color="Custom", 
+            text_color=self.theme_cls.primary_color
+        )
+        welcome_text = MDLabel(text=ar("مرحباً بكم في مركز نور القرآن"), halign="center", font_style="Body2", theme_text_color="Secondary")
+        header_card.add_widget(designer_text)
+        header_card.add_widget(welcome_text)
+        main_layout.add_widget(header_card)
+        
+        # أزرار التبديل العلوية (دخول الطالب / دخول الشيخ)
+        tabs_layout = MDBoxLayout(orientation='horizontal', size_hint_y=None, height="55dp", padding="10dp", spacing="10dp")
+        self.btn_student_tab = MDRaisedButton(text=ar("دخول الطلاب وأولياء الأمور"), size_hint_x=0.5, on_press=self.switch_to_student)
+        self.btn_teacher_tab = MDFlatButton(text=ar("دخول الشيخ والأقسام"), size_hint_x=0.5, on_press=self.switch_to_teacher)
+        tabs_layout.add_widget(self.btn_student_tab)
+        tabs_layout.add_widget(self.btn_teacher_tab)
+        main_layout.add_widget(tabs_layout)
+        
+        # حاوية النوافذ الديناميكية
+        self.container = MDBoxLayout(padding="20dp")
+        main_layout.add_widget(self.container)
+        
+        # تحضير واجهات الدخول مسبقاً لمنع البطء عند التنقل
+        self.student_view = StudentLoginForm(login_callback=self.handle_login_process)
+        self.teacher_view = TeacherLoginForm(login_callback=self.handle_login_process)
+        
+        # العرض الافتراضي هو واجهة الطالب وولي الأمر برقم الهاتف
+        self.switch_to_student(None)
+        return main_layout
 
----
+    def switch_to_student(self, instance):
+        """الانتقال لواجهة الطالب برقم الهاتف وتحديث الألوان"""
+        self.btn_student_tab.md_bg_color = self.theme_cls.primary_color
+        self.btn_student_tab.text_color = [1, 1, 1, 1]
+        self.btn_teacher_tab.md_bg_color = [0, 0, 0, 0]
+        self.btn_teacher_tab.text_color = self.theme_cls.primary_color
+        self.container.clear_widgets()
+        self.container.add_widget(self.student_view)
 
-## Create a build for the development profile
+    def switch_to_teacher(self, instance):
+        """الانتقال لواجهة الشيخ بالاسم المكتوب والكود (125) وتحديث الألوان"""
+        self.btn_teacher_tab.md_bg_color = self.theme_cls.primary_color
+        self.btn_teacher_tab.text_color = [1, 1, 1, 1]
+        self.btn_student_tab.md_bg_color = [0, 0, 0, 0]
+        self.btn_student_tab.text_color = self.theme_cls.primary_color
+        self.container.clear_widgets()
+        self.container.add_widget(self.teacher_view)
 
-For Android, the development build must be in the **.apk**. While the default Android format is **.aab**, which is ideal for Google Play Store distribution, it cannot be installed on devices or emulators.
+    def handle_login_process(self, role, identity, credential):
+        """دالة معالجة واستقبال المدخلات النظيفة من الواجهتين من قبل المبرمج ياسين"""
+        if role == "طالب":
+            print(f"[نظام المبرمج ياسين] دخول طالب/ولي أمر برقم الهاتف: {identity}")
+        elif role == "شيخ":
+            print(f"[نظام المبرمج ياسين] دخول الشيخ باسم: {identity} | الكود الرقمي: {credential}")
 
-To create a **.apk**:
-
-- In **eas.json**, make sure that `developmentClient` is set to `true` under `build.development` profile.
-- Then, run the `eas build` command with `android` as the platform and `development` as the build profile:
-
-  <Terminal cmd={['$ eas build --platform android --profile development']} />
-
-  > **info** **Tip**: Next time you run `eas build` command, you can also use `-p` to specify the platform. It is short for `--platform`.
-
-This command prompts us with the following questions:
-
-- **What would you like your Android application id to be?** Press <kbd>Return</kbd> to select the default value provided for this prompt. This will add [`android.package`](/versions/latest/config/app/#package) in **app.json**.
-- **Generate a new Android Keystore**? Press <kbd>Y</kbd>.
-
-After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the EAS dashboard:
-
-<ContentSpotlight
-  alt="Android development build details and progress in EAS dashboard"
-  src="/static/images/tutorial/eas/android-build-details.png"
-  className="max-w-[800px]"
-/>
-
-<Collapsible summary="What information does a build details page contain?">
-
-The build details page displays the build type, profile, Expo SDK version, app version, version code, last commit hash, and the identity of the developer or account owner who initiated the build.
-
-In the above image, the current status of the **Build artifact** shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** outlines every step taken during the Android build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [Android build process](/build-reference/android-builds/).
-
-</Collapsible>
-
-<Collapsible summary="What is an Android application ID?">
-
-Also known as the package name of our Android app, it stores the value in DNS reverse notation format (`com.owner.appname`). Each component of this notation should start with a lowercase letter.
-
-For example, our example app has `com.owner.stickersmash` where `com.owner` is the domain and `stickersmash` is our app name.
-
-</Collapsible>
-
-## Android device
-
-<Step label="1">
-
-### Install development build
-
-Once the build finishes, the **Build artifact** section gets updated, indicating that the build is complete:
-
-<ContentSpotlight
-  alt="Build artifact gives the option to download development build for Android devices and emulators"
-  src="/static/images/tutorial/eas/android-build-artifact.png"
-/>
-
-This section provides the methods available for running the development build on an Android device: Expo Orbit and Install button.
-
-[Expo Orbit](https://expo.dev/orbit) allows for seamless installation of the development build on an Android device. To use this method:
-
-- Connect our Android device to our local machine using USB.
-- Open the Orbit app.
-- Select the **Device** in the Orbit app.
-
-<ContentSpotlight
-  alt="Expo Orbit app interface when connected to an Android device"
-  src="/static/images/tutorial/eas/android-orbit.png"
-  className="max-w-[300px]"
-/>
-
-- On the EAS dashboard, under **Build artifact**, click the **Open with Orbit**.
-
-After the build is installed, the Orbit app launches the development build on the device.
-
-<Collapsible summary="Alternate: Use the Install button and QR code">
-
-The **Install** button in the **Build artifact** generates a QR code for installation:
-
-- Click **Install** to display a popup with the QR code.
-
-<ContentSpotlight
-  alt="Install button generates a QR code for easy installation on Android devices and emulators"
-  src="/static/images/tutorial/eas/android-qr-code.png"
-  className="max-w-[480px]"
-/>
-
-- Scan the QR code with our Android device's camera to open the build link in the default web browser.
-- Tap the **Install** button on the webpage to download the **.apk** file.
-- Once downloaded, open the **.apk** to start the installation process.
-- If an **Unsafe app blocked message** appears, select **Install anyway**. This warning can safely be ignored as the source of the **.apk** (which we generated) is trusted.
-
-<ContentSpotlight
-  alt="Unsafe app message dialog on Android device when installing development build"
-  src="/static/images/tutorial/eas/android-unsafe-dialog.png"
-  className="max-w-[300px]"
-/>
-
-</Collapsible>
-
-</Step>
-
-<Step label="2">
-
-### Run development build
-
-Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>A</kbd> in the terminal window to open the project:
-
-<Terminal
-  cmd={{
-    npm: ['$ npx expo start'],
-    yarn: ['$ yarn expo start'],
-    pnpm: ['$ pnpm expo start'],
-    bun: ['$ bun expo start'],
-  }}
-/>
-
-</Step>
-
-## Android Emulator
-
-<Step label="1">
-
-### Install the development build
-
-In the terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an Android Emulator. Press <kbd>Y</kbd>.
-
-<ContentSpotlight
-  alt="EAS CLI automatically gives to run build on Android Emulator"
-  src="/static/images/tutorial/eas/android-emulator-cli.png"
-  className="max-w-[600px]"
-/>
-
-<Collapsible summary="Alternate: Use Expo Orbit">
-
-Alternatively, [Expo Orbit](/build/orbit/) can be used for installation. From **Build artifact** on the EAS dashboard, click **Open with Expo Orbit** to install the development build on the Android Emulator.
-
-</Collapsible>
-
-</Step>
-
-<Step label="2">
-
-### Run the development build
-
-Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>A</kbd> in the terminal window to open the project:
-
-<Terminal
-  cmd={{
-    npm: ['$ npx expo start'],
-    yarn: ['$ yarn expo start'],
-    pnpm: ['$ pnpm expo start'],
-    bun: ['$ bun expo start'],
-  }}
-/>
-
-</Step>
-
-## Summary
-
-<ProgressTracker
-  currentChapterIndex={1}
-  name="EAS_TUTORIAL"
-  summary={
-    <>
-      We successfully used EAS Build to create and run development builds on Android devices and
-      emulators, and learned about <strong>.apk</strong> and <strong>.aab</strong> file formats.
-    </>
-  }
-  nextChapterDescription="In the next chapter, learn how to configure a development build for iOS Simulators using EAS Build and get it running."
-  nextChapterTitle="Create and run a cloud build for iOS Simulator"
-  nextChapterLink="/tutorial/eas/ios-development-build-for-simulators/"
-/>
+if __name__ == "__main__":
+    NoorQuranApp().run()
