@@ -11,6 +11,11 @@ public protocol AnyViewDefinition: Sendable {
 
   var name: String { get }
 
+  /// Whether the view this definition creates applies props through
+  /// `ExpoFabricView.applyDecodedProps(_:)`, and can therefore have them decoded from their
+  /// JavaScript values on the JavaScript thread. Defaults to `false`.
+  var receivesDecodedProps: Bool { get }
+
   /**
    Names of the events that the view can send to JavaScript.
    */
@@ -47,4 +52,10 @@ public protocol AnyViewDefinition: Sendable {
    */
   @JavaScriptActor
   func createReactComponentPrototype(appContext: AppContext) throws -> JavaScriptObject
+}
+
+extension AnyViewDefinition {
+  public var receivesDecodedProps: Bool {
+    return false
+  }
 }

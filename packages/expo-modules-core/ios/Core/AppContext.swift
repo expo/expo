@@ -430,8 +430,8 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @MainActor
   private func registerNativeViews() {
     for holder in moduleRegistry {
-      for viewName in holder.definition.views.keys {
-        ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
+      for (viewName, viewDefinition) in holder.definition.views {
+        ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName, viewDefinition: viewDefinition)
       }
     }
     AppContext.viewsRegisteringAppContext = self
