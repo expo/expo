@@ -36,6 +36,28 @@ declare class BenchmarkingExpoModule extends NativeModule {
   executeAsyncSync(iterations: number): Promise<number>;
   /** iOS only — measures async `runtime.execute` with an async closure. */
   executeAsyncAsync(iterations: number): Promise<number>;
+
+  // MARK: - View-props benchmark (iOS only)
+
+  /** Resets the process-wide view-prop decode/apply counters. */
+  resetViewPropsBenchmark(): void;
+  /** Reads the accumulated view-prop decode/apply counters. */
+  getViewPropsBenchmark(): ViewPropsBenchmark;
 }
+
+export type ViewPropsBenchmark = {
+  /** Total time spent decoding props from JS values on the JS thread (ms). */
+  decodeMs: number;
+  /** Total time spent applying props to views on the main thread (ms). */
+  applyMs: number;
+  /** Number of props decoded straight from their JS value (JSI path). */
+  decodedPropCount: number;
+  /** Number of props presented to the legacy (dictionary) path (sticky full set, not applied count). */
+  legacyPresentedPropCount: number;
+  /** Number of decode passes (cloneProps calls that reached the decoder; can exceed apply passes). */
+  decodePassCount: number;
+  /** Number of apply passes (finalizeUpdates → updateProps calls on the main thread). */
+  applyPassCount: number;
+};
 
 export default requireNativeModule<BenchmarkingExpoModule>('BenchmarkingExpoModule');

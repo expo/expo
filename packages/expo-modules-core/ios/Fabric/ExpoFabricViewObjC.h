@@ -45,6 +45,14 @@
 // We use the protocol for AppContext to allow proper Swift type bridging
 @protocol EXAppContextProtocol;
 
+// Swift class (`@objc(EXDecodedViewProps)`) holding view-prop values decoded on the JS thread.
+// The method below types this parameter as `id` rather than `EXDecodedViewProps *`: in the
+// precompiled-xcframework build the Swift target imports this header as an external Clang module,
+// where a forward-declared Swift class does not unify with the local Swift definition, so an
+// `EXDecodedViewProps *` parameter would make the Swift override fail to match. `ExpoFabricView`
+// downcasts to `DecodedViewProps` internally.
+@class EXDecodedViewProps;
+
 // Addition to the interface that is visible in both Swift and Objective-C
 @interface ExpoFabricViewObjC (ExpoFabricViewInterface)
 
@@ -52,7 +60,21 @@
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
 
-- (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
+/**
+ Applies view props that were decoded straight from their JavaScript values on the JS thread.
+ Implemented in `ExpoFabricView.swift`. No-op in the base class.
+ */
+- (void)applyDecodedProps:(nonnull id)decodedProps NS_SWIFT_UI_ACTOR;
+
+/**
+ Framework entry points invoked from `finalizeUpdates:` to bracket the props apply phase.
+ Implemented in `ExpoFabricView.swift`, where they run the overridable `viewWillUpdateProps()`
+ / `viewDidUpdateProps()` hooks and dispatch the registered lifecycle methods. Not meant to be
+ overridden directly.
+ */
+- (void)callViewWillUpdateLifecycleMethods NS_SWIFT_UI_ACTOR;
+
+- (void)callViewDidUpdateLifecycleMethods NS_SWIFT_UI_ACTOR;
 
 - (void)setShadowNodeSize:(float)width height:(float)height;
 
