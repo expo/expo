@@ -429,9 +429,6 @@ export declare class ExpoCalendarEvent {
   static get(eventId: string): Promise<ExpoCalendarEvent>;
 }
 
-/**
- * @platform ios
- */
 export declare class ExpoCalendarReminder {
   /**
    * Internal ID that represents this reminder on the device.

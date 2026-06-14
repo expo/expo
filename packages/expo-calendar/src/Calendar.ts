@@ -89,6 +89,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 
 /**
  * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
+ * @platform ios
  */
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
   override async update(details: Partial<ModifiableReminderProperties>): Promise<void> {
