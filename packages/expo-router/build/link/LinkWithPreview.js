@@ -125,7 +125,7 @@ function LinkWithPreview({ children, ...rest }) {
             if (!isPad) {
                 router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
-        }, style: { display: 'contents' }, disableForceFlatten: true, children: (0, jsx_runtime_1.jsx)(NativeMenuContext_1.NativeMenuContext, { value: true, children: (0, jsx_runtime_1.jsxs)(InternalLinkPreviewContext_1.InternalLinkPreviewContext, { value: {
+        }, accessible: false, style: { display: 'contents' }, disableForceFlatten: true, children: (0, jsx_runtime_1.jsx)(NativeMenuContext_1.NativeMenuContext, { value: true, children: (0, jsx_runtime_1.jsxs)(InternalLinkPreviewContext_1.InternalLinkPreviewContext, { value: {
                     isVisible: isCurrentPreviewOpen,
                     href: rest.hrefForPreviewNavigation,
                     blockPressRef,

@@ -137,6 +137,7 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
           router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
       }}
+      accessible={false}
       style={{ display: 'contents' }}
       disableForceFlatten>
       <NativeMenuContext value>
