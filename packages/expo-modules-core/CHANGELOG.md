@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Added `EmbeddedFingerprint`, which reads the fingerprint a debug build embedded, with `EmbeddedFingerprint.CheckProtocol` carrying the literals of the fingerprint-check exchange. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added an experimental path that decodes Fabric view props from their JavaScript values on the JavaScript thread (via a dedicated `ExpoViewJSIComponentDescriptor`), instead of lowering to `folly::dynamic` / `NSDictionary` and decoding on the main thread. Off for every existing view; a view class opts in by overriding `receivesDecodedProps`. ([#46872](https://github.com/expo/expo/pull/46872) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
