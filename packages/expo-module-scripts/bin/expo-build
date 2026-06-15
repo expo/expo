@@ -12,7 +12,7 @@ const cwd = process.cwd();
 const VALID_FORMATS = new Set(['esm', 'cjs', 'script']);
 const EXCLUDED_DIRS = new Set([/*TODO*/]);
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
-const ASSET_EXTENSIONS = new Set(['.json']);
+const ASSET_EXTENSIONS = new Set(['.css', '.json']);
 
 const { values: flags, positionals } = parseArgs({
   options: {

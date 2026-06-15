@@ -3469,6 +3469,9 @@ importers:
       eslint-plugin-eslint-plugin:
         specifier: ^6.2.0
         version: 6.5.0(eslint@9.39.4(jiti@1.21.7))
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
@@ -4975,6 +4978,10 @@ importers:
       yaml:
         specifier: ^2.8.3
         version: 2.8.3
+    devDependencies:
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
 
   packages/expo-navigation-bar:
     dependencies:

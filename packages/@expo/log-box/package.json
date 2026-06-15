@@ -61,7 +61,7 @@
     "prepublishOnly": "run-s clean build:publish",
     "build": "run-s build:lib",
     "build:publish": "run-s build:lib build:bundle",
-    "build:lib": "tsc -p tsconfig.lib.json && node ./scripts/copy-css-modules.mjs",
+    "build:lib": "expo-build src",
     "build:bundle": "node ./scripts/build-bundle.mjs",
     "export:web": "expo export -p web --no-minify"
   },
