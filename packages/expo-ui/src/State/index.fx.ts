@@ -61,11 +61,10 @@ function registerSharedObjectSerializer(): void {
 }
 
 try {
-  // reanimated import is needed to initialise __WORKLET_RUNTIME global, which is required by the installOnUIRuntime
-  require('react-native-reanimated');
-
-  installOnUIRuntime();
-  registerSharedObjectSerializer();
+  if (worklets) {
+    installOnUIRuntime(worklets.getUIRuntimeHolder());
+    registerSharedObjectSerializer();
+  }
 } catch {
   // Fail silently as worklet support is currently optional in Expo UI
 }
