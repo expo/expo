@@ -1,6 +1,8 @@
 import Observe from './module';
 
 export { default as AppMetrics } from 'expo-app-metrics';
+export { ObserveInteractiveMarker } from './InteractiveMarker';
+export type { ObserveInteractiveMarkerProps } from './InteractiveMarker';
 export { ObserveRoot } from './ObserveRoot';
 
 Observe.setBundleDefaults({
