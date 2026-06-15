@@ -101,6 +101,34 @@ on:
 
 ```
 
+### `on.ref_delete`
+
+Runs your workflow when a GitHub branch or tag is deleted. Requires a [linked GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) on your EAS project.
+
+With the `branches` list, you can trigger the workflow only when those specified branches are deleted. For example, if you use `branches: ['main']`, only deletion of the `main` branch will trigger the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it). See [`on.push`](#onpush) for details on glob and negation pattern matching.
+
+With the `tags` list, you can trigger the workflow only when those specified tags are deleted. Supports globs and `!` negation with the same rules as branches.
+
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger when any branch is deleted and will not trigger on tag deletions. If only one of the two lists is provided the other defaults to `[]`.
+
+> **info** Workflow files are read from the default branch HEAD at the time of deletion, not from the deleted ref.
+
+```yaml
+on:
+  # @info #
+  ref_delete:
+    # @end #
+    branches:
+      - feat/**
+      - !main # other branch names and globs
+
+
+    tags:
+      - v*
+      - !v2-preview** # other tag names and globs
+
+```
+
 ### `on.pull_request`
 
 Runs your workflow when you create or update a pull request that targets one of the matching branches.
