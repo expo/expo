@@ -31,10 +31,18 @@ public final class ModuleHolder {
   let definition: ModuleDefinition
 
   /**
-   Returns `definition.name` if not empty, otherwise falls back to the module type name.
+   The module's name. Prefers the name passed at registration, then a non-empty `Name(…)` from the
+   definition, and finally `_jsName` — the `@ExpoModule` macro's synthesized name, defaulting to the
+   module type name.
    */
   var name: String {
-    return _name ?? (definition.name.isEmpty ? String(describing: type(of: module)) : definition.name)
+    if let _name {
+      return _name
+    }
+    if !definition.name.isEmpty {
+      return definition.name
+    }
+    return type(of: module)._jsName
   }
 
   /**
