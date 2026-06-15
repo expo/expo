@@ -4019,7 +4019,7 @@ SPEC CHECKSUMS:
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
   Expo: 848f62d607a8a550d4b8064f8f3f69feaf0555c6
   expo-dev-client: 47bd82ac19bbfce73d04f9140f4a607b8468dde7
-  expo-dev-launcher: 5de1e475767f9158cb9d869a13edc9caa1c0ce2a
+  expo-dev-launcher: f761f01b43a9d7cc32f4bbac53269b0ffe17b349
   expo-dev-menu: d9ea09994a5a9bec05005bd7ccbdfcca8f970772
   expo-dev-menu-interface: 65402d4affb8b418aa6cec29b3abb0e313c8f443
   ExpoAgeRange: 0f0a7efa4953b7559a726a817e0fa81bed4f35a7
