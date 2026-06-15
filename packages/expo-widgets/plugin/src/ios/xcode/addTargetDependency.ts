@@ -15,7 +15,8 @@ export function addTargetDependency(xcodeProject: XcodeProject, target: { uuid: 
 
   if (
     mainTarget.dependencies.some(
-      (dependency: { value: string }) => targetDependencies[dependency.value]?.target === target.uuid
+      (dependency: { value: string }) =>
+        targetDependencies[dependency.value]?.target === target.uuid
     )
   ) {
     return;

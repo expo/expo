@@ -1,4 +1,5 @@
 import { type ConfigPlugin, withPodfileProperties } from 'expo/config-plugins';
+
 import type { PluginConfig } from '../types';
 
 // NOTE: Keep in sync with cli/src/utils/config.ts

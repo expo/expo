@@ -1,7 +1,7 @@
+import type { ExpoConfig, ProjectConfig } from '@expo/config';
 import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import type { ExpoConfig, ProjectConfig } from '@expo/config';
 import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import path from 'path';
 import semver from 'semver';
