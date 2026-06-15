@@ -14,7 +14,6 @@ export type AddEventWithFormOptions = PresentationOptions & {
      */
     url?: string;
     /**
-     * Array of alarm objects that trigger a reminder.
      * @platform ios
      */
     alarms?: Alarm[];
@@ -403,15 +402,20 @@ export declare class ExpoCalendarReminder {
      * Setting this property of a nonnull `Date` will automatically set the reminder's `completed` value to `true`.
      */
     completionDate?: string | Date;
+    /**
+     * @platform ios
+     */
     update(details: Partial<ModifiableReminderProperties>, nullableFields?: (keyof ModifiableReminderProperties)[]): Promise<void>;
     /**
      * Deletes the reminder.
+     * @platform ios
      */
     delete(): Promise<void>;
     /**
      * Gets a reminder by its ID. Throws an error if the reminder with the given ID does not exist.
      * @param reminderId The ID of the reminder to get.
      * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
+     * @platform ios
      */
     static get(reminderId: string): Promise<ExpoCalendarReminder>;
 }

@@ -268,7 +268,7 @@ export async function getRemindersPermissions() {
  * @platform ios
  */
 export function getSourcesSync() {
-    if (Platform.OS === 'android') {
+    if (Platform.OS !== 'ios') {
         throw new UnavailabilityError('Calendar', 'getSourcesSync');
     }
     return InternalExpoCalendar.getSourcesSync();

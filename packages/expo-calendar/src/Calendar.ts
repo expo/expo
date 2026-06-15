@@ -344,7 +344,7 @@ export async function getRemindersPermissions(): Promise<PermissionResponse> {
  * @platform ios
  */
 export function getSourcesSync(): Source[] {
-  if (Platform.OS === 'android') {
+  if (Platform.OS !== 'ios') {
     throw new UnavailabilityError('Calendar', 'getSourcesSync');
   }
   return InternalExpoCalendar.getSourcesSync();
