@@ -423,6 +423,14 @@ export declare function deleteAssetsAsync(assets: AssetRef[] | AssetRef): Promis
  */
 export declare function getAssetInfoAsync(asset: AssetRef, options?: MediaLibraryAssetInfoQueryOptions): Promise<AssetInfo>;
 /**
+ * Returns the `content://` URI for the given legacy asset. Use this when migrating to the new
+ * class-based API — pass the returned URI as the ID to `new Asset(id)`.
+ * @param asset An [`Asset`](#asset) or its ID.
+ * @return A promise which fulfils with the `content://` URI string for the asset.
+ * @platform android
+ */
+export declare function getAssetContentUriAsync(asset: AssetRef): Promise<string>;
+/**
  * Queries for user-created albums in media gallery.
  * @return A promise which fulfils with an array of [`Album`](#asset)s. Depending on Android version,
  * root directory of your storage may be listed as album titled `"0"` or unlisted at all.
