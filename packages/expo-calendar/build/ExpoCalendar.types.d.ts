@@ -9,7 +9,13 @@ export type AddEventWithFormOptions = PresentationOptions & {
     allDay?: boolean;
     notes?: string;
     location?: string;
+    /**
+     * @platform ios
+     */
     url?: string;
+    /**
+     * @platform ios
+     */
     alarms?: Alarm[];
     recurrenceRule?: RecurrenceRule;
 };
@@ -117,6 +123,7 @@ export declare class ExpoCalendar {
      * @param endDate End of time period to search for reminders in, or `null` for all completed reminders after `startDate`.
      * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`. If not defined, both completed and incomplete reminders will be returned.
      * @return An array of [`ExpoCalendarReminder`](#expocalendarreminder) objects matching the search criteria.
+     * @platform ios
      */
     listReminders(startDate?: Date | string | null, endDate?: Date | string | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
     /**
@@ -129,6 +136,7 @@ export declare class ExpoCalendar {
      * Creates a new reminder in the calendar.
      * @param reminderData A map of details for the reminder to be created.
      * @return An instance of the created reminder.
+     * @platform ios
      */
     createReminder(reminderData: Omit<Partial<ExpoCalendarReminder>, 'id' | 'calendarId'>): Promise<ExpoCalendarReminder>;
     /**
@@ -299,7 +307,6 @@ export declare class ExpoCalendarEvent {
      * Returns an event instance for a given event (or instance of a recurring event).
      * @param recurringEventOptions A map of options for recurring events.
      * @return An event instance.
-     * @platform ios
      */
     getOccurrenceSync(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     /**
@@ -395,15 +402,20 @@ export declare class ExpoCalendarReminder {
      * Setting this property of a nonnull `Date` will automatically set the reminder's `completed` value to `true`.
      */
     completionDate?: string | Date;
+    /**
+     * @platform ios
+     */
     update(details: Partial<ModifiableReminderProperties>, nullableFields?: (keyof ModifiableReminderProperties)[]): Promise<void>;
     /**
      * Deletes the reminder.
+     * @platform ios
      */
     delete(): Promise<void>;
     /**
      * Gets a reminder by its ID. Throws an error if the reminder with the given ID does not exist.
      * @param reminderId The ID of the reminder to get.
      * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
+     * @platform ios
      */
     static get(reminderId: string): Promise<ExpoCalendarReminder>;
 }

@@ -1,4 +1,4 @@
-import { createPermissionHook } from 'expo';
+import { createPermissionHook, PermissionStatus } from 'expo';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import InternalExpoCalendar from './ExpoCalendar';
@@ -60,13 +60,26 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 }
 /**
  * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
+ * @platform ios
  */
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     async update(details) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendarReminder', 'update');
+        }
         const nullableDetailsFields = getNullableDetailsFields(details);
         await super.update(stringifyDateValues(details), nullableDetailsFields);
     }
+    async delete() {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendarReminder', 'delete');
+        }
+        await super.delete();
+    }
     static async get(reminderId) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendarReminder', 'get');
+        }
         const reminder = await InternalExpoCalendar.getReminderById(reminderId);
         Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
         return reminder;
@@ -85,6 +98,9 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         return newEvent;
     }
     async createReminder(details) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendar', 'createReminder');
+        }
         const newReminder = await super.createReminder(stringifyDateValues(details));
         Object.setPrototypeOf(newReminder, ExpoCalendarReminder.prototype);
         return newReminder;
@@ -103,6 +119,9 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         });
     }
     async listReminders(startDate = null, endDate = null, status = null) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('ExpoCalendar', 'listReminders');
+        }
         const reminders = await super.listReminders(startDate ? stringifyIfDate(startDate) : null, endDate ? stringifyIfDate(endDate) : null, status);
         return reminders.map((reminder) => {
             Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
@@ -128,7 +147,11 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 }
 /**
  * Gets an instance of the default calendar object.
+ * > **Android:** This function is not available on Android. Android does not expose a single
+ * > system-managed default calendar. Use `getCalendars()` and choose an appropriate writable
+ * > calendar for your app; `isPrimary` can help identify per-account primary calendars.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
+ * @platform ios
  */
 export function getDefaultCalendarSync() {
     if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendarSync) {
@@ -217,18 +240,39 @@ export const getCalendarPermissions = InternalExpoCalendar.getCalendarPermission
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
  */
-export const requestRemindersPermissions = InternalExpoCalendar.requestRemindersPermissions;
+export async function requestRemindersPermissions() {
+    if (Platform.OS !== 'ios') {
+        throw new UnavailabilityError('Calendar', 'requestRemindersPermissions');
+    }
+    return InternalExpoCalendar.requestRemindersPermissions();
+}
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
  */
-export const getRemindersPermissions = InternalExpoCalendar.getRemindersPermissions;
+export async function getRemindersPermissions() {
+    if (Platform.OS !== 'ios') {
+        throw new UnavailabilityError('Calendar', 'getRemindersPermissions');
+    }
+    return InternalExpoCalendar.getRemindersPermissions();
+}
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
+ * > **Android:** This function is not available on Android. Android does not expose a
+ * > first-class calendar sources API. If you need account-like source information, call
+ * > `getCalendars()` and inspect each calendar's `source` field.
  * @returns An array of Source objects representing the sources found.
+ * @platform ios
  */
-export const getSourcesSync = InternalExpoCalendar.getSourcesSync;
+export function getSourcesSync() {
+    if (Platform.OS !== 'ios') {
+        throw new UnavailabilityError('Calendar', 'getSourcesSync');
+    }
+    return InternalExpoCalendar.getSourcesSync();
+}
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, } from './legacy/Calendar';
 /**
  * Check or request permissions to access the user's calendars.
@@ -255,8 +299,23 @@ export const useCalendarPermissions = createPermissionHook({
  * ```ts
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
+ * @platform ios
  */
-export const useRemindersPermissions = createPermissionHook({
+export function useRemindersPermissions(options) {
+    if (Platform.OS !== 'ios') {
+        // While for getRemindersPermissions and other iOS-specific functions we throw UnavailabilityError,
+        // returning a denied permission response is a deliberate choice to make it work without need to wrap it in try/catch.
+        const response = {
+            canAskAgain: false,
+            expires: 'never',
+            granted: false,
+            status: PermissionStatus.DENIED,
+        };
+        return [response, async () => response, async () => response];
+    }
+    return createRemindersPermissionHook(options);
+}
+const createRemindersPermissionHook = createPermissionHook({
     getMethod: getRemindersPermissions,
     requestMethod: requestRemindersPermissions,
 });
