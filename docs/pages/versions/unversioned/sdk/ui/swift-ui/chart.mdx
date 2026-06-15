@@ -138,6 +138,33 @@ export default function PerPointColorExample() {
 }
 ```
 
+### Reference lines
+
+Use `referenceLines` together with `ruleStyle` to overlay horizontal rule marks, for example to highlight a target or average value.
+
+```tsx ReferenceLinesExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function ReferenceLinesExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="line"
+        data={[
+          { x: 'Jan', y: 15 },
+          { x: 'Feb', y: 25 },
+          { x: 'Mar', y: 18 },
+          { x: 'Apr', y: 32 },
+        ]}
+        referenceLines={[{ x: 'Average', y: 22.5 }]}
+        ruleStyle={{ color: '#FF6B6B', lineWidth: 2, dashArray: [5, 5] }}
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
