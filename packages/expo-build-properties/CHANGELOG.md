@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Make the precompiled header reusable by passing `-Xclang -fno-pch-timestamp`, so ccache can reuse it across builds.
+
 ### 💡 Others
+
+- [Android] Compile the precompiled header once in a shared owner target and reuse it across all codegen targets, instead of building a separate PCH per target.
 
 ## 56.0.15 — 2026-05-26
 

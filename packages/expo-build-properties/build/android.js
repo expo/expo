@@ -315,6 +315,7 @@ const withAndroidPrecompiledHeaders = (config, props) => {
                 fs_1.default.promises.writeFile(path_1.default.join(jniDir, 'CMakeLists.txt'), androidPCHTemplates_1.PCH_CMAKE_CONTENTS),
                 fs_1.default.promises.writeFile(path_1.default.join(jniDir, 'OnLoad.cpp'), androidPCHTemplates_1.PCH_ONLOAD_CONTENTS),
                 fs_1.default.promises.writeFile(path_1.default.join(jniDir, 'pch.h'), androidPCHTemplates_1.PCH_HEADER_CONTENTS),
+                fs_1.default.promises.writeFile(path_1.default.join(jniDir, 'appmodules_pch_owner.cpp'), androidPCHTemplates_1.PCH_OWNER_SOURCE_CONTENTS),
             ]);
             return config;
         },
