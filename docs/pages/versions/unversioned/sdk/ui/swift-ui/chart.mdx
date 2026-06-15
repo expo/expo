@@ -66,6 +66,30 @@ export default function BarChartExample() {
 }
 ```
 
+### Pie chart
+
+```tsx PieChartExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function PieChartExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="pie"
+        data={[
+          { x: 'Direct', y: 45, color: '#6366F1' },
+          { x: 'Social', y: 30, color: '#EC4899' },
+          { x: 'Email', y: 25, color: '#10B981' },
+        ]}
+        pieStyle={{ innerRadius: 0.5, angularInset: 2 }}
+        showLegend
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
