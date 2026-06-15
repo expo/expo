@@ -55,6 +55,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(VStackView.self, VStackViewProps.self, updateProps: updateChildren)
     case "ZStackView":
       render(ZStackView.self, ZStackViewProps.self, updateProps: updateChildren)
+    case "BackgroundView":
+      render(BackgroundView.self, BackgroundViewProps.self, updateProps: updateChildren)
     case "RectangleView":
       render(RectangleView.self, RectangleViewProps.self)
     case "RoundedRectangleView":
