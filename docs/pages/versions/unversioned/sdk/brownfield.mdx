@@ -225,6 +225,137 @@ The `expo-brownfield` package provides a [config plugin](/config-plugins/introdu
   ]}
 />
 
+## Publishing artifacts
+
+Brownfield Android artifacts are pushed to one or more Maven repositories declared via `android.publishing` in your app config. The repository types supported are:
+
+| `type`            | Description                                                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `localMaven`      | Publishes to `~/.m2/repository`. Default. Useful for local host-app integration during development.                       |
+| `localDirectory`  | Publishes to a local filesystem path (`path` field). Useful for checking artifacts into a sibling git repository.        |
+| `remotePublic`    | Publishes to a public Maven repository with no authentication.                                                            |
+| `remotePrivate`   | Publishes to an authenticated remote Maven repository (GitHub Packages, JFrog Artifactory, AWS CodeArtifact, Sonatype Nexus…). Credentials can be inline strings or environment-variable references. |
+
+`url`, `username`, and `password` on `remotePrivate` accept either a plain string or an `EnvValue` object — `{ "variable": "SOME_ENV_VAR" }` — that resolves the value at build time via Gradle's `providers.environmentVariable(...)`. Pin secrets to env vars so they don't end up in your committed app config.
+
+### Publishing to GitHub Packages
+
+GitHub Packages hosts a private Maven repository scoped to a GitHub repo. Authentication is `GITHUB_ACTOR` (the user/bot name) + a [personal access token](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages) with `write:packages` and `read:packages` scopes (in GitHub Actions, the workflow's `GITHUB_TOKEN` already has the right scopes for the workflow's own repo).
+
+Add a `remotePrivate` entry to `android.publishing` pointing at the GitHub Packages URL for your test repository:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-brownfield",
+        {
+          "android": {
+            "group": "com.example",
+            "libraryName": "brownfield",
+            "publishing": [
+              { "type": "localMaven" },
+              {
+                "type": "remotePrivate",
+                "name": "GitHubPackages",
+                "url": "https://maven.pkg.github.com/<owner>/<repo>",
+                "username": { "variable": "GITHUB_ACTOR" },
+                "password": { "variable": "GITHUB_TOKEN" }
+              }
+            ]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+The `name` field controls both the Gradle Maven repo name and the `--repo` CLI flag value. With `"name": "GitHubPackages"`, the publish task becomes `publishBrownfieldReleasePublicationToGitHubPackagesRepository`, invoked via:
+
+<Terminal cmd={['$ npx expo-brownfield build:android --fused --repo GitHubPackages']} />
+
+### Publishing only the fused artifacts
+
+The non-fused publish flow emits one Maven coordinate per autolinked Expo Android module (typically 20–40 artifacts per release). To publish a small, curated set instead, use `--fused` — the fused mode short-circuits the publish plugin's per-module re-publish loop and only emits the fat-AAR sibling(s):
+
+| Invocation                                   | Coordinates published                                                                                                   |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `--fused --release`                          | `<group>:<libraryName>-fused-release:<version>`                                                                          |
+| `--fused --debug`                            | `<group>:<libraryName>-fused-debug:<version>`                                                                            |
+| `--fused --all` (default with `--fused`)     | Both of the above (two Gradle invocations under the hood, one per variant)                                              |
+
+That's at most two Maven coordinates published per release — independent of how many Expo modules your project autolinks. Everything else (per-module AARs, transitive Maven deps) stays out of your remote repo. Foundational libraries (AndroidX, RN runtime, Kotlin stdlib, Glide alternatives the host already has) stay external in the POM rather than fusing into the AAR; see [Fused mode](#fused-mode) for the full denylist + allowlist.
+
+### Sample GitHub Actions workflow
+
+```yaml .github/workflows/publish-brownfield.yml
+name: Publish brownfield fused AAR
+
+on:
+  push:
+    tags:
+      - 'brownfield-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - run: npx expo prebuild --platform android
+      - run: npx expo-brownfield build:android --fused --release --repo GitHubPackages
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Trigger via `git tag brownfield-v1.0.0 && git push --tags` (or manually via the Actions tab). The workflow's built-in `GITHUB_TOKEN` is scoped to the workflow's own repo, so publishing to a third-party repo requires a PAT in a repo secret instead.
+
+### Consumer setup (host Android app)
+
+The host app's `settings.gradle.kts` (or per-module `build.gradle.kts`) declares the same GitHub Packages URL + credentials. The host app's CI/local builds must have `GITHUB_ACTOR` + `GITHUB_TOKEN` env vars set or pulled from `~/.gradle/gradle.properties`.
+
+```kotlin android/settings.gradle.kts
+dependencyResolutionManagement {
+  repositories {
+    google()
+    mavenCentral()
+    maven {
+      url = uri("https://maven.pkg.github.com/<owner>/<repo>")
+      credentials {
+        username = providers.environmentVariable("GITHUB_ACTOR").orNull
+          ?: providers.gradleProperty("gpr.user").get()
+        password = providers.environmentVariable("GITHUB_TOKEN").orNull
+          ?: providers.gradleProperty("gpr.token").get()
+      }
+    }
+  }
+}
+```
+
+```kotlin android/app/build.gradle.kts
+dependencies {
+  releaseImplementation("com.example:brownfield-fused-release:1.0.0")
+  debugImplementation("com.example:brownfield-fused-debug:1.0.0")
+}
+```
+
+`releaseImplementation` / `debugImplementation` pair the variants automatically — Gradle picks the matching sibling per host build type. If your host only ships release builds, you can drop the `debugImplementation` line and just publish the release sibling with `--fused --release`.
+
 ## CLI
 
 The `expo-brownfield` library includes a CLI for building and publishing to Maven repositories (Android) and XCFrameworks (iOS).
