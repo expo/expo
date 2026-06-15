@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add option to specify targets to use with inline modules, add new option to podfile.properties ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.16 — 2026-06-15
+
+### 🎉 New features
+
+- Add option to specify targets to use with inline modules, add new option to podfile.properties ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 
 ## 56.0.15 — 2026-06-05
 

@@ -37,7 +37,7 @@
     "@expo/metro-runtime": "workspace:^56.0.15",
     "expo": "*",
     "expo-constants": "workspace:^56.0.18",
-    "expo-font": "workspace:^56.0.6",
+    "expo-font": "workspace:^56.0.7",
     "expo-router": "*",
     "expo-server": "workspace:^56.0.5",
     "react": "*",

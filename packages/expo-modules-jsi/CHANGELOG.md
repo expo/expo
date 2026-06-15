@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Ignore already-settled promises. ([#46765](https://github.com/expo/expo/pull/46765) by [@jakex7](https://github.com/jakex7))
-
 ### 💡 Others
+
+## 56.0.10 — 2026-06-15
+
+### 🐛 Bug fixes
+
+- [iOS] Ignore already-settled promises. ([#46765](https://github.com/expo/expo/pull/46765) by [@jakex7](https://github.com/jakex7))
 
 ## 56.0.9 — 2026-06-10
 

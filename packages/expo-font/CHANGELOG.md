@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.7 — 2026-06-15
+
+### 💡 Others
+
 - Resolve package-style font paths. ([#46784](https://github.com/expo/expo/pull/46784) by [@maxlapides](https://github.com/maxlapides))
 
 ## 56.0.6 — 2026-06-10
