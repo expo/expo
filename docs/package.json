@@ -40,7 +40,7 @@
     "@expo/styleguide-base": "^3.1.2",
     "@expo/styleguide-cookie-consent": "^2.1.2",
     "@expo/styleguide-icons": "^4.2.4",
-    "@expo/styleguide-search-ui": "^9.1.6",
+    "@expo/styleguide-search-ui": "^9.1.7",
     "@formatjs/intl-localematcher": "^0.8.5",
     "@kapaai/react-sdk": "^0.9.6",
     "@mdx-js/loader": "^3.1.1",
