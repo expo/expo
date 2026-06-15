@@ -1,3 +1,4 @@
+import { type PermissionHookOptions } from 'expo';
 import InternalExpoCalendar from './ExpoCalendar';
 import type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, ModifiableAttendeeProperties, AddEventWithFormOptions } from './ExpoCalendar.types';
 import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus, PermissionResponse, Source } from './legacy/Calendar';
@@ -132,7 +133,7 @@ export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, 
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
-export declare const useCalendarPermissions: (options?: import("expo-modules-core").PermissionHookOptions<{
+export declare const useCalendarPermissions: (options?: PermissionHookOptions<{
     writeOnly?: boolean;
 }> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
@@ -146,7 +147,7 @@ export declare const useCalendarPermissions: (options?: import("expo-modules-cor
  * ```
  * @platform ios
  */
-export declare function useRemindersPermissions(): ReturnType<typeof createRemindersPermissionHook>;
-declare const createRemindersPermissionHook: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare function useRemindersPermissions(options?: PermissionHookOptions<object>): ReturnType<typeof createRemindersPermissionHook>;
+declare const createRemindersPermissionHook: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 export * from './legacyWarnings';
 //# sourceMappingURL=Calendar.d.ts.map

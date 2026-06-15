@@ -301,7 +301,7 @@ export const useCalendarPermissions = createPermissionHook({
  * ```
  * @platform ios
  */
-export function useRemindersPermissions() {
+export function useRemindersPermissions(options) {
     if (Platform.OS !== 'ios') {
         // While for getRemindersPermissions and other iOS-specific functions we throw UnavailabilityError,
         // returning a denied permission response is a deliberate choice to make it work without need to wrap it in try/catch.
@@ -313,7 +313,7 @@ export function useRemindersPermissions() {
         };
         return [response, async () => response, async () => response];
     }
-    return createRemindersPermissionHook();
+    return createRemindersPermissionHook(options);
 }
 const createRemindersPermissionHook = createPermissionHook({
     getMethod: getRemindersPermissions,
