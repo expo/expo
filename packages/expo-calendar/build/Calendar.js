@@ -1,4 +1,4 @@
-import { createPermissionHook } from 'expo';
+import { createPermissionHook, PermissionStatus } from 'expo';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import InternalExpoCalendar from './ExpoCalendar';
@@ -60,6 +60,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 }
 /**
  * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
+ * @platform ios
  */
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     async update(details) {
@@ -146,13 +147,11 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 }
 /**
  * Gets an instance of the default calendar object.
+ * > **Android:** This function is not available on Android. Android does not expose a single
+ * > system-managed default calendar. Use `getCalendars()` and choose an appropriate writable
+ * > calendar for your app; `isPrimary` can help identify per-account primary calendars.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  * @platform ios
- *
- * > **Android:** This function is not available on Android. There is no single system-managed
- * > default calendar on Android. As a workaround, use `getCalendars()` and pick the calendar
- * > where `isPrimary === true`. Note that `isPrimary` is per-account, so multiple calendars
- * > may have this flag set when more than one account is registered on the device.
  */
 export function getDefaultCalendarSync() {
     if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendarSync) {
@@ -262,15 +261,14 @@ export async function getRemindersPermissions() {
 }
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
+ * > **Android:** This function is not available on Android. Android does not expose a
+ * > first-class calendar sources API. If you need account-like source information, call
+ * > `getCalendars()` and inspect each calendar's `source` field.
  * @returns An array of Source objects representing the sources found.
  * @platform ios
- *
- * > **Android:** This function is not available on Android. There is no first-class concept of
- * > calendar sources on Android. As a workaround, call `getCalendars()` and aggregate the
- * > `source` field of each returned calendar.
  */
 export function getSourcesSync() {
-    if (Platform.OS === 'android' || !InternalExpoCalendar.getSourcesSync) {
+    if (Platform.OS === 'android') {
         throw new UnavailabilityError('Calendar', 'getSourcesSync');
     }
     return InternalExpoCalendar.getSourcesSync();
@@ -305,12 +303,21 @@ export const useCalendarPermissions = createPermissionHook({
  */
 export function useRemindersPermissions() {
     if (Platform.OS !== 'ios') {
-        throw new UnavailabilityError('Calendar', 'useRemindersPermissions');
+        // While for getRemindersPermissions and other iOS-specific functions we throw UnavailabilityError,
+        // returning a denied permission response is a deliberate choice to make it work without need to wrap it in try/catch.
+        const response = {
+            canAskAgain: false,
+            expires: 'never',
+            granted: false,
+            status: PermissionStatus.DENIED,
+        };
+        return [response, async () => response, async () => response];
     }
-    return createPermissionHook({
-        getMethod: getRemindersPermissions,
-        requestMethod: requestRemindersPermissions,
-    })();
+    return createRemindersPermissionHook();
 }
+const createRemindersPermissionHook = createPermissionHook({
+    getMethod: getRemindersPermissions,
+    requestMethod: requestRemindersPermissions,
+});
 export * from './legacyWarnings';
 //# sourceMappingURL=Calendar.js.map

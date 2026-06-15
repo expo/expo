@@ -10,7 +10,6 @@ export type AddEventWithFormOptions = PresentationOptions & {
     notes?: string;
     location?: string;
     /**
-     * URL for the event.
      * @platform ios
      */
     url?: string;
@@ -338,9 +337,6 @@ export declare class ExpoCalendarEvent {
      */
     static get(eventId: string): Promise<ExpoCalendarEvent>;
 }
-/**
- * @platform ios
- */
 export declare class ExpoCalendarReminder {
     /**
      * Internal ID that represents this reminder on the device.

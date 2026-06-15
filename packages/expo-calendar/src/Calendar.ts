@@ -1,4 +1,4 @@
-import { createPermissionHook } from 'expo';
+import { createPermissionHook, PermissionStatus } from 'expo';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
@@ -205,13 +205,13 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 }
 
 /**
-* Gets an instance of the default calendar object.
-* > **Android:** This function is not available on Android. Android does not expose a single
-* > system-managed default calendar. Use `getCalendars()` and choose an appropriate writable
-* > calendar for your app; `isPrimary` can help identify per-account primary calendars.
-* @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
-* @platform ios
-*/
+ * Gets an instance of the default calendar object.
+ * > **Android:** This function is not available on Android. Android does not expose a single
+ * > system-managed default calendar. Use `getCalendars()` and choose an appropriate writable
+ * > calendar for your app; `isPrimary` can help identify per-account primary calendars.
+ * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
+ * @platform ios
+ */
 export function getDefaultCalendarSync(): ExpoCalendar {
   if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendarSync) {
     throw new UnavailabilityError('Calendar', 'getDefaultCalendar');
@@ -336,13 +336,13 @@ export async function getRemindersPermissions(): Promise<PermissionResponse> {
 }
 
 /**
-* Gets an array of Source objects with details about the different sources stored on the device.
-* > **Android:** This function is not available on Android. Android does not expose a
-* > first-class calendar sources API. If you need account-like source information, call
-* > `getCalendars()` and inspect each calendar's `source` field.
-* @returns An array of Source objects representing the sources found.
-* @platform ios
-*/
+ * Gets an array of Source objects with details about the different sources stored on the device.
+ * > **Android:** This function is not available on Android. Android does not expose a
+ * > first-class calendar sources API. If you need account-like source information, call
+ * > `getCalendars()` and inspect each calendar's `source` field.
+ * @returns An array of Source objects representing the sources found.
+ * @platform ios
+ */
 export function getSourcesSync(): Source[] {
   if (Platform.OS === 'android') {
     throw new UnavailabilityError('Calendar', 'getSourcesSync');

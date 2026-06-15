@@ -21,6 +21,7 @@ export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendar
 }
 /**
  * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
+ * @platform ios
  */
 export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     update(details: Partial<ModifiableReminderProperties>): Promise<void>;
@@ -44,13 +45,11 @@ export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 }
 /**
  * Gets an instance of the default calendar object.
+ * > **Android:** This function is not available on Android. Android does not expose a single
+ * > system-managed default calendar. Use `getCalendars()` and choose an appropriate writable
+ * > calendar for your app; `isPrimary` can help identify per-account primary calendars.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  * @platform ios
- *
- * > **Android:** This function is not available on Android. There is no single system-managed
- * > default calendar on Android. As a workaround, use `getCalendars()` and pick the calendar
- * > where `isPrimary === true`. Note that `isPrimary` is per-account, so multiple calendars
- * > may have this flag set when more than one account is registered on the device.
  */
 export declare function getDefaultCalendarSync(): ExpoCalendar;
 /**
@@ -111,12 +110,11 @@ export declare function requestRemindersPermissions(): Promise<PermissionRespons
 export declare function getRemindersPermissions(): Promise<PermissionResponse>;
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
+ * > **Android:** This function is not available on Android. Android does not expose a
+ * > first-class calendar sources API. If you need account-like source information, call
+ * > `getCalendars()` and inspect each calendar's `source` field.
  * @returns An array of Source objects representing the sources found.
  * @platform ios
- *
- * > **Android:** This function is not available on Android. There is no first-class concept of
- * > calendar sources on Android. As a workaround, call `getCalendars()` and aggregate the
- * > `source` field of each returned calendar.
  */
 export declare function getSourcesSync(): Source[];
 export type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, AddEventWithFormOptions, } from './ExpoCalendar.types';
@@ -148,6 +146,7 @@ export declare const useCalendarPermissions: (options?: import("expo-modules-cor
  * ```
  * @platform ios
  */
-export declare function useRemindersPermissions(): [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare function useRemindersPermissions(): ReturnType<typeof createRemindersPermissionHook>;
+declare const createRemindersPermissionHook: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 export * from './legacyWarnings';
 //# sourceMappingURL=Calendar.d.ts.map
