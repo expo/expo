@@ -78,11 +78,6 @@ internal inline fun withJSIInterop(
   every { appContextMock.reactContext } answers { reactContextMock }
   every { appContextMock.assertMainThread() } answers { }
 
-  val functionSlot = slot<() -> Unit>()
-  every { appContextMock.dispatchOnMainUsingUIManager(capture(functionSlot)) } answers {
-    functionSlot.captured.invoke()
-  }
-
   val jniDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
   repeat(numberOfReloads) {
     val coreModule = run {

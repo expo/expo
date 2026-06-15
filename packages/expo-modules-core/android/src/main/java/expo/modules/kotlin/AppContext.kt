@@ -11,8 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.UIManagerModule
-import com.facebook.react.uimanager.common.UIManagerType
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
@@ -371,18 +369,6 @@ class AppContext(
     return UIManagerHelper
       .getUIManagerForReactTag(reactContext, viewTag)
       ?.resolveView(viewTag) as? T
-  }
-
-  internal fun dispatchOnMainUsingUIManager(block: () -> Unit) {
-    val reactContext = runtime.reactContext ?: throw Exceptions.ReactContextLost()
-    val uiManager = UIManagerHelper.getUIManagerForReactTag(
-      reactContext,
-      UIManagerType.DEFAULT
-    ) as UIManagerModule
-
-    uiManager.addUIBlock {
-      block()
-    }
   }
 
   internal fun assertMainThread() {
