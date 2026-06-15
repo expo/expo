@@ -114,6 +114,30 @@ export default function PointAreaExample() {
 }
 ```
 
+### Per-point colors
+
+Provide a `color` for individual data points to override the automatic category colors. This is useful when each data point represents a distinct category (for example, days of the week) rather than a series.
+
+```tsx PerPointColorExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function PerPointColorExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="bar"
+        data={[
+          { x: 'Mon', y: 20, color: '#4A90E2' },
+          { x: 'Tue', y: 22, color: '#50C8D8' },
+          { x: 'Wed', y: 18, color: '#5AD67D' },
+        ]}
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
