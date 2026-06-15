@@ -26,17 +26,17 @@ public struct CrashReport: Codable, Sendable {
   /// App version at the time of the crash.
   public let appVersion: String
 
-  /// Timestamp range start of the diagnostic payload.
-  public let timestampBegin: Date
+  /// Timestamp range start of the diagnostic payload, as an ISO 8601 string.
+  public let timestampBegin: String
 
-  /// Timestamp range end of the diagnostic payload.
-  public let timestampEnd: Date
+  /// Timestamp range end of the diagnostic payload, as an ISO 8601 string.
+  public let timestampEnd: String
 
-  /// Timestamp at which this device received the diagnostic and constructed the report.
-  /// Distinct from `timestampEnd` because MetricKit can deliver historical or backlogged
-  /// diagnostics — `ingestedAt` reflects when *we* learned about the crash, not when it
-  /// happened.
-  public let ingestedAt: Date
+  /// Timestamp at which this device received the diagnostic and constructed the report,
+  /// as an ISO 8601 string. Distinct from `timestampEnd` because MetricKit can deliver
+  /// historical or backlogged diagnostics — `ingestedAt` reflects when *we* learned about
+  /// the crash, not when it happened.
+  public let ingestedAt: String
 
   /// Picks the most likely main session that this crash report belongs to.
   ///
@@ -56,8 +56,8 @@ public struct CrashReport: Codable, Sendable {
   /// is genuinely unattributable, and silently misattributing it to the current
   /// session would hide that.
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
-    let payloadBegin = timestampBegin.ISO8601Format()
-    let payloadEnd = timestampEnd.ISO8601Format()
+    let payloadBegin = timestampBegin
+    let payloadEnd = timestampEnd
     let intersecting = mainSessions.filter { session in
       guard session.startTimestamp <= payloadEnd else {
         return false
@@ -81,6 +81,36 @@ public struct CrashReport: Codable, Sendable {
       return session
     }
     return candidates.max(by: { $0.startTimestamp < $1.startTimestamp })
+  }
+
+  /// Compact, high-signal attributes describing the crash, attached to the `expo.session.crashed`
+  /// event. Deliberately omits the call stack and VM-region blob — those are large and already
+  /// persisted in full on the crash report row; the event is just a marker that the session ended
+  /// in a crash. Opaque numeric codes are surfaced as both their raw value and a human-readable
+  /// name so consumers don't have to maintain their own lookup tables. All keys live under the
+  /// SDK-owned `expo.*` namespace.
+  var eventAttributes: [String: Any] {
+    var attributes: [String: Any] = ["expo.app.version": appVersion]
+
+    if let exceptionType {
+      attributes["expo.crash.exception_type"] = exceptionName(for: exceptionType)
+      attributes["expo.crash.exception_type_code"] = exceptionType
+    }
+    if let exceptionCode {
+      attributes["expo.crash.exception_code"] = exceptionCode
+    }
+    if let signal {
+      attributes["expo.crash.signal"] = signalName(for: signal)
+      attributes["expo.crash.signal_code"] = signal
+    }
+    if let terminationReason {
+      attributes["expo.crash.termination_reason"] = terminationReason
+    }
+    if let exceptionReason {
+      attributes["expo.crash.objc_exception_type"] = exceptionReason.exceptionType
+      attributes["expo.crash.objc_exception_message"] = exceptionReason.composedMessage
+    }
+    return attributes
   }
 
   /// Mirrors the shape of `MXCallStackTree.JSONRepresentation()`. Every field is optional so that
@@ -144,9 +174,9 @@ extension CrashReport {
     let decodedTree = try? JSONDecoder().decode(CallStackTree.self, from: diagnostic.callStackTree.jsonRepresentation())
     self.callStackTree = decodedTree.map(CrashReportSymbolicator.symbolicate)
     self.appVersion = diagnostic.applicationVersion
-    self.timestampBegin = payload.timeStampBegin
-    self.timestampEnd = payload.timeStampEnd
-    self.ingestedAt = Date.now
+    self.timestampBegin = payload.timeStampBegin.ISO8601Format()
+    self.timestampEnd = payload.timeStampEnd.ISO8601Format()
+    self.ingestedAt = Date.now.ISO8601Format()
 
     if #available(iOS 17.0, *), let reason = diagnostic.exceptionReason {
       self.exceptionReason = ExceptionReason(
@@ -188,8 +218,7 @@ extension CrashReport: CustomStringConvertible {
       lines.append("    \(exceptionReason.composedMessage)")
     }
 
-    let formatter = ISO8601DateFormatter()
-    lines.append("  Time window: \(formatter.string(from: timestampBegin)) – \(formatter.string(from: timestampEnd))")
+    lines.append("  Time window: \(timestampBegin) – \(timestampEnd)")
 
     return lines.joined(separator: "\n")
   }
