@@ -94,12 +94,14 @@ object DevLauncherPackageDelegate {
             preferences = requireNotNull(DependencyInjection.devMenuPreferences),
             goToHomeAction = { DevLauncherController.instance.navigateToLauncher() },
             switchToComponentAction = { moduleName ->
-              DevLauncherComponentSwitcher.switch(
+              val ok = DevLauncherComponentSwitcher.switch(
                 activity = currentActivity,
                 delegate = reactActivityDelegateHolder.get(),
                 container = containerHolder.get(),
                 moduleName = moduleName
-              ).also { ok -> if (ok) currentModuleName = moduleName }
+              )
+              if (ok) currentModuleName = moduleName
+              ok
             },
             appInfoProvider = { application, reactHost ->
               val defaultAppInfo = AppInfo.getAppInfo(application, reactHost)

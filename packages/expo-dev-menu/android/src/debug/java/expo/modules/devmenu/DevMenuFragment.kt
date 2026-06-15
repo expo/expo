@@ -39,7 +39,7 @@ import java.lang.ref.WeakReference
 
 typealias GoHomeAction = () -> Unit
 typealias AppInfoProvider = (application: Application, reactHost: ReactHost) -> DevMenuState.AppInfo?
-typealias SwitchToComponentAction = (moduleName: String) -> Boolean
+typealias SwitchToComponentAction = suspend (moduleName: String) -> Boolean
 
 @SuppressLint("ViewConstructor")
 class DevMenuFragment(

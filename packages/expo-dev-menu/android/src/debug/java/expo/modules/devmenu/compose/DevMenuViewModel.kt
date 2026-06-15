@@ -3,6 +3,7 @@ package expo.modules.devmenu.compose
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuDevSettings
 import expo.modules.devmenu.DevMenuPreferences
@@ -10,6 +11,7 @@ import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.SwitchToComponentAction
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.kotlin.weak
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
 class DevMenuViewModel(
@@ -136,8 +138,13 @@ class DevMenuViewModel(
       DevMenuAction.FinishOnboarding -> finishOnboarding()
       is DevMenuAction.TriggerCustomCallback -> action.item.fn.invoke()
       is DevMenuAction.SwitchComponent -> {
-        if (switchToComponentAction?.invoke(action.name) == true) {
-          _state.value = _state.value.copy(currentAppKey = action.name)
+        val switch = switchToComponentAction
+        if (switch != null) {
+          viewModelScope.launch {
+            if (switch(action.name)) {
+              _state.value = _state.value.copy(currentAppKey = action.name)
+            }
+          }
         }
       }
       is DevMenuAction.OpenSubScreen -> _state.value = _state.value.copy(openSubScreen = action.screen)

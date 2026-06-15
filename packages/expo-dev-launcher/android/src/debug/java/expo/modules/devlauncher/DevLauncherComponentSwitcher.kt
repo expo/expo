@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.ViewGroup
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Re-mounts the host's React root view against a different AppRegistry
@@ -19,7 +21,7 @@ import com.facebook.react.ReactDelegate
 internal object DevLauncherComponentSwitcher {
   private const val TAG = "DevLauncher"
 
-  fun switch(
+  suspend fun switch(
     activity: Activity?,
     delegate: ReactActivityDelegate?,
     container: ViewGroup?,
@@ -36,14 +38,14 @@ internal object DevLauncherComponentSwitcher {
       return false
     }
 
-    activity.runOnUiThread {
+    return withContext(Dispatchers.Main) {
       val oldRootView = reactDelegate.reactRootView
       reactDelegate.unloadApp()
       reactDelegate.loadApp(moduleName)
       val newRootView = reactDelegate.reactRootView
       if (newRootView == null) {
         Log.w(TAG, "ReactDelegate did not produce a new root view for '$moduleName'.")
-        return@runOnUiThread
+        return@withContext false
       }
       (oldRootView?.parent as? ViewGroup)?.removeView(oldRootView)
       (newRootView.parent as? ViewGroup)?.removeView(newRootView)
@@ -54,8 +56,8 @@ internal object DevLauncherComponentSwitcher {
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT
       ))
+      true
     }
-    return true
   }
 
   /**
@@ -76,3 +78,4 @@ internal object DevLauncherComponentSwitcher {
 	    Log.w(TAG, "Failed to invoke ReactActivityDelegate.getReactDelegate", t)
 	    null
 	  }
+}
