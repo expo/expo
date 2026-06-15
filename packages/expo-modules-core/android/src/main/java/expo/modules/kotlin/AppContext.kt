@@ -51,11 +51,7 @@ class AppContext(
 ) : CurrentActivityProvider {
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
-  @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
-  val hostingRuntimeContext = MainRuntime(this, reactContextHolder)
-
-  val runtime: MainRuntime
-    get() = hostingRuntimeContext
+  val runtime = MainRuntime(this, reactContextHolder)
 
   private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
   val uiRuntime
