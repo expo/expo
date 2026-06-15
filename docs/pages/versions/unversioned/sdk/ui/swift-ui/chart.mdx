@@ -42,6 +42,30 @@ export default function LineChartExample() {
 }
 ```
 
+### Bar chart
+
+```tsx BarChartExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function BarChartExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="bar"
+        data={[
+          { x: 'Q1', y: 75 },
+          { x: 'Q2', y: 85 },
+          { x: 'Q3', y: 65 },
+          { x: 'Q4', y: 95 },
+        ]}
+        showLegend
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
