@@ -53,7 +53,7 @@
 
 ### 💡 Others
 
-- [iOS] Add documentation for the SwiftUI `Chart` component. ([#46883](https://github.com/expo/expo/pull/46883) by [@dileepapeiris](https://github.com/dileepapeiris))
+- [iOS] Add documentation for the SwiftUI `Chart` component. ([#46908](https://github.com/expo/expo/pull/46908) by [@dileepapeiris](https://github.com/dileepapeiris))
 - [universal] Revamp web universal components (`Button`, `Checkbox`, `FieldGroup`, `Picker`, `Slider`,`Switch`,`TextInput`) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258), [#46541](https://github.com/expo/expo/pull/46541) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.14 — 2026-05-26
