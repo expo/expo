@@ -1,4 +1,6 @@
 import fs from 'node:fs';
+import type { IncomingMessage } from 'node:http';
+import { type WebSocket, WebSocketServer } from 'ws';
 
 import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { PluginSchema } from './DevToolsPlugin.schema';
@@ -22,6 +24,18 @@ const maybeRealpath = (target: string): string => {
 export type DevToolsPluginRequestHandler = (
   request: Request
 ) => Response | null | undefined | Promise<Response | null | undefined>;
+
+/**
+ * Per-connection WebSocket handler exported by a plugin's `serverEntryPoint`. Receives the
+ * connected `ws` socket, the upgrade `request`, and the `WebSocketServer` the connection belongs
+ * to (use `server.clients` to broadcast). Mirrors the `ws` `'connection'` event so plugin authors
+ * use the familiar `socket.on('message', ...)` / `socket.send(...)` API.
+ */
+export type DevToolsPluginWebSocketHandler = (
+  socket: WebSocket,
+  request: IncomingMessage,
+  server: WebSocketServer
+) => void;
 
 /**
  * Class that represents a DevTools plugin with CLI and/or web extensions
@@ -67,6 +81,7 @@ export class DevToolsPlugin {
 
   private _executor: DevToolsPluginCliExtensionExecutor | undefined = undefined;
   private _requestHandler: DevToolsPluginRequestHandler | undefined = undefined;
+  private _webSocketServers: Record<string, WebSocketServer> | undefined = undefined;
 
   get packageName(): string {
     return this.plugin.packageName;
@@ -115,6 +130,43 @@ export class DevToolsPlugin {
     }
 
     return this._requestHandler;
+  }
+
+  /**
+   * Lazily builds the WebSocket servers contributed by the plugin's `serverEntryPoint`. The entry
+   * point exports a `webSocketHandlers` map of route (e.g. `/ws`) to a connection handler; each
+   * route becomes a `ws` `WebSocketServer` (in `noServer` mode) that the dev server mounts under
+   * `/_expo/plugins/<name>/<route>`. The fetch API based `requestHandler` cannot serve WebSocket
+   * upgrades, so this is how a plugin opts into them. Returns an empty object when the plugin
+   * exports no handlers.
+   */
+  get webSocketServers(): Record<string, WebSocketServer> {
+    if (!this.plugin.serverEntryPoint) {
+      return {};
+    }
+
+    if (!this._webSocketServers) {
+      const serverModule = require(maybeRealpath(this.plugin.serverEntryPoint));
+      const handlers: Record<string, DevToolsPluginWebSocketHandler> =
+        serverModule?.webSocketHandlers ?? {};
+
+      this._webSocketServers = Object.fromEntries(
+        Object.entries(handlers).map(([route, handler]) => {
+          if (typeof handler !== 'function') {
+            throw new Error(
+              `The webSocketHandlers["${route}"] export of plugin ${this.plugin.packageName} ` +
+                `must be a function (socket, request, server) => void.`
+            );
+          }
+          const server = new WebSocketServer({ noServer: true });
+          server.on('connection', (socket, request) => handler(socket, request, server));
+          // Routes are mounted relative to the plugin endpoint, so they must be absolute.
+          return [route.startsWith('/') ? route : `/${route}`, server];
+        })
+      );
+    }
+
+    return this._webSocketServers;
   }
 
   get cliBanner(): boolean {
