@@ -90,6 +90,30 @@ export default function PieChartExample() {
 }
 ```
 
+### Point and area charts
+
+```tsx PointAreaExample.tsx
+import { Host, Chart, VStack } from '@expo/ui/swift-ui';
+
+const data = [
+  { x: 0, y: 10 },
+  { x: 1.5, y: 25 },
+  { x: 3, y: 18 },
+  { x: 4.5, y: 32 },
+];
+
+export default function PointAreaExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={16}>
+        <Chart type="point" data={data} pointStyle={{ pointStyle: 'diamond', pointSize: 8 }} style={{ height: 150 }} />
+        <Chart type="area" data={data} areaStyle={{ color: '#10B981' }} style={{ height: 150 }} />
+      </VStack>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
