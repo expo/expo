@@ -467,8 +467,9 @@ class ViewDefinitionBuilder<T : View>(
   private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, error: Throwable): View {
     Log.e("ExpoModulesCore", "Couldn't create view of type $viewClass", error)
 
-    appContext.errorManager?.reportExceptionToLogBox(
-      error as? CodedException ?: UnexpectedException(error)
+    appContext.jsLogger?.error(
+      message = error.message.toString(),
+      cause = error
     )
 
     return if (ViewGroup::class.java.isAssignableFrom(viewClass.java)) {

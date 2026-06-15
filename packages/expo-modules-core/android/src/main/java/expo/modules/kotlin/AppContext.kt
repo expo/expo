@@ -17,7 +17,6 @@ import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
-import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.JSLoggerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
@@ -264,11 +263,6 @@ class AppContext(
         ?: return null
       return KEventEmitterWrapper(legacyEventEmitter, runtime.reactContextHolder)
     }
-
-  @Deprecated("Use AppContext.jsLogger instead")
-  val errorManager: ErrorManagerModule? by lazy {
-    registry.getModule()
-  }
 
   val jsLogger by lazy {
     registry.getModule<JSLoggerModule>()?.logger
