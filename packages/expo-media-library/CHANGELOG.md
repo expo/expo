@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [android] Add `getAssetContentUriAsync` for legacy ID migration ([#46854](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
+
 ## 56.0.7 — 2026-06-10
 
 _This version does not introduce any user-facing changes._

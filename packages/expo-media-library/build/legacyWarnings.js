@@ -111,4 +111,10 @@ export async function albumNeedsMigrationAsync(album) {
 export async function setAssetFavoriteAsync(asset, isFavorite) {
     throw errorOnLegacyMethodUse('setAssetFavoriteAsync');
 }
+/**
+ * @deprecated Import this method from `expo-media-library/legacy`. This method will throw in runtime.
+ */
+export async function getAssetContentUriAsync(asset) {
+    throw errorOnLegacyMethodUse('getAssetContentUriAsync');
+}
 //# sourceMappingURL=legacyWarnings.js.map

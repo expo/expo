@@ -294,6 +294,21 @@ export async function getAssetInfoAsync(asset, options = { shouldDownloadFromNet
     }
     return assetInfo;
 }
+/**
+ * Returns the `content://` URI for the given legacy asset. Use this when migrating to the new
+ * class-based API — pass the returned URI as the ID to `new Asset(id)`.
+ * @param asset An [`Asset`](#asset) or its ID.
+ * @return A promise which fulfils with the `content://` URI string for the asset.
+ * @platform android
+ */
+export async function getAssetContentUriAsync(asset) {
+    if (Platform.OS !== 'android') {
+        throw new UnavailabilityError('MediaLibrary', 'getAssetContentUriAsync');
+    }
+    const assetId = getId(asset);
+    checkAssetIds([assetId]);
+    return await MediaLibrary.getAssetContentUriAsync(assetId);
+}
 // @needsAudit
 /**
  * Queries for user-created albums in media gallery.

@@ -72,4 +72,8 @@ export declare function albumNeedsMigrationAsync(album: AlbumRef): Promise<boole
  * @deprecated Use `asset.setFavorite()` or import this method from `expo-media-library/legacy`. This method will throw in runtime.
  */
 export declare function setAssetFavoriteAsync(asset: AssetRef, isFavorite: boolean): Promise<boolean>;
+/**
+ * @deprecated Import this method from `expo-media-library/legacy`. This method will throw in runtime.
+ */
+export declare function getAssetContentUriAsync(asset: AssetRef): Promise<string>;
 //# sourceMappingURL=legacyWarnings.d.ts.map
