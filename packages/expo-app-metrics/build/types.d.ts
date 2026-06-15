@@ -181,7 +181,6 @@ export type LogEventOptions = {
     severity?: LogSeverity | null;
 };
 export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
-export type CrashKind = 'badAccess' | 'fatalError' | 'divideByZero' | 'forceUnwrapNil' | 'arrayOutOfBounds' | 'objcException' | 'stackOverflow';
 /**
  * Payload accepted by `Session.addMetric`. The owning session is implied by the
  * receiver, so the input carries every `Metric` field except `sessionId`.
@@ -428,22 +427,6 @@ export interface ExpoAppMetricsModuleType {
      * @private This API is unstable and may change without notice.
      */
     getInactiveSessions(): Promise<DebugSession[]>;
-    /**
-     * Simulates a crash report, attributing it to the current main session.
-     * Intended for development and debugging only.
-     *
-     * @private This API is unstable and may change without notice.
-     * @platform ios
-     */
-    simulateCrashReport(): void;
-    /**
-     * Intentionally crashes the app to produce a real MetricKit diagnostic.
-     * Intended for development and debugging only.
-     *
-     * @private This API is unstable and may change without notice.
-     * @platform ios
-     */
-    triggerCrash(kind: CrashKind): void;
     /**
      * @private This API is unstable and may change without notice.
      */

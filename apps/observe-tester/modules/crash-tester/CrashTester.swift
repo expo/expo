@@ -1,6 +1,43 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+internal import ExpoModulesCore
 import Foundation
+
+/// Crash kinds accepted by `triggerCrash`. Raw values match the TypeScript `CrashKind` union.
+enum CrashKind: String, Enumerable {
+  /// EXC_BAD_ACCESS / SIGSEGV — dereference of a bogus pointer.
+  case badAccess
+  /// EXC_CRASH / SIGABRT — Swift `fatalError`.
+  case fatalError
+  /// EXC_ARITHMETIC / SIGFPE — integer divide by zero.
+  case divideByZero
+  /// EXC_BAD_INSTRUCTION — force-unwrap of a nil optional.
+  case forceUnwrapNil
+  /// EXC_BAD_INSTRUCTION — out-of-bounds Swift array access.
+  case arrayOutOfBounds
+  /// Uncaught Objective-C `NSException`, populates MetricKit's `exceptionReason`.
+  case objcException
+  /// Stack overflow via unbounded recursion.
+  case stackOverflow
+}
+
+/// Inline module that exposes crash triggers to the observe-tester app. Test-only:
+/// it intentionally crashes the process to exercise the crash-reporting pipeline.
+class CrashTester: Module {
+  public func definition() -> ModuleDefinition {
+    Function("triggerCrash") { (kind: CrashKind) in
+      switch kind {
+      case .badAccess: CrashTriggers.badAccess()
+      case .fatalError: CrashTriggers.fatalErrorCrash()
+      case .divideByZero: CrashTriggers.divideByZero()
+      case .forceUnwrapNil: CrashTriggers.forceUnwrapNil()
+      case .arrayOutOfBounds: CrashTriggers.arrayOutOfBounds()
+      case .objcException: CrashTriggers.objcException()
+      case .stackOverflow: CrashTriggers.stackOverflow()
+      }
+    }
+  }
+}
 
 /// Helpers that intentionally crash the app to produce real MetricKit crash diagnostics.
 /// Use only for testing the crash-reporting pipeline.

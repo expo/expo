@@ -1,7 +1,7 @@
-import AppMetrics, { type CrashKind } from 'expo-app-metrics';
 import { StyleSheet, Text } from 'react-native';
 
 import { Button } from '@/components/Button';
+import CrashTester, { type CrashKind } from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
 const CRASH_TRIGGERS: { kind: CrashKind; title: string; description: string }[] = [
@@ -17,7 +17,7 @@ const CRASH_TRIGGERS: { kind: CrashKind; title: string; description: string }[] 
 export function CrashReportsSection() {
   const theme = useTheme();
 
-  if (typeof AppMetrics.triggerCrash !== 'function') {
+  if (CrashTester == null) {
     return null;
   }
 
@@ -25,21 +25,14 @@ export function CrashReportsSection() {
     <>
       <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Crash reports</Text>
       <Text style={[styles.sectionHint, { color: theme.text.secondary }]}>
-        Trigger real crashes to produce MetricKit diagnostics, or simulate a crash report attached
-        to the current session.
+        Trigger real crashes to produce crash diagnostics.
       </Text>
-      <Button
-        title="Simulate crash report"
-        description="Adds a fake crash report to the current session"
-        onPress={() => AppMetrics.simulateCrashReport()}
-        theme="secondary"
-      />
       {CRASH_TRIGGERS.map(({ kind, title, description }) => (
         <Button
           key={kind}
           title={title}
           description={description}
-          onPress={() => AppMetrics.triggerCrash(kind)}
+          onPress={() => CrashTester?.triggerCrash(kind)}
           theme="secondary"
         />
       ))}
