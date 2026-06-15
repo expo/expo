@@ -69,13 +69,13 @@ on:
 
 Runs your workflow when you push a commit to matching branches and/or tags.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only pushes to the `main` branch will trigger the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
+With the `branches` list, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only pushes to the `main` branch trigger the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
 
-With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs. By using the `!` prefix you can specify tags to ignore (you still need to provide at least one tag pattern without it).
+With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed triggers the workflow. Supports globs. By using the `!` prefix you can specify tags to ignore (you still need to provide at least one tag pattern without it).
 
-With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory will trigger the workflow. Supports globs. By default, changes to any path will trigger the workflow.
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
 
-When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger on push events to all branches and will not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow triggers on push events to all branches and does not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
 
 ```yaml
 on:
@@ -105,11 +105,11 @@ on:
 
 Runs your workflow when a GitHub branch or tag is deleted. Requires a [linked GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) on your EAS project.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are deleted. For example, if you use `branches: ['main']`, only deletion of the `main` branch will trigger the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it). See [`on.push`](#onpush) for details on glob and negation pattern matching.
+With the `branches` list, you can trigger the workflow only when those specified branches are deleted. For example, if you use `branches: ['main']`, only deletion of the `main` branch triggers the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it). See [`on.push`](#onpush) for details on glob and negation pattern matching.
 
 With the `tags` list, you can trigger the workflow only when those specified tags are deleted. Supports globs and `!` negation with the same rules as branches.
 
-When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger when any branch is deleted and will not trigger on tag deletions. If only one of the two lists is provided the other defaults to `[]`.
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow triggers when any branch is deleted and does not trigger on tag deletions. If only one of the two lists is provided the other defaults to `[]`.
 
 > **info** Workflow files are read from the default branch HEAD at the time of deletion, not from the deleted ref.
 
@@ -133,9 +133,9 @@ on:
 
 Runs your workflow when you create or update a pull request that targets one of the matching branches.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
+With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow triggers on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
 
-With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
+With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) triggers the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
 - `opened`
 - `ready_for_review`
@@ -143,7 +143,7 @@ With the `types` list, you can trigger the workflow only on the specified pull r
 - `synchronize`
 - `labeled`
 
-With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory will trigger the workflow. Supports globs. By default, changes to any path will trigger the workflow.
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
 
 ```yaml
 on:
@@ -171,7 +171,7 @@ on:
 
 Runs your workflow when a pull request is labeled with a matching label.
 
-With the `labels` list, you can specify which labels, when assigned to your pull request, will trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label will trigger the workflow. Defaults to `[]` when not provided, which means no labels will trigger the workflow.
+With the `labels` list, you can specify which labels, when assigned to your pull request, trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label triggers the workflow. Defaults to `[]` when not provided, which means no labels trigger the workflow.
 
 You can also provide a list of matching labels directly to `on.pull_request_labeled` for simpler syntax.
 
