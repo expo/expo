@@ -55,8 +55,7 @@ function openBrowser(url) {
         : ['xdg-open', [url], {}];
   try {
     spawn(cmd, args, { stdio: 'ignore', detached: true, ...extraOptions }).unref();
-  } catch {
-  }
+  } catch {}
 }
 
 function waitForRedirect(expectedState) {
