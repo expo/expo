@@ -268,10 +268,17 @@ async function installAppWithDeviceCtlInternalAsync(
         return;
       }
       currentProgress = progress;
-      const statusPrefix = attempt > 1 ? `Installing (attempt ${attempt})` : 'Installing';
+      const isComplete = progress === 100;
+      // Match the usbmux install path, which reports a `Complete` status at 100%
+      // (`✔ Complete 100%`) via `InstallationProxyClient`.
+      const statusPrefix = isComplete
+        ? 'Complete'
+        : attempt > 1
+          ? `Installing (attempt ${attempt})`
+          : 'Installing';
       onProgress({
         progress,
-        isComplete: progress === 100,
+        isComplete,
         status: statusPrefix,
       });
     }
@@ -309,6 +316,12 @@ async function installAppWithDeviceCtlInternalAsync(
     childProcess.on('close', (code) => {
       debug('[close]: ' + code);
       if (code === 0) {
+        // `devicectl` OTA installs (e.g. to a wireless device) can exit 0 without ever
+        // printing an `NN%...` progress line, so `updateProgress()` may never have fired and
+        // consumers would never receive the completion event that stops their progress
+        // spinner — leaving `expo run:ios --device` hanging after a successful install.
+        // Emit a terminal 100% here; it's a no-op when stdout already reported 100%.
+        updateProgress(100);
         resolve();
       } else {
         const err = new Error(stderrBuffer || `Command failed with exit code ${code}`);
