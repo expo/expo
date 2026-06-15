@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Marked `InnerTextFieldProps` and `PlaceholderProps` as optimized, so they no longer fall back to reflection-based props parsing and no longer log a warning on startup. ([#49632](https://github.com/expo/expo/issues/49632) by [@sfourdrinier](https://github.com/sfourdrinier)) ([#46919](https://github.com/expo/expo/pull/46919) by [@lukmccall](https://github.com/lukmccall))
+
 ## 57.0.15 — 2026-09-01
 
 ### 🎉 New features
