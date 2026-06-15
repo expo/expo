@@ -1,0 +1,56 @@
+---
+title: Clean up EAS Update branches with EAS Workflows
+sidebar_title: Clean up update branches
+description: Learn how to delete EAS Update branches when GitHub branches are deleted.
+hideTOC: true
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+If you publish updates to EAS Update branches named after GitHub branches, for example with [`eas update --auto`](/eas-update/eas-cli/#create-a-new-update-and-publish-it), the [`update` workflow job](/eas/workflows/pre-packaged-jobs#update) with `branch: ${{ github.ref_name }}`, or [preview updates on every branch](/eas/workflows/examples/publish-preview-update), deleting the GitHub branch leaves the EAS Update branch behind. This workflow cleans up when a Git branch is deleted.
+
+## Get started
+
+<Prerequisites>
+  <Requirement title="Set up EAS Update">
+    Your project needs to have [EAS Update](/eas-update/introduction/) configured. You can set up your project with:
+
+    <Terminal cmd={['$ eas update:configure']} />
+
+  </Requirement>
+  <Requirement title="Connect your GitHub repository">
+    Your EAS project must be linked to a GitHub repository. See [Get started with EAS Workflows](/eas/workflows/get-started/#automate-workflows-with-github-events).
+  </Requirement>
+  <Requirement title="Workflow file on the default branch">
+    Keep this workflow file on your repository's default branch. When a branch is deleted, EAS reads workflow configuration from the default branch HEAD, not from the deleted ref.
+  </Requirement>
+</Prerequisites>
+
+The following workflow deletes the EAS Update branch with the same name as the deleted GitHub branch:
+
+```yaml .eas/workflows/branch-cleanup.yml
+name: Branch cleanup
+
+on:
+  ref_delete:
+    branches: ['*', '!main']
+
+jobs:
+  delete-update-branch:
+    type: branch-delete
+    params:
+      branch_name: ${{ github.ref_name }}
+```
+
+## How it works
+
+1. [`on.ref_delete`](/eas/workflows/syntax/#onref_delete) runs when a GitHub branch matching the patterns is deleted. The example above triggers on all branches except `main`.
+2. The [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job deletes the EAS Update branch named `${{ github.ref_name }}` — the same name as the deleted Git branch.
+3. With the default `fail_on_missing: false`, the job succeeds even if the EAS Update branch was already deleted or never existed.
+
+## Important notes
+
+- `github.sha` is the default branch, not the deleted ref's last commit. See the [`github` context reference](/eas/workflows/syntax/#github) for interpolation details on `ref_delete` runs.
+- Channel mappings block deletion: if a channel points to the EAS Update branch, deletion fails with an error about the channel mapping.
+- Protect branches you never want cleaned up using negation patterns like `!main` or `!release/**` in `on.ref_delete.branches`.
