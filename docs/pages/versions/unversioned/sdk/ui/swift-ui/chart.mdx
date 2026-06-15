@@ -165,6 +165,41 @@ export default function ReferenceLinesExample() {
 }
 ```
 
+### Styling and animation
+
+Pass `showGrid`, `showLegend`, and `animate` to control the chart's appearance, and use the per-type style props (`lineStyle`, `barStyle`, `pieStyle`, and so on) to customize individual mark types.
+
+```tsx StyledChartExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function StyledChartExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="line"
+        data={[
+          { x: 'Jan', y: 15 },
+          { x: 'Feb', y: 25 },
+          { x: 'Mar', y: 18 },
+          { x: 'Apr', y: 32 },
+        ]}
+        showGrid={false}
+        showLegend={false}
+        animate
+        lineStyle={{
+          color: '#6366F1',
+          width: 3,
+          dashArray: [5, 5],
+          pointStyle: 'square',
+          pointSize: 8,
+        }}
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
