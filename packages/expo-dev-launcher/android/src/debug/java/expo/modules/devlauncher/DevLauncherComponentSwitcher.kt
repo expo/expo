@@ -67,12 +67,12 @@ internal object DevLauncherComponentSwitcher {
    * reflection lets Kotlin's virtual dispatch route through the wrapper's override and
    * return the right `ReactDelegate` whether we're handed the wrapper or the inner.
    */
-  private fun readReactDelegate(delegate: ReactActivityDelegate): ReactDelegate? = try {
-    val method = ReactActivityDelegate::class.java.getDeclaredMethod("getReactDelegate")
-    method.isAccessible = true
-    method.invoke(delegate) as? ReactDelegate
-  } catch (t: Throwable) {
-    Log.w(TAG, "Failed to invoke ReactActivityDelegate.getReactDelegate", t)
-    null
-  }
-}
+  private fun readReactDelegate(delegate: ReactActivityDelegate): ReactDelegate? =
+	  runCatching {
+	    val method = ReactActivityDelegate::class.java.getDeclaredMethod("getReactDelegate")
+	    method.isAccessible = true
+	    method.invoke(delegate) as? ReactDelegate
+	  }.getOrElse { t ->
+	    Log.w(TAG, "Failed to invoke ReactActivityDelegate.getReactDelegate", t)
+	    null
+	  }
