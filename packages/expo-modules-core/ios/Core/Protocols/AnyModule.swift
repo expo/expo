@@ -17,6 +17,12 @@ public protocol AnyModule: AnyObject, AnyArgument {
   @ModuleDefinitionBuilder
   func definition() -> ModuleDefinition
 
+  /// The module's JavaScript name, emitted as a static constant by the `@ExpoModule` macro from the
+  /// class name or the `@ExpoModule("CustomName")` argument. Core reads it as the last resort when
+  /// naming the module, after the `Name(…)` DSL entry. Framework-internal (leading underscore).
+  /// Modules that don't use the macro fall back to the default, which is the class name.
+  static var _jsName: String { get }
+
   /// Returns definitions synthesized from `@JS`-annotated members by the `@ExpoModule` macro.
   /// Framework-internal: the leading underscore signals this is not part of the public API and
   /// should only be called by `expo-modules-core` itself. Modules that don't use the macro fall
@@ -32,6 +38,16 @@ public protocol AnyModule: AnyObject, AnyArgument {
 }
 
 public extension AnyModule {
+  static var _jsName: String {
+    return String(describing: self)
+  }
+
+  /// An empty definition by default, so `@ExpoModule`-macro modules that describe their whole surface
+  /// through `@JS` members don't have to write an empty `definition()` of their own. Modules that use
+  /// the DSL provide their own.
+  @ModuleDefinitionBuilder
+  func definition() -> ModuleDefinition {}
+
   func _synthesizedDefinition() -> [AnyDefinition] {
     return []
   }
