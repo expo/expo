@@ -49,6 +49,12 @@ export type NativeStackNavigationEventMap = {
    * * `stable` - on Android `false` value means that the user is dragging the sheet or it is settling; on iOS it is always `true`.
    */
   sheetDetentChange: { data: { index: number; stable: boolean } };
+  /**
+   * Event which fires when a stack transition has settled. Emitted without a `target`, so every
+   * listener on the navigator receives it, including listeners registered by a route that has
+   * already been popped.
+   */
+  unstable_finishTransitioning: { data: undefined };
 };
 
 export type NativeStackNavigationProp<

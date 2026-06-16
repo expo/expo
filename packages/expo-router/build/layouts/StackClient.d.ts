@@ -59,6 +59,7 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
         transitionEnd: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
         gestureCancel: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
         sheetDetentChange: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
+        unstable_finishTransitioning: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "unstable_finishTransitioning", unknown>;
         focus: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
         blur: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
         state: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
@@ -71,6 +72,7 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
         transitionEnd: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
         gestureCancel: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
         sheetDetentChange: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
+        unstable_finishTransitioning: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "unstable_finishTransitioning", unknown>;
         focus: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
         blur: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
         state: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
@@ -104,6 +106,7 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
         transitionEnd: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
         gestureCancel: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
         sheetDetentChange: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
+        unstable_finishTransitioning: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "unstable_finishTransitioning", unknown>;
         focus: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
         blur: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
         state: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
@@ -116,6 +119,7 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
         transitionEnd: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
         gestureCancel: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
         sheetDetentChange: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
+        unstable_finishTransitioning: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "unstable_finishTransitioning", unknown>;
         focus: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
         blur: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
         state: import("../react-navigation").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
