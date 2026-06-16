@@ -52,10 +52,13 @@ internal object DevLauncherComponentSwitcher {
       // Match the layout that ReactActivityDelegateWrapper.loadAppImpl uses for the
       // initial mount: add the root view to the container without a specific index so
       // it sits in the same z-position as before.
-      container.addView(newRootView, ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT
-      ))
+      container.addView(
+        newRootView,
+        ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.MATCH_PARENT
+        )
+      )
       true
     }
   }
@@ -70,12 +73,12 @@ internal object DevLauncherComponentSwitcher {
    * return the right `ReactDelegate` whether we're handed the wrapper or the inner.
    */
   private fun readReactDelegate(delegate: ReactActivityDelegate): ReactDelegate? =
-	  runCatching {
-	    val method = ReactActivityDelegate::class.java.getDeclaredMethod("getReactDelegate")
-	    method.isAccessible = true
-	    method.invoke(delegate) as? ReactDelegate
-	  }.getOrElse { t ->
-	    Log.w(TAG, "Failed to invoke ReactActivityDelegate.getReactDelegate", t)
-	    null
-	  }
+    runCatching {
+      val method = ReactActivityDelegate::class.java.getDeclaredMethod("getReactDelegate")
+      method.isAccessible = true
+      method.invoke(delegate) as? ReactDelegate
+    }.getOrElse { t ->
+      Log.w(TAG, "Failed to invoke ReactActivityDelegate.getReactDelegate", t)
+      null
+    }
 }
