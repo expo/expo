@@ -140,9 +140,14 @@ class AudioModule : Module() {
     return playsInSilentMode || audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL
   }
 
-  private fun requestAudioFocus() {
-    if (focusAcquired || !audioEnabled || interruptionMode == InterruptionMode.MIX_WITH_OTHERS) {
-      return
+  private enum class AudioFocusResult { GRANTED, DELAYED, FAILED, NOT_REQUESTED }
+
+  private fun requestAudioFocus(): AudioFocusResult {
+    if (focusAcquired) {
+      return AudioFocusResult.GRANTED
+    }
+    if (!audioEnabled || interruptionMode == InterruptionMode.MIX_WITH_OTHERS) {
+      return AudioFocusResult.NOT_REQUESTED
     }
 
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -165,7 +170,7 @@ class AudioModule : Module() {
       }
       audioFocusRequest?.let {
         audioManager.requestAudioFocus(it)
-      }
+      } ?: AudioManager.AUDIOFOCUS_REQUEST_FAILED
     } else {
       @Suppress("DEPRECATION")
       val requestType = if (interruptionMode == InterruptionMode.DO_NOT_MIX) {
@@ -176,10 +181,21 @@ class AudioModule : Module() {
       audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, requestType)
     }
 
-    if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-      focusAcquired = true
-    } else {
-      Log.e(TAG, "Audio focus request failed with: $result")
+    return when (result) {
+      AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> {
+        focusAcquired = true
+        AudioFocusResult.GRANTED
+      }
+      // The system can grant focus later through the listener, so this is not a failure.
+      AudioManager.AUDIOFOCUS_REQUEST_DELAYED -> AudioFocusResult.DELAYED
+      else -> {
+        appContext.jsLogger?.warn(
+          "expo-audio couldn't acquire audio focus, so playback won't start. On Android an app can't " +
+            "play in the background without an active media playback foreground service. Call " +
+            "setActiveForLockScreen(true) on the player to keep playback alive in the background."
+        )
+        AudioFocusResult.FAILED
+      }
     }
   }
 
@@ -473,8 +489,8 @@ class AudioModule : Module() {
           return@Function
         }
         runOnMain {
-          if (!focusAcquired) {
-            requestAudioFocus()
+          if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
+            return@runOnMain
           }
           player.ref.play()
         }
@@ -497,8 +513,8 @@ class AudioModule : Module() {
                 if (!shouldPlayInSilentMode()) {
                   return@runOnMain
                 }
-                if (!focusAcquired) {
-                  requestAudioFocus()
+                if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
+                  return@runOnMain
                 }
                 player.ref.play()
               }
@@ -793,8 +809,8 @@ class AudioModule : Module() {
           return@Function
         }
         runOnMain {
-          if (!focusAcquired) {
-            requestAudioFocus()
+          if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
+            return@runOnMain
           }
           playlist.ref.play()
         }
