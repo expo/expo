@@ -193,17 +193,76 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
       retained.release()
     }
   }
+
+  // MARK: - JavaScript conversion
+
+  /**
+   Converts a JavaScript ArrayBuffer or TypedArray to Expo's safe native ArrayBuffer representation.
+   */
+  internal static func from(jsValue: JavaScriptValue) throws -> ArrayBuffer {
+    if jsValue.isTypedArray() {
+      let typedArray = jsValue.getTypedArray()
+      let count = typedArray.byteLength
+
+      if count == 0 {
+        return ArrayBuffer.allocate(size: 0)
+      }
+      return try typedArray.withUnsafeBytes { bytes in
+        let backingBuffer = typedArray.getArrayBuffer()
+        if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
+          return ArrayBuffer(
+            borrowing: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
+            count: count,
+            cleanup: {
+              _ = borrowed
+            })
+        }
+        return ArrayBuffer.copy(of: bytes.baseAddress!, count: count)
+      }
+    }
+    guard jsValue.isArrayBuffer() else {
+      throw ArrayBufferJavaScriptValueConversionException(jsValue.kind)
+    }
+    let jsArrayBuffer = jsValue.getArrayBuffer()
+
+    if jsArrayBuffer.size == 0 {
+      return ArrayBuffer.allocate(size: 0)
+    }
+    if let borrowed = jsArrayBuffer.tryBorrowMutableBuffer() {
+      return ArrayBuffer(
+        borrowing: UnsafeMutableRawPointer(borrowed.data),
+        count: borrowed.size,
+        cleanup: {
+          _ = borrowed
+        })
+    }
+    return ArrayBuffer.copy(of: UnsafeRawPointer(jsArrayBuffer.data()), count: jsArrayBuffer.size)
+  }
 }
 
-extension ArrayBuffer: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> ArrayBuffer {
-    fatalError(
-      "Creating ArrayBuffer directly from JavaScriptValue is not supported. " +
-        "ArrayBuffer conversion happens through DynamicArrayBufferType for module arguments."
-    )
+extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
+  @JavaScriptActor
+  public static func decode(
+    _ value: JavaScriptValue,
+    appContext: borrowing AppContext,
+    runtime: borrowing JavaScriptRuntime
+  ) throws -> ArrayBuffer {
+    return try ArrayBuffer.from(jsValue: value)
   }
 
-  public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    return asJavaScriptArrayBuffer(runtime: runtime).asValue()
+  @JavaScriptActor
+  public static func encode(
+    _ value: ArrayBuffer,
+    appContext: borrowing AppContext,
+    runtime: borrowing JavaScriptRuntime
+  ) throws -> JavaScriptValue {
+    return value.asJavaScriptArrayBuffer(runtime: copy runtime).asValue()
+  }
+}
+
+internal final class ArrayBufferJavaScriptValueConversionException:
+  GenericException<JavaScriptValue.Kind>, @unchecked Sendable {
+  override var reason: String {
+    "Given argument is not an ArrayBuffer or TypedArray, got \(param.rawValue)"
   }
 }

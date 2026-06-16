@@ -18,43 +18,13 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
 
   /// Converts JS array buffer to its native representation.
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    if jsValue.isTypedArray() {
-      let typedArray = jsValue.getTypedArray()
-      let count = typedArray.byteLength
-
-      if count == 0 {
-        return ArrayBuffer.allocate(size: 0)
-      }
-      return try typedArray.withUnsafeBytes { bytes in
-        let backingBuffer = typedArray.getArrayBuffer()
-        if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
-          return ArrayBuffer(
-            borrowing: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
-            count: count,
-            cleanup: {
-              _ = borrowed
-            })
-        }
-        return ArrayBuffer.copy(of: bytes.baseAddress!, count: count)
-      }
-    }
-    guard jsValue.isArrayBuffer() else {
+    do {
+      return try ArrayBuffer.from(jsValue: jsValue)
+    } catch is ArrayBufferJavaScriptValueConversionException {
       throw NotArrayBufferException(innerType)
+    } catch {
+      throw error
     }
-    let jsArrayBuffer = jsValue.getArrayBuffer()
-
-    if jsArrayBuffer.size == 0 {
-      return ArrayBuffer.allocate(size: 0)
-    }
-    if let borrowed = jsArrayBuffer.tryBorrowMutableBuffer() {
-      return ArrayBuffer(
-        borrowing: UnsafeMutableRawPointer(borrowed.data),
-        count: borrowed.size,
-        cleanup: {
-          _ = borrowed
-        })
-    }
-    return ArrayBuffer.copy(of: UnsafeRawPointer(jsArrayBuffer.data()), count: jsArrayBuffer.size)
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
