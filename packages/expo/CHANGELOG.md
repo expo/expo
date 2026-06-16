@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add a spec-compliant `Request` to `expo/fetch` (exported as `Request` and installed as the global on native) that replaces React Native's `whatwg-fetch` polyfill, so request bodies and `FormData` round-trip predictably. ([#46630](https://github.com/expo/expo/pull/46630) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))
