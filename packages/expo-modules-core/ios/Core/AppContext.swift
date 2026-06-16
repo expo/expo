@@ -719,9 +719,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
     // [0] When ExpoModulesCore is built as separated framework/module,
     // we should explicitly load main bundle's `ExpoModulesProvider` class.
+    // CFBundleExecutable is tried first: it equals $(PRODUCT_NAME:c99extidentifier) and
+    // directly matches the Swift module name. CFBundleName is kept as a fallback for the
+    // uncommon case where both values are identical valid identifiers.
     let mainBundleNames = [
-      Bundle.main.infoDictionary?["CFBundleName"],
-      Bundle.main.infoDictionary?["CFBundleExecutable"]
+      Bundle.main.infoDictionary?["CFBundleExecutable"],
+      Bundle.main.infoDictionary?["CFBundleName"]
     ].compactMap { $0 as? String }
 
     for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: mainBundleNames) {
@@ -738,8 +741,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       let frameworkBundleNames = [
-        bundle.infoDictionary?["CFBundleName"],
-        bundle.infoDictionary?["CFBundleExecutable"]
+        bundle.infoDictionary?["CFBundleExecutable"],
+        bundle.infoDictionary?["CFBundleName"]
       ].compactMap { $0 as? String }
 
       for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: frameworkBundleNames) {
