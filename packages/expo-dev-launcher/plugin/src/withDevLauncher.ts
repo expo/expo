@@ -33,6 +33,39 @@ export function resolveDefaultServerUrl(
   );
 }
 
+/** The Info.plist key / AndroidManifest meta-data name the native launcher reads on startup. */
+export const DEFAULT_SERVER_URL_KEY = 'DEV_CLIENT_DEFAULT_SERVER_URL';
+
+/**
+ * Writes the default server URL into the Info.plist so the iOS dev launcher can auto-connect on launch.
+ * @ignore
+ */
+export function setDefaultServerUrlInfoPlist<T extends Record<string, any>>(
+  infoPlist: T,
+  url: string
+): T {
+  infoPlist[DEFAULT_SERVER_URL_KEY as keyof T] = url as T[keyof T];
+  return infoPlist;
+}
+
+/**
+ * Writes the default server URL as main-application meta-data so the Android dev launcher can
+ * auto-connect on launch. Idempotent — re-applying replaces the existing value rather than duplicating it.
+ * @ignore
+ */
+export function setDefaultServerUrlAndroidManifest(
+  androidManifest: AndroidConfig.Manifest.AndroidManifest,
+  url: string
+): AndroidConfig.Manifest.AndroidManifest {
+  const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+  AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+    mainApplication,
+    DEFAULT_SERVER_URL_KEY,
+    url
+  );
+  return androidManifest;
+}
+
 /**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys
  * from non-Debug builds. This keeps the keys in Debug builds (where dev-launcher is active)
@@ -176,7 +209,7 @@ export default createRunOncePlugin<PluginConfigType>(
     const iOSDefaultServerUrl = resolveDefaultServerUrl(props, 'ios');
     if (iOSDefaultServerUrl) {
       config = withInfoPlist(config, (config) => {
-        config.modResults['DEV_CLIENT_DEFAULT_SERVER_URL'] = iOSDefaultServerUrl;
+        config.modResults = setDefaultServerUrlInfoPlist(config.modResults, iOSDefaultServerUrl);
         return config;
       });
     }
@@ -184,11 +217,8 @@ export default createRunOncePlugin<PluginConfigType>(
     const androidDefaultServerUrl = resolveDefaultServerUrl(props, 'android');
     if (androidDefaultServerUrl) {
       config = withAndroidManifest(config, (config) => {
-        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
-
-        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
-          mainApplication,
-          'DEV_CLIENT_DEFAULT_SERVER_URL',
+        config.modResults = setDefaultServerUrlAndroidManifest(
+          config.modResults,
           androidDefaultServerUrl
         );
         return config;

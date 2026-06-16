@@ -1,5 +1,21 @@
+import { AndroidConfig } from 'expo/config-plugins';
+
 import { validateConfig } from '../pluginConfig';
-import { resolveDefaultServerUrl } from '../withDevLauncher';
+import {
+  DEFAULT_SERVER_URL_KEY,
+  resolveDefaultServerUrl,
+  setDefaultServerUrlAndroidManifest,
+  setDefaultServerUrlInfoPlist,
+} from '../withDevLauncher';
+
+function createAndroidManifest(): AndroidConfig.Manifest.AndroidManifest {
+  return {
+    manifest: {
+      $: { 'xmlns:android': 'http://schemas.android.com/apk/res/android', package: 'com.app' },
+      application: [{ $: { 'android:name': '.MainApplication' } }],
+    },
+  };
+}
 
 describe(resolveDefaultServerUrl, () => {
   const emptyEnv: NodeJS.ProcessEnv = {};
@@ -33,6 +49,36 @@ describe(resolveDefaultServerUrl, () => {
     const env = { EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL: 'http://10.0.0.2:9000' };
     expect(resolveDefaultServerUrl(props, 'ios', env)).toBe('http://10.0.0.2:9000');
     expect(resolveDefaultServerUrl(props, 'android', env)).toBe('http://10.0.0.2:9000');
+  });
+});
+
+describe(setDefaultServerUrlInfoPlist, () => {
+  it(`sets the key the iOS launcher reads`, () => {
+    const infoPlist = setDefaultServerUrlInfoPlist({}, 'http://192.168.1.50:8081');
+    expect(infoPlist[DEFAULT_SERVER_URL_KEY]).toBe('http://192.168.1.50:8081');
+  });
+});
+
+describe(setDefaultServerUrlAndroidManifest, () => {
+  it(`adds main-application meta-data the Android launcher reads`, () => {
+    const manifest = setDefaultServerUrlAndroidManifest(
+      createAndroidManifest(),
+      'http://192.168.1.50:8082'
+    );
+    expect(AndroidConfig.Manifest.getMainApplicationMetaDataValue(manifest, DEFAULT_SERVER_URL_KEY)).toBe(
+      'http://192.168.1.50:8082'
+    );
+  });
+
+  it(`replaces rather than duplicates on re-apply (idempotent prebuild)`, () => {
+    let manifest = createAndroidManifest();
+    manifest = setDefaultServerUrlAndroidManifest(manifest, 'http://192.168.1.50:8082');
+    manifest = setDefaultServerUrlAndroidManifest(manifest, 'http://192.168.1.50:9000');
+
+    const metaData = AndroidConfig.Manifest.getMainApplicationOrThrow(manifest)['meta-data'] ?? [];
+    const matching = metaData.filter((e) => e.$['android:name'] === DEFAULT_SERVER_URL_KEY);
+    expect(matching).toHaveLength(1);
+    expect(matching[0].$['android:value']).toBe('http://192.168.1.50:9000');
   });
 });
 

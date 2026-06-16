@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DEFAULT_SERVER_URL_KEY = void 0;
 exports.resolveDefaultServerUrl = resolveDefaultServerUrl;
+exports.setDefaultServerUrlInfoPlist = setDefaultServerUrlInfoPlist;
+exports.setDefaultServerUrlAndroidManifest = setDefaultServerUrlAndroidManifest;
 const config_plugins_1 = require("expo/config-plugins");
 const pluginConfig_1 = require("./pluginConfig");
 const pkg = require('expo-dev-launcher/package.json');
@@ -18,6 +21,26 @@ function resolveDefaultServerUrl(props, platform, env = process.env) {
     return (env.EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL ??
         props[platform]?.defaultServerUrl ??
         props.defaultServerUrl);
+}
+/** The Info.plist key / AndroidManifest meta-data name the native launcher reads on startup. */
+exports.DEFAULT_SERVER_URL_KEY = 'DEV_CLIENT_DEFAULT_SERVER_URL';
+/**
+ * Writes the default server URL into the Info.plist so the iOS dev launcher can auto-connect on launch.
+ * @ignore
+ */
+function setDefaultServerUrlInfoPlist(infoPlist, url) {
+    infoPlist[exports.DEFAULT_SERVER_URL_KEY] = url;
+    return infoPlist;
+}
+/**
+ * Writes the default server URL as main-application meta-data so the Android dev launcher can
+ * auto-connect on launch. Idempotent — re-applying replaces the existing value rather than duplicating it.
+ * @ignore
+ */
+function setDefaultServerUrlAndroidManifest(androidManifest, url) {
+    const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+    config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, exports.DEFAULT_SERVER_URL_KEY, url);
+    return androidManifest;
 }
 /**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys
@@ -135,15 +158,14 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
     const iOSDefaultServerUrl = resolveDefaultServerUrl(props, 'ios');
     if (iOSDefaultServerUrl) {
         config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
-            config.modResults['DEV_CLIENT_DEFAULT_SERVER_URL'] = iOSDefaultServerUrl;
+            config.modResults = setDefaultServerUrlInfoPlist(config.modResults, iOSDefaultServerUrl);
             return config;
         });
     }
     const androidDefaultServerUrl = resolveDefaultServerUrl(props, 'android');
     if (androidDefaultServerUrl) {
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
-            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
-            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_DEFAULT_SERVER_URL', androidDefaultServerUrl);
+            config.modResults = setDefaultServerUrlAndroidManifest(config.modResults, androidDefaultServerUrl);
             return config;
         });
     }
