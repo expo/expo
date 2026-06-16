@@ -95,6 +95,20 @@ internal class NonisolatedUnsafeVar<VarType>: @unchecked Sendable {
   }
 }
 
+/**
+ Like ``NonisolatedUnsafeVar``, but holds a weak reference so it can be captured into an isolated
+ closure without extending the referenced object's lifetime. Useful for sending a non-`Sendable`
+ object across an isolation boundary while keeping weak semantics.
+ - TODO: Remove it once the code is refactored to deal better with the concurrency model.
+ */
+internal class NonisolatedUnsafeWeakVar<VarType: AnyObject>: @unchecked Sendable {
+  nonisolated(unsafe) weak var value: VarType?
+
+  init(_ value: VarType?) {
+    self.value = value
+  }
+}
+
 internal func performSynchronouslyOnMainActor<Result: Sendable>(_ closure: @MainActor () throws -> Result) rethrows -> Result {
   if Thread.isMainThread {
     return try MainActor.assumeIsolated(closure)
