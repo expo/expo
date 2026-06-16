@@ -38,11 +38,6 @@ const PAGES_DIR = path.join(process.cwd(), 'pages');
 
 let failCount = 0;
 
-/**
- * Every <Tab label="..."> in the source MDX must survive into the generated
- * markdown as a heading. Guards against silent content loss when a multi-panel
- * component is stripped during HTML→Markdown conversion (ENG-21907).
- */
 function findMissingTabLabels(markdown: string, mdxPath: string): string[] {
   const mdx = fs.readFileSync(mdxPath, 'utf-8');
   const labelRegex = /<Tab\s+label=(?:"([^"]*)"|'([^']*)')/g;
@@ -57,14 +52,6 @@ function findMissingTabLabels(markdown: string, mdxPath: string): string[] {
   return missing;
 }
 
-/**
- * Structural backstop for tab content loss, independent of how labels are
- * declared. The conversion prefixes every rendered tab panel with its label as
- * an h4, so the markdown must hold at least as many h4 headings as the built
- * HTML has tab panels. A shortfall means panels were dropped. Covers the
- * <Tabs tabs={[...]}> prop style and dynamic labels, which the source-MDX check
- * above cannot see (ENG-21907). Returns the number of missing headings.
- */
 function tabPanelHeadingDeficit(markdown: string, htmlPath: string): number {
   if (!fs.existsSync(htmlPath)) {
     return 0;
@@ -77,7 +64,7 @@ function tabPanelHeadingDeficit(markdown: string, htmlPath: string): number {
   if (panels === 0) {
     return 0;
   }
-  const headings = (markdown.match(/^#### /gm) ?? []).length;
+  const headings = (markdown.match(/^#{4} /gm) ?? []).length;
   return Math.max(0, panels - headings);
 }
 
