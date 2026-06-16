@@ -2,6 +2,14 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+// The CLI is bundled with ncc (webpack), which rewrites `require`/`createRequire` to its own
+// module registry — those can't resolve `@expo/llm-configs` on disk. `__non_webpack_require__`
+// is left untouched by webpack and resolves to the real Node `require` at runtime; outside the
+// bundle (e.g. tests) it is undefined, so we fall back to the regular `require`.
+declare const __non_webpack_require__: NodeRequire | undefined;
+const requireFromHere: NodeRequire =
+  typeof __non_webpack_require__ !== 'undefined' ? __non_webpack_require__ : require;
+
 const AGENT_TEMPLATE_FILE_NAMES = ['AGENTS.md', 'CLAUDE.md'] as const;
 const AGENT_TEMPLATE_MODULES: Record<(typeof AGENT_TEMPLATE_FILE_NAMES)[number], string> = {
   'AGENTS.md': '@expo/llm-configs/expo-app/AGENTS.md',
@@ -9,7 +17,7 @@ const AGENT_TEMPLATE_MODULES: Record<(typeof AGENT_TEMPLATE_FILE_NAMES)[number],
 };
 
 function resolveAgentTemplatePath(fileName: (typeof AGENT_TEMPLATE_FILE_NAMES)[number]): string {
-  return (module.require as NodeRequire).resolve(AGENT_TEMPLATE_MODULES[fileName]);
+  return requireFromHere.resolve(AGENT_TEMPLATE_MODULES[fileName]);
 }
 
 const CLAUDE_SETTINGS_CONTENT = `{
