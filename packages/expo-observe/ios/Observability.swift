@@ -2,6 +2,14 @@ import EASClient
 import ExpoAppMetrics
 import ExpoModulesCore
 
+/// State carried across re-arms of the deferred-dispatch timer for a single deferral window.
+/// Lives at file scope so the pure helper `computeNextDeferredArm` can take it as an argument
+/// without coupling to `ObservabilityManager`'s actor isolation.
+internal struct DeferredArmState: Equatable {
+  let fireTime: Date
+  let originalArmTime: Date
+}
+
 @AppMetricsActor
 internal struct ObservabilityManager {
   private static let easClientId = EASClientID.uuid().uuidString
@@ -97,27 +105,34 @@ internal struct ObservabilityManager {
   }
 
   /// One pass of the polling loop. Compares the max metric/log ids against the persisted dispatch
-  /// cursors — if either has new rows, (re)arms the deferred dispatch timer.
+  /// cursors — if either has new rows, (re)arms the deferred dispatch timer. The decision logic
+  /// is delegated to `shouldArmDeferred` so it can be unit-tested without real storage; reader
+  /// closures wrap `AppMetrics.getMaxMetricId()` / `getMaxLogId()` and log on failure.
   private static func pollOnceAndMaybeArmDispatch() {
-    let hasNewMetrics: Bool = {
-      do {
-        guard let maxId = try AppMetrics.getMaxMetricId() else { return false }
-        return maxId > ObserveUserDefaults.lastDispatchedMetricId
-      } catch {
-        observeLogger.warn("[EAS Observe] Polling failed to read max metric id: \(error.localizedDescription)")
-        return false
+    if shouldArmDeferred(
+      metricCursor: ObserveUserDefaults.lastDispatchedMetricId,
+      logCursor: ObserveUserDefaults.lastDispatchedLogId,
+      readMaxMetricId: {
+        do {
+          return try AppMetrics.getMaxMetricId()
+        } catch {
+          observeLogger.warn(
+            "[EAS Observe] Polling failed to read max metric id: \(error.localizedDescription)"
+          )
+          throw error
+        }
+      },
+      readMaxLogId: {
+        do {
+          return try AppMetrics.getMaxLogId()
+        } catch {
+          observeLogger.warn(
+            "[EAS Observe] Polling failed to read max log id: \(error.localizedDescription)"
+          )
+          throw error
+        }
       }
-    }()
-    let hasNewLogs: Bool = {
-      do {
-        guard let maxId = try AppMetrics.getMaxLogId() else { return false }
-        return maxId > ObserveUserDefaults.lastDispatchedLogId
-      } catch {
-        observeLogger.warn("[EAS Observe] Polling failed to read max log id: \(error.localizedDescription)")
-        return false
-      }
-    }()
-    if hasNewMetrics || hasNewLogs {
+    ) {
       armDeferredDispatch()
     }
   }
@@ -133,28 +148,24 @@ internal struct ObservabilityManager {
     let delay = max((deferredDispatchDelaySeconds ?? defaultDeferredDispatchDelaySeconds), 0)
     let now = Date()
 
-    let newFireTime: Date
-    if let existingFireTime = deferredDispatchFireTime,
-      let originalArmTime = deferredDispatchOriginalArmTime,
-      existingFireTime > now
-    {
-      // Re-arm: push existing fire time out by half the delay, capped at original + 2 × delay.
-      let pushed = existingFireTime.addingTimeInterval(delay / 2)
-      let cap = originalArmTime.addingTimeInterval(2 * delay)
-      newFireTime = min(pushed, cap)
+    let existing: DeferredArmState? = {
+      guard let fire = deferredDispatchFireTime, let original = deferredDispatchOriginalArmTime
+      else { return nil }
+      return DeferredArmState(fireTime: fire, originalArmTime: original)
+    }()
+    let next = computeNextDeferredArm(now: now, delay: delay, existing: existing)
+    if existing != nil {
       observeLogger.debug(
-        "[EAS Observe] Re-arming deferred dispatch: pushed to \(newFireTime) (cap \(cap))"
+        "[EAS Observe] Re-arming deferred dispatch: pushed to \(next.fireTime)"
       )
     } else {
-      // First arm in a fresh window.
-      newFireTime = now.addingTimeInterval(delay)
-      deferredDispatchOriginalArmTime = now
-      observeLogger.debug("[EAS Observe] Arming deferred dispatch for \(newFireTime)")
+      observeLogger.debug("[EAS Observe] Arming deferred dispatch for \(next.fireTime)")
     }
 
     deferredDispatchTask?.cancel()
-    deferredDispatchFireTime = newFireTime
-    let sleepInterval = max(newFireTime.timeIntervalSince(now), 0)
+    deferredDispatchFireTime = next.fireTime
+    deferredDispatchOriginalArmTime = next.originalArmTime
+    let sleepInterval = max(next.fireTime.timeIntervalSince(now), 0)
     let nanoseconds = UInt64(sleepInterval.rounded()) * 1_000_000_000
     deferredDispatchTask = Task { @AppMetricsActor in
       try? await Task.sleep(nanoseconds: nanoseconds)
@@ -164,6 +175,62 @@ internal struct ObservabilityManager {
       deferredDispatchOriginalArmTime = nil
       await dispatch(cancelDeferred: false)
     }
+  }
+
+  /// Pure helper that computes the next arm state for the deferred-dispatch timer. Extracted from
+  /// `armDeferredDispatch` so the half-push and cap rules can be unit-tested without a real `Task`
+  /// or wall clock.
+  ///
+  /// - First arm (no existing state, or existing fire time has already passed): schedule for
+  ///   `now + delay`. `originalArmTime` is `now`.
+  /// - Re-arm (existing fire time still in the future): push the existing fire time by `delay / 2`,
+  ///   capped at `existing.originalArmTime + 2 × delay`. `originalArmTime` is preserved.
+  internal nonisolated static func computeNextDeferredArm(
+    now: Date,
+    delay: TimeInterval,
+    existing: DeferredArmState?
+  ) -> DeferredArmState {
+    if let existing, existing.fireTime > now {
+      let pushed = existing.fireTime.addingTimeInterval(delay / 2)
+      let cap = existing.originalArmTime.addingTimeInterval(2 * delay)
+      return DeferredArmState(
+        fireTime: min(pushed, cap),
+        originalArmTime: existing.originalArmTime
+      )
+    }
+    return DeferredArmState(fireTime: now.addingTimeInterval(delay), originalArmTime: now)
+  }
+
+  /// Pure helper that mirrors `pollOnceAndMaybeArmDispatch`'s decision logic without touching real
+  /// storage. Returns `true` when either the metrics or logs DB has a max id strictly greater than
+  /// the corresponding dispatch cursor — i.e. the caller should arm the deferred dispatch.
+  ///
+  /// Reader closures `throw` to model `AppMetrics.getMaxMetricId()` / `getMaxLogId()` failures —
+  /// the real implementations log and treat the result as "no new rows", so this helper does the
+  /// same here.
+  internal nonisolated static func shouldArmDeferred(
+    metricCursor: Int64,
+    logCursor: Int64,
+    readMaxMetricId: () throws -> Int64?,
+    readMaxLogId: () throws -> Int64?
+  ) -> Bool {
+    let hasNewMetrics: Bool = {
+      do {
+        guard let maxId = try readMaxMetricId() else { return false }
+        return maxId > metricCursor
+      } catch {
+        return false
+      }
+    }()
+    let hasNewLogs: Bool = {
+      do {
+        guard let maxId = try readMaxLogId() else { return false }
+        return maxId > logCursor
+      } catch {
+        return false
+      }
+    }()
+    return hasNewMetrics || hasNewLogs
   }
 
   /// Cancels any armed deferred dispatch. Called from `dispatch(cancelDeferred:)` so any other
