@@ -927,6 +927,10 @@ export async function initAsync(
         destPath: path.join(projectRoot, 'ios', 'updatese2e', 'AppDelegate.swift'),
       },
       {
+        sourcePath: path.join(customInitSourcesDirectory, 'SceneDelegate.swift'),
+        destPath: path.join(projectRoot, 'ios', 'updatese2e', 'SceneDelegate.swift'),
+      },
+      {
         sourcePath: path.join(customInitSourcesDirectory, 'MainApplication.kt'),
         destPath: path.join(
           projectRoot,
