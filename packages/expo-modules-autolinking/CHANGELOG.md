@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add the `CSS/core/transition` header mapping to the `react-native-reanimated` precompile config so its XCFramework builds against `react-native-reanimated@4.4.1`. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
 - Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
 

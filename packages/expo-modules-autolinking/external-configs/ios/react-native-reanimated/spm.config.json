@@ -71,6 +71,7 @@
                         { "from": "CSS/common/values/complex/*.h", "to": "reanimated/CSS/common/values/complex/{filename}", "type": "header" },
                         { "from": "CSS/configs/*.h", "to": "reanimated/CSS/configs/{filename}", "type": "header" },
                         { "from": "CSS/core/*.h", "to": "reanimated/CSS/core/{filename}", "type": "header" },
+                        { "from": "CSS/core/transition/*.h", "to": "reanimated/CSS/core/transition/{filename}", "type": "header" },
                         { "from": "CSS/easing/*.h", "to": "reanimated/CSS/easing/{filename}", "type": "header" },
                         { "from": "CSS/interpolation/*.h", "to": "reanimated/CSS/interpolation/{filename}", "type": "header" },
                         { "from": "CSS/interpolation/filters/*.h", "to": "reanimated/CSS/interpolation/filters/{filename}", "type": "header" },
