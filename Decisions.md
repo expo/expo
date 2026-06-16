@@ -214,6 +214,22 @@ Acted on before the first commit:
   scenario 6 lands in Phase 3 with `resolveBack`); strengthened the multi-visible test to assert an
   unfocused column keeps its independent stack depth.
 
+### P-13 — Single key-minting authority (Phase 2 review, architecture finding)
+*(4 fresh agents on hydration+projection)*
+
+The architecture + coverage agents caught a real cross-phase risk: hydration minted keys with a
+*per-call* counter while runtime push (Phase 3) would mint differently — so a hydrated route and a
+later push/native-echo of the "same" route could carry incomparable keys and fail to dedupe (ghost
+duplicate screen, violating P-7). Fix: `navigation-state/keys.ts` `createRouteKey(name)` is now the
+**single minting authority** (module-level monotonic counter, `${name}#${n}` format), used by
+hydration and by all future runtime minting. Keys are **opaque, not content-derived** (a stack may
+hold the same route twice). The dedupe contract is: **JS mints once, native echoes the same key**;
+the reducer dedupes by key equality. Determinism-across-calls was dropped (it isn't required and the
+test was weak — test-quality finding); the real invariant tested is tree-global uniqueness, incl.
+when a route name repeats across branches. Also removed the dead `route.key ??` fallback
+(`getStateFromPath` never emits keys) and added coverage for multi-sibling nodes, non-last focus
+projection, dynamic-segment + query round-trips, and `hydrate → undefined`.
+
 Relationship: this module is the **global state backend** (the whole-app nested tree:
 `NavNode` with `child`, `index`). `standard-navigation/` is the **per-navigator render contract**
 (a flat `{index, routes:[{key,name,params,href}]}` slice for *one* navigator level). They are
