@@ -225,7 +225,7 @@ const assetFilesByInput = new Map();
 for (const input of srcDirSet) {
   const srcDir = path.resolve(baseDir, input);
   const allFound = await findSourceFiles(srcDir);
-  const files = allFound.filter((f) => !f.asset).map((f) => f.relPath);
+  const files = allFound.filter((f) => !f.asset && !f.declaration).map((f) => f.relPath);
   const declFiles = allFound.filter((f) => f.declaration).map((f) => f.relPath);
   const assetFiles = allFound.filter((f) => f.asset).map((f) => f.relPath);
   if (files.length === 0 && declFiles.length === 0 && assetFiles.length === 0) {
@@ -250,9 +250,10 @@ const { parsed, compilerHost, writtenFiles, writeFileIfChanged } = createBuildHo
 );
 
 // Emit declarations once, using all unique source files
-const allSrcFiles = [...filesByInput.entries()].flatMap(([input, files]) =>
-  files.map((file) => path.join(path.resolve(baseDir, input), file))
-);
+const allSrcFiles = [...filesByInput.entries()].flatMap(([input, files]) => {
+  const srcDir = path.resolve(baseDir, input);
+  return [...files, ...(declFilesByInput.get(input) ?? [])].map((file) => path.join(srcDir, file));
+});
 const uniqueSrcFiles = [...new Set(allSrcFiles)];
 
 // Copy .d.ts files to each output directory
