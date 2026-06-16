@@ -11,7 +11,7 @@ import { Step } from '~/ui/components/Step';
 
 [PostHog](https://posthog.com/) is a product analytics platform with session replay, feature flags, and error tracking.
 
-The EAS CLI integration automates the standard PostHog React Native setup — installing the SDK, creating a PostHog organization and project, and configuring your environment variables. You can also [set it up manually](#manual-setup) and use the rest of this guide unchanged.
+The EAS CLI integration automates the standard PostHog React Native setup: installing the SDK, creating a PostHog organization and project, and configuring your environment variables. You can also [set it up manually](#manual-setup) and use the rest of this guide unchanged.
 
 <Prerequisites>
   <Requirement title="Expo account">
@@ -46,12 +46,12 @@ Run the following command in your project directory:
 This command:
 
 - Prompts for a PostHog **region** (US or EU). The region sets your data residency and can't be changed after connecting.
-- Creates a PostHog organization and project for you, or reuses the existing one if you've already connected. (New PostHog accounts only — see [Troubleshooting](#troubleshooting).)
-- Asks which features to set up — a multiselect of **Analytics**, **Session replay**, and **Error tracking**, all enabled by default.
-- If you enable **error tracking**, prompts you to paste a PostHog **personal API key** — create one in PostHog under **Settings → Personal API keys** with the "Source map upload" preset. (Non-interactively, pass it with `--posthog-cli-api-key`.)
+- Creates a PostHog organization and project for you, or reuses the existing one if you've already connected. (New PostHog accounts only; see [Troubleshooting](#troubleshooting).)
+- Asks which features to set up: a multiselect of **Analytics**, **Session replay**, and **Error tracking**, all enabled by default.
+- If you enable **error tracking**, prompts you to paste a PostHog **personal API key**. Create one in PostHog under **Settings → Personal API keys** with the "Source map upload" preset. (Non-interactively, pass it with `--posthog-cli-api-key`.)
 - Installs the PostHog SDK and required Expo modules (plus the session-replay package if you keep that feature).
-- Adds the `posthog-react-native/expo` config plugin to your app config — it wires up the native modules the SDK, session replay, and error symbolication rely on. It edits a static **app.json** for you; with a dynamic **app.config.js** it can't edit the file, so it prints the plugin entry for you to add.
-- Writes `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` to **.env.local** and to your EAS environment variables across Production, Preview, and Development. With error tracking enabled it also stores the personal API key as `POSTHOG_CLI_API_KEY` (with [sensitive visibility](/eas/environment-variables/#visibility-settings-for-environment-variables)) plus the public `POSTHOG_CLI_PROJECT_ID` and `POSTHOG_CLI_HOST`.
+- Adds the `posthog-react-native/expo` config plugin to your app config. The plugin wires up the native modules that PostHog's SDK, session replay, and error symbolication rely on. It edits a static [app config](/workflow/configuration/) file for you, but it can't edit a [dynamic app config](/workflow/configuration/#dynamic-configuration), so it prints the plugin entry for you to add.
+- Writes `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` to **.env.local** and to your EAS environment variables across Production, Preview, and Development environments. With error tracking enabled it also stores the personal API key as `POSTHOG_CLI_API_KEY` (with [sensitive visibility](/eas/environment-variables/#visibility-settings-for-environment-variables)) and the public `POSTHOG_CLI_PROJECT_ID` and `POSTHOG_CLI_HOST`.
 
 Re-running `connect` is safe: it reuses your existing organization and project and prompts before overwriting environment variables.
 
@@ -94,9 +94,9 @@ export default function RootLayout() {
 
 ### Create a development build
 
-Session replay and native error symbolication require a [development build](/develop/development-builds/introduction/) — they don't work in Expo Go. Product analytics works in Expo Go.
+Session replay and native error symbolication require a [development build](/develop/development-builds/introduction/) since they don't work in Expo Go. Product analytics works in Expo Go.
 
-<Terminal cmd={['$ npx expo prebuild', '$ eas build --profile development']} />
+<Terminal cmd={['$ eas build --profile development']} />
 
 </Step>
 
@@ -122,21 +122,21 @@ Open your PostHog project (at `https://us.posthog.com` or `https://eu.posthog.co
 
 ## Manual setup
 
-`connect` is a shortcut for the standard PostHog React Native setup. To do it by hand, follow [PostHog's React Native installation guide](https://posthog.com/docs/libraries/react-native), then set `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (plus the `POSTHOG_CLI_*` variables for source maps — see [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native)). Wrap your app in `<PostHogProvider>` as shown in [Step 2](#install-and-configure-posthog).
+`connect` is a shortcut for the standard PostHog React Native setup. To do it manually, follow [PostHog's React Native installation guide](https://posthog.com/docs/libraries/react-native), then set `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (plus the `POSTHOG_CLI_*` variables for source maps). Wrap your app in `<PostHogProvider>` as shown in [Step 2](#install-and-configure-posthog). For source maps, see [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native).
 
 ## Usage with EAS Build
 
-The `posthog-react-native/expo` config plugin, together with the `POSTHOG_CLI_*` environment variables, handles source-map upload during `eas build` — there's no extra command to run. For configuration details and options, see [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native). If your build needs to adjust iOS script sandboxing for source-map upload, the plugin's options are documented there as well.
+The `posthog-react-native/expo` config plugin, together with the `POSTHOG_CLI_*` environment variables, handles source-map upload during `eas build`, so there's no extra command to run. For configuration details and options, see [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native). If your build needs to adjust iOS script sandboxing for source-map upload, the plugin's options are documented there as well.
 
 ## Usage with EAS Update
 
-Over-the-air bundles aren't part of `eas build`, so you upload their source maps separately after each `eas update`. Follow [PostHog's React Native source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native) — PostHog's CLI reads the `POSTHOG_CLI_*` environment variables that `connect` configured.
+Over-the-air bundles aren't part of `eas build`, so you upload their source maps separately after each `eas update`. Follow [PostHog's React Native source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native). PostHog's CLI reads the `POSTHOG_CLI_*` environment variables that `connect` configured.
 
-For EAS Workflows and other CI, those variables are already set in your EAS environment variables. For external CI, add them with `eas secret:create` and reference them in your workflow.
+For EAS Workflows and other CI, those variables are already set in your EAS environment variables. For external CI, add them with `eas env:create` and reference them in your workflow.
 
 ## Release tagging
 
-Map each captured event back to a specific over-the-air update by registering super properties from [`expo-updates`](/versions/latest/sdk/updates/):
+Map each captured event back to a specific over-the-air update by registering [super properties](https://posthog.com/docs/libraries/react-native#super-properties) from [`expo-updates`](/versions/latest/sdk/updates/):
 
 ```tsx
 import { useEffect } from 'react';
@@ -158,19 +158,21 @@ function ReleaseTagger() {
 }
 ```
 
-Render `<ReleaseTagger />` inside `<PostHogProvider>`. Every subsequent `capture()` carries these properties, so you can filter or group events by `expo_update_id` in PostHog. See [PostHog's super properties docs](https://posthog.com/docs/libraries/react-native#super-properties).
+Render `<ReleaseTagger />` inside `<PostHogProvider>`. Every subsequent `capture()` carries these properties, so you can filter or group events by `expo_update_id` in PostHog.
 
 ## Feature flags
 
-Once the provider is set up, feature flags work with no extra configuration. See [PostHog's feature flags for React Native](https://posthog.com/docs/feature-flags/installation/react-native), and [bootstrapping](https://posthog.com/docs/feature-flags/bootstrapping) to avoid a network round-trip on app start.
+Once the provider is set up, feature flags work with no extra configuration. See [PostHog's feature flags for React Native](https://posthog.com/docs/feature-flags/installation/react-native) and [bootstrapping](https://posthog.com/docs/feature-flags/bootstrapping) to avoid a network round-trip on app start.
 
 ## Manage the integration
 
 Use these commands to manage the integration later:
 
-<Terminal cmd={['$ eas integrations:posthog:dashboard', '$ eas integrations:posthog:disconnect']} />
+<Terminal
+  cmd={['$ eas integrations:posthog:dashboard', '', '$ eas integrations:posthog:disconnect']}
+/>
 
-`dashboard` opens your linked PostHog project. `disconnect` removes the Expo-side link only — your PostHog organization, project, and data are left intact.
+`dashboard` opens your linked PostHog project. `disconnect` removes the Expo-side link only. Your PostHog organization, project, and data are left intact.
 
 ## Troubleshooting
 
@@ -182,7 +184,7 @@ Confirm `disabled: __DEV__` isn't masking events in your production build, and t
 
 <Collapsible summary="Session replay isn't working">
 
-Session replay requires a development build — it doesn't work in Expo Go. Create one with `npx expo prebuild` and `eas build --profile development`.
+Session replay requires a development build since it doesn't work with Expo Go. If your project uses [Continuous Native Generation](/workflow/continuous-native-generation/), create one with `npx expo run:android` or `npx expo run:ios` locally, or with `eas build --profile development`.
 
 </Collapsible>
 
@@ -194,7 +196,7 @@ Confirm the `POSTHOG_CLI_*` environment variables are set (connect adds them whe
 
 <Collapsible summary="'You already have a PostHog account'">
 
-The integration connects new PostHog accounts. If your email already has a PostHog account, set it up using the [manual steps](#manual-setup) instead — create a project in PostHog and configure the SDK, config plugin, and environment variables yourself.
+The integration connects new PostHog accounts. If your email already has a PostHog account, set it up using the [manual steps](#manual-setup) instead.
 
 </Collapsible>
 
