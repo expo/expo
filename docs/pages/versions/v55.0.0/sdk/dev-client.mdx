@@ -86,6 +86,13 @@ You can configure development client launcher using its built-in [config plugin]
       default: '"most-recent"',
       platform: 'ios',
     },
+    {
+      name: 'defaultServerUrl',
+      description: [
+        'A development server URL (for example `http://192.168.1.50:8081`) to bake into the build and auto-connect to on launch, instead of waiting for the user to scan a QR code or pick a development server. Useful for headless, CI, or agent-driven workflows, or when running several Metro servers on fixed, dedicated ports that are known ahead of build time.',
+        'If the server is unreachable, the launcher falls back to its home screen, and a recently opened project still takes precedence (unless `launchMode` is `launcher`). Can be set per-platform with `ios.defaultServerUrl` / `android.defaultServerUrl`, or overridden at build time with the `EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL` environment variable.',
+      ].join('\n'),
+    },
   ]}
 />
 
