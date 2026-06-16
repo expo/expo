@@ -74,7 +74,7 @@ export default function ControlledTextInputExample() {
 
 Add the `'worklet'` directive to [`onChangeText`](#onchangetext) for synchronously updating the state on the UI thread. Writes to `value` land without the JS-thread round-trip that can cause cursor flicker.
 
-> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+> **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
 
 ```tsx PhoneMaskExample.tsx
 import { Host, TextInput, useNativeState } from '@expo/ui';

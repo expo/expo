@@ -60,7 +60,7 @@ export default function BasicTextFieldExample() {
 
 Pass a [`useNativeState`](usenativestate) observable as `value` and an `onValueChange` worklet to transform or validate input before writing it back. The example below uppercases the text as it is typed.
 
-> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+> **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
 
 ```tsx ControlledTextFieldExample.tsx
 import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
@@ -310,7 +310,7 @@ export default function ImperativeRefExample() {
 
 When `onValueChange` is marked with the `'worklet'` directive, it runs synchronously on the UI thread, so writes to [`useNativeState`](usenativestate) observables inside the callback take effect before the next frame. There is no flicker between the typed text and the masked text. The example below masks a phone number as the user types and writes both `value` and `selection` from the worklet to keep the cursor at the end of the formatted value.
 
-> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+> **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
 
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
