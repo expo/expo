@@ -219,10 +219,14 @@ describe('cleanHtml', () => {
     expect($('main').text()).toContain('content');
   });
 
-  it('keeps only first tab panel in @reach/tabs groups', () => {
+  it('keeps every tab panel, labeled by its tab button', () => {
     const html = [
       '<main>',
       '<div data-reach-tabs="">',
+      '<div data-reach-tab-list="" role="tablist">',
+      '<div class="relative"><button data-reach-tab="" role="tab"><div><p>Alpha</p></div></button></div>',
+      '<div class="relative"><button data-reach-tab="" role="tab"><div><p>Beta</p></div></button></div>',
+      '</div>',
       '<div data-reach-tab-panels="">',
       '<div data-reach-tab-panel="" role="tabpanel">',
       '<pre><code class="language-sh">npm install expo</code></pre>',
@@ -236,8 +240,15 @@ describe('cleanHtml', () => {
     ].join('');
     const $ = cheerio.load(html);
     cleanHtml($, $('main'));
-    expect($('main').text()).toContain('npm install expo');
-    expect($('main').text()).not.toContain('yarn add expo');
+    const text = $('main').text();
+    expect(text).toContain('npm install expo');
+    expect(text).toContain('yarn add expo');
+    expect(
+      $('main')
+        .find('h4')
+        .map((_, el) => $(el).text())
+        .get()
+    ).toEqual(['Alpha', 'Beta']);
   });
 
   it('unwraps non-empty div/span inside headings', () => {
@@ -600,12 +611,17 @@ describe('platform indicators in table cells', () => {
   });
 });
 
-describe('tab panel deduplication', () => {
-  it('only includes first tab panel content in output', () => {
+describe('tab panels', () => {
+  it('preserves content from every tab panel in output', () => {
     const html = [
       '<main>',
       '<h1>Installation</h1>',
       '<div data-reach-tabs="">',
+      '<div data-reach-tab-list="" role="tablist">',
+      '<div class="relative"><button data-reach-tab="" role="tab"><div><p>npm</p></div></button></div>',
+      '<div class="relative"><button data-reach-tab="" role="tab"><div><p>yarn</p></div></button></div>',
+      '<div class="relative"><button data-reach-tab="" role="tab"><div><p>bun</p></div></button></div>',
+      '</div>',
       '<div data-reach-tab-panels="">',
       '<div data-reach-tab-panel="" role="tabpanel">',
       '<pre><code class="language-sh">npx expo install expo-camera</code></pre>',
@@ -622,8 +638,11 @@ describe('tab panel deduplication', () => {
     ].join('');
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('npx expo install expo-camera');
-    expect(md).not.toContain('yarn add expo-camera');
-    expect(md).not.toContain('bun add expo-camera');
+    expect(md).toContain('yarn add expo-camera');
+    expect(md).toContain('bun add expo-camera');
+    expect(md).toContain('#### npm');
+    expect(md).toContain('#### yarn');
+    expect(md).toContain('#### bun');
   });
 });
 
@@ -944,6 +963,7 @@ describe('tabs', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('# Installation');
+    expect(md).toContain('#### npm');
     expect(md).toContain('npm install expo');
   });
 });

@@ -303,22 +303,29 @@ export function convertMdxInstructionToMarkdown(
  * normalize terminal blocks, and strip decorative artifacts.
  */
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
-  // Remove interactive/decorative elements
-  main.find('button').remove();
-  main.find('style').remove();
-
-  // Keep only the first tab panel in each tab group (typically the npm variant).
-  // @reach/tabs renders all panels in SSR HTML; we want only the first (default) one
-  // to avoid duplicating install commands for npm/yarn/bun.
-  main.find('[data-reach-tab-panels]').each((_, el) => {
-    $(el)
+  // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
+  // Must run before the button removal below, since labels live in the buttons.
+  main.find('[data-reach-tabs]').each((_, tabsEl) => {
+    const $tabs = $(tabsEl);
+    const ownLabels = $tabs
+      .find('[data-reach-tab]')
+      .filter((_, btn) => $(btn).closest('[data-reach-tabs]').is($tabs))
+      .map((_, btn) => $(btn).text().replace(/\s+/g, ' ').trim())
+      .get();
+    $tabs
       .find('[data-reach-tab-panel]')
+      .filter((_, panel) => $(panel).closest('[data-reach-tabs]').is($tabs))
       .each((i, panel) => {
-        if (i > 0) {
-          $(panel).remove();
+        const label = ownLabels[i];
+        if (label) {
+          $(panel).prepend(`<h4>${label}</h4>`);
         }
       });
   });
+
+  // Remove interactive/decorative elements
+  main.find('button').remove();
+  main.find('style').remove();
 
   // Preserve semantic SVG icons as text before blanket SVG removal.
   // YesIcon (text-icon-success) → ✓, NoIcon (text-icon-danger) → ✗

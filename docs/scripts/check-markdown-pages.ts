@@ -20,6 +20,7 @@
  * - Validates that key content survived conversion and no artifacts leaked through.
  */
 
+import * as cheerio from 'cheerio';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -29,11 +30,56 @@ import {
   extractFrontmatter,
   findHtmlPages,
   findMarkdownPages,
+  findMdxSource,
 } from './generate-markdown-pages-utils.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
+const PAGES_DIR = path.join(process.cwd(), 'pages');
 
 let failCount = 0;
+
+/**
+ * Every <Tab label="..."> in the source MDX must survive into the generated
+ * markdown as a heading. Guards against silent content loss when a multi-panel
+ * component is stripped during HTML→Markdown conversion (ENG-21907).
+ */
+function findMissingTabLabels(markdown: string, mdxPath: string): string[] {
+  const mdx = fs.readFileSync(mdxPath, 'utf-8');
+  const labelRegex = /<Tab\s+label=(?:"([^"]*)"|'([^']*)')/g;
+  const missing: string[] = [];
+  let match: RegExpExecArray | null = null;
+  while ((match = labelRegex.exec(mdx)) !== null) {
+    const label = (match[1] ?? match[2] ?? '').trim();
+    if (label && !markdown.includes(label)) {
+      missing.push(label);
+    }
+  }
+  return missing;
+}
+
+/**
+ * Structural backstop for tab content loss, independent of how labels are
+ * declared. The conversion prefixes every rendered tab panel with its label as
+ * an h4, so the markdown must hold at least as many h4 headings as the built
+ * HTML has tab panels. A shortfall means panels were dropped. Covers the
+ * <Tabs tabs={[...]}> prop style and dynamic labels, which the source-MDX check
+ * above cannot see (ENG-21907). Returns the number of missing headings.
+ */
+function tabPanelHeadingDeficit(markdown: string, htmlPath: string): number {
+  if (!fs.existsSync(htmlPath)) {
+    return 0;
+  }
+  const html = fs.readFileSync(htmlPath, 'utf-8');
+  if (!html.includes('data-reach-tab')) {
+    return 0;
+  }
+  const panels = cheerio.load(html)('[data-reach-tab-panel]').length;
+  if (panels === 0) {
+    return 0;
+  }
+  const headings = (markdown.match(/^#### /gm) ?? []).length;
+  return Math.max(0, panels - headings);
+}
 
 // --- Bulk quality gate (requires out/ from a full build) ---
 
@@ -58,6 +104,21 @@ if (fs.existsSync(OUT_DIR)) {
     const rel = path.relative(OUT_DIR, mdPath);
     const htmlRel = rel.replace(/\.md$/, '.html');
     const errors = checkPage(markdown, htmlRel);
+
+    const mdxPath = findMdxSource(mdPath, OUT_DIR, PAGES_DIR);
+    if (mdxPath) {
+      const missingLabels = findMissingTabLabels(markdown, mdxPath);
+      for (const label of missingLabels) {
+        errors.push(`Tab "${label}" from source MDX is missing (content dropped)`);
+      }
+    }
+
+    const htmlPath = path.join(OUT_DIR, htmlRel);
+    const deficit = tabPanelHeadingDeficit(markdown, htmlPath);
+    if (deficit > 0) {
+      errors.push(`${deficit} tab panel(s) dropped: fewer h4 headings than rendered tab panels`);
+    }
+
     if (errors.length > 0) {
       for (const error of errors) {
         console.error(`  \x1b[31m✗\x1b[0m ${rel}: ${error}`);
@@ -135,7 +196,10 @@ if (integrationMd === null) {
     ['bold text', 'md-test-bold-text'],
     ['unordered list', 'md-test-unordered-item'],
     ['ordered list', 'md-test-ordered-item'],
-    ['npm tab content', 'md-test-npm-pkg'],
+    ['first tab label', 'md-test-tab-one-label'],
+    ['first tab content', 'md-test-tab-one-pkg'],
+    ['second tab label', 'md-test-tab-two-label'],
+    ['second tab content', 'md-test-tab-two-pkg'],
   ];
   for (const [label, text] of mustContain) {
     if (!integrationMd.includes(text)) {
@@ -144,9 +208,6 @@ if (integrationMd === null) {
   }
 
   // Negative: artifacts must not leak
-  if (integrationMd.includes('md-test-yarn-pkg')) {
-    errors.push('Non-default tab panel content leaked (yarn tab should be stripped)');
-  }
   if (/^Terminal$/m.test(integrationMd)) {
     errors.push('Snippet header "Terminal" label leaked as standalone text');
   }
