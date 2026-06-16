@@ -362,7 +362,7 @@ describe('convertHtmlToMarkdown', () => {
       '<html><head><meta http-equiv="refresh" content="0; url=/get-started/create-a-project/"></head><body><div id="__next"></div></body></html>';
     const result = convertHtmlToMarkdown(html);
     expect(result).toContain('/get-started/create-a-project/');
-    expect(result).toContain('https://docs.expo.dev/get-started/create-a-project/');
+    expect(result).toContain('https://docs.expo.dev/get-started/create-a-project.md');
     expect(result).toContain('redirects to');
   });
 
@@ -388,6 +388,28 @@ describe('convertHtmlToMarkdown', () => {
     const html = '<main><pre><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```js\nconst x = 1;\n```');
+  });
+
+  it('rewrites internal links to markdown URLs', () => {
+    const html = `<main>
+      <h1>Links</h1>
+      <p>
+        <a href="/more/expo-cli#install">CLI</a>
+        <a href="https://docs.expo.dev/versions/v56.0.0/sdk/contacts#contactgetalloptions">Contacts</a>
+        <a href="/llms.txt">llms</a>
+        <a href="https://expo.dev">External</a>
+      </p>
+      <pre><code class="language-md">[Inside](/more/expo-cli#install)</code></pre>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+
+    expect(md).toContain('[CLI](/more/expo-cli.md#install)');
+    expect(md).toContain(
+      '[Contacts](https://docs.expo.dev/versions/v56.0.0/sdk/contacts.md#contactgetalloptions)'
+    );
+    expect(md).toContain('[llms](/llms.txt)');
+    expect(md).toContain('[External](https://expo.dev)');
+    expect(md).toContain('[Inside](/more/expo-cli#install)');
   });
 });
 
@@ -440,7 +462,7 @@ describe('card links', () => {
       </a>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[My Guide](/guide)');
+    expect(md).toContain('[My Guide](/guide.md)');
     expect(md).toContain('Guide description.');
   });
 });
@@ -809,7 +831,7 @@ describe('convertHtmlToMarkdown with real page structure', () => {
     expect(md).toContain('[Node.js (LTS)](https://nodejs.org)');
     expect(md).toContain('```sh\nnpx create-expo-app@latest\n```');
     expect(md).toContain('## Next step');
-    expect(md).toContain('[development environment](/get-started/set-up-your-environment)');
+    expect(md).toContain('[development environment](/get-started/set-up-your-environment.md)');
 
     // Non-content is removed
     expect(md).not.toContain('Home');
