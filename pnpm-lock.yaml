@@ -2956,6 +2956,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.2.3(@types/react@19.2.14)
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../../expo-module-scripts
       expo-router:
         specifier: workspace:*
         version: link:../../expo-router
