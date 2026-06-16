@@ -337,8 +337,7 @@ export default function DocumentationPage({
           description={description}
           canonicalUrl={canonicalUrl}
           markdownPath={markdownPath}
-          locale={locale}
-          pathname={pathname}>
+          locale={locale}>
           {hideFromSearch !== true && (
             <meta
               name="docsearch:version"
