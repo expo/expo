@@ -166,24 +166,22 @@ class ObservabilityManager(
     val delayMs = ((deferredDispatchDelaySeconds ?: defaultDeferredDispatchDelaySeconds).coerceAtLeast(0)) * 1000
     val now = System.currentTimeMillis()
 
-    val newFireTimeMs: Long
-    val existingFire = deferredDispatchFireTimeMs
-    val originalArm = deferredDispatchOriginalArmTimeMs
-    if (existingFire != null && originalArm != null && existingFire > now) {
-      // Re-arm: push out by half the delay, capped at original + 2 × delay.
-      val pushed = existingFire + delayMs / 2
-      val cap = originalArm + 2 * delayMs
-      newFireTimeMs = minOf(pushed, cap)
-      Log.d(OBSERVE_TAG, "Re-arming deferred dispatch: pushed fire time to $newFireTimeMs (cap $cap)")
+    val existing: DeferredArmState? = deferredDispatchFireTimeMs?.let { fire ->
+      deferredDispatchOriginalArmTimeMs?.let { original ->
+        DeferredArmState(fireTimeMs = fire, originalArmTimeMs = original)
+      }
+    }
+    val next = computeNextDeferredArm(nowMs = now, delayMs = delayMs, existing = existing)
+    if (existing != null) {
+      Log.d(OBSERVE_TAG, "Re-arming deferred dispatch: pushed fire time to ${next.fireTimeMs}")
     } else {
-      newFireTimeMs = now + delayMs
-      deferredDispatchOriginalArmTimeMs = now
-      Log.d(OBSERVE_TAG, "Arming deferred dispatch for $newFireTimeMs")
+      Log.d(OBSERVE_TAG, "Arming deferred dispatch for ${next.fireTimeMs}")
     }
 
     deferredDispatchJob?.cancel()
-    deferredDispatchFireTimeMs = newFireTimeMs
-    val sleepMs = (newFireTimeMs - now).coerceAtLeast(0)
+    deferredDispatchFireTimeMs = next.fireTimeMs
+    deferredDispatchOriginalArmTimeMs = next.originalArmTimeMs
+    val sleepMs = (next.fireTimeMs - now).coerceAtLeast(0)
     deferredDispatchJob = dispatchScope.launch {
       delay(sleepMs)
       deferredDispatchJob = null
@@ -220,7 +218,46 @@ class ObservabilityManager(
     deferredDispatchFireTimeMs = null
     deferredDispatchOriginalArmTimeMs = null
   }
+
+  companion object {
+    /**
+     * Pure helper that computes the next arm state for the deferred-dispatch timer. Extracted from
+     * `armDeferredDispatch` so the half-push and cap rules can be unit-tested without a real
+     * coroutine `Job` or wall clock.
+     *
+     * - First arm (no existing state, or existing fire time has already passed): schedule for
+     *   `nowMs + delayMs`. `originalArmTimeMs` is `nowMs`.
+     * - Re-arm (existing fire time still in the future): push the existing fire time by
+     *   `delayMs / 2`, capped at `existing.originalArmTimeMs + 2 × delayMs`. `originalArmTimeMs`
+     *   is preserved.
+     */
+    internal fun computeNextDeferredArm(
+      nowMs: Long,
+      delayMs: Long,
+      existing: DeferredArmState?
+    ): DeferredArmState {
+      if (existing != null && existing.fireTimeMs > nowMs) {
+        val pushed = existing.fireTimeMs + delayMs / 2
+        val cap = existing.originalArmTimeMs + 2 * delayMs
+        return DeferredArmState(
+          fireTimeMs = minOf(pushed, cap),
+          originalArmTimeMs = existing.originalArmTimeMs
+        )
+      }
+      return DeferredArmState(fireTimeMs = nowMs + delayMs, originalArmTimeMs = nowMs)
+    }
+  }
 }
+
+/**
+ * State carried across re-arms of the deferred-dispatch timer for a single deferral window.
+ * Lives at file scope so the pure helper `computeNextDeferredArm` can take it as an argument
+ * without coupling to `ObservabilityManager` instance state.
+ */
+internal data class DeferredArmState(
+  val fireTimeMs: Long,
+  val originalArmTimeMs: Long
+)
 
 class BaseObservabilityManager(
   private val context: Context,
