@@ -15,6 +15,7 @@
 - Sync config plugin `Props` type with the options schema, adding the missing `redirects`, `rewrites`, `platformRoutes`, and `disableSynchronousScreensUpdates` options. ([#46677](https://github.com/expo/expo/pull/46677) by [@zoontek](https://github.com/zoontek))
 - [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
 - Allow async routes to rehydrate synchronously by carrying through preloaded modules preventing FOUC in production output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+- Preserve a system time mocked with `jest.setSystemTime` across `renderRouter` instead of resetting it to the real time. ([#46864](https://github.com/expo/expo/issues/46864) by [@jakub-agent](https://github.com/jakub-agent))
 
 ### 💡 Others
 

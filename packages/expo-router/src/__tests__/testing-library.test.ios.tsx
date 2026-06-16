@@ -139,3 +139,19 @@ describe('toHaveRouterState', () => {
     expect(message).toMatchSnapshot();
   });
 });
+
+describe('fake timers', () => {
+  // https://github.com/expo/expo/issues/46864
+  it('preserves a system time mocked with jest.setSystemTime', () => {
+    const mockNow = new Date('2025-06-17T12:00:00.000Z');
+    jest.useFakeTimers();
+    jest.setSystemTime(mockNow);
+
+    renderRouter(['[slug]'], { initialUrl: '/home' });
+
+    // `renderRouter` calls `jest.useFakeTimers()` internally to control navigator
+    // animations. That must not reset the system time the user mocked.
+    expect(Date.now()).toBe(mockNow.getTime());
+    expect(new Date().toISOString()).toBe(mockNow.toISOString());
+  });
+});

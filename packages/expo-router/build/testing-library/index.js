@@ -33,7 +33,17 @@ Object.defineProperty(exports, 'screen', {
     },
 });
 function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
+    // `renderRouter` relies on fake timers to drive the navigator animations and to flush
+    // React Navigation's async state updates. Calling `jest.useFakeTimers()` re-initializes
+    // the fake clock, which resets the mocked system time back to the real current time and
+    // clobbers any `jest.setSystemTime()` the user configured in their test setup.
+    // Capture the current time first so we can restore it afterwards: `Date.now()` returns
+    // the mocked time when fake timers are already installed, or the real time otherwise, so
+    // restoring it preserves the user's intent in both cases.
+    // See https://github.com/expo/expo/issues/46864
+    const systemTime = Date.now();
     jest.useFakeTimers();
+    jest.setSystemTime(systemTime);
     const mockContext = (0, mock_config_1.getMockContext)(context);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
