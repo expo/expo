@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ExpoHeader.pch"
+#include "../JavaScriptObject.h"
 #include "MainRuntimeInstaller.h"
 
 namespace jni = facebook::jni;
@@ -23,6 +24,14 @@ public:
 
   static void prepareRuntime(
     jni::local_ref<JSIContext::javaobject> jsiContext
+  ) noexcept;
+
+  // Resolves the raw UI `jsi::Runtime *` (as a jlong) from a
+  // `react-native-worklets` UI runtime holder. Returns 0 when worklets isn't
+  // linked or the holder doesn't wrap a worklet runtime.
+  static jlong resolveUIRuntimePointer(
+    jni::alias_ref<jni::JClass> clazz,
+    jni::alias_ref<JavaScriptObject::javaobject> uiRuntimeHolder
   ) noexcept;
 };
 
