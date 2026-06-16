@@ -32,7 +32,7 @@ export default (program: Command) => {
   program
     .command('prebuild-packages [packageNames...]')
     .description(
-      'Generates `.xcframework` artifacts for iOS packages. If no package names are provided, discovers all packages with spm.config.json.'
+      'Generates `.xcframework` artifacts for iOS packages. If no package names are provided, builds the default distributed set; pass --all-packages to build every package with an spm.config.json.'
     )
     .alias('prebuild')
     .option(
@@ -92,6 +92,11 @@ export default (program: Command) => {
     .option(
       '--external-only',
       'Build only external (third-party) packages. Implies --include-external.',
+      false
+    )
+    .option(
+      '--all-packages',
+      'When no package names are given, build every Expo package with an spm.config.json instead of only the default distributed set.',
       false
     )
     .option(
