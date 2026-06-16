@@ -40,7 +40,7 @@
     "@expo/styleguide-base": "^1.0.1",
     "@expo/ui": "workspace:*",
     "@expo/vector-icons": "^15.0.2",
-    "@lottiefiles/dotlottie-react": "^0.10.1",
+    "@lottiefiles/dotlottie-react": "^0.13.5",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "8.6.0",
