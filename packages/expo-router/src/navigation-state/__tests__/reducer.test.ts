@@ -77,6 +77,13 @@ describe('primitive ops', () => {
     expect(after).toBe(before);
   });
 
+  it('setIndex to the current index is identity (referential bail-out)', () => {
+    const before = state(homeStack(['index', 'list'], 1));
+    expect(
+      reduce(before, { ops: [{ type: 'setIndex', target: 'home.stack', index: 1 }], source: 'js' })
+    ).toBe(before);
+  });
+
   it('setIndex clamps out-of-range values to the structural bounds', () => {
     const before = state(homeStack(['index', 'list'], 0));
     expect(

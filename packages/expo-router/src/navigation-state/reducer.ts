@@ -29,8 +29,10 @@ function applyToNode(node: NavNode, op: PrimitiveOp): NavNode {
       if (routes.length === node.routes.length) return node; // absent target → identity (P-7)
       return { ...node, routes, index: clampIndex(node.index, routes.length) };
     }
-    case 'setIndex':
-      return { ...node, index: clampIndex(op.index, node.routes.length) };
+    case 'setIndex': {
+      const index = clampIndex(op.index, node.routes.length);
+      return index === node.index ? node : { ...node, index }; // identity when unchanged → bail-out
+    }
   }
 }
 

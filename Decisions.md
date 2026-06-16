@@ -258,6 +258,26 @@ Known limitations / deferred to integration (documented, no consumer this sessio
   fix is a `localInput` (focus-order) parameter on `BehaviorStrategy.resolve` (the channel P-8 named);
   do it in Phase 3 so both are delegated symmetrically.
 
+### P-15 — Forward navigation (`resolveNavigate`) review outcomes
+*(3 fresh agents: coverage, test-quality+architecture, minimalism)*
+
+`navigate(path)` = hydrate the target → diff against current along the target's focused path → ops
+via the seam (RFC scenarios 3/4). Confirmed/clarified by review:
+- **Sibling navigation pushes (history-preserving), not replaces** — that is correct `navigate`
+  semantics (a route absent from the stack is pushed); `replace` is a distinct, deferred action.
+  Pinned with a test.
+- **Known limit, documented + tested:** routes are matched by **name only**, so re-navigating to a
+  same-named route with different params focuses the existing one **without** updating params — needs
+  the deferred `replace` primitive (Decisions P-12). A `KNOWN LIMIT` test pins the current behavior.
+- **Absolute-only seam:** the target is hydrated from root, so relative/navigator scopes (D7) must
+  resolve to an absolute path upstream. Documented.
+- **Reducer `setIndex` no-op guard** added (identity when index unchanged) so a redundant `setIndex`
+  (emitted when focusing the already-focused tab) preserves referential identity for React bail-out;
+  directly tested.
+- The "no-op navigation" test was renamed to reflect that it proves the **reducer absorbs** redundant
+  ops (not that the resolver emits none); the refocus test now also asserts the focused tab's stack
+  is untouched.
+
 Relationship: this module is the **global state backend** (the whole-app nested tree:
 `NavNode` with `child`, `index`). `standard-navigation/` is the **per-navigator render contract**
 (a flat `{index, routes:[{key,name,params,href}]}` slice for *one* navigator level). They are
