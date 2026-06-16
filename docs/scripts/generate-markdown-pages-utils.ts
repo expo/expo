@@ -323,6 +323,39 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       });
   });
 
+  main.find('[data-md="collapsible"]').each((_, el) => {
+    const $details = $(el);
+    const $summary = $details.children('summary').first();
+    const $label = $summary.find('[data-text="true"]').first();
+    const summaryText = ($label.length ? $label : $summary).text().replace(/\s+/g, ' ').trim();
+    if (summaryText) {
+      $summary.replaceWith(`<h4>${summaryText}</h4>`);
+    } else {
+      $summary.remove();
+    }
+    $details.replaceWith($details.contents());
+  });
+
+  main.find('[data-md="prerequisites"]').each((_, el) => {
+    const $details = $(el);
+    const $summary = $details.children('summary').first();
+    $summary.find('[data-md="skip"]').remove();
+    const headingText = $summary.text().replace(/\s+/g, ' ').trim();
+    if (headingText) {
+      $summary.replaceWith(`<h4>${headingText}</h4>`);
+    } else {
+      $summary.remove();
+    }
+    $details.find('[data-md="requirement-title"]').each((_, title) => {
+      const $title = $(title);
+      const titleText = $title.text().replace(/\s+/g, ' ').trim();
+      if (titleText) {
+        $title.replaceWith(`<h5>${titleText}</h5>`);
+      }
+    });
+    $details.replaceWith($details.contents());
+  });
+
   // Remove interactive/decorative elements
   main.find('button').remove();
   main.find('style').remove();

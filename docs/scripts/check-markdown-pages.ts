@@ -187,6 +187,9 @@ if (integrationMd === null) {
     ['first tab content', 'md-test-tab-one-pkg'],
     ['second tab label', 'md-test-tab-two-label'],
     ['second tab content', 'md-test-tab-two-pkg'],
+    ['collapsible summary heading', '#### md-test-collapsible-summary'],
+    ['requirement title heading', '##### md-test-requirement-title'],
+    ['requirement body', 'md-test-requirement-body'],
   ];
   for (const [label, text] of mustContain) {
     if (!integrationMd.includes(text)) {

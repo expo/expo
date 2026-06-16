@@ -917,12 +917,15 @@ describe('checkPage (check-markdown-pages)', () => {
 });
 
 describe('collapsible/details', () => {
-  it('converts collapsible with data-md="collapsible"', () => {
+  it('promotes the collapsible summary to an h4 heading and keeps the body', () => {
     const html = `<main>
       <h1>Guide</h1>
       <details data-md="collapsible">
         <summary>
+          <div><svg class="icon-sm"></svg></div>
           <span class="font-medium" data-text="true">How to configure</span>
+          <a href="#how-to-configure" aria-label="Permalink"><svg></svg></a>
+          <div></div>
         </summary>
         <div class="overflow-hidden">
           <div class="px-5 py-4">
@@ -932,8 +935,51 @@ describe('collapsible/details', () => {
       </details>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('How to configure');
+    expect(md).toContain('#### How to configure');
     expect(md).toContain('Configuration details here.');
+  });
+});
+
+describe('prerequisites', () => {
+  it('emits a heading and a per-requirement h5, dropping the requirement counter', () => {
+    const html = `<main>
+      <h1>Install</h1>
+      <details data-md="prerequisites" id="prerequisites">
+        <summary>
+          <div class="flex items-center">
+            <div><svg></svg></div>
+            <div class="flex items-center gap-2"><svg></svg><p>Prerequisites</p></div>
+            <a aria-label="Permalink"><svg></svg></a>
+          </div>
+          <div><p class="text-sm text-secondary" data-md="skip">2 requirements</p></div>
+        </summary>
+        <div class="overflow-hidden">
+          <div>
+            <div class="flex p-5">
+              <p class="font-medium" data-md="skip">1.</p>
+              <div class="flex-1">
+                <div class="font-medium" data-md="requirement-title">Install dependencies</div>
+                <div><p>Run the install command.</p></div>
+              </div>
+            </div>
+            <div class="flex p-5">
+              <p class="font-medium" data-md="skip">2.</p>
+              <div class="flex-1">
+                <div class="font-medium" data-md="requirement-title">Set up environment</div>
+                <div><p>Configure your machine.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('#### Prerequisites');
+    expect(md).toContain('##### Install dependencies');
+    expect(md).toContain('##### Set up environment');
+    expect(md).toContain('Run the install command.');
+    expect(md).toContain('Configure your machine.');
+    expect(md).not.toContain('2 requirements');
   });
 });
 
