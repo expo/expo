@@ -140,7 +140,8 @@ private fun ButtonProps.toGlanceContentColor(defaultColor: ColorProvider): Color
 }
 
 private fun ReadableMap.textFromTextNode(): String? {
-  return when (if (hasKey("type")) getString("type") else null) {
+  val type = if (hasKey("type")) getString("type") else null
+  return when (type) {
     "TextView" -> propsMap()?.textContent()
     "react.fragment" -> children().textContent()
     else -> null
@@ -153,7 +154,7 @@ private fun ReadableMap.textContent(): String? {
 }
 
 private fun ReadableMap.spansText(): String? {
-  if (!hasKey("spans") || isNull("spans") || getType("spans") != ReadableType.Array) {
+  if (!hasKey("spans") || getType("spans") != ReadableType.Array) {
     return null
   }
 
@@ -165,7 +166,7 @@ private fun ReadableMap.spansText(): String? {
 private fun ReadableArray.spansText(): String {
   return buildString {
     for (index in 0 until size()) {
-      if (!isNull(index) && getType(index) == ReadableType.Map) {
+      if (getType(index) == ReadableType.Map) {
         getMap(index)?.let { span ->
           append(span.spansText() ?: span.stringValue("text").orEmpty())
         }
@@ -189,7 +190,7 @@ private fun ReadableMap.stringValue(key: String): String? {
 
 private fun ReadableMap.children(): List<ReadableMap> {
   val props = propsMap() ?: return emptyList()
-  if (!props.hasKey("children") || props.isNull("children")) {
+  if (!props.hasKey("children")) {
     return emptyList()
   }
 
@@ -203,7 +204,7 @@ private fun ReadableMap.children(): List<ReadableMap> {
 private fun ReadableArray.children(): List<ReadableMap> {
   return buildList {
     for (index in 0 until size()) {
-      if (!isNull(index) && getType(index) == ReadableType.Map) {
+      if (getType(index) == ReadableType.Map) {
         getMap(index)?.let(::add)
       }
     }

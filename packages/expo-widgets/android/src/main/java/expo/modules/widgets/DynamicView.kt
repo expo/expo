@@ -35,7 +35,8 @@ import expo.modules.widgets.ui.TextView
 
 @Composable
 internal fun DynamicView(node: ReadableMap) {
-  when (if (node.hasKey("type")) node.getString("type") else null) {
+  val type = if (node.hasKey("type")) node.getString("type") else null
+  when (type) {
     "Button" -> ButtonView(node.props<ButtonProps>(), node.children())
     "FilledTonalButton" -> FilledTonalButtonView(node.props<ButtonProps>(), node.children())
     "OutlinedButton" -> OutlinedButtonView(node.props<ButtonProps>(), node.children())
@@ -93,7 +94,7 @@ private fun ReadableMap.children(): List<ReadableMap> {
 private fun ReadableArray.children(): List<ReadableMap> {
   return buildList {
     for (index in 0 until size()) {
-      if (!isNull(index) && getType(index) == ReadableType.Map) {
+      if (getType(index) == ReadableType.Map) {
         getMap(index)?.let(::add)
       }
     }
