@@ -442,8 +442,11 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
 
   /**
    * Enable using precompiled Expo modules (XCFrameworks) instead of building from source.
-   * When enabled, sets the `EXPO_USE_PRECOMPILED_MODULES` environment variable to `1`
-   * during `pod install`, which causes matching modules to be linked as vendored frameworks.
+   * Sets the `EXPO_USE_PRECOMPILED_MODULES` environment variable during `pod install`
+   * — `true` exports `1` (modules linked as vendored frameworks), `false` exports `0`
+   * which overrides any ambient default-on env (e.g. EAS Build pre-exports `=1`),
+   * so an explicit opt-out reliably builds from source. Use `false` when you need
+   * `patch-package` patches to a module's native sources to land in the binary.
    *
    * @default true
    */
