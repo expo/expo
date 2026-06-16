@@ -39,10 +39,10 @@ private struct MacroEventTests {
 
   @Test
   func `emits an event with a payload to a JS listener`() async throws {
-    try runtime.eval([
-      "globalThis.result = null",
-      "expo.modules.MacroEmitter.addListener('progress', payload => { globalThis.result = payload.percent })"
-    ].joined(separator: "\n"))
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('progress', payload => { globalThis.result = payload.percent })
+      """)
 
     module.onProgress(ProgressEvent(percent: 75))
 
@@ -51,10 +51,10 @@ private struct MacroEventTests {
 
   @Test
   func `emits a no-payload event to a JS listener`() async throws {
-    try runtime.eval([
-      "globalThis.result = 0",
-      "expo.modules.MacroEmitter.addListener('done', () => { globalThis.result = 1 })"
-    ].joined(separator: "\n"))
+    try runtime.eval("""
+      globalThis.result = 0
+      expo.modules.MacroEmitter.addListener('done', () => { globalThis.result = 1 })
+      """)
 
     module.onDone()
 

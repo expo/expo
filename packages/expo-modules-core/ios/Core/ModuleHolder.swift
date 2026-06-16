@@ -70,10 +70,18 @@ public final class ModuleHolder {
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
     let userDefinition = module.definition()
     let synthesized = module._synthesizedDefinition()
-    if synthesized.isEmpty {
-      return userDefinition
+    let definition = synthesized.isEmpty
+      ? userDefinition
+      : ModuleDefinition(definitions: synthesized + userDefinition.rawDefinitions)
+
+    // A macro module describes its name through the synthesized `_jsName` rather than a `Name(…)`
+    // entry, so fill it in here. The definition's name backs `__expo_module_name__` and the view
+    // prototype keys, which legacy event-emitter and view-manager compatibility paths look up by
+    // the registered module name — they'd otherwise key off an empty string.
+    if definition.name.isEmpty {
+      definition.name = type(of: module)._jsName
     }
-    return ModuleDefinition(definitions: synthesized + userDefinition.rawDefinitions)
+    return definition
   }
 
   // MARK: Constants
