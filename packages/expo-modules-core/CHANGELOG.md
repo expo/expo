@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Resolve the worklet UI runtime through the `react-native-worklets` stable API (`StableApi.h`) from its UI runtime holder; `installOnUIRuntime` now takes the holder from `getUIRuntimeHolder()`. ([#46922](https://github.com/expo/expo/pull/46922) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ## 56.0.17 — 2026-06-15
 
 ### 🐛 Bug fixes
