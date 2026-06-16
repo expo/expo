@@ -34,6 +34,7 @@ export function ListItem(props: ListItemProps) {
     trailing: trailingProp,
     supportingText,
     testID,
+    ref,
   } = props;
   const slots = extractListItemSlots(children);
   const leading = slots.leading ?? leadingProp;
@@ -41,7 +42,7 @@ export function ListItem(props: ListItemProps) {
   const supporting = slots.supporting ?? supportingText;
 
   return (
-    <Button onPress={onPress} modifiers={[buttonStyle('plain')]} testID={testID}>
+    <Button onPress={onPress} modifiers={[buttonStyle('plain')]} testID={testID} {...{ ref }}>
       <HStack alignment="center" spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
         {wrapStrings(leading)}
         <VStack alignment="leading" spacing={2}>

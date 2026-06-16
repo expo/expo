@@ -21,6 +21,7 @@ export function Button({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: ButtonProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -37,7 +38,11 @@ export function Button({
 
   const ButtonComponent = variantComponentMap[variant];
 
-  return <ButtonComponent {...commonProps}>{content}</ButtonComponent>;
+  return (
+    <ButtonComponent {...commonProps} {...{ ref }}>
+      {content}
+    </ButtonComponent>
+  );
 }
 
 const variantComponentMap: Record<

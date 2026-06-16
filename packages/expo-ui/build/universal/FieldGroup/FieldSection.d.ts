@@ -5,5 +5,5 @@ import type { FieldSectionProps } from './types';
  * or nest a `<FieldGroup.SectionHeader>` / `<FieldGroup.SectionFooter>`
  * child for fully custom header / footer content.
  */
-export declare function FieldSection({ children, title, style, onAppear, onDisappear, hidden, testID, titleUppercase, }: FieldSectionProps): import("react/jsx-runtime").JSX.Element;
+export declare function FieldSection({ children, title, style, onAppear, onDisappear, hidden, testID, titleUppercase, ref, }: FieldSectionProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=FieldSection.d.ts.map

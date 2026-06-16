@@ -33,11 +33,13 @@ export function FieldGroup({
   onDisappear,
   hidden = false,
   testID,
+  ref,
 }: FieldGroupProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
   return (
     <ScrollView
+      ref={ref}
       style={[styles.container, style, hidden && styles.hidden]}
       contentContainerStyle={styles.contentContainer}
       testID={testID}>

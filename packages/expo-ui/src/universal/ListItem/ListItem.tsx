@@ -24,6 +24,7 @@ export function ListItem(props: ListItemProps) {
     trailing: trailingProp,
     supportingText,
     testID,
+    ref,
   } = props;
 
   const isDark = useColorScheme() === 'dark';
@@ -33,7 +34,7 @@ export function ListItem(props: ListItemProps) {
   const supporting = slots.supporting ?? supportingText;
 
   return (
-    <Pressable onPress={onPress} style={styles.row} testID={testID}>
+    <Pressable ref={ref} onPress={onPress} style={styles.row} testID={testID}>
       {leading != null ? <View style={styles.slot}>{leading}</View> : null}
       <View style={styles.main}>
         <Text style={isDark && styles.darkText}>{slots.headline}</Text>

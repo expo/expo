@@ -48,6 +48,7 @@ export function Text({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: TextProps) {
   // Build text-specific modifiers before the universal ones
   const textModifiers: ModifierConfig[] = [];
@@ -103,7 +104,7 @@ export function Text({
   const modifiers = [...omitUserOverridden(textModifiers, extraModifiers), ...universalModifiers];
 
   return (
-    <SwiftUIText modifiers={modifiers} testID={testID}>
+    <SwiftUIText modifiers={modifiers} testID={testID} {...{ ref }}>
       {children}
     </SwiftUIText>
   );

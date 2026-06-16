@@ -3,13 +3,22 @@ import { testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
 
 import type { SwitchProps } from './types';
 
-export function Switch({ value, onValueChange, label, disabled, testID, modifiers }: SwitchProps) {
+export function Switch({
+  value,
+  onValueChange,
+  label,
+  disabled,
+  testID,
+  modifiers,
+  ref,
+}: SwitchProps) {
   const toggle = (
     <ComposeSwitch
       value={value}
       onCheckedChange={disabled ? undefined : onValueChange}
       enabled={!disabled}
       modifiers={[...(modifiers ?? []), ...(testID ? [testIDModifier(testID)] : [])]}
+      {...{ ref }}
     />
   );
 

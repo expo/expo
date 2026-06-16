@@ -33,6 +33,7 @@ export function BottomSheet({
   showDragIndicator = true,
   snapPoints,
   testID,
+  ref,
 }: BottomSheetProps) {
   const isDark = useColorScheme() === 'dark';
   const vaulSnapPoints = snapPoints?.length ? snapPoints.map(snapPointToVaul) : undefined;
@@ -60,7 +61,7 @@ export function BottomSheet({
           {/* Radix Dialog requires a title for a11y; render visually-hidden. */}
           <Drawer.Title style={visuallyHiddenStyle}>Bottom sheet</Drawer.Title>
           {showDragIndicator && <Drawer.Handle />}
-          <div style={innerStyle} data-testid={testID}>
+          <div ref={ref} style={innerStyle} data-testid={testID}>
             {children}
           </div>
         </Drawer.Content>

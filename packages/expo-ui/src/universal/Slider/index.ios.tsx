@@ -13,6 +13,7 @@ export function Slider({
   disabled,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: SliderProps) {
   const modifiers: ModifierConfig[] = [];
   if (disabled) modifiers.push(disabledMod(true));
@@ -27,6 +28,7 @@ export function Slider({
       step={step}
       modifiers={modifiers}
       testID={testID}
+      {...{ ref }}
     />
   );
 }

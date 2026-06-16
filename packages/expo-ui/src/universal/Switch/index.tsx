@@ -67,7 +67,14 @@ const styles = StyleSheet.create({
 /**
  * A toggle control that switches between on and off states.
  */
-export function Switch({ value, onValueChange, label, disabled = false, testID }: SwitchProps) {
+export function Switch({
+  value,
+  onValueChange,
+  label,
+  disabled = false,
+  testID,
+  ref,
+}: SwitchProps) {
   const { focusVisible, onFocus, onBlur } = useFocusVisible();
 
   return (
@@ -76,6 +83,7 @@ export function Switch({ value, onValueChange, label, disabled = false, testID }
       role="label"
       style={[styles.view, disabled && styles.viewDisabled]}>
       <Input
+        ref={ref}
         type="checkbox"
         role="switch"
         onFocus={onFocus}

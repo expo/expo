@@ -26,6 +26,7 @@ export function Spacer({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: SpacerProps) {
   const baseModifiers = transformToModifiers(
     style,
@@ -34,11 +35,15 @@ export function Spacer({
   );
 
   if (flexible) {
-    return <SwiftUISpacer minLength={size} modifiers={baseModifiers} testID={testID} />;
+    return (
+      <SwiftUISpacer minLength={size} modifiers={baseModifiers} testID={testID} {...{ ref }} />
+    );
   }
 
   const sizeModifier = size != null ? [frame({ width: size, height: size })] : [];
-  return <SwiftUISpacer modifiers={[...sizeModifier, ...baseModifiers]} testID={testID} />;
+  return (
+    <SwiftUISpacer modifiers={[...sizeModifier, ...baseModifiers]} testID={testID} {...{ ref }} />
+  );
 }
 
 export * from './types';

@@ -102,6 +102,7 @@ export function Slider({
   step,
   disabled = false,
   testID,
+  ref,
 }: SliderProps) {
   const pct = ((value - min) / (max - min)) * 100;
 
@@ -112,6 +113,7 @@ export function Slider({
       </style>
 
       <Input
+        ref={ref}
         type="range"
         dataSet={{ expoUiSlider: '' }}
         value={value}

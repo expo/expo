@@ -22,6 +22,7 @@ export function Text({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: TextProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -47,7 +48,8 @@ export function Text({
       color={textStyle?.color}
       maxLines={numberOfLines}
       style={Object.keys(composeTextStyle).length > 0 ? composeTextStyle : undefined}
-      modifiers={modifiers}>
+      modifiers={modifiers}
+      {...{ ref }}>
       {children}
     </ComposeText>
   );

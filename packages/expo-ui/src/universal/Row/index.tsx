@@ -41,6 +41,7 @@ export function Row({
   disabled = false,
   hidden = false,
   testID,
+  ref,
 }: RowProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -48,6 +49,7 @@ export function Row({
 
   return (
     <Container
+      ref={ref}
       onPress={onPress}
       disabled={disabled}
       testID={testID}

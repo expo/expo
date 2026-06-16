@@ -29,6 +29,7 @@ export function FieldSection({
   testID,
   titleUppercase = false,
   modifiers: extraModifiers,
+  ref,
 }: FieldSectionProps) {
   useUniversalLifecycle(onAppear, onDisappear);
   const colors = useMaterialColors();
@@ -56,7 +57,7 @@ export function FieldSection({
     ) : null);
 
   return (
-    <ComposeColumn verticalArrangement={{ spacedBy: 4 }} modifiers={outerModifiers}>
+    <ComposeColumn verticalArrangement={{ spacedBy: 4 }} modifiers={outerModifiers} {...{ ref }}>
       {headerNode ? (
         <ComposeColumn modifiers={[padding(16, 0, 16, 8)]}>{headerNode}</ComposeColumn>
       ) : null}

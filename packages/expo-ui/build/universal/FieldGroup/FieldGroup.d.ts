@@ -6,5 +6,5 @@ import type { FieldGroupProps } from './types';
  * non-section children are automatically grouped into an implicit section,
  * matching SwiftUI `Form` behavior.
  */
-export declare function FieldGroup({ children, style, onAppear, onDisappear, hidden, testID, }: FieldGroupProps): import("react/jsx-runtime").JSX.Element;
+export declare function FieldGroup({ children, style, onAppear, onDisappear, hidden, testID, ref, }: FieldGroupProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=FieldGroup.d.ts.map

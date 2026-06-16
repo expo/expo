@@ -3,6 +3,6 @@ import type { SpacerProps } from './types';
  * A layout spacer that produces empty space between siblings in a
  * `Row` or `Column`.
  */
-export declare function Spacer({ size, flexible, style, onAppear, onDisappear, hidden, testID, }: SpacerProps): import("react/jsx-runtime").JSX.Element;
+export declare function Spacer({ size, flexible, style, onAppear, onDisappear, hidden, testID, ref, }: SpacerProps): import("react/jsx-runtime").JSX.Element;
 export * from './types';
 //# sourceMappingURL=index.d.ts.map

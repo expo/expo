@@ -11,6 +11,7 @@ export function Checkbox({
   disabled,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: CheckboxProps) {
   const modifiers: ModifierConfig[] = [];
   if (disabled) modifiers.push(disabledMod(true));
@@ -23,6 +24,7 @@ export function Checkbox({
       label={label}
       modifiers={modifiers}
       testID={testID}
+      {...{ ref }}
     />
   );
 }

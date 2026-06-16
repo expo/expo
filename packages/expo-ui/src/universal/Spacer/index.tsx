@@ -20,11 +20,13 @@ export function Spacer({
   onDisappear,
   hidden = false,
   testID,
+  ref,
 }: SpacerProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
   return (
     <View
+      ref={ref}
       testID={testID}
       style={[
         flexible && styles.flexible,

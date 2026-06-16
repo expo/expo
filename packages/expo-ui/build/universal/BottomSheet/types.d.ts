@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import type { ModifierConfig } from '../../types';
 /**
  * A snap point describing one of the heights a [`BottomSheet`](#bottomsheet) can rest at.
@@ -56,5 +57,11 @@ export interface BottomSheetProps {
      * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
      */
     modifiers?: ModifierConfig[];
+    /**
+     * Forwarded to the bottom sheet's content container on each platform. An escape
+     * hatch for advanced cases that need the native handle; not part of the public API.
+     * @hidden
+     */
+    ref?: Ref<any>;
 }
 //# sourceMappingURL=types.d.ts.map

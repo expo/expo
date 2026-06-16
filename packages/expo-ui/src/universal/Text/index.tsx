@@ -24,6 +24,7 @@ export function Text({
   disabled = false,
   hidden = false,
   testID,
+  ref,
 }: TextProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -31,6 +32,7 @@ export function Text({
 
   return (
     <RNText
+      ref={ref}
       numberOfLines={numberOfLines}
       onPress={onPress}
       disabled={disabled}

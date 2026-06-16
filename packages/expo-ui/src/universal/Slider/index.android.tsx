@@ -12,6 +12,7 @@ export function Slider({
   disabled,
   testID,
   modifiers,
+  ref,
 }: SliderProps) {
   // Android `steps` = number of discrete intervals between min and max.
   // Universal `step` = increment size. Convert: steps = (max - min) / step - 1.
@@ -36,6 +37,7 @@ export function Slider({
       steps={steps}
       enabled={!disabled}
       modifiers={[...(modifiers ?? []), ...(testID ? [testIDModifier(testID)] : [])]}
+      {...{ ref }}
     />
   );
 }

@@ -17,11 +17,13 @@ export function Collapsible({
   label = '',
   labelStyle,
   children,
+  ref,
 }: CollapsibleProps) {
   const isDark = useColorScheme() === 'dark';
 
   return (
     <Details
+      ref={ref}
       open={isOpen}
       onToggle={(event: SyntheticEvent<HTMLDetailsElement>) => {
         const nextOpen = event.currentTarget.open;

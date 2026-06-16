@@ -66,6 +66,7 @@ export function FieldSection({
   hidden,
   testID,
   titleUppercase = false,
+  ref,
 }: FieldSectionProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -78,7 +79,7 @@ export function FieldSection({
     ) : null);
 
   return (
-    <View style={[style, hidden && styles.hidden]} testID={testID}>
+    <View ref={ref} style={[style, hidden && styles.hidden]} testID={testID}>
       {headerNode ? <View style={styles.headerContainer}>{headerNode}</View> : null}
       {rows.length > 0 ? (
         <View style={styles.card}>

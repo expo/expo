@@ -32,6 +32,7 @@ export function Icon({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: IconProps) {
   const systemName = resolveIosName(name);
   const modifiers = transformToModifiers(
@@ -47,6 +48,7 @@ export function Icon({
       color={color}
       onPress={onPress}
       modifiers={modifiers}
+      {...{ ref }}
     />
   );
 }

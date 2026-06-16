@@ -24,6 +24,7 @@ export function BottomSheet({
   snapPoints,
   testID,
   modifiers,
+  ref,
 }: BottomSheetProps) {
   const presentationModifiers: ModifierConfig[] = [
     frame({ maxWidth: Infinity, alignment: 'topLeading' }),
@@ -46,7 +47,9 @@ export function BottomSheet({
         }}
         fitToContents={!snapPoints || snapPoints.length === 0}
         testID={testID}>
-        <Group modifiers={presentationModifiers}>{children}</Group>
+        <Group modifiers={presentationModifiers} {...{ ref }}>
+          {children}
+        </Group>
       </SwiftUIBottomSheet>
     </Host>
   );

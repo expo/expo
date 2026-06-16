@@ -63,7 +63,14 @@ const styles = StyleSheet.create({
 /**
  * A toggle control that represents a checked or unchecked state.
  */
-export function Checkbox({ value, onValueChange, label, disabled = false, testID }: CheckboxProps) {
+export function Checkbox({
+  value,
+  onValueChange,
+  label,
+  disabled = false,
+  testID,
+  ref,
+}: CheckboxProps) {
   const { focusVisible, onFocus, onBlur } = useFocusVisible();
 
   return (
@@ -72,6 +79,7 @@ export function Checkbox({ value, onValueChange, label, disabled = false, testID
       role="label"
       style={[styles.view, disabled && styles.viewDisabled]}>
       <Input
+        ref={ref}
         type="checkbox"
         focusable
         onFocus={onFocus}

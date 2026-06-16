@@ -20,11 +20,13 @@ export function RNHostView({
   hidden = false,
   testID,
   matchContents = false,
+  ref,
 }: RNHostViewProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
   return (
     <View
+      ref={ref}
       testID={testID}
       style={[
         matchContents ? styles.matchContents : styles.fillParent,

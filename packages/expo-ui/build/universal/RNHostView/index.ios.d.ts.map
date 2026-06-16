@@ -1,1 +1,1 @@
-{"version":3,"file":"index.ios.d.ts","sourceRoot":"","sources":["../../../src/universal/RNHostView/index.ios.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,SAAS,CAAC;AAE/C;;GAEG;AACH,wBAAgB,UAAU,CAAC,EAAE,QAAQ,EAAE,aAAa,EAAE,EAAE,eAAe,2CAEtE;AAED,cAAc,SAAS,CAAC"}
+{"version":3,"file":"index.ios.d.ts","sourceRoot":"","sources":["../../../src/universal/RNHostView/index.ios.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,SAAS,CAAC;AAE/C;;GAEG;AACH,wBAAgB,UAAU,CAAC,EAAE,QAAQ,EAAE,aAAa,EAAE,GAAG,EAAE,EAAE,eAAe,2CAM3E;AAED,cAAc,SAAS,CAAC"}

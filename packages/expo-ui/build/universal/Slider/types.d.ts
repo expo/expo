@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import type { ModifierConfig } from '../../types';
 /**
  * Props for the [`Slider`](#slider) component.
@@ -38,5 +39,12 @@ export interface SliderProps {
      * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
      */
     modifiers?: ModifierConfig[];
+    /**
+     * Forwarded to the underlying native view: the SwiftUI view on iOS, the Jetpack
+     * Compose view on Android, or the rendered React Native element on web. An escape
+     * hatch for advanced cases that need the native handle; not part of the public API.
+     * @hidden
+     */
+    ref?: Ref<any>;
 }
 //# sourceMappingURL=types.d.ts.map

@@ -6,9 +6,9 @@ import type { ListProps } from './types';
  * A vertical container of rows.
  * Typically populated with [`ListItem`](#listitem) children.
  */
-export function List({ children, testID }: ListProps) {
+export function List({ children, testID, ref }: ListProps) {
   return (
-    <View style={styles.container} testID={testID}>
+    <View ref={ref} style={styles.container} testID={testID}>
       {children}
     </View>
   );
