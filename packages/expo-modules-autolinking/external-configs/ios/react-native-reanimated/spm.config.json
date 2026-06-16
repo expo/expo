@@ -129,8 +129,10 @@
                     ],
                     "fileMapping": [
                         { "from": "*.h", "to": "reanimated/apple/{filename}", "type": "header" },
+                        { "from": "CSS/*.h", "to": "reanimated/apple/CSS/{filename}", "type": "header" },
                         { "from": "keyboardObserver/*.h", "to": "reanimated/apple/keyboardObserver/{filename}", "type": "header" },
                         { "from": "native/*.h", "to": "reanimated/apple/native/{filename}", "type": "header" },
+                        { "from": "pseudoSelectors/*.h", "to": "reanimated/apple/pseudoSelectors/{filename}", "type": "header" },
                         { "from": "sensor/*.h", "to": "reanimated/apple/sensor/{filename}", "type": "header" }
                     ]
                 }
