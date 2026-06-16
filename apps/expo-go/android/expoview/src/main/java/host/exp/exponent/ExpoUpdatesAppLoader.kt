@@ -152,11 +152,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }.toMap()
 
     val configuration = UpdatesConfiguration(null, configMap)
-    val sdkVersionsList = listOf(Constants.SDK_VERSION, RNObject.UNVERSIONED).flatMap {
-      listOf(it, "exposdk:$it")
-    }
     val selectionPolicy = SelectionPolicy(
-      ExpoGoLauncherSelectionPolicyFilterAware(sdkVersionsList),
+      ExpoGoLauncherSelectionPolicyFilterAware(Constants.SDK_VERSION),
       LoaderSelectionPolicyFilterAware(configuration),
       ReaperSelectionPolicyDevelopmentClient()
     )
@@ -366,16 +363,10 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }
 
   private fun isValidSdkVersion(sdkVersion: String?): Boolean {
-    if (sdkVersion == null) {
-      return false
-    }
-    if (RNObject.UNVERSIONED == sdkVersion) {
-      return true
-    }
-    if (Constants.SDK_VERSION == sdkVersion) {
-      return true
-    }
-    return false
+    // Compare by SDK major version rather than the full version string: Expo Go supports a
+    // single SDK major and projects always publish X.0.0, while the client's own version
+    // (Constants.SDK_VERSION) may differ in its patch (e.g. a 56.0.1 client serving SDK 56.0.0).
+    return ABIVersion.isCompatibleSdkVersion(Constants.SDK_VERSION, sdkVersion)
   }
 
   private fun formatExceptionForIncompatibleSdk(sdkVersion: String?): ManifestException {

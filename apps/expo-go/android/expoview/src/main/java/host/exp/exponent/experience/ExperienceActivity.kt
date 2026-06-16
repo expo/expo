@@ -34,6 +34,7 @@ import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
+import host.exp.exponent.ABIVersion
 import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
@@ -501,19 +502,16 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     sdkVersion = manifest.getExpoGoSDKVersion()
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
-    // to point to the unversioned code in ReactAndroid.
-    if (Constants.SDK_VERSION == sdkVersion) {
+    // to point to the unversioned code in ReactAndroid. Compatibility is by SDK major version, so a
+    // client whose patch differs from the supported SDK version (e.g. 56.0.1 serving SDK 56.0.0)
+    // still maps a matching project to the unversioned code.
+    if (ABIVersion.isCompatibleSdkVersion(Constants.SDK_VERSION, sdkVersion)) {
       sdkVersion = RNObject.UNVERSIONED
-    }
-
-    if (RNObject.UNVERSIONED != sdkVersion) {
-      val isValidVersion = sdkVersion == Constants.SDK_VERSION
-      if (!isValidVersion) {
-        KernelProvider.instance.handleError(
-          sdkVersion + " is not a valid SDK version. Only ${Constants.SDK_VERSION} is supported."
-        )
-        return
-      }
+    } else {
+      KernelProvider.instance.handleError(
+        sdkVersion + " is not a valid SDK version. Only ${Constants.SDK_VERSION} is supported."
+      )
+      return
     }
 
     soLoaderInit()

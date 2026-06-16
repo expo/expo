@@ -14,6 +14,7 @@ import expo.modules.apploader.AppLoaderProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.manifests.core.Manifest
+import host.exp.exponent.ABIVersion
 import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
@@ -118,20 +119,17 @@ class InternalHeadlessAppLoader(private val context: Context) :
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl!!))
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
-    // to point to the unversioned code in ReactAndroid.
-    if (Constants.SDK_VERSION == sdkVersion) {
+    // to point to the unversioned code in ReactAndroid. Compatibility is by SDK major version, so a
+    // client whose patch differs from the supported SDK version (e.g. 56.0.1 serving SDK 56.0.0)
+    // still maps a matching project to the unversioned code.
+    if (ABIVersion.isCompatibleSdkVersion(Constants.SDK_VERSION, sdkVersion)) {
       sdkVersion = RNObject.UNVERSIONED
+    } else {
+      callback!!.onComplete(false, Exception("$sdkVersion is not a valid SDK version."))
+      return
     }
 
     detachSdkVersion = sdkVersion
-
-    if (RNObject.UNVERSIONED != sdkVersion) {
-      val isValidVersion = sdkVersion == Constants.SDK_VERSION
-      if (!isValidVersion) {
-        callback!!.onComplete(false, Exception("$sdkVersion is not a valid SDK version."))
-        return
-      }
-    }
 
     soLoaderInit()
 

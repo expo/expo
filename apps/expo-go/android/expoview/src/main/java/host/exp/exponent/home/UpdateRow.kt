@@ -11,15 +11,20 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import host.exp.exponent.ABIVersion
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
 
-private fun isUpdateCompatible(sdkVersion: String?): Boolean {
-  if (sdkVersion == null) return false
-  val expoGoMajorVersion = ExponentBuildConstants.TEMPORARY_SDK_VERSION.split(".").firstOrNull()
-  val updateMajorVersion = sdkVersion.split(".").firstOrNull()
-  return expoGoMajorVersion != null && expoGoMajorVersion == updateMajorVersion
+// [runtimeVersion] is an update's runtime version, which for Expo Go updates is prefixed, e.g.
+// "exposdk:56.0.0". [ABIVersion.isCompatibleSdkVersion] strips that prefix and compares by SDK
+// major version, so an update for the supported SDK is recognized as compatible regardless of the
+// prefix or the client's patch version.
+private fun isUpdateCompatible(runtimeVersion: String?): Boolean {
+  return ABIVersion.isCompatibleSdkVersion(
+    ExponentBuildConstants.TEMPORARY_SDK_VERSION,
+    runtimeVersion
+  )
 }
 
 private fun toExp(httpUrl: String): String {
