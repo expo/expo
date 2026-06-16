@@ -21,10 +21,13 @@ const registryMetroConfigPath = path.join(__dirname, '../layout-registry.metro.c
 async function main() {
   const projectRoot = path.resolve(possibleProjectRoot);
   const outputPath = path.resolve(projectRoot, registryOutput ?? defaultOutputPath);
+  const defaultConfigPath =
+    platform === 'android'
+      ? path.join(projectRoot, 'android', 'app', 'src', 'main', 'expo-widgets-layout-registry.config.json')
+      : path.join(projectRoot, 'ios', 'ExpoWidgetsTarget', 'ExpoWidgetsLayoutRegistry.config.json');
   const resolvedConfigPath = path.resolve(
     projectRoot,
-    configPath ??
-      path.join(projectRoot, 'ios', 'ExpoWidgetsTarget', 'ExpoWidgetsLayoutRegistry.config.json')
+    configPath ?? defaultConfigPath
   );
 
   await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });

@@ -12,10 +12,15 @@ version = '56.0.15'
 def expoWidgetsPackageDirFile = project.projectDir.parentFile
 def expoWidgetsPackageDir = expoWidgetsPackageDirFile.absolutePath
 def expoWidgetsProjectRoot = rootDir.absoluteFile.parentFile.absolutePath
+def expoWidgetsLayoutRegistryConfigFile = file("$expoWidgetsProjectRoot/android/app/src/main/expo-widgets-layout-registry.config.json")
 def expoWidgetsGeneratedResDir = objects.directoryProperty()
 expoWidgetsGeneratedResDir.set(layout.buildDirectory.dir("generated/expo-widgets/res"))
 def expoWidgetsBundleOutput = expoWidgetsGeneratedResDir
   .file("raw/expo_widgets_bundle.bundle")
+  .get()
+  .asFile
+def expoWidgetsLayoutRegistryOutput = expoWidgetsGeneratedResDir
+  .file("raw/expo_widgets_layout_registry.json")
   .get()
   .asFile
 
@@ -77,7 +82,7 @@ def generateExpoWidgetsBundle = tasks.register("generateExpoWidgetsBundle", Exec
   }
   inputs.file file("$expoWidgetsPackageDir/metro.config.js")
   inputs.file file("$expoWidgetsPackageDir/scripts/build-bundle.mjs")
-  outputs.dir(expoWidgetsGeneratedResDir)
+  outputs.file(expoWidgetsBundleOutput)
 
   def command = [
     *nodeExecutableAndArgs,
@@ -94,9 +99,42 @@ def generateExpoWidgetsBundle = tasks.register("generateExpoWidgetsBundle", Exec
   }
 }
 
+def generateExpoWidgetsLayoutRegistry = tasks.register("generateExpoWidgetsLayoutRegistry", Exec) {
+  description = "expo-widgets: Generate the Android widget layout registry resource."
+
+  inputs.dir project.fileTree(file("$expoWidgetsPackageDir/bundle")) {
+    exclude "build/**"
+  }
+  inputs.file file("$expoWidgetsPackageDir/layout-registry.metro.config.js")
+  inputs.file file("$expoWidgetsPackageDir/metro.config.js")
+  inputs.file file("$expoWidgetsPackageDir/scripts/build-layout-registry.mjs")
+  inputs.file file("$expoWidgetsPackageDir/bundle/layout-registry-entry.js")
+  inputs.file(expoWidgetsLayoutRegistryConfigFile).optional()
+  outputs.file(expoWidgetsLayoutRegistryOutput)
+
+  def command = [
+    *nodeExecutableAndArgs,
+    "$expoWidgetsPackageDir/scripts/build-layout-registry.mjs",
+    expoWidgetsProjectRoot,
+    "android",
+    expoWidgetsLayoutRegistryOutput.absolutePath
+  ]
+
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    commandLine("cmd", "/c", *command)
+  } else {
+    commandLine(*command)
+  }
+}
+
+def generateExpoWidgetsResources = tasks.register("generateExpoWidgetsResources") {
+  dependsOn(generateExpoWidgetsBundle, generateExpoWidgetsLayoutRegistry)
+  outputs.dir(expoWidgetsGeneratedResDir)
+}
+
 androidComponents {
   onVariants(selector().all()) { variant ->
-    variant.sources.res.addGeneratedSourceDirectory(generateExpoWidgetsBundle) {
+    variant.sources.res.addGeneratedSourceDirectory(generateExpoWidgetsResources) {
       expoWidgetsGeneratedResDir
     }
   }
