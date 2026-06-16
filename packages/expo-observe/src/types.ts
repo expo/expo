@@ -65,6 +65,12 @@ export type ObserveConfig = {
    * Opt in to per-integration behavior.
    */
   integrations?: ObserveIntegrationsConfig;
+  /**
+   * If this property is present, run a repeating dispatch loop with this interval in seconds.
+   * This allows a long-running process to flush pending metrics and logs without waiting for the app
+   * to go to background.
+   */
+  scheduledDispatchInterval?: number;
 };
 
 export interface ObserveIntegrationsConfig {

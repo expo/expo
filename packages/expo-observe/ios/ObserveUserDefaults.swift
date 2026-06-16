@@ -7,6 +7,7 @@ internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?
   var dispatchInDebug: Bool?
   var sampleRate: Double?
+  var scheduledDispatchInterval: Double?
 }
 
 /// Bundle-derived facts pushed from the JS layer at package import time.

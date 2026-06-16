@@ -19,6 +19,7 @@ class Config(
   @Field val dispatchInDebug: Boolean? = null,
   @Field val sampleRate: Double? = null,
   @Field val integrations: Map<String, Any?>? = null
+  @Field val scheduledDispatchInterval: Double? = null
 ) : Record
 
 @OptimizedRecord
@@ -69,7 +70,8 @@ class ObserveModule : Module() {
           PersistedConfig(
             dispatchingEnabled = config.dispatchingEnabled,
             dispatchInDebug = config.dispatchInDebug,
-            sampleRate = config.sampleRate
+            sampleRate = config.sampleRate,
+            scheduledDispatchInterval = config.scheduledDispatchInterval
           )
         )
         // Environment falls back to the bundle default (set on JS package import) so an
@@ -81,6 +83,10 @@ class ObserveModule : Module() {
         // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.
         lastIntegrations = config.integrations ?: emptyMap()
         this@ObserveModule.sendEvent("configure", mapOf("integrations" to lastIntegrations))
+
+        // The JS surface speaks Double seconds; native loops want Long seconds. `null`/`0` keep
+        // the loop idle; any positive value starts or updates it.
+        observabilityManager.setDispatchIntervalSeconds(config.scheduledDispatchInterval?.toLong())
       }
 
       Function("getIntegrations") {
