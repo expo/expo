@@ -28,43 +28,167 @@ internal struct ObservabilityManager {
   /// `Observe.configure({ scheduledDispatchInterval })`. The loop reads this on each wake, so a
   /// `configure(...)` change takes effect on the next pass.
   private static var dispatchIntervalSeconds: TimeInterval?
+  /// Default deferred-dispatch delay when no explicit value is configured (30 minutes).
+  private static let defaultDeferredDispatchDelaySeconds: TimeInterval = 1800
 
-  private static var periodicDispatchStarted = false
+  /// Polling cadence (in seconds) for checking the metrics DB for new rows. `nil` keeps the loop
+  /// idle. Updated via `setPollingIntervalSeconds(_:)` from
+  /// `Observe.configure({ scheduledDispatchPollingInterval })`. The loop reads this on each wake,
+  /// so a `configure(...)` change takes effect on the next pass.
+  private static var pollingIntervalSeconds: TimeInterval?
 
-  /// Sets the dispatch interval for the periodic dispatch loop. Passing a positive number of seconds
-  /// starts the loop (on its first call), so a long-running process flushes pending metrics and logs
-  /// without waiting for resign-active. Subsequent calls update the interval in place; the next wake
-  /// uses the new value. Passing `nil` (or `0`) leaves the loop idle.
-  internal nonisolated static func setDispatchIntervalSeconds(_ intervalSeconds: TimeInterval?) {
+  /// Delay (in seconds) between detecting new rows and the deferred dispatch firing. `nil` falls
+  /// back to `defaultDeferredDispatchDelaySeconds`. Updated via
+  /// `setDeferredDispatchDelaySeconds(_:)` from `Observe.configure({ scheduledDispatchDelay })`.
+  private static var deferredDispatchDelaySeconds: TimeInterval?
+
+  private static var pollingLoopStarted = false
+
+  /// The currently-armed deferred dispatch, if any. Set when polling detects new rows; replaced
+  /// (the old task is cancelled) when polling fires again with new rows; cancelled when any other
+  /// `dispatch()` runs first.
+  private static var deferredDispatchTask: Task<Void, Never>?
+
+  /// When the currently-armed deferred dispatch is scheduled to fire (wall clock). `nil` when no
+  /// dispatch is armed. Re-arms read this to compute the next fire time as `existing + delay/2`.
+  private static var deferredDispatchFireTime: Date?
+
+  /// When the *first* arm in the current deferral window happened. Cleared after dispatch (or
+  /// cancellation). Combined with `deferredDispatchDelaySeconds` to enforce the hard cap on how
+  /// far re-arms can push out — at most `2 × delay` past this point.
+  private static var deferredDispatchOriginalArmTime: Date?
+
+  /// Sets the polling interval for the metrics-DB polling loop. Passing a positive number of
+  /// seconds starts the loop on its first call. Subsequent calls update the interval in place; the
+  /// next wake uses the new value. Passing `nil` (or `0`) leaves the loop idle.
+  internal nonisolated static func setPollingIntervalSeconds(_ intervalSeconds: TimeInterval?) {
     AppMetricsActor.isolated {
-      self.dispatchIntervalSeconds = intervalSeconds
-      if !periodicDispatchStarted, let intervalSeconds, intervalSeconds > 0 {
-        periodicDispatchStarted = true
-        startPeriodicDispatchLoop()
+      self.pollingIntervalSeconds = intervalSeconds
+      if !pollingLoopStarted, let intervalSeconds, intervalSeconds > 0 {
+        pollingLoopStarted = true
+        startPollingLoop()
       }
     }
   }
 
-  /// Runs the repeating dispatch loop on `AppMetricsActor`. `Task.sleep` releases the actor between
-  /// passes, and `dispatch()` no-ops until the endpoint is configured, so this is safe to start at
-  /// any time. The loop reads `dispatchIntervalSeconds` at each wake — if cleared, it idles in a
+  /// Sets the delay between detecting new rows and the deferred dispatch firing.
+  internal nonisolated static func setDeferredDispatchDelaySeconds(_ delaySeconds: TimeInterval?) {
+    AppMetricsActor.isolated {
+      self.deferredDispatchDelaySeconds = delaySeconds
+    }
+  }
+
+  /// Runs the repeating poll on `AppMetricsActor`. The poll checks the metrics and logs DB cursors
+  /// for new rows; when either has new rows, it (re)arms a one-shot deferred dispatch — bursty
+  /// writes batch into a single dispatch at the end of the window. The poll itself does not send
+  /// anything. The loop reads `pollingIntervalSeconds` at each wake — if cleared, it idles in a
   /// 1-minute heartbeat until a positive value is restored.
-  private static func startPeriodicDispatchLoop() {
+  private static func startPollingLoop() {
     AppMetricsActor.isolated {
       while !Task.isCancelled {
-        let interval = dispatchIntervalSeconds.map { max($0, 1) } ?? 60
+        let interval = pollingIntervalSeconds.map { max($0, 1) } ?? 60
         try? await Task.sleep(nanoseconds: UInt64(interval) * 1_000_000_000)
-        guard let configured = dispatchIntervalSeconds, configured > 0 else {
+        guard let configured = pollingIntervalSeconds, configured > 0 else {
           continue
         }
-        await dispatch()
+        pollOnceAndMaybeArmDispatch()
       }
     }
+  }
+
+  /// One pass of the polling loop. Compares the max metric/log ids against the persisted dispatch
+  /// cursors — if either has new rows, (re)arms the deferred dispatch timer.
+  private static func pollOnceAndMaybeArmDispatch() {
+    let hasNewMetrics: Bool = {
+      do {
+        guard let maxId = try AppMetrics.getMaxMetricId() else { return false }
+        return maxId > ObserveUserDefaults.lastDispatchedMetricId
+      } catch {
+        observeLogger.warn("[EAS Observe] Polling failed to read max metric id: \(error.localizedDescription)")
+        return false
+      }
+    }()
+    let hasNewLogs: Bool = {
+      do {
+        guard let maxId = try AppMetrics.getMaxLogId() else { return false }
+        return maxId > ObserveUserDefaults.lastDispatchedLogId
+      } catch {
+        observeLogger.warn("[EAS Observe] Polling failed to read max log id: \(error.localizedDescription)")
+        return false
+      }
+    }()
+    if hasNewMetrics || hasNewLogs {
+      armDeferredDispatch()
+    }
+  }
+
+  /// Arms — or re-arms — the deferred dispatch timer.
+  ///
+  /// - First arm in a deferral window: schedule for `now + delay`.
+  /// - Subsequent re-arms (timer already pending): push the existing fire time out by `delay / 2`,
+  ///   capped so re-arms can never push beyond `original arm time + 2 × delay`. The cap bounds
+  ///   the worst-case starvation in a chatty app: once at the cap, further polls don't extend the
+  ///   timer, and it fires on schedule.
+  private static func armDeferredDispatch() {
+    let delay = max((deferredDispatchDelaySeconds ?? defaultDeferredDispatchDelaySeconds), 0)
+    let now = Date()
+
+    let newFireTime: Date
+    if let existingFireTime = deferredDispatchFireTime,
+      let originalArmTime = deferredDispatchOriginalArmTime,
+      existingFireTime > now
+    {
+      // Re-arm: push existing fire time out by half the delay, capped at original + 2 × delay.
+      let pushed = existingFireTime.addingTimeInterval(delay / 2)
+      let cap = originalArmTime.addingTimeInterval(2 * delay)
+      newFireTime = min(pushed, cap)
+      observeLogger.debug(
+        "[EAS Observe] Re-arming deferred dispatch: pushed to \(newFireTime) (cap \(cap))"
+      )
+    } else {
+      // First arm in a fresh window.
+      newFireTime = now.addingTimeInterval(delay)
+      deferredDispatchOriginalArmTime = now
+      observeLogger.debug("[EAS Observe] Arming deferred dispatch for \(newFireTime)")
+    }
+
+    deferredDispatchTask?.cancel()
+    deferredDispatchFireTime = newFireTime
+    let sleepInterval = max(newFireTime.timeIntervalSince(now), 0)
+    let nanoseconds = UInt64(sleepInterval.rounded()) * 1_000_000_000
+    deferredDispatchTask = Task { @AppMetricsActor in
+      try? await Task.sleep(nanoseconds: nanoseconds)
+      if Task.isCancelled { return }
+      deferredDispatchTask = nil
+      deferredDispatchFireTime = nil
+      deferredDispatchOriginalArmTime = nil
+      await dispatch(cancelDeferred: false)
+    }
+  }
+
+  /// Cancels any armed deferred dispatch. Called from `dispatch(cancelDeferred:)` so any other
+  /// dispatch path (lifecycle, manual) supersedes the deferred timer.
+  private static func cancelDeferredDispatch() {
+    deferredDispatchTask?.cancel()
+    deferredDispatchTask = nil
+    deferredDispatchFireTime = nil
+    deferredDispatchOriginalArmTime = nil
   }
 
   internal static func dispatch() async {
-    // Per-signal gates are checked inside `dispatchMetrics` / `dispatchLogs` rather than
-    // here, so a backoff on one endpoint doesn't suppress the other's traffic.
+    // Compute once and reuse for both signals — `shouldDispatch()` reads the persisted config, the
+    // bundle defaults, and computes a sample-rate hash. Both halves of dispatch want the same answer.
+    await dispatch(cancelDeferred: true)
+  }
+
+  /// `cancelDeferred` is `true` from every entry point except the deferred timer itself — the timer
+  /// already nilled the task out before calling, so cancelling there would just no-op.
+  private static func dispatch(cancelDeferred: Bool) async {
+    if cancelDeferred {
+      cancelDeferredDispatch()
+    }
+    // Compute once and reuse for both signals — `shouldDispatch()` reads the persisted config, the
+    // bundle defaults, and computes a sample-rate hash. Both halves of dispatch want the same answer.
     let shouldDispatch = Self.shouldDispatch()
 
     await dispatchMetrics(shouldDispatch: shouldDispatch)

@@ -7,7 +7,13 @@ internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?
   var dispatchInDebug: Bool?
   var sampleRate: Double?
-  var scheduledDispatchInterval: Double?
+  /// How often the polling loop checks the metrics DB for new rows, in seconds. The poll itself
+  /// does not dispatch; it only arms the deferred-dispatch timer when new rows are found.
+  var scheduledDispatchPollingInterval: Double?
+  /// Delay (in seconds) between detecting new rows and the deferred dispatch firing. (Re)armed on
+  /// every poll that finds new rows; cancelled when any other dispatch fires. Defaults to 1800
+  /// (30 min) at the call site if absent.
+  var scheduledDispatchDelay: Double?
 }
 
 /// Bundle-derived facts pushed from the JS layer at package import time.

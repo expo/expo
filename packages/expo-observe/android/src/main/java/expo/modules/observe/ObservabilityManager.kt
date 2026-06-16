@@ -61,14 +61,17 @@ class ObservabilityManager(
   }
 
   suspend fun dispatchUnsentMetrics() {
+    cancelDeferredDispatch()
     baseManager.dispatchUnsentMetrics()
   }
 
   suspend fun dispatchUnsentLogs() {
+    cancelDeferredDispatch()
     baseManager.dispatchUnsentLogs()
   }
 
   fun scheduleBackgroundDispatch() {
+    cancelDeferredDispatch()
     ObservabilityBackgroundWorker.scheduleBackgroundDispatch(
       context = context,
       projectId = baseManager.projectId,
@@ -76,54 +79,146 @@ class ObservabilityManager(
     )
   }
 
-  // Manager-owned scope so the periodic dispatch loop has a lifecycle tied to module destroy
-  // rather than to a single JS-call dispatch (`modulesQueue`, which is per-call). `Dispatchers.IO`
-  // is the right pool: each wake reads pending tables, queries the DB, and POSTs to the endpoint.
+  // Manager-owned scope so the polling + deferred-dispatch tasks have a lifecycle tied to module
+  // destroy rather than to a single JS-call dispatch (`modulesQueue`, which is per-call).
+  // `Dispatchers.IO` is the right pool: each wake reads from the metrics DB and may POST.
   private val dispatchScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-  private var dispatchJob: Job? = null
+  private var pollingJob: Job? = null
+  private var deferredDispatchJob: Job? = null
+
+  /** Default deferred-dispatch delay when no explicit value is configured (30 minutes). */
+  private val defaultDeferredDispatchDelaySeconds: Long = 1800
 
   @Volatile
-  private var dispatchIntervalSeconds: Long? = null
+  private var pollingIntervalSeconds: Long? = null
+
+  @Volatile
+  private var deferredDispatchDelaySeconds: Long? = null
 
   /**
-   * Configures the periodic dispatch loop. A positive `intervalSeconds` starts the loop (on its
-   * first call) and tells it to flush pending metrics and logs that often, so a long-running app
-   * sends in-session telemetry without waiting for `OnActivityEntersBackground`. Subsequent calls
-   * update the interval in place — the next wake uses the new value. Passing `null` or `0` leaves
-   * the loop idle (no-ops at each wake). Driven by
-   * `Observe.configure({ scheduledDispatchInterval })`.
+   * Wall-clock millis of the currently-armed deferred dispatch's fire time. Re-arms read this to
+   * push the existing fire time out by `delay / 2`, capped at `originalArmTime + 2 × delay`.
    */
-  fun setDispatchIntervalSeconds(intervalSeconds: Long?) {
-    dispatchIntervalSeconds = intervalSeconds
-    if (dispatchJob == null && intervalSeconds != null && intervalSeconds > 0) {
-      dispatchJob = dispatchScope.launch {
+  private var deferredDispatchFireTimeMs: Long? = null
+
+  /**
+   * Wall-clock millis when the *first* arm in the current deferral window happened. Cleared after
+   * dispatch (or cancellation). Combined with `deferredDispatchDelaySeconds` to enforce the hard
+   * cap on how far re-arms can push out — at most `2 × delay` past this point.
+   */
+  private var deferredDispatchOriginalArmTimeMs: Long? = null
+
+  /**
+   * Configures the polling loop. A positive `intervalSeconds` starts the loop on its first call;
+   * subsequent calls update the interval in place. Each wake reads the metrics/logs DB cursors,
+   * and if either has new rows, (re)arms the deferred-dispatch timer. The poll itself does not
+   * send anything. `null` or `0` leaves the loop idle.
+   */
+  fun setPollingIntervalSeconds(intervalSeconds: Long?) {
+    pollingIntervalSeconds = intervalSeconds
+    if (pollingJob == null && intervalSeconds != null && intervalSeconds > 0) {
+      pollingJob = dispatchScope.launch {
         while (true) {
-          // Idle in a 1-minute heartbeat while the interval is cleared, so a later re-configure
-          // resumes promptly. Matches iOS.
-          val interval = dispatchIntervalSeconds?.coerceAtLeast(1) ?: 60
+          // Idle in a 1-minute heartbeat while the interval is cleared so a later re-configure
+          // resumes promptly.
+          val interval = pollingIntervalSeconds?.coerceAtLeast(1) ?: 60
           delay(interval * 1000)
-          val configured = dispatchIntervalSeconds ?: continue
+          val configured = pollingIntervalSeconds ?: continue
           if (configured <= 0) {
             continue
           }
           try {
-            baseManager.dispatchUnsentMetrics()
-            baseManager.dispatchUnsentLogs()
+            pollOnceAndMaybeArmDispatch()
           } catch (e: Exception) {
-            Log.w(OBSERVE_TAG, "Periodic dispatch failed: ${e.message}")
+            Log.w(OBSERVE_TAG, "Polling pass failed: ${e.message}")
           }
         }
       }
     }
   }
 
+  /** Sets the delay between detecting new rows and the deferred dispatch firing. */
+  fun setDeferredDispatchDelaySeconds(delaySeconds: Long?) {
+    deferredDispatchDelaySeconds = delaySeconds
+  }
+
   /**
-   * Cancels the periodic dispatch loop. Called from `ObserveModule.OnDestroy` so the loop doesn't
-   * try to hit the network or DB after the module's lifecycle has ended.
+   * One pass of the polling loop. Checks for new pending metrics/logs and (re)arms the deferred
+   * dispatch timer if any are found.
+   */
+  private suspend fun pollOnceAndMaybeArmDispatch() {
+    val hasNewMetrics = baseManager.hasPendingMetrics()
+    val hasNewLogs = baseManager.hasPendingLogs()
+    if (hasNewMetrics || hasNewLogs) {
+      armDeferredDispatch()
+    }
+  }
+
+  /**
+   * Arms — or re-arms — the deferred dispatch timer.
+   *
+   * - First arm in a deferral window: schedule for `now + delay`.
+   * - Subsequent re-arms (timer already pending): push the existing fire time out by `delay / 2`,
+   *   capped at `originalArmTime + 2 × delay`. The cap bounds the worst-case starvation: once at
+   *   the cap, further polls don't extend the timer and it fires on schedule.
+   */
+  private fun armDeferredDispatch() {
+    val delayMs = ((deferredDispatchDelaySeconds ?: defaultDeferredDispatchDelaySeconds).coerceAtLeast(0)) * 1000
+    val now = System.currentTimeMillis()
+
+    val newFireTimeMs: Long
+    val existingFire = deferredDispatchFireTimeMs
+    val originalArm = deferredDispatchOriginalArmTimeMs
+    if (existingFire != null && originalArm != null && existingFire > now) {
+      // Re-arm: push out by half the delay, capped at original + 2 × delay.
+      val pushed = existingFire + delayMs / 2
+      val cap = originalArm + 2 * delayMs
+      newFireTimeMs = minOf(pushed, cap)
+      Log.d(OBSERVE_TAG, "Re-arming deferred dispatch: pushed fire time to $newFireTimeMs (cap $cap)")
+    } else {
+      newFireTimeMs = now + delayMs
+      deferredDispatchOriginalArmTimeMs = now
+      Log.d(OBSERVE_TAG, "Arming deferred dispatch for $newFireTimeMs")
+    }
+
+    deferredDispatchJob?.cancel()
+    deferredDispatchFireTimeMs = newFireTimeMs
+    val sleepMs = (newFireTimeMs - now).coerceAtLeast(0)
+    deferredDispatchJob = dispatchScope.launch {
+      delay(sleepMs)
+      deferredDispatchJob = null
+      deferredDispatchFireTimeMs = null
+      deferredDispatchOriginalArmTimeMs = null
+      try {
+        baseManager.dispatchUnsentMetrics()
+        baseManager.dispatchUnsentLogs()
+      } catch (e: Exception) {
+        Log.w(OBSERVE_TAG, "Deferred dispatch failed: ${e.message}")
+      }
+    }
+  }
+
+  /**
+   * Cancels any armed deferred dispatch. Called from every other dispatch path so the lifecycle /
+   * manual dispatches supersede the deferred timer.
+   */
+  private fun cancelDeferredDispatch() {
+    deferredDispatchJob?.cancel()
+    deferredDispatchJob = null
+    deferredDispatchFireTimeMs = null
+    deferredDispatchOriginalArmTimeMs = null
+  }
+
+  /**
+   * Cancels the polling and deferred-dispatch jobs. Called from `ObserveModule.OnDestroy` so they
+   * don't try to hit the network or DB after the module's lifecycle has ended.
    */
   fun destroy() {
     dispatchScope.cancel()
-    dispatchJob = null
+    pollingJob = null
+    deferredDispatchJob = null
+    deferredDispatchFireTimeMs = null
+    deferredDispatchOriginalArmTimeMs = null
   }
 }
 
@@ -204,6 +299,12 @@ class BaseObservabilityManager(
     now = currentTimeMs(),
     backoff = { DispatchUtils.computeBackoffDelay(it) }
   )
+
+  /** Whether the pending-metrics table has any rows. Used by the polling pass. */
+  suspend fun hasPendingMetrics(): Boolean = pendingMetricsManager.getAllPendingMetricIds().isNotEmpty()
+
+  /** Whether the pending-logs table has any rows. Used by the polling pass. */
+  suspend fun hasPendingLogs(): Boolean = pendingLogsManager.getAllPendingLogIds().isNotEmpty()
 
   suspend fun dispatchUnsentMetrics(): Unit = metricsDispatchMutex.withLock {
     val pendingIds = pendingMetricsManager.getAllPendingMetricIds()

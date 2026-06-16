@@ -66,11 +66,24 @@ export type ObserveConfig = {
    */
   integrations?: ObserveIntegrationsConfig;
   /**
-   * If this property is present, run a repeating dispatch loop with this interval in seconds.
-   * This allows a long-running process to flush pending metrics and logs without waiting for the app
-   * to go to background.
+   * If this property is present, run a repeating loop that polls the metrics database with this
+   * interval in seconds. When the poll detects new metrics or logs, it arms a one-shot deferred
+   * dispatch (see `scheduledDispatchDelay`). The poll itself does not send anything; it only
+   * decides whether a deferred dispatch should be (re)armed.
+   *
+   * Set this to a small value (e.g. `60`) so a long-running process surfaces in-session telemetry
+   * without waiting for the app to go to background.
    */
-  scheduledDispatchInterval?: number;
+  scheduledDispatchPollingInterval?: number;
+  /**
+   * Delay in seconds between detecting new metrics/logs and the deferred dispatch firing. The
+   * timer is (re)armed on every poll that finds new rows — bursty writes batch into one
+   * dispatch at the end of the window. If a dispatch fires for another reason in the meantime
+   * (lifecycle resign-active / terminate), the deferred timer is cancelled.
+   *
+   * @default 1800 - 30 minutes
+   */
+  scheduledDispatchDelay?: number;
 };
 
 export interface ObserveIntegrationsConfig {

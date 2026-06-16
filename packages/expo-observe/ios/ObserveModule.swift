@@ -11,7 +11,8 @@ internal struct Config: Record {
   @Field var dispatchInDebug: Bool?
   @Field var sampleRate: Double?
   @Field var integrations: [String: Any]?
-  @Field var scheduledDispatchInterval: Double?
+  @Field var scheduledDispatchPollingInterval: Double?
+  @Field var scheduledDispatchDelay: Double?
 }
 
 internal struct BundleDefaults: Record {
@@ -48,14 +49,16 @@ public final class ObserveModule: Module {
             dispatchingEnabled: config.dispatchingEnabled,
             dispatchInDebug: config.dispatchInDebug,
             sampleRate: config.sampleRate,
-            scheduledDispatchInterval: config.scheduledDispatchInterval
+            scheduledDispatchPollingInterval: config.scheduledDispatchPollingInterval,
+            scheduledDispatchDelay: config.scheduledDispatchDelay
           )
         )
         let resolvedEnvironment = config.environment ?? ObserveUserDefaults.bundleDefaults?.environment
         if let resolvedEnvironment {
           AppMetrics.setEnvironment(resolvedEnvironment)
         }
-        ObservabilityManager.setDispatchIntervalSeconds(config.scheduledDispatchInterval)
+        ObservabilityManager.setPollingIntervalSeconds(config.scheduledDispatchPollingInterval)
+        ObservabilityManager.setDeferredDispatchDelaySeconds(config.scheduledDispatchDelay)
       }
 
       // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.

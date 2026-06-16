@@ -17,7 +17,17 @@ data class PersistedConfig(
   val dispatchingEnabled: Boolean? = null,
   val dispatchInDebug: Boolean? = null,
   val sampleRate: Double? = null,
-  val scheduledDispatchInterval: Double? = null
+  /**
+   * How often the polling loop checks the metrics DB for new rows, in seconds. The poll itself
+   * does not dispatch; it only arms the deferred-dispatch timer when new rows are found.
+   */
+  val scheduledDispatchPollingInterval: Double? = null,
+  /**
+   * Delay (in seconds) between detecting new rows and the deferred dispatch firing. (Re)armed on
+   * every poll that finds new rows; cancelled when any other dispatch fires. Defaults to 1800
+   * (30 min) at the call site if absent.
+   */
+  val scheduledDispatchDelay: Double? = null
 )
 
 /**

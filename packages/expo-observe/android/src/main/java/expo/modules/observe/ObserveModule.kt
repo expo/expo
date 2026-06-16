@@ -20,6 +20,8 @@ class Config(
   @Field val sampleRate: Double? = null,
   @Field val integrations: Map<String, Any?>? = null
   @Field val scheduledDispatchInterval: Double? = null
+  @Field val scheduledDispatchPollingInterval: Double? = null,
+  @Field val scheduledDispatchDelay: Double? = null
 ) : Record
 
 @OptimizedRecord
@@ -71,7 +73,8 @@ class ObserveModule : Module() {
             dispatchingEnabled = config.dispatchingEnabled,
             dispatchInDebug = config.dispatchInDebug,
             sampleRate = config.sampleRate,
-            scheduledDispatchInterval = config.scheduledDispatchInterval
+            scheduledDispatchPollingInterval = config.scheduledDispatchPollingInterval,
+            scheduledDispatchDelay = config.scheduledDispatchDelay
           )
         )
         // Environment falls back to the bundle default (set on JS package import) so an
@@ -86,7 +89,8 @@ class ObserveModule : Module() {
 
         // The JS surface speaks Double seconds; native loops want Long seconds. `null`/`0` keep
         // the loop idle; any positive value starts or updates it.
-        observabilityManager.setDispatchIntervalSeconds(config.scheduledDispatchInterval?.toLong())
+        observabilityManager.setPollingIntervalSeconds(config.scheduledDispatchPollingInterval?.toLong())
+        observabilityManager.setDeferredDispatchDelaySeconds(config.scheduledDispatchDelay?.toLong())
       }
 
       Function("getIntegrations") {
