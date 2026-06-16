@@ -978,9 +978,11 @@ export function convertHtmlToMarkdown(html: string): string {
     const match = refreshMeta.match(/url=(\S+)/i);
     if (match) {
       const target = match[1];
-      return rewriteDocsLinksToMarkdown(
-        `This page redirects to [${target}](https://docs.expo.dev${target}).`
-      ) + '\n';
+      return (
+        rewriteDocsLinksToMarkdown(
+          `This page redirects to [${target}](https://docs.expo.dev${target}).`
+        ) + '\n'
+      );
     }
   }
 
