@@ -17,7 +17,10 @@ appId: ${APP_ID}
                 id: openReactNativeButton
             - tapOn:
                 id: openReactNativeButton
-            - assertVisible: Expo + Brownfield = 🖤
+            - runFlow: ../common/_nested-flows/skip-dev-menu.yml
+            - extendedWaitUntil:
+                visible: Expo + Brownfield = 🖤
+                timeout: 60000
 - runFlow:
     when:
       platform: iOS
@@ -31,7 +34,10 @@ appId: ${APP_ID}
                 id: openReactNativeButton
             - tapOn:
                 id: openReactNativeButton
-            - assertVisible: Expo + Brownfield = 🖤
+            - runFlow: ../common/_nested-flows/skip-dev-menu.yml
+            - extendedWaitUntil:
+                visible: Expo + Brownfield = 🖤
+                timeout: 60000
 
 # Verify popToNative() method
 - tapOn:
