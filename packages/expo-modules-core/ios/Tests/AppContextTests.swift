@@ -21,7 +21,6 @@ struct AppContextTests {
     let recovered = AppContext.from(runtime: try runtime)
     #expect(recovered === appContext)
   }
-
   @Test
   func `from(runtime:) returns nil for a runtime without the core object`() {
     // A bare runtime that was never prepared by an app context has no `global.expo`.
@@ -276,17 +275,15 @@ extension AppContextTests {
   }
 
   @Test
-  func `module provider class names sanitize non-ASCII bundle names to ASCII`() {
-    // Non-ASCII letters (e.g. accented) are not valid Swift identifier characters
-    // and must be replaced with `_` to match the sanitization in the autolinking generator.
+  func `module provider class names preserves order and deduplicates across CFBundleName and CFBundleExecutable`() {
+    // When CFBundleName == CFBundleExecutable (already a valid identifier), only one candidate is produced.
     let classNames = AppContext.moduleProviderClassNames(
       withName: "ExpoModulesProvider",
-      bundleNames: ["Café"]
+      bundleNames: ["UniversalApp", "UniversalApp"]
     )
 
     #expect(classNames == [
-      "Café.ExpoModulesProvider",
-      "Caf_.ExpoModulesProvider"
+      "UniversalApp.ExpoModulesProvider"
     ])
   }
 }

@@ -737,9 +737,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
-      guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
+      let frameworkBundleNames = [
+        bundle.infoDictionary?["CFBundleName"],
+        bundle.infoDictionary?["CFBundleExecutable"]
+      ].compactMap { $0 as? String }
 
-      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: [bundleName]) {
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: frameworkBundleNames) {
         if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
           return providerClass.init()
         }
@@ -751,35 +754,11 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   }
 
   internal static func moduleProviderClassNames(withName providerName: String, bundleNames: [String]) -> [String] {
-    var candidates: [String] = []
-
-    func append(_ moduleName: String) {
-      let candidate = "\(moduleName).\(providerName)"
-      if !candidates.contains(candidate) {
-        candidates.append(candidate)
-      }
+    var seen = Set<String>()
+    return bundleNames.compactMap { bundleName in
+      let candidate = "\(bundleName).\(providerName)"
+      return seen.insert(candidate).inserted ? candidate : nil
     }
-
-    for bundleName in bundleNames {
-      append(bundleName)
-      append(swiftModuleName(from: bundleName))
-    }
-
-    return candidates
-  }
-
-  private static func swiftModuleName(from bundleName: String) -> String {
-    let sanitized = bundleName
-      .map { character in
-        character.isASCII && (character.isLetter || character.isNumber) || character == "_" ? character : "_"
-      }
-
-    let moduleName = String(sanitized)
-    if let firstCharacter = moduleName.first, firstCharacter.isASCII && firstCharacter.isNumber {
-      return "_\(moduleName)"
-    }
-
-    return moduleName
   }
 
   public func reloadAppAsync(_ reason: String = "Reload from appContext") {
