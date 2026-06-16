@@ -2,30 +2,15 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-function getExpoSdkVersion(root: string): string | null {
-  try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf-8'));
-    const expoVersion = (pkg.dependencies?.expo ?? pkg.devDependencies?.expo) as string | undefined;
-    if (!expoVersion) return null;
-    const match = expoVersion.match(/(\d+)\./);
-    return match?.[1] ?? null;
-  } catch {
-    return null;
-  }
+const AGENT_TEMPLATE_FILE_NAMES = ['AGENTS.md', 'CLAUDE.md'] as const;
+const AGENT_TEMPLATE_MODULES: Record<(typeof AGENT_TEMPLATE_FILE_NAMES)[number], string> = {
+  'AGENTS.md': '@expo/llm-configs/expo-app/AGENTS.md',
+  'CLAUDE.md': '@expo/llm-configs/expo-app/CLAUDE.md',
+};
+
+function resolveAgentTemplatePath(fileName: (typeof AGENT_TEMPLATE_FILE_NAMES)[number]): string {
+  return (module.require as NodeRequire).resolve(AGENT_TEMPLATE_MODULES[fileName]);
 }
-
-function getAgentsMdContent(sdkVersion: string | null): string {
-  const docsUrl = sdkVersion
-    ? `https://docs.expo.dev/versions/v${sdkVersion}.0.0/`
-    : 'https://docs.expo.dev';
-  return `# Expo HAS CHANGED
-
-Read the exact versioned docs at ${docsUrl} before writing any code.
-`;
-}
-
-const CLAUDE_MD_CONTENT = `@AGENTS.md
-`;
 
 const CLAUDE_SETTINGS_CONTENT = `{
   "enabledPlugins": {
@@ -42,26 +27,29 @@ function isClaudeCodeInstalled(): boolean {
   );
 }
 
-export function generateAgentFiles(root: string): void {
-  const sdkVersion = getExpoSdkVersion(root);
+function copyFileIfMissing(sourcePath: string, destinationPath: string): void {
+  if (fs.existsSync(destinationPath)) {
+    return;
+  }
+  const dir = path.dirname(destinationPath);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.copyFileSync(sourcePath, destinationPath);
+}
 
-  const files: { filePath: string; content: string }[] = [
-    { filePath: path.join(root, 'AGENTS.md'), content: getAgentsMdContent(sdkVersion) },
-  ];
+function writeFileIfMissing(filePath: string, content: string): void {
+  if (fs.existsSync(filePath)) {
+    return;
+  }
+  const dir = path.dirname(filePath);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(filePath, content);
+}
+
+export function generateAgentFiles(root: string): void {
+  copyFileIfMissing(resolveAgentTemplatePath('AGENTS.md'), path.join(root, 'AGENTS.md'));
 
   if (isClaudeCodeInstalled()) {
-    files.push(
-      { filePath: path.join(root, 'CLAUDE.md'), content: CLAUDE_MD_CONTENT },
-      { filePath: path.join(root, '.claude', 'settings.json'), content: CLAUDE_SETTINGS_CONTENT }
-    );
-  }
-
-  for (const { filePath, content } of files) {
-    if (fs.existsSync(filePath)) {
-      continue;
-    }
-    const dir = path.dirname(filePath);
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(filePath, content);
+    copyFileIfMissing(resolveAgentTemplatePath('CLAUDE.md'), path.join(root, 'CLAUDE.md'));
+    writeFileIfMissing(path.join(root, '.claude', 'settings.json'), CLAUDE_SETTINGS_CONTENT);
   }
 }

@@ -4,6 +4,10 @@ import path from 'path';
 
 import { generateAgentFiles } from '../generateAgentFiles';
 
+function readAgentTemplate(fileName: 'AGENTS.md' | 'CLAUDE.md'): string {
+  return fs.readFileSync(require.resolve(`@expo/llm-configs/expo-app/${fileName}`), 'utf-8');
+}
+
 describe(generateAgentFiles, () => {
   let tmpDir: string;
   let homeDir: string;
@@ -12,11 +16,6 @@ describe(generateAgentFiles, () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'create-expo-test-'));
     homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'create-expo-home-'));
     jest.spyOn(os, 'homedir').mockReturnValue(homeDir);
-    // Write a minimal package.json so the SDK version can be resolved
-    fs.writeFileSync(
-      path.join(tmpDir, 'package.json'),
-      JSON.stringify({ dependencies: { expo: '~55.0.0' } })
-    );
   });
 
   afterEach(() => {
@@ -38,31 +37,20 @@ describe(generateAgentFiles, () => {
     expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(false);
   });
 
-  it('writes correct content to AGENTS.md with versioned docs URL', () => {
+  it('copies AGENTS.md from @expo/llm-configs', () => {
     generateAgentFiles(tmpDir);
 
     const content = fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf-8');
-    expect(content).toContain('# Expo');
-    expect(content).toContain('https://docs.expo.dev/versions/v55.0.0/');
+    expect(content).toBe(readAgentTemplate('AGENTS.md'));
   });
 
-  it('falls back to unversioned docs URL when expo version is missing', () => {
-    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify({ dependencies: {} }));
-
-    generateAgentFiles(tmpDir);
-
-    const content = fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf-8');
-    expect(content).toContain('https://docs.expo.dev');
-    expect(content).not.toContain('/versions/');
-  });
-
-  it('writes correct content to CLAUDE.md', () => {
+  it('copies CLAUDE.md from @expo/llm-configs', () => {
     fs.writeFileSync(path.join(homeDir, '.claude.json'), '{}');
 
     generateAgentFiles(tmpDir);
 
     const content = fs.readFileSync(path.join(tmpDir, 'CLAUDE.md'), 'utf-8');
-    expect(content).toBe('@AGENTS.md\n');
+    expect(content).toBe(readAgentTemplate('CLAUDE.md'));
   });
 
   it('writes correct content to .claude/settings.json', () => {
