@@ -29,11 +29,13 @@ inline fun <reified Props : ComposeProps> createComposeProps(
     val prop = props[name] ?: continue
 
     propsMap.getDynamic(name).recycle {
-      propsInstance = (prop.copyPropsWithNewValue(
-        prop = this,
-        currentProps = propsInstance,
-        appContext = appContext
-      ) ?: propsInstance) as Props
+      propsInstance = (
+        prop.copyPropsWithNewValue(
+          prop = this,
+          currentProps = propsInstance,
+          appContext = appContext
+        ) ?: propsInstance
+        ) as Props
     }
   }
 
