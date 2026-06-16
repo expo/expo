@@ -11,8 +11,6 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.component6
 import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
-import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
