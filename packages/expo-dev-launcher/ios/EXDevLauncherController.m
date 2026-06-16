@@ -221,6 +221,19 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
     return;
   }
+
+  // A development server URL can be baked into the build (e.g. by the expo-dev-client config plugin or the
+  // EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL env var). When no recent app was launched above, auto-connect to it
+  // so headless/CI/multi-server setups don't need to scan a QR code. Falls back to the launcher if unreachable.
+  NSString *defaultServerUrlString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_SERVER_URL"];
+  if (defaultServerUrlString.length > 0 && hasGrantedNetworkPermission && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
+    NSURL *defaultServerUrl = [NSURL URLWithString:defaultServerUrlString];
+    if (defaultServerUrl != nil) {
+      [self loadApp:defaultServerUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
+      return;
+    }
+  }
+
   [self navigateToLauncher];
 }
 

@@ -282,6 +282,22 @@ class DevLauncherController private constructor(
         }
         return true
       }
+
+      // A development server URL can be baked into the build (e.g. by the expo-dev-client config plugin or the
+      // EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL env var). When no recent app was launched above, auto-connect to it
+      // so headless/CI/multi-server setups don't need to scan a QR code. Falls back to the launcher if unreachable.
+      val defaultServerUrl = getMetadataValue(context, "DEV_CLIENT_DEFAULT_SERVER_URL", "")
+      if (defaultServerUrl.isNotEmpty()) {
+        coroutineScope.launch {
+          try {
+            loadApp(defaultServerUrl.toUri(), activityToBeInvalidated)
+          } catch (_: Throwable) {
+            navigateToLauncher()
+          }
+        }
+        return true
+      }
+
       return handleExternalIntent(it)
     }
 

@@ -12,6 +12,28 @@ import { PluginConfigType, validateConfig } from './pluginConfig';
 const pkg = require('expo-dev-launcher/package.json');
 
 /**
+ * Resolves the development server URL to bake into the build for the given platform.
+ *
+ * Precedence (highest first):
+ * 1. `EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL` env var (build-time override)
+ * 2. platform-specific `ios.defaultServerUrl` / `android.defaultServerUrl`
+ * 3. top-level `defaultServerUrl`
+ *
+ * @ignore
+ */
+export function resolveDefaultServerUrl(
+  props: PluginConfigType,
+  platform: 'ios' | 'android',
+  env: NodeJS.ProcessEnv = process.env
+): string | undefined {
+  return (
+    env.EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL ??
+    props[platform]?.defaultServerUrl ??
+    props.defaultServerUrl
+  );
+}
+
+/**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys
  * from non-Debug builds. This keeps the keys in Debug builds (where dev-launcher is active)
  * but removes only the dev-launcher entries from production builds.
@@ -143,6 +165,31 @@ export default createRunOncePlugin<PluginConfigType>(
           mainApplication,
           'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE',
           false?.toString()
+        );
+        return config;
+      });
+    }
+
+    // A default development server URL baked into the build so headless/CI/multi-server setups can
+    // auto-connect on launch without scanning a QR code. The `EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL`
+    // env var, when set, takes precedence so it can be overridden per build invocation.
+    const iOSDefaultServerUrl = resolveDefaultServerUrl(props, 'ios');
+    if (iOSDefaultServerUrl) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['DEV_CLIENT_DEFAULT_SERVER_URL'] = iOSDefaultServerUrl;
+        return config;
+      });
+    }
+
+    const androidDefaultServerUrl = resolveDefaultServerUrl(props, 'android');
+    if (androidDefaultServerUrl) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'DEV_CLIENT_DEFAULT_SERVER_URL',
+          androidDefaultServerUrl
         );
         return config;
       });

@@ -1,8 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolveDefaultServerUrl = resolveDefaultServerUrl;
 const config_plugins_1 = require("expo/config-plugins");
 const pluginConfig_1 = require("./pluginConfig");
 const pkg = require('expo-dev-launcher/package.json');
+/**
+ * Resolves the development server URL to bake into the build for the given platform.
+ *
+ * Precedence (highest first):
+ * 1. `EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL` env var (build-time override)
+ * 2. platform-specific `ios.defaultServerUrl` / `android.defaultServerUrl`
+ * 3. top-level `defaultServerUrl`
+ *
+ * @ignore
+ */
+function resolveDefaultServerUrl(props, platform, env = process.env) {
+    return (env.EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL ??
+        props[platform]?.defaultServerUrl ??
+        props.defaultServerUrl);
+}
 /**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys
  * from non-Debug builds. This keeps the keys in Debug builds (where dev-launcher is active)
@@ -110,6 +126,24 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
             const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE', false?.toString());
+            return config;
+        });
+    }
+    // A default development server URL baked into the build so headless/CI/multi-server setups can
+    // auto-connect on launch without scanning a QR code. The `EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL`
+    // env var, when set, takes precedence so it can be overridden per build invocation.
+    const iOSDefaultServerUrl = resolveDefaultServerUrl(props, 'ios');
+    if (iOSDefaultServerUrl) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults['DEV_CLIENT_DEFAULT_SERVER_URL'] = iOSDefaultServerUrl;
+            return config;
+        });
+    }
+    const androidDefaultServerUrl = resolveDefaultServerUrl(props, 'android');
+    if (androidDefaultServerUrl) {
+        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_DEFAULT_SERVER_URL', androidDefaultServerUrl);
             return config;
         });
     }

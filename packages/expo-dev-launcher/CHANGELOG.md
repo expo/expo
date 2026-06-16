@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [Android] Add NDS service discovery.
+- Add `defaultServerUrl` config plugin option (and `EXPO_DEV_LAUNCHER_DEFAULT_SERVER_URL` env var) to bake a development server URL into the build and auto-connect on launch without scanning a QR code. ([#PR](https://github.com/expo/expo/pull/PR) by [@qwertey6](https://github.com/qwertey6))
 
 ### 🐛 Bug fixes
 
