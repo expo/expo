@@ -29,6 +29,7 @@
 
 ### 💡 Others
 
+- Allow `react-native-worklets` `^0.9.0` in peer dependencies. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - [Android] Make `expo-module-gradle-plugin` compatible with Android Gradle Plugin 9. ([#46769](https://github.com/expo/expo/pull/46769) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added `JavaScriptDecodable` / `JavaScriptEncodable` (composed as `JavaScriptCodable`), a statically-dispatched, non-erasing conversion path between JavaScript and native values for Expo Modules v2, with conformances for primitives, containers, records, enumerables and `Data`. ([#46893](https://github.com/expo/expo/pull/46893) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `@ExpoModule` now synthesizes a `_decorateModule` that binds the module's `@JS` functions directly onto the JS object, letting the module holder skip the dynamic definition path for synthesized modules. ([#46612](https://github.com/expo/expo/pull/46612) by [@tsapeta](https://github.com/tsapeta))
