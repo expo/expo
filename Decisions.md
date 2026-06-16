@@ -230,6 +230,34 @@ when a route name repeats across branches. Also removed the dead `route.key ??` 
 (`getStateFromPath` never emits keys) and added coverage for multi-sibling nodes, non-last focus
 projection, dynamic-segment + query round-trips, and `hydrate → undefined`.
 
+### P-14 — Phase 3a (back-bubbling) + Phase 4 (store/bridge) review outcomes
+*(4 fresh agents: coverage, test-quality, architecture, minimalism)*
+
+Acted on now:
+- **`resolveBack` empty-ops = keep bubbling** (architecture): a node handles back only if it produces
+  ops; empty ops bubble on. Prevents a handler silently swallowing an Android back press (was safe
+  only by accidental double-guarding between `back.ts` and the stack strategy).
+- **Minimalism:** dropped the unused `focusedChain(rootName)` param, un-exported `FocusedNode`,
+  trimmed the `back.ts` header.
+- **Coverage/quality:** added `tree.test.ts` (leaf/deep/out-of-range/empty + name-keying); added
+  3-level bubbling through a stuck inner navigator to a middle stack; split the fall-through test
+  into its three real causes (no focus-order / current-tab-first / previous-tab-absent); added store
+  remount-reinstalls-bridge, `useNavigationTree`-throws-outside-provider, and a committed-snapshot
+  (`getNavSnapshot().root.index === 1`) assertion before `resolveBack`.
+
+Known limitations / deferred to integration (documented, no consumer this session):
+- **Behavior keyed by owning-route name** is a non-unique stand-in (`tree.ts`); the production
+  manifest will key by `contextKey`/layout path (refines P-4). Acceptable while the lookup is an
+  injected input and `resolveBack` is the only consumer.
+- **Transition policy should key off `source`** — seed/hydration must commit synchronously
+  (`animation: none`, RFC C13/1b), not via `startTransition`. `dispatchNav` wraps unconditionally
+  for now; revisit when Phase 2 introduces the `'seed'`/`'hydration'` sources.
+- **Committed-snapshot contract** needs a pending-intent channel; the effect-mirrored snapshot lags
+  by one commit under a concurrent root (P-3). Synchronous test renderer hides this.
+- **tabs-back lives in `back.ts`, stack-back is delegated to the strategy** — asymmetric. The clean
+  fix is a `localInput` (focus-order) parameter on `BehaviorStrategy.resolve` (the channel P-8 named);
+  do it in Phase 3 so both are delegated symmetrically.
+
 Relationship: this module is the **global state backend** (the whole-app nested tree:
 `NavNode` with `child`, `index`). `standard-navigation/` is the **per-navigator render contract**
 (a flat `{index, routes:[{key,name,params,href}]}` slice for *one* navigator level). They are
