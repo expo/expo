@@ -12,6 +12,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 **Development build** is the term that we use for a "Debug" build of an app that includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library. This library augments the built-in React Native development tooling with additional capabilities, such as support for inspecting network requests and a "launcher" UI that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with EAS Update).
@@ -73,6 +74,18 @@ Both [Android App Links](/linking/android-app-links/) and [iOS Universal Links](
 Expo Go can only support one SDK version at a time. When a new SDK version is released, Expo Go is updated to support the newer version, and this will be the only version of Expo Go available to install from the stores.
 
 If you're developing on an Android Device, Android Emulator, or iOS Simulator, a compatible version of Expo Go can be [downloaded and installed](https://expo.dev/go). The only platform where this is impossible is iPhone devices because Apple does not support side-loading older versions of apps.
+
+The [`expo-go` CLI](https://www.npmjs.com/package/expo-go) downloads the binary for a given SDK version without an Expo project:
+
+<Terminal
+  cmd={[
+    '# Use the SDK version your project targets (omit it for the latest)',
+    '$ npx expo-go download android 53',
+    '',
+    '# iOS simulator app',
+    '$ npx expo-go download ios 53',
+  ]}
+/>
 
 </Collapsible>
 
