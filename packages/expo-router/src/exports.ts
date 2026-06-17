@@ -72,6 +72,8 @@ export {
 } from './standard-navigation';
 export type {
   IntegrateWithRouterOptions,
+  NavigatorContentProps,
+  StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './standard-navigation';
 
