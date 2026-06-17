@@ -80,7 +80,8 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
     try {
       req.url = urlInPluginRoot;
       const request = convertRequest(req as http.IncomingMessage, res as http.ServerResponse);
-      const response = await plugin.requestHandler?.(request);
+      const handler = await plugin.getRequestHandlerAsync();
+      const response = await handler?.(request);
       if (response == null) {
         return false;
       }

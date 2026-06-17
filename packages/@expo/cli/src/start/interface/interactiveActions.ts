@@ -36,6 +36,31 @@ export function getDevToolsPluginCliBannerItems(
     }));
 }
 
+export async function printDevToolsPluginCliBannersAsync(
+  devServerManager: DevServerManager
+): Promise<number> {
+  if (!devServerManager.getNativeDevServerPort()) {
+    return 0;
+  }
+
+  try {
+    const plugins = await devServerManager.devtoolsPluginManager.queryPluginsAsync();
+    const bannerItems = getDevToolsPluginCliBannerItems(
+      plugins,
+      devServerManager.getDefaultDevServer().getUrlCreator().constructUrl({ scheme: 'http' })
+    );
+
+    for (const { title, url } of bannerItems) {
+      Log.log(printItem(chalk`${title}: {underline ${url}}`));
+    }
+
+    return bannerItems.length;
+  } catch (error: any) {
+    debug(`Failed to print DevTools plugin CLI banners: ${error.toString()}`);
+    return 0;
+  }
+}
+
 /** Wraps the DevServerManager and adds an interface for user actions. */
 export class DevServerManagerActions {
   constructor(
@@ -118,7 +143,7 @@ export class DevServerManagerActions {
       }
     }
 
-    rows -= await this.printDevToolsPluginCliBannersAsync();
+    rows -= await printDevToolsPluginCliBannersAsync(this.devServerManager);
 
     const dependencyCheckLines = getDependencyCheckMessage(options.dependencyCheckRef?.result);
     rows -= dependencyCheckLines.length;
@@ -129,29 +154,6 @@ export class DevServerManagerActions {
 
     for (const line of dependencyCheckLines) {
       Log.log(line);
-    }
-  }
-
-  private async printDevToolsPluginCliBannersAsync(): Promise<number> {
-    if (!this.devServerManager.getNativeDevServerPort()) {
-      return 0;
-    }
-
-    try {
-      const plugins = await this.devServerManager.devtoolsPluginManager.queryPluginsAsync();
-      const bannerItems = getDevToolsPluginCliBannerItems(
-        plugins,
-        this.devServerManager.getDefaultDevServer().getUrlCreator().constructUrl({ scheme: 'http' })
-      );
-
-      for (const { title, url } of bannerItems) {
-        Log.log(printItem(chalk`${title}: {underline ${url}}`));
-      }
-
-      return bannerItems.length;
-    } catch (error: any) {
-      debug(`Failed to print DevTools plugin CLI banners: ${error.toString()}`);
-      return 0;
     }
   }
 

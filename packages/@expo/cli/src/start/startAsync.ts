@@ -10,6 +10,7 @@ import {
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
+import { printDevToolsPluginCliBannersAsync } from './interface/interactiveActions';
 import { startInterfaceAsync } from './interface/startInterface';
 import type { Options } from './resolveOptions';
 import { resolvePortsAsync } from './resolveOptions';
@@ -153,6 +154,8 @@ export async function startAsync(
         console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: defaultServerUrl })}`);
       }
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
+      Log.log();
+      await printDevToolsPluginCliBannersAsync(devServerManager);
     }
     // In non-interactive mode, print the check outside of an interface, if it's available
     if (dependencyCheckRef?.result) {

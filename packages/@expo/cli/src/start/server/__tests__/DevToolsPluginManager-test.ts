@@ -3,6 +3,13 @@ import DevToolsPluginManager from '../DevToolsPluginManager';
 
 jest.mock('../../../log');
 
+jest.mock('../../../events', () => ({
+  events: jest.fn(() => jest.fn()),
+}));
+
+const { events } = require('../../../events') as { events: jest.Mock };
+const mockEvent = events.mock.results[0].value as jest.Mock;
+
 // Mock the autolinking module
 jest.mock('expo/internal/unstable-autolinking-exports', () => ({
   makeCachedDependenciesLinker: jest.fn(),
@@ -15,7 +22,14 @@ const autolinking = require('expo/internal/unstable-autolinking-exports') as jes
 >;
 
 function mockAutolinkingPlugins(
-  plugins: { packageName: string; packageRoot: string; cliExtensions?: any; webpageRoot?: string }[]
+  plugins: {
+    packageName: string;
+    packageRoot: string;
+    bannerTitle?: string;
+    cliExtensions?: any;
+    webpageRoot?: string;
+    serverEntryPoint?: string;
+  }[]
 ) {
   const revisions: Record<string, { name: string }> = {};
   const descriptors: Record<string, any> = {};
@@ -110,5 +124,54 @@ describe('DevToolsPluginManager', () => {
     expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining('Skipping plugin "invalid-plugin"')
     );
+  });
+
+  it('should log loaded plugins with a webroot or server available', async () => {
+    mockAutolinkingPlugins([
+      {
+        packageName: 'web-plugin',
+        packageRoot: '/path/to/web-plugin',
+        webpageRoot: '/path/to/web-plugin/web',
+        bannerTitle: 'Web Plugin',
+      },
+      {
+        packageName: 'server-plugin',
+        packageRoot: '/path/to/server-plugin',
+        serverEntryPoint: '/path/to/server-plugin/server.js',
+      },
+      {
+        packageName: 'cli-only-plugin',
+        packageRoot: '/path/to/cli-only-plugin',
+        cliExtensions: {
+          description: 'A CLI-only extension',
+          entryPoint: 'index.js',
+          commands: [
+            {
+              name: 'test-cmd',
+              title: 'Test Command',
+              environments: ['cli'],
+            },
+          ],
+        },
+      },
+    ]);
+
+    const manager = new DevToolsPluginManager('/project');
+    await manager.queryPluginsAsync();
+
+    expect(mockEvent).toHaveBeenCalledWith('dev-tools-plugin:load', {
+      plugins: [
+        {
+          packageName: 'web-plugin',
+          bannerTitle: 'Web Plugin',
+          webpageEndpoint: '/_expo/plugins/web-plugin',
+        },
+        {
+          packageName: 'server-plugin',
+          bannerTitle: 'server-plugin',
+          webpageEndpoint: '/_expo/plugins/server-plugin',
+        },
+      ],
+    });
   });
 });

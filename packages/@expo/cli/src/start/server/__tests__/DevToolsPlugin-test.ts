@@ -1,6 +1,8 @@
+import { vol } from 'memfs';
 import path from 'path';
 
 import { DevToolsPlugin } from '../DevToolsPlugin';
+import { isEsmEntryPoint } from '../DevToolsPluginServerHelpers';
 
 describe('DevToolsPlugin', () => {
   it('should create an instance from a plugin with only the webpageRoot configuration set', () => {
@@ -115,15 +117,21 @@ describe('DevToolsPlugin', () => {
   describe('requestHandler', () => {
     const fixturesRoot = path.join(__dirname, 'fixtures');
 
-    it('should be undefined when no serverEntryPoint is set', () => {
+    beforeEach(() => {
+      vol.fromJSON({
+        [path.join(fixturesRoot, 'package.json')]: JSON.stringify({}),
+      });
+    });
+
+    it('should be undefined when no serverEntryPoint is set', async () => {
       const plugin = new DevToolsPlugin(
         { packageName: 'example-plugin', packageRoot: '/path/to/example-plugin' },
         '/path/to/project'
       );
-      expect(plugin.requestHandler).toBeUndefined();
+      await expect(plugin.getRequestHandlerAsync()).resolves.toBeUndefined();
     });
 
-    it('should load the handler default-exported by the server entry point', async () => {
+    it('should load the handler default-exported by a CommonJS server entry point', async () => {
       const plugin = new DevToolsPlugin(
         {
           packageName: 'example-plugin',
@@ -132,7 +140,7 @@ describe('DevToolsPlugin', () => {
         },
         '/path/to/project'
       );
-      const handler = plugin.requestHandler;
+      const handler = await plugin.getRequestHandlerAsync();
       expect(typeof handler).toBe('function');
 
       const response = await handler!(new Request('http://localhost:8081/api/hello'));
@@ -144,7 +152,7 @@ describe('DevToolsPlugin', () => {
       expect(passthrough).toBeNull();
     });
 
-    it('should throw when the server entry point does not default-export a function', () => {
+    it('should throw when the server entry point does not default-export a function', async () => {
       const plugin = new DevToolsPlugin(
         {
           packageName: 'example-plugin',
@@ -153,7 +161,70 @@ describe('DevToolsPlugin', () => {
         },
         '/path/to/project'
       );
-      expect(() => plugin.requestHandler).toThrow(/must default-export a handler function/);
+      await expect(plugin.getRequestHandlerAsync()).rejects.toThrow(
+        /must default-export a handler function/
+      );
+    });
+  });
+
+  describe('isEsmEntryPoint', () => {
+    beforeEach(() => {
+      vol.reset();
+    });
+
+    it('treats .mjs as ESM and .cjs as CommonJS regardless of any package.json', () => {
+      vol.fromJSON({
+        '/pkg/package.json': JSON.stringify({ type: 'commonjs' }),
+      });
+
+      expect(isEsmEntryPoint('/pkg/server.mjs', '/pkg')).toBe(true);
+      expect(isEsmEntryPoint('/pkg/server.cjs', '/pkg')).toBe(false);
+    });
+
+    describe('resolving a .js entry point from package.json files up to packageRoot', () => {
+      it('resolves to ESM via the package root "type": "module"', () => {
+        vol.fromJSON({
+          '/pkg/package.json': JSON.stringify({ type: 'module' }),
+        });
+
+        expect(isEsmEntryPoint('/pkg/dist/server.js', '/pkg')).toBe(true);
+      });
+
+      it('resolves from a nested package.json inside packageRoot', () => {
+        vol.fromJSON({
+          '/pkg/package.json': JSON.stringify({ type: 'commonjs' }),
+          '/pkg/dist/package.json': JSON.stringify({ type: 'module' }),
+        });
+
+        expect(isEsmEntryPoint('/pkg/dist/server.js', '/pkg')).toBe(true);
+      });
+
+      it('does not traverse above packageRoot', () => {
+        vol.fromJSON({
+          '/package.json': JSON.stringify({ type: 'module' }),
+          '/pkg/dist/package.json': JSON.stringify({ type: 'commonjs' }),
+        });
+
+        expect(isEsmEntryPoint('/pkg/dist/server.js', '/pkg')).toBe(false);
+      });
+
+      it('resolves to CommonJS when the package root package.json omits "type"', () => {
+        vol.fromJSON({
+          '/pkg/package.json': JSON.stringify({}),
+        });
+
+        expect(isEsmEntryPoint('/pkg/server.js', '/pkg')).toBe(false);
+      });
+    });
+
+    it('defaults a .js entry point to CommonJS when the package root package.json cannot be read', () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      expect(isEsmEntryPoint('/pkg/dist/server.js', '/pkg')).toBe(false);
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining(
+        'Unable to load package.json for DevTools plugin server entry point /pkg/dist/server.js, loading as CommonJS.'
+      ));
+      warn.mockRestore();
     });
   });
 

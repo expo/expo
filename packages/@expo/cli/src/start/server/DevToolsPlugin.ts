@@ -1,11 +1,15 @@
 import fs from 'node:fs';
-import type { IncomingMessage } from 'node:http';
-import { type WebSocket, WebSocketServer } from 'ws';
+import type { WebSocketServer } from 'ws';
 
 import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { PluginSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import { DevToolsPluginEndpoint } from './DevToolsPluginManager';
+import {
+  type DevToolsPluginRequestHandler,
+  loadRequestHandlerAsync,
+  loadWebSocketServerAsync,
+} from './DevToolsPluginServerHelpers';
 import { isPathInside } from '../../utils/dir';
 
 const maybeRealpath = (target: string): string => {
@@ -16,26 +20,7 @@ const maybeRealpath = (target: string): string => {
   }
 };
 
-/**
- * Handler default-exported by a plugin's `serverEntryPoint`. Receives a fetch API `Request`
- * with the plugin endpoint prefix stripped from the URL. Returning `null`/`undefined` falls
- * through to static `webpageRoot` serving.
- */
-export type DevToolsPluginRequestHandler = (
-  request: Request
-) => Response | null | undefined | Promise<Response | null | undefined>;
-
-/**
- * Per-connection WebSocket handler exported by a plugin's `serverEntryPoint`. Receives the
- * connected `ws` socket, the upgrade `request`, and the `WebSocketServer` the connection belongs
- * to (use `server.clients` to broadcast). Mirrors the `ws` `'connection'` event so plugin authors
- * use the familiar `socket.on('message', ...)` / `socket.send(...)` API.
- */
-export type DevToolsPluginWebSocketHandler = (
-  socket: WebSocket,
-  request: IncomingMessage,
-  server: WebSocketServer
-) => void;
+export type { DevToolsPluginRequestHandler } from './DevToolsPluginServerHelpers';
 
 /**
  * Class that represents a DevTools plugin with CLI and/or web extensions
@@ -110,23 +95,17 @@ export class DevToolsPlugin {
    * The entry point must default-export a handler function
    * (`export default function handler(request) {}` or `module.exports = function handler(request) {}`).
    */
-  get requestHandler(): DevToolsPluginRequestHandler | undefined {
+  async getRequestHandlerAsync(): Promise<DevToolsPluginRequestHandler | undefined> {
     if (!this.plugin.serverEntryPoint) {
       return undefined;
     }
 
     if (!this._requestHandler) {
-      const serverModule = require(maybeRealpath(this.plugin.serverEntryPoint));
-      const handler = typeof serverModule === 'function' ? serverModule : serverModule?.default;
-      if (typeof handler !== 'function') {
-        throw new Error(
-          `The serverEntryPoint (${this.plugin.serverEntryPoint}) of plugin ${this.plugin.packageName} ` +
-            `must default-export a handler function that takes a Request and returns a Response. ` +
-            `Export it as \`export default function handler(request) {}\` ` +
-            `or \`module.exports = function handler(request) {}\`.`
-        );
-      }
-      this._requestHandler = handler;
+      this._requestHandler = await loadRequestHandlerAsync({
+        packageName: this.plugin.packageName,
+        packageRoot: this.plugin.packageRoot,
+        serverEntryPoint: this.plugin.serverEntryPoint,
+      });
     }
 
     return this._requestHandler;
@@ -140,30 +119,17 @@ export class DevToolsPlugin {
    * upgrades, so this is how a plugin opts into them. Returns an empty object when the plugin
    * exports no handlers.
    */
-  get webSocketServers(): Record<string, WebSocketServer> {
+  async getWebSocketServersAsync(): Promise<Record<string, WebSocketServer>> {
     if (!this.plugin.serverEntryPoint) {
       return {};
     }
 
     if (!this._webSocketServers) {
-      const serverModule = require(maybeRealpath(this.plugin.serverEntryPoint));
-      const handlers: Record<string, DevToolsPluginWebSocketHandler> =
-        serverModule?.webSocketHandlers ?? {};
-
-      this._webSocketServers = Object.fromEntries(
-        Object.entries(handlers).map(([route, handler]) => {
-          if (typeof handler !== 'function') {
-            throw new Error(
-              `The webSocketHandlers["${route}"] export of plugin ${this.plugin.packageName} ` +
-                `must be a function (socket, request, server) => void.`
-            );
-          }
-          const server = new WebSocketServer({ noServer: true });
-          server.on('connection', (socket, request) => handler(socket, request, server));
-          // Routes are mounted relative to the plugin endpoint, so they must be absolute.
-          return [route.startsWith('/') ? route : `/${route}`, server];
-        })
-      );
+      this._webSocketServers = await loadWebSocketServerAsync({
+        packageName: this.plugin.packageName,
+        packageRoot: this.plugin.packageRoot,
+        serverEntryPoint: this.plugin.serverEntryPoint,
+      });
     }
 
     return this._webSocketServers;

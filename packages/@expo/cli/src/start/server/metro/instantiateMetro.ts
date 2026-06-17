@@ -31,7 +31,8 @@ import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import DevToolsPluginManager, { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import type DevToolsPluginManager from '../DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
@@ -349,7 +350,12 @@ export async function instantiateMetroAsync(
     exp = getConfig(metroBundler.projectRoot, {
       skipSDKVersionRequirement: true,
     }).exp,
-  }: { isExporting: boolean; exp?: ExpoConfig }
+    devToolsPluginManager,
+  }: {
+    isExporting: boolean;
+    exp?: ExpoConfig;
+    devToolsPluginManager: DevToolsPluginManager;
+  }
 ): Promise<{
   metro: MetroServer;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
@@ -417,10 +423,9 @@ export async function instantiateMetroAsync(
     // mounted at `/_expo/plugins/<name>/<route>`, reusing Metro's exact-path upgrade dispatch (and
     // its shutdown cleanup). Endpoints must be known before the server starts, so unlike the
     // fetch-based request handler, plugin server modules are loaded eagerly here.
-    const pluginManager = new DevToolsPluginManager(projectRoot);
-    for (const plugin of await pluginManager.queryPluginsAsync()) {
+    for (const plugin of await devToolsPluginManager.queryPluginsAsync()) {
       try {
-        for (const [route, server] of Object.entries(plugin.webSocketServers)) {
+        for (const [route, server] of Object.entries(await plugin.getWebSocketServersAsync())) {
           Object.assign(websocketEndpoints, {
             [`${DevToolsPluginEndpoint}/${plugin.packageName}${route}`]: server,
           });

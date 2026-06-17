@@ -11,7 +11,7 @@ const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
 class MockDevToolsPluginManager extends DevToolsPluginManager {
   queryPluginsAsync = jest.fn().mockResolvedValue([]);
-  queryPluginWebpageRootAsync = jest.fn().mockResolvedValue(null);
+  queryPluginAsync = jest.fn().mockResolvedValue(null);
 }
 
 function createMiddleware(devToolsPluginManager = new MockDevToolsPluginManager('/')) {
@@ -66,16 +66,11 @@ function createServerRequest(url: string): ServerRequest {
 describe(DevToolsPluginMiddleware, () => {
   it('handleRequestAsync should return index.html from a matched plugin', async () => {
     const devToolsPluginManager = new MockDevToolsPluginManager('/');
-    devToolsPluginManager.queryPluginsAsync.mockResolvedValue([
-      {
-        packageName: 'hello-plugin',
-        packageRoot: '/root/packages/hello-plugin',
-        webpageRoot: '/root/packages/hello-plugin/dist',
-      },
-    ]);
-    devToolsPluginManager.queryPluginWebpageRootAsync.mockResolvedValue(
-      '/root/packages/hello-plugin/dist'
-    );
+    devToolsPluginManager.queryPluginAsync.mockResolvedValue({
+      packageName: 'hello-plugin',
+      packageRoot: '/root/packages/hello-plugin',
+      webpageRoot: '/root/packages/hello-plugin/dist',
+    });
     vol.fromJSON({
       '/root/packages/hello-plugin/dist/index.html': '<html></html>',
     });
@@ -97,15 +92,14 @@ describe(DevToolsPluginMiddleware, () => {
 
   it('handleRequestAsync should support plugin with scoped package name', async () => {
     const devToolsPluginManager = new MockDevToolsPluginManager('/');
-    devToolsPluginManager.queryPluginsAsync.mockResolvedValue([
-      {
-        packageName: '@namespace/hello-plugin',
-        packageRoot: '/root/node_modules/@namespace/hello-plugin',
-        webpageRoot: '/root/node_modules/@namespace/hello-plugin/dist',
-      },
-    ]);
-    devToolsPluginManager.queryPluginWebpageRootAsync.mockResolvedValueOnce(
-      '/root/node_modules/@namespace/hello-plugin/dist'
+    devToolsPluginManager.queryPluginAsync.mockImplementation(async (pluginName) =>
+      pluginName === '@namespace/hello-plugin'
+        ? {
+            packageName: '@namespace/hello-plugin',
+            packageRoot: '/root/node_modules/@namespace/hello-plugin',
+            webpageRoot: '/root/node_modules/@namespace/hello-plugin/dist',
+          }
+        : null
     );
     vol.fromJSON({
       '/root/node_modules/@namespace/hello-plugin/dist/index.html': '<html></html>',
@@ -142,16 +136,11 @@ describe(DevToolsPluginMiddleware, () => {
 
   it('handleRequestAsync should return static resources from a matched plugin', async () => {
     const devToolsPluginManager = new MockDevToolsPluginManager('/');
-    devToolsPluginManager.queryPluginsAsync.mockResolvedValue([
-      {
-        packageName: 'hello-plugin',
-        packageRoot: '/root/packages/hello-plugin',
-        webpageRoot: '/root/packages/hello-plugin/dist',
-      },
-    ]);
-    devToolsPluginManager.queryPluginWebpageRootAsync.mockResolvedValue(
-      '/root/packages/hello-plugin/dist'
-    );
+    devToolsPluginManager.queryPluginAsync.mockResolvedValue({
+      packageName: 'hello-plugin',
+      packageRoot: '/root/packages/hello-plugin',
+      webpageRoot: '/root/packages/hello-plugin/dist',
+    });
     vol.fromJSON({
       '/root/packages/hello-plugin/dist/index.html': '<html></html>',
       '/root/packages/hello-plugin/dist/static/icon.png': 'PNGPNG',
@@ -191,16 +180,11 @@ describe(DevToolsPluginMiddleware, () => {
 
   it('handleRequestAsync should return 404 if plugin static resource is not found', async () => {
     const devToolsPluginManager = new MockDevToolsPluginManager('/');
-    devToolsPluginManager.queryPluginsAsync.mockResolvedValue([
-      {
-        packageName: 'hello-plugin',
-        packageRoot: '/root/packages/hello-plugin',
-        webpageRoot: '/root/packages/hello-plugin/dist',
-      },
-    ]);
-    devToolsPluginManager.queryPluginWebpageRootAsync.mockResolvedValue(
-      '/root/packages/hello-plugin/dist'
-    );
+    devToolsPluginManager.queryPluginAsync.mockResolvedValue({
+      packageName: 'hello-plugin',
+      packageRoot: '/root/packages/hello-plugin',
+      webpageRoot: '/root/packages/hello-plugin/dist',
+    });
     vol.fromJSON({
       '/root/packages/hello-plugin/dist/index.html': '<html></html>',
       '/root/packages/hello-plugin/dist/static/icon.png': 'PNGPNG',
@@ -224,7 +208,7 @@ describe(DevToolsPluginMiddleware, () => {
   describe('serverEntryPoint', () => {
     function createPluginManager(plugin: object) {
       const devToolsPluginManager = new MockDevToolsPluginManager('/');
-      devToolsPluginManager.queryPluginsAsync.mockResolvedValue([plugin]);
+      devToolsPluginManager.queryPluginAsync.mockResolvedValue(plugin);
       return devToolsPluginManager;
     }
 
@@ -241,7 +225,7 @@ describe(DevToolsPluginMiddleware, () => {
           packageName: 'hello-plugin',
           packageRoot: '/root/packages/hello-plugin',
           serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
-          requestHandler,
+          getRequestHandlerAsync: async () => requestHandler,
         })
       );
 
@@ -270,7 +254,7 @@ describe(DevToolsPluginMiddleware, () => {
           packageRoot: '/root/packages/hello-plugin',
           webpageRoot: '/root/packages/hello-plugin/dist',
           serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
-          requestHandler,
+          getRequestHandlerAsync: async () => requestHandler,
         })
       );
       vol.fromJSON({
@@ -293,7 +277,7 @@ describe(DevToolsPluginMiddleware, () => {
           packageName: 'hello-plugin',
           packageRoot: '/root/packages/hello-plugin',
           serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
-          requestHandler: jest.fn(async () => null),
+          getRequestHandlerAsync: async () => jest.fn(async () => null),
         })
       );
 
@@ -311,9 +295,10 @@ describe(DevToolsPluginMiddleware, () => {
           packageName: 'hello-plugin',
           packageRoot: '/root/packages/hello-plugin',
           serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
-          requestHandler: jest.fn(async () => {
-            throw new Error('boom');
-          }),
+          getRequestHandlerAsync: async () =>
+            jest.fn(async () => {
+              throw new Error('boom');
+            }),
         })
       );
 
