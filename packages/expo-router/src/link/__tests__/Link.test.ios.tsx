@@ -772,6 +772,28 @@ describe('Preview', () => {
     expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
     expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
   });
+  it('keeps the native Link.Preview wrapper out of the accessibility tree', () => {
+    renderRouter({
+      index: () => {
+        return (
+          <Link prefetch href="/test">
+            <Link.Trigger>
+              <Pressable accessibilityLabel="preview-row">
+                <Text>Preview row</Text>
+              </Pressable>
+            </Link.Trigger>
+            <Link.Preview />
+          </Link>
+        );
+      },
+      test: () => null,
+    });
+
+    const calls = (NativeLinkPreview as jest.Mock).mock.calls;
+    expect(calls[calls.length - 1][0]).toMatchObject({
+      accessible: false,
+    });
+  });
   it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
     expect(() => {
       render(
