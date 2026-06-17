@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Resolve the presentation window scene-aware and fail gracefully instead of crashing when no window is available for the Sign in with Apple sheet. ([#46955](https://github.com/expo/expo/pull/46955) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-21
