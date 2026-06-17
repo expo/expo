@@ -3,6 +3,7 @@ import { LATEST_VERSION } from '../constants/versions.js';
 import { DOCS_BASE_URL, getMarkdownUrl } from './markdown-link-utils.ts';
 
 const TRIM_SECTION_PAGE_THRESHOLD = 30;
+const SDK_INDEX_SECTION_NAME = 'Expo SDK';
 const AREA_LABELS: Record<string, string> = {
   home: 'Home',
   general: 'Guides',
@@ -30,6 +31,7 @@ type NavLocation = {
   siblings: Sibling[];
   /** Number of pages in the immediate section/group (drives the SDK trim). */
   sectionPageCount: number;
+  isSdkIndex?: boolean;
 };
 
 type NavArea = {
@@ -85,10 +87,36 @@ function indexNodes(
   }
 }
 
+function registerSdkIndex(
+  versionKey: string,
+  nodes: NavNode[],
+  index: Map<string, NavLocation>
+): void {
+  const sdkSection = nodes.find(
+    node => node.type === 'section' && node.name === SDK_INDEX_SECTION_NAME
+  );
+  const sdkPages = (sdkSection?.children ?? []).filter(isInternalPage);
+  if (sdkPages.length === 0) {
+    return;
+  }
+
+  index.set(normalizeNavKey(`/versions/${versionKey}`), {
+    area: 'reference',
+    versionKey,
+    trail: [SDK_INDEX_SECTION_NAME],
+    siblings: sdkPages.map(page => ({ name: page.name ?? '', href: page.href as string })),
+    sectionPageCount: sdkPages.length,
+    isSdkIndex: true,
+  });
+}
+
 export function buildNavIndexFrom(areas: NavArea[]): Map<string, NavLocation> {
   const index = new Map<string, NavLocation>();
   for (const { area, versionKey, nodes } of areas) {
     indexNodes(nodes, { area, versionKey, trail: [] }, index);
+    if (area === 'reference' && versionKey) {
+      registerSdkIndex(versionKey, nodes, index);
+    }
   }
   return index;
 }
@@ -119,7 +147,11 @@ function areaLabel(location: NavLocation): string {
 }
 
 function isTrimmedSection(location: NavLocation): boolean {
-  return location.area === 'reference' && location.sectionPageCount > TRIM_SECTION_PAGE_THRESHOLD;
+  return (
+    location.area === 'reference' &&
+    !location.isSdkIndex &&
+    location.sectionPageCount > TRIM_SECTION_PAGE_THRESHOLD
+  );
 }
 
 export function buildDocsNavigation(

@@ -205,14 +205,14 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     if (frontmatter) {
       parts.push(frontmatter);
     }
-    if (docsNavigation) {
-      parts.push(docsNavigation);
-    }
     if (pageNote) {
       parts.push(pageNote);
     }
     if (agentBlock) {
       parts.push(agentBlock);
+    }
+    if (docsNavigation) {
+      parts.push(docsNavigation);
     }
     parts.push(markdown);
     markdown = parts.join('\n');

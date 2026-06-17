@@ -148,6 +148,22 @@ describe('buildDocsNavigation', () => {
     expect(block).toContain(`You are here: Reference (${LATEST_VERSION}) > Expo SDK`);
   });
 
+  it('lists every Expo SDK module in full on the version index page (ENG-21931)', () => {
+    const block = navFor('/versions/v55.0.0/') as string;
+    expect(block).toContain('You are here: Reference (v55.0.0) > Expo SDK');
+    expect(block).toContain('Pages in this section:');
+    expect(block).not.toContain('40 pages in this section');
+    expect(block).toContain('- [Page 0](https://docs.expo.dev/versions/v55.0.0/sdk/page-0.md)');
+    expect(block).toContain('- [Page 39](https://docs.expo.dev/versions/v55.0.0/sdk/page-39.md)');
+    expect(block).toContain('Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)');
+  });
+
+  it('resolves the latest label on the version index page', () => {
+    const block = navFor('/versions/latest/') as string;
+    expect(block).toContain(`You are here: Reference (${LATEST_VERSION}) > Expo SDK`);
+    expect(block).toContain('- [Page 0](https://docs.expo.dev/versions/latest/sdk/page-0.md)');
+  });
+
   it('is insensitive to a trailing slash', () => {
     expect(navFor('/eas/workflows/get-started')).toBe(navFor('/eas/workflows/get-started/'));
   });
