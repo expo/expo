@@ -141,6 +141,12 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
+  var maxResolution: VideoSize? {
+    didSet {
+      ref.currentItem?.preferredMaximumResolution = maxResolution?.toCGSize() ?? .zero
+    }
+  }
+
   var bufferedPosition: Double {
     return getBufferedPosition()
   }
@@ -391,6 +397,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     )
     safeEmit(event: "sourceChange", payload: payload)
     newVideoPlayerItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+    newVideoPlayerItem?.preferredMaximumResolution = maxResolution?.toCGSize() ?? .zero
   }
 
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {

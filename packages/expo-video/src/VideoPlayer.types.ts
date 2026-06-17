@@ -225,6 +225,20 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   readonly availableVideoTracks: VideoTrack[];
 
   /**
+   * Specifies the maximum resolution that the player will select when choosing between the video tracks of an adaptive stream.
+   * The player picks the highest-quality track that does not exceed this resolution.
+   *
+   * Set this property to `null` to remove the limit and allow all available resolutions.
+   *
+   * > On Android this is applied through ExoPlayer's `TrackSelectionParameters.Builder.setMaxVideoSize`. On iOS it maps to [`AVPlayerItem.preferredMaximumResolution`](https://developer.apple.com/documentation/avfoundation/avplayeritem/preferredmaximumresolution).
+   *
+   * @default null
+   * @platform android
+   * @platform ios
+   */
+  maxResolution: VideoSize | null;
+
+  /**
    * Indicates whether the player is currently playing back the media to an external device via AirPlay.
    *
    * @platform ios
