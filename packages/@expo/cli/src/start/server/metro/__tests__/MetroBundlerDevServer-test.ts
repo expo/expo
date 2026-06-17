@@ -341,10 +341,14 @@ describe('getStaticPageAsync', () => {
 
     expect(typeof result.content).toBe('string');
     expect(result.resources).toEqual([]);
-    expect(getStaticContent).toHaveBeenCalledWith(
-      new URL('http://localhost:8081/posts/123'),
-      undefined
-    );
+    expect(getStaticContent).toHaveBeenCalledWith(new URL('http://localhost:8081/posts/123'), {
+      hydrate: false,
+      assets: {
+        css: [],
+        js: [expect.stringContaining('/index.bundle?')],
+        favicon: undefined,
+      },
+    });
   });
 
   it('normalizes loader Response data and passes dynamic params to metadata', async () => {

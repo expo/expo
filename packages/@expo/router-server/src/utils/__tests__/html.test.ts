@@ -5,6 +5,7 @@ import {
   createLoaderDataScriptAsString,
   escapeUnsafeCharacters,
   getHydrationFlagScriptAsString,
+  injectAssetsIntoHtml,
   serializeHelmetToHtml,
 } from '../html';
 
@@ -130,6 +131,98 @@ describe(createLoaderDataScriptAsString, () => {
   });
 });
 
+describe(injectAssetsIntoHtml, () => {
+  const TEMPLATE = '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>';
+
+  it('returns the template unchanged when there is nothing to inject', () => {
+    expect(injectAssetsIntoHtml(TEMPLATE, {})).toBe(TEMPLATE);
+    expect(injectAssetsIntoHtml(TEMPLATE, { assets: { css: [], js: [] } })).toBe(TEMPLATE);
+  });
+
+  it('injects the favicon before the hydration flag and styles', () => {
+    const result = injectAssetsIntoHtml(TEMPLATE, {
+      hydrate: true,
+      assets: { css: [{ type: 'css', href: '/a.css' }], js: [], favicon: '/favicon.ico' },
+    });
+    expect(result).toContain(
+      expectedHead([
+        '<link rel="icon" href="/favicon.ico"/>',
+        '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>',
+        '<link rel="preload" href="/a.css" as="style">\n<link rel="stylesheet" href="/a.css">',
+      ])
+    );
+  });
+
+  it('only injects the hydration flag when `hydrate` is truthy', () => {
+    expect(injectAssetsIntoHtml(TEMPLATE, { hydrate: false })).not.toContain(
+      '__EXPO_ROUTER_HYDRATE__'
+    );
+    expect(injectAssetsIntoHtml(TEMPLATE, {})).not.toContain('__EXPO_ROUTER_HYDRATE__');
+    expect(injectAssetsIntoHtml(TEMPLATE, { hydrate: true })).toContain('__EXPO_ROUTER_HYDRATE__');
+  });
+
+  it('injects export CSS hrefs as link tags, joined without separators', () => {
+    const result = injectAssetsIntoHtml(TEMPLATE, {
+      assets: {
+        css: [
+          { type: 'css', href: '/a.css' },
+          { type: 'css', href: '/b.css' },
+        ],
+        js: [],
+      },
+    });
+    expect(result).toContain(
+      expectedHead([
+        '<link rel="preload" href="/a.css" as="style">\n<link rel="stylesheet" href="/a.css">',
+        '<link rel="preload" href="/b.css" as="style">\n<link rel="stylesheet" href="/b.css">',
+      ])
+    );
+  });
+
+  it('injects development inline CSS as style tags with HMR IDs', () => {
+    const result = injectAssetsIntoHtml(TEMPLATE, {
+      assets: {
+        css: [
+          { type: 'inline', source: '.a{}', hmrId: 'a' },
+          { type: 'inline', source: '.b{}', hmrId: 'b' },
+        ],
+        js: [],
+      },
+    });
+    expect(result).toContain(
+      expectedHead([
+        '<style data-expo-css-hmr="a">.a{}\n</style>',
+        '<style data-expo-css-hmr="b">.b{}\n</style>',
+      ])
+    );
+  });
+
+  it('preserves the original order of bundled and external CSS entries', () => {
+    const result = injectAssetsIntoHtml(TEMPLATE, {
+      assets: {
+        css: [
+          { type: 'external', source: '<link rel="stylesheet" href="https://x/y.css">' },
+          { type: 'css', href: '/a.css' },
+        ],
+        js: [],
+      },
+    });
+    expect(result).toContain(
+      expectedHead([
+        '<link rel="stylesheet" href="https://x/y.css">',
+        '<link rel="preload" href="/a.css" as="style">\n<link rel="stylesheet" href="/a.css">',
+      ])
+    );
+  });
+
+  it('injects JS as deferred scripts before </body>, joined without separators', () => {
+    const result = injectAssetsIntoHtml(TEMPLATE, { assets: { css: [], js: ['/a.js', '/b.js'] } });
+    expect(result).toContain(
+      expectedBody(['<script src="/a.js" defer></script>', '<script src="/b.js" defer></script>'])
+    );
+  });
+});
+
 describe(serializeHelmetToHtml, () => {
   it.each([null, undefined])('returns empty strings for %j helmet', () => {
     expect(serializeHelmetToHtml(null)).toEqual({
@@ -177,3 +270,13 @@ describe(serializeHelmetToHtml, () => {
     expect(result.bodyAttributes).toBe('');
   });
 });
+
+/** Joins the injected `<head>` fragments and the closing `</head>` into the expected substring. */
+function expectedHead(parts: string[]): string {
+  return [...parts, '</head>'].join('');
+}
+
+/** Joins the injected `<body>` fragments and the closing `</body>` into the expected substring. */
+function expectedBody(parts: string[]): string {
+  return [...parts, '\n</body>'].join('');
+}

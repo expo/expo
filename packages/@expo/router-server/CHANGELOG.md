@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
+- [Internal] Inject CSS/JS bundle tags within `getStaticContent()` ([#47006](https://github.com/expo/expo/pull/47006) by [@hassankhan](https://github.com/hassankhan))
 
 ## 56.0.12 — 2026-05-26
 

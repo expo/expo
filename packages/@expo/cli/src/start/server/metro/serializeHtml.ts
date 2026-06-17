@@ -1,8 +1,7 @@
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import {
-  createInjectedCssAsString,
-  createInjectedScriptsAsString,
-  getHydrationFlagScriptAsString,
+  injectAssetsIntoHtml,
+  type StaticContentAssets,
 } from '@expo/router-server/build/utils/html';
 import type { RouteNode } from 'expo-router/build/Route';
 
@@ -29,14 +28,13 @@ export function serializeHtmlWithAssets({
   if (!resources) {
     return '';
   }
-  return htmlFromSerialAssets(resources, {
+  const assets = serialAssetsToStaticContentAssets(resources, {
     isExporting,
-    template,
     baseUrl,
     bundleUrl: isExporting ? undefined : devBundleUrl,
     route,
-    hydrate,
   });
+  return injectAssetsIntoHtml(template, { assets, hydrate });
 }
 
 /**
@@ -55,40 +53,39 @@ function combineUrlPath(baseUrl: string, ...segments: string[]) {
     .join('/');
 }
 
-function htmlFromSerialAssets(
+/**
+ * Converts Metro serial assets into the ordered payload injected by `injectAssetsIntoHtml()`.
+ */
+export function serialAssetsToStaticContentAssets(
   assets: SerialAsset[],
   {
     isExporting,
-    template,
     baseUrl,
     bundleUrl,
     route,
-    hydrate,
+    favicon,
   }: {
     isExporting: boolean;
-    template: string;
     baseUrl: string;
-    /** This is dev-only. */
     bundleUrl?: string;
     route?: RouteNode;
-    hydrate?: boolean;
+    favicon?: string;
   }
-) {
-  // Combine the CSS modules into tags that have hot refresh data attributes.
-  const styleString = assets
-    .filter((asset) => asset.type.startsWith('css'))
-    .map(({ type, metadata, filename, source }) => {
-      if (type === 'css') {
-        if (isExporting) {
-          return createInjectedCssAsString([combineUrlPath(baseUrl, filename)]);
-        } else {
-          return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
-        }
+): StaticContentAssets {
+  const css = assets
+    .filter((asset) => asset.type === 'css' || asset.type === 'css-external')
+    .map((asset) => {
+      if (asset.type === 'css-external') {
+        return { type: 'external' as const, source: asset.source };
       }
-      // External link tags will be passed through as-is.
-      return source;
-    })
-    .join('');
+      return isExporting
+        ? { type: 'css' as const, href: combineUrlPath(baseUrl, asset.filename) }
+        : { type: 'inline' as const, source: asset.source, hmrId: asset.metadata.hmrId };
+    });
+
+  if (bundleUrl) {
+    return { css, js: [bundleUrl], favicon };
+  }
 
   let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
@@ -103,46 +100,30 @@ function htmlFromSerialAssets(
     orderedJsAssets = [...runtimeAssets, ...sortedAsync, ...entryAssets];
   }
 
-  const scripts = bundleUrl
-    ? `<script src="${bundleUrl}" defer></script>`
-    : orderedJsAssets
-        .map(({ filename, metadata }) => {
-          // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
-          if (metadata.isAsync) {
-            // We have the data required to match async chunks to the route's HTML file.
-            if (
-              route?.entryPoints &&
-              metadata.modulePaths &&
-              Array.isArray(route.entryPoints) &&
-              Array.isArray(metadata.modulePaths)
-            ) {
-              // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
-              const doesAsyncChunkContainRouteEntryPoint = route.entryPoints.some((entryPoint) =>
-                (metadata.modulePaths as string[]).includes(entryPoint)
-              );
-              if (!doesAsyncChunkContainRouteEntryPoint) {
-                return '';
-              }
-              debug('Linking async chunk %s to HTML for route %s', filename, route.contextKey);
-              // Pass through to the next condition.
-            } else {
-              return '';
-            }
-            // Mark async chunks as defer so they don't block the page load.
-            // return `<script src="${combineUrlPath(baseUrl, filename)" defer></script>`;
-          }
+  const js = orderedJsAssets
+    .filter((asset) => {
+      if (!asset.metadata.isAsync) {
+        return true;
+      }
+      // Async chunks are only linked into the routes whose entry points they contain.
+      if (
+        route?.entryPoints &&
+        Array.isArray(route.entryPoints) &&
+        Array.isArray(asset.metadata.modulePaths)
+      ) {
+        const matches = route.entryPoints.some((entryPoint) =>
+          (asset.metadata.modulePaths as string[]).includes(entryPoint)
+        );
+        if (matches) {
+          debug('Linking async chunk %s to HTML for route %s', asset.filename, route.contextKey);
+        }
+        return matches;
+      }
+      return false;
+    })
+    .map((asset) => combineUrlPath(baseUrl, asset.filename));
 
-          return createInjectedScriptsAsString([combineUrlPath(baseUrl, filename)]);
-        })
-        .join('');
-
-  if (hydrate) {
-    template = template.replace('</head>', `${getHydrationFlagScriptAsString()}</head>`);
-  }
-
-  return template
-    .replace('</head>', `${styleString}</head>`)
-    .replace('</body>', `${scripts}\n</body>`);
+  return { css, js, favicon };
 }
 
 /**
