@@ -52,6 +52,11 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build fingerprint packages
+        run: pnpm turbo build --filter @expo/fingerprint...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: E2E Test @expo/fingerprint
         run: |
           pnpm tsc

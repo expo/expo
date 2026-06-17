@@ -19,15 +19,9 @@ export default (program: Command) => {
     )
     .option('-a, --all', 'Whether to check all packages and ignore `--since` option.', false)
     .option('-c, --core', 'Whether to add core packages to check.', false)
-    .option('--no-build', 'Whether to skip `pnpm build` check.', false)
     .option('--no-test', 'Whether to skip `pnpm test` check.', false)
     .option('--no-lint', 'Whether to skip `pnpm lint` check.', false)
     .option('--fix-lint', 'Whether to run `pnpm lint --fix` instead of `pnpm lint`.', false)
-    .option(
-      '--no-uniformity-check',
-      'Whether to check the uniformity of committed and generated build files.',
-      false
-    )
     .option('--no-dependency-check', 'Whether to skip the valid dependency chain check.', false)
     .description('Checks if packages build successfully and their tests pass.')
     .asyncAction(main);

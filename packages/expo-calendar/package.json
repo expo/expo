@@ -10,26 +10,39 @@
     "./package.json": "./package.json",
     "./plugin": "./plugin/build/index.js",
     "./legacy": {
-      "types": "./build/legacy/index.d.ts",
-      "default": "./src/legacy/index.ts"
+      "types": {
+        "source": "./src/legacy/index.ts",
+        "default": "./build/legacy/index.d.ts"
+      },
+      "source": "./src/legacy/index.ts",
+      "default": "./build/legacy/index.js"
     },
     "./next": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
     }
   },
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "keywords": [
     "react-native",

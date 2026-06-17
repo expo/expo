@@ -1,1 +1,0 @@
-{"version":3,"file":"Platform.js","sourceRoot":"","sources":["../src/Platform.ts"],"names":[],"mappings":";;;AAAA,IAAY,QAIX;AAJD,WAAY,QAAQ;IAClB,qCAAY,CAAA;IACZ,6CAAgB,CAAA;IAChB,uCAAoB,CAAA;AACtB,CAAC,EAJW,QAAQ,wBAAR,QAAQ,QAInB","sourcesContent":["export enum Platform {\n  iOS = 1 << 1,\n  Android = 1 << 2,\n  Both = iOS | Android,\n}\n"]}

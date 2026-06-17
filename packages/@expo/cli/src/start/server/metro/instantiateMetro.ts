@@ -634,7 +634,7 @@ function pruneCustomTransformOptions(
   if (typeof routerRoot === 'string') {
     const isRouterEntry = /\/expo-router\/_ctx/.test(filePath);
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
-    const isRouterModule = /\/expo-router\/build\//.test(filePath);
+    const isRouterModule = /\/expo-router\/(?:build|src)\//.test(filePath);
     // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
     const resolvedRouterRoot = path.resolve(projectRoot, routerRoot).split(path.sep).join('/');
     const isRouterRoute = path.isAbsolute(filePath) && filePath.startsWith(resolvedRouterRoot);
@@ -649,7 +649,7 @@ function pruneCustomTransformOptions(
   if (
     transformOptions.customTransformOptions?.asyncRoutes &&
     // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
-    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/(?:build|src)\//))
   ) {
     delete transformOptions.customTransformOptions.asyncRoutes;
   }

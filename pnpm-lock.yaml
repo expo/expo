@@ -76,6 +76,9 @@ importers:
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)
+      turbo:
+        specifier: 2.9.18
+        version: 2.9.18
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
@@ -1917,6 +1920,9 @@ importers:
       dnssd-advertise:
         specifier: ^1.1.4
         version: 1.1.4
+      expo:
+        specifier: '*'
+        version: link:../../expo
       expo-server:
         specifier: workspace:^56.0.4
         version: link:../../expo-server
@@ -2008,18 +2014,6 @@ importers:
       '@playwright/test':
         specifier: ^1.59.0
         version: 1.59.0
-      '@swc/core':
-        specifier: ^1.11.11
-        version: 1.15.18
-      '@taskr/clear':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@taskr/esnext':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@taskr/watch':
-        specifier: ^1.1.0
-        version: 1.1.0
       '@types/accepts':
         specifier: ^1.3.5
         version: 1.3.7
@@ -2089,9 +2083,6 @@ importers:
       expect:
         specifier: ^29.7.0
         version: 29.7.0
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-atlas:
         specifier: ^0.4.1
         version: 0.4.3(expo@packages+expo)
@@ -2125,9 +2116,6 @@ importers:
       playwright:
         specifier: ^1.59.0
         version: 1.59.0
-      taskr:
-        specifier: ^1.1.0
-        version: 1.1.0
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
@@ -2290,6 +2278,9 @@ importers:
 
   packages/@expo/dom-webview:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -2300,9 +2291,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2368,6 +2356,12 @@ importers:
         specifier: ^7.6.0
         version: 7.7.4
     devDependencies:
+      '@expo/config':
+        specifier: workspace:~55.0.8
+        version: link:../config
+      '@expo/require-utils':
+        specifier: workspace:~55.0.2
+        version: link:../require-utils
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
@@ -2380,9 +2374,6 @@ importers:
       '@types/semver':
         specifier: ^7.5.8
         version: 7.7.1
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2514,9 +2505,6 @@ importers:
         specifier: ^0.1.10
         version: 0.1.11
     devDependencies:
-      '@expo/cli':
-        specifier: workspace:*
-        version: link:../cli
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
@@ -2526,9 +2514,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.2.3(@types/react@19.2.14)
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2616,6 +2601,9 @@ importers:
       debug:
         specifier: ^4.3.2
         version: 4.4.3
+      expo:
+        specifier: '*'
+        version: link:../../expo
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
@@ -2662,9 +2650,6 @@ importers:
       dedent:
         specifier: ^1.5.3
         version: 1.7.2
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2729,6 +2714,9 @@ importers:
       anser:
         specifier: ^1.4.9
         version: 1.4.10
+      expo:
+        specifier: '*'
+        version: link:../../expo
       pretty-format:
         specifier: ^29.7.0
         version: 29.7.0
@@ -2748,9 +2736,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-constants:
         specifier: workspace:*
         version: link:../../expo-constants
@@ -2934,6 +2919,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
+      expo:
+        specifier: '*'
+        version: link:../../expo
       expo-constants:
         specifier: workspace:^56.0.16
         version: link:../../expo-constants
@@ -2968,9 +2956,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.2.3(@types/react@19.2.14)
-      expo:
+      expo-module-scripts:
         specifier: workspace:*
-        version: link:../../expo
+        version: link:../../expo-module-scripts
       expo-router:
         specifier: workspace:*
         version: link:../../expo-router
@@ -3155,6 +3143,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-widgets:
         specifier: workspace:^56.0.15
         version: link:../expo-widgets
@@ -3180,9 +3171,6 @@ importers:
       babel-plugin-module-resolver:
         specifier: ^5.0.2
         version: 5.0.3
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3484,6 +3472,9 @@ importers:
       eslint-plugin-eslint-plugin:
         specifier: ^6.2.0
         version: 6.5.0(eslint@9.39.4(jiti@1.21.7))
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
@@ -3687,6 +3678,9 @@ importers:
       '@expo/image-utils':
         specifier: workspace:^0.10.1
         version: link:../@expo/image-utils
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-constants:
         specifier: workspace:~56.0.16
         version: link:../expo-constants
@@ -3709,9 +3703,6 @@ importers:
       '@types/react-native__assets':
         specifier: ^1.0.3
         version: 1.0.3
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4104,6 +4095,9 @@ importers:
       '@expo/env':
         specifier: workspace:~2.3.0
         version: link:../@expo/env
+      expo:
+        specifier: '*'
+        version: link:../expo
       react-native:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
@@ -4111,9 +4105,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-manifests:
         specifier: workspace:*
         version: link:../expo-manifests
@@ -4157,6 +4148,9 @@ importers:
 
   packages/expo-dev-client:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-dev-launcher:
         specifier: workspace:~56.0.16
         version: link:../expo-dev-launcher
@@ -4176,9 +4170,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4191,6 +4182,9 @@ importers:
       '@expo/schema-utils':
         specifier: workspace:^56.0.0
         version: link:../@expo/schema-utils
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-dev-menu:
         specifier: workspace:~56.0.15
         version: link:../expo-dev-menu
@@ -4204,12 +4198,12 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      expo:
-        specifier: workspace:*
-        version: link:../expo
 
   packages/expo-dev-menu:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-dev-menu-interface:
         specifier: workspace:~56.0.0
         version: link:../expo-dev-menu-interface
@@ -4226,9 +4220,6 @@ importers:
       babel-preset-expo:
         specifier: workspace:*
         version: link:../babel-preset-expo
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4240,9 +4231,9 @@ importers:
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
 
   packages/expo-dev-menu-interface:
-    devDependencies:
+    dependencies:
       expo:
-        specifier: workspace:*
+        specifier: '*'
         version: link:../expo
 
   packages/expo-device:
@@ -4369,6 +4360,9 @@ importers:
 
   packages/expo-file-system:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react-native:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
@@ -4376,9 +4370,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4388,6 +4379,9 @@ importers:
 
   packages/expo-font:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       fontfaceobserver:
         specifier: ^2.1.0
         version: 2.3.0
@@ -4410,9 +4404,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4465,6 +4456,9 @@ importers:
 
   packages/expo-glass-effect:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -4487,9 +4481,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4598,6 +4589,9 @@ importers:
 
   packages/expo-keep-awake:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -4608,9 +4602,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4770,13 +4761,13 @@ importers:
 
   packages/expo-manifests:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-json-utils:
         specifier: workspace:~56.0.0
         version: link:../expo-json-utils
     devDependencies:
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4858,6 +4849,9 @@ importers:
       '@react-native/jest-preset':
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(react@19.2.3)
+      '@swc/core':
+        specifier: ^1.15.18
+        version: 1.15.18
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
@@ -4987,6 +4981,10 @@ importers:
       yaml:
         specifier: ^2.8.3
         version: 2.8.3
+    devDependencies:
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
 
   packages/expo-navigation-bar:
     dependencies:
@@ -5182,6 +5180,9 @@ importers:
       escape-string-regexp:
         specifier: ^4.0.0
         version: 4.0.0
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-constants:
         specifier: workspace:^56.0.16
         version: link:../expo-constants
@@ -5285,9 +5286,6 @@ importers:
       '@types/react-test-renderer':
         specifier: ^19.1.0
         version: 19.1.0
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       immer:
         specifier: ^10.1.1
         version: 10.2.0
@@ -5454,6 +5452,9 @@ importers:
       '@expo/image-utils':
         specifier: workspace:^0.10.1
         version: link:../@expo/image-utils
+      expo:
+        specifier: '*'
+        version: link:../expo
       xml2js:
         specifier: 0.6.0
         version: 0.6.0
@@ -5467,9 +5468,6 @@ importers:
       '@types/xml2js':
         specifier: ~0.4.11
         version: 0.4.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -5580,6 +5578,9 @@ importers:
       '@expo-google-fonts/material-symbols':
         specifier: ^0.4.1
         version: 0.4.27
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -5593,9 +5594,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-font:
         specifier: workspace:*
         version: link:../expo-font
@@ -5745,6 +5743,9 @@ importers:
 
   packages/expo-ui:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -5776,9 +5777,6 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -5809,6 +5807,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-eas-client:
         specifier: workspace:~56.0.0
         version: link:../expo-eas-client
@@ -5873,9 +5874,6 @@ importers:
       '@vercel/ncc':
         specifier: ^0.38.3
         version: 0.38.4
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-dev-client:
         specifier: workspace:*
         version: link:../expo-dev-client
@@ -5902,9 +5900,9 @@ importers:
         version: 4.38.3
 
   packages/expo-updates-interface:
-    devDependencies:
+    dependencies:
       expo:
-        specifier: workspace:*
+        specifier: '*'
         version: link:../expo
 
   packages/expo-video:
@@ -7970,72 +7968,85 @@ packages:
     resolution: {integrity: sha512-IVfGJa7gjChDET1dK9SekxFFdflarnUB8PwW8aGwEoF3oAsSDuNUTYS+SKDOyOJxQyDC1aPFMuRYLoDInyV9Ew==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linux-arm@1.1.0':
     resolution: {integrity: sha512-s8BAd0lwUIvYCJyRdFqvsj+BJIpDBSxs6ivrOPm/R7piTs5UIwY5OjXrP2bqXC9/moGsyRa37eYWYCOGVXxVrA==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linux-ppc64@1.1.0':
     resolution: {integrity: sha512-tiXxFZFbhnkWE2LA8oQj7KYR+bWBkiV2nilRldT7bqoEZ4HiDOcePr9wVDAZPi/Id5fT1oY9iGnDq20cwUz8lQ==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linux-s390x@1.1.0':
     resolution: {integrity: sha512-xukSwvhguw7COyzvmjydRb3x/09+21HykyapcZchiCUkTThEQEOMtBj9UhkaBRLuBrgLFzQ2wbxdeCCJW/jgJA==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linux-x64@1.1.0':
     resolution: {integrity: sha512-yRj2+reB8iMg9W5sULM3S74jVS7zqSzHG3Ol/twnAAkAhnGQnpjj6e4ayUz7V+FpKypwgs82xbRdYtchTTUB+Q==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linuxmusl-arm64@1.1.0':
     resolution: {integrity: sha512-jYZdG+whg0MDK+q2COKbYidaqW/WTz0cc1E+tMAusiDygrM4ypmSCjOJPmFTvHHJ8j/6cAGyeDWZOsK06tP33w==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@img/sharp-libvips-linuxmusl-x64@1.1.0':
     resolution: {integrity: sha512-wK7SBdwrAiycjXdkPnGCPLjYb9lD4l6Ze2gSdAGVZrEL05AOUJESWU2lhlC+Ffn5/G+VKuSm6zzbQSzFX/P65A==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@img/sharp-linux-arm64@0.34.2':
     resolution: {integrity: sha512-D8n8wgWmPDakc83LORcfJepdOSN6MvWNzzz2ux0MnIbOqdieRZwVYY32zxVx+IFUT8er5KPcyU3XXsn+GzG/0Q==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linux-arm@0.34.2':
     resolution: {integrity: sha512-0DZzkvuEOqQUP9mo2kjjKNok5AmnOr1jB2XYjkaoNRwpAYMDzRmAqUIa1nRi58S2WswqSfPOWLNOr0FDT3H5RQ==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linux-s390x@0.34.2':
     resolution: {integrity: sha512-EGZ1xwhBI7dNISwxjChqBGELCWMGDvmxZXKjQRuqMrakhO8QoMgqCrdjnAqJq/CScxfRn+Bb7suXBElKQpPDiw==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linux-x64@0.34.2':
     resolution: {integrity: sha512-sD7J+h5nFLMMmOXYH4DD9UtSNBD05tWSSdWAcEyzqW8Cn5UxXvsHAxmxSesYUsTOBmUnjtxghKDl15EvfqLFbQ==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linuxmusl-arm64@0.34.2':
     resolution: {integrity: sha512-NEE2vQ6wcxYav1/A22OOxoSOGiKnNmDzCYFOZ949xFmrWZOVII1Bp3NqVVpvj+3UeHMFyN5eP/V5hzViQ5CZNA==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@img/sharp-linuxmusl-x64@0.34.2':
     resolution: {integrity: sha512-DOYMrDm5E6/8bm/yQLCWyuDJwUnlevR8xtF8bs+gjZ7cyUNYXiSf/E8Kp0Ss5xasIaXSHzb888V1BE4i1hFhAA==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@img/sharp-wasm32@0.34.2':
     resolution: {integrity: sha512-/VI4mdlJ9zkaq53MbIG6rZY+QRN3MLbR6usYlgITEzi4Rpx5S6LFKsycOQjkOGmqTNmkIdLjEvooFKwww6OpdQ==}
@@ -8372,36 +8383,42 @@ packages:
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-arm-musl@2.5.6':
     resolution: {integrity: sha512-Ve3gUCG57nuUUSyjBq/MAM0CzArtuIOxsBdQ+ftz6ho8n7s1i9E1Nmk/xmP323r2YL0SONs1EuwqBp2u1k5fxg==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-linux-arm64-glibc@2.5.6':
     resolution: {integrity: sha512-f2g/DT3NhGPdBmMWYoxixqYr3v/UXcmLOYy16Bx0TM20Tchduwr4EaCbmxh1321TABqPGDpS8D/ggOTaljijOA==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-arm64-musl@2.5.6':
     resolution: {integrity: sha512-qb6naMDGlbCwdhLj6hgoVKJl2odL34z2sqkC7Z6kzir8b5W65WYDpLB6R06KabvZdgoHI/zxke4b3zR0wAbDTA==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-linux-x64-glibc@2.5.6':
     resolution: {integrity: sha512-kbT5wvNQlx7NaGjzPFu8nVIW1rWqV780O7ZtkjuWaPUgpv2NMFpjYERVi0UYj1msZNyCzGlaCWEtzc+exjMGbQ==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-x64-musl@2.5.6':
     resolution: {integrity: sha512-1JRFeC+h7RdXwldHzTsmdtYR/Ku8SylLgTU/reMuqdVD7CtLwf0VR1FqeprZ0eHQkO0vqsbvFLXUmYm/uNKJBg==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-win32-arm64@2.5.6':
     resolution: {integrity: sha512-3ukyebjc6eGlw9yRt678DxVF7rjXatWiHvTXqphZLvo7aC5NdEgFufVwjFfY51ijYEWpXbqF5jtrK275z52D4Q==}
@@ -9016,24 +9033,28 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@swc/core-linux-arm64-musl@1.15.18':
     resolution: {integrity: sha512-0a+Lix+FSSHBSBOA0XznCcHo5/1nA6oLLjcnocvzXeqtdjnPb+SvchItHI+lfeiuj1sClYPDvPMLSLyXFaiIKw==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@swc/core-linux-x64-gnu@1.15.18':
     resolution: {integrity: sha512-wG9J8vReUlpaHz4KOD/5UE1AUgirimU4UFT9oZmupUDEofxJKYb1mTA/DrMj0s78bkBiNI+7Fo2EgPuvOJfuAA==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@swc/core-linux-x64-musl@1.15.18':
     resolution: {integrity: sha512-4nwbVvCphKzicwNWRmvD5iBaZj8JYsRGa4xOxJmOyHlMDpsvvJ2OR2cODlvWyGFH6BYL1MfIAK3qph3hp0Az6g==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@swc/core-win32-arm64-msvc@1.15.18':
     resolution: {integrity: sha512-zk0RYO+LjiBCat2RTMHzAWaMky0cra9loH4oRrLKLLNuL+jarxKLFDA8xTZWEkCPLjUTwlRN7d28eDLLMgtUcQ==}
@@ -9150,6 +9171,36 @@ packages:
   '@tsd/typescript@6.0.3':
     resolution: {integrity: sha512-/PrZSLnkoCYJ2upiMeCjkCnTSgCLAguM5mcZVa5UkWzX9eZS6EIT0I3+M8q1NkHEu/gxTPgiVwiAT5bS1GS4cQ==}
     engines: {node: '>=14.17'}
+
+  '@turbo/darwin-64@2.9.18':
+    resolution: {integrity: sha512-9f27peFu16ur8c0v9nUFUEyBnbKuuFsUTjHFWfmwGfzySBXbHwzU44QhZon6Mznz0cHsIr3984NQj/bVrnGSRw==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@turbo/darwin-arm64@2.9.18':
+    resolution: {integrity: sha512-9A6TMRq/Ib+QnbhLlgkhOm+624wO4pzSQ/yQviQfWHOlFvaYxdnIAYmu2H6TS6y7kSVL0DvzNe04NbESTOzFVQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@turbo/linux-64@2.9.18':
+    resolution: {integrity: sha512-zCdIDtz69AnbYh913elJRRoF3QY5aa2HNnf+4rAkc7bQ+tWujiDkCNV7stazOUPggaDvhKIf2Z87qHftTeXSkw==}
+    cpu: [x64]
+    os: [linux]
+
+  '@turbo/linux-arm64@2.9.18':
+    resolution: {integrity: sha512-Va1kXI04naMgYwqv/5Dfa36dTDx8015U7oaQAjrXa45ua9OoFjSV4OmvkML4EmXvUclQHCiBRbY8bvd0jV7eAg==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@turbo/windows-64@2.9.18':
+    resolution: {integrity: sha512-m0kDhZANxSNz9ck1ybogFscHabriAsp4eDFNrN/1H5WrgTF7b3VlcPZnhuO3v2+E2KnCbeAc+UUT10BZZHdDKw==}
+    cpu: [x64]
+    os: [win32]
+
+  '@turbo/windows-arm64@2.9.18':
+    resolution: {integrity: sha512-nUdR8WqoomUys9iIQmG45TMiizJ+5BV8egSeLLZba/AWblyp3fVBcIH1kSE58OtK4g2YzbMJEth6Ttv9w5rqMA==}
+    cpu: [arm64]
+    os: [win32]
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -9654,41 +9705,49 @@ packages:
     resolution: {integrity: sha512-34gw7PjDGB9JgePJEmhEqBhWvCiiWCuXsL9hYphDF7crW7UgI05gyBAi6MF58uGcMOiOqSJ2ybEeCvHcq0BCmQ==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@unrs/resolver-binding-linux-arm64-musl@1.11.1':
     resolution: {integrity: sha512-RyMIx6Uf53hhOtJDIamSbTskA99sPHS96wxVE/bJtePJJtpdKGXO1wY90oRdXuYOGOTuqjT8ACccMc4K6QmT3w==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@unrs/resolver-binding-linux-ppc64-gnu@1.11.1':
     resolution: {integrity: sha512-D8Vae74A4/a+mZH0FbOkFJL9DSK2R6TFPC9M+jCWYia/q2einCubX10pecpDiTmkJVUH+y8K3BZClycD8nCShA==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@unrs/resolver-binding-linux-riscv64-gnu@1.11.1':
     resolution: {integrity: sha512-frxL4OrzOWVVsOc96+V3aqTIQl1O2TjgExV4EKgRY09AJ9leZpEg8Ak9phadbuX0BA4k8U5qtvMSQQGGmaJqcQ==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@unrs/resolver-binding-linux-riscv64-musl@1.11.1':
     resolution: {integrity: sha512-mJ5vuDaIZ+l/acv01sHoXfpnyrNKOk/3aDoEdLO/Xtn9HuZlDD6jKxHlkN8ZhWyLJsRBxfv9GYM2utQ1SChKew==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@unrs/resolver-binding-linux-s390x-gnu@1.11.1':
     resolution: {integrity: sha512-kELo8ebBVtb9sA7rMe1Cph4QHreByhaZ2QEADd9NzIQsYNQpt9UkM9iqr2lhGr5afh885d/cB5QeTXSbZHTYPg==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@unrs/resolver-binding-linux-x64-gnu@1.11.1':
     resolution: {integrity: sha512-C3ZAHugKgovV5YvAMsxhq0gtXuwESUKc5MhEtjBpLoHPLYM+iuwSj3lflFwK3DPm68660rZ7G8BMcwSro7hD5w==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@unrs/resolver-binding-linux-x64-musl@1.11.1':
     resolution: {integrity: sha512-rV0YSoyhK2nZ4vEswT/QwqzqQXw5I6CjoaYMOX0TqBlWhojUf8P94mvI7nuJTeaCkkds3QE4+zS8Ko+GdXuZtA==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@unrs/resolver-binding-wasm32-wasi@1.11.1':
     resolution: {integrity: sha512-5u4RkfxJm+Ng7IWgkzi3qrFOvLvQYnPBmjmZQ8+szTK/b31fQCnleNl1GgEt7nIsZRIf5PLhPwT0WM+q45x/UQ==}
@@ -12850,24 +12909,28 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-arm64-musl@1.32.0:
     resolution: {integrity: sha512-UpQkoenr4UJEzgVIYpI80lDFvRmPVg6oqboNHfoH4CQIfNA+HOrZ7Mo7KZP02dC6LjghPQJeBsvXhJod/wnIBg==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-linux-x64-gnu@1.32.0:
     resolution: {integrity: sha512-V7Qr52IhZmdKPVr+Vtw8o+WLsQJYCTd8loIfpDaMRWGUZfBOYEJeyJIkqGIDMZPwPx24pUMfwSxxI8phr/MbOA==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-x64-musl@1.32.0:
     resolution: {integrity: sha512-bYcLp+Vb0awsiXg/80uCRezCYHNg1/l3mt0gzHnWV9XP1W5sKa5/TCdGWaR/zBM2PeF/HbsQv/j2URNOiVuxWg==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-win32-arm64-msvc@1.32.0:
     resolution: {integrity: sha512-8SbC8BR40pS6baCM8sbtYDSwEVQd4JlFTOlaD3gWGHfThTcABnNDBda6eTZeqbofalIJhFx0qKzgHJmcPTnGdw==}
@@ -15344,6 +15407,10 @@ packages:
 
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
+
+  turbo@2.9.18:
+    resolution: {integrity: sha512-bwabv6PupzeavybzEoArBAkwq5fnzwf8OFnRtpHwnviFWuwJPFxtyH+aVp36TmIqK3aYYgtTJ3J0m2ysxxSzQg==}
+    hasBin: true
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -18854,9 +18921,7 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -19230,6 +19295,24 @@ snapshots:
   '@tsd/typescript@5.9.3': {}
 
   '@tsd/typescript@6.0.3': {}
+
+  '@turbo/darwin-64@2.9.18':
+    optional: true
+
+  '@turbo/darwin-arm64@2.9.18':
+    optional: true
+
+  '@turbo/linux-64@2.9.18':
+    optional: true
+
+  '@turbo/linux-arm64@2.9.18':
+    optional: true
+
+  '@turbo/windows-64@2.9.18':
+    optional: true
+
+  '@turbo/windows-arm64@2.9.18':
+    optional: true
 
   '@tybys/wasm-util@0.10.1':
     dependencies:
@@ -26483,6 +26566,15 @@ snapshots:
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
+
+  turbo@2.9.18:
+    optionalDependencies:
+      '@turbo/darwin-64': 2.9.18
+      '@turbo/darwin-arm64': 2.9.18
+      '@turbo/linux-64': 2.9.18
+      '@turbo/linux-arm64': 2.9.18
+      '@turbo/windows-64': 2.9.18
+      '@turbo/windows-arm64': 2.9.18
 
   type-check@0.4.0:
     dependencies:

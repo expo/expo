@@ -1,12 +1,7 @@
 {
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
-    "outDir": "./build",
     "rootDir": "./src",
-    "module": "commonjs",
-    "moduleResolution": "bundler",
-    "verbatimModuleSyntax": false,
-    "noEmit": false,
     "resolveJsonModule": true,
     "types": ["jest", "node"]
   },

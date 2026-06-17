@@ -42,6 +42,11 @@ jobs:
           bun-version: latest
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build router packages
+        run: pnpm turbo build --filter expo-router...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🧪 Run types tests
         working-directory: packages/expo-router
         run: pnpm test:types

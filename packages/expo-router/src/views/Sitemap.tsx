@@ -14,6 +14,7 @@ import type { SitemapType } from './useSitemap';
 import { useSitemap } from './useSitemap';
 import { Link } from '../link/Link';
 import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
+import type { Href } from '../types';
 
 const INDENT = 20;
 
@@ -134,7 +135,7 @@ function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
 
 function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) {
   return (
-    <Link accessibilityLabel={node.contextKey} href={node.href} asChild replace>
+    <Link accessibilityLabel={node.contextKey} href={node.href as Href} asChild replace>
       <SitemapItemPressable
         leftIcon={<FileIcon />}
         rightIcon={<ForwardIcon />}
