@@ -40,11 +40,26 @@ function getPlatformFromPreset(basePreset) {
 
 function _createJestPreset(basePreset) {
   const { platform, isServer } = getPlatformFromPreset(basePreset);
+  const customExportConditions =
+    basePreset.testEnvironmentOptions?.customExportConditions?.slice() ?? [];
+  if (!customExportConditions.includes('source')) {
+    customExportConditions.push('source');
+  }
   // Jest does not support chained presets so we flatten this preset before exporting it
   return {
     ...basePreset,
     clearMocks: true,
     roots: ['<rootDir>/src'],
+    testEnvironmentOptions: {
+      ...basePreset.testEnvironmentOptions,
+      customExportConditions,
+    },
+    moduleNameMapper: {
+      // Source exports can contain TypeScript files that use explicit `.js`
+      // extensions for runtime ESM compatibility.
+      '^(\\.{1,2}/.*)\\.js$': '$1',
+      ...basePreset.moduleNameMapper,
+    },
     transform: {
       ...basePreset.transform,
       '^.+\\.tsx?$': [

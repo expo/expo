@@ -10,7 +10,7 @@ jest.mock('expo-router/build/views/Navigator', () => ({}));
 jest.mock('expo-constants', () => ({}));
 // TODO(@ubax): check why its needed
 jest.mock('react-native', () => ({ Platform: { select: jest.fn((obj) => obj.web) } }));
-jest.mock('expo-linking', () => ({}));
+jest.mock('expo-linking', () => ({}), { virtual: true });
 jest.mock('expo-modules-core', () => ({}));
 
 function Route() {

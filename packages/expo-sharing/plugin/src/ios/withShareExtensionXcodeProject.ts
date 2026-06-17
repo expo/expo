@@ -43,7 +43,8 @@ export const withShareExtensionXcodeProject: ConfigPlugin<WithShareExtensionXcod
       return config;
     }
 
-    const xcConfigurationList = addXCConfigurationList(
+    // TODO(@kitten): This was untyped before and types now fail
+    const xcConfigurationList: any = addXCConfigurationList(
       xcodeProject,
       targetName,
       bundleIdentifier,
@@ -51,8 +52,8 @@ export const withShareExtensionXcodeProject: ConfigPlugin<WithShareExtensionXcod
       config.ios?.buildNumber ?? '1',
       config.version ?? '1.0'
     );
-
-    const productFile = addProductFile(xcodeProject, targetName, groupName);
+    // TODO(@kitten): This was untyped before and types now fail
+    const productFile: any = addProductFile(xcodeProject, targetName, groupName);
 
     const pbxNativeTargetObject = addToPbxNativeTargetSection(
       xcodeProject,

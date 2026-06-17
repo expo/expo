@@ -187,6 +187,9 @@ jobs:
 
       - name: Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
         id: prebuild_xcframeworks

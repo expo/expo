@@ -1,6 +1,5 @@
-import { useObserve } from 'expo-observe';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -8,16 +7,12 @@ import { useTheme } from '@/utils/theme';
 
 export default function ModalScreen() {
   const theme = useTheme();
-  const { markInteractive } = useObserve();
-
-  useEffect(() => {
-    markInteractive();
-  }, []);
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background.screen }]}
       contentContainerStyle={styles.content}>
+      <ObserveInteractiveMarker />
       <Text style={[styles.heading, { color: theme.text.default }]}>Modal</Text>
       <Text style={[styles.body, { color: theme.text.secondary }]}>{`presentation: 'modal'`}</Text>
       <Button

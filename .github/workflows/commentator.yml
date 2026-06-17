@@ -30,6 +30,11 @@ jobs:
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
+      - name: 🛠 Build expotools
+        run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 💬 Comment on GitHub issues as github-actions bot
         run: pnpm expotools commentator --payload "${{ github.event.inputs.payload }}"
         env:

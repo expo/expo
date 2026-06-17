@@ -4,14 +4,24 @@
   "description": "Provides cryptography primitives for Android, iOS and web.",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/Crypto.ts",
+        "default": "./build/Crypto.d.ts"
+      },
+      "source": "./src/Crypto.ts",
+      "default": "./build/Crypto.js"
+    },
+    "./package.json": "./package.json"
+  },
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "keywords": [
     "react-native",
