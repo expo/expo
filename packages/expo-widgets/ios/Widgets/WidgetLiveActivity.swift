@@ -12,49 +12,33 @@ struct LiveActivityAttributes: ActivityAttributes {
 
 @available(iOS 16.1, *)
 public struct WidgetLiveActivity: Widget {
-  @Environment(\.self) var env
-  
   let widgetContext: AppContext = AppContext()
-  
-  var environment: [String: Any] {
-    return getLiveActivityEnvironment(environment: env)
-  }
 
   public init() {}
 
   public var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
-      let nodes = getLiveActivityNodes(
-        forName: context.state.name,
-        props: context.state.props,
-        environment: environment
-      )
-      LiveActivityBannerView(context: context, nodes: nodes)
+      LiveActivityBannerView(context: context)
     } dynamicIsland: { context in
-      let nodes = getLiveActivityNodes(
-        forName: context.state.name,
-        props: context.state.props,
-        environment: environment
-      )
-      return DynamicIsland {
+      DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
-          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedCenter")
+          LiveActivitySectionView(context: context, sectionName: "expandedCenter")
         }
         DynamicIslandExpandedRegion(.leading) {
-          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedLeading")
+          LiveActivitySectionView(context: context, sectionName: "expandedLeading")
         }
         DynamicIslandExpandedRegion(.trailing) {
-          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedTrailing")
+          LiveActivitySectionView(context: context, sectionName: "expandedTrailing")
         }
         DynamicIslandExpandedRegion(.bottom) {
-          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedBottom")
+          LiveActivitySectionView(context: context, sectionName: "expandedBottom")
         }
       } compactLeading: {
-        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "compactLeading")
+        LiveActivitySectionView(context: context, sectionName: "compactLeading")
       } compactTrailing: {
-        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "compactTrailing")
+        LiveActivitySectionView(context: context, sectionName: "compactTrailing")
       } minimal: {
-        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "minimal")
+        LiveActivitySectionView(context: context, sectionName: "minimal")
       }
       .widgetURL(getLiveActivityUrl(forName: context.state.name))
     }
@@ -64,11 +48,16 @@ public struct WidgetLiveActivity: Widget {
 
 @available(iOS 16.1, *)
 private struct LiveActivitySectionView: View {
+  @Environment(\.self) var env
   let context: ActivityViewContext<LiveActivityAttributes>
-  let nodes: [String: Any]
   let sectionName: String
 
   var body: some View {
+    let nodes = getLiveActivityNodes(
+      forName: context.state.name,
+      props: context.state.props,
+      environment: getLiveActivityEnvironment(environment: env)
+    )
     if let node = nodes[sectionName] as? [String: Any] {
       WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
     } else {
@@ -79,10 +68,15 @@ private struct LiveActivitySectionView: View {
 
 @available(iOS 16.1, *)
 private struct LiveActivityBannerView: View {
+  @Environment(\.self) var env
   var context: ActivityViewContext<LiveActivityAttributes>
-  let nodes: [String: Any]
 
   var body: some View {
+    let nodes = getLiveActivityNodes(
+      forName: context.state.name,
+      props: context.state.props,
+      environment: getLiveActivityEnvironment(environment: env)
+    )
     if #available(iOS 18.0, *) {
       LiveActivityBanner(context: context, nodes: nodes)
     } else if let node = nodes["banner"] as? [String: Any] {
