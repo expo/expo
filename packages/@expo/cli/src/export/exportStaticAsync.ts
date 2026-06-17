@@ -367,6 +367,14 @@ export async function exportFromServerAsync(
         .filter((asset) => asset.type === 'css')
         .map((asset) => toAssetUrl(asset.filename));
 
+      // External stylesheets (`@import url(https://...)`) are extracted out of the bundled CSS.
+      const externalCssAssets = resources.artifacts
+        .filter((asset) => asset.type === 'css-external')
+        .map((asset) => ({
+          href: asset.filename,
+          media: asset.metadata.media,
+        }));
+
       const jsArtifacts = resources.artifacts.filter((asset) => asset.type === 'js');
       const orderedJsAssets = assetsRequiresSort(jsArtifacts);
       const syncJs = orderedJsAssets.filter((asset) => !asset.metadata.isAsync);
@@ -411,6 +419,7 @@ export async function exportFromServerAsync(
         callback: (manifest) => {
           manifest.assets = {
             css: cssAssets,
+            externalCss: externalCssAssets,
             js: syncJsAssets,
             favicon: faviconAsset?.href,
           };
