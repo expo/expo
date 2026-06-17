@@ -1,5 +1,5 @@
 import type { MetricAttributes } from 'expo-app-metrics';
-export type InteractiveMarkerProps = {
+export type ObserveInteractiveMarkerProps = {
     /**
      * Custom parameters attached to the TTI metric, forwarded to `markInteractive`.
      * Values can be strings, numbers, booleans, or other JSON-serializable values.
@@ -33,5 +33,5 @@ export type InteractiveMarkerProps = {
  * }
  * ```
  */
-export declare function InteractiveMarker(props: InteractiveMarkerProps): null;
+export declare function ObserveInteractiveMarker(props: ObserveInteractiveMarkerProps): null;
 //# sourceMappingURL=InteractiveMarker.d.ts.map
