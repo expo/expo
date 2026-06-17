@@ -8,7 +8,7 @@ hideTOC: true
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-If you publish updates to EAS Update branches named after GitHub branches, for example with [`eas update --auto`](/eas-update/eas-cli/#create-a-new-update-and-publish-it), the [`update` workflow job](/eas/workflows/pre-packaged-jobs#update) with `branch: ${{ github.ref_name }}`, or [preview updates on every branch](/eas/workflows/examples/publish-preview-update), deleting the GitHub branch leaves the EAS Update branch behind. This workflow cleans up when a Git branch is deleted.
+You might publish updates to EAS Update branches named after GitHub branches, for example with [`eas update --auto`](/eas-update/eas-cli/#create-a-new-update-and-publish-it), the [`update` workflow job](/eas/workflows/pre-packaged-jobs#update) with `branch: ${{ github.ref_name }}`, or [preview updates on every branch](/eas/workflows/examples/publish-preview-update). When you do, deleting the GitHub branch leaves the EAS Update branch behind. This workflow cleans up the orphaned EAS Update branch when a Git branch is deleted.
 
 ## Get started
 
