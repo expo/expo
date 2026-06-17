@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [plugin] Allow overriding the `defaultLaunchURL` option at build time with the `EXPO_DEV_LAUNCHER_DEFAULT_LAUNCH_URL` environment variable, and add plugin tests for `defaultLaunchURL`. ([#47009](https://github.com/expo/expo/pull/47009) by [@qwertey6](https://github.com/qwertey6))
+
 ### 🐛 Bug fixes
 
 - [iOS] Use `RCTPlatformName` instead of hardcoding `ios` when requesting bundles from Metro. ([#46443](https://github.com/expo/expo/pull/46443) by [@gabrieldonadel](https://github.com/gabrieldonadel))
