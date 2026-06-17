@@ -42,14 +42,14 @@ public extension EventEmitter {
       return
     }
     // The emitter is not necessarily `Sendable` - some modules hold non-sendable state — so we can't let
-    // the compiler send `self` into the `@JavaScriptActor` region. Capturing it as `nonisolated(unsafe)` is
-    // safe here because the scheduled closure only calls `withEventTarget`, which touches `@JavaScriptActor`-
-    // isolated or `Sendable` state (the JS object, the registry, `appContext`) and the emitter's identity -
-    // never the module's own mutable state.
-    nonisolated(unsafe) weak let emitter = self
+    // the compiler send `self` into the `@JavaScriptActor` region. Wrapping it in a weak, `@unchecked
+    // Sendable` box is safe here because the scheduled closure only calls `withEventTarget`, which touches
+    // `@JavaScriptActor`-isolated or `Sendable` state (the JS object, the registry, `appContext`) and the
+    // emitter's identity - never the module's own mutable state.
+    let emitter = NonisolatedUnsafeWeakVar(self)
 
     runtime.schedule {
-      guard let emitter else {
+      guard let emitter = emitter.value else {
         return
       }
       let dispatched = emitter.withEventTarget { target in
@@ -70,13 +70,13 @@ public extension EventEmitter {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
-    // See the note in `emit(event:payload:)` above - the emitter is captured as `nonisolated(unsafe)`
-    // because it isn't necessarily `Sendable`, and the scheduled closure only reaches `@JavaScriptActor`-
-    // isolated or `Sendable` state through it.
-    nonisolated(unsafe) weak let emitter = self
+    // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
+    // Sendable` box because it isn't necessarily `Sendable`, and the scheduled closure only reaches
+    // `@JavaScriptActor`-isolated or `Sendable` state through it.
+    let emitter = NonisolatedUnsafeWeakVar(self)
 
     runtime.schedule { [weak appContext] in
-      guard let emitter, let appContext else {
+      guard let emitter = emitter.value, let appContext else {
         return
       }
       let jsPayload: JavaScriptValue

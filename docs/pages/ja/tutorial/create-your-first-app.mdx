@@ -51,19 +51,53 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 新しい Expo アプリを初期化するために [`create-expo-app`](/more/create-expo/) を使います。これは新しい React Native プロジェクトを作成するためのコマンドラインツールです。それでは、ターミナルで次のコマンドを実行してみましょう。
 
 <Terminal
-  cmd={[
-    '# Create a project named StickerSmash',
-    '$ npx create-expo-app@latest StickerSmash',
-    '',
-    '# Navigate to the project directory',
-    '$ cd StickerSmash',
-  ]}
-  cmdCopy="npx create-expo-app@latest StickerSmash && cd StickerSmash"
+  cmd={{
+    npm: [
+      '# Create a project named StickerSmash',
+      '$ npx create-expo-app@latest StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    yarn: [
+      '# Create a project named StickerSmash',
+      '$ yarn create expo-app StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    pnpm: [
+      '# Create a project named StickerSmash',
+      '$ pnpm create expo-app StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    bun: [
+      '# Create a project named StickerSmash',
+      '$ bun create expo StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+  }}
 />
 
 このコマンドは [デフォルト](/more/create-expo/#--template) テンプレートを使用して、StickerSmash という名前の新しいプロジェクトディレクトリを作成します。このテンプレートには、Expo Router を含む、アプリ構築に必要な基本的なボイラープレートコードとライブラリが含まれています。チュートリアルの中で必要に応じてライブラリを追加していきます。
 
-> **info** 現在、`create-expo-app@latest` は SDK 54 のプロジェクトを作成します。このチュートリアルは SDK 54 向けに設計されているため、`--template` フラグは不要です。
+> **info** 現在、`create-expo-app@latest` は Expo SDK テンプレートの選択を求めます。このチュートリアルは SDK 54 向けに設計されているため、必ず SDK 54 のテンプレートを選択してください。
 
 <Collapsible summary="デフォルトテンプレートを使用するメリット">
 
@@ -105,7 +139,14 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 このチュートリアルでは、アプリをゼロから構築し、ファイルベースのナビゲーションを追加する基本を理解します。ボイラープレートコードを取り除くために、`reset-project` スクリプトを実行しましょう。
 
-<Terminal cmd={['$ npm run reset-project']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run reset-project'],
+    yarn: ['$ yarn run reset-project'],
+    pnpm: ['$ pnpm run reset-project'],
+    bun: ['$ bun run reset-project'],
+  }}
+/>
 
 上記のコマンドを実行すると、**app** ディレクトリには 2 つのファイル (**index.tsx** と **\_layout.tsx**) が残ります。**app** ディレクトリと他のディレクトリ (**components**、**constants**、**hooks** &mdash; ボイラープレートコードを含む) からの以前のファイルは、スクリプトによって **app-example** ディレクトリに移動されます。進めながら独自のディレクトリやコンポーネントファイルを作成していきます。
 
@@ -123,7 +164,14 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 プロジェクトディレクトリで、ターミナルから [開発サーバー](/more/glossary-of-terms/#development-server) を起動するために次のコマンドを実行します。
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 上記のコマンドを実行すると:
 
@@ -162,7 +210,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=340
-import { Text, View, /* @tutinfo スタイルを定義するため <CODE>StyleSheet</CODE> をインポートします。 */ StyleSheet/* @end */ } from 'react-native';
+import { Text, View, /* @tutinfo スタイルを定義するため `StyleSheet` をインポートします。 */ StyleSheet/* @end */ } from 'react-native';
 
 export default function Index() {
   return (
@@ -177,7 +225,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    /* @tutinfo <CODE>backgroundColor</CODE> プロパティに <CODE>'#25292e'</CODE> の値を設定します。*/
+    /* @tutinfo `backgroundColor` プロパティに `'#25292e'` の値を設定します。*/
     backgroundColor: '#25292e',
     /* @end */
     alignItems: 'center',

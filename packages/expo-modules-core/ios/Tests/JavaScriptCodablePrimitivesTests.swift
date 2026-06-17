@@ -16,6 +16,11 @@ struct JavaScriptCodablePrimitivesTests {
     }
   }
 
+  // `Number.MAX_SAFE_INTEGER` (2^53 - 1): the largest integer a JS number round-trips exactly.
+  static let maxSafeInteger: Int64 = (1 << 53) - 1
+  // 2^53 + 1: the first integer above the safe range, which a JS number can no longer represent.
+  static let firstUnsafeInteger: Int64 = (1 << 53) + 1
+
   // MARK: - Double
 
   @Test
@@ -62,6 +67,84 @@ struct JavaScriptCodablePrimitivesTests {
     #expect(try UInt8.decode(runtime.eval("255"), appContext: appContext, runtime: runtime) == 255)
     #expect(try Int64.decode(runtime.eval("1024"), appContext: appContext, runtime: runtime) == 1024)
     #expect(try UInt32.encode(300, appContext: appContext, runtime: runtime).getInt() == 300)
+  }
+
+  // MARK: - 64-bit integers and BigInt
+
+  @Test
+  func `encodes Int64 and UInt64 as a JS bigint regardless of magnitude`() throws {
+    let runtime = try runtime
+    let smallSigned = try Int64.encode(5, appContext: appContext, runtime: runtime)
+    #expect(smallSigned.isBigInt())
+    #expect(try smallSigned.asBigInt().asInt64() == 5)
+
+    let smallUnsigned = try UInt64.encode(5, appContext: appContext, runtime: runtime)
+    #expect(smallUnsigned.isBigInt())
+    #expect(try smallUnsigned.asBigInt().asUint64() == 5)
+  }
+
+  @Test
+  func `round-trips Int64 and UInt64 values beyond the JS safe-integer range losslessly`() throws {
+    let runtime = try runtime
+    // A magnitude above the safe-integer range would silently lose precision if it went through `.number`.
+    let signed = Self.firstUnsafeInteger
+    let signedEncoded = try Int64.encode(signed, appContext: appContext, runtime: runtime)
+    #expect(try Int64.decode(signedEncoded, appContext: appContext, runtime: runtime) == signed)
+
+    let unsigned = UInt64.max
+    let unsignedEncoded = try UInt64.encode(unsigned, appContext: appContext, runtime: runtime)
+    #expect(try UInt64.decode(unsignedEncoded, appContext: appContext, runtime: runtime) == unsigned)
+  }
+
+  @Test
+  func `decodes Int64 and UInt64 from a JS bigint`() throws {
+    let runtime = try runtime
+    #expect(try Int64.decode(runtime.eval("-\(Self.firstUnsafeInteger)n"), appContext: appContext, runtime: runtime) == -Self.firstUnsafeInteger)
+    #expect(try UInt64.decode(runtime.eval("\(UInt64.max)n"), appContext: appContext, runtime: runtime) == UInt64.max)
+  }
+
+  @Test
+  func `Int and UInt encode as a JS number within the safe-integer range`() throws {
+    let runtime = try runtime
+    let small = try Int.encode(5, appContext: appContext, runtime: runtime)
+    #expect(small.isNumber())
+    #expect(small.getInt() == 5)
+
+    let unsigned = try UInt.encode(UInt(Self.maxSafeInteger), appContext: appContext, runtime: runtime)
+    #expect(unsigned.isNumber())
+    #expect(unsigned.getDouble() == Double(Self.maxSafeInteger))
+  }
+
+  @Test
+  func `Int and UInt encode throws beyond the JS safe-integer range`() throws {
+    let runtime = try runtime
+    // Above the safe-integer range a JS number can't represent the value exactly; Int maps to a number,
+    // so encoding throws rather than silently losing precision. Int64/UInt64 carry such values as a bigint.
+    #expect(throws: UnsafeIntegerException.self) {
+      _ = try Int.encode(Int(Self.firstUnsafeInteger), appContext: appContext, runtime: runtime)
+    }
+    #expect(throws: UnsafeIntegerException.self) {
+      _ = try UInt.encode(UInt.max, appContext: appContext, runtime: runtime)
+    }
+  }
+
+  @Test
+  func `Int and UInt decode from a JS bigint`() throws {
+    let runtime = try runtime
+    #expect(try Int.decode(runtime.eval("\(Self.firstUnsafeInteger)n"), appContext: appContext, runtime: runtime) == Int(Self.firstUnsafeInteger))
+    #expect(try UInt.decode(runtime.eval("\(Self.firstUnsafeInteger)n"), appContext: appContext, runtime: runtime) == UInt(Self.firstUnsafeInteger))
+  }
+
+  @Test
+  func `64-bit decode throws instead of trapping on an out-of-range bigint`() throws {
+    let runtime = try runtime
+    // 2^64 overflows UInt64, and a negative bigint can't be a UInt64.
+    #expect(throws: BigIntOutOfRangeException.self) {
+      _ = try UInt64.decode(runtime.eval("18446744073709551616n"), appContext: appContext, runtime: runtime)
+    }
+    #expect(throws: BigIntOutOfRangeException.self) {
+      _ = try UInt64.decode(runtime.eval("-1n"), appContext: appContext, runtime: runtime)
+    }
   }
 
   @Test
@@ -126,6 +209,20 @@ struct JavaScriptCodablePrimitivesTests {
     #expect(try Double.decode(buffer.unownedValue(at: 1), appContext: appContext, runtime: runtime) == 3.5)
     #expect(try String.decode(buffer.unownedValue(at: 2), appContext: appContext, runtime: runtime) == "expo")
     #expect(try Bool.decode(buffer.unownedValue(at: 3), appContext: appContext, runtime: runtime) == true)
+  }
+
+  @Test
+  func `decodes a 64-bit bigint from a borrowed argument buffer`() throws {
+    // The borrowing overload reads a `number` zero-copy but has to materialize an owning value on the
+    // `bigint` branch; this exercises that materialization path for a value beyond the safe-integer range.
+    let runtime = try runtime
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: JavaScriptValue(runtime, bigInt: Self.firstUnsafeInteger),
+      JavaScriptValue(runtime, bigInt: UInt64.max)
+    )
+    #expect(try Int64.decode(buffer.unownedValue(at: 0), appContext: appContext, runtime: runtime) == Self.firstUnsafeInteger)
+    #expect(try UInt64.decode(buffer.unownedValue(at: 1), appContext: appContext, runtime: runtime) == UInt64.max)
   }
 
   // MARK: - Error paths

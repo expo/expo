@@ -7,6 +7,8 @@
 ### 🎉 New features
 
 - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `@ExpoModule` now synthesizes the module's JavaScript name from the class name or its `@ExpoModule("CustomName")` argument, so a `Name(…)` definition entry is no longer required. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added `Module.emit` that sends an event directly to the module's own JavaScript object, mirroring `SharedObject.emit`. Both now share an `EventEmitter` protocol. ([#46555](https://github.com/expo/expo/pull/46555) by [@tsapeta](https://github.com/tsapeta))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
 
@@ -29,8 +31,10 @@
 
 ### 💡 Others
 
+- Allow `react-native-worklets` `^0.9.0` in peer dependencies. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - [Android] Make `expo-module-gradle-plugin` compatible with Android Gradle Plugin 9. ([#46769](https://github.com/expo/expo/pull/46769) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added `JavaScriptDecodable` / `JavaScriptEncodable` (composed as `JavaScriptCodable`), a statically-dispatched, non-erasing conversion path between JavaScript and native values for Expo Modules v2, with conformances for primitives, containers, records, enumerables and `Data`. ([#46893](https://github.com/expo/expo/pull/46893) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `JavaScriptCodable` now maps `Int64`/`UInt64` to a JS `BigInt` for lossless 64-bit round-tripping, and `Int`/`UInt` throw when encoding a value outside JavaScript's safe-integer range. ([#46939](https://github.com/expo/expo/pull/46939) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `@ExpoModule` now synthesizes a `_decorateModule` that binds the module's `@JS` functions directly onto the JS object, letting the module holder skip the dynamic definition path for synthesized modules. ([#46612](https://github.com/expo/expo/pull/46612) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added the public `Exceptions.ArgumentsRangeMismatch` exception, thrown by synthesized `@JS` function bindings when a JavaScript caller passes a number of arguments outside the accepted range. ([#46901](https://github.com/expo/expo/pull/46901) by [@tsapeta](https://github.com/tsapeta))
 - Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
