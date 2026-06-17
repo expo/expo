@@ -11,7 +11,6 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private typealias PromiseContinuation = CheckedContinuation<JavaScriptValue.Ref, any Error>
 
   private weak let runtime: JavaScriptRuntime?
-  private var object: JavaScriptObject
   private let deferredPromise = DeferredPromise()
 
   // Create refs for resolve and reject functions.
@@ -19,12 +18,17 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private let resolveFunction = JavaScriptValue.Ref()
   private let rejectFunction = JavaScriptValue.Ref()
 
+  // Stored as a class so dropping the struct off-thread only decrements an ARC count.
+  // resolve() and reject() capture this in their runtime.schedule blocks, ensuring
+  // jsi::Value::~Value (which calls ptr_->invalidate()) always runs on the JS thread.
+  private var value: JavaScriptValue
+
   /// Initializes a promise from the existing object. The promise may already be settled.
   /// It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
   @JavaScriptActor
-  public init(_ runtime: JavaScriptRuntime, _ object: consuming JavaScriptObject) throws {
+  public init(_ runtime: JavaScriptRuntime, _ jsObject: consuming JavaScriptObject) throws {
     self.runtime = runtime
-    self.object = object
+    self.value = jsObject.asValue()
     try setUpCallbacks()
   }
 
@@ -32,9 +36,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   @JavaScriptActor
   public init(_ runtime: JavaScriptRuntime) throws {
     self.runtime = runtime
-    // Initialize the non-copyable field before any throwing work. Swift requires a
-    // consistently initialized value on every throwing initializer path.
-    self.object = runtime.createObject()
+    // Initialize value before any throwing work. Swift requires a ~Copyable field to be
+    // consistently initialized on every code path through a throwing initializer.
+    self.value = .undefined
 
     // Create function that is the promise setup. It is called immediately on `callAsConstructor`.
     let setup = runtime.createFunction { [weak resolveFunction, weak rejectFunction] this, arguments in
@@ -43,19 +47,18 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       return .undefined
     }
 
-    self.object =
+    self.value =
       try runtime
       .global()
       .getPropertyAsFunction(.cached(runtime, "Promise"))
       .callAsConstructor(setup.asValue())
-      .getObject()
 
     try setUpCallbacks()
   }
 
   @JavaScriptActor
-  internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) throws {
-    try self.init(runtime, JavaScriptObject(runtime, object))
+  internal init(_ runtime: JavaScriptRuntime, _ jsObject: consuming facebook.jsi.Object) throws {
+    try self.init(runtime, JavaScriptObject(runtime, jsObject))
   }
 
   public var isDeferred: Bool {
@@ -68,7 +71,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   }
 
   public func asValue() -> JavaScriptValue {
-    return object.asValue()
+    return value
   }
 
   public func resolve<V: JavaScriptRepresentable>(_ value: V) {
@@ -77,7 +80,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     }
 
     // `resolve` is not isolated, so make sure to jump to JS thread.
-    runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+    runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction, value = self.value] in
       // If the promise is already settled, do nothing.
       guard let resolver = resolveFunction.take() else {
         return
@@ -86,8 +89,10 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       // This will also call `deferredPromise.resolve` in the `then` handler.
       _ = try! resolver.getFunction().call(arguments: value)
 
-      // Release the rejecter, we cannot call it anymore.
+      // Release the rejecter and the promise value on the JS thread so their
+      // jsi::Value destructors (which call back into the runtime) run here.
       rejectFunction.release()
+      // `value` is released when this closure drops at the end of the scheduled block.
     }
   }
 
@@ -97,7 +102,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     }
 
     // `reject` is not isolated, so make sure to jump to JS thread.
-    runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+    runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction, value = self.value] in
       // If the promise is already settled, do nothing.
       guard let rejecter = rejectFunction.take() else {
         return
@@ -112,8 +117,10 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       // This will also call `deferredPromise.reject` in the `then` handler.
       _ = try! rejecter.getFunction().call(arguments: errorValue)
 
-      // Release the resolver, we cannot call it anymore.
+      // Release the resolver and the promise value on the JS thread so their
+      // jsi::Value destructors (which call back into the runtime) run here.
       resolveFunction.release()
+      // `value` is released when this closure drops at the end of the scheduled block.
     }
   }
 
@@ -140,6 +147,6 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       }
       return .undefined
     }
-    try object.callFunction(.cached(runtime, "then"), arguments: onFulfilled.asValue(), onRejected.asValue())
+    try value.getObject().callFunction(.cached(runtime, "then"), arguments: onFulfilled.asValue(), onRejected.asValue())
   }
 }
