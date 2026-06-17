@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Make `buildReactNativeFromSource` idempotent so repeated prebuilds no longer append a duplicate `includeBuild(expoAutolinking.reactNative)` block to `settings.gradle` (and toggling it off removes the block). ([#46713](https://github.com/expo/expo/pull/46713) by [@ahmdshrif](https://github.com/ahmdshrif))
 - [Android] Make the precompiled header reusable by passing `-Xclang -fno-pch-timestamp`, so ccache can reuse it across builds. ([#46915](https://github.com/expo/expo/pull/46915) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
