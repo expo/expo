@@ -33,7 +33,15 @@ Object.defineProperty(exports, 'screen', {
     },
 });
 function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
+    // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
+    const systemTime = Date.now();
     jest.useFakeTimers();
+    try {
+        jest.setSystemTime(systemTime);
+    }
+    catch {
+        // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
+    }
     const mockContext = (0, mock_config_1.getMockContext)(context);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';

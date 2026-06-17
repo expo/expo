@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Preserve a system time mocked with `jest.setSystemTime` across `renderRouter` ([#46978](https://github.com/expo/expo/pull/46978) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 57.0.1 — 2026-06-27
