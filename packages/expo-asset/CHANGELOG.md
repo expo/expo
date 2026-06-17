@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] fix adding transparent png Image Assets ([#40991](https://github.com/expo/expo/pull/40991) by [@kosmydel](https://github.com/kosmydel))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26
