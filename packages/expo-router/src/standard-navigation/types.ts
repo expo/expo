@@ -65,7 +65,7 @@ export interface IntegrateWithRouterOptions<
    * ```tsx
    * createProps: ({ state, dispatch }) => ({
    *   activeRouteKey: state.routes[state.index].key,
-   *   reset: () => dispatch({ type: 'POP_TO_TOP' }),
+   *   preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
    * })
    * ```
    */
@@ -78,6 +78,51 @@ export type StandardNavigatorContentProps<
   NavigatorProps extends object,
 > = NavigatorArgs<NavigatorOptions, EventMap> &
   Omit<NavigatorProps, keyof NavigatorArgs<NavigatorOptions, EventMap>>;
+
+/**
+ * Lets TypeScript infer `EventMap` and `NavigatorProps` from a `NavigatorContent` component.
+ *
+ * On their own these can't be inferred: `EventMap` only appears as an argument to `emitter.emit`,
+ * and `NavigatorProps` only inside `Omit<NavigatorProps, …>` — neither is a position TypeScript can
+ * read a type back out of. Without these two properties it gives up and falls back to the base
+ * shapes, rejecting components that declare specific events or extra props.
+ *
+ * The properties are phantom: they never exist at runtime and are never read. They exist only to
+ * put each type somewhere TypeScript will infer it from.
+ */
+type NavigatorContentInferenceCarrier<
+  EventMap extends StandardNavigatorEventMapBase,
+  NavigatorProps extends object,
+> = {
+  /** @internal */
+  readonly __eventMap__?: EventMap;
+  /** @internal */
+  readonly __navigatorProps__?: NavigatorProps;
+};
+
+/**
+ * Props for a standard navigator's `NavigatorContent` component. Annotate your content component
+ * with this type to declare the events it emits, so `unstable_createStandardRouterNavigator` can
+ * type `emitter.emit` for you.
+ *
+ * @example
+ * ```tsx
+ * // No events:
+ * type TabsContentProps = NavigatorContentProps<{ title?: string }>;
+ *
+ * // Typed events:
+ * type TabsContentProps = NavigatorContentProps<
+ *   { title?: string },
+ *   { tabPress: { data: undefined; canPreventDefault: true } }
+ * >;
+ * ```
+ */
+export type NavigatorContentProps<
+  NavigatorOptions extends object,
+  EventMap extends StandardNavigatorEventMapBase = Record<string, never>,
+  NavigatorProps extends object = object,
+> = StandardNavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps> &
+  NavigatorContentInferenceCarrier<EventMap, NavigatorProps>;
 
 export type StandardRouterNavigatorProps<
   State extends NavigationState,

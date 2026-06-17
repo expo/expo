@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix type inference for `unstable_createStandardRouterNavigator` ([#46737](https://github.com/expo/expo/pull/46737) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 56.2.11 — 2026-06-15
