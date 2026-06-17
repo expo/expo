@@ -12,6 +12,7 @@
 
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
 - Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Respect an explicit `ios.usePrecompiledModules: false` even when `EXPO_USE_PRECOMPILED_MODULES` is already set in the environment (e.g. EAS Build). ([#46953](https://github.com/expo/expo/issues/46953) by [@ryanda9910](https://github.com/ryanda9910))
 
 ### 💡 Others
 
