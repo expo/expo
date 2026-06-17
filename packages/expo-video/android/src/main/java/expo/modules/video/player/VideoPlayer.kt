@@ -45,8 +45,9 @@ import expo.modules.video.records.ScrubbingModeOptions
 import expo.modules.video.records.SeekTolerance
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
-import expo.modules.video.utils.MutableWeakReference
+import expo.modules.video.records.VideoSize
 import expo.modules.video.records.VideoTrack
+import expo.modules.video.utils.MutableWeakReference
 import expo.modules.video.utils.buildBasicMediaSession
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -229,6 +230,20 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   var availableVideoTracks: List<VideoTrack> = emptyList()
     private set
+
+  var maxResolution: VideoSize? = null
+    set(value) {
+      field = value
+      appContext?.mainQueue?.launch {
+        val parameters = player.trackSelectionParameters.buildUpon()
+        if (value != null && value.width > 0 && value.height > 0) {
+          parameters.setMaxVideoSize(value.width, value.height)
+        } else {
+          parameters.clearVideoSizeConstraints()
+        }
+        player.trackSelectionParameters = parameters.build()
+      }
+    }
 
   var keepScreenOnWhilePlaying by VideoPlayerKeepAwake(this, appContext)
 
