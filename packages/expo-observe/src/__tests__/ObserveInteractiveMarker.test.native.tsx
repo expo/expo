@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 import { StrictMode } from 'react';
 
-import { ObserveInteractiveMarker } from '../InteractiveMarker';
+import { ObserveInteractiveMarker } from '../ObserveInteractiveMarker';
 import { useObserve } from '../useObserve';
 
 jest.mock('../useObserve', () => ({
@@ -32,14 +32,14 @@ describe(ObserveInteractiveMarker, () => {
     expect(markInteractive).toHaveBeenCalledWith({ params: undefined });
   });
 
-  it('calls markInteractive once even under StrictMode double-invoke', () => {
+  it('calls markInteractive twice under StrictMode double-invoke', () => {
     render(
       <StrictMode>
         <ObserveInteractiveMarker params={{ cacheHit: true }} />
       </StrictMode>
     );
 
-    expect(markInteractive).toHaveBeenCalledTimes(1);
+    expect(markInteractive).toHaveBeenCalledTimes(2);
   });
 
   it('renders null', () => {

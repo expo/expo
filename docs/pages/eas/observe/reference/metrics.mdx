@@ -239,10 +239,10 @@ Param values can be strings, numbers, booleans, or other JSON-serializable value
 
 Instead of calling `markInteractive()` from an effect, you can render the `<InteractiveMarker />` component at the point your screen becomes interactive, such as once its initial data has loaded. It calls `markInteractive()` once when it mounts and renders nothing.
 
-> **info** `InteractiveMarker` is available in SDK 56 and later.
+> **info** `ObserveInteractiveMarker` is available in SDK 56 and later.
 
 ```tsx
-import { InteractiveMarker } from 'expo-observe';
+import { ObserveInteractiveMarker } from 'expo-observe';
 
 function Feed({ items }) {
   if (!items) {
@@ -252,7 +252,7 @@ function Feed({ items }) {
   return (
     <>
       <FeedList items={items} />
-      <InteractiveMarker params={{ cacheHit: true }} />
+      <ObserveInteractiveMarker />
     </>
   );
 }

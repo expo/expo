@@ -1,5 +1,5 @@
 import type { MetricAttributes } from 'expo-app-metrics';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useObserve } from './useObserve';
 
@@ -25,14 +25,14 @@ export type ObserveInteractiveMarkerProps = {
  *
  * @example
  * ```tsx
- * import { InteractiveMarker } from 'expo-observe';
+ * import { ObserveInteractiveMarker } from 'expo-observe';
  *
  * function Feed({ items }) {
  *   if (!items) return <Spinner />;
  *   return (
  *     <>
  *       <FeedList items={items} />
- *       <InteractiveMarker params={{ cacheHit: true }} />
+ *       <ObserveInteractiveMarker params={{ cacheHit: true }} />
  *     </>
  *   );
  * }
@@ -40,29 +40,22 @@ export type ObserveInteractiveMarkerProps = {
  */
 export function ObserveInteractiveMarker(props: ObserveInteractiveMarkerProps) {
   const { markInteractive } = useObserve();
-  const initialPropsRef = useRef(props);
-  const hasFiredRef = useRef(false);
+  const [initialProps] = useState(props);
   const hasWarnedRef = useRef(false);
 
   useEffect(() => {
-    // Fire once per mounted instance. The `hasFiredRef` guard keeps StrictMode's
-    // mount/unmount/remount double-invoke (refs are preserved across it) from
-    // sending twice; a genuine remount gets a fresh ref and fires again.
-    if (hasFiredRef.current) return;
-    hasFiredRef.current = true;
-    markInteractive({ params: initialPropsRef.current.params });
-    // Fire once on mount; `markInteractive` identity and later prop changes are ignored by design.
+    markInteractive({ params: initialProps.params });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (!__DEV__ || hasWarnedRef.current) return;
-    if (!paramsEqual(initialPropsRef.current.params, props.params)) {
+    if (!paramsEqual(initialProps.params, props.params)) {
       hasWarnedRef.current = true;
       console.warn(
-        '[expo-observe] <InteractiveMarker> received changed props after its first render. ' +
+        '[expo-observe] <ObserveInteractiveMarker> received changed props after its first render. ' +
           'markInteractive is only sent once on mount, so updates to `params` are ignored. ' +
-          'Pass params that are stable for the marker’s lifetime, or call ' +
+          "Pass params that are stable for the marker's lifetime, or call " +
           'useObserve().markInteractive(...) directly if you need to attach attributes known later.'
       );
     }
@@ -71,12 +64,10 @@ export function ObserveInteractiveMarker(props: ObserveInteractiveMarkerProps) {
   return null;
 }
 
-/**
- * Structural equality for `params`, so a fresh inline object of the same shape is treated as
- * equal and does not trigger the dev warning. Falls back to reference equality if the values
- * can't be serialized (for example, a circular reference) so the diagnostic never throws.
- */
-function paramsEqual(a: ObserveInteractiveMarkerProps['params'], b: ObserveInteractiveMarkerProps['params']) {
+function paramsEqual(
+  a: ObserveInteractiveMarkerProps['params'],
+  b: ObserveInteractiveMarkerProps['params']
+) {
   try {
     return JSON.stringify(a) === JSON.stringify(b);
   } catch {
