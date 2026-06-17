@@ -57,6 +57,9 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(ZStackView.self, ZStackViewProps.self, updateProps: updateChildren)
     case "BackgroundView":
       render(BackgroundView.self, BackgroundViewProps.self, updateProps: updateChildren)
+    case "SlotView":
+      // Render the slot's children like a fragment; its name is exposed via `AnySlotChild`.
+      render(FragmentView.self, FragmentProps.self, updateProps: updateChildren)
     case "RectangleView":
       render(RectangleView.self, RectangleViewProps.self)
     case "RoundedRectangleView":
@@ -159,5 +162,16 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
         initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString)]
       }
     }
+  }
+}
+
+// Lets `BackgroundView` find its `content` slot through the widget wrapper.
+extension WidgetsDynamicView: AnySlotChild {
+  public var slotName: String? {
+    guard node["type"] as? String == "SlotView",
+      let props = node["props"] as? [String: Any] else {
+      return nil
+    }
+    return props["name"] as? String
   }
 }

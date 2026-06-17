@@ -1,17 +1,33 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import SwiftUI
 import ExpoModulesCore
+import SwiftUI
+
+// A named slot. `SlotView` conforms in-app; `WidgetsDynamicView` conforms in the widgets renderer,
+// so the `content` slot resolves whether children are real slots or widget wrappers.
+public protocol AnySlotChild {
+  var slotName: String? { get }
+}
+
+extension SlotView: AnySlotChild {
+  var slotName: String? { props.name }
+}
+
+extension [any ExpoSwiftUI.AnyChild] {
+  fileprivate func slotChild(_ name: String) -> (any ExpoSwiftUI.AnyChild)? {
+    first { ($0.childView as? AnySlotChild)?.slotName == name }
+  }
+
+  fileprivate func withoutSlotChildren() -> [any ExpoSwiftUI.AnyChild] {
+    filter { ($0.childView as? AnySlotChild)?.slotName == nil }
+  }
+}
 
 public final class BackgroundViewProps: UIBaseViewProps {
   @Field var alignment: AlignmentOptions?
 }
 
-// Draws the last child behind the remaining children using SwiftUI's
-// `.background(alignment:content:)`. Unlike `ZStack`, the resulting view is sized to the
-// FOREGROUND content (not the union of children), so a full-bleed background image does not
-// expand or compress the content — the correct primitive for widget / Live Activity backgrounds,
-// where `@expo/ui` otherwise only exposes a solid-color `containerBackground`.
+// `public` (unlike `Overlay` / `Mask`) so the widgets renderer can render it in Live Activities.
 public struct BackgroundView: ExpoSwiftUI.View {
   @ObservedObject public var props: BackgroundViewProps
 
@@ -20,30 +36,25 @@ public struct BackgroundView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    let children = props.children ?? []
-    let hasBackground = children.count > 1
-    let backgroundChild = hasBackground ? children.last : nil
-    foreground(hasBackground ? Array(children.dropLast()) : children)
+    baseContent
       .background(alignment: props.alignment?.toAlignment() ?? .center) {
-        if let backgroundChild {
-          let view: any View = backgroundChild.childView
-          AnyView(view)
-        }
+        backgroundContent
       }
   }
 
   @ViewBuilder
-  private func foreground(_ children: [any ExpoSwiftUI.AnyChild]) -> some View {
-    // Render a single foreground child directly: a bare `ForEach` can mis-size under
-    // `.background`, which would let the background affect the foreground's layout.
-    if children.count == 1 {
-      let view: any View = children[0].childView
+  private var baseContent: some View {
+    ForEach(props.children?.withoutSlotChildren() ?? [], id: \.id) { child in
+      let view: any View = child.childView
       AnyView(view)
-    } else {
-      ForEach(children, id: \.id) { child in
-        let view: any View = child.childView
-        AnyView(view)
-      }
+    }
+  }
+
+  @ViewBuilder
+  private var backgroundContent: some View {
+    if let content = props.children?.slotChild("content") {
+      let view: any View = content.childView
+      AnyView(view)
     }
   }
 }
