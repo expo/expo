@@ -25,6 +25,7 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     analyserBuffer = null;
     analyserSource = null;
     meteringEnabled = false;
+    recordedBytes = 0;
     get isRecording() {
         return this.mediaRecorder?.state === 'recording';
     }
@@ -75,6 +76,7 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             canRecord: this.mediaRecorder?.state === 'recording' || this.mediaRecorder?.state === 'inactive',
             isRecording: this.mediaRecorder?.state === 'recording',
             durationMillis: this.getAudioRecorderDurationMillis(),
+            fileSize: this.recordedBytes,
             mediaServicesDidReset: false,
             url: this.uri,
         };
@@ -128,6 +130,7 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         }
         this.mediaRecorderUptimeOfLastStartResume = 0;
         this.currentTime = 0;
+        this.recordedBytes = 0;
         const audioConstraints = this.selectedDeviceId
             ? { deviceId: { exact: this.selectedDeviceId } }
             : true;
@@ -178,6 +181,9 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             this.mediaRecorderUptimeOfLastStartResume = Date.now();
             this.currentTime = 0;
             this.mediaRecorderIsRecording = true;
+        });
+        mediaRecorder.addEventListener('dataavailable', (event) => {
+            this.recordedBytes += event.data.size;
         });
         mediaRecorder?.addEventListener('stop', () => {
             this.currentTime = 0;

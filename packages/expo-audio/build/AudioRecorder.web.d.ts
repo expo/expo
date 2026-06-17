@@ -19,6 +19,7 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     private analyserBuffer;
     private analyserSource;
     private meteringEnabled;
+    private recordedBytes;
     get isRecording(): boolean;
     record(options?: RecordingStartOptions): void;
     private startActualRecording;
