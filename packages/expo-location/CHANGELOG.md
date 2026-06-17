@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect `@default` JSDoc for `pausesUpdatesAutomatically`, which defaults to `true` on iOS, not `false`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ignigena](https://github.com/Ignigena))
+
 ### 💡 Others
 
 - Simplify re-export of `LocationEventEmitter` ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))

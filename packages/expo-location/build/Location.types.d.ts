@@ -171,7 +171,7 @@ export type LocationTaskOptions = LocationOptions & {
      * `true`, the location manager pauses updates (and powers down the appropriate hardware) at times
      * when the location data is unlikely to change. You can help the determination of when to pause
      * location updates by assigning a value to the `activityType` property.
-     * @default false
+     * @default true
      * @platform ios
      */
     pausesUpdatesAutomatically?: boolean;
