@@ -25,7 +25,6 @@ import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.UUID
-import kotlin.coroutines.Continuation
 import kotlin.math.log10
 
 private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
