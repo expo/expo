@@ -2,7 +2,9 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
-import expo.modules.appmetrics.logevents.ErrorReport
+import expo.modules.appmetrics.jserrors.ErrorReport
+import expo.modules.appmetrics.jserrors.PendingErrorStore
+import expo.modules.appmetrics.jserrors.toLogRecord
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
@@ -151,6 +153,20 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         UpdatesControllerRegistry.controller?.get()?.let { controller ->
           subscription = controller.subscribeToUpdatesStateChanges(this@AppMetricsModule)
         }
+
+        // Ingest fatal JS errors that a previous launch wrote to disk before terminating. Each is
+        // attributed to the session it was captured in (recorded in the file), not the new session.
+        // A session that never reached disk (crash before its row was inserted) makes the insert fail;
+        // we swallow it and move on.
+        // TODO(@ubax): move this drain and other resource-intensive startup work off the launch path
+        // (e.g. into `markInteractive` or a background dispatch) so it doesn't affect startup time.
+        scope.launch {
+          PendingErrorStore.drain(context).forEach { pendingError ->
+            runCatching {
+              sessionManager.addLogs(listOf(pendingError.toLogRecord()), sessionId = pendingError.sessionId)
+            }
+          }
+        }
       }
 
       OnActivityEntersBackground {
@@ -191,13 +207,20 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       // Records an unhandled JavaScript error captured by the JS-side `global.ErrorUtils` handler as
-      // a log event. The JS layer owns capture (and chaining to the previous handler); native records
-      // it through the same log pipeline as everything else, so it persists, attributes to the
-      // session, and dispatches with no special-case storage.
+      // a log event. The JS layer owns capture (and chaining to the previous handler).
+      //
+      // A fatal error terminates the process right after this returns, so we can't let the async
+      // coroutine write race the shutdown. We write it to disk synchronously here (no coroutine, no
+      // database) and ingest it on the next launch. Non-fatal errors aren't racing termination, so
+      // they go through the normal async log path.
       Function("reportError") { report: ErrorReport ->
-        scope.launch {
-          saveStartupMetricsIfNotSaved()
-          mainSession.addLogs(listOf(report.toLogRecord(mainSession.sessionId)))
+        if (report.isFatal) {
+          PendingErrorStore.write(context, report.toPendingError(mainSession.sessionId))
+        } else {
+          scope.launch {
+            saveStartupMetricsIfNotSaved()
+            mainSession.addLogs(listOf(report.toLogRecord(mainSession.sessionId)))
+          }
         }
       }
 
