@@ -1,4 +1,4 @@
-import type { Session } from 'expo-app-metrics';
+import type { DebugSession, Session } from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -26,7 +26,7 @@ export function SessionDetail({
   loaded,
   title,
 }: {
-  session: Session | null;
+  session: DebugSession | null;
   loaded: boolean;
   title: string;
 }) {
@@ -60,7 +60,7 @@ export function SessionDetail({
         <>
           <SessionHeader session={session} />
           <Divider style={styles.divider} />
-          {session.type === 'main' && session.crashReport ? (
+          {session.crashReport ? (
             <>
               <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Crash report</Text>
               <CrashReportPanel report={session.crashReport} />
@@ -113,14 +113,19 @@ export function SessionDetail({
  * since a live (active) session can't have crashed yet. Lets the `main` route
  * render through the same presentational component as the inactive records.
  */
-export function liveSessionToRecord(session: Session): Session {
+export async function liveSessionToRecord(session: Session): Promise<DebugSession> {
+  const [metrics, logs, endDate] = await Promise.all([
+    session.getMetrics(),
+    session.getLogs(),
+    session.getEndDate(),
+  ]);
   return {
     id: session.id,
     type: session.type,
     startDate: session.startDate,
-    endDate: session.endDate,
-    metrics: session.metrics,
-    logs: session.logs,
+    endDate,
+    metrics,
+    logs,
     // A live session is always active, so it never has a crash report.
     crashReport: null,
   };
@@ -129,8 +134,8 @@ export function liveSessionToRecord(session: Session): Session {
 // The call stack tree balloons the raw JSON to the point where it can fail to render. It's
 // already shown visually in the "Call stacks" section above, so we omit it from the raw JSON
 // and replace it with a marker noting that.
-function stripCallStackTree(session: Session): Session {
-  if (!('crashReport' in session) || !session.crashReport?.callStackTree) {
+function stripCallStackTree(session: DebugSession): DebugSession {
+  if (!session.crashReport?.callStackTree) {
     return session;
   }
   return {

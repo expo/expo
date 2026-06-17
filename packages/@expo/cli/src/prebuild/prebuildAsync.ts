@@ -187,6 +187,8 @@ export async function prebuildAsync(
   if (inlineModules && options.platforms.includes('ios')) {
     await updateXcodeProject(projectRoot, {
       watchedDirectories: inlineModules.watchedDirectories ?? [],
+      xcodeProjectTargets: inlineModules.xcodeProjectTargets,
+      name: exp.name,
     });
   }
 

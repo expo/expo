@@ -916,6 +916,7 @@ exports[`built-in plugins introspects mods 1`] = `
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{"mainTarget":"mycoolapp","targets":[]}",
           "expo.jsEngine": "hermes",
           "ios.deploymentTarget": "15.1",
         },
@@ -1554,6 +1555,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{"mainTarget":"mycoolapp","targets":[]}",
           "ios.deploymentTarget": "15.1",
         },
       },

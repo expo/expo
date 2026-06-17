@@ -31,10 +31,18 @@ public final class ModuleHolder {
   let definition: ModuleDefinition
 
   /**
-   Returns `definition.name` if not empty, otherwise falls back to the module type name.
+   The module's name. Prefers the name passed at registration, then a non-empty `Name(…)` from the
+   definition, and finally `_jsName` — the `@ExpoModule` macro's synthesized name, defaulting to the
+   module type name.
    */
   var name: String {
-    return _name ?? (definition.name.isEmpty ? String(describing: type(of: module)) : definition.name)
+    if let _name {
+      return _name
+    }
+    if !definition.name.isEmpty {
+      return definition.name
+    }
+    return type(of: module)._jsName
   }
 
   /**
@@ -62,10 +70,18 @@ public final class ModuleHolder {
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
     let userDefinition = module.definition()
     let synthesized = module._synthesizedDefinition()
-    if synthesized.isEmpty {
-      return userDefinition
+    let definition = synthesized.isEmpty
+      ? userDefinition
+      : ModuleDefinition(definitions: synthesized + userDefinition.rawDefinitions)
+
+    // A macro module describes its name through the synthesized `_jsName` rather than a `Name(…)`
+    // entry, so fill it in here. The definition's name backs `__expo_module_name__` and the view
+    // prototype keys, which legacy event-emitter and view-manager compatibility paths look up by
+    // the registered module name — they'd otherwise key off an empty string.
+    if definition.name.isEmpty {
+      definition.name = type(of: module)._jsName
     }
-    return ModuleDefinition(definitions: synthesized + userDefinition.rawDefinitions)
+    return definition
   }
 
   // MARK: Constants
@@ -75,6 +91,19 @@ public final class ModuleHolder {
    */
   func getLegacyConstants() -> [String: Any?] {
     return definition.getLegacyConstants()
+  }
+
+  @JavaScriptActor
+  func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
+    if javaScriptObject == nil {
+      javaScriptObject = createJavaScriptModuleObject()
+    }
+    // Creating the object can still fail (e.g. the app context has been destroyed), in which case
+    // there is nothing to emit to and we behave like `getJavaScriptValue()` by returning `nil`.
+    if javaScriptObject == nil {
+      return nil
+    }
+    return try body(javaScriptObject!)
   }
 
   @JavaScriptActor

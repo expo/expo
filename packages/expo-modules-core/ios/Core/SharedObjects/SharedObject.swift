@@ -25,6 +25,13 @@ open class SharedObject: AnySharedObject {
   public internal(set) weak var appContext: AppContext?
 
   /**
+   Weak reference to the native state that owns this `SharedObject` and bridges
+   it to its JS counterpart. Populated by `SharedObjectRegistry.add` and used to
+   recover the paired JS object without going through the registry's id table.
+   */
+  internal weak var nativeState: SharedObjectNativeState?
+
+  /**
    The default public initializer of the shared object.
    */
   public init() {}
@@ -68,61 +75,6 @@ open class SharedObject: AnySharedObject {
   }
 
   /**
-   Schedules an event with the given name and a pre-converted JavaScript payload to be emitted
-   to the associated JavaScript object. This is the lowest-level emit overload — use it when the
-   value is already a `JavaScriptValue` to skip the native-to-JS conversion step.
-   */
-  public func emit(event: String, payload: JavaScriptValue) {
-    guard let appContext, let runtime = try? appContext.runtime else {
-      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
-      return
-    }
-    runtime.schedule { [weak appContext, sharedObjectId] in
-      guard let appContext else {
-        return
-      }
-      guard let jsValue = appContext.sharedObjectRegistry.toJavaScriptValue(sharedObjectId: sharedObjectId) else {
-        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-        return
-      }
-      dispatch(event: event, payload: payload, to: jsValue, in: runtime)
-    }
-  }
-
-  /**
-   Schedules an event with the given name to be emitted to the associated JavaScript object.
-   */
-  public func emit(event: String) {
-    emit(event: event, payload: .undefined)
-  }
-
-  /**
-   Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
-   */
-  public func emit<P: AnyArgument>(event: String, payload: sending P) {
-    guard let appContext, let runtime = try? appContext.runtime else {
-      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
-      return
-    }
-    runtime.schedule { [weak appContext, sharedObjectId] in
-      guard let appContext else {
-        return
-      }
-      guard let jsValue = appContext.sharedObjectRegistry.toJavaScriptValue(sharedObjectId: sharedObjectId) else {
-        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-        return
-      }
-      do {
-        let jsPayload = try (~P.self).castToJS(payload, appContext: appContext, in: runtime)
-        dispatch(event: event, payload: jsPayload, to: jsValue, in: runtime)
-      } catch {
-        log.warn("Failed to convert payload for event '\(event)' on \(P.self); the event will not be emitted: \(error)")
-        return
-      }
-    }
-  }
-
-  /**
    Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
    call sites keep working unchanged; the parameter has been renamed to `payload` to make the
    single-payload semantics explicit, so callers should migrate the label.
@@ -133,23 +85,12 @@ open class SharedObject: AnySharedObject {
   }
 }
 
-/**
- Sends a pre-converted event payload to the given JavaScript object via the JSI emitter helper.
- Must run on the JS thread; the public `emit` overloads schedule onto the runtime before calling in.
- */
-@JavaScriptActor
-private func dispatch(event: String, payload: JavaScriptValue, to value: JavaScriptValue, in runtime: JavaScriptRuntime) {
-  runtime.withUnsafePointee { runtimePtr in
-    value.withUnsafePointee { objectPtr in
-      payload.withUnsafePointee { payloadPtr in
-        JSUtils.emitEvent(
-          event,
-          runtimePointer: runtimePtr,
-          objectPointer: objectPtr,
-          argumentsPointer: payloadPtr,
-          argumentCount: 1
-        )
-      }
+extension SharedObject: EventEmitter {
+  @JavaScriptActor
+  public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
+    guard let target = getJavaScriptObject() else {
+      return nil
     }
+    return try body(target)
   }
 }

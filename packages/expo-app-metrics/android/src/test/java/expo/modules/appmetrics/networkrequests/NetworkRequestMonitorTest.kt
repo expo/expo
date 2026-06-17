@@ -3,6 +3,7 @@ package expo.modules.appmetrics.networkrequests
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.net.URI
 import java.util.Date
 import java.util.UUID
 
@@ -68,6 +69,28 @@ class NetworkRequestMonitorTest {
     assertEquals(0, collector.completed.size)
   }
 
+  @Test
+  fun `does not fan out events the delegate filters out`() {
+    val monitor = NetworkRequestMonitor()
+    val collector = FilteringDelegate(allowedHost = "api.expo.dev")
+    monitor.addDelegate(collector)
+
+    monitor.recordStart(
+      NetworkRequestStarted(UUID.randomUUID(), "https://api.expo.dev/v2/sessions", "POST", Date())
+    )
+    monitor.recordStart(
+      NetworkRequestStarted(UUID.randomUUID(), "https://cdn.example.com/asset.png", "GET", Date())
+    )
+    monitor.record(makeRequest(url = "https://api.expo.dev/v2/sessions"))
+    monitor.record(makeRequest(url = "https://cdn.example.com/asset.png"))
+
+    // Only the matching host reaches the delegate, on both the start and the completion path.
+    assertEquals(1, collector.started.size)
+    assertEquals("https://api.expo.dev/v2/sessions", collector.started.first().url)
+    assertEquals(1, collector.completed.size)
+    assertEquals("https://api.expo.dev/v2/sessions", collector.completed.first().url)
+  }
+
   private fun makeRequest(
     url: String = "https://expo.dev/x",
     fetchStart: Date = Date()
@@ -100,6 +123,25 @@ class NetworkRequestMonitorTest {
   private class CollectingDelegate : NetworkRequestObserverDelegate {
     val completed = mutableListOf<NetworkRequest>()
     val started = mutableListOf<NetworkRequestStarted>()
+
+    override fun onNetworkRequestStarted(request: NetworkRequestStarted) {
+      started.add(request)
+    }
+
+    override fun onNetworkRequestCompleted(request: NetworkRequest) {
+      completed.add(request)
+    }
+  }
+
+  /**
+   * Collecting delegate that only accepts requests for a single host, exercising the monitor's
+   * per-delegate `shouldObserveRequest` consult at the fan-out site.
+   */
+  private class FilteringDelegate(private val allowedHost: String) : NetworkRequestObserverDelegate {
+    val completed = mutableListOf<NetworkRequest>()
+    val started = mutableListOf<NetworkRequestStarted>()
+
+    override fun shouldObserveRequest(url: String, method: String): Boolean = URI(url).host == allowedHost
 
     override fun onNetworkRequestStarted(request: NetworkRequestStarted) {
       started.add(request)

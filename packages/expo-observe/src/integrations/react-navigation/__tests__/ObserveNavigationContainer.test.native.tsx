@@ -13,8 +13,12 @@ jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: {
     markInteractive: jest.fn(),
-    getMainSession: jest.fn(async () => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(),
+    getMainSession: jest.fn(() => ({
+      id: 'session-1',
+      type: 'main',
+      startDate: '2026-01-01T00:00:00.000Z',
+      addMetric: jest.fn(),
+    })),
   },
 }));
 

@@ -1,6 +1,4 @@
-/**
- Type-erased struct that is used to encode/decode types that use `Any` which itself is not conforming to `Encodable` nor `Decodable`.
- */
+/// Type-erased struct that is used to encode/decode types that use `Any` which itself is not conforming to `Encodable` nor `Decodable`.
 public struct AnyCodable: Codable, Sendable {
   // Similarly, `Any` does not conform to `Sendable`, but it is safe
   // to send it over different isolation domains as it is immutable.

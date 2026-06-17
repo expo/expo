@@ -8,20 +8,22 @@ import {
 import type { NavigationStateLike } from '../types';
 
 jest.mock('expo-app-metrics', () => {
-  const addCustomMetricToSession = jest.fn();
-  const getMainSession = jest.fn(async () => ({ id: 'session-1' }));
+  const mainSession = {
+    id: 'session-1',
+    type: 'main',
+    startDate: '2026-01-01T00:00:00.000Z',
+    addMetric: jest.fn(),
+  };
   return {
     __esModule: true,
     default: {
       markInteractive: jest.fn(),
-      getMainSession,
-      addCustomMetricToSession,
+      getMainSession: jest.fn(() => mainSession),
     },
   };
 });
 
-const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
-const mockSessionId = 'session-1';
+const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 
 function stackState(
   routes: { key: string; name?: string; params?: object }[],
@@ -78,9 +80,8 @@ describe('createStateChangeHandler', () => {
     handle(stackState([{ key: 'a' }]));
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric).toHaveBeenCalledWith({
-      sessionId: mockSessionId,
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenCalledWith({
       timestamp: expect.any(String),
       category: 'navigation',
       name: 'cold_ttr',
@@ -93,15 +94,15 @@ describe('createStateChangeHandler', () => {
   it('records cold_ttr with isAppLaunch=false on subsequent navigations to a new screen', async () => {
     handle(stackState([{ key: 'a' }], 0));
     await flushAsync();
-    mockAddCustomMetric.mockClear();
+    mockAddMetric.mockClear();
 
     storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: performance.now() });
     handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
-    expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddMetric.mock.calls[0][0].params).toEqual({
       isAppLaunch: false,
       routeParams: {},
     });
@@ -119,12 +120,12 @@ describe('createStateChangeHandler', () => {
     handle(stackState([{ key: 'a' }], 0));
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(3);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
-    expect(mockAddCustomMetric.mock.calls[0][0].params.isAppLaunch).toBe(true);
-    expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
-    expect(mockAddCustomMetric.mock.calls[1][0].params.isAppLaunch).toBe(false);
-    expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
+    expect(mockAddMetric).toHaveBeenCalledTimes(3);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddMetric.mock.calls[0][0].params.isAppLaunch).toBe(true);
+    expect(mockAddMetric.mock.calls[1][0].name).toBe('cold_ttr');
+    expect(mockAddMetric.mock.calls[1][0].params.isAppLaunch).toBe(false);
+    expect(mockAddMetric.mock.calls[2][0].name).toBe('warm_ttr');
   });
 
   it('joins the focused route-name chain of nested navigators into the routeName', async () => {
@@ -148,23 +149,23 @@ describe('createStateChangeHandler', () => {
     handle(nested);
     await flushAsync();
 
-    expect(mockAddCustomMetric.mock.calls[0][0].routeName).toBe('/Group/Details');
+    expect(mockAddMetric.mock.calls[0][0].routeName).toBe('/Group/Details');
   });
 
   it('does not emit when the focused key is unchanged (param-only state update)', async () => {
     handle(stackState([{ key: 'a' }]));
     await flushAsync();
-    mockAddCustomMetric.mockClear();
+    mockAddMetric.mockClear();
 
     handle(stackState([{ key: 'a', params: { x: '1' } }]));
     await flushAsync();
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
   });
 
   it('emits cold_ttr for first focus of each tab; tab siblings are not preemptively marked', async () => {
     handle(tabState([{ key: 'home' }, { key: 'settings' }], 0));
     await flushAsync();
-    mockAddCustomMetric.mockClear();
+    mockAddMetric.mockClear();
 
     storage.pendingActions.push({ actionType: 'JUMP_TO', dispatchTime: performance.now() });
     handle(tabState([{ key: 'home' }, { key: 'settings' }], 1));
@@ -174,16 +175,16 @@ describe('createStateChangeHandler', () => {
     handle(tabState([{ key: 'home' }, { key: 'settings' }], 0));
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
-    expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('warm_ttr');
+    expect(mockAddMetric).toHaveBeenCalledTimes(2);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddMetric.mock.calls[1][0].name).toBe('warm_ttr');
   });
 
   it('passes the focused route params through as routeParams on the emitted metric', async () => {
     handle(stackState([{ key: 'a', name: 'A', params: { id: '42' } }]));
     await flushAsync();
 
-    expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
+    expect(mockAddMetric.mock.calls[0][0].params).toEqual({
       isAppLaunch: true,
       routeParams: { id: '42' },
     });
@@ -205,7 +206,7 @@ describe('createStateChangeHandler', () => {
   it('treats undefined state as a no-op', async () => {
     handle(undefined);
     await flushAsync();
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
   });
 
   it('adds non-focused mounted stack screens to renderedScreensIds so revisits become warm_ttr', async () => {
@@ -214,20 +215,20 @@ describe('createStateChangeHandler', () => {
     expect(storage.renderedScreensIds.has('a')).toBe(true);
     expect(storage.renderedScreensIds.has('b')).toBe(true);
 
-    mockAddCustomMetric.mockClear();
+    mockAddMetric.mockClear();
     storage.pendingActions.push({ actionType: 'GO_BACK', dispatchTime: performance.now() });
     handle(stackState([{ key: 'a' }], 0));
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('warm_ttr');
   });
 
   it('emits tti alongside the TTR when a pending interactive was waiting (post-cold-launch)', async () => {
     // Cold-launch the first screen so the next focus runs through the warm branch.
     handle(stackState([{ key: 'a' }], 0));
     await flushAsync();
-    mockAddCustomMetric.mockClear();
+    mockAddMetric.mockClear();
 
     // markInteractive ran before onStateChange — wrote lastInteractiveCall
     // with no dispatchTime.
@@ -239,9 +240,9 @@ describe('createStateChangeHandler', () => {
     handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
-    const ttrCall = mockAddCustomMetric.mock.calls[0][0];
-    const ttiCall = mockAddCustomMetric.mock.calls[1][0];
+    expect(mockAddMetric).toHaveBeenCalledTimes(2);
+    const ttrCall = mockAddMetric.mock.calls[0][0];
+    const ttiCall = mockAddMetric.mock.calls[1][0];
     expect(ttrCall.name).toBe('cold_ttr');
     expect(ttrCall.params.isAppLaunch).toBe(false);
     expect(ttiCall.name).toBe('tti');
@@ -256,9 +257,9 @@ describe('createStateChangeHandler', () => {
     handle(stackState([{ key: 'a' }], 0));
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
-    const ttrCall = mockAddCustomMetric.mock.calls.find((c) => c[0].name === 'cold_ttr')?.[0];
-    const ttiCall = mockAddCustomMetric.mock.calls.find((c) => c[0].name === 'tti')?.[0];
+    expect(mockAddMetric).toHaveBeenCalledTimes(2);
+    const ttrCall = mockAddMetric.mock.calls.find((c) => c[0].name === 'cold_ttr')?.[0];
+    const ttiCall = mockAddMetric.mock.calls.find((c) => c[0].name === 'tti')?.[0];
     expect(ttrCall.params.isAppLaunch).toBe(true);
     expect(ttiCall.value).toBe(ttrCall.value);
     expect(ttiCall.routeName).toBe('/a');
@@ -286,13 +287,13 @@ describe('createStateChangeHandler', () => {
   it('does not emit tti when no pending interactive is waiting', async () => {
     handle(stackState([{ key: 'a' }], 0));
     await flushAsync();
-    mockAddCustomMetric.mockClear();
+    mockAddMetric.mockClear();
 
     storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: performance.now() });
     handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
     await flushAsync();
 
-    const ttiCalls = mockAddCustomMetric.mock.calls.filter((c) => c[0].name === 'tti');
+    const ttiCalls = mockAddMetric.mock.calls.filter((c) => c[0].name === 'tti');
     expect(ttiCalls).toHaveLength(0);
   });
 });

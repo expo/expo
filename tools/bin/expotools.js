@@ -112,9 +112,6 @@ async function calculateSourceChecksumAsync() {
         '**.ts',
         '**.json',
         'expotools.js',
-        // swc build files
-        'taskfile.js',
-        'taskfile-swc.js',
         // type checking
         'tsconfig.json',
       ],

@@ -104,20 +104,17 @@ export function useObserveForRouter(): MarkInteractive | null {
 
       // Stored in seconds to match the OTel `unit = "s"` convention
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
-      const mainSessionId = (await AppMetrics.getMainSession())?.id;
       // TODO(@ubax): we should count the time against the action which caused the first navigation
       // and add a param stating if during that time there was any navigation
-      if (mainSessionId) {
-        await emitTTI({
-          sessionId: mainSessionId,
-          timestamp,
-          routeName: routePattern,
-          value: interactiveTimeSeconds,
-          isAppLaunch: !!currentScreenData.isAppLaunch,
-          routeParams,
-          url: pathname,
-        });
-      }
+      await emitTTI({
+        session: AppMetrics.getMainSession(),
+        timestamp,
+        routeName: routePattern,
+        value: interactiveTimeSeconds,
+        isAppLaunch: !!currentScreenData.isAppLaunch,
+        routeParams,
+        url: pathname,
+      });
     },
     [screenId, navigation, pathname, routePattern, storage, routeParams]
   );

@@ -2,10 +2,8 @@ import ExpoAppMetrics
 import ExpoModulesCore
 import Foundation
 
-/**
- An object representing an event providing some app metrics and the information about the app and the device.
- In this form metrics and metadata are sent to the EAS endpoint.
- */
+/// An object representing an event providing some app metrics and the information about the app and the device.
+/// In this form metrics and metadata are sent to the EAS endpoint.
 struct Event: Codable, Sendable {
   let metadata: Metadata
   let metrics: [Metric]
@@ -65,11 +63,9 @@ struct Event: Codable, Sendable {
     let sessionId: String
   }
 
-  /**
-   Builds an `Event` from a session row plus its metric/log batch. The session row carries all the
-   metadata that used to live on `Entry`/`AppInfo`/`DeviceInfo`; metrics and logs are passed
-   separately so a partial dispatch (only the rows past a cursor) can still produce a valid event.
-   */
+  /// Builds an `Event` from a session row plus its metric/log batch. The session row carries all the
+  /// metadata that used to live on `Entry`/`AppInfo`/`DeviceInfo`; metrics and logs are passed
+  /// separately so a partial dispatch (only the rows past a cursor) can still produce a valid event.
   static func from(session: SessionRow, metrics: [MetricRow], logs: [LogRow]) -> Event {
     let updatesInfo = AppInfo.UpdatesInfo(
       updateId: session.appUpdateId,

@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import ExpoAppMetrics
+import ExpoModulesCore
 
 internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
@@ -57,8 +57,8 @@ public final class ObserveModule: Module {
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
         observeLogger.warn(
-          "[EAS Observe] setBundleDefaults received empty environment; skipping. " +
-          "This is a bug in the JS layer — `process.env.NODE_ENV` should always resolve."
+          "[EAS Observe] setBundleDefaults received empty environment; skipping. "
+            + "This is a bug in the JS layer — `process.env.NODE_ENV` should always resolve."
         )
         return
       }
@@ -97,10 +97,8 @@ private func getUseOpenTelemetry(_ manifest: [String: Any]) -> Bool? {
   return getManifestProperty("extra.eas.observe.useOpenTelemetry", manifest) as? Bool
 }
 
-/**
- * Traverses the manifest using a dot-separated property chain.
- * For example, "extra.eas.projectId" will navigate manifest["extra"]["eas"]["projectId"].
- */
+/// Traverses the manifest using a dot-separated property chain.
+/// For example, "extra.eas.projectId" will navigate manifest["extra"]["eas"]["projectId"].
 private func getManifestProperty(_ propertyChain: String, _ manifest: [String: Any]) -> Any? {
   let keys = propertyChain.split(separator: ".").map { String($0) }
   var value: Any? = manifest

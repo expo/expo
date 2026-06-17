@@ -79,7 +79,8 @@ struct NetworkRequestMonitorTests {
     let snapshot = NetworkRequest.from(
       id: UUID(),
       request: URLRequest(url: URL(string: "https://expo.dev/x")!),
-      response: HTTPURLResponse(url: URL(string: "https://expo.dev/x")!, statusCode: 200, httpVersion: nil, headerFields: nil),
+      response: HTTPURLResponse(
+        url: URL(string: "https://expo.dev/x")!, statusCode: 200, httpVersion: nil, headerFields: nil),
       taskBytesSent: nil,
       taskBytesReceived: nil,
       metrics: nil,
@@ -133,6 +134,124 @@ struct NetworkRequestMonitorTests {
       monitor.record(snapshot)
     }
     #expect(monitor.recent.count == 200)
+  }
+
+  @Test
+  func `does not fan out events the delegate filters out`() {
+    let monitor = NetworkRequestMonitor()
+    let collector = FilteringDelegate(allowedHost: "api.expo.dev")
+    monitor.addDelegate(collector)
+
+    monitor.recordStart(makeStarted(url: "https://api.expo.dev/v2/sessions", method: "POST"))
+    monitor.recordStart(makeStarted(url: "https://cdn.example.com/asset.png", method: "GET"))
+    monitor.record(makeRequest(url: "https://api.expo.dev/v2/sessions"))
+    monitor.record(makeRequest(url: "https://cdn.example.com/asset.png"))
+
+    // Only the matching host reaches the delegate, on both the start and the completion path.
+    #expect(collector.receivedStarts.count == 1)
+    #expect(collector.receivedStarts.first?.url.host == "api.expo.dev")
+    #expect(collector.received.count == 1)
+    #expect(collector.received.first?.url.host == "api.expo.dev")
+  }
+
+  private func makeStarted(url: String, method: String) -> NetworkRequestStarted {
+    return NetworkRequestStarted(id: UUID(), url: URL(string: url)!, method: method, startedAt: Date())
+  }
+
+  private func makeRequest(url: String) -> NetworkRequest {
+    return NetworkRequest.from(
+      id: UUID(),
+      request: URLRequest(url: URL(string: url)!),
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: Date(),
+      fallbackEnd: Date(),
+      error: nil
+    )
+  }
+}
+
+@Suite("NetworkRequestFilter")
+struct NetworkRequestFilterTests {
+  @Test
+  func `a filter with no fields set matches every request`() {
+    let filter = NetworkRequestFilter()
+    #expect(filter.matches(url: URL(string: "https://anything.example.com/path")!, method: "GET"))
+    #expect(filter.matches(url: URL(string: "https://other.test/x")!, method: "DELETE"))
+  }
+
+  @Test
+  func `an empty array allows nothing through that dimension`() {
+    var emptyHosts = NetworkRequestFilter()
+    emptyHosts.hosts = []
+    #expect(!emptyHosts.matches(url: URL(string: "https://api.expo.dev/x")!, method: "GET"))
+
+    var emptyMethods = NetworkRequestFilter()
+    emptyMethods.methods = []
+    #expect(!emptyMethods.matches(url: URL(string: "https://api.expo.dev/x")!, method: "GET"))
+  }
+
+  @Test
+  func `hosts match exactly and case-insensitively`() {
+    var filter = NetworkRequestFilter()
+    filter.hosts = ["API.Expo.dev"]
+    #expect(filter.matches(url: URL(string: "https://api.expo.dev/v2")!, method: "GET"))
+    // Exact host only — subdomains and unrelated hosts are excluded.
+    #expect(!filter.matches(url: URL(string: "https://cdn.expo.dev/v2")!, method: "GET"))
+    #expect(!filter.matches(url: URL(string: "https://example.com/v2")!, method: "GET"))
+  }
+
+  @Test
+  func `hosts is an OR across the listed entries`() {
+    var filter = NetworkRequestFilter()
+    filter.hosts = ["api.expo.dev", "u.expo.dev"]
+    #expect(filter.matches(url: URL(string: "https://api.expo.dev/x")!, method: "GET"))
+    #expect(filter.matches(url: URL(string: "https://u.expo.dev/x")!, method: "GET"))
+    #expect(!filter.matches(url: URL(string: "https://cdn.expo.dev/x")!, method: "GET"))
+  }
+
+  @Test
+  func `methods match case-insensitively`() {
+    var filter = NetworkRequestFilter()
+    filter.methods = ["post", "PUT"]
+    #expect(filter.matches(url: URL(string: "https://expo.dev/x")!, method: "POST"))
+    #expect(filter.matches(url: URL(string: "https://expo.dev/x")!, method: "put"))
+    #expect(!filter.matches(url: URL(string: "https://expo.dev/x")!, method: "GET"))
+  }
+
+  @Test
+  func `fields combine with AND`() {
+    var filter = NetworkRequestFilter()
+    filter.hosts = ["api.expo.dev"]
+    filter.methods = ["POST"]
+    // Both the host and the method must match.
+    #expect(filter.matches(url: URL(string: "https://api.expo.dev/x")!, method: "POST"))
+    #expect(!filter.matches(url: URL(string: "https://api.expo.dev/x")!, method: "GET"))
+    #expect(!filter.matches(url: URL(string: "https://cdn.expo.dev/x")!, method: "POST"))
+  }
+}
+
+@Suite("NetworkRequestObserver filtering")
+struct NetworkRequestObserverFilterTests {
+  @Test
+  func `setFilter swaps the active filter synchronously`() {
+    var post = NetworkRequestFilter()
+    post.methods = ["POST"]
+    let observer = NetworkRequestObserver(filter: post)
+    #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
+    #expect(!observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "GET"))
+
+    var get = NetworkRequestFilter()
+    get.methods = ["GET"]
+    observer.setFilter(get)
+    #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "GET"))
+    #expect(!observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
+
+    // No filter falls back to observing everything.
+    observer.setFilter(nil)
+    #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
   }
 }
 
@@ -204,10 +323,14 @@ struct NetworkRequestSummaryTests {
     // 304 is a successful conditional-GET cache hit; 301/302 are redirections URLSession
     // typically follows but if one surfaces here it's still a successful response from the
     // origin's perspective. Only 4xx/5xx (and explicit errors) belong in the failed count.
-    let cacheHit = makeRequest(host: "expo.dev", duration: 0.05, status: 304, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
-    let redirect = makeRequest(host: "expo.dev", duration: 0.1, status: 301, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
-    let clientError = makeRequest(host: "expo.dev", duration: 0.1, status: 404, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
-    let serverError = makeRequest(host: "expo.dev", duration: 0.1, status: 500, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+    let cacheHit = makeRequest(
+      host: "expo.dev", duration: 0.05, status: 304, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+    let redirect = makeRequest(
+      host: "expo.dev", duration: 0.1, status: 301, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+    let clientError = makeRequest(
+      host: "expo.dev", duration: 0.1, status: 404, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+    let serverError = makeRequest(
+      host: "expo.dev", duration: 0.1, status: 500, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
 
     let summary = NetworkRequestSummary.from([cacheHit, redirect, clientError, serverError])
     #expect(summary.count == 4)
@@ -300,16 +423,14 @@ struct NetworkRequestMonitorWindowingTests {
   }
 }
 
-/**
- End-to-end tests for `NetworkRequestTaskSwizzling`. We register a `FakeServerProtocol` inside the
- test's URLSession so requests never escape the process; the swizzles still fire on the real
- `__NSCFLocalSessionTask` Apple creates to drive the URLProtocol, so we observe the full lifecycle
- just as we would in production.
-
- Serialized because every test installs the same process-wide swizzles and shares the monitor's
- ring buffer — concurrent runs would observe each other's traffic and the assertions filter by URL
- to keep tests independent.
- */
+/// End-to-end tests for `NetworkRequestTaskSwizzling`. We register a `FakeServerProtocol` inside the
+/// test's URLSession so requests never escape the process; the swizzles still fire on the real
+/// `__NSCFLocalSessionTask` Apple creates to drive the URLProtocol, so we observe the full lifecycle
+/// just as we would in production.
+///
+/// Serialized because every test installs the same process-wide swizzles and shares the monitor's
+/// ring buffer — concurrent runs would observe each other's traffic and the assertions filter by URL
+/// to keep tests independent.
 @Suite("NetworkRequestTaskSwizzling", .serialized)
 struct NetworkRequestTaskSwizzlingTests {
   init() {
@@ -361,11 +482,9 @@ struct NetworkRequestTaskSwizzlingTests {
     #expect(recorded == nil)
   }
 
-  /**
-   With task-resume swizzling the caller's session is never replaced — POST bodies reach the
-   server through the URL loading system's normal path. The fake echoes whatever it receives; a
-   matching echo proves the body wasn't dropped.
-   */
+  /// With task-resume swizzling the caller's session is never replaced — POST bodies reach the
+  /// server through the URL loading system's normal path. The fake echoes whatever it receives; a
+  /// matching echo proves the body wasn't dropped.
   @Test
   func `preserves request bodies for uploads`() async throws {
     let config = URLSessionConfiguration.ephemeral
@@ -384,13 +503,11 @@ struct NetworkRequestTaskSwizzlingTests {
     #expect(data == payload)
   }
 
-  /**
-   With the swizzle approach the caller's `URLSession` configuration is preserved verbatim — no
-   inner session, no replay. Ephemeral sessions used to leak cookies into `HTTPCookieStorage.shared`
-   under the old URLProtocol-replay implementation; this test pins that the leak is gone.
-   `FakeServerProtocol` returns a `Set-Cookie` header for `/cookie-test`, so the assertion would
-   fail loudly if cookies started flowing into the shared jar again.
-   */
+  /// With the swizzle approach the caller's `URLSession` configuration is preserved verbatim — no
+  /// inner session, no replay. Ephemeral sessions used to leak cookies into `HTTPCookieStorage.shared`
+  /// under the old URLProtocol-replay implementation; this test pins that the leak is gone.
+  /// `FakeServerProtocol` returns a `Set-Cookie` header for `/cookie-test`, so the assertion would
+  /// fail loudly if cookies started flowing into the shared jar again.
   @Test
   func `does not leak cookies from an ephemeral session into the shared storage`() async throws {
     // Wipe any cookie a previous test or stray network state might have planted on `fake.test`.
@@ -413,12 +530,10 @@ struct NetworkRequestTaskSwizzlingTests {
     #expect(sharedAfter.isEmpty)
   }
 
-  /**
-   `URLSessionWebSocketTask` extends `URLSessionTask` so the swizzle's `resume` fires on it, but
-   websockets don't produce useful HTTP metrics and we deliberately skip them. We resume a
-   websocket task pointed at a URL that will never connect, then cancel it; the swizzle must not
-   have recorded a snapshot.
-   */
+  /// `URLSessionWebSocketTask` extends `URLSessionTask` so the swizzle's `resume` fires on it, but
+  /// websockets don't produce useful HTTP metrics and we deliberately skip them. We resume a
+  /// websocket task pointed at a URL that will never connect, then cancel it; the swizzle must not
+  /// have recorded a snapshot.
   @Test
   func `skips websocket tasks`() async throws {
     let config = URLSessionConfiguration.ephemeral
@@ -435,12 +550,10 @@ struct NetworkRequestTaskSwizzlingTests {
     #expect(recorded == nil)
   }
 
-  /**
-   Requests marked with `ExpoRequestInterceptorProtocol.requestId` are dev-launcher inner replays —
-   the swizzle must skip them so we don't double-record every request in dev-client builds. Drive
-   the check through `URLProtocol.setProperty(_:forKey:in:)` directly; we don't need the
-   dev-launcher itself to repro the condition.
-   */
+  /// Requests marked with `ExpoRequestInterceptorProtocol.requestId` are dev-launcher inner replays —
+  /// the swizzle must skip them so we don't double-record every request in dev-client builds. Drive
+  /// the check through `URLProtocol.setProperty(_:forKey:in:)` directly; we don't need the
+  /// dev-launcher itself to repro the condition.
   @Test
   func `skips dev-launcher inner replay tasks`() async throws {
     let config = URLSessionConfiguration.ephemeral
@@ -459,12 +572,10 @@ struct NetworkRequestTaskSwizzlingTests {
     #expect(recorded == nil)
   }
 
-  /**
-   Sessions created without a delegate (and the global `URLSession.shared`-style completion-handler
-   path) skip our `DelegateProxy`, so `didFinishCollectingMetrics:` never fires. The `setState:`
-   fallback has to win after `setStateFallbackDelay` and still record the snapshot — degraded (no
-   per-phase metrics) but present.
-   */
+  /// Sessions created without a delegate (and the global `URLSession.shared`-style completion-handler
+  /// path) skip our `DelegateProxy`, so `didFinishCollectingMetrics:` never fires. The `setState:`
+  /// fallback has to win after `setStateFallbackDelay` and still record the snapshot — degraded (no
+  /// per-phase metrics) but present.
   @Test
   func `records delegate-less sessions via the setState fallback`() async throws {
     let config = URLSessionConfiguration.ephemeral
@@ -507,12 +618,10 @@ struct NetworkRequestTaskSwizzlingTests {
   }
 }
 
-/**
- The JS-facing observer mostly forwards to `NetworkRequestMonitor`, which is exercised by the
- `NetworkRequestMonitor` suite. What's specific to the observer is the payload shape — the dict
- it hands to `emit()` is the wire format JS consumers see. These tests pin that shape down so
- renames (`fromUrl` → `from`, `responseEnd` → `endedAt`, etc.) require a deliberate change.
- */
+/// The JS-facing observer mostly forwards to `NetworkRequestMonitor`, which is exercised by the
+/// `NetworkRequestMonitor` suite. What's specific to the observer is the payload shape — the dict
+/// it hands to `emit()` is the wire format JS consumers see. These tests pin that shape down so
+/// renames (`fromUrl` → `from`, `responseEnd` → `endedAt`, etc.) require a deliberate change.
 @Suite("NetworkRequestObserver")
 struct NetworkRequestObserverTests {
   @Test
@@ -687,14 +796,61 @@ private final class CollectingDelegate: NetworkRequestObserverDelegate, @uncheck
   }
 }
 
-/**
- A trivial `URLProtocol` that pretends to be a server. Routes by URL path:
- - `/cookie-test` returns a `Set-Cookie` header so the cookie-isolation test can detect a leak.
- - any other path echoes the request body back when there is one (POST/PUT payload assertions) and
-   otherwise returns a `hi` body.
+/// Collecting delegate that only accepts requests for a single host, exercising the monitor's
+/// per-delegate `shouldObserveRequest` consult at the fan-out site.
+private final class FilteringDelegate: NetworkRequestObserverDelegate, @unchecked Sendable {
+  private let allowedHost: String
+  private let lock = NSLock()
+  private var completed: [NetworkRequest] = []
+  private var started: [NetworkRequestStarted] = []
 
- Sits at the tail of the protocol chain in the test's outer session.
- */
+  init(allowedHost: String) {
+    self.allowedHost = allowedHost
+  }
+
+  var received: [NetworkRequest] {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    return completed
+  }
+
+  var receivedStarts: [NetworkRequestStarted] {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    return started
+  }
+
+  func shouldObserveRequest(url: URL, method: String) -> Bool {
+    return url.host == allowedHost
+  }
+
+  func onNetworkRequestStarted(_ request: NetworkRequestStarted) {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    started.append(request)
+  }
+
+  func onNetworkRequestCompleted(_ request: NetworkRequest) {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    completed.append(request)
+  }
+}
+
+/// A trivial `URLProtocol` that pretends to be a server. Routes by URL path:
+/// - `/cookie-test` returns a `Set-Cookie` header so the cookie-isolation test can detect a leak.
+/// - any other path echoes the request body back when there is one (POST/PUT payload assertions) and
+/// otherwise returns a `hi` body.
+///
+/// Sits at the tail of the protocol chain in the test's outer session.
 private final class FakeServerProtocol: URLProtocol {
   override class func canInit(with request: URLRequest) -> Bool {
     return request.url?.host == "fake.test"
@@ -706,7 +862,8 @@ private final class FakeServerProtocol: URLProtocol {
 
   override func startLoading() {
     let url = request.url!
-    let headers: [String: String]? = url.path == "/cookie-test"
+    let headers: [String: String]? =
+      url.path == "/cookie-test"
       ? ["Set-Cookie": "fake=value; Path=/"]
       : nil
     let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: headers)!
@@ -718,11 +875,9 @@ private final class FakeServerProtocol: URLProtocol {
 
   override func stopLoading() {}
 
-  /**
-   Reads the request body, preferring the in-memory `httpBody` and falling back to draining
-   `httpBodyStream` — by the time a request reaches a `URLProtocol`, Foundation has usually
-   converted the body to a stream, which is exactly the path we want to exercise.
-   */
+  /// Reads the request body, preferring the in-memory `httpBody` and falling back to draining
+  /// `httpBodyStream` — by the time a request reaches a `URLProtocol`, Foundation has usually
+  /// converted the body to a stream, which is exactly the path we want to exercise.
   private static func readBody(from request: URLRequest) -> Data? {
     if let body = request.httpBody {
       return body

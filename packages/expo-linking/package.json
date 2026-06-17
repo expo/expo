@@ -5,20 +5,31 @@
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "react-server": "./build/Linking.server.js",
+      "react-server": {
+        "types": {
+          "source": "./src/Linking.server.ts",
+          "default": "./build/Linking.server.js"
+        },
+        "source": "./src/Linking.server.ts",
+        "default": "./build/Linking.server.js"
+      },
+      "types": {
+        "source": "./src/Linking.ts",
+        "default": "./build/Linking.d.ts"
+      },
+      "source": "./src/Linking.ts",
       "default": "./build/Linking.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "keywords": [
     "react-native",

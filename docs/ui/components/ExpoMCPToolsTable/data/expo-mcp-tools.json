@@ -2,7 +2,7 @@
   "source": {
     "server": "https://mcp.expo.dev/mcp",
     "localRepo": "expo/expo-mcp",
-    "fetchedAt": "2026-03-18T10:06:19.629Z"
+    "fetchedAt": "2026-06-15T15:49:08.099Z"
   },
   "totalTools": 25,
   "totalPrompts": 1,
@@ -14,17 +14,17 @@
       "availability": "Server"
     },
     {
+      "name": "read_documentation",
+      "description": "Fetch a single Expo documentation page and return its content as markdown. Returns up to ~5000 tokens per call. Use offset to paginate through long pages.",
+      "examplePrompt": "read the Expo Router docs page",
+      "availability": "Server"
+    },
+    {
       "name": "search_documentation",
       "description": "Search the official Expo documentation and return page URLs ranked by relevance for a user query. Use read_documentation to fetch the full content of specific pages, starting from the top.",
       "examplePrompt": "search documentation for CNG",
       "availability": "Server",
       "requirements": "requires an EAS paid plan"
-    },
-    {
-      "name": "read_documentation",
-      "description": "Fetch a single Expo documentation page and return its content as markdown. Returns up to ~5000 tokens per call. Use offset to paginate through long pages.",
-      "examplePrompt": "read the Expo Router docs page",
-      "availability": "Server"
     },
     {
       "name": "learn",

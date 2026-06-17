@@ -81,7 +81,7 @@ if [ "$CONFIGURATION" != "Debug" ]; then
   fi
 fi
 `,
-    });
+    }, undefined);
 
     const targetPhases: { value: string; comment?: string }[] =
       project.pbxNativeTargetSection()[nativeTargetId]?.buildPhases ?? [];

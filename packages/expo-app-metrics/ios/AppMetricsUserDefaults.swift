@@ -1,16 +1,10 @@
-/**
- Class that manages a custom `UserDefaults` database with `"dev.expo.app-metrics"` suite name.
- */
+/// Class that manages a custom `UserDefaults` database with `"dev.expo.app-metrics"` suite name.
 public final class AppMetricsUserDefaults: UserDefaults {
-  /**
-   Singleton instance of the user defaults for AppMetrics.
-   It is not isolated, but UserDefaults is thread-safe.
-   */
+  /// Singleton instance of the user defaults for AppMetrics.
+  /// It is not isolated, but UserDefaults is thread-safe.
   nonisolated(unsafe) private static let defaults = AppMetricsUserDefaults()
 
-  /**
-   Enum with keys used within this user defaults database.
-   */
+  /// Enum with keys used within this user defaults database.
   private enum Keys: String {
     case lastAppLaunchState
     case environment

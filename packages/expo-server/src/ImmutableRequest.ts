@@ -116,8 +116,8 @@ export class ImmutableRequest implements _ImmutableRequest, RequestInit {
     return this.#request.bodyUsed;
   }
 
-  get duplex() {
-    // NOTE(@kitten): Depending on if `@types/node` is used, this may not be defined
+  get duplex(): 'half' | undefined {
+    // NOTE(@kitten): Depending on if `@types/node` / undici is used, this may not be defined
     return (this.#request as Request & { duplex?: 'half' | undefined }).duplex;
   }
 

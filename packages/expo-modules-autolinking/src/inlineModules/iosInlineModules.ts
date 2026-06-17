@@ -14,3 +14,25 @@ export async function getIosInlineModulesClassNames(
     }
   );
 }
+
+export function isTargetInInlineModulesTargets({
+  targetPath,
+  inlineModulesTargets,
+}: {
+  targetPath: string;
+  inlineModulesTargets: { mainTarget?: string; targets: string[] };
+}): boolean {
+  const targetRegex = /\/Pods-(.+?)\/ExpoModulesProvider\.swift$/;
+  const match = targetPath.match(targetRegex);
+  if (!match) {
+    return false;
+  }
+  const targetName = match[1];
+  if (targetName === undefined) {
+    return false;
+  }
+  if (inlineModulesTargets.mainTarget) {
+    return targetName === inlineModulesTargets.mainTarget;
+  }
+  return inlineModulesTargets.targets.includes(targetName);
+}

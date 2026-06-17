@@ -5,6 +5,7 @@ import SwiftUI
 struct AccountSheet: View {
   @Environment(\.dismiss) private var dismiss
   @EnvironmentObject var viewModel: DevLauncherViewModel
+  @State private var showingLogoutConfirmation = false
 
   var body: some View {
     VStack(spacing: 0) {
@@ -26,7 +27,7 @@ struct AccountSheet: View {
           loginSignupCard
         }
       }
-      .padding(.horizontal, 16)
+      .padding(.horizontal, 20)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     #if !os(tvOS) && !os(macOS)
@@ -53,7 +54,7 @@ struct AccountSheet: View {
             .frame(width: 44, height: 44)
         }
       }
-      .padding(.horizontal, 16)
+      .padding(.horizontal, 20)
       .padding(.top, 8)
     }
   }
@@ -76,19 +77,32 @@ struct AccountSheet: View {
         }
       }
 
-      Button {
+      logOutButton
+    }
+  }
+
+  private var logOutButton: some View {
+    Button(role: .destructive) {
+      showingLogoutConfirmation = true
+    }
+    label: {
+      Text("Log out")
+        .font(.headline)
+        .foregroundColor(.red)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+    }
+    .background(Color.expoSecondarySystemBackground)
+    .cornerRadius(12)
+    .confirmationDialog(
+      "Are you sure you want to log out?",
+      isPresented: $showingLogoutConfirmation,
+      titleVisibility: .visible
+    ) {
+      Button("Log out", role: .destructive) {
         viewModel.signOut()
       }
-      label: {
-        Text("Log out")
-          .font(.headline)
-          .fontWeight(.bold)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
-      }
-      .background(Color.black)
-      .cornerRadius(12)
+      Button("Cancel", role: .cancel) {}
     }
   }
 

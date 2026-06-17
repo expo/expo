@@ -6,6 +6,8 @@ import com.facebook.react.ReactActivity
 import expo.modules.BuildConfig
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.WorkletRuntimeInstaller
 import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -95,25 +97,14 @@ class CoreModule : Module() {
       reactDelegate.reload()
     }
 
-    Function("installOnUIRuntime") {
-      val uiRuntimePointerHolder = appContext.runtime.jsiContext.global()["_WORKLET_RUNTIME"]
-        ?: throw IllegalStateException("UI Runtime is not available. Make sure you have Reanimated installed and imported in your project.")
-
-      assert(uiRuntimePointerHolder.isObject()) {
-        "Expected _WORKLET_RUNTIME to be an ArrayBuffer, got: ${uiRuntimePointerHolder.kind()}."
+    Function("installOnUIRuntime") { uiRuntimeHolder: JavaScriptObject ->
+      val runtimePointer = WorkletRuntimeInstaller.resolveUIRuntimePointer(uiRuntimeHolder)
+      if (runtimePointer == 0L) {
+        throw IllegalStateException(
+          "Couldn't resolve the worklets UI runtime from the provided holder. " +
+            "Make sure `react-native-worklets` is installed and rebuild the app."
+        )
       }
-
-      val uiRuntimePointerHolderObj = uiRuntimePointerHolder.getObject()
-      assert(uiRuntimePointerHolderObj.isArrayBuffer()) {
-        "Expected _WORKLET_RUNTIME to be an ArrayBuffer, got: ${uiRuntimePointerHolder.kind()}."
-      }
-
-      val arayBuffer = uiRuntimePointerHolderObj.getArrayBuffer()
-      assert(arayBuffer.size() == 8) {
-        "Expected _WORKLET_RUNTIME to be an ArrayBuffer with a size of 8 bytes (a pointer size), got: ${arayBuffer.size()}."
-      }
-
-      val runtimePointer = arayBuffer.read8Byte(0)
 
       runBlocking {
         withContext(Dispatchers.Main) {

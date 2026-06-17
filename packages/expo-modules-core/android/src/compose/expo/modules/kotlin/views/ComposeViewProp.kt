@@ -18,22 +18,12 @@ class ComposeViewProp(
 ) : AnyViewProp(name, anyType) {
   private var _isStateProp = false
 
-  @Suppress("UNCHECKED_CAST")
   override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
-    setPropDirectly(prop = prop, onView = onView, appContext = appContext)
-  }
-
-  override fun set(prop: Any?, onView: View, appContext: AppContext?) {
-    setPropDirectly(prop = prop, onView = onView, appContext = appContext)
-  }
-
-  @PublishedApi
-  internal fun setPropDirectly(prop: Dynamic, currentProps: Any, appContext: AppContext?): Any {
-    return copyPropsWithNewValue(prop, currentProps, appContext) ?: currentProps
+    set(prop = prop as Any, onView = onView, appContext = appContext)
   }
 
   @Suppress("UNCHECKED_CAST")
-  private fun setPropDirectly(prop: Any?, onView: View, appContext: AppContext?) {
+  override fun set(prop: Any?, onView: View, appContext: AppContext?) {
     exceptionDecorator({
       PropSetException(name, onView::class, it)
     }) {
@@ -57,7 +47,8 @@ class ComposeViewProp(
     }
   }
 
-  private fun copyPropsWithNewValue(prop: Any?, currentProps: Any, appContext: AppContext?): Any? {
+  @PublishedApi
+  internal fun copyPropsWithNewValue(prop: Any?, currentProps: Any, appContext: AppContext?): Any? {
     // TODO(@lukmccall): We should remove the copy call
     val copy = currentProps::class.memberFunctions.firstOrNull { it.name == "copy" }
     if (copy == null) {

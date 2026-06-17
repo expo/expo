@@ -159,9 +159,8 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 180_000) 
     );
     const label = 'device startup duration';
     console.time(label);
-    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], {
-      stdio: 'inherit',
-    });
+    // Capture (don't inherit) stdio so the verbose boot/data-migration progress doesn't flood the logs.
+    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b']);
 
     let timeoutHandle: NodeJS.Timeout | null = null;
     const timeoutPromise = new Promise((_, reject) => {
@@ -239,7 +238,7 @@ async function testAsync(
         },
       });
       console.timeEnd(TEST_DURATION_LABEL);
-    } catch {
+    } catch (error: unknown) {
       stopLogCollectionController.abort();
       console.timeEnd(TEST_DURATION_LABEL);
       console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
@@ -262,11 +261,8 @@ async function testAsync(
       }
 
       console.log('\n\n');
-      throw new Error('e2e tests have failed.');
+      throw new Error('e2e tests have failed.', { cause: error });
     }
-  } catch (e: unknown) {
-    console.error('Uncaught Error', e);
-    throw e;
   } finally {
     endGroup();
     stopLogCollectionController.abort();

@@ -403,7 +403,7 @@ async function preparePackageJson(
       dependencies: {
         ...packageJson.dependencies,
         glob: '^11.0.0',
-        'react-native-tvos': '0.86.0-0rc2',
+        'react-native-tvos': '0.86.0-0rc3',
         '@react-native-tvos/config-tv': '^0.1.6',
       },
     };
@@ -925,6 +925,10 @@ export async function initAsync(
       {
         sourcePath: path.join(customInitSourcesDirectory, 'AppDelegate.swift'),
         destPath: path.join(projectRoot, 'ios', 'updatese2e', 'AppDelegate.swift'),
+      },
+      {
+        sourcePath: path.join(customInitSourcesDirectory, 'SceneDelegate.swift'),
+        destPath: path.join(projectRoot, 'ios', 'updatese2e', 'SceneDelegate.swift'),
       },
       {
         sourcePath: path.join(customInitSourcesDirectory, 'MainApplication.kt'),

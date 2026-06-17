@@ -75,10 +75,6 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
     ),
   });
 
-  // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-  // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-  Font.resetServerContext();
-
   // This MUST be run before `ReactDOMServer.renderToString` to prevent
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
@@ -98,54 +94,56 @@ export async function getStaticContent(
   location: URL,
   options?: GetStaticContentOptions
 ): Promise<string> {
-  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
-    location,
-    options
-  );
+  return Font.withServerContext(() => {
+    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
+      location,
+      options
+    );
 
-  const html = ReactDOMServer.renderToString(
-    <Head.Provider context={headContext}>
-      <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-    </Head.Provider>
-  );
+    const html = ReactDOMServer.renderToString(
+      <Head.Provider context={headContext}>
+        <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
+      </Head.Provider>
+    );
 
-  // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+    // Eval the CSS after the HTML is rendered so that the CSS is in the same order
+    const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
 
-  let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
+    let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
 
-  output = output.replace('</head>', `${css}</head>`);
+    output = output.replace('</head>', `${css}</head>`);
 
-  const fonts = Font.getServerResources();
-  debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-  // Inject static fonts loaded with expo-font
-  output = output.replace('</head>', `${fonts.join('')}</head>`);
-  if (loadedData) {
-    output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
-  }
-
-  // Inject favicon link tag. Mirrors `assets.favicon` handling in `getStreamingContent`.
-  if (options?.assets?.favicon) {
-    output = output.replace('</head>', `${createFaviconAsString(options.assets.favicon)}</head>`);
-  }
-
-  // Inject hydration assets (JS/CSS bundles). Used in SSR mode
-  if (options?.assets) {
-    if (options.assets.css.length > 0) {
-      const injectedCSS = createInjectedCssAsString(options.assets.css);
-      output = output.replace('</head>', `${injectedCSS}\n</head>`);
+    const fonts = Font.getServerResources();
+    debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
+    // Inject static fonts loaded with expo-font
+    output = output.replace('</head>', `${fonts.join('')}</head>`);
+    if (loadedData) {
+      output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
     }
 
-    if (options.assets.js.length > 0) {
-      // In non-streaming mode, use deferred scripts in the body
-      output = output.replace(
-        '</body>',
-        `${createInjectedScriptsAsString(options.assets.js)}\n</body>`
-      );
+    // Inject favicon link tag. Mirrors `assets.favicon` handling in `getStreamingContent`.
+    if (options?.assets?.favicon) {
+      output = output.replace('</head>', `${createFaviconAsString(options.assets.favicon)}</head>`);
     }
-  }
 
-  return '<!DOCTYPE html>' + output;
+    // Inject hydration assets (JS/CSS bundles). Used in SSR mode
+    if (options?.assets) {
+      if (options.assets.css.length > 0) {
+        const injectedCSS = createInjectedCssAsString(options.assets.css);
+        output = output.replace('</head>', `${injectedCSS}\n</head>`);
+      }
+
+      if (options.assets.js.length > 0) {
+        // In non-streaming mode, use deferred scripts in the body
+        output = output.replace(
+          '</body>',
+          `${createInjectedScriptsAsString(options.assets.js)}\n</body>`
+        );
+      }
+    }
+
+    return '<!DOCTYPE html>' + output;
+  });
 }
 
 function mixHeadComponentsWithStaticResults(helmet: any, html: string) {

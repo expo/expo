@@ -49,11 +49,17 @@ struct DevServersView: View {
 
       LazyVStack(alignment: .leading, spacing: 6) {
         if viewModel.devServers.isEmpty {
-          Text("No development servers found")
-            .foregroundColor(.primary)
-            .multilineTextAlignment(.leading)
+          if viewModel.permissionStatus != .denied {
+            HStack {
+              Text("Searching for development servers...")
+                .foregroundColor(.secondary)
+              Spacer()
+              ProgressView()
+                .controlSize(.small)
+            }
             .padding()
-          Divider()
+            Divider()
+          }
         } else {
           ForEach(viewModel.devServers, id: \.self) { server in
             DevServerRow(server: server) {
@@ -66,12 +72,6 @@ struct DevServersView: View {
         }
         enterUrl
       }
-    }
-    .onAppear {
-      viewModel.startServerDiscovery()
-    }
-    .onDisappear {
-      viewModel.stopServerDiscovery()
     }
   }
 
@@ -143,13 +143,17 @@ struct DevServersView: View {
         Text("Load embedded bundle")
           .foregroundColor(.primary)
         Spacer()
-        if viewModel.isLoadingLocalBundle {
-          ProgressView()
-        } else {
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        Group {
+          if viewModel.isLoadingLocalBundle {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
         }
+        .frame(width: 20, height: 20)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
@@ -232,13 +236,17 @@ struct DevServerRow: View {
 
         Spacer()
 
-        if viewModel.isLoadingServer {
-          ProgressView()
-        } else {
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        Group {
+          if viewModel.isLoadingServer {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
         }
+        .frame(width: 20, height: 20)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

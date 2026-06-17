@@ -9,8 +9,8 @@ namespace expo {
 void NativeStatePropsGetter::registerNatives() {
   javaClassLocal()->registerNatives({
                                       makeNativeMethod("getStateProps", NativeStatePropsGetter::getStateProps),
-                                      makeNativeMethod("updateStyleSizeImmediate", NativeStatePropsGetter::updateStyleSizeImmediate),
-                                      makeNativeMethod("updateViewSizeImmediate", NativeStatePropsGetter::updateViewSizeImmediate),
+                                      makeNativeMethod("updateStyleSizeImmediateImpl", NativeStatePropsGetter::updateStyleSizeImmediate),
+                                      makeNativeMethod("updateViewSizeImmediateImpl", NativeStatePropsGetter::updateViewSizeImmediate),
                                     });
 }
 

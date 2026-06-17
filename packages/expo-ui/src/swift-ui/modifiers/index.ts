@@ -23,7 +23,7 @@ import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservatio
 import { id, scrollPosition } from './scrollPosition';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
-import { widgetAccentedRenderingMode, widgetURL } from './widgets';
+import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -564,6 +564,14 @@ export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
  */
 export const controlSize = (size: 'mini' | 'small' | 'regular' | 'large' | 'extraLarge') =>
   createModifier('controlSize', { size });
+
+/**
+ * Scales SF Symbols within this view relative to the surrounding text, using one of the standard sizes.
+ * @param scale - The relative image scale.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/imagescale(_:)).
+ */
+export const imageScale = (scale: 'small' | 'medium' | 'large') =>
+  createModifier('imageScale', { scale });
 
 /**
  * Sets the style for labels within this view.
@@ -1455,6 +1463,7 @@ export type BuiltInModifier =
   | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
   | ReturnType<typeof controlSize>
+  | ReturnType<typeof imageScale>
   | ReturnType<typeof labelStyle>
   | ReturnType<typeof labelsHidden>
   | ReturnType<typeof textFieldStyle>
@@ -1531,6 +1540,7 @@ export type BuiltInModifier =
   | ReturnType<typeof symbolEffect>
   | ReturnType<typeof widgetAccentedRenderingMode>
   | ReturnType<typeof widgetURL>
+  | ReturnType<typeof activityBackgroundTint>
   | ReturnType<typeof containerBackground>;
 
 /**

@@ -42,7 +42,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 @interface EXDevLauncherController ()
 
-@property (nonatomic, weak) ExpoDevLauncherReactDelegateHandler * delegate;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;

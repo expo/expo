@@ -7,11 +7,10 @@ import {
   type JSONArray,
   type JSONObject,
   type JSONValue,
-  mergeJsonFilesAsync,
   readJsonFileAsync,
   writeJsonFileAsync,
 } from './JsonFile.js';
-import { REACT_NATIVE_TRANSITIVE_DEPENDENCIES } from './Packages.js';
+import { REACT_NATIVE_TRANSITIVE_DEPENDENCIES, getExpoPackageNamesAsync } from './Packages.js';
 import { runAsync } from './Processes.js';
 
 export interface ProjectProperties {
@@ -77,22 +76,32 @@ async function setupProjectPackageJsonAsync(
   const packageJsonPath = path.join(projectRoot, 'package.json');
   const packageJson = await readJsonFileAsync(packageJsonPath);
 
-  let workspacePrefix: string;
-  const relativePath = path.relative(projectRoot, expoRepoPath);
-  if (relativePath.startsWith('..')) {
-    workspacePrefix = expoRepoPath;
-  } else {
-    workspacePrefix = relativePath;
-  }
-
   const resolutions: Record<string, string> =
     (packageJson.resolutions as Record<string, string>) ?? {};
   for (const name of REACT_NATIVE_TRANSITIVE_DEPENDENCIES) {
     resolutions[name] = `${nightlyVersion}`;
   }
-  await mergeJsonFilesAsync(packageJsonPath, {
-    // Add workspaces
-    workspaces: [`${workspacePrefix}/packages/*`, `${workspacePrefix}/packages/@expo/*`],
+
+  // Point repo dependencies at the local workspace copy so the build tests the
+  // code under test, not the published canary. Only the `workspace:` protocol
+  // forces this; pnpm won't link a workspace package whose version doesn't
+  // satisfy the declared range, and the canary template pins different versions.
+  const repoPackageNames = await getExpoPackageNamesAsync(expoRepoPath);
+
+  for (const field of ['dependencies', 'devDependencies'] as const) {
+    const deps = packageJson[field] as Record<string, string> | undefined;
+
+    if (deps != null) {
+      for (const name of Object.keys(deps)) {
+        if (repoPackageNames.has(name)) {
+          deps[name] = 'workspace:*';
+        }
+      }
+    }
+  }
+
+  await writeJsonFileAsync(packageJsonPath, {
+    ...packageJson,
 
     // Exclude templates from autolinking
     expo: {
@@ -104,6 +113,17 @@ async function setupProjectPackageJsonAsync(
     // Pin the versions of transitive dependencies
     resolutions,
   });
+
+  // pnpm ignores the package.json `workspaces` field, so the repo packages must
+  // be declared as workspace members here for the `workspace:*` specifiers to
+  // resolve to local source.
+  const relativePrefix = path.relative(projectRoot, expoRepoPath);
+  const workspaceGlobs = [`${relativePrefix}/packages/*`, `${relativePrefix}/packages/@expo/*`];
+
+  await fs.promises.writeFile(
+    path.join(projectRoot, 'pnpm-workspace.yaml'),
+    ['packages:', ...workspaceGlobs.map((glob) => `  - '${glob}'`), ''].join('\n')
+  );
 }
 
 /**

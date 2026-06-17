@@ -26,3 +26,29 @@ fun Cursor.asIterable(): Iterable<Cursor> {
     }
   }
 }
+
+fun Cursor.asSequence(): Sequence<Cursor> {
+  return sequence {
+    while (moveToNext()) {
+      yield(this@asSequence)
+    }
+  }
+}
+
+// This wrapper enforces null-safety, because the default getString() method returns String! type
+fun Cursor.getNullableString(columnIndex: Int): String? =
+  getString(columnIndex)
+
+fun Cursor.getNullableInt(columnIndex: Int): Int? =
+  if (isNull(columnIndex)) {
+    null
+  } else {
+    getInt(columnIndex)
+  }
+
+fun Cursor.getNullableLong(columnIndex: Int): Long? =
+  if (isNull(columnIndex)) {
+    null
+  } else {
+    getLong(columnIndex)
+  }

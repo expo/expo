@@ -4,8 +4,19 @@
   "description": "Types for the Expo config object app.config.ts",
   "types": "build/ExpoConfig.d.ts",
   "main": "build/ExpoConfig.js",
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/ExpoConfig.ts",
+        "default": "./build/ExpoConfig.d.ts"
+      },
+      "source": "./src/ExpoConfig.ts",
+      "default": "./build/ExpoConfig.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "generate": "node ./scripts/generate.js",
     "lint": "expo-module lint",
