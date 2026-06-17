@@ -28,7 +28,7 @@ The EAS CLI integration automates the standard PostHog React Native setup: insta
 This guide covers integrating PostHog with your Expo project:
 
 - [Install and configure PostHog](#install-and-configure-posthog) in your React Native app
-- [Source maps](#source-maps) for error symbolication on EAS Build and EAS Update
+- [Error tracking](#error-tracking) with source maps and native crash symbolication
 - [Release tagging](#release-tagging), [feature flags](#feature-flags), and [troubleshooting](#troubleshooting)
 
 ## Install and configure PostHog
@@ -122,16 +122,18 @@ Open your PostHog project (at `https://us.posthog.com` or `https://eu.posthog.co
 
 `connect` is a shortcut for the standard PostHog React Native setup. To do it manually, follow [PostHog's React Native installation guide](https://posthog.com/docs/libraries/react-native), then set `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (plus the `POSTHOG_CLI_*` variables for source maps). Wrap your app in `<PostHogProvider>` as shown in [Step 2](#install-and-configure-posthog). For source maps, see [Source maps](#source-maps).
 
-## Source maps
+## Error tracking
 
 If you enabled error tracking, PostHog symbolicates two separate things, and you set them up independently:
 
-- **JavaScript source maps** for JS/TS exceptions, including Hermes bytecode. Covered by the steps below.
-- **Native debug symbols** for native Android and iOS crashes (ProGuard/R8 mappings and dSYMs). Optional, and covered in [Native crash symbolication](#native-crash-symbolication).
+- **JavaScript source maps** for JS/TS exceptions, including Hermes bytecode. See [Source maps](#source-maps).
+- **Native debug symbols** for native Android and iOS crashes (ProGuard/R8 mappings and dSYMs). Optional. See [Native crash symbolication](#native-crash-symbolication).
 
-### Set up source map injection
+### Source maps
 
-Wrap your Metro config with PostHog's helper so each bundle is tagged for upload. Add this to **metro.config.js** in your project root (create the file if it doesn't exist):
+Source maps make JavaScript stack traces (including Hermes bytecode) point to your original source instead of minified output.
+
+First, set up injection so each bundle is tagged for upload. Add this to **metro.config.js** in your project root (create the file if it doesn't exist):
 
 ```js metro.config.js
 const { getPostHogExpoConfig } = require('posthog-react-native/metro');
@@ -145,13 +147,9 @@ If you already customize your Metro config (for example, with NativeWind or in a
 
 PostHog's CLI authenticates with the `POSTHOG_CLI_*` environment variables that `connect` set. To upload from your own machine, run `posthog-cli login` instead.
 
-### EAS Build
+**On EAS Build**, the `posthog-react-native/expo` config plugin uploads source maps automatically during the Android (Gradle) and iOS (Xcode) build phases, so there's no extra command to run.
 
-The `posthog-react-native/expo` config plugin configures upload for you. JavaScript source maps upload automatically during the Android (Gradle) and iOS (Xcode) build phases, so there's no extra command to run on `eas build`. Native debug-symbol upload is also built into the plugin, but it's off by default; turn it on with the `uploadNativeSymbols` option (see [Native crash symbolication](#native-crash-symbolication)).
-
-### EAS Update
-
-Over-the-air updates ship only JavaScript, so you upload just their source maps after each update (native symbols are fixed at build time). [Install PostHog's CLI](https://posthog.com/docs/error-tracking/upload-source-maps/cli), then:
+**On EAS Update**, over-the-air updates ship only JavaScript, so upload just their source maps after each update (native symbols are fixed at build time). [Install PostHog's CLI](https://posthog.com/docs/error-tracking/upload-source-maps/cli), then:
 
 <Terminal cmd={['$ eas update', '', '$ posthog-cli hermes upload --directory dist']} />
 
