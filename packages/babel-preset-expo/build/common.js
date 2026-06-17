@@ -22,6 +22,9 @@ exports.getMetroSourceType = getMetroSourceType;
 exports.getBabelRuntimeVersion = getBabelRuntimeVersion;
 exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
+exports.getNodeModuleInlineEnvVarsEnabled = getNodeModuleInlineEnvVarsEnabled;
+exports.getNodeModulePackageName = getNodeModulePackageName;
+exports.matchesPackage = matchesPackage;
 exports.getAsyncRoutes = getAsyncRoutes;
 exports.createAddNamedImportOnce = createAddNamedImportOnce;
 exports.toPosixPath = toPosixPath;
@@ -166,15 +169,56 @@ function isPathInside(child, parent) {
     const relative = node_path_1.default.relative(parent, child);
     return !!relative && !relative.startsWith('..') && !node_path_1.default.isAbsolute(relative);
 }
-function getInlineEnvVarsEnabled(caller) {
-    assertExpoBabelCaller(caller);
+// Conditions that disable `EXPO_PUBLIC_*` inlining regardless of where the code lives.
+function isInlineEnvVarsDisabled(caller) {
     const isWebpack = getBundler(caller) === 'webpack';
     const isServer = getIsServer(caller);
-    const isNodeModule = getIsNodeModule(caller);
     const preserveEnvVars = caller?.preserveEnvVars;
+    return isWebpack || isServer || !!preserveEnvVars;
+}
+function getInlineEnvVarsEnabled(caller) {
+    assertExpoBabelCaller(caller);
+    const isNodeModule = getIsNodeModule(caller);
     // Development env vars are added using references to enable HMR in development.
     // Servers have env vars left as-is to read from the environment.
-    return !isNodeModule && !isWebpack && !isServer && !preserveEnvVars;
+    return !isNodeModule && !isInlineEnvVarsDisabled(caller);
+}
+function getNodeModuleInlineEnvVarsEnabled(caller) {
+    assertExpoBabelCaller(caller);
+    const isNodeModule = getIsNodeModule(caller);
+    const isProd = getIsProd(caller);
+    // node_modules: production only — dev is handled by the `@expo/metro-config` serializer's global
+    // `process.env`. The per-package allowlist is applied per file by the inline-env-vars plugin.
+    return isNodeModule && isProd && !isInlineEnvVarsDisabled(caller);
+}
+/**
+ * Extract the owning `node_modules` package name from a file path, e.g. `expo`, `@expo/metro-config`,
+ * or `@acme/shared`. Uses the LAST `node_modules` segment so nested and pnpm-style layouts
+ * (`.../node_modules/.pnpm/expo@x/node_modules/expo/...`) resolve to the innermost package. Matching
+ * whole path segments avoids false positives like a `my_node_modules` directory. Returns undefined
+ * when the path is not inside `node_modules` (app code).
+ */
+function getNodeModulePackageName(filename) {
+    const segments = filename.split(/[\\/]/);
+    const i = segments.lastIndexOf('node_modules');
+    if (i === -1)
+        return undefined;
+    const scopeOrName = segments[i + 1];
+    if (!scopeOrName)
+        return undefined;
+    if (scopeOrName.startsWith('@')) {
+        const name = segments[i + 2];
+        return name ? `${scopeOrName}/${name}` : undefined;
+    }
+    return scopeOrName;
+}
+/**
+ * Whether `pkg` is covered by `allowlist`. Entries match by exact package name; a trailing `/*`
+ * matches a whole scope, e.g. `'@acme/*'` matches `@acme/shared` and `@acme/utils`. A bare name
+ * like `'expo'` matches only `expo`, never `expo-router`.
+ */
+function matchesPackage(pkg, allowlist) {
+    return allowlist.some((entry) => entry.endsWith('/*') ? pkg.startsWith(entry.slice(0, -1)) : pkg === entry);
 }
 function getAsyncRoutes(caller) {
     assertExpoBabelCaller(caller);

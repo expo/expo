@@ -162,6 +162,21 @@ Enable transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegi
 
 Passed to `@react-native/babel-preset`.
 
+### `inlineEnvVarsInPackages`
+
+`string[]`, defaults to `[]`. Additional `node_modules` packages where `EXPO_PUBLIC_*` environment variables are inlined in production builds, the same way they are in your app code. Entries match by exact package name; a trailing `/*` matches a whole scope (e.g. `'@acme/*'`). Expo's own `expo` package is always included.
+
+Use this for monorepo workspace packages or shared libraries that ship through `node_modules` and read `process.env.EXPO_PUBLIC_*` — without it, those reads work in development but resolve to `undefined` in production.
+
+```js
+[
+  'babel-preset-expo',
+  {
+    inlineEnvVarsInPackages: ['@acme/shared', '@my-org/*'],
+  },
+];
+```
+
 ## Platform-specific options
 
 All options can be passed in the platform-specific objects `native` and `web` to provide different settings on different platforms. For example, if you'd like to only apply `disableImportExportTransform` on web, use the following:

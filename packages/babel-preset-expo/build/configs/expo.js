@@ -54,8 +54,13 @@ module.exports = function (api, options) {
     // Development uses an uncached serializer.
     // Servers read from the environment.
     // Users who disable the feature may be using a different babel plugin.
-    if (options.inlineEnvironmentVariables) {
-        plugins.push(inline_env_vars_1.expoInlineEnvVars);
+    // App code inlines via `inlineEnvironmentVariables`; eligible `node_modules` bundles opt in per
+    // package via `inlineEnvVarsInNodeModules` (the plugin then matches each file's owning package).
+    const inlineInPackages = options.inlineEnvVarsInNodeModules
+        ? options.inlineEnvVarsInPackages
+        : undefined;
+    if (options.inlineEnvironmentVariables || inlineInPackages?.length) {
+        plugins.push([inline_env_vars_1.expoInlineEnvVars, { inlineInPackages }]);
     }
     if (options.platform === 'web') {
         plugins.push(require('babel-plugin-react-native-web'));

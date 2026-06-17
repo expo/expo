@@ -6,6 +6,7 @@ import {
   getBaseUrl,
   getBundler,
   getInlineEnvVarsEnabled,
+  getNodeModuleInlineEnvVarsEnabled,
   getIsDev,
   getIsDomComponent,
   getIsFastRefreshEnabled,
@@ -28,6 +29,9 @@ import { syntaxPlugins } from './configs/syntax';
 import { getConfig as getTypeScriptConfig } from './configs/typescript';
 import { WebConfigOptions } from './configs/web';
 import { WebviewConfigOptions } from './configs/webview';
+
+/** `node_modules` packages whose `EXPO_PUBLIC_*` env vars are always inlined in production. */
+const DEFAULT_INLINE_ENV_VAR_PACKAGES = ['expo'];
 
 interface BabelPresetExpoPlatformOptions {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
@@ -77,6 +81,18 @@ interface BabelPresetExpoPlatformOptions {
    * @default `true`
    */
   transformImportMeta?: boolean;
+
+  /**
+   * Additional `node_modules` packages where `EXPO_PUBLIC_*` environment variables should be
+   * inlined in production, the same way they are in your app code. Match by package name, e.g.
+   * `['@acme/shared', 'my-internal-lib']`. A trailing `/*` matches a whole scope, e.g. `'@acme/*'`.
+   * Useful for monorepo workspace packages or shared libraries that read `process.env.EXPO_PUBLIC_*`.
+   *
+   * Expo's own `expo` package is always included; this list extends that default.
+   *
+   * @default `[]`
+   */
+  inlineEnvVarsInPackages?: string[];
 }
 
 export interface BabelPresetExpoOptions extends BabelPresetExpoPlatformOptions {
@@ -130,9 +146,19 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
   // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
   const isProduction = api.caller(getIsProd);
+
   const inlineEnvironmentVariables = api.caller(getInlineEnvVarsEnabled);
+  const inlineEnvVarsInNodeModules = api.caller(getNodeModuleInlineEnvVarsEnabled);
 
   const platformOptions = getOptions(options, platform);
+
+  // The effective allowlist of package names where `EXPO_PUBLIC_*` is inlined inside production
+  // `node_modules`. Expo's own packages are always included; the user list extends (never replaces)
+  // it so configuring this option can't accidentally disable inlining for them.
+  const inlineEnvVarsInPackages = [
+    ...DEFAULT_INLINE_ENV_VAR_PACKAGES,
+    ...(platformOptions.inlineEnvVarsInPackages ?? []),
+  ];
 
   // Use the simpler babel preset for web and server environments (both web and native SSR).
   // For DOM components, the webview may be an Android factory WebView that doesn't support many modern JavaScript features,
@@ -224,6 +250,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           baseUrl,
           bundler,
           inlineEnvironmentVariables,
+          inlineEnvVarsInNodeModules,
+          inlineEnvVarsInPackages,
           disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           decorators: platformOptions.decorators,
           reanimated: platformOptions.reanimated,

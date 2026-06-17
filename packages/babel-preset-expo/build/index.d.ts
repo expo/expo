@@ -41,6 +41,17 @@ interface BabelPresetExpoPlatformOptions {
      * @default `true`
      */
     transformImportMeta?: boolean;
+    /**
+     * Additional `node_modules` packages where `EXPO_PUBLIC_*` environment variables should be
+     * inlined in production, the same way they are in your app code. Match by package name, e.g.
+     * `['@acme/shared', 'my-internal-lib']`. A trailing `/*` matches a whole scope, e.g. `'@acme/*'`.
+     * Useful for monorepo workspace packages or shared libraries that read `process.env.EXPO_PUBLIC_*`.
+     *
+     * Expo's own `expo` package is always included; this list extends that default.
+     *
+     * @default `[]`
+     */
+    inlineEnvVarsInPackages?: string[];
 }
 export interface BabelPresetExpoOptions extends BabelPresetExpoPlatformOptions {
     /** Web-specific settings. */

@@ -3,9 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.expoInlineEnvVars = expoInlineEnvVars;
 const common_1 = require("../common");
 const debug = require('debug')('expo:babel:env-vars');
-function expoInlineEnvVars(api) {
+function expoInlineEnvVars(api, { inlineInPackages } = {}) {
     const { types: t } = api;
     const isProduction = api.caller(common_1.getIsProd);
+    // `inlineInPackages` is the `node_modules` opt-in: when set, only files whose owning package is
+    // allow-listed are inlined; when absent (app code) every file is inlined. `shouldInlineFile` is
+    // recomputed per file.
+    let shouldInlineFile = true;
     function isProcessEnv(path) {
         const { object } = path.node;
         if (!t.isMemberExpression(object) ||
@@ -41,7 +45,7 @@ function expoInlineEnvVars(api) {
         return t.isAssignmentExpression(path.parent) && path.parent.left === path.node;
     }
     function memberExpressionVisitor(path, state) {
-        if (!isProcessEnv(path) || isAssignment(path))
+        if (!shouldInlineFile || !isProcessEnv(path) || isAssignment(path))
             return;
         const key = toMemberProperty(path);
         if (key != null && key.startsWith('EXPO_PUBLIC_')) {
@@ -60,6 +64,15 @@ function expoInlineEnvVars(api) {
     return {
         name: 'expo-inline-or-reference-env-vars',
         pre(file) {
+            if (!inlineInPackages) {
+                // App code: always inline.
+                shouldInlineFile = true;
+            }
+            else {
+                // node_modules: inline only when the owning package is allow-listed.
+                const pkg = this.filename ? (0, common_1.getNodeModulePackageName)(this.filename) : undefined;
+                shouldInlineFile = pkg != null && (0, common_1.matchesPackage)(pkg, inlineInPackages);
+            }
             const addNamedImportOnce = (0, common_1.createAddNamedImportOnce)(t);
             addEnvImport = () => {
                 return addNamedImportOnce(file.path, 'env', 'expo/virtual/env');

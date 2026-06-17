@@ -155,15 +155,60 @@ function isPathInside(child: string, parent: string): boolean {
   return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
 }
 
-export function getInlineEnvVarsEnabled(caller?: any): boolean {
-  assertExpoBabelCaller(caller);
+// Conditions that disable `EXPO_PUBLIC_*` inlining regardless of where the code lives.
+function isInlineEnvVarsDisabled(caller?: any): boolean {
   const isWebpack = getBundler(caller) === 'webpack';
   const isServer = getIsServer(caller);
-  const isNodeModule = getIsNodeModule(caller);
   const preserveEnvVars = caller?.preserveEnvVars;
+  return isWebpack || isServer || !!preserveEnvVars;
+}
+
+export function getInlineEnvVarsEnabled(caller?: any): boolean {
+  assertExpoBabelCaller(caller);
+  const isNodeModule = getIsNodeModule(caller);
   // Development env vars are added using references to enable HMR in development.
   // Servers have env vars left as-is to read from the environment.
-  return !isNodeModule && !isWebpack && !isServer && !preserveEnvVars;
+  return !isNodeModule && !isInlineEnvVarsDisabled(caller);
+}
+
+export function getNodeModuleInlineEnvVarsEnabled(caller?: any): boolean {
+  assertExpoBabelCaller(caller);
+  const isNodeModule = getIsNodeModule(caller);
+  const isProd = getIsProd(caller);
+  // node_modules: production only — dev is handled by the `@expo/metro-config` serializer's global
+  // `process.env`. The per-package allowlist is applied per file by the inline-env-vars plugin.
+  return isNodeModule && isProd && !isInlineEnvVarsDisabled(caller);
+}
+
+/**
+ * Extract the owning `node_modules` package name from a file path, e.g. `expo`, `@expo/metro-config`,
+ * or `@acme/shared`. Uses the LAST `node_modules` segment so nested and pnpm-style layouts
+ * (`.../node_modules/.pnpm/expo@x/node_modules/expo/...`) resolve to the innermost package. Matching
+ * whole path segments avoids false positives like a `my_node_modules` directory. Returns undefined
+ * when the path is not inside `node_modules` (app code).
+ */
+export function getNodeModulePackageName(filename: string): string | undefined {
+  const segments = filename.split(/[\\/]/);
+  const i = segments.lastIndexOf('node_modules');
+  if (i === -1) return undefined;
+  const scopeOrName = segments[i + 1];
+  if (!scopeOrName) return undefined;
+  if (scopeOrName.startsWith('@')) {
+    const name = segments[i + 2];
+    return name ? `${scopeOrName}/${name}` : undefined;
+  }
+  return scopeOrName;
+}
+
+/**
+ * Whether `pkg` is covered by `allowlist`. Entries match by exact package name; a trailing `/*`
+ * matches a whole scope, e.g. `'@acme/*'` matches `@acme/shared` and `@acme/utils`. A bare name
+ * like `'expo'` matches only `expo`, never `expo-router`.
+ */
+export function matchesPackage(pkg: string, allowlist: string[]): boolean {
+  return allowlist.some((entry) =>
+    entry.endsWith('/*') ? pkg.startsWith(entry.slice(0, -1)) : pkg === entry
+  );
 }
 
 export function getAsyncRoutes(caller?: any): boolean {

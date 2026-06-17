@@ -1,12 +1,25 @@
 import type { ConfigAPI, NodePath, PluginObj, PluginPass, types as t } from '@babel/core';
 
-import { createAddNamedImportOnce, getIsProd } from '../common';
+import {
+  createAddNamedImportOnce,
+  getIsProd,
+  getNodeModulePackageName,
+  matchesPackage,
+} from '../common';
 
 const debug = require('debug')('expo:babel:env-vars');
 
-export function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
+export function expoInlineEnvVars(
+  api: ConfigAPI & typeof import('@babel/core'),
+  { inlineInPackages }: { inlineInPackages?: string[] } = {}
+): PluginObj {
   const { types: t } = api;
   const isProduction = api.caller(getIsProd);
+
+  // `inlineInPackages` is the `node_modules` opt-in: when set, only files whose owning package is
+  // allow-listed are inlined; when absent (app code) every file is inlined. `shouldInlineFile` is
+  // recomputed per file.
+  let shouldInlineFile = true;
 
   function isProcessEnv(path: NodePath<t.MemberExpression | t.OptionalMemberExpression>) {
     const { object } = path.node;
@@ -49,7 +62,7 @@ export function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core'))
     path: NodePath<t.MemberExpression | t.OptionalMemberExpression>,
     state: PluginPass
   ) {
-    if (!isProcessEnv(path) || isAssignment(path)) return;
+    if (!shouldInlineFile || !isProcessEnv(path) || isAssignment(path)) return;
     const key = toMemberProperty(path);
     if (key != null && key.startsWith('EXPO_PUBLIC_')) {
       debug(
@@ -74,6 +87,15 @@ export function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core'))
   return {
     name: 'expo-inline-or-reference-env-vars',
     pre(file) {
+      if (!inlineInPackages) {
+        // App code: always inline.
+        shouldInlineFile = true;
+      } else {
+        // node_modules: inline only when the owning package is allow-listed.
+        const pkg = this.filename ? getNodeModulePackageName(this.filename) : undefined;
+        shouldInlineFile = pkg != null && matchesPackage(pkg, inlineInPackages);
+      }
+
       const addNamedImportOnce = createAddNamedImportOnce(t);
 
       addEnvImport = () => {

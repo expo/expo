@@ -33,6 +33,10 @@ export interface ExpoConfigOptions {
   baseUrl: string;
   bundler: 'metro' | 'webpack' | null;
   inlineEnvironmentVariables?: boolean;
+  /** Whether `EXPO_PUBLIC_*` may be inlined inside `node_modules` for this bundle (production, non-server). */
+  inlineEnvVarsInNodeModules?: boolean;
+  /** `node_modules` package names where `EXPO_PUBLIC_*` is inlined. */
+  inlineEnvVarsInPackages?: string[];
   decorators: { legacy?: boolean; version?: number } | false | undefined;
   reanimated: boolean | undefined;
   worklets: boolean | undefined;
@@ -92,8 +96,13 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   // Development uses an uncached serializer.
   // Servers read from the environment.
   // Users who disable the feature may be using a different babel plugin.
-  if (options.inlineEnvironmentVariables) {
-    plugins.push(expoInlineEnvVars);
+  // App code inlines via `inlineEnvironmentVariables`; eligible `node_modules` bundles opt in per
+  // package via `inlineEnvVarsInNodeModules` (the plugin then matches each file's owning package).
+  const inlineInPackages = options.inlineEnvVarsInNodeModules
+    ? options.inlineEnvVarsInPackages
+    : undefined;
+  if (options.inlineEnvironmentVariables || inlineInPackages?.length) {
+    plugins.push([expoInlineEnvVars, { inlineInPackages }]);
   }
 
   if (options.platform === 'web') {

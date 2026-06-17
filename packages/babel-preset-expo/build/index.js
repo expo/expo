@@ -4,6 +4,8 @@ const common_1 = require("./common");
 const flow_1 = require("./configs/flow");
 const syntax_1 = require("./configs/syntax");
 const typescript_1 = require("./configs/typescript");
+/** `node_modules` packages whose `EXPO_PUBLIC_*` env vars are always inlined in production. */
+const DEFAULT_INLINE_ENV_VAR_PACKAGES = ['expo'];
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
     let output = {
@@ -36,7 +38,15 @@ function babelPresetExpo(api, options = {}) {
     // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
     const isProduction = api.caller(common_1.getIsProd);
     const inlineEnvironmentVariables = api.caller(common_1.getInlineEnvVarsEnabled);
+    const inlineEnvVarsInNodeModules = api.caller(common_1.getNodeModuleInlineEnvVarsEnabled);
     const platformOptions = getOptions(options, platform);
+    // The effective allowlist of package names where `EXPO_PUBLIC_*` is inlined inside production
+    // `node_modules`. Expo's own packages are always included; the user list extends (never replaces)
+    // it so configuring this option can't accidentally disable inlining for them.
+    const inlineEnvVarsInPackages = [
+        ...DEFAULT_INLINE_ENV_VAR_PACKAGES,
+        ...(platformOptions.inlineEnvVarsInPackages ?? []),
+    ];
     // Use the simpler babel preset for web and server environments (both web and native SSR).
     // For DOM components, the webview may be an Android factory WebView that doesn't support many modern JavaScript features,
     // so we need to use the more compatible preset for web regardless.
@@ -119,6 +129,8 @@ function babelPresetExpo(api, options = {}) {
                     baseUrl,
                     bundler,
                     inlineEnvironmentVariables,
+                    inlineEnvVarsInNodeModules,
+                    inlineEnvVarsInPackages,
                     disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
                     decorators: platformOptions.decorators,
                     reanimated: platformOptions.reanimated,

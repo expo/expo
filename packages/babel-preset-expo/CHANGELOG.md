@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Inline `EXPO_PUBLIC_*` environment variables for the `expo` package (and any packages configured via the `inlineEnvVarsInPackages` option) in production `node_modules`. ([#47012](https://github.com/expo/expo/pull/47012) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

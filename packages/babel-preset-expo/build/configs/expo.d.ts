@@ -13,6 +13,10 @@ export interface ExpoConfigOptions {
     baseUrl: string;
     bundler: 'metro' | 'webpack' | null;
     inlineEnvironmentVariables?: boolean;
+    /** Whether `EXPO_PUBLIC_*` may be inlined inside `node_modules` for this bundle (production, non-server). */
+    inlineEnvVarsInNodeModules?: boolean;
+    /** `node_modules` package names where `EXPO_PUBLIC_*` is inlined. */
+    inlineEnvVarsInPackages?: string[];
     decorators: {
         legacy?: boolean;
         version?: number;

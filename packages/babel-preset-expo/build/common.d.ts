@@ -20,6 +20,21 @@ export declare function getMetroSourceType(caller?: any): "script" | "module" | 
 export declare function getBabelRuntimeVersion(caller?: any): string;
 export declare function getExpoRouterAbsoluteAppRoot(caller?: any): string;
 export declare function getInlineEnvVarsEnabled(caller?: any): boolean;
+export declare function getNodeModuleInlineEnvVarsEnabled(caller?: any): boolean;
+/**
+ * Extract the owning `node_modules` package name from a file path, e.g. `expo`, `@expo/metro-config`,
+ * or `@acme/shared`. Uses the LAST `node_modules` segment so nested and pnpm-style layouts
+ * (`.../node_modules/.pnpm/expo@x/node_modules/expo/...`) resolve to the innermost package. Matching
+ * whole path segments avoids false positives like a `my_node_modules` directory. Returns undefined
+ * when the path is not inside `node_modules` (app code).
+ */
+export declare function getNodeModulePackageName(filename: string): string | undefined;
+/**
+ * Whether `pkg` is covered by `allowlist`. Entries match by exact package name; a trailing `/*`
+ * matches a whole scope, e.g. `'@acme/*'` matches `@acme/shared` and `@acme/utils`. A bare name
+ * like `'expo'` matches only `expo`, never `expo-router`.
+ */
+export declare function matchesPackage(pkg: string, allowlist: string[]): boolean;
 export declare function getAsyncRoutes(caller?: any): boolean;
 export declare function createAddNamedImportOnce(t: typeof import('@babel/core').types): (path: NodePath<t.Node>, name: string, source: string) => any;
 /**
