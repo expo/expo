@@ -78,6 +78,10 @@ export default function RootLayout() {
       options={{
         host: process.env.EXPO_PUBLIC_POSTHOG_HOST,
         enableSessionReplay: false, // set to true if you enabled session replay
+        // Capture JS exceptions (remove if you didn't enable error tracking):
+        errorTracking: {
+          autocapture: { uncaughtExceptions: true, unhandledRejections: true },
+        },
         // disabled: __DEV__, // uncomment to stop sending events from development builds
       }}>
       <Slot />
@@ -245,7 +249,7 @@ Use these commands to manage the integration later:
 
 <Collapsible summary="No events arriving">
 
-Confirm `disabled: __DEV__` isn't masking events in your production build, and that `EXPO_PUBLIC_POSTHOG_API_KEY` is set in the environment profile your build uses.
+Confirm `disabled: __DEV__` isn't masking events in your production build, and that `EXPO_PUBLIC_POSTHOG_API_KEY` is set in the environment profile your build uses. If a dev server was already running when `connect` wrote your environment variables, do a full reload (not Fast Refresh) so the app picks up the new `EXPO_PUBLIC_*` values.
 
 </Collapsible>
 
