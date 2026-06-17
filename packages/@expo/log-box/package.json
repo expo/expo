@@ -85,7 +85,6 @@
   },
   "peerDependencies": {
     "@expo/dom-webview": "workspace:^56.0.5",
-    "expo": "*",
     "react": "*",
     "react-native": "*"
   },
