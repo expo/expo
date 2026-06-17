@@ -20,6 +20,13 @@ public class PushTokenModule: Module, NotificationDelegate {
 
     OnDestroy {
       NotificationCenterManager.shared.removeDelegate(self)
+      // Settle any in-flight device-token promise before the module (and its
+      // AppContext) is deallocated. Once the delegate is removed this module can
+      // never receive didRegister/didFailRegistration, so an unsettled promise
+      // would be destroyed in deinit against an already-torn-down JS runtime,
+      // causing an EXC_BAD_ACCESS crash (e.g. on a dev-client reload).
+      promiseNotYetResolved?.reject("E_APP_DESTROYED", "The app context was destroyed before a device push token was returned.")
+      promiseNotYetResolved = nil
     }
 
     AsyncFunction("getDevicePushTokenAsync") { (promise: Promise) in
