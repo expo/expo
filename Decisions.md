@@ -21,6 +21,113 @@ Running log of decisions and observations made while planning and implementing t
   `unstable_integrateWithRouter`, but currently adapts react-navigation's builder output rather
   than owning state. No production navigator consumes it yet.
 
+## Render-layer phase (2026-06-17)
+
+### R-1 — Render architecture: navigators as pure `NavigatorArgs` render targets (Option B), not container state-substitution (Option A)
+*(decided by a fresh architecture agent + a view-contract audit agent)*
+
+To render real screens from the new tree, **Option B**: project a `NavNode` slice into the
+`standard-navigation` `NavigatorArgs` (`{state:{index,routes}, descriptors:{key:{options,render()}},
+actions, emitter}`) and feed NEW navigator components. This is RFC [D3](./RFC.md#L424)/[D5](./RFC.md#L426)
+("native becomes a render target", "navigators are a pure rendering layer").
+
+**Rejected Option A** (drive react-navigation's `NavigationStateContext` from the reducer and reuse
+existing navigators): `useNavigationBuilder` does not passively read state — it runs incoming state
+through `getRehydratedState`/`getStateForAction` and writes back via `setState`, so two state machines
+fight; and it keeps RN routers as the live semantic authority, which only runs when mounted, defeating
+[C12](./RFC.md#L382)/P-5 (render-free resolution for unmounted branches — the whole thesis).
+
+**Reuse line (the hybrid):** do NOT rebuild react-navigation's `SceneView`/`useDescriptors`/RSC
+wrappers. Reuse **expo-router's own** screen-component layer (`getQualifiedRouteComponent`/`Route`
+from `useScreens.tsx`, which already handles Suspense/error-boundary/RSC/lazy) to produce each
+descriptor's `render()`, and recurse via a new `NavNodeContext` that hands each route's `child`
+NavNode to the nested navigator. Under the flag the whole tree uses the new navigators, so recursion
+flows through `NavNodeContext`, never react-navigation's context.
+
+**View reuse map (audited):** `NativeTabsView` is a clean contract (`{focusedIndex, tabs:[{routeKey,
+name,options,contentRenderer}], onTabChange}`) — reuse as-is. `NativeStackView` and
+`ExperimentalStackView` are RN-coupled (consume full `StackNavigationState` + `preloadedRoutes` +
+`describe`) — need thin new views on `{index, routes, descriptors}`.
+
+**Highest risk:** the key-identity contract end-to-end (hydration mint → push mint → native echo
+dedupe → descriptor key → screen reconciliation, P-7/P-13). De-risk with a single-Stack leaf prototype
+before the other two navigators.
+
+### R-2 — Reuse existing views via a `navigation` shim (revises R-1's "thin new views")
+*(react-native + iOS + React plan reviews converge)*
+
+Do NOT write thin new stack views. `NativeStackView`/`ExperimentalStackView` are ~600/210 lines of
+headers, sheets, `preventRemove`, freeze math, gestures, and native-`dismissCount` reconciliation —
+rewriting regresses features. And `getQualifiedRouteComponent`'s `BaseRoute` *requires* a
+react-navigation `navigation` object anyway (`isFocused`/`getState`/`addListener('focus'|'transitionEnd')`/
+`replaceParams`/`useStateForPath`), so a shim is unavoidable. Therefore: keep my reducer as the state
+owner (Option B — no `useNavigationBuilder`), but **project each `NavNode` slice into the shape the
+EXISTING view consumes** (an inert `StackNavigationState`-shaped object for the stack views;
+`{focusedIndex, provenance, tabs, onTabChange}` for `NativeTabsView`) **plus a per-route `navigation`
+shim** whose `dispatch`/`emit` route into `dispatchNav`. Feeding an inert projected state does NOT
+re-create Option A's fight (no `setState`/`getStateForAction` round-trip — nothing reconciles it).
+This reverses the memory note's "no reconstructed navigation" guidance *for this case* because the
+shim is the price of reusing the heavy native views; keep it honest/documented and source-tagged.
+
+### R-3 — Flag = render-time branch in a stable component (NOT an export swap)
+*(React + general reviews)*
+
+`enableNewStateModel()` sets a module boolean; `isNewStateModelEnabled()` reads it **at render and
+per-dispatch, never at module-eval**. Each navigator export stays ONE stable component that branches
+internally (`isNewStateModelEnabled() ? <New/> : <Old/>`). Rationale: an eval-time export swap races
+the user's `enableNewStateModel()` call (the flag is almost always still `false` when `expo-router` is
+first imported) and would change what the ~19 flag-off RN-shape test files import. Mirror
+`screensFeatureFlags`'s init guard; account for Fast-Refresh resetting the module boolean. **Invariant:
+flag-off is byte-identical to today** — every new-path side effect (behavior registration,
+`NavNodeContext`, bridge install) must be guarded or only reachable flag-on; run the RN-shape suite
+flag-off at every commit.
+
+### R-4 — Vertical-slice-first sequencing (revises the R-Phase list)
+*(general review — mount + imperative + route-info are mutually load-bearing)*
+
+Flag-on there is no `NavigationContainerRef`, so `routingQueue.run`'s `if (ref.current)` silently
+drops every action, and `useRouteInfo` returns stale state without projection — so mount (#1) +
+imperative (#3) + route-info (#4) must land in ONE commit. Re-sequenced phases:
+- **A** — flag module only (`enableNewStateModel`/`isNewStateModelEnabled`). No registry (cut per
+  P-4/P-12; a plain module `Map<contextKey,behavior>` is added when a navigator first needs it).
+- **B** — `NavNode`→view projection + per-route `navigation` shim + `NavNodeContext` + ONE Stack,
+  proven under a real `NavigationStateProvider` in an isolated `*.test.tsx` (key-identity de-risk).
+- **C** — first flag-on vertical slice: mount + imperative + route-info + hardware-back, wired atomically;
+  one Stack navigable end-to-end; exit criteria = on-device push/back works AND flag-off suite green.
+- **D** — NativeTabs (replicate; feed existing `NativeTabsView`, wire `provenance`/`onTabChange`).
+- **E** — ExperimentalStack (replicate, reuse the stack view).
+
+### R-5 — Seam #7: hardware back; native reconciliation is in-scope for B/C
+*(Android + iOS + react-native reviews)*
+
+- **Hardware back (#7):** the new mount bypasses `fork/useBackButton`. `NavigationStateProvider` must
+  subscribe `BackHandler` → `resolveBack(getNavSnapshot(), lookup, focusOrder)`; `'ops' in r` →
+  `dispatchNav` + `return true`, else `return false` (Android exits). Branch on `'ops' in r`, not
+  `ops.length`.
+- **Focus-order producer:** add a minimal per-tabs-node focus history (appended on tab change), else
+  Android cross-tab back exits the app instead of returning to the previous tab. Amends the
+  out-of-scope "focus-order storage" line.
+- **Native reconciliation in B/C (not deferred):** the `navigation` shim carries `source:'native'`;
+  native `onDismissed(dismissCount)` → multi-key `remove` (idempotent dedupe, P-7); JS `back()` should
+  commit the `remove` on the native callback, not synchronously, so the outgoing screen stays mounted
+  for the pop/back-swipe animation (disappearing-screen hold lives in the view via the shim). Tabs:
+  carry the `provenance` counter and the four-case `onTabChange` (`isNativeAction`/`isPrevented`).
+- **Link preview / preload:** the tree has no `preloadedRoutes`; gate `<Link.Preview>` as unsupported
+  under the flag for now (warn), rather than silently breaking iOS peek/pop.
+
+### R-6 — R-Phase A (flag module) review outcomes
+*(3 fresh agents)*
+
+`navigation-state/enable.ts` ships `enableNewStateModel()`/`isNewStateModelEnabled()` as a module-level
+`let` (not globalThis — agents confirmed jest gives each test file a fresh module registry, so a
+module `let` is test-isolated across files; globalThis would leak across files in a worker). One-way,
+no args, no `disable` (toggling off mid-session can't unwind mounted navigators). Added a test-only
+`__resetNewStateModelForTests()` seam (called in `afterEach`) because jest-expo does not reset modules
+between tests *within* a file, so render tests that opt in must restore the flag to keep the flag-off
+path green — chosen over `jest.resetModules()`+re-require (a multi-module footgun for render tests
+that read the flag across modules). Not exported from the public index until R-Phase C (avoid shipping
+a no-op public API). Fast-Refresh resets the boolean (accepted, documented — full reload to toggle).
+
 ## Decisions
 
 ### P-1 — Implementation strategy: greenfield module alongside (no live re-wiring)
