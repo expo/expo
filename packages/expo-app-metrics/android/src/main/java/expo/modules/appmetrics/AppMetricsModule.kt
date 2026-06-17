@@ -2,6 +2,7 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
+import expo.modules.appmetrics.logevents.ErrorReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
@@ -187,6 +188,17 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
         sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
+      }
+
+      // Records an unhandled JavaScript error captured by the JS-side `global.ErrorUtils` handler as
+      // a log event. The JS layer owns capture (and chaining to the previous handler); native records
+      // it through the same log pipeline as everything else, so it persists, attributes to the
+      // session, and dispatches with no special-case storage.
+      Function("reportError") { report: ErrorReport ->
+        scope.launch {
+          saveStartupMetricsIfNotSaved()
+          mainSession.addLogs(listOf(report.toLogRecord(mainSession.sessionId)))
+        }
       }
 
       Function("getMainSession") {

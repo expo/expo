@@ -134,6 +134,16 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
 
+    // Records an unhandled JavaScript error captured by the JS-side `global.ErrorUtils` handler as a
+    // log event. The JS layer owns capture (and chaining to the previous handler); native records it
+    // through the same log pipeline as everything else, so it persists, attributes to the session,
+    // and dispatches with no special-case storage.
+    Function("reportError") { (report: ErrorReport) in
+      AppMetricsActor.isolated {
+        AppMetrics.mainSession.receiveLog(report.toLogRecord())
+      }
+    }
+
     Class(NetworkRequestObserver.self) {
       Constructor { (filter: NetworkRequestFilter?) in
         return NetworkRequestObserver(filter: filter)
