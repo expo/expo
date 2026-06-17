@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [Android] Added the `controllerAutoShow` prop to `VideoView` to control whether the native controls auto-show on play. ([#46665](https://github.com/expo/expo/pull/46665) by [@stevesouth](https://github.com/stevesouth))
+- [Android][iOS] Add `maxResolution` player option to cap adaptive video track selection.
 
 ### 🐛 Bug fixes
 
