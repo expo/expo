@@ -805,6 +805,14 @@ internal struct TextAllowsTightening: ViewModifier, Record {
   }
 }
 
+internal struct MinimumScaleFactorModifier: ViewModifier, Record {
+  @Field var factor: CGFloat = 1.0
+
+  func body(content: Content) -> some View {
+    content.minimumScaleFactor(factor)
+  }
+}
+
 internal enum TextCaseTypes: String, Enumerable {
   case lowercase
   case uppercase
@@ -1700,6 +1708,10 @@ extension ViewModifierRegistry {
       return try TextAllowsTightening(from: params, appContext: appContext)
     }
 
+    register("minimumScaleFactor") { params, appContext, _ in
+      return try MinimumScaleFactorModifier(from: params, appContext: appContext)
+    }
+
     register("textCase") { params, appContext, _ in
       return try TextCase(from: params, appContext: appContext)
     }
@@ -1766,6 +1778,10 @@ extension ViewModifierRegistry {
 
     register("dynamicTypeSize") { params, appContext, _ in
       return try DynamicTypeSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("imageScale") { params, appContext, _ in
+      return try ImageScaleModifier(from: params, appContext: appContext)
     }
 
     register("gridCellUnsizedAxes") { params, appContext, _ in
@@ -1898,6 +1914,10 @@ extension ViewModifierRegistry {
 
     register("widgetURL") { params, appContext, _ in
       return try WidgetURLModifier(from: params, appContext: appContext)
+    }
+
+    register("activityBackgroundTint") { params, appContext, _ in
+      return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
     }
 
     register("keyboardType") { params, appContext, _ in

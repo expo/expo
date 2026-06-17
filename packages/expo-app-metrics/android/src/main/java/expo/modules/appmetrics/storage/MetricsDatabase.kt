@@ -176,6 +176,9 @@ interface MetricDao {
 
   @Delete
   suspend fun delete(metrics: List<Metric>)
+
+  @Query("SELECT * FROM metrics WHERE sessionId = :sessionId ORDER BY timestamp ASC")
+  suspend fun getMetricsForSession(sessionId: String): List<Metric>
 }
 
 @Dao
@@ -188,6 +191,9 @@ interface LogDao {
 
   @Query("DELETE FROM logs WHERE timestamp < :cutoffTimestamp")
   suspend fun deleteLogsOlderThan(cutoffTimestamp: String)
+
+  @Query("SELECT * FROM logs WHERE sessionId = :sessionId ORDER BY timestamp ASC")
+  suspend fun getLogsForSession(sessionId: String): List<LogRecord>
 }
 
 @Dao

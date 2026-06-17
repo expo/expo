@@ -23,7 +23,7 @@ import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservatio
 import { id, scrollPosition } from './scrollPosition';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
-import { widgetAccentedRenderingMode, widgetURL } from './widgets';
+import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -190,13 +190,17 @@ export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
 
 /**
- * Calls the handler whenever the view's geometry changes. Sizes are in points.
- * @param handler - Function called with the new size.
+ * Calls the handler whenever the view's geometry changes, with its position and size.
+ * `x` and `y` are in the global coordinate space (relative to the window); all values are in points.
+ * @param handler - Function called with the new frame.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
  */
-export const onGeometryChange = (handler: (size: { width: number; height: number }) => void) =>
-  createModifierWithEventListener('onGeometryChange', (size: { width: number; height: number }) =>
-    handler(size)
+export const onGeometryChange = (
+  handler: (frame: { x: number; y: number; width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onGeometryChange',
+    (frame: { x: number; y: number; width: number; height: number }) => handler(frame)
   );
 
 /**
@@ -562,6 +566,14 @@ export const controlSize = (size: 'mini' | 'small' | 'regular' | 'large' | 'extr
   createModifier('controlSize', { size });
 
 /**
+ * Scales SF Symbols within this view relative to the surrounding text, using one of the standard sizes.
+ * @param scale - The relative image scale.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/imagescale(_:)).
+ */
+export const imageScale = (scale: 'small' | 'medium' | 'large') =>
+  createModifier('imageScale', { scale });
+
+/**
  * Sets the style for labels within this view.
  * @param style - The label style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelstyle(_:)).
@@ -903,6 +915,19 @@ export const truncationMode = (mode: 'head' | 'middle' | 'tail') =>
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/allowstightening(_:)).
  */
 export const allowsTightening = (value: boolean) => createModifier('allowsTightening', { value });
+/**
+ * Sets the minimum amount that text in this view scales down to fit in the available space.
+ *
+ * Use this modifier if the text you place in a view doesn't fit and it's okay if the text shrinks
+ * to accommodate. For example, a label with a minimum scale factor of `0.5` draws its text in a
+ * font size as small as half of the actual font if needed.
+ * @param factor - A fraction between `0` and `1` (including `0` and `1`) that specifies the amount
+ * of text to draw. For example, a value of `0.5` draws the text in a font size as small as half the
+ * actual font if needed.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/minimumscalefactor(_:)).
+ */
+export const minimumScaleFactor = (factor: number) =>
+  createModifier('minimumScaleFactor', { factor });
 /**
  * Sets the spacing, or kerning, between characters for the text in this view.
  * @default 0
@@ -1438,6 +1463,7 @@ export type BuiltInModifier =
   | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
   | ReturnType<typeof controlSize>
+  | ReturnType<typeof imageScale>
   | ReturnType<typeof labelStyle>
   | ReturnType<typeof labelsHidden>
   | ReturnType<typeof textFieldStyle>
@@ -1514,6 +1540,7 @@ export type BuiltInModifier =
   | ReturnType<typeof symbolEffect>
   | ReturnType<typeof widgetAccentedRenderingMode>
   | ReturnType<typeof widgetURL>
+  | ReturnType<typeof activityBackgroundTint>
   | ReturnType<typeof containerBackground>;
 
 /**

@@ -12,6 +12,7 @@ export default function SessionsLayout() {
       }}>
       <Stack.Screen name="sessions/index" options={{ title: 'Sessions' }} />
       <Stack.Screen name="sessions/main" options={{ title: 'Main session' }} />
+      <Stack.Screen name="sessions/foreground" options={{ title: 'Foreground session' }} />
       <Stack.Screen name="sessions/[id]" options={{ title: 'Session' }} />
     </Stack>
   );

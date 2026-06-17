@@ -20,6 +20,7 @@ const homeDirectories = [
   'deploy',
   'review',
   'monitoring',
+  'agents',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'additional-resources'];
@@ -73,7 +74,19 @@ export const home = [
     makePage('get-started/start-developing.mdx'),
     makePage('get-started/next-steps.mdx'),
   ]),
-  makeSection('AI', [makePage('skills.mdx'), makePage('llms.mdx')]),
+  makeSection('AI', [
+    makePage('agents/index.mdx'),
+    makePage('skills.mdx'),
+    makePage('mcp.mdx'),
+    makeGroup(
+      'AI agents',
+      [makePage('agents/claude.mdx'), makePage('agents/codex.mdx'), makePage('agents/cursor.mdx')],
+      {
+        expanded: false,
+      }
+    ),
+    makePage('llms.mdx'),
+  ]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
     makePage('develop/app-navigation.mdx'),
@@ -445,7 +458,6 @@ export const eas = [
       expanded: true,
     }
   ),
-  makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
     makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
@@ -649,6 +661,19 @@ export const learn = [
       makePage('tutorial/platform-differences.mdx'),
       makePage('tutorial/configuration.mdx'),
       makePage('tutorial/follow-up.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
+    'Build with AI tutorial',
+    [
+      makePage('tutorial/build-with-ai/introduction.mdx'),
+      makePage('tutorial/build-with-ai/set-up-your-tools.mdx'),
+      makePage('tutorial/build-with-ai/create-your-first-app.mdx'),
+      makePage('tutorial/build-with-ai/build-the-home-screen.mdx'),
+      makePage('tutorial/build-with-ai/add-stickers.mdx'),
+      makePage('tutorial/build-with-ai/save-your-creation.mdx'),
+      makePage('tutorial/build-with-ai/finishing-touches.mdx'),
     ],
     { expanded: true }
   ),

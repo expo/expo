@@ -16,6 +16,6 @@ jobs:
       # Pinned to a commit SHA (not the v1.4.0 tag) because this runs under
       # pull_request_target with a write-scoped token — a re-pointed tag from
       # a compromised upstream account would give the attacker repo write access.
-      - uses: tobyhs/codemention@bb6bfb2c3ff1e6fee7ee37006bbee6d114057225 # v1.4.0
+      - uses: tobyhs/codemention@14c10ab8528ed556c3b92f205e7b5aa03e7b187c # v1.5.2
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}

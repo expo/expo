@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
+
+- [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner. ([#46762](https://github.com/expo/expo/pull/46762) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

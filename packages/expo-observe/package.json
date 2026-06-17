@@ -21,6 +21,8 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"

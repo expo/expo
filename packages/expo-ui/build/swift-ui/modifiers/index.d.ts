@@ -16,7 +16,7 @@ import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservatio
 import { id, scrollPosition } from './scrollPosition';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
-import { widgetAccentedRenderingMode, widgetURL } from './widgets';
+import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 /**
  * Sets the spacing between adjacent sections.
  * @param spacing - The spacing to apply.
@@ -135,11 +135,14 @@ export declare const onAppear: (handler: () => void) => ModifierConfig;
  */
 export declare const onDisappear: (handler: () => void) => ModifierConfig;
 /**
- * Calls the handler whenever the view's geometry changes. Sizes are in points.
- * @param handler - Function called with the new size.
+ * Calls the handler whenever the view's geometry changes, with its position and size.
+ * `x` and `y` are in the global coordinate space (relative to the window); all values are in points.
+ * @param handler - Function called with the new frame.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
  */
-export declare const onGeometryChange: (handler: (size: {
+export declare const onGeometryChange: (handler: (frame: {
+    x: number;
+    y: number;
     width: number;
     height: number;
 }) => void) => ModifierConfig;
@@ -443,6 +446,12 @@ export declare const toggleStyle: (style: "automatic" | "switch" | "button") => 
  */
 export declare const controlSize: (size: "mini" | "small" | "regular" | "large" | "extraLarge") => ModifierConfig;
 /**
+ * Scales SF Symbols within this view relative to the surrounding text, using one of the standard sizes.
+ * @param scale - The relative image scale.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/imagescale(_:)).
+ */
+export declare const imageScale: (scale: "small" | "medium" | "large") => ModifierConfig;
+/**
  * Sets the style for labels within this view.
  * @param style - The label style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelstyle(_:)).
@@ -699,6 +708,18 @@ export declare const truncationMode: (mode: "head" | "middle" | "tail") => Modif
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/allowstightening(_:)).
  */
 export declare const allowsTightening: (value: boolean) => ModifierConfig;
+/**
+ * Sets the minimum amount that text in this view scales down to fit in the available space.
+ *
+ * Use this modifier if the text you place in a view doesn't fit and it's okay if the text shrinks
+ * to accommodate. For example, a label with a minimum scale factor of `0.5` draws its text in a
+ * font size as small as half of the actual font if needed.
+ * @param factor - A fraction between `0` and `1` (including `0` and `1`) that specifies the amount
+ * of text to draw. For example, a value of `0.5` draws the text in a font size as small as half the
+ * actual font if needed.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/minimumscalefactor(_:)).
+ */
+export declare const minimumScaleFactor: (factor: number) => ModifierConfig;
 /**
  * Sets the spacing, or kerning, between characters for the text in this view.
  * @default 0
@@ -1044,7 +1065,7 @@ export declare const resizable: (capInsets?: {
  * This provides type safety for the modifiers array.
  * @hidden
  */
-export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof luminanceToAlpha> | ReturnType<typeof onDisappear> | ReturnType<typeof onGeometryChange> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof rotation3DEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof monospacedDigit> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof buttonBorderShape> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof accessibilityInputLabels> | ReturnType<typeof accessibilityIdentifier> | ReturnType<typeof accessibilityHidden> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof scrollIndicators> | ReturnType<typeof defaultScrollAnchor> | ReturnType<typeof defaultScrollAnchorForRole> | ReturnType<typeof scrollTargetBehavior> | ReturnType<typeof scrollTargetLayout> | ReturnType<typeof id> | ReturnType<typeof scrollPosition> | ReturnType<typeof onScrollPhaseChange> | NonNullable<ReturnType<typeof useScrollGeometryChange>> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof listRowSpacing> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineHeight> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof dynamicTypeSize> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof keyboardType> | ReturnType<typeof autocorrectionDisabled> | ReturnType<typeof onSubmit> | ReturnType<typeof textInputAutocapitalization> | ReturnType<typeof textContentType> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle> | ReturnType<typeof contentTransition> | ReturnType<typeof resizable> | ReturnType<typeof symbolEffect> | ReturnType<typeof widgetAccentedRenderingMode> | ReturnType<typeof widgetURL> | ReturnType<typeof containerBackground>;
+export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof luminanceToAlpha> | ReturnType<typeof onDisappear> | ReturnType<typeof onGeometryChange> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof rotation3DEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof monospacedDigit> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof buttonBorderShape> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof imageScale> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof accessibilityInputLabels> | ReturnType<typeof accessibilityIdentifier> | ReturnType<typeof accessibilityHidden> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof scrollIndicators> | ReturnType<typeof defaultScrollAnchor> | ReturnType<typeof defaultScrollAnchorForRole> | ReturnType<typeof scrollTargetBehavior> | ReturnType<typeof scrollTargetLayout> | ReturnType<typeof id> | ReturnType<typeof scrollPosition> | ReturnType<typeof onScrollPhaseChange> | NonNullable<ReturnType<typeof useScrollGeometryChange>> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof listRowSpacing> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineHeight> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof dynamicTypeSize> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof keyboardType> | ReturnType<typeof autocorrectionDisabled> | ReturnType<typeof onSubmit> | ReturnType<typeof textInputAutocapitalization> | ReturnType<typeof textContentType> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle> | ReturnType<typeof contentTransition> | ReturnType<typeof resizable> | ReturnType<typeof symbolEffect> | ReturnType<typeof widgetAccentedRenderingMode> | ReturnType<typeof widgetURL> | ReturnType<typeof activityBackgroundTint> | ReturnType<typeof containerBackground>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.

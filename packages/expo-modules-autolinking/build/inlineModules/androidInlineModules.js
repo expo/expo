@@ -32,37 +32,27 @@ function getClassName(classNameWithPackage) {
     return classNameWithPackage.substring(index + 1);
 }
 async function generateInlineModulesListFile(inlineModulesListPath, inlineModulesMirror) {
-    const fileContent = `package inline.modules;
+    const fileContent = `package inline.modules
 
-import org.jetbrains.annotations.NotNull;
+import expo.modules.kotlin.ModulesProvider
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.services.Service
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import expo.modules.kotlin.ModulesProvider;
-import expo.modules.kotlin.modules.Module;
-import expo.modules.kotlin.services.Service;
-
-public class ExpoInlineModulesList implements ModulesProvider {
-
-  @Override
-  public Map<Class<? extends Module>, String> getModulesMap() {
-    return Map.of(
+class ExpoInlineModulesList : ModulesProvider {
+  override fun getModulesMap(): Map<Class<out Module>, String?> {
+    return mapOf(
 ${inlineModulesMirror.kotlinClasses
-        .map((moduleClass) => `      ${moduleClass}.class, "${getClassName(moduleClass)}"`)
+        .map((moduleClass) => `      ${moduleClass}::class.java to "${getClassName(moduleClass)}"`)
         .join(',\n')}
-    );
+    )
   }
 
-  @Override
-  public List<Class<? extends @NotNull Service>> getServices() {
-    return new ArrayList<>();
+  override fun getServices(): List<Class<out Service>> {
+    return emptyList()
   }
 }
-
 `;
     await fs_1.default.promises.mkdir(inlineModulesListPath, { recursive: true });
-    await fs_1.default.promises.writeFile(path_1.default.resolve(inlineModulesListPath, 'ExpoInlineModulesList.java'), fileContent);
+    await fs_1.default.promises.writeFile(path_1.default.resolve(inlineModulesListPath, 'ExpoInlineModulesList.kt'), fileContent);
 }
 //# sourceMappingURL=androidInlineModules.js.map

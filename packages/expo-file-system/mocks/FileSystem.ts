@@ -247,7 +247,7 @@ export class FileSystemFile {
   }
 
   writeSync(
-    content: string | Uint8Array,
+    content: string | Uint8Array | ArrayBuffer,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): void {
     assertParent(this.uri, false);
@@ -281,7 +281,7 @@ export class FileSystemFile {
   }
 
   async write(
-    content: string | Uint8Array,
+    content: string | Uint8Array | ArrayBuffer,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): Promise<void> {
     this.writeSync(content, options);

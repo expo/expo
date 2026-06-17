@@ -1,12 +1,8 @@
 struct MemoryMonitoringData: Sendable {
-  /**
-   Total number of memory warnings sent by the system.
-   */
+  /// Total number of memory warnings sent by the system.
   var warningsCount: Int = .zero
 
-  /**
-   Snapshot of the memory usage taken while the last memory warning occurred.
-   */
+  /// Snapshot of the memory usage taken while the last memory warning occurred.
   var lastMemoryUsageSnapshot: MemoryUsageSnapshot? = nil
 }
 

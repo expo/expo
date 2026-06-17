@@ -13,6 +13,7 @@ import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetModernDelegate
+import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
@@ -26,6 +27,7 @@ import java.lang.ref.WeakReference
 class AssetModernFactory(
   val assetDeleter: AssetDeleter,
   val assetMover: AssetMover,
+  val assetMapper: AssetMapper,
   val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate,
   context: Context
 ) : AssetFactory {
@@ -41,6 +43,7 @@ class AssetModernFactory(
       contentUri,
       assetDeleter,
       assetMover,
+      assetMapper,
       mediaStorePermissionsDelegate,
       this,
       contextRef.getOrThrow()

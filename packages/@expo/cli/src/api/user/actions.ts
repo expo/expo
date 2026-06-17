@@ -31,7 +31,9 @@ export async function showLoginPromptAsync({
   }
   const hasCredentials = options.username && options.password;
   const sso = options.sso;
-  const browser = options.browser;
+
+  // Browser-based login is the default.
+  const browser = options.browser ?? (!hasCredentials && isInteractive());
 
   if (printNewLine) {
     Log.log();
@@ -39,6 +41,7 @@ export async function showLoginPromptAsync({
 
   if (sso || browser) {
     await browserLoginAsync({ sso: !!sso });
+    Log.log('Logged in');
     return;
   }
 
@@ -85,15 +88,13 @@ export async function showLoginPromptAsync({
     });
   } catch (e) {
     if (e instanceof ApiV2Error && e.expoApiV2ErrorCode === 'ONE_TIME_PASSWORD_REQUIRED') {
-      await retryUsernamePasswordAuthWithOTPAsync(
-        username,
-        password,
-        e.expoApiV2ErrorMetadata as any
-      );
+      await retryUsernamePasswordAuthWithOTPAsync(username, password);
     } else {
       throw e;
     }
   }
+
+  Log.log('Logged in');
 }
 
 export async function tryGetUserAsync(): Promise<Actor | null> {

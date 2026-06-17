@@ -25,6 +25,10 @@ NS_SWIFT_NAME(WorkletsProvider)
 - (nullable id)workletRuntimeHandleForRawPointer:(void *)rawPointer
     NS_SWIFT_NAME(workletRuntimeHandle(rawPointer:));
 
+- (void * _Nullable)uiRuntimePointerWithRuntimePointer:(void *)runtimePointer
+                                         holderPointer:(const void *)holderPointer
+    NS_SWIFT_NAME(uiRuntimePointer(runtimePointer:holderPointer:));
+
 - (void)scheduleWorkletWithRuntimeHandle:(id)runtimeHandle
                             serializable:(EXJavaScriptSerializable *)serializable
                                arguments:(NSArray *)arguments

@@ -104,5 +104,4 @@ class GlobalAttributesTest {
     assertEquals(1, merged!!.size)
     assertEquals("pro", merged["tier"])
   }
-
 }

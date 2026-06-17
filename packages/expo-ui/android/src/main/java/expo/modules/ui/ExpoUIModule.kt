@@ -118,8 +118,7 @@ class ExpoUIModule : Module() {
     //region Views use expo-modules-core DSL for uncommon features
 
     View(HostView::class) {
-      // See ShadowNodeSyncFlush.kt for why onExpoUISyncFlush is needed.
-      Events("onLayoutContent", "onExpoUISyncFlush")
+      Events("onLayoutContent")
 
       OnViewDidUpdateProps { view ->
         view.onViewDidUpdateProps()
@@ -156,10 +155,7 @@ class ExpoUIModule : Module() {
       colorScheme.toTokenMap()
     }
 
-    View(RNHostView::class) {
-      // See ShadowNodeSyncFlush.kt for why this internal phantom event is needed.
-      Events("onExpoUISyncFlush")
-    }
+    View(RNHostView::class)
 
     View(SlotView::class) {
       Events("onSlotEvent")

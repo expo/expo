@@ -18,7 +18,9 @@ export interface ImageProps extends CommonViewModifierProps {
      */
     uiImage?: string;
     /**
-     * The size of the system image.
+     * The fixed size of the system image in points. Does not scale with Dynamic
+     * Type. Use the `font` modifier with `textStyle` for that. Ignored when a
+     * `font` modifier is supplied.
      */
     size?: number;
     /**

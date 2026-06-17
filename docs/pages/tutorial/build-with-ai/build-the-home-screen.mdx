@@ -1,0 +1,84 @@
+---
+title: Build the home screen
+description: In this chapter, direct your AI agent to add tab navigation, the photo viewer, and an image picker.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+
+In this chapter, the app starts to look like StickerSmash: two navigation tabs, a photo viewer, and a button that opens your phone's photo library.
+
+<Step label="1">
+
+## Add navigation tabs
+
+Most apps have more than one screen, with tabs along the bottom to switch between them. Paste the following prompt into your agent:
+
+```text Prompt|wrap
+Add a tab bar to the app with two tabs: a Home tab showing the current home screen, and an About tab with a screen that says "About screen" for now. Use Expo Router for navigation. Style everything with a dark theme: the color #25292e for the screen backgrounds, headers, and tab bar, white text, and yellow (#ffd33d) as the color of the selected tab. Give each tab a fitting icon, such as a house for Home and an info circle for About.
+```
+
+**What you should see**: a tab bar at the bottom of the app with Home and About tabs. The tab you're on is highlighted in yellow, and tapping the other one switches screens:
+
+<ContentSpotlight
+  alt="App with a two-tab layout"
+  src="/static/images/tutorial/04-tab-navigator-complete.png"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## Add the photo viewer
+
+Next, give the home screen its main content: a large photo and two buttons. We've prepared an asset pack with the placeholder photo and the emoji stickers you'll use later. Paste the following prompt into your agent:
+
+```text Prompt|wrap
+Download the image assets for this app from https://docs.expo.dev/static/images/tutorial/sticker-smash-assets.zip and extract them into the assets/images folder, replacing any files with the same names. Then build out the Home screen: show the background-image.png photo large in the center of the screen with rounded corners, and below it two buttons stacked vertically: "Choose a photo" — a prominent button with a yellow border, a white background, a dark label, and a small picture icon — and a plain "Use this photo" button with white text. Use the expo-image library to display the image.
+```
+
+<Collapsible summary="Prefer to download the assets yourself?">
+
+If your agent can't download or extract the file, do it manually: download [sticker-smash-assets.zip](/static/images/tutorial/sticker-smash-assets.zip), unzip it, and copy the images into the **assets/images** folder inside your **StickerSmash** folder, replacing files with the same names. Then ask the agent to build the screen with the prompt above, minus its first sentence.
+
+</Collapsible>
+
+**What you should see**: a photo of a wooden boardwalk over the ocean filling most of the screen, with the two buttons below it:
+
+<ContentSpotlight
+  alt="Home screen with the photo viewer and two buttons"
+  src="/static/images/tutorial/initial-layout.png"
+  className="max-w-[300px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+## Pick a photo from your library
+
+Time for the first real feature: choosing your own photo. Paste the following prompt into your agent:
+
+```text Prompt|wrap
+Add the expo-image-picker library. When I tap "Choose a photo", open my phone's photo library so I can pick an image, and show the one I pick in place of the placeholder photo. If I cancel without picking anything, keep showing the current photo.
+```
+
+**What you should see**: tapping **Choose a photo** opens your phone's photo library. The first time, your phone asks for permission to access your photos. Tap **Allow**. The photo you pick replaces the placeholder photo.
+
+</Step>
+
+> If a result doesn't match what you expected, tell the agent what you see. The [When something looks wrong](/tutorial/build-with-ai/create-your-first-app/#when-something-looks-wrong) section from the previous chapter has the playbook.
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={2}
+  name="BUILD_WITH_AI"
+  summary="The app now has navigation, a styled home screen, and a working photo picker. You haven't touched a line of code."
+  nextChapterDescription="In the next chapter, you'll add an emoji picker modal and play with the sticker using gestures."
+  nextChapterTitle="Add stickers"
+  nextChapterLink="/tutorial/build-with-ai/add-stickers/"
+/>

@@ -58,6 +58,7 @@
     "@expo/inline-modules": "workspace:^0.0.10",
     "@expo/json-file": "workspace:^10.2.0",
     "@expo/log-box": "workspace:^56.0.12",
+    "@expo/log-box-utils": "workspace:^56.0.0",
     "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:~56.0.13",
     "@expo/metro-file-map": "workspace:^56.0.3",

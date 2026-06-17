@@ -37,6 +37,7 @@ import {
   onLongPressGesture,
   onAppear,
   onDisappear,
+  onGeometryChange,
   accessibilityLabel,
   accessibilityIdentifier,
   accessibilityHidden,
@@ -69,6 +70,7 @@ import {
   tag,
   font,
   dynamicTypeSize,
+  imageScale,
   lineLimit,
   contentShape,
   shapes,
@@ -472,6 +474,46 @@ export default function ModifiersScreen() {
             </HStack>
             <Slider min={0} max={20} onValueChange={setLineSpaceingValue} />
           </Section>
+          {/* Image modifiers */}
+          <Section title="Image modifier">
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>
+                font text style on a symbol scales with Dynamic Type
+              </Text>
+              <HStack alignment="center" spacing={16}>
+                <Image systemName="bell.fill" />
+                <Image systemName="bell.fill" modifiers={[font({ textStyle: 'largeTitle' })]} />
+                <Image systemName="bell.fill" modifiers={[font({ textStyle: 'caption' })]} />
+              </HStack>
+            </VStack>
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>resizable symbol scales to its frame</Text>
+              <HStack alignment="center" spacing={16}>
+                <Image systemName="star.fill" size={24} />
+                <Image
+                  systemName="star.fill"
+                  modifiers={[resizable(), frame({ width: 64, height: 64 })]}
+                />
+              </HStack>
+            </VStack>
+          </Section>
+          {/* Image scale */}
+          <Section title="Image scale">
+            <VStack alignment="leading" spacing={8}>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('small')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>small</Text>
+              </HStack>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('medium')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>medium</Text>
+              </HStack>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('large')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>large</Text>
+              </HStack>
+            </VStack>
+          </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
             <Toggle
@@ -810,6 +852,8 @@ export default function ModifiersScreen() {
 
           <AppearSection />
 
+          <GeometrySection />
+
           {/* Container Shape Modifier */}
           <Section title="Content Shape Modifier">
             <Text>Try tapping the empty space between texts:</Text>
@@ -968,6 +1012,29 @@ function AppearSection() {
           ]}
         />
       </DisclosureGroup>
+    </Section>
+  );
+}
+
+function GeometrySection() {
+  const [frame, setFrame] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  return (
+    <Section title="onGeometryChange (position + size)">
+      <Text
+        modifiers={[
+          background('#5856D6'),
+          cornerRadius(12),
+          padding({ all: 16 }),
+          foregroundStyle({ type: 'color', color: '#FFFFFF' }),
+          onGeometryChange(setFrame),
+        ]}>
+        Track my frame
+      </Text>
+      <Text modifiers={[font({ size: 13 }), monospacedDigit()]}>
+        {`global x: ${frame.x.toFixed(0)}  y: ${frame.y.toFixed(0)}  •  size ${frame.width.toFixed(
+          0
+        )} × ${frame.height.toFixed(0)} (pt)`}
+      </Text>
     </Section>
   );
 }

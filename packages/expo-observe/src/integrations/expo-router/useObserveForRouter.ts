@@ -104,7 +104,7 @@ export function useObserveForRouter(): MarkInteractive | null {
 
       // Stored in seconds to match the OTel `unit = "s"` convention
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
-      const mainSessionId = (await AppMetrics.getMainSession())?.id;
+      const mainSessionId = AppMetrics.getMainSession()?.id;
       // TODO(@ubax): we should count the time against the action which caused the first navigation
       // and add a param stating if during that time there was any navigation
       if (mainSessionId) {

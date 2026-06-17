@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.STUB_PCH_GRADLE_TASK = exports.PCH_HEADER_CONTENTS = exports.PCH_ONLOAD_CONTENTS = exports.PCH_CMAKE_CONTENTS = void 0;
+exports.STUB_PCH_GRADLE_TASK = exports.PCH_HEADER_CONTENTS = exports.PCH_ONLOAD_CONTENTS = exports.PCH_OWNER_SOURCE_CONTENTS = exports.PCH_CMAKE_CONTENTS = void 0;
 exports.PCH_CMAKE_CONTENTS = `\
 cmake_minimum_required(VERSION 3.16)
 
@@ -9,6 +9,25 @@ project(appmodules)
 include(\${REACT_ANDROID_DIR}/cmake-utils/ReactNative-application.cmake)
 
 set(PCH_HEADER "\${CMAKE_CURRENT_SOURCE_DIR}/pch.h")
+
+add_library(appmodules_pch STATIC EXCLUDE_FROM_ALL "\${CMAKE_CURRENT_SOURCE_DIR}/appmodules_pch_owner.cpp")
+
+# Apply the exact same compile options codegen targets get from RN's
+target_compile_reactnative_options(appmodules_pch PRIVATE)
+
+# Link dependencies needed by our PCH header
+target_link_libraries(appmodules_pch PRIVATE common_flags reactnative jsi folly_runtime fbjni)
+
+# Stop Clang from embedding a build timestamp in the .pch. Without this the PCH
+# is non-reproducible across builds, so ccache can't reuse it and dependent
+# translation units reject a restored PCH as "modified since built".
+target_compile_options(appmodules_pch PRIVATE
+  "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
+)
+
+target_precompile_headers(appmodules_pch PRIVATE
+  "$<$<COMPILE_LANGUAGE:CXX>:\${PCH_HEADER}>"
+)
 
 function(add_pch_if_eligible target)
   if (NOT TARGET \${target})
@@ -25,9 +44,12 @@ function(add_pch_if_eligible target)
     return()
   endif ()
 
-  target_precompile_headers(\${target} PRIVATE
-    "$<$<COMPILE_LANGUAGE:CXX>:\${PCH_HEADER}>"
+  # Keep the flag consistent with the PCH owner - see the note above.
+  target_compile_options(\${target} PRIVATE
+    "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
   )
+
+  target_precompile_headers(\${target} REUSE_FROM appmodules_pch)
 endfunction()
 
 if (DEFINED AUTOLINKED_LIBRARIES)
@@ -35,6 +57,10 @@ if (DEFINED AUTOLINKED_LIBRARIES)
     add_pch_if_eligible(\${lib})
   endforeach ()
 endif ()
+`;
+exports.PCH_OWNER_SOURCE_CONTENTS = `\
+// Translation unit exists solely so the owning target can produce a .pch
+// binary that codegen targets reuse.
 `;
 exports.PCH_ONLOAD_CONTENTS = `\
 /*

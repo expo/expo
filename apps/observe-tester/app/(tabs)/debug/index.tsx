@@ -10,6 +10,7 @@ import { GlobalAttributesSection } from '@/components/GlobalAttributesSection';
 import { JSAnimation } from '@/components/JSAnimation';
 import { LogEventsSection } from '@/components/LogEventsSection';
 import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
+import CrashTester from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
 export default function Debug() {
@@ -33,7 +34,7 @@ export default function Debug() {
       <NetworkRequestObserverSection />
       <Divider />
       <CrashReportsSection />
-      {typeof AppMetrics.triggerCrash === 'function' ? <Divider /> : null}
+      {CrashTester != null ? <Divider /> : null}
       <GlobalAttributesSection />
       <Divider />
       <Button
@@ -45,13 +46,28 @@ export default function Debug() {
       <Button
         title="Log main session to console"
         onPress={async () => {
-          const session = await AppMetrics.getMainSession();
-
-          if (session) {
-            console.log(JSON.stringify(session, null, 2));
-          } else {
-            console.error('Main session is null');
-          }
+          const session = AppMetrics.getMainSession();
+          const [metrics, logs, isActive, endDate] = await Promise.all([
+            session.getMetrics(),
+            session.getLogs(),
+            session.isActive(),
+            session.getEndDate(),
+          ]);
+          console.log(
+            JSON.stringify(
+              {
+                id: session.id,
+                type: session.type,
+                startDate: session.startDate,
+                endDate,
+                isActive,
+              },
+              null,
+              2
+            )
+          );
+          console.log(JSON.stringify(metrics, null, 2));
+          console.log(JSON.stringify(logs, null, 2));
         }}
         theme="secondary"
       />

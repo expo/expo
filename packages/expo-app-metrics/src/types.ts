@@ -1,5 +1,7 @@
 import type { SharedObject } from 'expo';
 
+import type { Session } from './Session';
+
 export type AppStartupTimes = {
   /**
    * Time from when the user taps the app to the moment the app starts executing the main code.
@@ -194,33 +196,11 @@ export type LogEventOptions = {
 
 export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
 
-export type CrashKind =
-  | 'badAccess'
-  | 'fatalError'
-  | 'divideByZero'
-  | 'forceUnwrapNil'
-  | 'arrayOutOfBounds'
-  | 'objcException'
-  | 'stackOverflow';
-
-type SessionBase = {
-  id: string;
-  startDate: string;
-  endDate?: string | null;
-  metrics: Metric[];
-  logs: LogRecord[];
-};
-
-export type MainSession = SessionBase & {
-  type: 'main';
-  crashReport?: CrashReport | null;
-};
-
-export type GenericSession = SessionBase & {
-  type: Exclude<SessionType, 'main'>;
-};
-
-export type Session = MainSession | GenericSession;
+/**
+ * Payload accepted by `Session.addMetric`. The owning session is implied by the
+ * receiver, so the input carries every `Metric` field except `sessionId`.
+ */
+export type MetricInput = Omit<Metric, 'sessionId'>;
 
 export type CallStackFrame = {
   binaryName?: string | null;
@@ -342,6 +322,33 @@ export type NetworkRequestCompletedEvent = {
 };
 
 /**
+ * Declares which requests a `NetworkRequestObserver` should emit events for. The filter is
+ * evaluated natively, before the request payload crosses into JS, so requests that don't match
+ * never materialize a `requestStarted`/`requestCompleted` event.
+ *
+ * Only request attributes that are known the moment a request starts are supported, so a request
+ * that matches always emits both its `requestStarted` and `requestCompleted` events as a pair —
+ * the filter decision never changes between the two.
+ *
+ * A field left unset (`undefined` or `null`) places no constraint on that dimension. A field set
+ * to an empty array allows nothing through it, so it drops every request. Different fields combine
+ * with AND (host **and** method must match); entries within a single field combine with OR (any
+ * listed host matches). A filter with no fields set, or a `null` filter, matches every request.
+ */
+export type NetworkRequestFilter = {
+  /**
+   * Allowed hosts, compared for exact, case-insensitive equality against the request URL's host.
+   * Subdomains are not implied: `['expo.dev']` matches `expo.dev` but not `api.expo.dev`. List each
+   * host you want to observe.
+   */
+  hosts?: string[] | null;
+  /**
+   * Allowed HTTP methods (`GET`, `POST`, …), compared case-insensitively.
+   */
+  methods?: string[] | null;
+};
+
+/**
  * Map of events emitted by `NetworkRequestObserver`. Used by the underlying `SharedObject`
  * event-emitter to type listener callbacks.
  */
@@ -357,11 +364,15 @@ export type NetworkRequestObserverEvents = {
  *
  * Subscribe to events via `addListener`/`removeListener` (inherited from the SharedObject base).
  *
+ * Pass a `NetworkRequestFilter` to only receive events for matching requests; the filter is
+ * applied natively so non-matching payloads never cross into JS. Omit it (or pass `null`) to
+ * observe every request.
+ *
  * @example
  * ```ts
  * import AppMetrics from 'expo-app-metrics';
  *
- * const observer = new AppMetrics.NetworkRequestObserver();
+ * const observer = new AppMetrics.NetworkRequestObserver({ hosts: ['api.expo.dev'] });
  * const sub = observer.addListener('requestCompleted', event => {
  *   console.log(event.url, event.totalDuration);
  * });
@@ -370,8 +381,39 @@ export type NetworkRequestObserverEvents = {
  * ```
  */
 export declare class NetworkRequestObserver extends SharedObject<NetworkRequestObserverEvents> {
-  constructor();
+  constructor(filter?: NetworkRequestFilter | null);
+
+  /**
+   * Replaces the active filter. Pass `null` to observe every request. The change applies
+   * atomically: events already mid-flight are emitted under either the old or the new filter,
+   * never a partially-applied mix.
+   */
+  setFilter(filter: NetworkRequestFilter | null): void;
 }
+
+/**
+ * A historic session and its recorded data, returned by `getInactiveSessions()`
+ * as a plain eager record (not a shared object). Debug-only: intended for
+ * inspecting on-device history, not production use.
+ *
+ * @private This API is unstable, debug-only, and may change without notice.
+ */
+export type DebugSession = {
+  /** Unique identifier (UUID) of the session. */
+  id: string;
+  /** Kind of session. */
+  type: SessionType;
+  /** ISO 8601 timestamp of when the session started. */
+  startDate: string;
+  /** ISO 8601 timestamp of when the session ended, or `null`/absent while active. */
+  endDate?: string | null;
+  /** Metrics recorded during the session. */
+  metrics: Metric[];
+  /** Log events recorded during the session. */
+  logs: LogRecord[];
+  /** Crash report attached to the session, if any. Never present on Android (MetricKit is iOS-only). */
+  crashReport?: CrashReport | null;
+};
 
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
@@ -412,36 +454,36 @@ export interface ExpoAppMetricsModuleType {
    *
    * @private This API is unstable and may change without notice.
    */
-  getInactiveSessions(): Promise<Session[]>;
-
-  /**
-   * Simulates a crash report, attributing it to the current main session.
-   * Intended for development and debugging only.
-   *
-   * @private This API is unstable and may change without notice.
-   * @platform ios
-   */
-  simulateCrashReport(): void;
-
-  /**
-   * Intentionally crashes the app to produce a real MetricKit diagnostic.
-   * Intended for development and debugging only.
-   *
-   * @private This API is unstable and may change without notice.
-   * @platform ios
-   */
-  triggerCrash(kind: CrashKind): void;
+  getInactiveSessions(): Promise<DebugSession[]>;
 
   /**
    * @private This API is unstable and may change without notice.
    */
   addCustomMetricToSession(metric: Metric): Promise<void>;
+
   /**
-   * Returns the current main session, including its metrics.
+   * Returns the main session — the per-launch session that tracks the entire
+   * app process — as a shared object built from in-memory state, so the call
+   * is synchronous and never returns `null`. Metrics and logs are fetched
+   * lazily via the returned object.
+   *
+   * The returned object is a static reference: repeated calls return the same
+   * object while it stays referenced, so `getMainSession() === getMainSession()`.
    *
    * @private This API is unstable and may change without notice.
    */
-  getMainSession(): Promise<MainSession | null>;
+  getMainSession(): Session;
+
+  /**
+   * Resolves to the current foreground session — created when the app becomes
+   * active and ended when it is backgrounded — as a shared object, or `null`
+   * when no foreground session is active. Metrics and logs are fetched lazily
+   * via the returned object.
+   *
+   * @private This API is unstable and may change without notice.
+   * @platform ios
+   */
+  getForegroundSession(): Promise<Session | null>;
 
   /**
    * Class for subscribing to HTTP requests observed by the native networking interceptor.
@@ -449,4 +491,13 @@ export interface ExpoAppMetricsModuleType {
    * release the instance (drop all references) to stop.
    */
   NetworkRequestObserver: typeof NetworkRequestObserver;
+
+  /**
+   * Native `Session` shared-object class (live main/foreground sessions).
+   * Exposed so the web module can substitute its own implementation; not
+   * intended to be constructed from user code.
+   *
+   * @private This API is unstable and may change without notice.
+   */
+  Session: typeof Session;
 }

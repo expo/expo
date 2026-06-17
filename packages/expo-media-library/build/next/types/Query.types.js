@@ -1,0 +1,11 @@
+export var AssetField;
+(function (AssetField) {
+    AssetField["CREATION_TIME"] = "creationTime";
+    AssetField["MODIFICATION_TIME"] = "modificationTime";
+    AssetField["MEDIA_TYPE"] = "mediaType";
+    AssetField["WIDTH"] = "width";
+    AssetField["HEIGHT"] = "height";
+    AssetField["DURATION"] = "duration";
+    AssetField["IS_FAVORITE"] = "isFavorite";
+})(AssetField || (AssetField = {}));
+//# sourceMappingURL=Query.types.js.map

@@ -1,19 +1,20 @@
-import AppMetrics, { type Session } from 'expo-app-metrics';
+import AppMetrics, { type DebugSession } from 'expo-app-metrics';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 
 import { SessionDetail, liveSessionToRecord } from '@/components/SessionDetail';
 
 export default function MainSessionScreen() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<DebugSession | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-      AppMetrics.getMainSession().then((mainSession) => {
+      const mainSession = AppMetrics.getMainSession();
+      liveSessionToRecord(mainSession).then((record) => {
         if (cancelled) return;
-        setSession(mainSession ? liveSessionToRecord(mainSession) : null);
+        setSession(record);
         setLoaded(true);
       });
       return () => {

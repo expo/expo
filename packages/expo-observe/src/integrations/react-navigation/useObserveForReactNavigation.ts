@@ -112,7 +112,7 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
       }
 
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
-      const mainSessionId = (await AppMetrics.getMainSession())?.id;
+      const mainSessionId = AppMetrics.getMainSession()?.id;
       if (mainSessionId) {
         await emitTTI({
           sessionId: mainSessionId,

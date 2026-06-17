@@ -15,6 +15,7 @@ import {
   PCH_CMAKE_CONTENTS,
   PCH_HEADER_CONTENTS,
   PCH_ONLOAD_CONTENTS,
+  PCH_OWNER_SOURCE_CONTENTS,
   STUB_PCH_GRADLE_TASK,
 } from './androidPCHTemplates';
 import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
@@ -390,6 +391,10 @@ export const withAndroidPrecompiledHeaders: ConfigPlugin<PluginConfigType> = (co
         fs.promises.writeFile(path.join(jniDir, 'CMakeLists.txt'), PCH_CMAKE_CONTENTS),
         fs.promises.writeFile(path.join(jniDir, 'OnLoad.cpp'), PCH_ONLOAD_CONTENTS),
         fs.promises.writeFile(path.join(jniDir, 'pch.h'), PCH_HEADER_CONTENTS),
+        fs.promises.writeFile(
+          path.join(jniDir, 'appmodules_pch_owner.cpp'),
+          PCH_OWNER_SOURCE_CONTENTS
+        ),
       ]);
       return config;
     },

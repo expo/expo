@@ -38,6 +38,7 @@ import expo.modules.ui.state.WorkletCallback
  */
 val LocalInnerTextField = compositionLocalOf<(@Composable () -> Unit)?> { null }
 
+@OptimizedComposeProps
 class InnerTextFieldProps : ComposeProps
 
 /**
@@ -63,6 +64,7 @@ class InnerTextFieldView(context: Context, appContext: AppContext) :
  */
 val LocalTextFieldIsEmpty = compositionLocalOf { true }
 
+@OptimizedComposeProps
 class PlaceholderProps : ComposeProps
 
 /**
