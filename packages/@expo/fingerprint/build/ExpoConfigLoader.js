@@ -56,7 +56,7 @@ async function runAsync(programName, args = []) {
     ];
     const filteredLoadedModules = loadedModules.filter((modulePath) => !virtualModuleNames.has(modulePath));
     const existingLoadedModules = (await Promise.all(filteredLoadedModules.map(async (modulePath) => {
-        const relativePath = path_1.default.relative(projectRoot, modulePath);
+        const relativePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, modulePath));
         if ((0, Path_1.isIgnoredPath)(relativePath, ignoredPaths)) {
             return null;
         }
