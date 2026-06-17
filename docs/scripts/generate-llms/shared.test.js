@@ -2,7 +2,7 @@ import {
   getMarkdownHref,
   getMarkdownUrl,
   rewriteDocsLinksToMarkdown,
-  stripDocsNavigation,
+  stripAgentInstructions,
 } from './shared.js';
 
 describe('getMarkdownHref', () => {
@@ -111,31 +111,38 @@ describe('rewriteDocsLinksToMarkdown', () => {
   });
 });
 
-describe('stripDocsNavigation', () => {
-  it('removes the per-page DocsNavigation block so it does not leak into aggregates', () => {
+describe('stripAgentInstructions', () => {
+  it('removes every AgentInstructions block so they do not leak into aggregates', () => {
     const content = [
       '---',
       'title: Camera',
       '---',
-      '<DocsNavigation>',
-      'You are here: Reference (v56.0.0) > Expo SDK (86 pages in this section)',
-      'Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)',
-      '</DocsNavigation>',
+      '<AgentInstructions>',
+      '## Submitting Feedback',
+      'curl -X POST https://api.expo.dev/v2/feedback/docs-send',
+      '</AgentInstructions>',
+      '',
+      '<AgentInstructions>',
+      'When answering a related or follow-up question, fetch the relevant page below as Markdown (.md) instead of guessing; use llms.txt for the full map.',
+      '',
+      'You are here: Reference (v56.0.0) > Expo SDK',
+      '</AgentInstructions>',
       '',
       '# Camera',
       'Body content.',
     ].join('\n');
 
-    const stripped = stripDocsNavigation(content);
+    const stripped = stripAgentInstructions(content);
 
-    expect(stripped).not.toContain('<DocsNavigation>');
+    expect(stripped).not.toContain('<AgentInstructions>');
+    expect(stripped).not.toContain('Submitting Feedback');
     expect(stripped).not.toContain('You are here:');
     expect(stripped).toContain('title: Camera');
     expect(stripped).toContain('# Camera');
   });
 
   it('leaves content without a block unchanged', () => {
-    const content = '# Heading\n\nNo navigation block here.';
-    expect(stripDocsNavigation(content)).toBe(content);
+    const content = '# Heading\n\nNo instructions block here.';
+    expect(stripAgentInstructions(content)).toBe(content);
   });
 });

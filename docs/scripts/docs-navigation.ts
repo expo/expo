@@ -10,6 +10,10 @@ const AREA_LABELS: Record<string, string> = {
   reference: 'Reference',
   learn: 'Learn',
 };
+const FETCH_INSTRUCTION =
+  'When answering a related or follow-up question, fetch the relevant page below as Markdown (.md) instead of guessing; use llms.txt for the full map.';
+const FETCH_INSTRUCTION_TRIMMED =
+  'When answering a related or follow-up question, use llms.txt to find the relevant page as Markdown (.md) instead of guessing.';
 
 type NavNode = {
   type: 'section' | 'group' | 'page';
@@ -188,10 +192,10 @@ export function buildDocsNavigation(
   }
 
   const breadcrumb = [areaLabel(location), ...location.trail].join(' > ');
-  const lines = ['<DocsNavigation>'];
+  const lines = ['<AgentInstructions>'];
 
   if (location.isVersionIndex && location.referenceSections) {
-    lines.push(`You are here: ${breadcrumb}`);
+    lines.push(FETCH_INSTRUCTION, '', `You are here: ${breadcrumb}`);
     for (const section of location.referenceSections) {
       lines.push(`### ${section.title}`);
       for (const page of section.pages) {
@@ -199,10 +203,13 @@ export function buildDocsNavigation(
       }
     }
   } else if (isTrimmedSection(location)) {
-    lines.push(`You are here: ${breadcrumb} (${location.sectionPageCount} pages in this section)`);
+    lines.push(
+      FETCH_INSTRUCTION_TRIMMED,
+      '',
+      `You are here: ${breadcrumb} (${location.sectionPageCount} pages in this section)`
+    );
   } else {
-    lines.push(`You are here: ${breadcrumb}`);
-    lines.push('Pages in this section:');
+    lines.push(FETCH_INSTRUCTION, '', `You are here: ${breadcrumb}`, 'Pages in this section:');
     for (const sibling of location.siblings) {
       const isCurrent = normalizeNavKey(sibling.href) === key;
       lines.push(
@@ -212,7 +219,7 @@ export function buildDocsNavigation(
   }
 
   lines.push(`Full documentation tree: [llms.txt](${DOCS_BASE_URL}/llms.txt)`);
-  lines.push('</DocsNavigation>');
+  lines.push('</AgentInstructions>');
 
   return `${lines.join('\n')}\n`;
 }

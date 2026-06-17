@@ -51,17 +51,11 @@ const CONTENT_SEPARATOR = '\n\n---\n\n';
 
 const AGENT_INSTRUCTIONS_BLOCK_REGEX = /<AgentInstructions>[\S\s]*?<\/AgentInstructions>\n*/g;
 
-const DOCS_NAVIGATION_BLOCK_REGEX = /<DocsNavigation>[\S\s]*?<\/DocsNavigation>\n*/g;
-
 const DOC_INDEX_BLOCKQUOTE =
   '> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.';
 
 export function stripAgentInstructions(content) {
   return content.replace(AGENT_INSTRUCTIONS_BLOCK_REGEX, '');
-}
-
-export function stripDocsNavigation(content) {
-  return content.replace(DOCS_NAVIGATION_BLOCK_REGEX, '');
 }
 
 export function stripDocIndexBlockquote(content) {
@@ -158,7 +152,7 @@ export function readUniqueMarkdownContent(markdownPaths, { warnOnMissing = false
     }
 
     const content = rewriteDocsLinksToMarkdown(
-      stripDocIndexBlockquote(stripDocsNavigation(stripAgentInstructions(rawContent)))
+      stripDocIndexBlockquote(stripAgentInstructions(rawContent))
     ).trim();
     if (!content) {
       continue;

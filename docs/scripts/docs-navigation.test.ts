@@ -90,14 +90,16 @@ describe('buildDocsNavigation', () => {
     const block = navFor('/eas/workflows/get-started/');
     expect(block).toBe(
       [
-        '<DocsNavigation>',
+        '<AgentInstructions>',
+        'When answering a related or follow-up question, fetch the relevant page below as Markdown (.md) instead of guessing; use llms.txt for the full map.',
+        '',
         'You are here: EAS > EAS Workflows',
         'Pages in this section:',
         '- [Introduction](https://docs.expo.dev/eas/workflows/introduction.md)',
         '- [Get started](https://docs.expo.dev/eas/workflows/get-started.md) (this page)',
         '- [Limitations](https://docs.expo.dev/eas/workflows/limitations.md)',
         'Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)',
-        '</DocsNavigation>',
+        '</AgentInstructions>',
         '',
       ].join('\n')
     );
@@ -130,6 +132,7 @@ describe('buildDocsNavigation', () => {
     expect(block).toContain(
       'You are here: Reference (v55.0.0) > Expo SDK (40 pages in this section)'
     );
+    expect(block).toContain('use llms.txt to find the relevant page');
     expect(block).not.toContain('Pages in this section:');
     expect(block).not.toMatch(/^- /m);
     expect(block).toContain('Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)');
