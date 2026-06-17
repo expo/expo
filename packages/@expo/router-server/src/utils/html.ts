@@ -115,6 +115,66 @@ export function createLoaderDataScriptAsString(data: Record<string, unknown>): s
   return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
 }
 
+/**
+ * A CSS entry to inject: `css` is a bundled stylesheet href (rendered as preload + stylesheet
+ * links), `inline` is CSS source rendered as a `<style>` for dev HMR, `external` is a pre-rendered
+ * `<link>` injected verbatim.
+ */
+export type StaticContentCssAsset =
+  | { type: 'css'; href: string }
+  | { type: 'inline'; source: string; hmrId?: string }
+  | { type: 'external'; source: string };
+
+export type StaticContentAssets = {
+  /** Injected in array order, so the caller controls cascade. */
+  css: StaticContentCssAsset[];
+  js: string[];
+  /** Public href of a favicon from `web.favicon`. */
+  favicon?: string;
+};
+
+/**
+ * Injects favicon, hydration flag, and CSS (in that order) before `</head>`, and deferred scripts
+ * before `</body>`.
+ */
+export function injectAssetsIntoHtml(
+  html: string,
+  { assets, hydrate }: { assets?: StaticContentAssets; hydrate?: boolean }
+): string {
+  if (assets?.favicon) {
+    html = html.replace('</head>', `${createFaviconAsString(assets.favicon)}</head>`);
+  }
+
+  if (hydrate) {
+    html = html.replace('</head>', `${getHydrationFlagScriptAsString()}</head>`);
+  }
+
+  if (assets) {
+    const styleString = assets.css
+      .map((entry) => {
+        switch (entry.type) {
+          case 'css':
+            return createInjectedCssAsString([entry.href]);
+          case 'inline':
+            return `<style data-expo-css-hmr="${entry.hmrId}">${entry.source}\n</style>`;
+          case 'external':
+            return entry.source;
+        }
+      })
+      .join('');
+    if (styleString) {
+      html = html.replace('</head>', `${styleString}</head>`);
+    }
+
+    const scripts = assets.js.map((src) => createInjectedScriptsAsString([src])).join('');
+    if (scripts) {
+      html = html.replace('</body>', `${scripts}\n</body>`);
+    }
+  }
+
+  return html;
+}
+
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;
 
 /**
