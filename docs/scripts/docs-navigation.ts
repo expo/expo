@@ -1,8 +1,7 @@
 import { home, general, eas, learn, reference } from '../constants/navigation.js';
 import { LATEST_VERSION } from '../constants/versions.js';
-import { DOCS_BASE_URL } from './markdown-link-utils.ts';
+import { DOCS_BASE_URL, getMarkdownUrl } from './markdown-link-utils.ts';
 
-const LLMS_TXT_URL = `${DOCS_BASE_URL}/llms.txt`;
 const TRIM_SECTION_PAGE_THRESHOLD = 30;
 const AREA_LABELS: Record<string, string> = {
   home: 'Home',
@@ -97,19 +96,17 @@ export function buildNavIndexFrom(areas: NavArea[]): Map<string, NavLocation> {
 let cachedIndex: Map<string, NavLocation> | null = null;
 
 export function buildNavIndex(): Map<string, NavLocation> {
-  if (!cachedIndex) {
-    cachedIndex = buildNavIndexFrom([
-      { area: 'home', nodes: home as NavNode[] },
-      { area: 'general', nodes: general as NavNode[] },
-      { area: 'eas', nodes: eas as NavNode[] },
-      { area: 'learn', nodes: learn as NavNode[] },
-      ...Object.entries(reference as Record<string, NavNode[]>).map(([versionKey, nodes]) => ({
-        area: 'reference',
-        versionKey,
-        nodes,
-      })),
-    ]);
-  }
+  cachedIndex ??= buildNavIndexFrom([
+    { area: 'home', nodes: home as NavNode[] },
+    { area: 'general', nodes: general as NavNode[] },
+    { area: 'eas', nodes: eas as NavNode[] },
+    { area: 'learn', nodes: learn as NavNode[] },
+    ...Object.entries(reference as Record<string, NavNode[]>).map(([versionKey, nodes]) => ({
+      area: 'reference',
+      versionKey,
+      nodes,
+    })),
+  ]);
   return cachedIndex;
 }
 
@@ -145,11 +142,13 @@ export function buildDocsNavigation(
     lines.push('Pages in this section:');
     for (const sibling of location.siblings) {
       const isCurrent = normalizeNavKey(sibling.href) === key;
-      lines.push(`- ${sibling.name}${isCurrent ? ' (this page)' : ''}`);
+      lines.push(
+        `- [${sibling.name}](${getMarkdownUrl(sibling.href)})${isCurrent ? ' (this page)' : ''}`
+      );
     }
   }
 
-  lines.push(`Full documentation tree: [llms.txt](${LLMS_TXT_URL})`);
+  lines.push(`Full documentation tree: [llms.txt](${DOCS_BASE_URL}/llms.txt)`);
   lines.push('</DocsNavigation>');
 
   return `${lines.join('\n')}\n`;

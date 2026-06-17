@@ -84,9 +84,9 @@ describe('buildDocsNavigation', () => {
         '<DocsNavigation>',
         'You are here: EAS > EAS Workflows',
         'Pages in this section:',
-        '- Introduction',
-        '- Get started (this page)',
-        '- Limitations',
+        '- [Introduction](https://docs.expo.dev/eas/workflows/introduction.md)',
+        '- [Get started](https://docs.expo.dev/eas/workflows/get-started.md) (this page)',
+        '- [Limitations](https://docs.expo.dev/eas/workflows/limitations.md)',
         'Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)',
         '</DocsNavigation>',
         '',
@@ -103,15 +103,17 @@ describe('buildDocsNavigation', () => {
   it('uses the immediate group for a nested page, including it in the breadcrumb', () => {
     const block = navFor('/eas/workflows/examples/e2e-tests') as string;
     expect(block).toContain('You are here: EAS > EAS Workflows > Examples');
-    expect(block).toContain('- E2E tests (this page)');
-    expect(block).toContain('- Deploy');
+    expect(block).toContain(
+      '- [E2E tests](https://docs.expo.dev/eas/workflows/examples/e2e-tests.md) (this page)'
+    );
+    expect(block).toContain('- [Deploy](https://docs.expo.dev/eas/workflows/examples/deploy.md)');
     expect(block).not.toContain('- Introduction');
   });
 
   it('omits a title-less section from the breadcrumb', () => {
     const block = navFor('/eas/overview') as string;
     expect(block).toContain('You are here: EAS\n');
-    expect(block).toContain('- Overview (this page)');
+    expect(block).toContain('- [Overview](https://docs.expo.dev/eas/overview.md) (this page)');
   });
 
   it('trims a large reference section to breadcrumb + count', () => {
@@ -127,8 +129,12 @@ describe('buildDocsNavigation', () => {
   it('lists a small reference section instead of trimming', () => {
     const block = navFor('/versions/v55.0.0/config/app') as string;
     expect(block).toContain('You are here: Reference (v55.0.0) > Configuration files');
-    expect(block).toContain('- app.json (this page)');
-    expect(block).toContain('- metro.config.js');
+    expect(block).toContain(
+      '- [app.json](https://docs.expo.dev/versions/v55.0.0/config/app.md) (this page)'
+    );
+    expect(block).toContain(
+      '- [metro.config.js](https://docs.expo.dev/versions/v55.0.0/config/metro.md)'
+    );
   });
 
   it('does not trim a large non-reference section', () => {
