@@ -50,10 +50,6 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
 
   private mainSession: WebSession | null = null;
 
-  addCustomMetricToSession(metric: Metric): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
   async markFirstRender() {}
   async markInteractive(attributes?: MetricAttributes) {}
   logEvent(name: string, options?: LogEventOptions) {}
