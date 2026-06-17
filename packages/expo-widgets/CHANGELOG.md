@@ -15,6 +15,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Evaluate the Live Activity layout in the rendered views so `env.colorScheme` matches the presentation. ([#46987](https://github.com/expo/expo/pull/46987) by [@crockalet](https://github.com/crockalet))
 - [Android] Fix widget strings file location. ([#46538](https://github.com/expo/expo/pull/46538) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
