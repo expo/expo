@@ -31,6 +31,11 @@ jobs:
           cache: 'pnpm'
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build app dependencies
+        run: pnpm turbo build --filter test-suite...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🚨 Lint test-suite files
         run: pnpm lint --max-warnings 0
         working-directory: apps/test-suite

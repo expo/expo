@@ -7,12 +7,11 @@
     "build"
   ],
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "repository": {
     "type": "git",
@@ -107,11 +106,11 @@
     "@types/babel__generator": "^7.27.0",
     "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.2",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "jest": "^29.2.1",
     "react-refresh": "^0.14.2",
     "resolve-from": "^5.0.0"
-  }
+  },
+  "types": "build/index.d.ts"
 }

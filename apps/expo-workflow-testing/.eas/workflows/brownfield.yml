@@ -66,8 +66,6 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
       - name: Build and publish Android brownfield artifacts
         working_directory: ../brownfield-tester/expo-app
         run: |
@@ -89,8 +87,6 @@ jobs:
       - uses: eas/restore_build_cache
         with:
           platform: ios
-      - name: Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
       - name: Build iOS artifacts (Release)
         working_directory: ../brownfield-tester/expo-app
         run: |

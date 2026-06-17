@@ -261,12 +261,21 @@ inline void unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) 
  has no native state, or its native state isn't an `expo::NativeState` subclass.
  Adopted native states (those constructed in external C++ code) are recovered too
  as long as their concrete type derives from `expo::NativeState`.
+
+ Hot path: avoids `Object::hasNativeState<expo::NativeState>` (which internally
+ fetches the native state and runs `dynamic_pointer_cast`) followed by another
+ `getNativeState<expo::NativeState>`. Instead, do a single bool check via the
+ specialized `hasNativeState<jsi::NativeState>`, fetch once, and dynamic-cast inline.
+ The pointee survives the temporary shared_ptr's destruction because JSI's slot
+ retains it.
  */
 inline expo::NativeState *_Nullable getExpoNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
-  if (!object.hasNativeState<expo::NativeState>(runtime)) {
+  if (!object.hasNativeState<jsi::NativeState>(runtime)) {
     return nullptr;
   }
-  return object.getNativeState<expo::NativeState>(runtime).get();
+  return dynamic_cast<expo::NativeState *>(
+    object.getNativeState<jsi::NativeState>(runtime).get()
+  );
 }
 
 /**

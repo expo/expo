@@ -6,12 +6,13 @@
   "types": "build/DevMenu.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "keywords": [
     "expo",
@@ -39,7 +40,6 @@
     "@testing-library/react-native": "^13.3.0",
     "@types/node": "^22.14.0",
     "babel-preset-expo": "workspace:*",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react": "19.2.3",
     "react-native": "0.86.0"

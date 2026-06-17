@@ -2,7 +2,7 @@ import { XcodeProject } from 'expo/config-plugins';
 
 export function addToPbxProjectSection(xcodeProject: XcodeProject, target: { uuid: string }) {
   const pbxProjectSection = xcodeProject.pbxProjectSection();
-  const project = pbxProjectSection[xcodeProject.getFirstProject().uuid];
+  const project = pbxProjectSection[xcodeProject.getFirstProject().uuid]!;
   const targetAlreadyAdded = project.targets.some(
     (projectTarget: { value: string }) => projectTarget.value === target.uuid
   );

@@ -62,7 +62,10 @@
     "trailingComma": "es5"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "moduleNameMapper": {
+      "^expo-sqlite$": "<rootDir>/../src/index.ts"
+    }
   },
   "private": true,
   "patchedDependencies": {

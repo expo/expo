@@ -1,1 +1,0 @@
-export { isNativeModuleAsync } from './isNativeModule';

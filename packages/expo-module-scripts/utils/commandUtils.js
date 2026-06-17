@@ -44,6 +44,9 @@ export function getArgs({ maybeAddWatchFlag = false } = {}) {
 }
 
 function shouldAddWatchFlag() {
+  if (process.env.TURBO_HASH && process.env.TURBO_IS_TUI !== 'true') {
+    return false;
+  }
   return process.stdout.isTTY && !process.env.CI && !process.env.EXPO_NONINTERACTIVE;
 }
 
