@@ -1,12 +1,27 @@
-import { useMemo } from 'react';
+import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
+import { useState } from 'react';
 import resolveAssetSource from './resolveAssetSource';
-export function useVideoPlayer(source, setup) {
+export function useVideoPlayer(source, setup, _playerBuilderOptions) {
     const parsedSource = typeof source === 'string' ? { uri: source } : source;
-    return useMemo(() => {
-        const player = new VideoPlayerWeb(parsedSource);
-        setup?.(player);
-        return player;
-    }, [JSON.stringify(source)]);
+    const [forceRecreateCount, setForceRecreateCount] = useState(0);
+    return useReleasingSharedObjectWithLifecycle({
+        factory: () => {
+            const player = new VideoPlayerWeb(parsedSource);
+            setup?.(player);
+            return player;
+        },
+        shouldRecreate: (_player, { previousDependencies, dependencies }) => {
+            // Recreate if replaceAsync failed ([1]).
+            return previousDependencies[1] !== dependencies[1];
+        },
+        update: (player) => {
+            // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
+            player.replaceAsync(parsedSource).catch(() => {
+                setForceRecreateCount((c) => c + 1);
+            });
+        },
+    }, [JSON.stringify(source), forceRecreateCount] // [0] source, [1] recreate counter
+    );
 }
 export function getSourceUri(source) {
     if (typeof source === 'string') {

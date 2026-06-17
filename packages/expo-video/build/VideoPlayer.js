@@ -1,4 +1,5 @@
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
+import { useState } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import resolveAssetSource from './resolveAssetSource';
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
@@ -32,11 +33,29 @@ export function createVideoPlayer(source, playerBuilderOptions) {
  */
 export function useVideoPlayer(source, setup, playerBuilderOptions) {
     const parsedSource = parseSource(source);
-    return useReleasingSharedObject(() => {
-        const player = new NativeVideoModule.VideoPlayer(parsedSource, false, playerBuilderOptions);
-        setup?.(player);
-        return player;
-    }, [JSON.stringify(parsedSource), JSON.stringify(playerBuilderOptions)]);
+    const parsedSourceKey = JSON.stringify(parsedSource);
+    const playerBuilderOptionsKey = JSON.stringify(playerBuilderOptions);
+    const [forceRecreateCount, setForceRecreateCount] = useState(0);
+    return useReleasingSharedObjectWithLifecycle({
+        factory: () => {
+            const player = new NativeVideoModule.VideoPlayer(parsedSource, false, playerBuilderOptions);
+            setup?.(player);
+            return player;
+        },
+        shouldRecreate: (_player, { previousDependencies, dependencies }) => {
+            // Recreate if builder options ([1]) changed or if replaceAsync failed ([2]).
+            return (previousDependencies[1] !== dependencies[1] || previousDependencies[2] !== dependencies[2]);
+        },
+        update: (player, { previousDependencies, dependencies }) => {
+            // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
+            if (previousDependencies[0] !== dependencies[0]) {
+                player.replaceAsync(parsedSource).catch(() => {
+                    setForceRecreateCount((c) => c + 1);
+                });
+            }
+        },
+    }, [parsedSourceKey, playerBuilderOptionsKey, forceRecreateCount] // [0] source, [1] options, [2] recreate counter
+    );
 }
 function parseSource(source) {
     if (typeof source === 'number') {

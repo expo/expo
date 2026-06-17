@@ -1,7 +1,7 @@
-import type { BufferOptions, PlayerError, VideoPlayerStatus, VideoSource, VideoPlayer, SubtitleTrack, AudioMixingMode, VideoTrack, AudioTrack, ScrubbingModeOptions, SeekTolerance } from './VideoPlayer.types';
+import type { BufferOptions, PlayerError, PlayerBuilderOptions, VideoPlayerStatus, VideoSource, VideoPlayer, SubtitleTrack, AudioMixingMode, VideoTrack, AudioTrack, ScrubbingModeOptions, SeekTolerance } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import type { VideoThumbnail } from './VideoThumbnail';
-export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
+export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void, _playerBuilderOptions?: PlayerBuilderOptions): VideoPlayer;
 export declare function getSourceUri(source?: VideoSource): string | null;
 export declare function createVideoPlayer(source: VideoSource): VideoPlayer;
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
