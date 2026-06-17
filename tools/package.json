@@ -14,7 +14,7 @@
     "expotools": "bin/expotools.js"
   },
   "scripts": {
-    "build": "taskr release",
+    "build": "expo-build cjs:src=build",
     "watch": "taskr",
     "clean": "rm -rf build cache",
     "et": "node bin/expotools.js",
@@ -88,6 +88,7 @@
     "eslint": "^9.39.4",
     "eslint-config-universe": "workspace:^15.2.0",
     "eslint-plugin-lodash": "^7.4.0",
+    "expo-module-scripts": "workspace:*",
     "prettier": "^3.8.3",
     "taskr": "1.1.0",
     "typescript": "^6.0.3"

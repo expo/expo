@@ -6409,6 +6409,9 @@ importers:
       eslint-plugin-lodash:
         specifier: ^7.4.0
         version: 7.4.0(eslint@9.39.4(jiti@1.21.7))
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../packages/expo-module-scripts
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
