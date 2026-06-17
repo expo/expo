@@ -9,12 +9,13 @@ import path from 'node:path';
 import { parentPort, workerData } from 'node:worker_threads';
 
 import {
-  buildAgentInstructions,
+  buildFeedbackSection,
   buildPageSpecificNote,
   shouldAppendAgentInstructions,
   urlPathFromHtmlPath,
+  wrapAgentInstructions,
 } from './agent-instructions.ts';
-import { buildDocsNavigation } from './docs-navigation.ts';
+import { buildNavigationSection } from './docs-navigation.ts';
 import {
   checkMarkdownQuality,
   convertMdxInstructionToMarkdown,
@@ -195,11 +196,17 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     const mdxPath = findMdxSource(htmlPath, outDir, pagesDir);
     const frontmatter = mdxPath ? extractFrontmatter(mdxPath) : null;
     const pathname = urlPathFromHtmlPath(relHtmlPath);
-    const agentBlock = shouldAppendAgentInstructions(markdown)
-      ? buildAgentInstructions(pathname)
-      : null;
+    const instructionSections: string[] = [];
+    if (shouldAppendAgentInstructions(markdown)) {
+      instructionSections.push(buildFeedbackSection(pathname));
+    }
+    const navigationSection = buildNavigationSection(pathname);
+    if (navigationSection) {
+      instructionSections.push(navigationSection);
+    }
+    const agentInstructions =
+      instructionSections.length > 0 ? wrapAgentInstructions(instructionSections) : null;
     const pageNote = buildPageSpecificNote(pathname);
-    const docsNavigation = buildDocsNavigation(pathname);
 
     const parts: string[] = [];
     if (frontmatter) {
@@ -208,11 +215,8 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     if (pageNote) {
       parts.push(pageNote);
     }
-    if (agentBlock) {
-      parts.push(agentBlock);
-    }
-    if (docsNavigation) {
-      parts.push(docsNavigation);
+    if (agentInstructions) {
+      parts.push(agentInstructions);
     }
     parts.push(markdown);
     markdown = parts.join('\n');

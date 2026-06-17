@@ -181,7 +181,7 @@ function isTrimmedSection(location: NavLocation): boolean {
   );
 }
 
-export function buildDocsNavigation(
+export function buildNavigationSection(
   pathname: string,
   index: Map<string, NavLocation> = buildNavIndex()
 ): string | null {
@@ -192,7 +192,7 @@ export function buildDocsNavigation(
   }
 
   const breadcrumb = [areaLabel(location), ...location.trail].join(' > ');
-  const lines = ['<AgentInstructions>'];
+  const lines = ['## Navigation', ''];
 
   if (location.isVersionIndex && location.referenceSections) {
     lines.push(FETCH_INSTRUCTION, '', `You are here: ${breadcrumb}`);
@@ -219,7 +219,6 @@ export function buildDocsNavigation(
   }
 
   lines.push(`Full documentation tree: [llms.txt](${DOCS_BASE_URL}/llms.txt)`);
-  lines.push('</AgentInstructions>');
 
-  return `${lines.join('\n')}\n`;
+  return lines.join('\n');
 }

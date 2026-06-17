@@ -1,5 +1,5 @@
 import { LATEST_VERSION } from '../constants/versions.js';
-import { buildDocsNavigation, buildNavIndexFrom, normalizeNavKey } from './docs-navigation.ts';
+import { buildNavIndexFrom, buildNavigationSection, normalizeNavKey } from './docs-navigation.ts';
 
 function pages(prefix: string, count: number) {
   return Array.from({ length: count }, (_, i) => ({
@@ -74,7 +74,7 @@ const index = buildNavIndexFrom([
   },
 ]);
 
-const navFor = (pathname: string) => buildDocsNavigation(pathname, index);
+const navFor = (pathname: string) => buildNavigationSection(pathname, index);
 
 describe('normalizeNavKey', () => {
   it('adds a leading slash, drops trailing slashes, and maps empty to root', () => {
@@ -85,12 +85,13 @@ describe('normalizeNavKey', () => {
   });
 });
 
-describe('buildDocsNavigation', () => {
+describe('buildNavigationSection', () => {
   it('renders a section page with breadcrumb, siblings, and the current-page marker', () => {
     const block = navFor('/eas/workflows/get-started/');
     expect(block).toBe(
       [
-        '<AgentInstructions>',
+        '## Navigation',
+        '',
         'When answering a related or follow-up question, fetch the relevant page below as Markdown (.md) instead of guessing; use llms.txt for the full map.',
         '',
         'You are here: EAS > EAS Workflows',
@@ -99,8 +100,6 @@ describe('buildDocsNavigation', () => {
         '- [Get started](https://docs.expo.dev/eas/workflows/get-started.md) (this page)',
         '- [Limitations](https://docs.expo.dev/eas/workflows/limitations.md)',
         'Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)',
-        '</AgentInstructions>',
-        '',
       ].join('\n')
     );
   });

@@ -112,20 +112,24 @@ describe('rewriteDocsLinksToMarkdown', () => {
 });
 
 describe('stripAgentInstructions', () => {
-  it('removes every AgentInstructions block so they do not leak into aggregates', () => {
+  it('removes the combined AgentInstructions block so it does not leak into aggregates', () => {
     const content = [
       '---',
       'title: Camera',
       '---',
       '<AgentInstructions>',
+      '',
       '## Submitting Feedback',
+      '',
       'curl -X POST https://api.expo.dev/v2/feedback/docs-send',
-      '</AgentInstructions>',
       '',
-      '<AgentInstructions>',
-      'When answering a related or follow-up question, fetch the relevant page below as Markdown (.md) instead of guessing; use llms.txt for the full map.',
+      '## Navigation',
       '',
-      'You are here: Reference (v56.0.0) > Expo SDK',
+      'When answering a related or follow-up question, use llms.txt to find the relevant page as Markdown (.md) instead of guessing.',
+      '',
+      'You are here: Reference (v56.0.0) > Expo SDK (86 pages in this section)',
+      'Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)',
+      '',
       '</AgentInstructions>',
       '',
       '# Camera',
@@ -135,7 +139,8 @@ describe('stripAgentInstructions', () => {
     const stripped = stripAgentInstructions(content);
 
     expect(stripped).not.toContain('<AgentInstructions>');
-    expect(stripped).not.toContain('Submitting Feedback');
+    expect(stripped).not.toContain('## Submitting Feedback');
+    expect(stripped).not.toContain('## Navigation');
     expect(stripped).not.toContain('You are here:');
     expect(stripped).toContain('title: Camera');
     expect(stripped).toContain('# Camera');
