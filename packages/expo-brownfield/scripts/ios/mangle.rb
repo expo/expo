@@ -89,6 +89,12 @@ module ExpoBrownfield
     def self.pod_xcconfig_paths(installer)
       paths = []
       installer.pods_project.targets.each do |target|
+        next unless target.respond_to?(:build_phases)
+        sources_phase = target.build_phases.find do |p|
+          p.is_a?(Xcodeproj::Project::Object::PBXSourcesBuildPhase)
+        end
+        next if sources_phase.nil? || sources_phase.files_references.empty?
+        
         target.build_configurations.each do |config|
           ref = config.base_configuration_reference
           next if ref.nil?
