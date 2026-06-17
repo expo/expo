@@ -1,12 +1,13 @@
 package expo.modules.appmetrics.crashreporting
 
 import expo.modules.appmetrics.utils.TimeUtils
+import kotlinx.serialization.decodeFromString
 import java.io.File
 
 /**
  * Next-launch read side of the pending-crash store written by `CrashFileWriter`. Runs where
  * allocation is safe, so unlike the write path it can parse freely and assemble the structured
- * `PendingJvmCrash`. Reads the format defined by `CrashFileFormat`.
+ * `PendingJvmCrash`. Decodes the JSON `PendingJvmCrashPayload` defined by `CrashFileFormat`.
  */
 class CrashFileReader(private val directory: File) {
   /**
@@ -19,7 +20,7 @@ class CrashFileReader(private val directory: File) {
   /**
    * Deletes `.tmp` files orphaned by a process that died mid-write.
    *
-   * A completed write atomically renames its temp to a `.txt`, so any `.tmp` still on disk is dead
+   * A completed write atomically renames its temp to a `.json`, so any `.tmp` still on disk is dead
    * weight the reader will never parse. Skips temp files for `currentPid`, which may belong to an
    * in-flight crash write happening right now — deleting it would drop a live crash report.
    */
@@ -38,11 +39,11 @@ class CrashFileReader(private val directory: File) {
   }
 
   /**
-   * Deletes corrupt final `.txt` files — ones that parse to null because a crash-path IO failure
-   * truncated them before the atomic rename (`PrintWriter` swallows write errors). The reader skips
-   * them forever otherwise, so the processor reclaims them on the same run. Needs no current-pid
-   * guard like `deleteOrphanedTempFiles`: a `.txt` exists only after the rename, so a live crash file
-   * is always complete and parses fine — only genuinely corrupt files, which hold no recoverable
+   * Deletes corrupt final `.json` files — ones that fail to decode because a crash-path IO failure
+   * truncated them before the atomic rename. The reader skips them forever otherwise, so the
+   * processor reclaims them on the same run. Needs no current-pid guard like
+   * `deleteOrphanedTempFiles`: a `.json` exists only after the rename, so a live crash file is
+   * always complete and parses fine — only genuinely corrupt files, which hold no recoverable
    * report, are removed.
    */
   fun deleteMalformedFiles() {
@@ -53,37 +54,21 @@ class CrashFileReader(private val directory: File) {
     }
   }
 
-  /** Final pending-crash files (`.txt`); excludes `.tmp` and unrelated files by name. */
+  /** Final pending-crash files (`.json`); excludes `.tmp` and unrelated files by name. */
   private fun finalCrashFiles(): List<File> =
     directory.listFiles { file -> CrashFileFormat.FILE_NAME_PATTERN.matches(file.name) }?.toList() ?: emptyList()
 
   private fun parse(file: File): PendingJvmCrash? =
     runCatching {
-      val lines = file.readLines()
-      val separatorIndex = lines.indexOf(CrashFileFormat.HEADER_SEPARATOR)
-      if (separatorIndex < 0) {
-        return null
-      }
-      val header = lines.take(separatorIndex).mapNotNull { line ->
-        val separator = line.indexOf('=')
-        if (separator < 0) null else line.substring(0, separator) to line.substring(separator + 1)
-      }.toMap()
-      val pid = header["pid"]?.toIntOrNull() ?: return null
-      val crashedAtMillis = header["crashedAt"]?.toLongOrNull() ?: return null
-      val exceptionClass = header["exceptionClass"]?.takeIf { it.isNotEmpty() } ?: return null
-
-      val stackFrames = lines.drop(separatorIndex + 1)
-        .filter { it.isNotEmpty() }
-        .map(CrashFileFormat::unescape)
-
+      val payload = CrashFileFormat.json.decodeFromString<PendingJvmCrashPayload>(file.readText())
       PendingJvmCrash(
-        sessionId = header["sessionId"]?.takeIf { it.isNotEmpty() }?.let(CrashFileFormat::unescape),
-        pid = pid,
-        crashedAtMillis = crashedAtMillis,
-        exceptionClass = CrashFileFormat.unescape(exceptionClass),
-        composedMessage = header["composedMessage"]?.let(CrashFileFormat::unescape) ?: exceptionClass,
-        threadName = header["thread"]?.takeIf { it.isNotEmpty() }?.let(CrashFileFormat::unescape),
-        stackFrames = stackFrames,
+        sessionId = payload.sessionId,
+        pid = payload.pid,
+        crashedAtMillis = payload.crashedAtMillis,
+        exceptionClass = payload.exceptionClass,
+        composedMessage = payload.composedMessage,
+        threadName = payload.threadName,
+        stackFrames = payload.stackFrames,
         file = file
       )
     }.getOrNull()

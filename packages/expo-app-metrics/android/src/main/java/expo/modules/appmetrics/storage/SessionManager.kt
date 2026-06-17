@@ -141,13 +141,13 @@ class SessionManager(
     database.crashReportDao().getBySessionId(sessionId)?.payload
 
   /**
-   * Payloads of crash reports not attributed to any session — startup crashes
-   * captured before the session existed, or native crashes that couldn't be
-   * attributed. Newest first. These never surface through the session-keyed
-   * query (`getInactiveSessions`), so they're fetched here.
+   * Every stored crash report, newest first — both reports attributed to a
+   * session and orphans (startup crashes before the session existed, or native
+   * crashes that couldn't be attributed). Returns the entities so callers can
+   * read each report's `sessionId` (null for an orphan) alongside its payload.
    */
-  suspend fun getOrphanCrashReportPayloads(): List<String> =
-    database.crashReportDao().getOrphans().map { it.payload }
+  suspend fun getAllCrashReports(): List<CrashReportEntity> =
+    database.crashReportDao().getAll()
 
   suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
 

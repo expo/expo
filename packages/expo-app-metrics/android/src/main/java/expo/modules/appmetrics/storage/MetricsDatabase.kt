@@ -246,10 +246,10 @@ interface CrashReportDao {
   @Query("SELECT * FROM crash_reports WHERE sessionId = :sessionId")
   suspend fun getBySessionId(sessionId: String): CrashReportEntity?
 
-  // Orphan reports — crashes not attributed to any session (startup crashes
-  // before the session existed, or native crashes that couldn't be attributed).
-  @Query("SELECT * FROM crash_reports WHERE sessionId IS NULL ORDER BY createdAt DESC")
-  suspend fun getOrphans(): List<CrashReportEntity>
+  // Every stored crash report, newest first. Orphans (no owning session) have a
+  // null `sessionId`; attributed reports carry theirs.
+  @Query("SELECT * FROM crash_reports ORDER BY createdAt DESC")
+  suspend fun getAll(): List<CrashReportEntity>
 
   // Ages out orphan reports (no owning session) past the retention window.
   // Attributed reports need no query here — the FK cascade prunes them with

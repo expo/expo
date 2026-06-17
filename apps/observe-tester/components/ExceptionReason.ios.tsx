@@ -10,13 +10,19 @@ export function ExceptionReason({
   reason: NonNullable<CrashReport['exceptionReason']>;
 }) {
   const theme = useTheme();
-  const detail = reason as Exclude<NonNullable<CrashReport['exceptionReason']>, string>;
+
+  // `exceptionReason` can be a plain string; render it as-is rather than reading
+  // structured fields off it.
+  if (typeof reason === 'string') {
+    console.warn('exceptionReason should not be a string on iOS');
+    return null;
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.message, { color: theme.text.default }]}>{detail.composedMessage}</Text>
+      <Text style={[styles.message, { color: theme.text.default }]}>{reason.composedMessage}</Text>
       <Text style={[styles.meta, { color: theme.text.secondary }]}>
-        {detail.className} · {detail.exceptionType}
+        {reason.className} · {reason.exceptionType}
       </Text>
     </View>
   );

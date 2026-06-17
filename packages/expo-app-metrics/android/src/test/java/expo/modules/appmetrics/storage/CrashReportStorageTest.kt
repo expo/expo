@@ -75,14 +75,18 @@ class CrashReportStorageTest {
       sessionManager.setCrashReport(null, """{"appVersion":"2.0.0"}""")
 
       // Both coexist — the unique sessionId index treats nulls as distinct.
-      assertEquals(2, sessionManager.getOrphanCrashReportPayloads().size)
+      assertEquals(2, sessionManager.getAllCrashReports().count { it.sessionId == null })
     }
 
   @Test
-  fun `getOrphanCrashReportPayloads returns only unattributed reports, newest first`() =
+  fun `getAllCrashReports returns attributed and orphan reports, newest first`() =
     runTest {
       startSession("session-1")
-      sessionManager.setCrashReport("session-1", """{"appVersion":"attributed"}""")
+      sessionManager.setCrashReport(
+        "session-1",
+        """{"appVersion":"attributed"}""",
+        createdAt = "2025-01-15T12:00:00.000Z"
+      )
       sessionManager.setCrashReport(
         null,
         """{"appVersion":"older-orphan"}""",
@@ -94,12 +98,14 @@ class CrashReportStorageTest {
         createdAt = "2025-01-15T11:00:00.000Z"
       )
 
-      val orphans = sessionManager.getOrphanCrashReportPayloads()
+      val all = sessionManager.getAllCrashReports()
 
+      // Every report, newest createdAt first; orphans carry a null sessionId.
       assertEquals(
-        listOf("""{"appVersion":"newer-orphan"}""", """{"appVersion":"older-orphan"}"""),
-        orphans
+        listOf("""{"appVersion":"attributed"}""", """{"appVersion":"newer-orphan"}""", """{"appVersion":"older-orphan"}"""),
+        all.map { it.payload }
       )
+      assertEquals(listOf("session-1", null, null), all.map { it.sessionId })
     }
 
   @Test
@@ -227,7 +233,7 @@ class CrashReportStorageTest {
 
       sessionManager.cleanupOldSessions()
 
-      assertEquals(emptyList<String>(), sessionManager.getOrphanCrashReportPayloads())
+      assertEquals(0, sessionManager.getAllCrashReports().count { it.sessionId == null })
     }
 
   @Test
@@ -239,7 +245,7 @@ class CrashReportStorageTest {
 
       sessionManager.cleanupOldSessions()
 
-      assertEquals(1, sessionManager.getOrphanCrashReportPayloads().size)
+      assertEquals(1, sessionManager.getAllCrashReports().count { it.sessionId == null })
     }
 
   @Test
@@ -252,7 +258,7 @@ class CrashReportStorageTest {
       sessionManager.clearAllData()
 
       assertNull(sessionManager.getCrashReport("session-1"))
-      assertEquals(emptyList<String>(), sessionManager.getOrphanCrashReportPayloads())
+      assertEquals(emptyList<CrashReportEntity>(), sessionManager.getAllCrashReports())
     }
 
   // endregion

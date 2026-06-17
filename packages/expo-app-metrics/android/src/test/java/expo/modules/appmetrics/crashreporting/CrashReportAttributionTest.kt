@@ -64,6 +64,10 @@ class CrashReportAttributionTest {
       ?.let { CrashReport.decodeFromJsonString(it) }
       ?.exceptionReason
 
+  // Reports stored unattributed — the orphans among all stored reports.
+  private suspend fun orphanCount(): Int =
+    sessionManager.getAllCrashReports().count { it.sessionId == null }
+
   // region JVM crash files (embedded id)
 
   @Test
@@ -84,7 +88,7 @@ class CrashReportAttributionTest {
       attribute("never-persisted", CrashOrigin.JVM_FILE)
 
       assertNull(sessionManager.getCrashReport("never-persisted"))
-      assertEquals(1, sessionManager.getOrphanCrashReportPayloads().size)
+      assertEquals(1, orphanCount())
     }
 
   @Test
@@ -93,7 +97,7 @@ class CrashReportAttributionTest {
       // A crash before the main session existed carries no id.
       attribute(null, CrashOrigin.JVM_FILE)
 
-      assertEquals(1, sessionManager.getOrphanCrashReportPayloads().size)
+      assertEquals(1, orphanCount())
     }
 
   // endregion
@@ -121,7 +125,7 @@ class CrashReportAttributionTest {
 
       // Never blame the live session — stored unattributed instead.
       assertNull(sessionManager.getCrashReport("current"))
-      assertEquals(1, sessionManager.getOrphanCrashReportPayloads().size)
+      assertEquals(1, orphanCount())
     }
 
   @Test
@@ -129,7 +133,7 @@ class CrashReportAttributionTest {
     runTest {
       attribute(null, CrashOrigin.EXIT_RECORD, currentSessionId = "current")
 
-      assertEquals(1, sessionManager.getOrphanCrashReportPayloads().size)
+      assertEquals(1, orphanCount())
     }
 
   @Test
@@ -144,7 +148,7 @@ class CrashReportAttributionTest {
 
       assertEquals("java.lang.IllegalStateException: from file", storedMessage("previous"))
       // The native crash landed as a separate orphan, not overwriting "previous".
-      assertEquals(1, sessionManager.getOrphanCrashReportPayloads().size)
+      assertEquals(1, orphanCount())
     }
 
   // endregion

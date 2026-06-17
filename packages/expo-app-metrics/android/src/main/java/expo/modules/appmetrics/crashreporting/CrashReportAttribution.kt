@@ -18,7 +18,7 @@ suspend fun attributeAndStoreCrashReport(
   runCatching {
     // A null target stores the report as an orphan.
     val target: String? = when {
-      // JVM file with a real session id → stored under that id. 
+      // JVM file with a real session id → stored under that id.
       sessionId != null -> sessionId.takeIf { sessionManager.getSessionRow(it) != null }
       // Native crash (exit record) → attributed to the previous main session,
       // unless that session already has a crash report, in which case it's stored

@@ -151,7 +151,7 @@ class CrashReportProcessorTest {
   fun `deletes a malformed crash file in the same run as a valid one`() =
     runTest {
       writeCrashFile(sessionId = "crashed-session")
-      val malformed = java.io.File(tmp.root, "crash-999-1700000000001.txt").apply { writeText("complete garbage") }
+      val malformed = java.io.File(tmp.root, "crash-999-1700000000001.json").apply { writeText("complete garbage") }
 
       processor().process()
 
@@ -163,7 +163,7 @@ class CrashReportProcessorTest {
   @Test
   fun `deletes a malformed crash file even when there is nothing else to process`() =
     runTest {
-      val malformed = java.io.File(tmp.root, "crash-999-1700000000001.txt").apply { writeText("complete garbage") }
+      val malformed = java.io.File(tmp.root, "crash-999-1700000000001.json").apply { writeText("complete garbage") }
 
       processor().process()
 
@@ -178,7 +178,7 @@ class CrashReportProcessorTest {
       // must reclaim it so it doesn't leak. Use a foreign pid so it isn't treated
       // as an in-flight write by the current process.
       val foreignPid = android.os.Process.myPid() + 1
-      val orphan = java.io.File(tmp.root, "crash-$foreignPid-1.txt.tmp").apply { writeText("partial") }
+      val orphan = java.io.File(tmp.root, "crash-$foreignPid-1.json.tmp").apply { writeText("partial") }
 
       processor().process()
 
@@ -302,12 +302,31 @@ class CrashReportProcessorTest {
     runTest {
       exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_ANR)
       exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_LOW_MEMORY)
-      exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_SIGNALED)
       exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_USER_REQUESTED)
 
       processor().process()
 
       assertTrue(storeCalls.isEmpty())
+    }
+
+  @Test
+  fun `hands a signaled crash to the callback with no session id and a signal`() =
+    runTest {
+      // SIGSEGV/SIGABRT deaths the OS records as REASON_SIGNALED rather than
+      // REASON_CRASH_NATIVE — these count as crashes too. `status` is the signal.
+      exitRecords += exitRecord(
+        reason = ApplicationExitInfo.REASON_SIGNALED,
+        status = 11,
+        description = "Signal 11 (SIGSEGV)"
+      )
+
+      processor().process()
+
+      val call = storeCalls.single()
+      assertNull(call.sessionId)
+      assertEquals(CrashOrigin.EXIT_RECORD, call.origin)
+      assertEquals(11, call.report.signal)
+      assertEquals("Signal 11 (SIGSEGV)", call.report.terminationReason)
     }
 
   // endregion

@@ -291,6 +291,13 @@ export type CrashReport = {
     | string
     | null;
   callStackTree?: CallStackTree | null;
+  /**
+   * Id of the session the crash is attributed to, or `null` for an orphan —
+   * a startup crash captured before a session existed, or a native crash that
+   * couldn't be attributed. Only populated by `getAllCrashReports`.
+   * @platform android
+   */
+  sessionId?: string | null;
   /** App version at the time of the crash. */
   appVersion: string;
   /**
@@ -517,18 +524,18 @@ export interface ExpoAppMetricsModuleType {
    */
   getInactiveSessions(): Promise<DebugSession[]>;
 
-  /* 
-   * Returns crash reports that aren't attributed to any session — startup
+  /**
+   * Returns every stored crash report, ordered with the most recent first.
+   * Includes reports attributed to a session as well as orphans — startup
    * crashes captured before a session existed, or native crashes that couldn't
-   * be attributed — ordered with the most recent first. These never appear under
-   * a session in `getInactiveSessions`.
+   * be attributed. Orphans have a `sessionId` of `null`.
    *
    * Debug-only: intended for inspecting on-device history, not for production use.
    *
    * @private This API is unstable and may change without notice.
    * @platform android
    */
-  getOrphanedCrashReports?: () => Promise<CrashReport[]>;
+  getAllCrashReports?: () => Promise<CrashReport[]>;
 
   /**
    * Reports an unhandled JavaScript error captured by the JS-side `global.ErrorUtils`

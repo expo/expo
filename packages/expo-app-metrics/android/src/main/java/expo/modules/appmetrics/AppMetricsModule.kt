@@ -153,8 +153,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         scope.launch { sessionManager.deactivateAllSessionsBefore(appSessionStartTimestamp) }
 
         // Turn the previous process's death evidence (pending JVM crash files,
-        // OS exit records) into stored crash reports. Runs after the session
-        // persist and orphan sweep — `modulesQueue` executes these in order.
+        // OS exit records) into stored crash reports.
         // The processor builds the reports; `attributeAndStoreCrashReport` owns
         // the session attribution and storage.
         scope.launch {
@@ -231,11 +230,15 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithChildren(it) }
       }
 
-      // Crash reports not attributed to any session — startup crashes captured
-      // before the session existed, or native crashes that couldn't be attributed.
-      // They never appear under a session in `getInactiveSessions`.
-      AsyncFunction("getOrphanedCrashReports") Coroutine { ->
-        sessionManager.getOrphanCrashReportPayloads().mapNotNull { JsonAny.decodeJsonStringToMap(it) }
+      // Every stored crash report, newest first — attributed reports plus
+      // orphans (startup crashes before the session existed, or native crashes
+      // that couldn't be attributed). Orphans carry a null session id.
+      AsyncFunction("getAllCrashReports") Coroutine { ->
+        sessionManager.getAllCrashReports().mapNotNull { entity ->
+          // `sessionId` lives on the DB row, not in the payload — merge it in so
+          // callers can spot orphans (null session id).
+          JsonAny.decodeJsonStringToMap(entity.payload)?.plus("sessionId" to entity.sessionId)
+        }
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->

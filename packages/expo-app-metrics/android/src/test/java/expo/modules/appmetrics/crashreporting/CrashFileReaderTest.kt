@@ -85,9 +85,9 @@ class CrashFileReaderTest {
   }
 
   @Test
-  fun `round-trips messages containing newlines and equals signs`() {
+  fun `round-trips messages containing newlines and quotes`() {
     writer().write(
-      throwable("first line\nsecond=line"),
+      throwable("first line\nsecond \"quoted\" line"),
       "main",
       "session-1",
       123,
@@ -97,16 +97,15 @@ class CrashFileReaderTest {
     val pending = reader().listPendingCrashes().single()
 
     assertEquals(
-      "java.lang.IllegalStateException: first line\nsecond=line",
+      "java.lang.IllegalStateException: first line\nsecond \"quoted\" line",
       pending.composedMessage
     )
   }
 
   @Test
-  fun `a multi-line message cannot inject or truncate stack frames`() {
-    // Frame lines are written escaped below the separator; the message never
-    // appears there, so "\n\tat …" / "\nCaused by:" payloads can't pollute
-    // the parsed frames.
+  fun `a frame-like message cannot pollute the parsed stack frames`() {
+    // `stackFrames` comes from the throwable, not the message — and JSON keeps the
+    // two as separate fields, so frame-like text in the message can't leak in.
     writer().write(
       throwable("first\n\tat com.fake.Injected.method(Fake.java:1)\nCaused by: com.fake.FakeCause"),
       "main",
@@ -119,19 +118,6 @@ class CrashFileReaderTest {
 
     assertTrue(pending.stackFrames.first().contains("CrashFileReaderTest"))
     assertTrue(pending.stackFrames.none { it.contains("com.fake.Injected") })
-  }
-
-  @Test
-  fun `a message line of exactly the header separator does not break parsing`() {
-    writer().write(throwable("before\n---\nafter"), "main", "session-1", 123, 1_700_000_000_000)
-
-    val pending = reader().listPendingCrashes().single()
-
-    assertEquals(
-      "java.lang.IllegalStateException: before\n---\nafter",
-      pending.composedMessage
-    )
-    assertTrue(pending.stackFrames.first().contains("CrashFileReaderTest"))
   }
 
   @Test
@@ -187,7 +173,7 @@ class CrashFileReaderTest {
   @Test
   fun `skips corrupt files without throwing`() {
     writer().write(throwable(), "main", "session-1", 123, 1_700_000_000_000)
-    tmp.newFile("crash-999-1700000000001.txt").writeText("complete garbage")
+    tmp.newFile("crash-999-1700000000001.json").writeText("complete garbage")
 
     val pending = reader().listPendingCrashes()
 
@@ -197,7 +183,7 @@ class CrashFileReaderTest {
 
   @Test
   fun `ignores temp files and unrelated files`() {
-    tmp.newFile("crash-1-2.txt.tmp").writeText("partial write")
+    tmp.newFile("crash-1-2.json.tmp").writeText("partial write")
     tmp.newFile("unrelated.json").writeText("{}")
 
     assertEquals(emptyList<PendingJvmCrash>(), reader().listPendingCrashes())
@@ -225,7 +211,7 @@ class CrashFileReaderTest {
 
   @Test
   fun `deletes orphaned temp files left by a dead process`() {
-    val orphan = tmp.newFile("crash-1-2.txt.tmp").apply { writeText("partial write") }
+    val orphan = tmp.newFile("crash-1-2.json.tmp").apply { writeText("partial write") }
 
     reader().deleteOrphanedTempFiles(currentPid = 999)
 
@@ -236,7 +222,7 @@ class CrashFileReaderTest {
   fun `keeps temp files belonging to the current process`() {
     // The current process may be writing this temp file right now (a crash while
     // processing); deleting it would drop a live crash report.
-    val inFlight = tmp.newFile("crash-999-2.txt.tmp").apply { writeText("partial write") }
+    val inFlight = tmp.newFile("crash-999-2.json.tmp").apply { writeText("partial write") }
 
     reader().deleteOrphanedTempFiles(currentPid = 999)
 
@@ -245,9 +231,9 @@ class CrashFileReaderTest {
 
   @Test
   fun `sweeps every foreign-pid orphan while keeping the current pid's temp`() {
-    val orphanA = tmp.newFile("crash-1-2.txt.tmp").apply { writeText("a") }
-    val orphanB = tmp.newFile("crash-2-3.txt.tmp").apply { writeText("b") }
-    val inFlight = tmp.newFile("crash-999-4.txt.tmp").apply { writeText("c") }
+    val orphanA = tmp.newFile("crash-1-2.json.tmp").apply { writeText("a") }
+    val orphanB = tmp.newFile("crash-2-3.json.tmp").apply { writeText("b") }
+    val inFlight = tmp.newFile("crash-999-4.json.tmp").apply { writeText("c") }
 
     reader().deleteOrphanedTempFiles(currentPid = 999)
 
@@ -258,7 +244,7 @@ class CrashFileReaderTest {
 
   @Test
   fun `leaves finished and unrelated files untouched`() {
-    val finished = tmp.newFile("crash-1-2.txt").apply { writeText("crash") }
+    val finished = tmp.newFile("crash-1-2.json").apply { writeText("crash") }
     val unrelated = tmp.newFile("unrelated.json").apply { writeText("{}") }
 
     reader().deleteOrphanedTempFiles(currentPid = 999)
@@ -279,7 +265,7 @@ class CrashFileReaderTest {
   @Test
   fun `deletes a corrupt final file while keeping a valid one`() {
     writer().write(throwable(), "main", "session-1", 123, 1_700_000_000_000)
-    val corrupt = tmp.newFile("crash-999-1700000000001.txt").apply { writeText("complete garbage") }
+    val corrupt = tmp.newFile("crash-999-1700000000001.json").apply { writeText("complete garbage") }
 
     reader().deleteMalformedFiles()
 
@@ -291,7 +277,7 @@ class CrashFileReaderTest {
   fun `deletes an empty final file`() {
     // A truncated write — the most likely corruption from a swallowed IO error — leaves a
     // zero-byte final file that can never parse.
-    val empty = tmp.newFile("crash-999-1700000000001.txt")
+    val empty = tmp.newFile("crash-999-1700000000001.json")
 
     reader().deleteMalformedFiles()
 
@@ -300,7 +286,7 @@ class CrashFileReaderTest {
 
   @Test
   fun `leaves temp files and unrelated files untouched`() {
-    val temp = tmp.newFile("crash-1-2.txt.tmp").apply { writeText("partial write") }
+    val temp = tmp.newFile("crash-1-2.json.tmp").apply { writeText("partial write") }
     val unrelated = tmp.newFile("unrelated.json").apply { writeText("{}") }
 
     reader().deleteMalformedFiles()

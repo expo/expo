@@ -34,6 +34,7 @@ class CrashFileWriterTest {
     assertNotNull(file)
     assertTrue(file!!.exists())
     assertTrue(file.name.startsWith("crash-123-1700000000000"))
+    assertTrue(file.name.endsWith(".json"))
     assertFalse(file.name.endsWith(".tmp"))
   }
 

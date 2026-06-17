@@ -25,12 +25,17 @@ data class ExitRecord(
     get() = "$timestampMillis:$pid:$reason"
 
   /**
-   * Only true crashes count, matching how Play Console separates crash rate 
-   * from ANR rate. ANRs, low-memory kills, and bare signals are deliberately excluded.
+   * Only true crashes count: managed (`REASON_CRASH`), native
+   * (`REASON_CRASH_NATIVE`), and signal kills (`REASON_SIGNALED`, e.g. a SIGSEGV
+   * the OS records as a bare signal rather than a native crash). Every other
+   * reason — ANRs, low-memory kills, user-requested stops, and the rest — is
+   * explicitly disregarded, matching how Play Console separates crash rate from
+   * ANR rate.
    */
   val isStandaloneCrash: Boolean
     get() = reason == ApplicationExitInfo.REASON_CRASH ||
-      reason == ApplicationExitInfo.REASON_CRASH_NATIVE
+      reason == ApplicationExitInfo.REASON_CRASH_NATIVE ||
+      reason == ApplicationExitInfo.REASON_SIGNALED
 
   /**
    * Whether this record describes the same death as a pending JVM crash file:
@@ -42,7 +47,15 @@ data class ExitRecord(
   fun toCrashReport(ingestedAt: String, appVersion: String): CrashReport {
     val crashTimestamp = TimeUtils.millisToTimestamp(timestampMillis)
     return CrashReport(
-      signal = if (reason == ApplicationExitInfo.REASON_CRASH_NATIVE) status else null,
+      // `status` carries the killing signal for native and signal-based deaths;
+      // for a managed (`REASON_CRASH`) death it's an exit code, not a signal.
+      signal = if (reason == ApplicationExitInfo.REASON_CRASH_NATIVE ||
+        reason == ApplicationExitInfo.REASON_SIGNALED
+      ) {
+        status
+      } else {
+        null
+      },
       terminationReason = description,
       appVersion = appVersion,
       timestampBegin = crashTimestamp,
@@ -66,7 +79,7 @@ fun interface ExitInfoProvider {
 }
 
 /**
- * Decouples `CrashReportProcessor` from the API-30 framework type 
+ * Decouples `CrashReportProcessor` from the API-30 framework type
  * so its logic runs and tests on every SDK level.
  */
 class ExitInfoProviderImpl(private val context: Context) : ExitInfoProvider {

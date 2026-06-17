@@ -62,6 +62,11 @@ class CrashReportProcessor(
 
     // Advance the cursor past every record we saw; the next launch only processes
     // records newer than this.
+    // Durability gap: if the process dies between a `delete(file)` above and this
+    // `set`, the cursor never advances, so the next launch reprocesses that
+    // record — but its JVM file is gone, so the death resurfaces once as a bare
+    // EXIT_RECORD orphan. Narrow (needs a second crash on the launch path) and
+    // bounded to a single duplicate, so we accept it rather than add a journal.
     val newCursor = allRecords.maxOfOrNull { it.timestampMillis } ?: cursor
     lastProcessedExitStore.set(maxOf(newCursor, cursor))
   }
@@ -91,6 +96,10 @@ class CrashReportProcessor(
       crashFileReader.delete(file)
     }
 
+    // No record-vs-record dedup: the OS emits one `ApplicationExitInfo` per
+    // process death, so two crash-class records (e.g. CRASH_NATIVE and SIGNALED)
+    // never describe the same death. `consumedRecordKeys` only suppresses a
+    // record already covered by a richer JVM file above.
     for (record in newRecords) {
       if (record.key in consumedRecordKeys || !record.isStandaloneCrash) {
         continue
