@@ -5,7 +5,10 @@ import path from 'path';
 import { generateAgentFiles } from '../generateAgentFiles';
 
 function readAgentTemplate(fileName: 'AGENTS.md' | 'CLAUDE.md'): string {
-  return fs.readFileSync(require.resolve(`@expo/llm-configs/expo-app/${fileName}`), 'utf-8');
+  return fs.readFileSync(
+    path.join(__dirname, '..', '..', 'template', 'agent-files', fileName),
+    'utf-8'
+  );
 }
 
 describe(generateAgentFiles, () => {

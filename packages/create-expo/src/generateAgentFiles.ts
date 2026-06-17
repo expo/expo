@@ -2,22 +2,16 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-// The CLI is bundled with ncc (webpack), which rewrites `require`/`createRequire` to its own
-// module registry — those can't resolve `@expo/llm-configs` on disk. `__non_webpack_require__`
-// is left untouched by webpack and resolves to the real Node `require` at runtime; outside the
-// bundle (e.g. tests) it is undefined, so we fall back to the regular `require`.
-declare const __non_webpack_require__: NodeRequire | undefined;
-const requireFromHere: NodeRequire =
-  typeof __non_webpack_require__ !== 'undefined' ? __non_webpack_require__ : require;
-
 const AGENT_TEMPLATE_FILE_NAMES = ['AGENTS.md', 'CLAUDE.md'] as const;
-const AGENT_TEMPLATE_MODULES: Record<(typeof AGENT_TEMPLATE_FILE_NAMES)[number], string> = {
-  'AGENTS.md': '@expo/llm-configs/expo-app/AGENTS.md',
-  'CLAUDE.md': '@expo/llm-configs/expo-app/CLAUDE.md',
-};
+
+// Agent templates are synced from `expo/llm-configs` at publish time (see
+// `scripts/sync-agent-templates.js`) and bundled under `template/agent-files`, so project
+// creation works offline. `__dirname` is the build output directory, one level below the
+// package root in both the source tree and the published package.
+const AGENT_TEMPLATES_DIR = path.join(__dirname, '..', 'template', 'agent-files');
 
 function resolveAgentTemplatePath(fileName: (typeof AGENT_TEMPLATE_FILE_NAMES)[number]): string {
-  return requireFromHere.resolve(AGENT_TEMPLATE_MODULES[fileName]);
+  return path.join(AGENT_TEMPLATES_DIR, fileName);
 }
 
 const CLAUDE_SETTINGS_CONTENT = `{

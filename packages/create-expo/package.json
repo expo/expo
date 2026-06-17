@@ -25,9 +25,6 @@
   "engines": {
     "node": ">=18.13.0"
   },
-  "dependencies": {
-    "@expo/llm-configs": "https://github.com/expo/llm-configs/archive/9a98ae0b454e7e8dfcefb827cb3391989f53e935.tar.gz"
-  },
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
@@ -36,8 +33,9 @@
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
+    "sync-agent-templates": "node scripts/sync-agent-templates.js",
     "watch": "pnpm run build --watch",
-    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+    "prepublishOnly": "pnpm run sync-agent-templates && pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
