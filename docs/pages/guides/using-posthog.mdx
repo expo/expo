@@ -28,9 +28,7 @@ The EAS CLI integration automates the standard PostHog React Native setup: insta
 This guide covers integrating PostHog with your Expo project:
 
 - [Install and configure PostHog](#install-and-configure-posthog) in your React Native app
-- Using PostHog with EAS:
-  - [EAS Build](#usage-with-eas-build) for building your app
-  - [EAS Update](#usage-with-eas-update) for over-the-air updates
+- [Source maps](#source-maps) for error symbolication on EAS Build and EAS Update
 - [Release tagging](#release-tagging), [feature flags](#feature-flags), and [troubleshooting](#troubleshooting)
 
 ## Install and configure PostHog
@@ -122,17 +120,39 @@ Open your PostHog project (at `https://us.posthog.com` or `https://eu.posthog.co
 
 ## Manual setup
 
-`connect` is a shortcut for the standard PostHog React Native setup. To do it manually, follow [PostHog's React Native installation guide](https://posthog.com/docs/libraries/react-native), then set `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (plus the `POSTHOG_CLI_*` variables for source maps). Wrap your app in `<PostHogProvider>` as shown in [Step 2](#install-and-configure-posthog). For source maps, see [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native).
+`connect` is a shortcut for the standard PostHog React Native setup. To do it manually, follow [PostHog's React Native installation guide](https://posthog.com/docs/libraries/react-native), then set `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (plus the `POSTHOG_CLI_*` variables for source maps). Wrap your app in `<PostHogProvider>` as shown in [Step 2](#install-and-configure-posthog). For source maps, see [Source maps](#source-maps).
 
-## Usage with EAS Build
+## Source maps
 
-The `posthog-react-native/expo` config plugin, together with the `POSTHOG_CLI_*` environment variables, handles source-map upload during `eas build`, so there's no extra command to run. For configuration details and options, see [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native). If your build needs to adjust iOS script sandboxing for source-map upload, the plugin's options are documented there as well.
+If you enabled error tracking, source maps let PostHog symbolicate JavaScript stack traces (including Hermes bytecode), so errors point to your original source instead of minified output. Set up injection once, then source maps upload automatically for native builds and manually for over-the-air updates.
 
-## Usage with EAS Update
+### Set up source map injection
 
-Over-the-air bundles aren't part of `eas build`, so you upload their source maps separately after each `eas update`. Follow [PostHog's React Native source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native). PostHog's CLI reads the `POSTHOG_CLI_*` environment variables that `connect` configured.
+Wrap your Metro config with PostHog's helper so each bundle is tagged for upload. Add this to **metro.config.js** in your project root (create the file if it doesn't exist):
 
-For EAS Workflows and other CI, those variables are already set in your EAS environment variables. For external CI, add them with `eas env:create` and reference them in your workflow.
+```js metro.config.js
+const { getPostHogExpoConfig } = require('posthog-react-native/metro');
+
+const config = getPostHogExpoConfig(__dirname);
+
+module.exports = config;
+```
+
+If you already customize your Metro config (for example, with NativeWind or in a monorepo), apply your changes to the `config` object that `getPostHogExpoConfig` returns instead of calling `getDefaultConfig` yourself.
+
+PostHog's CLI authenticates with the `POSTHOG_CLI_*` environment variables that `connect` set. To upload from your own machine, run `posthog-cli login` instead.
+
+### EAS Build
+
+The `posthog-react-native/expo` config plugin uploads source maps automatically during the Android (Gradle) and iOS (Xcode) build phases, so there's no extra command to run on `eas build`. To adjust iOS script sandboxing, see the plugin's options in [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native).
+
+### EAS Update
+
+Over-the-air bundles aren't part of `eas build`, so upload their source maps manually after each update. [Install PostHog's CLI](https://posthog.com/docs/error-tracking/upload-source-maps/cli), then:
+
+<Terminal cmd={['$ eas update', '', '$ posthog-cli hermes upload --directory dist']} />
+
+`dist` is the default EAS Update output directory. For EAS Workflows and other CI, the `POSTHOG_CLI_*` variables are already set in your EAS environment variables. For external CI, add them with `eas env:create` and reference them in your workflow.
 
 ## Release tagging
 
@@ -190,7 +210,7 @@ Session replay requires a development build since it doesn't work with Expo Go. 
 
 <Collapsible summary="Source maps aren't symbolicating">
 
-Confirm the `POSTHOG_CLI_*` environment variables are set (connect adds them when error tracking is enabled). For over-the-air updates, make sure you uploaded source maps after `eas update`, following [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native).
+Confirm your **metro.config.js** is wrapped with `getPostHogExpoConfig` (see [Source maps](#source-maps)) and that the `POSTHOG_CLI_*` environment variables are set (connect adds them when error tracking is enabled). For over-the-air updates, make sure you ran `posthog-cli hermes upload --directory dist` after `eas update`.
 
 </Collapsible>
 
