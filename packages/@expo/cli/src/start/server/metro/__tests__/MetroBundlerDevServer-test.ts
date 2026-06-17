@@ -308,7 +308,8 @@ describe('getStaticPageAsync', () => {
       metadata: null,
       request,
       assets: {
-        css: ['https://example.com/font.css'],
+        css: [],
+        externalCss: [{ href: 'https://example.com/font.css' }],
         inlineCss: [{ source: 'body { color: red; }', hmrId: 'app_global_css' }],
         js: [expect.stringContaining('/index.bundle?')],
       },
