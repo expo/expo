@@ -21,6 +21,7 @@ export function Picker<T extends PickerItemValue>({
   enabled = true,
   children,
   testID,
+  ref,
 }: PickerProps<T>) {
   const items = extractPickerItems<T>(children);
   const swiftUIStyle = appearance === 'wheel' ? 'wheel' : 'menu';
@@ -32,7 +33,8 @@ export function Picker<T extends PickerItemValue>({
       selection={selectedValue}
       onSelectionChange={(value) => onValueChange(value as T)}
       modifiers={modifiers}
-      testID={testID}>
+      testID={testID}
+      {...{ ref }}>
       {items.map((item) => (
         <Text key={String(item.value)} modifiers={[tag(item.value)]}>
           {item.label}

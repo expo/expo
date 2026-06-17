@@ -21,6 +21,7 @@ export function Picker<T extends PickerItemValue>({
   onValueChange,
   enabled = true,
   children,
+  ref,
 }: PickerProps<T>) {
   const items = extractPickerItems<T>(children);
   const [expanded, setExpanded] = useState(false);
@@ -37,7 +38,8 @@ export function Picker<T extends PickerItemValue>({
   return (
     <ExposedDropdownMenuBox
       expanded={expanded}
-      onExpandedChange={enabled ? setExpanded : undefined}>
+      onExpandedChange={enabled ? setExpanded : undefined}
+      {...{ ref }}>
       <TextField
         ref={textFieldRef}
         readOnly

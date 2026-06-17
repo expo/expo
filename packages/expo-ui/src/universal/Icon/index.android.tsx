@@ -41,6 +41,7 @@ export function Icon({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: IconProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -61,7 +62,7 @@ export function Icon({
     // would shift surrounding layout for a frame on every state-driven swap.
     const boxModifiers = size != null ? [sizeModifier(size, size), ...modifiers] : modifiers;
     return (
-      <Box modifiers={boxModifiers}>
+      <Box modifiers={boxModifiers} {...{ ref }}>
         <ComposeIcon
           source={source}
           size={size}
@@ -79,6 +80,7 @@ export function Icon({
       tint={color}
       contentDescription={accessibilityLabel}
       modifiers={modifiers}
+      {...{ ref }}
     />
   );
 }

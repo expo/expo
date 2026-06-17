@@ -35,6 +35,7 @@ export function Column({
   disabled = false,
   hidden = false,
   testID,
+  ref,
 }: ColumnProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -42,6 +43,7 @@ export function Column({
 
   return (
     <Container
+      ref={ref}
       onPress={onPress}
       disabled={disabled}
       testID={testID}

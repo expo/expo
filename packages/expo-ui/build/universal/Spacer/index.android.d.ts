@@ -7,6 +7,6 @@ import type { SpacerProps } from './types';
  * both horizontal and vertical containers. A flexible spacer uses Compose's
  * `weight(1)` modifier to fill remaining space.
  */
-export declare function Spacer({ size, flexible, style, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, }: SpacerProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Spacer({ size, flexible, style, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, ref, }: SpacerProps): import("react/jsx-runtime").JSX.Element | null;
 export * from './types';
 //# sourceMappingURL=index.android.d.ts.map

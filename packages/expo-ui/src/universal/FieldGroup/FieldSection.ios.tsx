@@ -21,6 +21,7 @@ export function FieldSection({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: FieldSectionProps) {
   const { header, footer, rows } = extractFieldSectionSlots(children);
 
@@ -35,7 +36,8 @@ export function FieldSection({
       title={header ? undefined : title}
       header={header}
       footer={footer}
-      modifiers={modifiers}>
+      modifiers={modifiers}
+      {...{ ref }}>
       {rows}
     </Section>
   );

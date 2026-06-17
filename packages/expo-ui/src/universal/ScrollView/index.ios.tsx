@@ -17,6 +17,7 @@ export function ScrollView({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: ScrollViewProps) {
   // Extract padding from style — it goes on the inner Group so content is
   // inset after stretching to full width.
@@ -69,7 +70,8 @@ export function ScrollView({
       axes={direction}
       showsIndicators={showsIndicators}
       modifiers={scrollModifiers}
-      testID={testID}>
+      testID={testID}
+      {...{ ref }}>
       <Group modifiers={innerModifiers}>{children}</Group>
     </SwiftUIScrollView>
   );

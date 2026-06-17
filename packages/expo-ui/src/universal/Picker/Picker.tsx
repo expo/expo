@@ -59,6 +59,7 @@ export function Picker<T extends PickerItemValue>({
   enabled = true,
   children,
   testID,
+  ref,
 }: PickerProps<T>) {
   const items = extractPickerItems<T>(children);
   const { focusVisible, onFocus, onBlur } = useFocusVisible();
@@ -66,6 +67,7 @@ export function Picker<T extends PickerItemValue>({
   return (
     <View>
       <Select
+        ref={ref}
         disabled={!enabled}
         value={String(selectedValue)}
         onFocus={onFocus}

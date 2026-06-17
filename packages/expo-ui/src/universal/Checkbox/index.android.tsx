@@ -10,6 +10,7 @@ export function Checkbox({
   disabled,
   testID,
   modifiers,
+  ref,
 }: CheckboxProps) {
   const checkbox = (
     <ComposeCheckbox
@@ -17,6 +18,7 @@ export function Checkbox({
       onCheckedChange={disabled ? undefined : onValueChange}
       enabled={!disabled}
       modifiers={[...(modifiers ?? []), ...(testID ? [testIDModifier(testID)] : [])]}
+      {...{ ref }}
     />
   );
 

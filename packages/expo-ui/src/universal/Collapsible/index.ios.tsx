@@ -12,13 +12,14 @@ export function Collapsible({
   label = '',
   labelStyle,
   children,
+  ref,
 }: CollapsibleProps) {
   const labelTextModifiers = labelStyle
     ? transformToModifiers(undefined, {}, undefined, { textStyle: labelStyle })
     : undefined;
 
   return (
-    <DisclosureGroup isExpanded={isOpen} onIsExpandedChange={onOpenChange}>
+    <DisclosureGroup isExpanded={isOpen} onIsExpandedChange={onOpenChange} {...{ ref }}>
       <DisclosureGroup.Label>
         <Text modifiers={labelTextModifiers}>{label}</Text>
       </DisclosureGroup.Label>

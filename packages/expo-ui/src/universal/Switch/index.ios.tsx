@@ -11,6 +11,7 @@ export function Switch({
   disabled,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: SwitchProps) {
   const modifiers: ModifierConfig[] = [];
   if (disabled) modifiers.push(disabledMod(true));
@@ -23,6 +24,7 @@ export function Switch({
       label={label}
       modifiers={modifiers}
       testID={testID}
+      {...{ ref }}
     />
   );
 }

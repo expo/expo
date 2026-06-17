@@ -16,6 +16,7 @@ export function FieldGroup({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: FieldGroupProps) {
   const modifiers = transformToModifiers(
     style,
@@ -23,5 +24,9 @@ export function FieldGroup({
     extraModifiers
   );
 
-  return <Form modifiers={modifiers}>{children}</Form>;
+  return (
+    <Form modifiers={modifiers} {...{ ref }}>
+      {children}
+    </Form>
+  );
 }

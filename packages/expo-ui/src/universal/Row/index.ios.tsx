@@ -28,6 +28,7 @@ export function Row({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: RowProps) {
   const modifiers = transformToModifiers(
     style,
@@ -41,7 +42,8 @@ export function Row({
       alignment={alignmentMap[alignment]}
       spacing={spacing}
       modifiers={modifiers}
-      testID={testID}>
+      testID={testID}
+      {...{ ref }}>
       {children}
     </HStack>
   );

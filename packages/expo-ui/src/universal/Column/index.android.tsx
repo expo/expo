@@ -23,6 +23,7 @@ export function Column({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: ColumnProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -38,7 +39,8 @@ export function Column({
     <ComposeColumn
       horizontalAlignment={alignmentMap[alignment]}
       verticalArrangement={spacing != null ? { spacedBy: spacing } : undefined}
-      modifiers={modifiers}>
+      modifiers={modifiers}
+      {...{ ref }}>
       {children}
     </ComposeColumn>
   );

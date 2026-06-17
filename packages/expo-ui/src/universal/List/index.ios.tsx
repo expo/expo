@@ -7,10 +7,10 @@ import type { ListProps } from './types';
  * iOS implementation of `List`.
  * Delegates to SwiftUI's `List` and applies `.refreshable` when `onRefresh` is provided.
  */
-export function List({ children, onRefresh, testID }: ListProps) {
+export function List({ children, onRefresh, testID, ref }: ListProps) {
   const modifiers: ModifierConfig[] | undefined = onRefresh ? [refreshable(onRefresh)] : undefined;
   return (
-    <SwiftUIList modifiers={modifiers} testID={testID}>
+    <SwiftUIList modifiers={modifiers} testID={testID} {...{ ref }}>
       {children}
     </SwiftUIList>
   );

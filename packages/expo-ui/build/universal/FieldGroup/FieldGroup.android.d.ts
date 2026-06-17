@@ -5,5 +5,5 @@ import type { FieldGroupProps } from './types';
  * layout and adapts to the enclosing `<Host>`'s theme. Pass
  * `style={{ backgroundColor }}` to override the default background.
  */
-export declare function FieldGroup({ children, style, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, }: FieldGroupProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function FieldGroup({ children, style, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, ref, }: FieldGroupProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=FieldGroup.android.d.ts.map

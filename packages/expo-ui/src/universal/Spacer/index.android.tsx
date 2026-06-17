@@ -29,6 +29,7 @@ export function Spacer({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: SpacerProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -53,7 +54,7 @@ export function Spacer({
     ...(extraModifiers ?? []),
   ]);
 
-  return <ComposeSpacer modifiers={modifiers} />;
+  return <ComposeSpacer modifiers={modifiers} {...{ ref }} />;
 }
 
 export * from './types';

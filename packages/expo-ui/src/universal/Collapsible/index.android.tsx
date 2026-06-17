@@ -41,6 +41,7 @@ export function Collapsible({
   label = '',
   labelStyle,
   children,
+  ref,
 }: CollapsibleProps) {
   const colors = useMaterialColors();
   const containerColor = isOpen ? colors.surfaceContainer : 'transparent';
@@ -51,7 +52,8 @@ export function Collapsible({
         // `clip` first so background paint and the inner ListItem's ripple both respect the rounded shape.
         clip(CONTAINER_SHAPE),
         background(containerColor, { animationSpec: spring() }),
-      ]}>
+      ]}
+      {...{ ref }}>
       <ListItem
         // Transparent so the outer `background` is the sole tint source.
         colors={{ containerColor: 'transparent' }}

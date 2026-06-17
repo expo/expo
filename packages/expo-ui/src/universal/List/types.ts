@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 
 /**
  * Props for the [`List`](#list) component.
@@ -25,4 +25,12 @@ export interface ListProps {
    * Identifier used to locate the component in end-to-end tests.
    */
   testID?: string;
+
+  /**
+   * Forwarded to the underlying native view: the SwiftUI view on iOS, the Jetpack
+   * Compose view on Android, or the rendered React Native element on web. An escape
+   * hatch for advanced cases that need the native handle; not part of the public API.
+   * @hidden
+   */
+  ref?: Ref<any>;
 }

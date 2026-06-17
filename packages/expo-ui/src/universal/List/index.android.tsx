@@ -9,7 +9,7 @@ import type { ListProps } from './types';
  * Composes `LazyColumn` and wraps with `PullToRefreshBox` when `onRefresh` is provided.
  * The returned promise drives the refresh indicator's visibility.
  */
-export function List({ children, onRefresh, testID }: ListProps) {
+export function List({ children, onRefresh, testID, ref }: ListProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -23,7 +23,11 @@ export function List({ children, onRefresh, testID }: ListProps) {
   }, [onRefresh]);
 
   const listModifiers: ModifierConfig[] | undefined = testID ? [testIDModifier(testID)] : undefined;
-  const listContent = <LazyColumn modifiers={listModifiers}>{children}</LazyColumn>;
+  const listContent = (
+    <LazyColumn modifiers={listModifiers} {...{ ref }}>
+      {children}
+    </LazyColumn>
+  );
 
   if (!onRefresh) {
     return listContent;

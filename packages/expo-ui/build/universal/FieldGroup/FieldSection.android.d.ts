@@ -6,5 +6,5 @@ import { type FieldSectionProps } from './types';
  * the section's ends, slightly rounded between rows, with a 2dp gap. All
  * colors adapt to the enclosing `<Host>`'s theme.
  */
-export declare function FieldSection({ children, title, style, onAppear, onDisappear, disabled, hidden, testID, titleUppercase, modifiers: extraModifiers, }: FieldSectionProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function FieldSection({ children, title, style, onAppear, onDisappear, disabled, hidden, testID, titleUppercase, modifiers: extraModifiers, ref, }: FieldSectionProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=FieldSection.android.d.ts.map

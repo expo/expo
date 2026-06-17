@@ -28,6 +28,7 @@ export function Column({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: ColumnProps) {
   const modifiers = transformToModifiers(
     style,
@@ -41,7 +42,8 @@ export function Column({
       alignment={alignmentMap[alignment]}
       spacing={spacing}
       modifiers={modifiers}
-      testID={testID}>
+      testID={testID}
+      {...{ ref }}>
       {children}
     </VStack>
   );

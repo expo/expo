@@ -16,6 +16,7 @@ export function RNHostView({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: RNHostViewProps) {
   const modifiers = transformToModifiers(
     style,
@@ -24,7 +25,7 @@ export function RNHostView({
   );
 
   return (
-    <ComposeRNHostView matchContents={matchContents} modifiers={modifiers}>
+    <ComposeRNHostView matchContents={matchContents} modifiers={modifiers} {...{ ref }}>
       {children}
     </ComposeRNHostView>
   );

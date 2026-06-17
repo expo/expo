@@ -16,6 +16,7 @@ export function ScrollView({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: ScrollViewProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -28,10 +29,18 @@ export function ScrollView({
   );
 
   if (direction === 'horizontal') {
-    return <Row modifiers={[...modifiers, horizontalScroll()]}>{children}</Row>;
+    return (
+      <Row modifiers={[...modifiers, horizontalScroll()]} {...{ ref }}>
+        {children}
+      </Row>
+    );
   }
 
-  return <Column modifiers={[...modifiers, verticalScroll()]}>{children}</Column>;
+  return (
+    <Column modifiers={[...modifiers, verticalScroll()]} {...{ ref }}>
+      {children}
+    </Column>
+  );
 }
 
 export * from './types';

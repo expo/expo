@@ -33,6 +33,7 @@ export function ScrollView({
   disabled = false,
   hidden = false,
   testID,
+  ref,
 }: ScrollViewProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -45,6 +46,7 @@ export function ScrollView({
 
   return (
     <RNScrollView
+      ref={ref}
       horizontal={isHorizontal}
       showsVerticalScrollIndicator={showVerticalIndicator}
       showsHorizontalScrollIndicator={showHorizontalIndicator}

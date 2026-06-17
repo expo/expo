@@ -24,6 +24,7 @@ export function Button({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: ButtonProps) {
   // A user-supplied buttonStyle modifier replaces the variant's.
   const buttonSpecificModifiers: ModifierConfig[] = omitUserOverridden(
@@ -44,7 +45,8 @@ export function Button({
       onPress={onPress}
       label={!children ? label : undefined}
       modifiers={modifiers}
-      testID={testID}>
+      testID={testID}
+      {...{ ref }}>
       {children as React.ReactElement | undefined}
     </SwiftUIButton>
   );

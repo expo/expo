@@ -20,6 +20,7 @@ export function FieldGroup({
   hidden,
   testID,
   modifiers: extraModifiers,
+  ref,
 }: FieldGroupProps) {
   useUniversalLifecycle(onAppear, onDisappear);
   const colors = useMaterialColors();
@@ -33,7 +34,8 @@ export function FieldGroup({
     <LazyColumn
       verticalArrangement={{ spacedBy: 24 }}
       contentPadding={{ start: 16, end: 16, top: 16, bottom: 16 }}
-      modifiers={modifiers}>
+      modifiers={modifiers}
+      {...{ ref }}>
       {groupFieldGroupChildren(children)}
     </LazyColumn>
   );

@@ -11,7 +11,7 @@ import type { IconProps, IconSelectSpec } from './types';
  * `clickable` applied directly to it. With no `onPress`, the bare Compose
  * `Icon` is rendered for a leaner native tree.
  */
-export declare function Icon({ name, size, color, accessibilityLabel, style, onPress, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, }: IconProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Icon({ name, size, color, accessibilityLabel, style, onPress, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, ref, }: IconProps): import("react/jsx-runtime").JSX.Element | null;
 export declare namespace Icon {
     var select: (spec: IconSelectSpec) => ImageSourcePropType;
 }

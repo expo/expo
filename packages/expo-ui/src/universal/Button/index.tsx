@@ -70,6 +70,7 @@ export function Button({
   disabled = false,
   hidden = false,
   testID,
+  ref,
 }: ButtonProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
@@ -77,6 +78,7 @@ export function Button({
 
   return (
     <Pressable
+      ref={ref}
       role="button"
       onFocus={onFocus}
       onBlur={onBlur}

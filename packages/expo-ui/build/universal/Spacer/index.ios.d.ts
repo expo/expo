@@ -11,6 +11,6 @@ import type { SpacerProps } from './types';
  * to stretch, which causes sibling Spacers to share the extra space equally
  * instead of each rendering at their requested size.
  */
-export declare function Spacer({ size, flexible, style, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, }: SpacerProps): import("react/jsx-runtime").JSX.Element;
+export declare function Spacer({ size, flexible, style, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, ref, }: SpacerProps): import("react/jsx-runtime").JSX.Element;
 export * from './types';
 //# sourceMappingURL=index.ios.d.ts.map
