@@ -41,17 +41,18 @@ const LinkPreviewContext_1 = require("../../link/preview/LinkPreviewContext");
  *
  * Tracks when a preloaded screen is transitioning on the native side (after
  * the preview is committed) but before React Navigation state is updated.
- * During this window, the hook synthesizes state/descriptors to keep native
- * and JS state in sync.
+ * During this window, the hook synthesizes state to keep native and JS state
+ * in sync.
  */
-function usePreviewTransition(state, navigation, descriptors, describe) {
+function usePreviewTransition(state, navigation, descriptors) {
     const { openPreviewKey, setOpenPreviewKey } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     // Track the preview screen currently transitioning on the native side
     const [previewTransitioningScreenId, setPreviewTransitioningScreenId] = React.useState();
     React.useEffect(() => {
         if (previewTransitioningScreenId) {
             // State was updated after the preview transition
-            if (state.routes.some((route) => route.key === previewTransitioningScreenId)) {
+            const position = state.routes.findIndex((route) => route.key === previewTransitioningScreenId);
+            if (position >= 0 && position <= state.index) {
                 // No longer need to track the preview transitioning screen
                 setPreviewTransitioningScreenId(undefined);
             }
@@ -83,37 +84,33 @@ function usePreviewTransition(state, navigation, descriptors, describe) {
         }
         return navigation;
     }, [navigation, openPreviewKey, setOpenPreviewKey]);
-    const { computedState, computedDescriptors } = React.useMemo(() => {
+    const computedState = React.useMemo(() => {
         // The preview screen was pushed on the native side, but react-navigation state was not updated yet
         if (previewTransitioningScreenId) {
-            const preloadedRoute = state.preloadedRoutes.find((route) => route.key === previewTransitioningScreenId);
-            if (preloadedRoute) {
-                const newState = {
-                    ...state,
-                    // On native side the screen is already pushed, so we need to update the state
-                    preloadedRoutes: state.preloadedRoutes.filter((route) => route.key !== previewTransitioningScreenId),
-                    routes: [...state.routes, preloadedRoute],
-                    index: state.index + 1,
-                };
-                const newDescriptors = previewTransitioningScreenId in descriptors
-                    ? descriptors
-                    : {
-                        ...descriptors,
-                        // We need to add the descriptor. For react-navigation this is still preloaded screen
-                        // Replicating the logic from https://github.com/react-navigation/react-navigation/blob/eaf1100ac7d99cb93ba11a999549dd0752809a78/packages/native-stack/src/views/NativeStackView.native.tsx#L489
-                        [previewTransitioningScreenId]: describe(preloadedRoute, true),
+            const position = state.routes.findIndex((route) => route.key === previewTransitioningScreenId);
+            // Only a preloaded route (positioned after the focused one) can be promoted
+            if (position > state.index) {
+                const previewRoute = state.routes[position];
+                if (position === state.index + 1) {
+                    // The preloaded route is already next to the focused one, so only the focus moves.
+                    // This is the common case: the PRELOAD action puts the newest preloaded route first.
+                    return {
+                        ...state,
+                        index: state.index + 1,
                     };
+                }
+                // On the native side the screen is already pushed, so move it right after the focused route
+                const routes = state.routes.filter((route) => route.key !== previewTransitioningScreenId);
+                routes.splice(state.index + 1, 0, previewRoute);
                 return {
-                    computedState: newState,
-                    computedDescriptors: newDescriptors,
+                    ...state,
+                    routes,
+                    index: state.index + 1,
                 };
             }
         }
-        return {
-            computedState: state,
-            computedDescriptors: descriptors,
-        };
-    }, [state, previewTransitioningScreenId, describe, descriptors]);
-    return { computedState, computedDescriptors, navigationWrapper };
+        return state;
+    }, [state, previewTransitioningScreenId]);
+    return { computedState, computedDescriptors: descriptors, navigationWrapper };
 }
 //# sourceMappingURL=usePreviewTransition.js.map

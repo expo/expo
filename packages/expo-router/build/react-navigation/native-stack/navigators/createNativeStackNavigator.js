@@ -39,6 +39,8 @@ const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const native_1 = require("../../native");
+const usePopAction_1 = require("../utils/usePopAction");
+const useProjectedStack_1 = require("../utils/useProjectedStack");
 const NativeStackView_1 = require("../views/NativeStackView");
 function NativeStackNavigator({ id, initialRouteName, UNSTABLE_routeNamesChangeBehavior, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
     const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
@@ -76,7 +78,11 @@ function NativeStackNavigator({ id, initialRouteName, UNSTABLE_routeNamesChangeB
             });
         });
     }, [meta, navigation, state.index, state.key]);
-    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(NativeStackView_1.NativeStackView, { ...rest, state: state, navigation: navigation, descriptors: descriptors, describe: describe }) }));
+    // Project preloaded routes as regular routes after `index`, with descriptors covering them.
+    // The view then treats any route positioned after the focused one as preloaded.
+    const { projectedState, projectedDescriptors } = (0, useProjectedStack_1.useProjectedStack)(state, descriptors, describe);
+    const pop = (0, usePopAction_1.usePopAction)(navigation, state.key);
+    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(NativeStackView_1.NativeStackView, { ...rest, state: projectedState, descriptors: projectedDescriptors, emit: navigation.emit, pop: pop }) }));
 }
 function createNativeStackNavigator(config) {
     return (0, native_1.createNavigatorFactory)(NativeStackNavigator)(config);

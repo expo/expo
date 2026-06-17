@@ -1,11 +1,10 @@
-import { type ParamListBase, type RouteProp, type StackNavigationState } from '../../native';
-import type { NativeStackDescriptor, NativeStackDescriptorMap, NativeStackNavigationHelpers } from '../types';
+import type { NativeStackDescriptorMap, NativeStackEmit, NativeStackViewState } from '../types';
 type Props = {
-    state: StackNavigationState<ParamListBase>;
-    navigation: NativeStackNavigationHelpers;
+    state: NativeStackViewState;
     descriptors: NativeStackDescriptorMap;
-    describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
+    emit: NativeStackEmit;
+    pop: (count: number, sourceRouteKey: string) => void;
 };
-export declare function NativeStackView({ state, descriptors, describe }: Props): import("react/jsx-runtime").JSX.Element;
+export declare function NativeStackView({ state, descriptors }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=NativeStackView.d.ts.map

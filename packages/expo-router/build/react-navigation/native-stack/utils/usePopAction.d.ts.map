@@ -1,0 +1,1 @@
+{"version":3,"file":"usePopAction.d.ts","sourceRoot":"","sources":["../../../../src/react-navigation/native-stack/utils/usePopAction.tsx"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,gBAAgB,EAAE,MAAM,cAAc,CAAC;AAGrD,wBAAgB,YAAY,CAC1B,UAAU,EAAE;IAAE,QAAQ,EAAE,CAAC,MAAM,EAAE,gBAAgB,KAAK,IAAI,CAAA;CAAE,EAC5D,QAAQ,EAAE,MAAM,WAGN,MAAM,kBAAkB,MAAM,UASzC"}
