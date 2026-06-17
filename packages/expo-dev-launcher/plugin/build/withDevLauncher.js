@@ -1,8 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolveDefaultLaunchURL = resolveDefaultLaunchURL;
 const config_plugins_1 = require("expo/config-plugins");
 const pluginConfig_1 = require("./pluginConfig");
 const pkg = require('../../package.json');
+/**
+ * Resolves the dev launcher's `defaultLaunchURL` for the given platform.
+ *
+ * Precedence (highest first):
+ * 1. `EXPO_DEV_LAUNCHER_DEFAULT_LAUNCH_URL` env var — a build-time override, useful for headless/CI
+ *    or multi-server build scripts that set the URL per build invocation rather than in app config.
+ * 2. platform-specific `android.defaultLaunchURL` / `ios.defaultLaunchURL`
+ * 3. top-level `defaultLaunchURL`
+ *
+ * @ignore
+ */
+function resolveDefaultLaunchURL(props, platform, env = process.env) {
+    return (env.EXPO_DEV_LAUNCHER_DEFAULT_LAUNCH_URL ??
+        props[platform]?.defaultLaunchURL ??
+        props.defaultLaunchURL);
+}
 /**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys
  * from non-Debug builds. This keeps the keys in Debug builds (where dev-launcher is active)
@@ -102,8 +119,8 @@ const withLocalNetworkPermission = (config) => {
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {}) => {
     (0, pluginConfig_1.validateConfig)(props);
-    const androidDefaultLaunchURL = props.android?.defaultLaunchURL ?? props.defaultLaunchURL;
-    const iosDefaultLaunchURL = props.ios?.defaultLaunchURL ?? props.defaultLaunchURL;
+    const androidDefaultLaunchURL = resolveDefaultLaunchURL(props, 'android');
+    const iosDefaultLaunchURL = resolveDefaultLaunchURL(props, 'ios');
     const iOSLaunchMode = props.ios?.launchMode ??
         props.launchMode ??
         props.ios?.launchModeExperimental ??

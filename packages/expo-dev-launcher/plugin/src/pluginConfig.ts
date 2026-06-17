@@ -39,6 +39,9 @@ export type PluginConfigOptions = {
   /**
    * Instead of navigating to launcher screen launch directly into this URL.
    * If `launchMode` is set to `most-recent` then launcher will use the defaultLaunchURL if launching previously opened project fails.
+   *
+   * Can be overridden at build time with the `EXPO_DEV_LAUNCHER_DEFAULT_LAUNCH_URL` environment
+   * variable, which takes precedence over this property (and its per-platform variants).
    */
   defaultLaunchURL?: string;
   /**

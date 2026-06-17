@@ -95,6 +95,7 @@ You can configure development client launcher using its built-in [config plugin]
       description: [
         'Launch directly into this URL instead of navigating to launcher screen.',
         'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
+        'Set the `EXPO_DEV_LAUNCHER_DEFAULT_LAUNCH_URL` environment variable to override this property at build time, which is useful for headless, CI, or multi-server build scripts.',
       ].join('\n'),
     },
     {
