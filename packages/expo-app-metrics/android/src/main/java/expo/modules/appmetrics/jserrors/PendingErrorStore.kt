@@ -58,10 +58,13 @@ object PendingErrorStore {
    */
   fun drain(context: Context): List<PendingError> {
     val directory = directory(context)
+    val allFiles = directory.listFiles() ?: return emptyList()
+
+    // Delete leftover temp files from a `write` whose rename didn't complete, so they can't pile up.
+    allFiles.filter { it.extension == "tmp" }.forEach { it.delete() }
+
     // File names are prefixed with an ISO-8601 timestamp, so lexicographic order is chronological.
-    val files = directory.listFiles { file -> file.extension == "json" }
-      ?.sortedBy { it.name }
-      ?: return emptyList()
+    val files = allFiles.filter { it.extension == "json" }.sortedBy { it.name }
 
     val overflow = (files.size - MAX_PENDING_ERRORS).coerceAtLeast(0)
     if (overflow > 0) {

@@ -21,31 +21,16 @@ data class ErrorReport(
   @Field val stacktrace: String? = null,
   @Field val isFatal: Boolean = false
 ) : Record {
-  /**
-   * Builds the `exception` log event for the live path. Following OpenTelemetry's exception-in-logs
-   * convention, the error rides as `exception.*` attributes (the event name is `exception` because
-   * this captures errors from a handler, not a specific operation). `expo.error.*` carries the bits
-   * OTel has no field for: the capture source and whether the error was fatal. Fatal errors log at
-   * `fatal` severity, the rest at `error`.
-   */
-  fun toLogRecord(sessionId: String): LogRecord {
-    // Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted, so the `exception`
-    // event always carries the same attribute keys.
-    val attributes = mapOf(
-      "expo.error.source" to source.rawValue,
-      "expo.error.is_fatal" to isFatal,
-      "exception.type" to type,
-      "exception.message" to message,
-      "exception.stacktrace" to stacktrace
-    )
-    return LogRecord(
+  /** Builds the `exception` log event for the live path. */
+  fun toLogRecord(sessionId: String): LogRecord =
+    makeExceptionLogRecord(
       sessionId = sessionId,
-      timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
-      name = "exception",
-      severity = (if (isFatal) Severity.FATAL else Severity.ERROR).rawValue,
-      attributes = JsonAny.encodeMapToJsonString(attributes)
+      source = source.rawValue,
+      type = type,
+      message = message,
+      stacktrace = stacktrace,
+      isFatal = isFatal
     )
-  }
 
   /**
    * Snapshots this report for durable on-disk storage, capturing the session it belongs to and the
@@ -69,12 +54,41 @@ enum class ErrorSource(val rawValue: String) : Enumerable {
 
 /**
  * Builds the `exception` log event for a fatal error ingested from disk on the next launch, using the
- * session and timestamp captured at fatal time. See [ErrorReport.toLogRecord] for the shape.
+ * session and timestamp captured at fatal time.
  */
-fun PendingErrorStore.PendingError.toLogRecord(): LogRecord {
+fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
+  makeExceptionLogRecord(
+    sessionId = sessionId,
+    source = source,
+    type = type,
+    message = message,
+    stacktrace = stacktrace,
+    isFatal = true,
+    timestamp = timestamp
+  )
+
+/**
+ * Builds an `exception` log event following OpenTelemetry's exception-in-logs convention: the error
+ * rides as `exception.*` attributes (the event name is `exception` because this captures errors from a
+ * handler, not a specific operation), and `expo.error.*` carries the bits OTel has no field for (the
+ * capture source and whether the error was fatal). Fatal errors log at `fatal` severity, the rest at
+ * `error`. Shared by the live and ingested-fatal paths so both events keep the same shape.
+ *
+ * Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted, so every `exception`
+ * event carries the same attribute keys.
+ */
+private fun makeExceptionLogRecord(
+  sessionId: String,
+  source: String,
+  type: String?,
+  message: String,
+  stacktrace: String?,
+  isFatal: Boolean,
+  timestamp: String = TimeUtils.getCurrentTimestampInISOFormat()
+): LogRecord {
   val attributes = mapOf(
     "expo.error.source" to source,
-    "expo.error.is_fatal" to true,
+    "expo.error.is_fatal" to isFatal,
     "exception.type" to type,
     "exception.message" to message,
     "exception.stacktrace" to stacktrace
@@ -83,7 +97,7 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord {
     sessionId = sessionId,
     timestamp = timestamp,
     name = "exception",
-    severity = Severity.FATAL.rawValue,
+    severity = (if (isFatal) Severity.FATAL else Severity.ERROR).rawValue,
     attributes = JsonAny.encodeMapToJsonString(attributes)
   )
 }

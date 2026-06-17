@@ -31,6 +31,8 @@ public struct AppMetrics {
     }
     AppMetricsActor.isolated {
       for pendingError in pendingErrors {
+        // Each error attaches to the prior-launch session it was captured in (`pendingError.sessionId`),
+        // not the just-started `mainSession`, so this doesn't depend on the current session's row INSERT.
         do {
           _ = try database?.insert(
             log: LogRow.from(log: pendingError.toLogRecord(), sessionId: pendingError.sessionId))

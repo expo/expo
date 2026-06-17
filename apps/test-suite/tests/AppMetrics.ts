@@ -510,11 +510,11 @@ export function test({ describe, expect, it, afterEach }) {
   });
 
   describe('error handler', () => {
-    // `installErrorHandler` ran on import, wrapping `global.ErrorUtils`. The end-to-end tests drive
-    // the native `reportError` path directly (rather than a fatal dispatch through the live global
-    // handler, which would chain into React Native's dev red box) and read the recorded `exception`
-    // log event back from the main session. A separate test drives the installed global handler with
-    // a non-fatal error to cover the JS wrapper's forwarding logic.
+    // `installErrorHandler` ran on import, wrapping `global.ErrorUtils`. The end-to-end test drives
+    // the native `reportError` path with a non-fatal error and reads the recorded `exception` log
+    // event back from the main session. (A fatal error can't be round-tripped in-process: it goes to
+    // the file sink and is ingested on the next launch — see the native `PendingErrorStore` tests.)
+    // A separate test drives the installed global handler to cover the JS wrapper's forwarding logic.
     //
     // The event follows OpenTelemetry's exception-in-logs convention: event name `exception`, with
     // `exception.type` / `exception.message` / `exception.stacktrace` attributes, plus `expo.error.*`
@@ -541,38 +541,30 @@ export function test({ describe, expect, it, afterEach }) {
       expect(typeof ErrorUtils.getGlobalHandler()).toBe('function');
     });
 
-    it('records a fatal error as an exception log event with OTel attributes', async () => {
-      const message = `test-suite fatal error ${Date.now()}`;
+    // Only non-fatal errors are readable via `getLogs` in-process: the fatal path writes to the file
+    // sink and is ingested on the next launch, so it can't be round-tripped here. Fatal persistence is
+    // covered by the native `PendingErrorStore` write/drain tests.
+    it('records a non-fatal error as an exception log event with OTel attributes', async () => {
+      const message = `test-suite error ${Date.now()}`;
       AppMetrics.reportError({
         source: 'global',
         type: 'TypeError',
         message,
         stacktrace: 'onPress@index.bundle:42:7',
-        isFatal: true,
+        isFatal: false,
       });
 
       const log = await waitForExceptionLog(
         (entry) => (entry.attributes ?? {})['exception.message'] === message
       );
-      expect(log.severity).toBe('fatal');
+      expect(log.severity).toBe('error');
 
       const attributes = log.attributes ?? {};
       expect(attributes['exception.type']).toBe('TypeError');
       expect(attributes['exception.message']).toBe(message);
       expect(attributes['exception.stacktrace']).toBe('onPress@index.bundle:42:7');
       expect(attributes['expo.error.source']).toBe('global');
-      expect(attributes['expo.error.is_fatal']).toBe(true);
-    });
-
-    it('records a non-fatal error at error severity', async () => {
-      const message = `test-suite non-fatal error ${Date.now()}`;
-      AppMetrics.reportError({ source: 'global', message, isFatal: false });
-
-      const log = await waitForExceptionLog(
-        (entry) => (entry.attributes ?? {})['exception.message'] === message
-      );
-      expect(log.severity).toBe('error');
-      expect((log.attributes ?? {})['expo.error.is_fatal']).toBe(false);
+      expect(attributes['expo.error.is_fatal']).toBe(false);
     });
 
     it('forwards an error from the installed global handler', () => {

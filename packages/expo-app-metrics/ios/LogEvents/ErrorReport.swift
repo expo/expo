@@ -17,25 +17,14 @@ struct ErrorReport {
     case global
   }
 
-  /// Builds the `exception` log event for the live path. Following OpenTelemetry's exception-in-logs
-  /// convention, the error rides as `exception.*` attributes (the event name is `exception` because
-  /// this captures errors from a handler, not a specific operation). `expo.error.*` carries the bits
-  /// OTel has no field for: the capture source and whether the error was fatal. Fatal errors log at
-  /// `fatal` severity, the rest at `error`.
+  /// Builds the `exception` log event for the live path.
   func toLogRecord() -> LogRecord {
-    // Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted, so the `exception`
-    // event always carries the same attribute keys. The boxed optionals encode as JSON `null`.
-    let attributes: [String: Any] = [
-      "expo.error.source": source.rawValue,
-      "expo.error.is_fatal": isFatal,
-      "exception.type": type as Any,
-      "exception.message": message,
-      "exception.stacktrace": stacktrace as Any,
-    ]
-    return LogRecord(
-      name: "exception",
-      attributes: attributes,
-      severity: isFatal ? .fatal : .error
+    return makeExceptionLogRecord(
+      source: source.rawValue,
+      type: type,
+      message: message,
+      stacktrace: stacktrace,
+      isFatal: isFatal
     )
   }
 
@@ -55,20 +44,46 @@ struct ErrorReport {
 
 extension PendingErrorStore.PendingError {
   /// Builds the `exception` log event for a fatal error ingested from disk on the next launch, using
-  /// the session and timestamp captured at fatal time. See `ErrorReport.toLogRecord` for the shape.
+  /// the session and timestamp captured at fatal time.
   func toLogRecord() -> LogRecord {
-    let attributes: [String: Any] = [
-      "expo.error.source": source,
-      "expo.error.is_fatal": true,
-      "exception.type": type as Any,
-      "exception.message": message,
-      "exception.stacktrace": stacktrace as Any,
-    ]
-    return LogRecord(
-      name: "exception",
-      attributes: attributes,
-      severity: .fatal,
+    return makeExceptionLogRecord(
+      source: source,
+      type: type,
+      message: message,
+      stacktrace: stacktrace,
+      isFatal: true,
       timestamp: timestamp
     )
   }
+}
+
+/// Builds an `exception` log event following OpenTelemetry's exception-in-logs convention: the error
+/// rides as `exception.*` attributes (the event name is `exception` because this captures errors from
+/// a handler, not a specific operation), and `expo.error.*` carries the bits OTel has no field for (the
+/// capture source and whether the error was fatal). Fatal errors log at `fatal` severity, the rest at
+/// `error`. Shared by the live and ingested-fatal paths so both events keep the same shape.
+///
+/// Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted (the boxed optionals
+/// encode as JSON `null`), so every `exception` event carries the same attribute keys.
+private func makeExceptionLogRecord(
+  source: String,
+  type: String?,
+  message: String,
+  stacktrace: String?,
+  isFatal: Bool,
+  timestamp: String = Date.now.ISO8601Format()
+) -> LogRecord {
+  let attributes: [String: Any] = [
+    "expo.error.source": source,
+    "expo.error.is_fatal": isFatal,
+    "exception.type": type as Any,
+    "exception.message": message,
+    "exception.stacktrace": stacktrace as Any,
+  ]
+  return LogRecord(
+    name: "exception",
+    attributes: attributes,
+    severity: isFatal ? .fatal : .error,
+    timestamp: timestamp
+  )
 }

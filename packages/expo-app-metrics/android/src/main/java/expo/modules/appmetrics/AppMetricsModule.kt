@@ -218,7 +218,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           PendingErrorStore.write(context, report.toPendingError(mainSession.sessionId))
         } else {
           scope.launch {
-            saveStartupMetricsIfNotSaved()
             mainSession.addLogs(listOf(report.toLogRecord(mainSession.sessionId)))
           }
         }

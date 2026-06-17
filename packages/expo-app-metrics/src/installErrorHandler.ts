@@ -24,7 +24,7 @@ export function installErrorHandler(): void {
   }
   installed = true;
 
-  const previousHandler = ErrorUtils.getGlobalHandler?.();
+  const previousHandler = ErrorUtils.getGlobalHandler();
   const handler: ErrorHandlerCallback = (error, isFatal) => {
     try {
       AppMetrics.reportError({
