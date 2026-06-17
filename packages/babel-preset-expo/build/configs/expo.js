@@ -231,6 +231,14 @@ function getInlinesFromOptions(options) {
     if (process.env.NODE_ENV !== 'test') {
         inlines['process.env.EXPO_BASE_URL'] = options.baseUrl;
     }
+    // Expo's winter runtime (`expo/.../winter/runtime.native.ts`) reads `EXPO_PUBLIC_USE_RN_FETCH` to
+    // opt out of `expo/fetch`, but it ships inside `node_modules`, where the `inline-env-vars` plugin
+    // that normally inlines `EXPO_PUBLIC_*` is disabled. The define plugin runs everywhere, so inline
+    // the value here too. Scoped to `node_modules` (app code stays owned by `inline-env-vars`) and only
+    // when the flag is set, so the default build is unchanged.
+    if (options.isNodeModule && process.env.EXPO_PUBLIC_USE_RN_FETCH != null) {
+        inlines['process.env.EXPO_PUBLIC_USE_RN_FETCH'] = process.env.EXPO_PUBLIC_USE_RN_FETCH;
+    }
     return inlines;
 }
 //# sourceMappingURL=expo.js.map

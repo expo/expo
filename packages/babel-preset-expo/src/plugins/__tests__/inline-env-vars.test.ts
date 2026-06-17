@@ -172,6 +172,61 @@ console.log(process.env.EXPO_PUBLIC_NODE_ENV);
   expect(contents).toMatch('EXPO_PUBLIC_NODE_ENV');
 });
 
+// `expo/.../winter/runtime.native.ts` reads `EXPO_PUBLIC_USE_RN_FETCH` to opt out of `expo/fetch`,
+// but it ships inside `node_modules` where general `EXPO_PUBLIC_*` inlining is disabled. The define
+// plugin still inlines this specific var so the documented opt-out works in production builds.
+it(`inlines EXPO_PUBLIC_USE_RN_FETCH inside node modules so the expo/fetch opt-out works in production`, () => {
+  process.env.EXPO_PUBLIC_USE_RN_FETCH = '1';
+
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: false,
+      isNodeModule: true,
+    }),
+  };
+
+  const sourceCode = `
+const useRnFetch =
+  process.env.EXPO_PUBLIC_USE_RN_FETCH === '1' || process.env.EXPO_PUBLIC_USE_RN_FETCH === 'true';
+`;
+
+  const normalized = babel.transform(sourceCode, options)!.code!.replace(/\s+/g, ' ');
+
+  // The lookup is inlined (and folded) so the opt-out resolves at build time.
+  expect(normalized).not.toMatch('process.env.EXPO_PUBLIC_USE_RN_FETCH');
+  expect(normalized).toContain('var useRnFetch = true || false;');
+});
+
+it(`leaves EXPO_PUBLIC_USE_RN_FETCH untouched inside node modules when the flag is unset`, () => {
+  delete process.env.EXPO_PUBLIC_USE_RN_FETCH;
+
+  const options = {
+    ...DEF_OPTIONS,
+    // Use a distinct platform so Babel doesn't reuse the cached preset config from the test above
+    // (the inline value is read from `process.env`, which Babel's caller-keyed cache doesn't track).
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'android',
+      isDev: false,
+      isNodeModule: true,
+    }),
+  };
+
+  const sourceCode = `
+const useRnFetch =
+  process.env.EXPO_PUBLIC_USE_RN_FETCH === '1' || process.env.EXPO_PUBLIC_USE_RN_FETCH === 'true';
+`;
+
+  const contents = babel.transform(sourceCode, options)!.code;
+
+  expect(contents).toMatch('process.env.EXPO_PUBLIC_USE_RN_FETCH');
+});
+
 function transformTest(
   sourceCode: string,
   customOptions: { filename?: string; caller?: any } = {}
