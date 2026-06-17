@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
+- [Android] Fix recording crash in apps wrapped with Microsoft Intune.
 
 ### 💡 Others
 
