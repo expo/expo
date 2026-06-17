@@ -36,7 +36,7 @@ type NavLocation = {
 type NavArea = {
   area: string;
   versionKey?: string;
-  nodes: NavNode[]
+  nodes: NavNode[];
 };
 
 export function normalizeNavKey(pathOrHref: string): string {
