@@ -2,10 +2,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { buildAgentInstructions } from '../agent-instructions.ts';
+import {
+  DOCS_BASE_URL,
+  getMarkdownHref,
+  getMarkdownUrl,
+  rewriteDocsLinksToMarkdown,
+} from '../markdown-link-utils.ts';
+
+export { DOCS_BASE_URL, getMarkdownHref, getMarkdownUrl, rewriteDocsLinksToMarkdown };
 
 export const OUTPUT_DIRECTORY_NAME = 'public';
 export const BUILD_OUTPUT_DIR = 'out';
-export const DOCS_BASE_URL = 'https://docs.expo.dev';
 
 const LLMS_FILES = [
   { filename: 'llms.txt', description: 'A list of all available documentation files' },
@@ -144,7 +151,9 @@ export function readUniqueMarkdownContent(markdownPaths, { warnOnMissing = false
       continue;
     }
 
-    const content = stripDocIndexBlockquote(stripAgentInstructions(rawContent)).trim();
+    const content = rewriteDocsLinksToMarkdown(
+      stripDocIndexBlockquote(stripAgentInstructions(rawContent))
+    ).trim();
     if (!content) {
       continue;
     }

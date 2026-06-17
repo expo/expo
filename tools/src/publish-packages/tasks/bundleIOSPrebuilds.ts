@@ -7,6 +7,7 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner, spawnAsync } from '../../Utils';
 import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
+import { IOS_PREBUILD_PACKAGES } from '../../prebuilds/Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 /**
@@ -93,27 +94,6 @@ export async function ensureSupportedToolchainAsync(
       `Install Xcode ${SUPPORTED_XCODE_VERSION} from https://developer.apple.com/download/all/ (it can coexist with other Xcodes), or rerun with \`--skip-ios-prebuilds\` if you don't need fresh artifacts.`
   );
 }
-
-/**
- * Packages whose iOS prebuilt xcframeworks should be bundled into the npm tarball.
- */
-const IOS_PREBUILD_PACKAGES = [
-  'expo-brownfield',
-  'expo-camera',
-  'expo-contacts',
-  'expo-file-system',
-  'expo-font',
-  'expo-image',
-  'expo-image-manipulator',
-  'expo-live-photo',
-  'expo-location',
-  'expo-maps',
-  'expo-media-library',
-  'expo-modules-core',
-  'expo-print',
-  'expo-ui',
-  'expo-video',
-];
 
 const PRECOMPILE_BUILD_DIR = path.join(PACKAGES_DIR, 'precompile', '.build');
 const FLAVORS = ['debug', 'release'] as const;

@@ -44,6 +44,9 @@ open class DevMenuModule: Module {
         )
       }
     }
-  }
 
+    AsyncFunction("setAvailableAppKeys") { (keys: [String]) in
+      DevMenuManager.shared.availableAppKeys = keys
+    }
+  }
 }

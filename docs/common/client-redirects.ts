@@ -646,4 +646,17 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After archiving Configure JS engines guide
   '/guides/configuring-js-engines/': '/archive/configuring-js-engines/',
+
+  // Trailing-slash variants of `_redirects` rules that only matched the no-slash form
+  '/versions/latest/sdk/admob/': '/versions/latest/',
+  '/versions/latest/workflow/linking/': '/guides/linking/',
+  '/versions/latest/introduction/faq/': '/faq/',
+  '/guides/setting-up-continuous-integration/': '/build/building-on-ci/',
+  '/eas-update/debug-advanced/': '/eas-update/debug/',
+  '/eas-update/publish/': '/eas-update/getting-started/',
+  '/clients/installation/': '/versions/latest/sdk/dev-client/',
+  '/module-api/': '/modules/module-api/',
+  '/module-config/': '/modules/module-config/',
+  '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
+  '/router/advance/router-setttings/': '/router/advanced/router-settings/',
 };

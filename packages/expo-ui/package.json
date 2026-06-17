@@ -103,8 +103,8 @@
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react-native-reanimated": "4.3.1",
-    "react-native-worklets": "0.8.3"
+    "react-native-reanimated": "4.4.1",
+    "react-native-worklets": "0.9.2"
   },
   "jest": {
     "preset": "expo-module-scripts"
@@ -115,7 +115,6 @@
     "react": "*",
     "react-dom": "*",
     "react-native": "*",
-    "react-native-reanimated": "*",
     "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
@@ -123,9 +122,6 @@
       "optional": true
     },
     "react-dom": {
-      "optional": true
-    },
-    "react-native-reanimated": {
       "optional": true
     },
     "react-native-worklets": {

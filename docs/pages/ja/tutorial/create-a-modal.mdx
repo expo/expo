@@ -46,7 +46,7 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
-  /* @tutinfo <CODE>Index</CODE> コンポーネント内に state 変数を作成します。 */
+  /* @tutinfo `Index` コンポーネント内に state 変数を作成します。 */
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   /* @end */
 
@@ -72,14 +72,14 @@ export default function Index() {
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
-      /* @tutinfo <CODE>showAppOptions</CODE> の値に基づいてボタンが表示されます。また、既存のボタンを三項演算子のブロック内に移動します。 */
+      /* @tutinfo `showAppOptions` の値に基づいてボタンが表示されます。また、既存のボタンを三項演算子のブロック内に移動します。 */
       {showAppOptions ? (
         <View />
       /* @end */
       ) : (
         <View style={styles.footerContainer}>
           <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
-          /* @tutinfo <CODE>alert()</CODE> を <CODE>onPress</CODE> に置き換えます。*/
+          /* @tutinfo `alert()` を `onPress` に置き換えます。*/
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
           /* @end */
         </View>
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
 
 {/* prettier-ignore */}
 ```tsx components/Button.tsx
-<Pressable style={styles.button} /* @tutinfo <CODE>alert()</CODE> を <CODE>onPress</CODE> に置き換えます。*/ onPress={onPress}/* @end */>
+<Pressable style={styles.button} /* @tutinfo `alert()` を `onPress` に置き換えます。*/ onPress={onPress}/* @end */>
 ```
 
 </Step>
@@ -221,7 +221,7 @@ import { useState } from 'react';
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
-/* @tutinfo <CODE>IconButton</CODE> と <CODE>CircleButton</CODE> コンポーネントをインポートします。*/
+/* @tutinfo `IconButton` と `CircleButton` コンポーネントをインポートします。*/
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 /* @end */
@@ -267,7 +267,7 @@ export default function Index() {
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
       {showAppOptions ? (
-        /* @tutinfo App オプションボタンを表示するため、空の <CODE>View</CODE> コンポーネントをこのスニペットに置き換えます。 */
+        /* @tutinfo App オプションボタンを表示するため、空の `View` コンポーネントをこのスニペットに置き換えます。 */
         <View style={styles.optionsContainer}>
           <View style={styles.optionsRow}>
             <IconButton icon="refresh" label="Reset" onPress={onReset} />
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     flex: 1 / 3,
     alignItems: 'center',
   },
-  /* @tutinfo 新しい <CODE>View</CODE> コンポーネントのスタイルを追加します。 */
+  /* @tutinfo 新しい `View` コンポーネントのスタイルを追加します。 */
   optionsContainer: {
     position: 'absolute',
     bottom: 80,
@@ -346,17 +346,17 @@ type Props = PropsWithChildren<{
 export default function EmojiPicker({ isVisible, children, onClose }: Props) {
   return (
     <View>
-    <Modal animationType="slide" transparent={true} visible={isVisible}>
-      <View style={styles.modalContent}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Choose a sticker</Text>
-          <Pressable onPress={onClose}>
-            <MaterialIcons name="close" color="#fff" size={22} />
-          </Pressable>
+      <Modal animationType="slide" transparent={true} visible={isVisible}>
+        <View style={styles.modalContent}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Choose a sticker</Text>
+            <Pressable onPress={onClose}>
+              <MaterialIcons name="close" color="#fff" size={22} />
+            </Pressable>
+          </View>
+          {children}
         </View>
-        {children}
-      </View>
-    </Modal>
+      </Modal>
     </View>
   );
 }
@@ -414,7 +414,7 @@ import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
-/* @tutinfo <CODE>EmojiPicker</CODE> コンポーネントをインポートします。 */
+/* @tutinfo `EmojiPicker` コンポーネントをインポートします。 */
 import EmojiPicker from '@/components/EmojiPicker';
 /* @end */
 
@@ -479,7 +479,7 @@ export default function Index() {
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
         </View>
       )}
-      /* @tutinfo <CODE>Index</CODE> コンポーネントの末尾に <CODE>EmojiPicker</CODE> コンポーネントをレンダリングします。 */
+      /* @tutinfo `Index` コンポーネントの末尾に `EmojiPicker` コンポーネントをレンダリングします。 */
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         {/* Emoji list component will go here */}
       </EmojiPicker>
@@ -606,7 +606,7 @@ import ImageViewer from '@/components/ImageViewer';
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
-/* @tutinfo <CODE>EmojiList</CODE> コンポーネントをインポートします。 */
+/* @tutinfo `EmojiList` コンポーネントをインポートします。 */
 import EmojiList from '@/components/EmojiList';
 /* @end */
 
@@ -671,7 +671,7 @@ export default function Index() {
         </View>
       )}
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
-        /* @tutinfo <CODE>EmojiPicker</CODE> コンポーネント内に <CODE>EmojiList</CODE> コンポーネントをレンダリングします。 */
+        /* @tutinfo `EmojiPicker` コンポーネント内に `EmojiList` コンポーネントをレンダリングします。 */
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
         /* @end */
       </EmojiPicker>
@@ -758,7 +758,7 @@ import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
-/* @tutinfo <CODE>EmojiSticker</CODE> コンポーネントをインポートします。 */import EmojiSticker from '@/components/EmojiSticker';/* @end */
+/* @tutinfo `EmojiSticker` コンポーネントをインポートします。 */import EmojiSticker from '@/components/EmojiSticker';/* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 

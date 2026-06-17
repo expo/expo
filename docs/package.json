@@ -21,6 +21,7 @@
     "copy-latest": "node ./scripts/copy-latest.js",
     "generate-llms": "node --experimental-strip-types ./scripts/generate-llms/index.js",
     "generate-markdown-pages": "node --experimental-strip-types ./scripts/generate-markdown-pages.ts",
+    "generate-ui-component-tables": "node --experimental-strip-types ./scripts/generate-ui-component-tables.ts",
     "check-markdown-pages": "node --experimental-strip-types ./scripts/check-markdown-pages.ts",
     "generate-static-resources": "node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
@@ -30,7 +31,7 @@
     "react-navigation-docs-sync": "node ./scripts/fetch-react-navigation-options.js",
     "eas-cli-sync": "node ./ui/components/EASCLIReference/eas-cli-rerference.js",
     "expo-skills-sync": "node --experimental-strip-types ./ui/components/ExpoSkillsTable/sync-expo-skills.js",
-    "expo-mcp-sync": "node --experimental-strip-types --env-file=.env ./ui/components/ExpoMCPToolsTable/sync-expo-mcp-tools.js",
+    "expo-mcp-sync": "node --experimental-strip-types ./ui/components/ExpoMCPToolsTable/sync-expo-mcp-tools.js",
     "install-vale": "node --experimental-strip-types scripts/install-vale.ts",
     "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale"
   },

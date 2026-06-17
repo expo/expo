@@ -16,5 +16,6 @@
 
 ### 💡 Others
 
+- Remove the unstable, development-only `triggerCrash` and `simulateCrashReport` APIs. ([#46924](https://github.com/expo/expo/pull/46924) by [@Ubax](https://github.com/Ubax))
 - Add private `getForegroundSession` ([#46657](https://github.com/expo/expo/pull/46657) by [@Ubax](https://github.com/Ubax))
 - Add session shared object API ([#46652](https://github.com/expo/expo/pull/46652) by [@Ubax](https://github.com/Ubax))
