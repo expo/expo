@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix incorrect `@default` JSDoc for `pausesUpdatesAutomatically`, which defaults to `true` on iOS, not `false`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ignigena](https://github.com/Ignigena))
+- Fix incorrect `@default` JSDoc for `pausesUpdatesAutomatically`, which defaults to `true` on iOS, not `false`. ([#47008](https://github.com/expo/expo/pull/47008) by [@Ignigena](https://github.com/Ignigena))
 
 ### 💡 Others
 
