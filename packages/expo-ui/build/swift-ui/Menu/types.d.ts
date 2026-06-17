@@ -3,7 +3,7 @@ import type { CommonViewModifierProps } from '../types';
 /**
  * Props for the `Menu` component.
  */
-export type MenuProps = {
+export interface MenuProps extends CommonViewModifierProps {
     /**
      * The label for the menu trigger. Can be a string for simple text labels,
      * or a ReactNode for custom label content.
@@ -25,5 +25,5 @@ export type MenuProps = {
      * Can contain `Button`, `Toggle`, `Picker`, `Section`, `Divider` or nested `Menu` components.
      */
     children: ReactNode;
-} & CommonViewModifierProps;
+}
 //# sourceMappingURL=types.d.ts.map

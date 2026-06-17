@@ -1,5 +1,5 @@
 import { type ExpoModifier } from '../../types';
-export type DockedSearchBarProps = {
+export interface DockedSearchBarProps {
     /**
      * Callback function that is called when the search query changes.
      */
@@ -12,7 +12,7 @@ export type DockedSearchBarProps = {
      * The children of the component.
      */
     children?: React.ReactNode;
-};
+}
 type PlaceholderProps = {
     children: React.ReactNode;
 };

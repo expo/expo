@@ -4,7 +4,7 @@ import { type ContentAlignment } from '../layout-types';
 /**
  * Configuration for the loading indicator shown during pull-to-refresh.
  */
-export type PullToRefreshIndicatorProps = {
+export interface PullToRefreshIndicatorProps {
     /**
      * Color of the loading indicator spinner.
      * @default MaterialTheme.colorScheme.primary
@@ -19,8 +19,8 @@ export type PullToRefreshIndicatorProps = {
      * Modifiers for the loading indicator.
      */
     modifiers?: ModifierConfig[];
-};
-export type PullToRefreshBoxProps = {
+}
+export interface PullToRefreshBoxProps {
     /**
      * Whether the content is refreshing.
      * @default false
@@ -47,7 +47,7 @@ export type PullToRefreshBoxProps = {
      * The content to refresh.
      */
     children: React.ReactNode;
-};
+}
 /**
  * A pull-to-refresh container that wraps scrollable content and shows a refresh indicator when pulled,
  * matching Compose's `PullToRefreshBox`.

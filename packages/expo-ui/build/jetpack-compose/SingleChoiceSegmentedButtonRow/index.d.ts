@@ -1,5 +1,5 @@
 import { type ModifierConfig } from '../../types';
-export type SingleChoiceSegmentedButtonRowProps = {
+export interface SingleChoiceSegmentedButtonRowProps {
     /**
      * SegmentedButton children.
      */
@@ -8,7 +8,7 @@ export type SingleChoiceSegmentedButtonRowProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * A row container for single-choice `SegmentedButton` children.
  * Maps to Material 3 `SingleChoiceSegmentedButtonRow`.

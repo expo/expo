@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type GaugeProps = {
+export interface GaugeProps extends CommonViewModifierProps {
     /**
      * The current value of the gauge.
      */
@@ -30,7 +30,7 @@ export type GaugeProps = {
      * A label showing the maximum value. Use `Text` or `Label` to display the value.
      */
     maximumValueLabel?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 /**
  * Renders a SwiftUI `Gauge` component.
  */

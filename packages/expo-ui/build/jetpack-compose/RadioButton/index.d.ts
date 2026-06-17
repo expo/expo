@@ -1,5 +1,5 @@
 import { type ModifierConfig } from '../../types';
-export type RadioButtonProps = {
+export interface RadioButtonProps {
     /**
      * Whether the radio button is selected.
      */
@@ -12,7 +12,7 @@ export type RadioButtonProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * A Material Design radio button.
  */

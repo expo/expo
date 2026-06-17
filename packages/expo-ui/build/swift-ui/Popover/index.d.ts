@@ -1,5 +1,5 @@
 import type { CommonViewModifierProps } from '../types';
-export type PopoverViewProps = {
+export interface PopoverViewProps extends CommonViewModifierProps {
     children: React.ReactNode;
     /**
      * Whether the popover is presented.
@@ -18,7 +18,7 @@ export type PopoverViewProps = {
      * @default 'none'
      */
     arrowEdge?: 'leading' | 'trailing' | 'top' | 'bottom' | 'none';
-} & CommonViewModifierProps;
+}
 declare function PopoverTrigger(props: {
     children: React.ReactNode;
 }): import("react/jsx-runtime").JSX.Element;

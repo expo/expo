@@ -1,11 +1,11 @@
 import { type CommonViewModifierProps } from '../types';
-export type LabeledContentProps = {
+export interface LabeledContentProps extends CommonViewModifierProps {
     /**
      * The label to be displayed in the labeled content.
      */
     label?: string | React.ReactNode;
     children: React.ReactNode;
-} & CommonViewModifierProps;
+}
 /**
  * LabeledContent component uses the native [LabeledContent](https://developer.apple.com/documentation/swiftui/labeledcontent) component.
  * A container for attaching a label to a value-bearing view.

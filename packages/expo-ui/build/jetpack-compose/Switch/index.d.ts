@@ -21,7 +21,7 @@ export type SwitchColors = {
     disabledUncheckedBorderColor?: ColorValue;
     disabledUncheckedIconColor?: ColorValue;
 };
-export type SwitchProps = {
+export interface SwitchProps {
     /**
      * Indicates whether the switch is checked.
      */
@@ -48,7 +48,7 @@ export type SwitchProps = {
      * @platform android
      */
     children?: React.ReactNode;
-};
+}
 type ThumbContentProps = {
     children: React.ReactNode;
 };

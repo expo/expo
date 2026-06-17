@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type ListForEachProps = {
+export interface ListForEachProps extends CommonViewModifierProps {
     /**
      * The children elements to be rendered inside the `List.ForEach`.
      */
@@ -16,7 +16,7 @@ export type ListForEachProps = {
      * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/dynamicviewcontent/onmove(perform:)).
      */
     onMove?: (sourceIndices: number[], destination: number) => void;
-} & CommonViewModifierProps;
+}
 /**
  * A compound component of `List` that enables item deletion and reordering.
  * This component must be used as a child of `List` (as `List.ForEach`).

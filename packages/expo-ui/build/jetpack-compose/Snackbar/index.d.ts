@@ -1,7 +1,7 @@
 import { type Ref } from 'react';
 import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
-export type SnackbarProps = {
+export interface SnackbarProps {
     /**
      * The background color of the snackbar container.
      */
@@ -28,7 +28,7 @@ export type SnackbarProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * Styling configuration for the snackbar shown by `SnackbarHost`. Pass as a
  * child to override colors or place the action on a new line.
@@ -71,7 +71,7 @@ export type SnackbarHostRef = {
      */
     showSnackbar: (options: SnackbarShowOptions) => Promise<SnackbarResult>;
 };
-export type SnackbarHostProps = {
+export interface SnackbarHostProps {
     /**
      * Ref exposing the imperative `showSnackbar` method.
      */
@@ -85,7 +85,7 @@ export type SnackbarHostProps = {
      * Compose's `SnackbarHost(hostState) { data -> Snackbar(data, ...) }` lambda.
      */
     children?: React.ReactNode;
-};
+}
 /**
  * A Material 3 [SnackbarHost](https://developer.android.com/develop/ui/compose/components/snackbar)
  * that displays snackbars triggered via its ref's `showSnackbar` method.

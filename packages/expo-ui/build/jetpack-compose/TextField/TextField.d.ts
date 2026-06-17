@@ -50,7 +50,7 @@ export type TextFieldColors = {
     disabledSuffixColor?: ColorValue;
     errorSuffixColor?: ColorValue;
 };
-export type TextFieldProps = CommonTextFieldProperties & {
+export interface TextFieldProps extends CommonTextFieldProperties {
     /** @default false */
     isError?: boolean;
     /**
@@ -60,8 +60,8 @@ export type TextFieldProps = CommonTextFieldProperties & {
      */
     shape?: ShapeJSXElement;
     colors?: TextFieldColors;
-};
-export type OutlinedTextFieldProps = CommonTextFieldProperties & {
+}
+export interface OutlinedTextFieldProps extends CommonTextFieldProperties {
     /** @default false */
     isError?: boolean;
     /**
@@ -71,7 +71,7 @@ export type OutlinedTextFieldProps = CommonTextFieldProperties & {
      */
     shape?: ShapeJSXElement;
     colors?: TextFieldColors;
-};
+}
 /**
  * A Material3 `TextField`.
  */

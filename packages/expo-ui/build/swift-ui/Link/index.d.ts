@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type LinkProps = {
+export interface LinkProps extends CommonViewModifierProps {
     /**
      * The text label for the Link. Use this for simple text links.
      */
@@ -13,7 +13,7 @@ export type LinkProps = {
      * Only nested elements are supported, not plain strings.
      */
     children?: React.ReactElement | React.ReactElement[];
-} & CommonViewModifierProps;
+}
 /**
  * Displays a native link component.
  *

@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type VStackProps = {
+export interface VStackProps extends CommonViewModifierProps {
     children: React.ReactNode;
     /**
      * The horizontal alignment of children within the stack.
@@ -9,6 +9,6 @@ export type VStackProps = {
      * The spacing between children.
      */
     spacing?: number;
-} & CommonViewModifierProps;
+}
 export declare function VStack(props: VStackProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

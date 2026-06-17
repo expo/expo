@@ -1,6 +1,6 @@
 import type { ExpoModifier } from '../../types';
 import { type ContentPadding } from '../LazyColumn';
-export type LazyRowProps = {
+export interface LazyRowProps {
     /**
      * The content to display inside the lazy row.
      */
@@ -24,7 +24,7 @@ export type LazyRowProps = {
      * Modifiers for the component.
      */
     modifiers?: ExpoModifier[];
-};
+}
 /**
  * A lazy row component that efficiently displays a horizontally scrolling list.
  */

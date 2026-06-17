@@ -1,12 +1,12 @@
 import { type Alignment, type CommonViewModifierProps } from '../types';
-export type OverlayProps = {
+export interface OverlayProps extends CommonViewModifierProps {
     children: React.ReactNode;
     /**
      * The alignment of the overlay content relative to the base content.
      * @default 'center'
      */
     alignment?: Alignment;
-} & CommonViewModifierProps;
+}
 declare function OverlayContent(props: {
     children: React.ReactNode;
 }): import("react/jsx-runtime").JSX.Element;

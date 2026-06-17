@@ -1,10 +1,10 @@
-export type NamespaceProps = {
+export interface NamespaceProps {
     /**
      * The ID of the namespace. You can generate one with the `useId` react hook.
      */
     id: string;
     children: React.ReactNode;
-};
+}
 /**
  * A component that provides a SwiftUI [`Namespace`](https://developer.apple.com/documentation/swiftui/namespace) to its children.
  *

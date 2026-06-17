@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
-export type BadgeProps = {
+export interface BadgeProps {
     /**
      * Background color of the badge.
      * @default BadgeDefaults.containerColor
@@ -20,7 +20,7 @@ export type BadgeProps = {
      * When omitted, renders as a small indicator dot.
      */
     children?: React.ReactNode;
-};
+}
 /**
  * A badge component matching Compose's `Badge`.
  * Renders as a small colored indicator dot, or with content (for example, a count).

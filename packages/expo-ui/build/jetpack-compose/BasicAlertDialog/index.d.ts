@@ -1,5 +1,5 @@
 import { type ModifierConfig, type DialogProperties } from '../../types';
-export type BasicAlertDialogProps = {
+export interface BasicAlertDialogProps {
     /**
      * The content to display inside the dialog.
      */
@@ -17,7 +17,7 @@ export type BasicAlertDialogProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * A basic alert dialog that provides a blank container for custom content.
  * Unlike `AlertDialog`, this component does not have structured title/text/buttons slots.

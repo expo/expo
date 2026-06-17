@@ -16,7 +16,7 @@ export type DropdownMenuItemElementColors = {
 /**
  * Props of the `DropdownMenuItem` component.
  */
-export type DropdownMenuItemProps = {
+export interface DropdownMenuItemProps {
     /**
      * Whether the menu item is enabled.
      * @default true
@@ -38,7 +38,7 @@ export type DropdownMenuItemProps = {
      * Slot children for text, leading/trailing icons.
      */
     children?: React.ReactNode;
-};
+}
 /**
  * A text slot for `DropdownMenuItem`.
  * Wrap text content to display as the menu item label.

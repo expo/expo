@@ -1,6 +1,6 @@
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
-export type ToggleProps = {
+export interface ToggleProps extends CommonViewModifierProps {
     /**
      * A Boolean value that determines the on/off state of the toggle.
      */
@@ -23,7 +23,7 @@ export type ToggleProps = {
      * the first represents the title and the second represents the subtitle.
      */
     children?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 /**
  * A control that toggles between on and off states.
  */

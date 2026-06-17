@@ -1,5 +1,5 @@
 import { type ExpoModifier } from '../../types';
-export type SearchBarProps = {
+export interface SearchBarProps {
     /**
      * Callback function that is called when the search text is submitted.
      */
@@ -12,7 +12,7 @@ export type SearchBarProps = {
      * The children of the component.
      */
     children?: React.ReactNode;
-};
+}
 type PlaceholderProps = {
     /**
      * The children of the component.

@@ -10,7 +10,7 @@ export type IconButtonColors = {
     disabledContainerColor?: ColorValue;
     disabledContentColor?: ColorValue;
 };
-export type IconButtonProps = {
+export interface IconButtonProps {
     /**
      * Callback that is called when the icon button is clicked.
      */
@@ -37,7 +37,7 @@ export type IconButtonProps = {
      * Content to display inside the icon button.
      */
     children: React.ReactNode;
-};
+}
 /**
  * A standard icon button with no background.
  */

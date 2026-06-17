@@ -25,12 +25,12 @@ export type LoadingIndicatorCommonConfig = {
  * Matches the Jetpack Compose `LoadingIndicator`.
  */
 export declare const LoadingIndicator: import("react").ComponentType<LoadingIndicatorCommonConfig>;
-export type ContainedLoadingIndicatorProps = LoadingIndicatorCommonConfig & {
+export interface ContainedLoadingIndicatorProps extends LoadingIndicatorCommonConfig {
     /**
      * Loading indicator's container color
      */
     containerColor?: ColorValue;
-};
+}
 /**
  * A loading indicator that displays loading using morphing shapes inside a container.
  *

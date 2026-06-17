@@ -19,7 +19,7 @@ export type DateTimePickerChangeEvent = {
         utcOffset: number;
     };
 };
-export type DateTimePickerProps = {
+export interface DateTimePickerProps extends Pick<ViewProps, 'style'> {
     /**
      * The current date value (controlled).
      */
@@ -122,7 +122,7 @@ export type DateTimePickerProps = {
     negativeButton?: {
         label?: string;
     };
-} & Pick<ViewProps, 'style'>;
+}
 export declare function buildEvent(date: Date): DateTimePickerEvent;
 export declare function buildChangeEvent(date: Date): DateTimePickerChangeEvent;
 //# sourceMappingURL=types.d.ts.map

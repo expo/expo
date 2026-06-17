@@ -110,7 +110,7 @@ export declare const ExitTransition: {
         targetScale?: number;
     }) => ExitTransitionType;
 };
-export type AnimatedVisibilityProps = {
+export interface AnimatedVisibilityProps extends PrimitiveBaseProps {
     children?: React.ReactNode;
     /**
      * Whether the content is visible. When changed, the content will animate in or out.
@@ -128,7 +128,7 @@ export type AnimatedVisibilityProps = {
      * Defaults to Compose's `fadeOut + shrinkOut` when not specified.
      */
     exitTransition?: ExitTransitionType;
-} & PrimitiveBaseProps;
+}
 export declare function AnimatedVisibility(props: AnimatedVisibilityProps): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

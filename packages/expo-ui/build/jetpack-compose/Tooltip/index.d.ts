@@ -11,7 +11,7 @@ export type TooltipBoxRef = {
      */
     dismiss: () => Promise<void>;
 };
-export type TooltipBoxProps = {
+export interface TooltipBoxProps {
     /**
      * Ref to imperatively show/dismiss the tooltip.
      */
@@ -45,26 +45,26 @@ export type TooltipBoxProps = {
      * The anchor content triggers the tooltip on long-press.
      */
     children: React.ReactNode;
-};
-export type PlainTooltipProps = {
+}
+export interface PlainTooltipProps {
     containerColor?: ColorValue;
     contentColor?: ColorValue;
     modifiers?: ModifierConfig[];
     children: React.ReactNode;
-};
+}
 /**
  * A simple tooltip. Place inside `TooltipBox` as `TooltipBox.PlainTooltip`.
  * Children become the tooltip content.
  */
 declare function PlainTooltipComponent(props: PlainTooltipProps): import("react/jsx-runtime").JSX.Element;
-export type RichTooltipProps = {
+export interface RichTooltipProps {
     containerColor?: ColorValue;
     contentColor?: ColorValue;
     titleContentColor?: ColorValue;
     actionContentColor?: ColorValue;
     modifiers?: ModifierConfig[];
     children: React.ReactNode;
-};
+}
 declare function RichTooltipTitle(props: {
     children: React.ReactNode;
 }): import("react/jsx-runtime").JSX.Element;
