@@ -5,7 +5,6 @@ import android.icu.util.LocaleData
 import android.icu.util.ULocale
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.os.Bundle
 import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
@@ -165,15 +164,4 @@ class LocalizationModule : Module() {
       )
     )
   }
-}
-
-/**
- * Creates a shallow [Map] from the [Bundle]. Does not traverse nested arrays and bundles.
- */
-private fun Bundle.toShallowMap(): Map<String, Any?> {
-  val map = HashMap<String, Any?>()
-  for (key in this.keySet()) {
-    map[key] = this[key]
-  }
-  return map
 }
