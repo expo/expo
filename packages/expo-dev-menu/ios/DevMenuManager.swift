@@ -512,6 +512,32 @@ open class DevMenuManager: NSObject {
     }
   }
 
+  // The list of AppRegistry component names pushed by JS. Drives the
+  // "Components" section of the dev menu when the app registers more than
+  // one root component.
+  private let availableAppKeysSubject = PassthroughSubject<[String], Never>()
+  public var availableAppKeysPublisher: AnyPublisher<[String], Never> {
+    availableAppKeysSubject.eraseToAnyPublisher()
+  }
+
+  public var availableAppKeys: [String] = [] {
+    didSet {
+      availableAppKeysSubject.send(availableAppKeys)
+    }
+  }
+
+  /**
+   Swaps the currently mounted React root view to the AppRegistry component
+   registered under `moduleName`. Notifies JS via the `componentSwitched`
+   event so any teardown listeners can run.
+   */
+  @objc
+  public func switchToComponent(_ moduleName: String) {
+    if DevMenuComponentSwitcher.shared.switchToComponent(moduleName) {
+      sendEventToDelegateBridge("componentSwitched", data: moduleName)
+    }
+  }
+
   func getDevToolsDelegate() -> DevMenuDevOptionsDelegate? {
     if let appContext = currentAppContext {
       let devDelegate = DevMenuDevOptionsDelegate(forAppContext: appContext)

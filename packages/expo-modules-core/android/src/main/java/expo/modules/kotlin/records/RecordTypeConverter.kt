@@ -52,7 +52,7 @@ class ReflectionRecordConversionStrategy<T : Record>(
 ) {
   private data class PropertyDescriptor(
     val typeConverter: TypeConverter<*>,
-    val fieldAnnotation: Field,
+    val key: String,
     val isRequired: Boolean
   )
 
@@ -66,10 +66,11 @@ class ReflectionRecordConversionStrategy<T : Record>(
         val typeConverter = converterProvider.obtainTypeConverter(
           property.returnType.toTypeDescriptor()
         )
+        val key = fieldAnnotation.key.takeUnless { it.isBlank() } ?: property.name
 
         return@mapNotNull property to PropertyDescriptor(
           typeConverter,
-          fieldAnnotation,
+          key,
           isRequired = property.findAnnotation<Required>() != null
         )
       }
@@ -82,7 +83,7 @@ class ReflectionRecordConversionStrategy<T : Record>(
 
     propertyDescriptors
       .forEach { (property, descriptor) ->
-        val jsKey = descriptor.fieldAnnotation.key.takeUnless { it.isBlank() } ?: property.name
+        val jsKey = descriptor.key
 
         if (!jsMap.hasKey(jsKey)) {
           if (descriptor.isRequired) {
@@ -114,7 +115,7 @@ class ReflectionRecordConversionStrategy<T : Record>(
 
     propertyDescriptors
       .forEach { (property, descriptor) ->
-        val key = descriptor.fieldAnnotation.key.takeUnless { it.isBlank() } ?: property.name
+        val key = descriptor.key
 
         if (!map.containsKey(key)) {
           if (descriptor.isRequired) {

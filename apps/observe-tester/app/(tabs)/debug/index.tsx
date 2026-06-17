@@ -10,6 +10,7 @@ import { GlobalAttributesSection } from '@/components/GlobalAttributesSection';
 import { JSAnimation } from '@/components/JSAnimation';
 import { LogEventsSection } from '@/components/LogEventsSection';
 import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
+import CrashTester from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
 export default function Debug() {
@@ -33,7 +34,7 @@ export default function Debug() {
       <NetworkRequestObserverSection />
       <Divider />
       <CrashReportsSection />
-      {typeof AppMetrics.triggerCrash === 'function' ? <Divider /> : null}
+      {CrashTester != null ? <Divider /> : null}
       <GlobalAttributesSection />
       <Divider />
       <Button

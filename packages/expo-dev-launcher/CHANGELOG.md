@@ -17,6 +17,7 @@
 - [iOS] Present the development server info dialog as a native sheet. ([#46760](https://github.com/expo/expo/pull/46760) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Reduce accidental logout in the account selector with a confirmation step and a less prominent button, and add more spacing around the header title. ([#46761](https://github.com/expo/expo/pull/46761) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Make the development server list reliable, keep discovery running across tab switches, periodically re-verify discovered servers, add pull-to-refresh on the Home tab, and show a searching state instead of "No development servers found". ([#46811](https://github.com/expo/expo/pull/46811) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Explain why a project failed to load instead of showing a generic "Failed to connect" message. ([#46866](https://github.com/expo/expo/pull/46866) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

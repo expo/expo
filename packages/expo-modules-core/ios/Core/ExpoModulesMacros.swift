@@ -47,6 +47,25 @@ public macro OptimizedFunction() =
 public macro JS(_ jsName: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
 
+/// Turns a function-typed `var` on a module or shared object into a typed JavaScript event.
+/// Calling the property emits the event to JavaScript, with the closure's parameter as the payload.
+///
+/// The JS event name defaults to the property name with a leading `on` stripped (`onProgress` emits
+/// `progress`); pass `@Event("customName")` to set it explicitly. The payload type must be
+/// convertible to JavaScript, and a `() -> Void` property is a no-payload event.
+///
+/// Usage:
+///
+///     @Event
+///     var onProgress: (ProgressEvent) -> Void
+///
+///     // Emit it from anywhere:
+///     onProgress(ProgressEvent(percent: 50))
+@attached(accessor)
+@attached(peer, names: arbitrary)
+public macro Event(_ name: String? = nil, sync: Bool = false) =
+  #externalMacro(module: "ExpoModulesMacros", type: "EventMacro")
+
 /// Member macro applied to a `Module` subclass. Scans the class body for declarations
 /// marked with `@JS` and synthesizes a framework-internal `_synthesizedDefinition()` method.
 /// `expo-modules-core` calls it automatically and merges the result into the module's
@@ -54,20 +73,24 @@ public macro JS(_ jsName: String? = nil) =
 /// additionally bound directly into the module's JS object by a synthesized
 /// `_decorateModule(object:in:appContext:)`.
 ///
+/// The module's JavaScript name is synthesized into a `_jsName` static and read by core, so there
+/// is no `Name(…)` DSL entry. It defaults to the class name; pass `@ExpoModule("CustomName")` to
+/// override it.
+///
 /// Usage:
 ///
 ///     @ExpoModule
 ///     public final class MyModule: Module {
-///       public func definition() -> ModuleDefinition {
-///         Name("MyModule")
-///       }
-///
 ///       @JS
 ///       func greet(name: String) -> String { "Hi, \(name)" }
 ///     }
 @attached(
   member,
-  names: named(_synthesizedDefinition), named(appContext), named(init), named(_decorateModule))
+  names:
+    named(_jsName), named(_synthesizedDefinition), named(appContext), named(init),
+    named(_decorateModule))
+@attached(memberAttribute)
+@attached(extension, conformances: AnyModule)
 public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoModuleMacro")
 
@@ -91,6 +114,7 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
 ///       var size: Int { 42 }
 ///     }
 @attached(member, names: named(_synthesizedClassDefinition))
+@attached(memberAttribute)
 public macro SharedObject(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "SharedObjectMacro")
 

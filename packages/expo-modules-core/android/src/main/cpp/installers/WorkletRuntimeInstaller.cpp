@@ -3,6 +3,7 @@
 #if WORKLETS_ENABLED
 
 #include "../worklets/WorkletJSCallInvoker.h"
+#include <worklets/Compat/StableApi.h>
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
 
 #endif
@@ -15,7 +16,8 @@ namespace expo {
 
 void WorkletRuntimeInstaller::registerNatives() {
   javaClassLocal()->registerNatives({
-                                      makeNativeMethod("install", WorkletRuntimeInstaller::install)
+                                      makeNativeMethod("install", WorkletRuntimeInstaller::install),
+                                      makeNativeMethod("resolveUIRuntimePointer", WorkletRuntimeInstaller::resolveUIRuntimePointer)
                                     });
 }
 
@@ -41,6 +43,28 @@ jni::local_ref<JSIContext::javaobject> WorkletRuntimeInstaller::install(
   return jsiContext;
 #else
   return nullptr;
+#endif
+}
+
+jlong WorkletRuntimeInstaller::resolveUIRuntimePointer(
+  jni::alias_ref<jni::JClass>,
+  jni::alias_ref<JavaScriptObject::javaobject> uiRuntimeHolder
+) noexcept {
+#if WORKLETS_ENABLED
+  auto *holder = uiRuntimeHolder->cthis();
+  jsi::Runtime &runtime = holder->getRuntime();
+  std::shared_ptr<jsi::Object> holderObject = holder->get();
+
+  std::shared_ptr<worklets::WorkletRuntime> workletRuntime =
+    worklets::getWorkletRuntimeFromHolder(runtime, *holderObject);
+  if (!workletRuntime) {
+    return 0;
+  }
+
+  jsi::Runtime &uiRuntime = worklets::getJSIRuntimeFromWorkletRuntime(workletRuntime);
+  return reinterpret_cast<jlong>(&uiRuntime);
+#else
+  return 0;
 #endif
 }
 

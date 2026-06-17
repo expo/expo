@@ -5,12 +5,11 @@
   "sideEffects": false,
   "main": "build/index.js",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/app-integrity/",
   "repository": {
@@ -42,5 +41,6 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
-  }
+  },
+  "types": "build/index.d.ts"
 }

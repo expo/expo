@@ -5,25 +5,45 @@
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "source": "./src/index.tsx",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.tsx",
       "default": "./build/index.js"
     },
     "./lib": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "source": "./src/index.tsx",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.tsx",
       "default": "./build/index.js"
     },
     "./LogBox": {
-      "types": "./build/LogBox.d.ts",
+      "types": {
+        "source": "./src/LogBox.ts",
+        "default": "./build/LogBox.d.ts"
+      },
+      "source": "./src/LogBox.ts",
       "default": "./build/LogBox.js"
     },
     "./swap-rn-logbox.js": "./swap-rn-logbox.js",
     "./swap-rn-logbox-parser.js": "./swap-rn-logbox-parser.js",
     "./logbox-web-polyfill": {
-      "types": "./build/logbox-web-polyfill.d.ts",
+      "types": {
+        "source": "./src/logbox-web-polyfill.tsx",
+        "default": "./build/logbox-web-polyfill.d.ts"
+      },
+      "source": "./src/logbox-web-polyfill.tsx",
       "default": "./build/logbox-web-polyfill.js"
     },
     "./Data/LogBoxLog": {
-      "types": "./build/Data/LogBoxLog.d.ts",
+      "types": {
+        "source": "./src/Data/LogBoxLog.ts",
+        "default": "./build/Data/LogBoxLog.d.ts"
+      },
+      "source": "./src/Data/LogBoxLog.ts",
       "default": "./build/Data/LogBoxLog.js"
     },
     "./package.json": "./package.json"
@@ -35,13 +55,10 @@
     "clean": "run-p clean:lib clean:bundle",
     "clean:lib": "rimraf build",
     "clean:bundle": "rimraf dist",
-    "watch": "run-p watch:lib watch:bundle",
-    "watch:lib": "tsc -p tsconfig.lib.json --watch",
-    "watch:bundle": "node ./scripts/watch-bundle.mjs",
     "prepublishOnly": "run-s clean build:publish",
     "build": "run-s build:lib",
     "build:publish": "run-s build:lib build:bundle",
-    "build:lib": "tsc -p tsconfig.lib.json && node ./scripts/copy-css-modules.mjs",
+    "build:lib": "expo-build src",
     "build:bundle": "node ./scripts/build-bundle.mjs",
     "export:web": "expo export -p web --no-minify"
   },
@@ -53,17 +70,15 @@
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
-    "@expo/cli": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/react": "~19.2.0",
     "@types/react-dom": "^19.1.7",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.86.0-rc.3",
+    "react-native": "0.86.0",
     "react-native-web": "^0.21.0",
     "rimraf": "^6.1.2",
     "typescript-plugin-css-modules": "^5.2.0"

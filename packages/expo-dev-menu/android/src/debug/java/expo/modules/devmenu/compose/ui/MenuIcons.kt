@@ -27,6 +27,70 @@ object MenuIcons {
   }
 
   @Composable
+  fun Check(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.check),
+      contentDescription = "Selected",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun ArrowBack(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.arrow_back),
+      contentDescription = "Back",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun Layers(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.layers),
+      contentDescription = "Components",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun ChevronRight(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.chevron_right),
+      contentDescription = "Open",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
   fun Copy(
     size: Dp,
     tint: Color,

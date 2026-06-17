@@ -15,4 +15,12 @@ public class DevLauncherDevMenuDelegate: NSObject, DevMenuHostDelegate {
   public func devMenuNavigateHome() {
     controller?.navigateToLauncher()
   }
+
+  public func devMenuSwitchToComponent(_ moduleName: String) -> Bool {
+    return controller?.delegate?.switchAppRegistryComponent(to: moduleName) ?? false
+  }
+
+  public func devMenuCurrentComponentName() -> String? {
+    return controller?.delegate?.rootViewModuleName
+  }
 }

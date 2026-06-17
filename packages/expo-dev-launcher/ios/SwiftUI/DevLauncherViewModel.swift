@@ -176,8 +176,8 @@ class DevLauncherViewModel: ObservableObject {
           self?.isLoadingServer = false
         }
       },
-      onError: { [weak self] _ in
-        let message = "Failed to connect to \(url)"
+      onError: { [weak self] error in
+        let message = DevLauncherLoadErrorMessage.message(for: error as NSError, url: url)
         DispatchQueue.main.async {
           self?.isLoadingServer = false
           self?.showErrorAlert(message)

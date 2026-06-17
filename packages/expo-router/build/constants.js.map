@@ -1,1 +1,0 @@
-{"version":3,"file":"constants.js","sourceRoot":"","sources":["../src/constants.ts"],"names":[],"mappings":";;;AAAa,QAAA,kBAAkB,GAAG,QAAQ,CAAC;AAC9B,QAAA,oBAAoB,GAAG,YAAY,CAAC;AACpC,QAAA,kBAAkB,GAAG,UAAU,CAAC","sourcesContent":["export const INTERNAL_SLOT_NAME = '__root';\nexport const NOT_FOUND_ROUTE_NAME = '+not-found';\nexport const SITEMAP_ROUTE_NAME = '_sitemap';\n"]}

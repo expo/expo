@@ -54,6 +54,11 @@ jobs:
           cache: 'pnpm'
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build app dependencies
+        run: pnpm turbo build --filter bare-expo...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: Get the base commit
         id: base-commit
         run: |

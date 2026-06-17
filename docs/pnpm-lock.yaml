@@ -29,8 +29,8 @@ importers:
         specifier: ^4.2.4
         version: 4.2.4(react@19.2.6)(tailwindcss@4.2.4)
       '@expo/styleguide-search-ui':
-        specifier: ^9.1.6
-        version: 9.1.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(next@16.2.6(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.2.4)
+        specifier: ^9.1.7
+        version: 9.1.7(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(next@16.2.6(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.2.4)
       '@formatjs/intl-localematcher':
         specifier: ^0.8.5
         version: 0.8.5
@@ -776,8 +776,8 @@ packages:
       react: '>= 19'
       tailwindcss: ^4.2.2
 
-  '@expo/styleguide-search-ui@9.1.6':
-    resolution: {integrity: sha512-NAbjOl42ZsyWcOL0rXQ9c+DsxE1VUuXKgJm7YnRc5ksarsWqDVYWXv/v0FrQEuTgeAxe/pbE17jLnJlLGESzRw==}
+  '@expo/styleguide-search-ui@9.1.7':
+    resolution: {integrity: sha512-hAqSR5Gw/XVYM1kZceKSAhQN+yPoAjyFUQsF9YxzWAf22QQjP8SrIVEotlsz4vaVE7mNwsq+dmPS81diY+ckhA==}
     peerDependencies:
       next: '>= 16'
       react: '>= 19'
@@ -7571,7 +7571,7 @@ snapshots:
       react: 19.2.6
       tailwindcss: 4.2.4
 
-  '@expo/styleguide-search-ui@9.1.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(next@16.2.6(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.2.4)':
+  '@expo/styleguide-search-ui@9.1.7(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(next@16.2.6(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.2.4)':
     dependencies:
       '@expo/styleguide': 14.1.5(next@16.2.6(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(tailwindcss@4.2.4)
       '@expo/styleguide-icons': 4.2.4(react@19.2.6)(tailwindcss@4.2.4)
