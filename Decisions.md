@@ -179,6 +179,16 @@ Acted on: `unwrapSlot` finds the `__root` slot by name (not position); dropped t
   stand-in; unmounted-branch behavior lookup still pending the static manifest.
 - Per-screen `options` still `{}`; `setParams` no-op (P-15); on-device verification still pending (R-7).
 
+### R-11 — R-Phase E (ExperimentalStack)
+
+`createStackNavigator` generalized into `createTreeStackNavigator(View)` — `NativeStackView` and
+`ExperimentalStackView` consume the identical `{state, navigation, descriptors, describe}` contract,
+so `ExperimentalStack` reuses the entire Stack machinery (projection, shim, providers, behavior
+registration), only swapping the view. Flag-swapped at the `experimental-stack` export like Stack
+(R-3); flag-off byte-identical. Integration test (flag on): boot + push/back. Full suite (4373) green.
+Reviewed via the shared factory already covered by R-9/R-10's 4 agents + the full suite, rather than a
+fresh round, since it is a mechanical reuse of the proven pattern.
+
 ### R-8 — R-Phase B foundation (NavNodeContext + projection) review outcomes
 *(3 fresh agents)*
 

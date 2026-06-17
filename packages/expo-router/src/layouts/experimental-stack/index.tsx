@@ -1,8 +1,11 @@
 'use client';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ComponentType } from 'react';
 import { Children, useMemo } from 'react';
 
+import { ExperimentalStackView } from './ExperimentalStackView';
 import { createExperimentalStackNavigator } from './createExperimentalStackNavigator';
+import { isNewStateModelEnabled } from '../../navigation-state/enable';
+import { createTreeStackNavigator } from '../../navigation-state/render/createStackNavigator';
 import { stackRouterOverride } from '../StackClient';
 import { mapProtectedScreen, StackHeader, StackScreen } from '../stack-utils';
 import { withLayoutContext } from '../withLayoutContext';
@@ -32,19 +35,32 @@ const RNExperimentalStack = withLayoutContext<
  *
  * @experimental
  */
-const ExperimentalStack = Object.assign(
-  (props: ComponentProps<typeof RNExperimentalStack>) => {
-    const rnChildren = useMemo(() => {
-      const filtered = Children.toArray(props.children).filter(
-        (child) => !isChildOfType(child, StackHeader)
-      );
-      return mapProtectedScreen({ guard: true, children: filtered }).children;
-    }, [props.children]);
-
-    return (
-      <RNExperimentalStack {...props} children={rnChildren} UNSTABLE_router={stackRouterOverride} />
+function ExperimentalStackImpl(props: ComponentProps<typeof RNExperimentalStack>) {
+  const rnChildren = useMemo(() => {
+    const filtered = Children.toArray(props.children).filter(
+      (child) => !isChildOfType(child, StackHeader)
     );
-  },
+    return mapProtectedScreen({ guard: true, children: filtered }).children;
+  }, [props.children]);
+
+  return (
+    <RNExperimentalStack {...props} children={rnChildren} UNSTABLE_router={stackRouterOverride} />
+  );
+}
+
+const NewExperimentalStack = createTreeStackNavigator(
+  ExperimentalStackView as ComponentType<{
+    state: unknown;
+    navigation: unknown;
+    descriptors: unknown;
+    describe: unknown;
+  }>
+);
+
+const ExperimentalStack = Object.assign(
+  // Flag swap (Decisions R-3): flag off = the exact old ExperimentalStack.
+  (props: ComponentProps<typeof RNExperimentalStack>) =>
+    isNewStateModelEnabled() ? <NewExperimentalStack /> : <ExperimentalStackImpl {...props} />,
   {
     Screen: StackScreen,
     Protected,
