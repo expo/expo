@@ -96,7 +96,7 @@ export default function RootLayout() {
 
 ### Create a development build
 
-Session replay and native error symbolication require a [development build](/develop/development-builds/introduction/) since they don't work in Expo Go. Product analytics works in Expo Go.
+Session replay and native crash symbolication require a [development build](/develop/development-builds/introduction/) since they don't work in Expo Go. Product analytics works in Expo Go.
 
 <Terminal cmd={['$ eas build --profile development']} />
 
@@ -249,7 +249,7 @@ Use these commands to manage the integration later:
 
 <Collapsible summary="No events arriving">
 
-Confirm `disabled: __DEV__` isn't masking events in your production build, and that `EXPO_PUBLIC_POSTHOG_API_KEY` is set in the environment profile your build uses. If a dev server was already running when `connect` wrote your environment variables, do a full reload (not Fast Refresh) so the app picks up the new `EXPO_PUBLIC_*` values.
+Confirm `EXPO_PUBLIC_POSTHOG_API_KEY` is set in the environment profile your build uses. Note that `disabled: __DEV__` stops events from development builds, so test in a preview or production build (or remove it temporarily). If a dev server was already running when `connect` wrote your environment variables, do a full reload (not Fast Refresh) so the app picks up the new `EXPO_PUBLIC_*` values.
 
 </Collapsible>
 
