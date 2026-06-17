@@ -33,6 +33,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the SwiftUI `listRowInsets` modifier being ignored when every edge is set to `0`, so a row can now reset all of its insets. ([#47000](https://github.com/expo/expo/pull/47000) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Fix `FieldGroup` rendering an empty row/section when a conditional child (e.g. `{condition && <FieldGroup.Section>…</FieldGroup.Section>}`) evaluates to `false`. ([##46874](https://github.com/expo/expo/pull/46874) by [@dileepapeiris](https://github.com/dileepapeiris))
 - [android] Fix React Native `Pressable`/`Button` taps not registering on `community/pager-view` pages after the first on physical devices. ([#46851](https://github.com/expo/expo/pull/46851) by [@nishan](https://github.com/intergalacticspacehighway))
 - [universal] Fix user-supplied `modifiers` having no effect when the component derives a modifier of the same type from its props, e.g. `buttonStyle` on `Button` always losing to the `variant` prop. ([#46815](https://github.com/expo/expo/pull/46815) by [@nishan](https://github.com/intergalacticspacehighway))
