@@ -123,6 +123,36 @@ not "device-verified". When the flag is ON and an app uses a navigator type not 
 JS Tabs, TopTabs, SplitView), **throw a clear error** naming the navigator and that the new state
 model doesn't support it yet — no silent breakage, no risky mixed-mode coexistence.
 
+### R-9 — R-Phase B part 2 (Stack render via shim) review outcomes
+*(4 fresh agents: architecture, coverage, quality, minimalism)*
+
+A `Stack` renders real screens from the new tree through the existing `NativeStackView` + a per-screen
+`navigation` shim, wrapped in the provider contexts `NavigationContent` supplies (Theme,
+NavigationHelpers, NavigationStateListener, FocusedRouteKey, PreventRemove). 40 render tests; 314 total.
+Acted on:
+- **Memoize on the slice** (the top fix): descriptors/shims/projection are `useMemo`d on the `NavNode`
+  slice (reference-stable), so screen `navigation` identity is stable — otherwise `BaseRoute`'s
+  focus/transitionEnd effects re-subscribe every render and `React.memo` is defeated.
+- **Throw, don't render blank** (R-7): an unmatched route name throws a clear error; `describe`
+  (preloaded routes) throws "not supported under enableNewStateModel" since the tree has no preload.
+- **Cut speculative shim methods**: removed `push`/`navigate`/`pop`/`popToTop`/`removeListener` (no
+  view-layer caller — the live native path is `dispatch`'s `POP`/`POP_TO_TOP`; header back uses
+  `goBack`); kept the 6 `BaseRoute` methods + `emit` + `dispatch` + `canGoBack`. Cross-navigator
+  navigate/back land in R-Phase C (resolved against the whole tree, not focus-on-node).
+- **Stronger tests**: push asserts committed `getNavSnapshot()` index/order (not just "mounted");
+  push→back asserts the screen is removed; the **nested-navigator recursion** seam is exercised; a
+  native-origin `POP` asserts `source:'native'` (P-6).
+
+Known limitations carried forward (jest-green; on-device pending — R-7):
+- **Per-screen `options` are `{}`** — header/sheet/gesture/presentation options aren't projected yet,
+  so the reused view's full feature set is dormant until an options-projection phase.
+- **`setParams`/`replaceParams` are documented no-ops** — param updates need the deferred `replace`
+  primitive (P-15); `replaceParams` is safe because the new model never sets the no-animation param.
+- **Route→RouteNode matching is by `route.name === child.route`** — fine for static segments; dynamic
+  segments/groups need handling in a later phase.
+- **Disappearing-screen hold / native dismissCount→remove** is wired through the shim's `dispatch`
+  but not yet exercised against real `react-native-screens` lifecycle (on-device, R-Phase C+).
+
 ### R-8 — R-Phase B foundation (NavNodeContext + projection) review outcomes
 *(3 fresh agents)*
 
