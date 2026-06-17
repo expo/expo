@@ -228,6 +228,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
       returnType.type = BasicType.NUMBER;
       break;
     case 'Void':
+    case '()': // `()` type is the same as `Void` in Swift. SourceKit will somtimes output `()` instead of `Void` when queried about the type.
       returnType.type = BasicType.VOID;
       break;
     default:
