@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Settle the pending `getDevicePushTokenAsync()` promise on module destroy to avoid an `EXC_BAD_ACCESS` crash when the `AppContext` is deallocated with a device-token request still in flight (e.g. on a dev-client reload). ([#46985](https://github.com/expo/expo/pull/46985) by [@josephrexme](https://github.com/josephrexme))
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-05-26
