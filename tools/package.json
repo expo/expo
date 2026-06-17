@@ -15,16 +15,10 @@
   },
   "scripts": {
     "build": "expo-build cjs:src=build",
-    "watch": "taskr",
     "clean": "rm -rf build cache",
     "et": "node bin/expotools.js",
     "lint": "eslint .",
     "test": "pnpm build && node --test 'build/**/*.test.js'"
-  },
-  "taskr": {
-    "requires": [
-      "./taskfile-swc.js"
-    ]
   },
   "author": "support@expo.dev",
   "license": "MIT",
@@ -72,10 +66,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@swc/core": "^1.11.11",
-    "@taskr/clear": "1.1.0",
-    "@taskr/esnext": "1.1.0",
-    "@taskr/watch": "1.1.0",
     "@types/diff": "^5.0.2",
     "@types/folder-hash": "^4.0.4",
     "@types/fs-extra": "^11.0.4",
