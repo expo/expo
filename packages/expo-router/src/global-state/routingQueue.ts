@@ -2,6 +2,8 @@ import type { RefObject } from 'react';
 
 import { getNavigateAction } from './getNavigationAction';
 import type { LinkToOptions } from './types';
+import { isNewStateModelEnabled } from '../navigation-state/enable';
+import { imperativeDispatch } from '../navigation-state/integrate';
 import type {
   NavigationAction,
   ParamListBase,
@@ -39,6 +41,16 @@ export const routingQueue = {
     const events = routingQueue.queue;
     routingQueue.queue = [];
     let action: NavigationAction | LinkAction | undefined;
+
+    // New state model: resolve each action against the tree and commit via dispatchNav. There is no
+    // NavigationContainer ref under the flag, so the RN path below would silently drop everything.
+    if (isNewStateModelEnabled()) {
+      while ((action = events.shift())) {
+        imperativeDispatch(action);
+      }
+      return;
+    }
+
     while ((action = events.shift())) {
       // TODO: Consider warning when ref.current is null — actions are silently dropped
       if (ref.current) {

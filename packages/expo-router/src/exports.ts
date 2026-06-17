@@ -18,6 +18,8 @@ export {
 export { router, type ImperativeRouter } from './imperative-api';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
+// Opt into the experimental new navigation state model. Call once at app start, before render.
+export { enableNewStateModel } from './navigation-state/enable';
 export { Navigator, Slot };
 
 // Expo Router Views

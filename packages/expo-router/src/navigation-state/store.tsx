@@ -1,20 +1,13 @@
-// Phase 4 — root store + imperative bridge (RFC D12/D4, Decisions P-3/P-9).
+// Root store + imperative bridge (RFC D12/D4, Decisions P-3/P-9).
 //
 // State lives in ONE root `useReducer`, distributed via context (NOT an external store) — this is
 // what keeps transition updates deferrable (D4). The imperative `router` reaches the store through a
-// thin module bridge: a `dispatch` ref plus a committed-state snapshot ref for reads outside render
-// (`canGoBack`, current URL). Every dispatch is wrapped in `startTransition`.
+// thin module bridge: a `dispatch` ref plus a committed-state snapshot ref for reads outside render.
+// Every dispatch is wrapped in `startTransition`.
 //
-// This is a minimal end-to-end proof. Documented for the integration session (Decisions P-9):
-//   - install timing (insertion/layout effect) must precede children's effects — and must be wired
-//     in lockstep with the synchronous `useLayoutEffect` seeding path (scenario 1b).
-//   - the committed-snapshot contract is only truly satisfied with a pending-intent channel; the
-//     effect-mirrored snapshot here lags by one commit under a concurrent root (P-3).
-//   - transition policy should key off `source` (seed/hydration commit synchronously per C13/1b,
-//     not via `startTransition`).
-//   - StrictMode double-invoke survival, identity-guarded teardown, server no-op + `getServerSnapshot`,
-//     context-fan-out selectors.
-// There is no live consumer this session, so none of the above is built yet.
+// Still deferred (Decisions P-9): install timing vs synchronous seeding (1b); a pending-intent channel
+// for the committed-snapshot contract under a concurrent root; transition policy keyed off `source`;
+// StrictMode double-invoke survival; server `getServerSnapshot`; context-fan-out selectors.
 
 import { createContext, startTransition, use, useEffect, type ReactNode } from 'react';
 import { useReducer } from 'react';
@@ -32,6 +25,12 @@ export function useNavigationTree(): GlobalNavState {
   const state = use(StateContext);
   if (!state) throw new Error('useNavigationTree must be used within a NavigationStateProvider');
   return state;
+}
+
+/** Like `useNavigationTree` but returns null outside a provider — so it can be called
+ * unconditionally (e.g. by `useRouteInfo`, which runs whether or not the flag is on). */
+export function useOptionalNavigationTree(): GlobalNavState | null {
+  return use(StateContext);
 }
 
 export function NavigationStateProvider({

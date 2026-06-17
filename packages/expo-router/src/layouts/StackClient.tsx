@@ -6,6 +6,8 @@ import { Children, useMemo } from 'react';
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
+import { isNewStateModelEnabled } from '../navigation-state/enable';
+import { Stack as NewStack } from '../navigation-state/render/createStackNavigator';
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
@@ -568,58 +570,62 @@ function filterSingular<
  *
  * @hideType
  */
-const Stack = Object.assign(
-  (props: ComponentProps<typeof RNStack>) => {
-    const { isStackAnimationDisabled } = useLinkPreviewContext();
+function StackImpl(props: ComponentProps<typeof RNStack>) {
+  const { isStackAnimationDisabled } = useLinkPreviewContext();
 
-    const screenOptionsWithCompositionAPIOptions = useMemo<NativeStackScreenOptions>(() => {
-      const stackHeader = Children.toArray(props.children).find((child) =>
-        isChildOfType(child, StackHeader)
-      );
-      if (stackHeader) {
-        const screenStackProps: StackScreenProps = { children: stackHeader };
-        const currentOptions = props.screenOptions;
-        if (currentOptions) {
-          if (typeof currentOptions === 'function') {
-            return (...args) => {
-              const options = currentOptions(...args);
-              return appendScreenStackPropsToOptions(options, screenStackProps);
-            };
-          }
-          return appendScreenStackPropsToOptions(currentOptions, screenStackProps);
-        } else {
-          return appendScreenStackPropsToOptions({}, screenStackProps);
+  const screenOptionsWithCompositionAPIOptions = useMemo<NativeStackScreenOptions>(() => {
+    const stackHeader = Children.toArray(props.children).find((child) =>
+      isChildOfType(child, StackHeader)
+    );
+    if (stackHeader) {
+      const screenStackProps: StackScreenProps = { children: stackHeader };
+      const currentOptions = props.screenOptions;
+      if (currentOptions) {
+        if (typeof currentOptions === 'function') {
+          return (...args) => {
+            const options = currentOptions(...args);
+            return appendScreenStackPropsToOptions(options, screenStackProps);
+          };
         }
-      } else if (props.screenOptions) {
-        const screenOptions = props.screenOptions;
-        if (typeof screenOptions === 'function') {
-          return validateStackPresentation(screenOptions);
-        }
+        return appendScreenStackPropsToOptions(currentOptions, screenStackProps);
+      } else {
+        return appendScreenStackPropsToOptions({}, screenStackProps);
+      }
+    } else if (props.screenOptions) {
+      const screenOptions = props.screenOptions;
+      if (typeof screenOptions === 'function') {
         return validateStackPresentation(screenOptions);
       }
-      return props.screenOptions;
-    }, [props.screenOptions, props.children]);
+      return validateStackPresentation(screenOptions);
+    }
+    return props.screenOptions;
+  }, [props.screenOptions, props.children]);
 
-    const screenOptions = useMemo(() => {
-      const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
+  const screenOptions = useMemo(() => {
+    const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
 
-      return disableAnimationInScreenOptions(screenOptionsWithCompositionAPIOptions, condition);
-    }, [screenOptionsWithCompositionAPIOptions, isStackAnimationDisabled]);
+    return disableAnimationInScreenOptions(screenOptionsWithCompositionAPIOptions, condition);
+  }, [screenOptionsWithCompositionAPIOptions, isStackAnimationDisabled]);
 
-    const rnChildren = useMemo(
-      () => mapProtectedScreen({ guard: true, children: props.children }).children,
-      [props.children]
-    );
+  const rnChildren = useMemo(
+    () => mapProtectedScreen({ guard: true, children: props.children }).children,
+    [props.children]
+  );
 
-    return (
-      <RNStack
-        {...props}
-        children={rnChildren}
-        screenOptions={screenOptions}
-        UNSTABLE_router={stackRouterOverride}
-      />
-    );
-  },
+  return (
+    <RNStack
+      {...props}
+      children={rnChildren}
+      screenOptions={screenOptions}
+      UNSTABLE_router={stackRouterOverride}
+    />
+  );
+}
+
+const Stack = Object.assign(
+  // Flag swap (Decisions R-3): read at render, never module-eval. Flag off = the exact old Stack.
+  (props: ComponentProps<typeof RNStack>) =>
+    isNewStateModelEnabled() ? <NewStack /> : <StackImpl {...props} />,
   {
     Screen: StackScreen,
     Protected,

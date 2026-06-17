@@ -14,6 +14,9 @@ import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
+import { isNewStateModelEnabled } from './navigation-state/enable';
+import { getInitialAppTree } from './navigation-state/integrate';
+import { NewStateModelRoot } from './navigation-state/render/NewStateModelRoot';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
 import type { LinkingOptions, NavigationAction } from './react-navigation/native';
@@ -150,6 +153,18 @@ function ContextNavigator({
       // Ensure tutorial styles are stripped in production.
       return null;
     }
+  }
+
+  // New state model (Decisions R-4): the reducer owns state, so we mount NavigationStateProvider +
+  // the app tree instead of the react-navigation container. Seams #1/#3/#4/#7 are wired together.
+  if (isNewStateModelEnabled()) {
+    return (
+      <StoreContext.Provider value={store}>
+        <ServerContext.Provider value={serverContext}>
+          <NewStateModelRoot initial={getInitialAppTree()} wrapper={WrapperComponent} />
+        </ServerContext.Provider>
+      </StoreContext.Provider>
+    );
   }
 
   return (

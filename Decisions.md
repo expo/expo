@@ -153,6 +153,32 @@ Known limitations carried forward (jest-green; on-device pending — R-7):
 - **Disappearing-screen hold / native dismissCount→remove** is wired through the shim's `dispatch`
   but not yet exercised against real `react-native-screens` lifecycle (on-device, R-Phase C+).
 
+### R-10 — R-Phase C (flag-on vertical slice) review outcomes
+*(4 fresh agents: architecture, flag-off integrity, test quality, minimalism)*
+
+`enableNewStateModel()` now switches the app end-to-end: `ExpoRoot` mounts `NavigationStateProvider`
++ the hydrated app tree + the new `Stack` (flag-swapped at the `StackClient` export, render-time
+branch — flag-off renders the byte-identical `StackImpl`); `routingQueue.run` resolves imperative
+actions via the new model; `useRouteInfo` projects the tree to the `UrlObject`; Android `BackHandler`
+→ `resolveBack`. Integration tests (real `ExpoRoot` via `renderRouter`, flag on): boot, deep-link
+boot, `router.push`/`back` + `usePathname`, and a "new provider mounted" oracle. **Flag-off is
+byte-identical** — full suite (4372 tests) green; the only flag-off deltas are an inert extra context
+read in `useRouteInfo` and one extra wrapper component, both verified harmless.
+
+Acted on: `unwrapSlot` finds the `__root` slot by name (not position); dropped the speculative
+`hydrateAppTree` export; trimmed the stale `store.tsx` roadmap comment; fixed the `behaviorMap`
+"live view"→"snapshot" comment; noted why the root needs its own shim.
+
+**Known limits (documented, deferred):**
+- **R-10a `push` ≡ `navigate`:** `imperativeDispatch` ignores `options.event`, so `router.push` to an
+  already-present route won't add a duplicate (uses navigate semantics). Pinned by a KNOWN-LIMIT test.
+- **R-10b not-found/sitemap:** `_sitemap`/`+not-found` can be top-level siblings of `__root`; the
+  unwrap/re-wrap and `getRouteInfoFromState`'s sibling-handling aren't fully wired for those focused
+  cases. Fine for matched routes (the slice); to finish before GA.
+- **Behavior registration is effect-time** (mounted navigators only) — the documented C12/P-4
+  stand-in; unmounted-branch behavior lookup still pending the static manifest.
+- Per-screen `options` still `{}`; `setParams` no-op (P-15); on-device verification still pending (R-7).
+
 ### R-8 — R-Phase B foundation (NavNodeContext + projection) review outcomes
 *(3 fresh agents)*
 

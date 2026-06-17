@@ -11,6 +11,7 @@ import type {
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { isNewStateModelEnabled } from '../navigation-state/enable';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
 import type { RequireContext, Href } from '../types';
 import * as SplashScreen from '../views/Splash';
@@ -129,6 +130,9 @@ export const store = {
     }
   },
   assertIsReady() {
+    // The new state model has no NavigationContainer; readiness is implied by the provider, and the
+    // routing queue holds actions until the emitter mounts and drains them.
+    if (isNewStateModelEnabled()) return;
     if (!storeRef.current.navigationRef.isReady()) {
       throw new Error(
         'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'

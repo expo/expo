@@ -8,7 +8,7 @@
 // (reference-stable across unrelated dispatches), so screen `navigation` identity is stable and an
 // unrelated navigation does not thrash screen effects.
 
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { createEmitter } from './emitter';
 import { NavNodeProvider, useNavNodeSlice } from './navNodeContext';
@@ -24,7 +24,9 @@ import { NavigationStateListenerProvider } from '../../react-navigation/core/use
 import { DefaultTheme } from '../../react-navigation/native';
 import { NativeStackView } from '../../react-navigation/native-stack/views/NativeStackView';
 import { getQualifiedRouteComponent } from '../../useScreens';
+import { registerBehavior } from '../behaviorMap';
 import { dispatchNav } from '../store';
+import { ROOT_NAME } from '../tree';
 import type { NavNode } from '../types';
 
 type Descriptor = {
@@ -76,6 +78,11 @@ function useStackDescriptors(node: NavNode, layoutNode: RouteNode | null) {
 export function Stack() {
   const node = useNavNodeSlice();
   const layoutNode = useRouteNode();
+
+  // Register this navigator's behavior so the resolvers (back/navigate) can look it up by the name
+  // `focusedChain` uses: the owning route's name, or ROOT_NAME for the app root (route '').
+  const behaviorName = layoutNode?.route || ROOT_NAME;
+  useEffect(() => registerBehavior(behaviorName, 'stack'), [behaviorName]);
 
   const descriptors = useStackDescriptors(node, layoutNode);
   const state = useMemo(() => projectToStackState(node), [node]);
