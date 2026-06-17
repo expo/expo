@@ -1,4 +1,9 @@
-import AppMetrics, { type DebugSession, type Session, type SessionType } from 'expo-app-metrics';
+import AppMetrics, {
+  type CrashReport,
+  type DebugSession,
+  type Session,
+  type SessionType,
+} from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
 import { type Href, router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -18,6 +23,7 @@ import { useTheme } from '@/utils/theme';
 // A row's worth of session data, normalized from a `Session` record — the live
 // main session or an inactive one.
 type SessionRowData = {
+  kind: 'session';
   id: string;
   type: SessionType;
   startDate: string;
@@ -30,7 +36,20 @@ type SessionRowData = {
   href: Href;
 };
 
-type Section = { title: string; data: SessionRowData[] };
+// A startup crash not attributed to any session (from `getOrphanedCrashReports`).
+// Keyed by position since crash reports have no id; the detail screen re-fetches
+// the same ordered list and looks the report up by index.
+type OrphanRowData = {
+  kind: 'orphan';
+  index: number;
+  summary: string;
+  timestamp: string;
+  href: Href;
+};
+
+type RowData = SessionRowData | OrphanRowData;
+
+type Section = { title: string; data: RowData[] };
 
 export default function SessionsList() {
   const theme = useTheme();
@@ -59,9 +78,14 @@ export default function SessionsList() {
       .map(inactiveSessionToRow)
       .sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
 
+    // Startup crashes that predate any session — Android only, hence the optional call.
+    const orphanReports = (await AppMetrics.getOrphanedCrashReports?.()) ?? [];
+    const orphans: OrphanRowData[] = orphanReports.map(orphanCrashToRow);
+
     setSections([
       ...(active.length ? [{ title: 'Active', data: active }] : []),
       ...(inactive.length ? [{ title: 'Inactive', data: inactive }] : []),
+      ...(orphans.length ? [{ title: 'Startup crashes', data: orphans }] : []),
     ]);
     setLoaded(true);
   }, []);
@@ -101,7 +125,7 @@ export default function SessionsList() {
         style={[styles.container, { backgroundColor: theme.background.screen }]}
         contentContainerStyle={styles.contentContainer}
         sections={sections}
-        keyExtractor={(session) => session.id}
+        keyExtractor={(item) => (item.kind === 'orphan' ? `orphan-${item.index}` : item.id)}
         stickySectionHeadersEnabled={false}
         refreshControl={
           Platform.OS === 'ios' ? (
@@ -137,7 +161,9 @@ export default function SessionsList() {
             {section.title}
           </Text>
         )}
-        renderItem={({ item }) => <SessionRow session={item} />}
+        renderItem={({ item }) =>
+          item.kind === 'orphan' ? <OrphanRow row={item} /> : <SessionRow session={item} />
+        }
       />
     </>
   );
@@ -145,6 +171,7 @@ export default function SessionsList() {
 
 async function liveSessionToRow(session: Session): Promise<SessionRowData> {
   return {
+    kind: 'session',
     id: session.id,
     type: session.type,
     startDate: session.startDate,
@@ -158,6 +185,7 @@ async function liveSessionToRow(session: Session): Promise<SessionRowData> {
 
 function inactiveSessionToRow(session: DebugSession): SessionRowData {
   return {
+    kind: 'session',
     id: session.id,
     type: session.type,
     startDate: session.startDate,
@@ -167,6 +195,29 @@ function inactiveSessionToRow(session: DebugSession): SessionRowData {
     crashed: !!session.crashReport,
     href: `/sessions/${session.id}`,
   };
+}
+
+function orphanCrashToRow(report: CrashReport, index: number): OrphanRowData {
+  return {
+    kind: 'orphan',
+    index,
+    summary: crashSummary(report),
+    timestamp: report.timestampBegin,
+    href: `/sessions/orphaned/${index}`,
+  };
+}
+
+// A short one-line description of a crash. Android JVM crashes carry the throwable
+// message as a plain `exceptionReason` string; native crashes fall back to the signal.
+function crashSummary(report: CrashReport): string {
+  const reason = report.exceptionReason;
+  if (typeof reason === 'string' && reason.trim()) {
+    return reason.split('\n')[0];
+  }
+  if (reason && typeof reason === 'object') {
+    return reason.composedMessage || reason.exceptionName;
+  }
+  return report.terminationReason ?? 'Native crash';
 }
 
 function SessionRow({ session }: { session: SessionRowData }) {
@@ -219,6 +270,44 @@ function SessionRow({ session }: { session: SessionRowData }) {
         {shortId}
         {duration ? ` · ${duration}` : isActive ? ' · active' : ''} · {metricCount} metric
         {metricCount === 1 ? '' : 's'}
+      </Text>
+    </Pressable>
+  );
+}
+
+function OrphanRow({ row }: { row: OrphanRowData }) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      onPress={() => router.push(row.href)}
+      style={({ pressed }) => [
+        styles.row,
+        {
+          backgroundColor: theme.background.element,
+          borderColor: theme.border.default,
+          borderLeftWidth: 3,
+          borderLeftColor: theme.icon.danger,
+        },
+        pressed && styles.rowPressed,
+      ]}>
+      <View style={styles.rowHeader}>
+        <Text
+          style={[styles.rowTitle, { color: theme.text.default }]}
+          numberOfLines={1}
+          ellipsizeMode="tail">
+          {formatDate(new Date(row.timestamp))}
+        </Text>
+        <View style={styles.badges}>
+          <View style={[styles.badge, { backgroundColor: theme.background.danger }]}>
+            <Text style={[styles.badgeText, { color: theme.text.danger }]}>Crashed</Text>
+          </View>
+        </View>
+      </View>
+      <Text
+        style={[styles.rowMeta, { color: theme.text.secondary }]}
+        numberOfLines={2}
+        ellipsizeMode="tail">
+        {row.summary}
       </Text>
     </Pressable>
   );
