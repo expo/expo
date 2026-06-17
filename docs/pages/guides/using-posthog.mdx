@@ -77,8 +77,8 @@ export default function RootLayout() {
       apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
       options={{
         host: process.env.EXPO_PUBLIC_POSTHOG_HOST,
-        enableSessionReplay: true, // set to true only if you set up session replay
-        disabled: __DEV__, // gate out development traffic
+        enableSessionReplay: false, // set to true if you enabled session replay
+        // disabled: __DEV__, // uncomment to stop sending events from development builds
       }}>
       <Slot />
     </PostHogProvider>
@@ -120,7 +120,7 @@ Open your PostHog project (at `https://us.posthog.com` or `https://eu.posthog.co
 
 ## Manual setup
 
-`connect` is a shortcut for the standard PostHog React Native setup. To do it manually, follow [PostHog's React Native installation guide](https://posthog.com/docs/libraries/react-native), then set `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (plus the `POSTHOG_CLI_*` variables for source maps). Wrap your app in `<PostHogProvider>` as shown in [Step 2](#install-and-configure-posthog). For source maps, see [Source maps](#source-maps).
+`connect` is a shortcut for the standard PostHog React Native setup. To do it manually, follow [PostHog's React Native installation guide](https://posthog.com/docs/libraries/react-native), then set `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (plus the `POSTHOG_CLI_*` variables for source maps). Wrap your app in `<PostHogProvider>` as shown in [Step 2](#wrap-your-app-in-posthogprovider). For source maps, see [Source maps](#source-maps).
 
 ## Error tracking
 
