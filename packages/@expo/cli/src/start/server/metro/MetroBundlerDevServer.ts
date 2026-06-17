@@ -54,7 +54,7 @@ import {
   isApiRouteConvention,
   warnInvalidWebOutput,
 } from './router';
-import { serializeHtmlWithAssets } from './serializeHtml';
+import { serialAssetsToStaticContentAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { events } from '../../../events';
 import type {
@@ -751,40 +751,30 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return { content };
     }
 
-    const bundleStaticHtml = async (): Promise<string> => {
-      const { getStaticContent } = await this.ssrLoadModule<
-        typeof import('@expo/router-server/build/static/renderStaticContent')
-      >(require.resolve('@expo/router-server/node/render.js'), {
-        // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-        // the previous React SSG utilities which aren't available in React 19.
-        environment: 'node',
-        minify: false,
-        isExporting,
-        platform,
-      });
-
-      const { loader } = await this.getDevServerRenderOptionsAsync({
-        location,
-        route,
-        request,
-      });
-
-      return await getStaticContent(location, loader ? { loader } : undefined);
-    };
-
-    const [{ artifacts: resources }, staticHtml] = await Promise.all([
-      this.getStaticResourcesAsync({
-        clientBoundaries: [],
-      }),
-      bundleStaticHtml(),
+    const [{ artifacts: resources }, { getStaticContent }, { loader }] = await Promise.all([
+      this.getStaticResourcesAsync({ clientBoundaries: [] }),
+      this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
+        require.resolve('@expo/router-server/node/render.js'),
+        {
+          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+          // the previous React SSG utilities which aren't available in React 19.
+          environment: 'node',
+          minify: false,
+          isExporting,
+          platform,
+        }
+      ),
+      this.getDevServerRenderOptionsAsync({ location, route, request }),
     ]);
-    const content = serializeHtmlWithAssets({
-      isExporting,
-      resources,
-      template: staticHtml,
-      devBundleUrl: devBundleUrlPathname,
-      baseUrl,
+
+    const content = await getStaticContent(location, {
+      ...(loader ? { loader } : {}),
       hydrate: env.EXPO_WEB_DEV_HYDRATE,
+      assets: serialAssetsToStaticContentAssets(resources, {
+        isExporting: false,
+        baseUrl,
+        bundleUrl: devBundleUrlPathname,
+      }),
     });
     return {
       content,

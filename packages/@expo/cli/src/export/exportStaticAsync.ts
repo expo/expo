@@ -29,7 +29,7 @@ import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import {
   assetsRequiresSort,
-  serializeHtmlWithAssets,
+  serialAssetsToStaticContentAssets,
   sortMatchedAssetsByEntryPoints,
 } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
@@ -221,7 +221,6 @@ export async function exportFromServerAsync(
   Log.log(logOutput);
 
   const platform = 'web';
-  const isExporting = true;
   const isExportingWithSSR =
     exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
@@ -276,19 +275,15 @@ export async function exportFromServerAsync(
         }
       }
 
-      if (faviconAsset) {
-        renderOpts.assets = { css: [], js: [], favicon: faviconAsset.href };
-      }
-
-      const template = await renderAsync(normalizedPathname, route, renderOpts);
-      let html = serializeHtmlWithAssets({
-        isExporting,
-        resources: resources.artifacts,
-        template,
+      renderOpts.hydrate = true;
+      renderOpts.assets = serialAssetsToStaticContentAssets(resources.artifacts, {
+        isExporting: true,
         baseUrl,
         route,
-        hydrate: true,
+        favicon: faviconAsset?.href,
       });
+
+      let html = await renderAsync(normalizedPathname, route, renderOpts);
 
       if (scriptTags) {
         // Inject script tags into the HTML.
