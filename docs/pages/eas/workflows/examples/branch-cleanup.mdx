@@ -46,7 +46,7 @@ jobs:
 ## How it works
 
 1. [`on.ref_delete`](/eas/workflows/syntax/#onref_delete) runs when a GitHub branch matching the patterns is deleted. The example above triggers on all branches except `main`.
-2. The [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job deletes the EAS Update branch named `${{ github.ref_name }}` — the same name as the deleted Git branch.
+2. The [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job deletes the EAS Update branch named `${{ github.ref_name }}`, the same name as the deleted Git branch.
 3. With the default `fail_on_missing: false`, the job succeeds even if the EAS Update branch was already deleted or never existed.
 
 ## Important notes
