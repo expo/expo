@@ -1,3 +1,4 @@
+'use client';
 // R-Phase B — a Stack navigator that renders REAL screens from the new tree (Decisions R-2).
 //
 // It reads its NavNode slice, projects it into the shape `NativeStackView` consumes, builds a

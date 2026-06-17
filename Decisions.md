@@ -189,6 +189,36 @@ registration), only swapping the view. Flag-swapped at the `experimental-stack` 
 Reviewed via the shared factory already covered by R-9/R-10's 4 agents + the full suite, rather than a
 fresh round, since it is a mechanical reuse of the proven pattern.
 
+### R-12 — R-Phase D (NativeTabs) review outcomes
+*(4 fresh agents: architecture, coverage, quality, minimalism)*
+
+`NativeTabs` renders from the tree via the existing `NativeTabsView`: declared `<Trigger>`s drive the
+bar (mount-all, P-10), the tree holds promoted tabs, switching resolves a `focus` on the tabs node
+(set-index if promoted, else insert+set-index, source `'native'`). Tests (view mocked to capture
+props): mount≠promotion, promote-on-navigate, switch-back (set-index, no removal), native onTabChange,
+disabled-tab prevented, flag-off legacy path. Full suite (4379) green.
+Acted on (real bugs the agents caught):
+- **`onTabChange` now honors `isPrevented`/`isNativeAction`** (was dropped behind `as never`): a
+  disabled-tab tap no longer navigates; a JS-origin echo no longer double-dispatches; provenance isn't
+  bumped on a prevented tap.
+- **`defaultTabNode` memoized per tab name** (was minting fresh keys every render → non-promoted tabs
+  remounted/lost state on any navigation).
+- **Hidden triggers filtered** from the bar.
+- **`'use client'`** added to the new render client modules (createStack/NativeTabs navigators,
+  NewStateModelRoot, store, navNodeContext) — they're imported into the RSC-safe `NativeTabs.tsx`
+  shell. `as never` dropped (typed `OnTabChangeEventPayload`/`NativeTabsViewTabItem`); useCallback.
+
+**Known limits (deferred, documented):**
+- **Cross-tab back exits the app** — `resolveBack` is called without focus-order and there is no
+  focus-order producer yet (R-5). Returning to the previous tab on back needs that plumbing.
+- **Shared-helper extraction deferred** — ~40% of the tabs navigator duplicates the stack navigator
+  (screensByName, screen-content render, behavior registration); extract into shared helpers before a
+  4th navigator (quality, not correctness).
+- **Per-tab `navigation` is a stack shim** — correct for the common case (tab content nests its own
+  navigator); a *leaf* tab calling `goBack` would mis-resolve (latent). Tab `options` icon/label flow
+  through `convertTabPropsToOptions`, but the full appearance prop set isn't forwarded yet.
+- On-device verification still pending (R-7).
+
 ### R-8 — R-Phase B foundation (NavNodeContext + projection) review outcomes
 *(3 fresh agents)*
 

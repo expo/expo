@@ -1,3 +1,4 @@
+'use client';
 // R-Phase C — the app root under the new state model (Decisions R-4/R-5). Mounts the store provider
 // with the hydrated app tree, renders the app's root layout component (which renders the new <Stack/>
 // reading its slice), and subscribes Android hardware-back to the render-free resolver (seam #7).

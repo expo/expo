@@ -5,6 +5,8 @@ import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsBottomAccessory } from './common/elements';
 import { usePlacement } from './hooks';
 import type { NativeTabsProps } from './types';
+import { isNewStateModelEnabled } from '../navigation-state/enable';
+import { NativeTabs as NewNativeTabs } from '../navigation-state/render/createNativeTabsNavigator';
 
 const BottomAccessory = Object.assign(NativeTabsBottomAccessory, {
   usePlacement,
@@ -28,8 +30,12 @@ const BottomAccessory = Object.assign(NativeTabsBottomAccessory, {
  * ```
  */
 export const NativeTabs = Object.assign(
-  (props: NativeTabsProps) => {
-    return <NativeTabsNavigatorWrapper {...props} />;
-  },
+  // Flag swap (Decisions R-3): flag off = the exact old NativeTabs.
+  (props: NativeTabsProps) =>
+    isNewStateModelEnabled() ? (
+      <NewNativeTabs>{props.children}</NewNativeTabs>
+    ) : (
+      <NativeTabsNavigatorWrapper {...props} />
+    ),
   { Trigger: NativeTabTrigger, BottomAccessory }
 );

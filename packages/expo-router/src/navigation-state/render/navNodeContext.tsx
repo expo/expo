@@ -1,3 +1,4 @@
+'use client';
 // R-Phase B — hands each navigator its slice of the tree (Decisions R-2/R-4).
 //
 // The root provides `root`; when a navigator renders a route's screen it provides that route's

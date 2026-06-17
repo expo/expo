@@ -1,3 +1,4 @@
+'use client';
 // Root store + imperative bridge (RFC D12/D4, Decisions P-3/P-9).
 //
 // State lives in ONE root `useReducer`, distributed via context (NOT an external store) — this is
