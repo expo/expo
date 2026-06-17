@@ -181,3 +181,18 @@ enum TestEnum {
   case multipleCases1, multipleCases2
   case caseWithArgs1(Int, Double, String), caseWithArgs2(Double, String, Either<Int, String>)
 }
+
+protocol SimpleProtocol: Record {
+  var id: String { get }
+}
+
+struct StructConformingToProtocol: SimpleProtocol {
+  @Field
+  var id: String { get }
+  @Field
+  var someInt: Int
+}
+
+struct EmptyStruct: Record {
+  init(){}
+}
