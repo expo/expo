@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [plugin] Allow overriding the `defaultLaunchURL` option at build time with the `EXPO_DEV_LAUNCHER_DEFAULT_LAUNCH_URL` environment variable, and add plugin tests for `defaultLaunchURL`. ([#PR](https://github.com/expo/expo/pull/PR) by [@qwertey6](https://github.com/qwertey6))
+- [plugin] Allow overriding the `defaultLaunchURL` option at build time with the `EXPO_DEV_LAUNCHER_DEFAULT_LAUNCH_URL` environment variable, and add plugin tests for `defaultLaunchURL`. ([#47009](https://github.com/expo/expo/pull/47009) by [@qwertey6](https://github.com/qwertey6))
 
 ### 🐛 Bug fixes
 
