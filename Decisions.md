@@ -115,6 +115,29 @@ imperative (#3) + route-info (#4) must land in ONE commit. Re-sequenced phases:
 - **Link preview / preload:** the tree has no `preloadedRoutes`; gate `<Link.Preview>` as unsupported
   under the flag for now (warn), rather than silently breaking iOS peek/pop.
 
+### R-7 — Render-phase scope (user steer, 2026-06-17)
+
+Build R-Phases B–E (all three navigators + flag seam wiring) with **jest tests**; on-device
+verification is explicitly skipped this pass (user to verify later) — so claims are "jest-green",
+not "device-verified". When the flag is ON and an app uses a navigator type not yet ported (Drawer,
+JS Tabs, TopTabs, SplitView), **throw a clear error** naming the navigator and that the new state
+model doesn't support it yet — no silent breakage, no risky mixed-mode coexistence.
+
+### R-8 — R-Phase B foundation (NavNodeContext + projection) review outcomes
+*(3 fresh agents)*
+
+`render/navNodeContext.tsx` (slice handoff; nested providers = recursion) and
+`render/projectToStackState.ts` (NavNode → inert StackNavigationState the existing views read) are the
+first render pieces. Confirmed: projection produces everything `NativeStackView` reads (index,
+routes`{key,name,params}`, key, empty preloadedRoutes); reducer reference-stability is genuinely
+exploitable so a navigator can memoize on its slice. Folded in: trimmed over-claiming headers (the
+memo win needs the consumer to `useMemo` the projection — noted, not implemented here), a note on the
+`as` cast (bridges `routeNames`), added empty-routes + undefined-params coverage. Honest framing: the
+projection is ONE of three inputs the stack view needs — the per-route `navigation` shim + descriptors
++ the `route.child`→`NavNodeProvider` recursion wiring live in the (still-unbuilt) descriptor/shim
+layer; `state.key` must equal the shim's dispatch `target`. The full `NativeStackView` reuse requires
+shimming the large `NativeStackNavigationProp` surface — the substantial remaining work.
+
 ### R-6 — R-Phase A (flag module) review outcomes
 *(3 fresh agents)*
 
