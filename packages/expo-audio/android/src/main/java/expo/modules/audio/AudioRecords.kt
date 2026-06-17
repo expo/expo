@@ -160,3 +160,39 @@ enum class RecordingSource(val value: String) : Enumerable {
     VOICE_RECOGNITION -> MediaRecorder.AudioSource.VOICE_RECOGNITION
   }
 }
+
+enum class AudioStreamFileFormat(val value: String) : Enumerable {
+  WAV("wav"),
+  PCM("pcm");
+
+  val fileExtension: String get() = value
+}
+
+@OptimizedRecord
+class AudioStreamFileRecordingOptions : Record {
+  @Field var uri: URL? = null
+
+  @Field var directory: RecordingDirectory? = null
+
+  @Field var format: AudioStreamFileFormat = AudioStreamFileFormat.WAV
+}
+
+@OptimizedRecord
+class AudioStreamFileRecordingStartResult : Record {
+  @Field var uri: URL? = null
+}
+
+@OptimizedRecord
+class AudioStreamFileRecordingResult : Record {
+  @Field var uri: URL? = null
+
+  @Field var duration: Double = 0.0
+
+  @Field var size: Long = 0L
+
+  @Field var sampleRate: Int = 0
+
+  @Field var channels: Int = 0
+
+  @Field var encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
+}
