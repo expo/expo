@@ -92,17 +92,27 @@ function isStructStructure(structure: Structure): boolean {
   return structure['key.kind'] === swiftDeclarationKind.struct;
 }
 
-function isRecordStructure(structure: Structure): boolean {
+function containsFieldAnnotation(file: FileType, structure: Structure): boolean {
+  const startIndex = structure['key.offset'];
+  const endIndex = startIndex + structure['key.length'];
+  const fieldIndex = file.content.substring(startIndex, endIndex).indexOf('@Field');
+  return fieldIndex !== -1;
+}
+
+function isRecordStructure(file: FileType, structure: Structure): boolean {
   const isRecordOrClass =
     structure['key.kind'] === swiftDeclarationKind.struct ||
     structure['key.kind'] === swiftDeclarationKind.class;
 
+  // To check whether a structure represents a record, check if it has any @Field annotated fields.
+  // For the case of empty structs add a check if the struct directly conforms to the Record.
+  const hasFields = containsFieldAnnotation(file, structure);
   const inheritsFromRecord =
     structure['key.inheritedtypes']?.find((type) => {
       return type['key.name'] === 'Record';
     }) !== undefined;
 
-  return isRecordOrClass && inheritsFromRecord;
+  return isRecordOrClass && (hasFields || inheritsFromRecord);
 }
 
 function isModuleStructure(structure: Structure): boolean {
@@ -972,6 +982,7 @@ async function parseModuleStructure(
 }
 
 function parseStructure(
+  file: FileType,
   structure: Structure,
   name: string,
   modulesStructures: { structure: Structure; name: string }[],
@@ -979,20 +990,21 @@ function parseStructure(
   enumsStructures: Structure[]
 ) {
   // TODO(@HubertBer): Find out why sometimes the structure is undefined (for example when parsing expo-audio)
-  if (!structure || !structure['key.substructure']) {
+  const substructure = structure['key.substructure'];
+  if (!structure || !substructure) {
     return;
   }
-  const substructure = structure['key.substructure'];
 
   if (isModuleStructure(structure)) {
     modulesStructures.push({ structure, name });
-  } else if (isRecordStructure(structure)) {
+  } else if (isRecordStructure(file, structure)) {
     recordsStructures.push(structure);
   } else if (isEnumStructure(structure)) {
     enumsStructures.push(structure);
   } else if (Array.isArray(substructure) && substructure.length > 0) {
     for (const substructure of structure['key.substructure']) {
       parseStructure(
+        file,
         substructure,
         structure['key.name'] ?? name,
         modulesStructures,
@@ -1112,7 +1124,7 @@ function parseNamespaces(
 ) {
   if (
     isModuleStructure(structure) ||
-    isRecordStructure(structure) ||
+    isRecordStructure(file, structure) ||
     isStructStructure(structure) ||
     isEnumStructure(structure) ||
     isClassStructure(structure)
@@ -1153,8 +1165,14 @@ export async function getSwiftFileTypeInformation(
   const recordsStructures: Structure[] = [];
   const enumsStructures: Structure[] = [];
   const fileStructure = getStructureFromFile(file);
-  parseStructure(fileStructure, '', modulesStructures, recordsStructures, enumsStructures);
-
+  parseStructure(
+    file,
+    getStructureFromFile(file),
+    '',
+    modulesStructures,
+    recordsStructures,
+    enumsStructures
+  );
   const namespaces: { [key: string]: namespace } = {};
   namespaces[''] = {};
   parseNamespaces(fileStructure, namespaces, file, namespaces['']);
