@@ -9,6 +9,15 @@ function pages(prefix: string, count: number) {
   }));
 }
 
+const moreSection = {
+  type: 'section' as const,
+  name: 'More',
+  children: [
+    { type: 'page' as const, name: 'Expo CLI', href: '/more/expo-cli' },
+    { type: 'page' as const, name: 'Glossary of terms', href: '/more/glossary-of-terms' },
+  ],
+};
+
 const index = buildNavIndexFrom([
   {
     area: 'eas',
@@ -33,11 +42,9 @@ const index = buildNavIndexFrom([
               { type: 'page', name: 'Deploy', href: '/eas/workflows/examples/deploy' },
             ],
           },
-          // External links must be ignored.
           { type: 'page', name: 'External', href: 'https://example.com' },
         ],
       },
-      // A large NON-reference section: must still list (trimming is reference-only).
       { type: 'section', name: 'Big EAS', children: pages('/eas/big', 40) },
     ],
   },
@@ -45,9 +52,7 @@ const index = buildNavIndexFrom([
     area: 'reference',
     versionKey: 'v55.0.0',
     nodes: [
-      // Large reference section: must trim.
       { type: 'section', name: 'Expo SDK', children: pages('/versions/v55.0.0/sdk', 40) },
-      // Small reference section: must list.
       {
         type: 'section',
         name: 'Configuration files',
@@ -56,12 +61,16 @@ const index = buildNavIndexFrom([
           { type: 'page', name: 'metro.config.js', href: '/versions/v55.0.0/config/metro' },
         ],
       },
+      moreSection,
     ],
   },
   {
     area: 'reference',
     versionKey: 'latest',
-    nodes: [{ type: 'section', name: 'Expo SDK', children: pages('/versions/latest/sdk', 40) }],
+    nodes: [
+      { type: 'section', name: 'Expo SDK', children: pages('/versions/latest/sdk', 40) },
+      moreSection,
+    ],
   },
 ]);
 
@@ -107,7 +116,7 @@ describe('buildDocsNavigation', () => {
       '- [E2E tests](https://docs.expo.dev/eas/workflows/examples/e2e-tests.md) (this page)'
     );
     expect(block).toContain('- [Deploy](https://docs.expo.dev/eas/workflows/examples/deploy.md)');
-    expect(block).not.toContain('- Introduction');
+    expect(block).not.toContain('- [Introduction]');
   });
 
   it('omits a title-less section from the breadcrumb', () => {
@@ -137,6 +146,17 @@ describe('buildDocsNavigation', () => {
     );
   });
 
+  it('omits the version for a shared, non-versioned reference page', () => {
+    const block = navFor('/more/glossary-of-terms') as string;
+    expect(block).toContain('You are here: Reference > More');
+    expect(block).not.toContain('Reference (v55.0.0) > More');
+    expect(block).not.toContain('Reference (v56.0.0) > More');
+    expect(block).toContain(
+      '- [Glossary of terms](https://docs.expo.dev/more/glossary-of-terms.md) (this page)'
+    );
+    expect(block).toContain('- [Expo CLI](https://docs.expo.dev/more/expo-cli.md)');
+  });
+
   it('does not trim a large non-reference section', () => {
     const block = navFor('/eas/big/page-0') as string;
     expect(block).toContain('You are here: EAS > Big EAS');
@@ -148,20 +168,25 @@ describe('buildDocsNavigation', () => {
     expect(block).toContain(`You are here: Reference (${LATEST_VERSION}) > Expo SDK`);
   });
 
-  it('lists every Expo SDK module in full on the version index page (ENG-21931)', () => {
+  it('lists every Reference section grouped on the version index page (ENG-21931)', () => {
     const block = navFor('/versions/v55.0.0/') as string;
-    expect(block).toContain('You are here: Reference (v55.0.0) > Expo SDK');
-    expect(block).toContain('Pages in this section:');
-    expect(block).not.toContain('40 pages in this section');
+    expect(block).toContain('You are here: Reference (v55.0.0)');
+    expect(block).toContain('### Expo SDK');
+    expect(block).toContain('### Configuration files');
+    expect(block).toContain('### More');
     expect(block).toContain('- [Page 0](https://docs.expo.dev/versions/v55.0.0/sdk/page-0.md)');
     expect(block).toContain('- [Page 39](https://docs.expo.dev/versions/v55.0.0/sdk/page-39.md)');
-    expect(block).toContain('Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)');
+    expect(block).toContain('- [app.json](https://docs.expo.dev/versions/v55.0.0/config/app.md)');
+    expect(block).toContain(
+      '- [Glossary of terms](https://docs.expo.dev/more/glossary-of-terms.md)'
+    );
+    expect(block).not.toContain('40 pages in this section');
   });
 
   it('resolves the latest label on the version index page', () => {
     const block = navFor('/versions/latest/') as string;
-    expect(block).toContain(`You are here: Reference (${LATEST_VERSION}) > Expo SDK`);
-    expect(block).toContain('- [Page 0](https://docs.expo.dev/versions/latest/sdk/page-0.md)');
+    expect(block).toContain('You are here: Reference (v56.0.0)');
+    expect(block).toContain('### Expo SDK');
   });
 
   it('is insensitive to a trailing slash', () => {

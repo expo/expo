@@ -3,7 +3,6 @@ import { LATEST_VERSION } from '../constants/versions.js';
 import { DOCS_BASE_URL, getMarkdownUrl } from './markdown-link-utils.ts';
 
 const TRIM_SECTION_PAGE_THRESHOLD = 30;
-const SDK_INDEX_SECTION_NAME = 'Expo SDK';
 const AREA_LABELS: Record<string, string> = {
   home: 'Home',
   general: 'Guides',
@@ -21,17 +20,16 @@ type NavNode = {
 
 type Sibling = { name: string; href: string };
 
+type ReferenceSection = { title: string; pages: Sibling[] };
+
 type NavLocation = {
   area: string;
-  /** Present only for `reference` pages; the version segment such as `latest` or `v55.0.0`. */
   versionKey?: string;
-  /** Breadcrumb segments after the area label, e.g. `['EAS Workflows']`. */
   trail: string[];
-  /** Pages in the immediate section/group, in sidebar order. */
   siblings: Sibling[];
-  /** Number of pages in the immediate section/group (drives the SDK trim). */
   sectionPageCount: number;
-  isSdkIndex?: boolean;
+  isVersionIndex?: boolean;
+  referenceSections?: ReferenceSection[];
 };
 
 type NavArea = {
@@ -48,6 +46,22 @@ export function normalizeNavKey(pathOrHref: string): string {
 
 function isInternalPage(node: NavNode): boolean {
   return node.type === 'page' && typeof node.href === 'string' && !node.href.startsWith('http');
+}
+
+function referenceVersionFromHref(href: string): string | undefined {
+  return href.match(/^\/versions\/([^/]+)\//)?.[1];
+}
+
+function collectPages(node: NavNode): Sibling[] {
+  const pages: Sibling[] = [];
+  for (const child of node.children ?? []) {
+    if (isInternalPage(child)) {
+      pages.push({ name: child.name ?? '', href: child.href as string });
+    } else if (child.type === 'section' || child.type === 'group') {
+      pages.push(...collectPages(child));
+    }
+  }
+  return pages;
 }
 
 function indexNodes(
@@ -69,9 +83,11 @@ function indexNodes(
     }));
 
     for (const page of pageChildren) {
-      index.set(normalizeNavKey(page.href as string), {
+      const href = page.href as string;
+      index.set(normalizeNavKey(href), {
         area: context.area,
-        versionKey: context.versionKey,
+        versionKey:
+          context.area === 'reference' ? referenceVersionFromHref(href) : context.versionKey,
         trail,
         siblings,
         sectionPageCount: pageChildren.length,
@@ -87,26 +103,33 @@ function indexNodes(
   }
 }
 
-function registerSdkIndex(
+function registerVersionIndex(
   versionKey: string,
   nodes: NavNode[],
   index: Map<string, NavLocation>
 ): void {
-  const sdkSection = nodes.find(
-    node => node.type === 'section' && node.name === SDK_INDEX_SECTION_NAME
-  );
-  const sdkPages = (sdkSection?.children ?? []).filter(isInternalPage);
-  if (sdkPages.length === 0) {
+  const referenceSections: ReferenceSection[] = [];
+  for (const node of nodes) {
+    if (node.type !== 'section' || !node.name) {
+      continue;
+    }
+    const pages = collectPages(node);
+    if (pages.length > 0) {
+      referenceSections.push({ title: node.name, pages });
+    }
+  }
+  if (referenceSections.length === 0) {
     return;
   }
 
   index.set(normalizeNavKey(`/versions/${versionKey}`), {
     area: 'reference',
     versionKey,
-    trail: [SDK_INDEX_SECTION_NAME],
-    siblings: sdkPages.map(page => ({ name: page.name ?? '', href: page.href as string })),
-    sectionPageCount: sdkPages.length,
-    isSdkIndex: true,
+    trail: [],
+    siblings: [],
+    sectionPageCount: 0,
+    isVersionIndex: true,
+    referenceSections,
   });
 }
 
@@ -115,7 +138,7 @@ export function buildNavIndexFrom(areas: NavArea[]): Map<string, NavLocation> {
   for (const { area, versionKey, nodes } of areas) {
     indexNodes(nodes, { area, versionKey, trail: [] }, index);
     if (area === 'reference' && versionKey) {
-      registerSdkIndex(versionKey, nodes, index);
+      registerVersionIndex(versionKey, nodes, index);
     }
   }
   return index;
@@ -149,7 +172,7 @@ function areaLabel(location: NavLocation): string {
 function isTrimmedSection(location: NavLocation): boolean {
   return (
     location.area === 'reference' &&
-    !location.isSdkIndex &&
+    !location.isVersionIndex &&
     location.sectionPageCount > TRIM_SECTION_PAGE_THRESHOLD
   );
 }
@@ -167,7 +190,15 @@ export function buildDocsNavigation(
   const breadcrumb = [areaLabel(location), ...location.trail].join(' > ');
   const lines = ['<DocsNavigation>'];
 
-  if (isTrimmedSection(location)) {
+  if (location.isVersionIndex && location.referenceSections) {
+    lines.push(`You are here: ${breadcrumb}`);
+    for (const section of location.referenceSections) {
+      lines.push(`### ${section.title}`);
+      for (const page of section.pages) {
+        lines.push(`- [${page.name}](${getMarkdownUrl(page.href)})`);
+      }
+    }
+  } else if (isTrimmedSection(location)) {
     lines.push(`You are here: ${breadcrumb} (${location.sectionPageCount} pages in this section)`);
   } else {
     lines.push(`You are here: ${breadcrumb}`);
