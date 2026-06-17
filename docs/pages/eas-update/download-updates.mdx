@@ -27,7 +27,7 @@ You can disable the default behavior by setting the [`checkAutomatically`](/vers
 
 </Collapsible>
 
-## Checking for updates while the app is running
+## Checking for updates while the app is running (foreground)
 
 You can use `Updates.checkForUpdateAsync()` to check for updates while the app is running. This will return a promise that resolves to a [`UpdateCheckResult` object](/versions/latest/sdk/updates/#updatecheckresult), with `isAvailable` set to `true` if an update is available, and information about the update in the [`manifest`](/versions/latest/sdk/manifests/#expoupdatesmanifest) property.
 
@@ -40,9 +40,9 @@ If an update is available, you can use the `Updates.fetchUpdateAsync()` method t
 
 </Collapsible>
 
-## Checking for updates while the app is backgrounded
+## Checking for background updates (while the app is backgrounded)
 
-You can use [`expo-background-task`](/versions/latest/sdk/background-task/) to check for updates while the app is backgrounded. To do this, use the same `Updates.checkForUpdateAsync()` and `Updates.fetchUpdateAsync()` methods as you would in the foreground, but execute them inside of a background task. This is a great way to ensure that the user always has the latest version of the app, even if they have not opened the app in a while.
+You can download **background updates** by checking for and fetching updates while the app is backgrounded, also known as *background fetch*. You can use [`expo-background-task`](/versions/latest/sdk/background-task/) to run the same `Updates.checkForUpdateAsync()` and `Updates.fetchUpdateAsync()` methods you would in the foreground, but inside a background task. This is a great way to ensure that the app user always has the latest version of the app, even if they have not opened the app in a while.
 
 It's worth considering whether you want to reload the app after an update is downloaded in the background, or wait for the user to close and reopen it. If you choose to only download it in the background and not apply it, this should still be useful to ensure that the next boot will immediately have the latest version, and it will lead to a faster adoption rate for updates compared to the default behavior.
 
@@ -85,7 +85,7 @@ Reloading an update while the app is backgrounded can be a great way to ensure t
 
 </Collapsible>
 
-## Critical/mandatory updates
+## Critical, mandatory, or forced updates
 
 There is no first-class support for critical/mandatory updates in the `expo-updates` library. However, you can implement your own logic to check for critical updates and apply them manually. The [`expo/UpdatesAPIDemo` repository](https://github.com/expo/UpdatesAPIDemo) contains an example of one way to approach this. You can combine that approach with the strategies above to check for updates.
 
