@@ -29,29 +29,35 @@ function isClaudeCodeInstalled(): boolean {
   );
 }
 
-function copyFileIfMissing(sourcePath: string, destinationPath: string): void {
+async function copyFileIfMissing(sourcePath: string, destinationPath: string): Promise<void> {
   if (fs.existsSync(destinationPath)) {
     return;
   }
   const dir = path.dirname(destinationPath);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.copyFileSync(sourcePath, destinationPath);
+  await fs.promises.mkdir(dir, { recursive: true });
+  await fs.promises.copyFile(sourcePath, destinationPath);
 }
 
-function writeFileIfMissing(filePath: string, content: string): void {
+async function writeFileIfMissing(filePath: string, content: string): Promise<void> {
   if (fs.existsSync(filePath)) {
     return;
   }
   const dir = path.dirname(filePath);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(filePath, content);
+  await fs.promises.mkdir(dir, { recursive: true });
+  await fs.promises.writeFile(filePath, content);
 }
 
-export function generateAgentFiles(root: string): void {
-  copyFileIfMissing(resolveAgentTemplatePath('AGENTS.md'), path.join(root, 'AGENTS.md'));
+export async function generateAgentFiles(root: string): Promise<void> {
+  const tasks: Promise<void>[] = [
+    copyFileIfMissing(resolveAgentTemplatePath('AGENTS.md'), path.join(root, 'AGENTS.md')),
+  ];
 
   if (isClaudeCodeInstalled()) {
-    copyFileIfMissing(resolveAgentTemplatePath('CLAUDE.md'), path.join(root, 'CLAUDE.md'));
-    writeFileIfMissing(path.join(root, '.claude', 'settings.json'), CLAUDE_SETTINGS_CONTENT);
+    tasks.push(
+      copyFileIfMissing(resolveAgentTemplatePath('CLAUDE.md'), path.join(root, 'CLAUDE.md')),
+      writeFileIfMissing(path.join(root, '.claude', 'settings.json'), CLAUDE_SETTINGS_CONTENT)
+    );
   }
+
+  await Promise.all(tasks);
 }
