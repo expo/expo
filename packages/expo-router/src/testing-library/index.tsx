@@ -73,7 +73,14 @@ export function renderRouter(
   context: MockContextConfig = './app',
   { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
 ): Result {
+  // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
+  const systemTime = Date.now();
   jest.useFakeTimers();
+  try {
+    jest.setSystemTime(systemTime);
+  } catch {
+    // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
+  }
 
   const mockContext = getMockContext(context);
 
