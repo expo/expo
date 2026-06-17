@@ -124,7 +124,10 @@ Open your PostHog project (at `https://us.posthog.com` or `https://eu.posthog.co
 
 ## Source maps
 
-If you enabled error tracking, source maps let PostHog symbolicate JavaScript stack traces (including Hermes bytecode), so errors point to your original source instead of minified output. Set up injection once, then source maps upload automatically for native builds and manually for over-the-air updates.
+If you enabled error tracking, PostHog symbolicates two separate things, and you set them up independently:
+
+- **JavaScript source maps** for JS/TS exceptions, including Hermes bytecode. Covered by the steps below.
+- **Native debug symbols** for native Android and iOS crashes (ProGuard/R8 mappings and dSYMs). Optional, and covered in [Native crash symbolication](#native-crash-symbolication).
 
 ### Set up source map injection
 
@@ -144,15 +147,61 @@ PostHog's CLI authenticates with the `POSTHOG_CLI_*` environment variables that 
 
 ### EAS Build
 
-The `posthog-react-native/expo` config plugin uploads source maps automatically during the Android (Gradle) and iOS (Xcode) build phases, so there's no extra command to run on `eas build`. To adjust iOS script sandboxing, see the plugin's options in [PostHog's source maps guide](https://posthog.com/docs/error-tracking/upload-source-maps/react-native).
+The `posthog-react-native/expo` config plugin configures upload for you. JavaScript source maps upload automatically during the Android (Gradle) and iOS (Xcode) build phases, so there's no extra command to run on `eas build`. Native debug-symbol upload is also built into the plugin, but it's off by default; turn it on with the `uploadNativeSymbols` option (see [Native crash symbolication](#native-crash-symbolication)).
 
 ### EAS Update
 
-Over-the-air bundles aren't part of `eas build`, so upload their source maps manually after each update. [Install PostHog's CLI](https://posthog.com/docs/error-tracking/upload-source-maps/cli), then:
+Over-the-air updates ship only JavaScript, so you upload just their source maps after each update (native symbols are fixed at build time). [Install PostHog's CLI](https://posthog.com/docs/error-tracking/upload-source-maps/cli), then:
 
 <Terminal cmd={['$ eas update', '', '$ posthog-cli hermes upload --directory dist']} />
 
-`dist` is the default EAS Update output directory. For EAS Workflows and other CI, the `POSTHOG_CLI_*` variables are already set in your EAS environment variables. For external CI, add them with `eas env:create` and reference them in your workflow.
+`dist` is the default EAS Update output directory.
+
+<Collapsible summary="Automate uploads with EAS Workflows">
+
+EAS Build uploads source maps as part of the native build, so a build workflow needs nothing extra. For updates, add a job that re-exports and uploads after publishing:
+
+```yaml .eas/workflows/publish-update.yml
+name: Publish update
+on:
+  push:
+    branches: ['main']
+jobs:
+  publish_update:
+    name: Publish update
+    type: update
+    params:
+      channel: production
+  upload_update_sourcemaps:
+    name: Upload OTA source maps to PostHog
+    needs: [publish_update]
+    environment: production
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: Export JS bundle and source maps
+        run: npx expo export --dump-sourcemap --output-dir dist
+      - name: Upload source maps to PostHog
+        run: npx --yes @posthog/cli@latest hermes upload --directory dist
+```
+
+`environment: production` gives the job the `POSTHOG_CLI_*` variables that `connect` stored. The chunk IDs injected by `getPostHogExpoConfig` let the re-exported source maps match the bundle the update published. For external CI, set the `POSTHOG_CLI_*` variables yourself.
+
+</Collapsible>
+
+### Native crash symbolication
+
+Optional. Native crashes (as opposed to JavaScript exceptions) need native debug symbols uploaded at build time. The `posthog-react-native/expo` plugin can do this during EAS Build once you opt in:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["posthog-react-native/expo", { "uploadNativeSymbols": true }]]
+  }
+}
+```
+
+This is one of three pieces required end to end: build-time symbol upload (above), native crash autocapture in your provider, and the exception-autocapture setting in your PostHog project. See [PostHog's native crash autocapture](https://posthog.com/docs/libraries/react-native#native-crash-autocapture) for the full setup.
 
 ## Release tagging
 
