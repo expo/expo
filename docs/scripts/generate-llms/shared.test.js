@@ -1,4 +1,9 @@
-import { getMarkdownHref, getMarkdownUrl, rewriteDocsLinksToMarkdown } from './shared.js';
+import {
+  getMarkdownHref,
+  getMarkdownUrl,
+  rewriteDocsLinksToMarkdown,
+  stripDocsNavigation,
+} from './shared.js';
 
 describe('getMarkdownHref', () => {
   it('converts docs page hrefs to sibling markdown hrefs', () => {
@@ -103,5 +108,34 @@ describe('rewriteDocsLinksToMarkdown', () => {
     const content = ['~~~md', '```', '[Inside](/get-started/create-a-project/)', '~~~'].join('\n');
 
     expect(rewriteDocsLinksToMarkdown(content)).toBe(content);
+  });
+});
+
+describe('stripDocsNavigation', () => {
+  it('removes the per-page DocsNavigation block so it does not leak into aggregates', () => {
+    const content = [
+      '---',
+      'title: Camera',
+      '---',
+      '<DocsNavigation>',
+      'You are here: Reference (v56.0.0) > Expo SDK (86 pages in this section)',
+      'Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)',
+      '</DocsNavigation>',
+      '',
+      '# Camera',
+      'Body content.',
+    ].join('\n');
+
+    const stripped = stripDocsNavigation(content);
+
+    expect(stripped).not.toContain('<DocsNavigation>');
+    expect(stripped).not.toContain('You are here:');
+    expect(stripped).toContain('title: Camera');
+    expect(stripped).toContain('# Camera');
+  });
+
+  it('leaves content without a block unchanged', () => {
+    const content = '# Heading\n\nNo navigation block here.';
+    expect(stripDocsNavigation(content)).toBe(content);
   });
 });

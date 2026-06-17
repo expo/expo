@@ -14,6 +14,7 @@ import {
   shouldAppendAgentInstructions,
   urlPathFromHtmlPath,
 } from './agent-instructions.ts';
+import { buildDocsNavigation } from './docs-navigation.ts';
 import {
   checkMarkdownQuality,
   convertMdxInstructionToMarkdown,
@@ -198,10 +199,14 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
       ? buildAgentInstructions(pathname)
       : null;
     const pageNote = buildPageSpecificNote(pathname);
+    const docsNavigation = buildDocsNavigation(pathname);
 
     const parts: string[] = [];
     if (frontmatter) {
       parts.push(frontmatter);
+    }
+    if (docsNavigation) {
+      parts.push(docsNavigation);
     }
     if (pageNote) {
       parts.push(pageNote);
