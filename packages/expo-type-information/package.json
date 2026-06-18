@@ -25,7 +25,8 @@
     "lint": "expo-module lint",
     "test": "echo \"Tests can only be run on MacOS with sourceKitten installed. Run tests locally instead using local-test script.\"",
     "local-test": "NODE_OPTIONS=\"--experimental-vm-modules\" expo-module test",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "expo-type-information": "./bin/cli.js"

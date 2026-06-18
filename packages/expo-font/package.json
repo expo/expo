@@ -43,7 +43,8 @@
     "test": "expo-module test",
     "test:plugin": "expo-module test plugin",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",

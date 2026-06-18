@@ -31,7 +31,7 @@
     "build:metro-require": "expo-build script:metro-require=build/metro-require",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
+    "typecheck": "tsc -p tsconfig.json",
     "test": "expo-module test",
     "test:e2e": "jest --config e2e/jest.config.js",
     "test:playwright": "playwright test --config e2e/playwright.config.ts"

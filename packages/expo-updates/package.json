@@ -32,7 +32,8 @@
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "pretest:e2e-cli": "expo-module prepublishOnly",
-    "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js"
+    "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",

@@ -44,7 +44,7 @@
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
-    "typecheck": "expo-module typecheck"
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",

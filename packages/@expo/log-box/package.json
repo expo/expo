@@ -51,7 +51,7 @@
   "scripts": {
     "start": "expo start",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
+    "typecheck": "tsc -p tsconfig.json",
     "clean": "run-p clean:lib clean:bundle",
     "clean:lib": "rimraf build",
     "clean:bundle": "rimraf dist",

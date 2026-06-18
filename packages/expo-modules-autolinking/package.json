@@ -33,7 +33,8 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "expo-modules-autolinking": "bin/expo-modules-autolinking.js"

@@ -23,7 +23,8 @@
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "syncBrowserScripts": "./scripts/buildBrowserScripts.ts"
+    "syncBrowserScripts": "./scripts/buildBrowserScripts.ts",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

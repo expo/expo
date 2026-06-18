@@ -12,7 +12,8 @@
     "test": "pnpm test:babel && pnpm test:src",
     "test:src": "expo-module test",
     "test:babel": "jest --config babel/jest.config.js",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "expo",

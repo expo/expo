@@ -14,7 +14,8 @@
     "build": "expo-build cjs:src",
     "test": "expo-module test",
     "lint": "expo-module lint",
-    "clean": "expo-module clean"
+    "clean": "expo-module clean",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "expo-modules-test-core": "./bin/cli.js"

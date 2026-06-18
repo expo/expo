@@ -170,7 +170,8 @@
     "clean": "rimraf build",
     "lint": "eslint src",
     "test": "jest",
-    "prepublishOnly": "run-s clean build"
+    "prepublishOnly": "run-s clean build",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "jest": {
     "preset": "../expo-module-scripts/jest-preset.cjs"

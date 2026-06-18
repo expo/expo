@@ -35,7 +35,7 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
+    "typecheck": "tsc -p tsconfig.json",
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"

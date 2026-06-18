@@ -11,7 +11,8 @@
   "scripts": {
     "build": "pnpm build:plugin",
     "build:plugin": "expo-build --base plugin cjs:src",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "typecheck": "tsc -p plugin/tsconfig.json"
   },
   "keywords": [
     "react-native"

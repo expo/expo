@@ -11,7 +11,8 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:snapshots": "jest --updateSnapshot",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

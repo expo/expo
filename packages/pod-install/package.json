@@ -9,7 +9,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod",
-    "typecheck": "expo-module typecheck"
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": "./bin/pod-install.js",
   "files": [

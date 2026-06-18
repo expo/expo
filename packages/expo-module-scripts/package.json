@@ -51,7 +51,8 @@
     "./tsconfig": "./tsconfig.json"
   },
   "scripts": {
-    "lint": "expo-module eslint ."
+    "lint": "expo-module eslint .",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",

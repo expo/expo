@@ -12,7 +12,7 @@
     "test": "expo-module test",
     "pretest:e2e": "pnpm run build",
     "test:e2e": "expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck"
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "patch-project": "bin/cli.js"

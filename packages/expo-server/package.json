@@ -67,7 +67,8 @@
     "clean": "rimraf build",
     "prepublishOnly": "run-s clean build",
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",

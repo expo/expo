@@ -21,7 +21,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod",
-    "test": "expo-module test"
+    "test": "expo-module test",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",

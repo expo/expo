@@ -122,7 +122,8 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/ui/",
   "repository": {

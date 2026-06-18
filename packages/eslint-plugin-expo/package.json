@@ -21,7 +21,8 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
-    "build": "expo-build cjs:src"
+    "build": "expo-build cjs:src",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@typescript-eslint/types": "^8.59.0",

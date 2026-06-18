@@ -22,7 +22,8 @@
     "build": "expo-build src",
     "clean": "rimraf build",
     "lint": "expo-module lint",
-    "prepublishOnly": "run-s clean build"
+    "prepublishOnly": "run-s clean build",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {},
   "devDependencies": {

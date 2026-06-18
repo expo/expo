@@ -27,7 +27,7 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
+    "typecheck": "tsc -p tsconfig.json",
     "test": "expo-module test",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },

@@ -21,7 +21,7 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
-    "typecheck": "expo-module typecheck"
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",

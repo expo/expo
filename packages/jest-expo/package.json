@@ -31,7 +31,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "jest": {
     "preset": "jest-expo/universal"
