@@ -87,19 +87,22 @@ export function canDismiss(): boolean {
       'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  let state = store.state;
+  // TODO(@ubax): `type` was removed from navigation state, so we can no longer walk the tree looking
+  // for a poppable stack navigator. Rework to resolve navigator kind from the static layout config.
+  throw new Error('canDismiss is not implemented yet.');
+  // let state = store.state;
 
-  // Keep traversing down the state tree until we find a stack navigator that we can pop
-  while (state) {
-    if (state.type === 'stack' && state.routes.length > 1) {
-      return true;
-    }
-    if (state.index === undefined) return false;
+  // // Keep traversing down the state tree until we find a stack navigator that we can pop
+  // while (state) {
+  //   if (state.type === 'stack' && state.routes.length > 1) {
+  //     return true;
+  //   }
+  //   if (state.index === undefined) return false;
 
-    state = state.routes?.[state.index]?.state as any;
-  }
+  //   state = state.routes?.[state.index]?.state as any;
+  // }
 
-  return false;
+  // return false;
 }
 
 export function setParams(

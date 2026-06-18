@@ -74,13 +74,16 @@ export function getNavigateAction(
    */
   const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
 
-  if (type === 'PUSH' && navigationState.type !== 'stack') {
-    type = 'NAVIGATE';
-  } else if (navigationState.type === 'expo-tab') {
-    type = 'JUMP_TO';
-  } else if (type === 'REPLACE' && navigationState.type === 'drawer') {
-    type = 'JUMP_TO';
-  }
+  // TODO(@ubax): `type` was removed from navigation state, so we can no longer remap the action to
+  // the target navigator's kind (PUSH→NAVIGATE on non-stacks, expo-tab/drawer→JUMP_TO). The base
+  // action type is emitted as-is. Rework to resolve navigator kind from the static layout config.
+  // if (type === 'PUSH' && navigationState.type !== 'stack') {
+  //   type = 'NAVIGATE';
+  // } else if (navigationState.type === 'expo-tab') {
+  //   type = 'JUMP_TO';
+  // } else if (type === 'REPLACE' && navigationState.type === 'drawer') {
+  //   type = 'JUMP_TO';
+  // }
 
   if (withAnchor) {
     if (rootPayload.params.initial) {

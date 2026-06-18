@@ -101,7 +101,7 @@ export function BottomTabView(props: Props) {
     ) {
       const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
-      if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
+      if (prevRoute?.state && 'preloadedRoutes' in prevRoute.state && prevRoute.state.key) {
         popToTopAction = {
           ...StackActions.popToTop(),
           target: prevRoute.state.key,

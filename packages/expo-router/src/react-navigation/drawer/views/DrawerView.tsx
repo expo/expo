@@ -94,7 +94,8 @@ function DrawerViewBase({
     ) {
       const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
-      if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
+      // A nested stack is identified structurally by its `preloadedRoutes`
+      if (prevRoute?.state && 'preloadedRoutes' in prevRoute.state && prevRoute.state.key) {
         navigation.dispatch({
           ...StackActions.popToTop(),
           target: prevRoute.state.key,

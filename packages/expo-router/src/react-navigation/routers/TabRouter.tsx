@@ -46,10 +46,6 @@ export type TabNavigationState<ParamList extends ParamListBase> = Omit<
   'history'
 > & {
   /**
-   * Type of the router, in this case, it's tab.
-   */
-  type: 'tab';
-  /**
    * List of previously visited route keys.
    */
   history: { type: 'route'; key: string; params?: object | undefined }[];
@@ -191,8 +187,6 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
   > = {
     ...BaseRouter,
 
-    type: 'tab',
-
     getInitialState({ routeNames, routeParamList }) {
       const index =
         initialRouteName !== undefined && routeNames.includes(initialRouteName)
@@ -209,7 +203,6 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
 
       return {
         stale: false,
-        type: 'tab',
         key: `tab-${nanoid()}`,
         index,
         routeNames,
@@ -259,7 +252,6 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       return changeIndex(
         {
           stale: false,
-          type: 'tab',
           key: `tab-${nanoid()}`,
           index,
           routeNames,
@@ -318,6 +310,8 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       switch (action.type) {
         case 'JUMP_TO':
         case 'NAVIGATE':
+        // @ts-expect-error PUSH is not part of tab actions
+        case 'PUSH':
         case 'NAVIGATE_DEPRECATED': {
           const index = state.routes.findIndex((route) => route.name === action.payload.name);
 

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `type` field from the navigation state. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))
