@@ -2232,6 +2232,9 @@ importers:
 
   packages/@expo/config-types:
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -2322,6 +2325,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
 
   packages/@expo/fingerprint:
     dependencies:
@@ -2795,6 +2801,12 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
+      strip-ansi:
+        specifier: ^6.0.1
+        version: 6.0.1
 
   packages/@expo/pkcs12:
     dependencies:
@@ -3255,6 +3267,9 @@ importers:
       glob:
         specifier: ^13.0.0
         version: 13.0.6
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
       multitars:
         specifier: ^1.0.0
         version: 1.0.0
