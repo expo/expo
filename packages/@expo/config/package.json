@@ -68,7 +68,8 @@
     "@types/babel__code-frame": "^7.27.0",
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
   },
   "publishConfig": {
     "access": "public"
