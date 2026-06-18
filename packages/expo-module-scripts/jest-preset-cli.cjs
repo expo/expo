@@ -3,7 +3,17 @@ module.exports = {
   testEnvironment: 'node',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
   transform: {
-    '^.+\\.[jt]sx?$': ['babel-jest', { configFile: require.resolve('./babel.config.cli.cjs') }],
+    '^.+\\.[jt]sx?$': [
+      require.resolve('@swc/jest'),
+      {
+        jsc: {
+          parser: { syntax: 'typescript', tsx: true, dynamicImport: true },
+          target: 'es2022',
+          transform: { react: { runtime: 'automatic' } },
+        },
+        module: { type: 'commonjs', lazy: true },
+      },
+    ],
   },
   watchPlugins: [
     require.resolve('jest-watch-typeahead/filename'),

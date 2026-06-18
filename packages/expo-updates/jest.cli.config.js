@@ -1,14 +1,11 @@
+// Drop the preset's `testRegex` since this config selects tests via `testMatch`
+// (jest forbids using both together).
+const { testRegex, ...preset } = require('expo-module-scripts/jest-preset-cli');
+
 module.exports = {
-  preset: 'ts-jest',
+  ...preset,
   testMatch: ['**/__tests__/**/*-test.ts'],
   coveragePathIgnorePatterns: ['testfixtures'],
-  globals: {
-    'ts-jest': {
-      diagnostics: {
-        warnOnly: true,
-      },
-    },
-  },
   rootDir: __dirname,
   roots: ['cli'],
 };

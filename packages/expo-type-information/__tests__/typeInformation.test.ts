@@ -18,7 +18,7 @@ import {
 } from '../src/typescriptGeneration';
 import { GetFileTypeInformationOptions } from '../build';
 
-const swiftFile = fs.realpathSync('./tests/TestModule.swift');
+const swiftFile = fs.realpathSync('./__tests__/TestModule.swift');
 const defaultArgs: GetFileTypeInformationOptions = {
   input: { inputFileAbsolutePaths: [swiftFile], type: 'file' },
   typeInference: TypeInferenceOption.PREPROCESS_AND_INFERENCE,

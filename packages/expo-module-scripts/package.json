@@ -77,18 +77,18 @@
     "@babel/preset-typescript": "^7.23.3",
     "@expo/spawn-async": "^1.8.0",
     "@react-native/jest-preset": "0.86.0",
+    "@swc/core": "^1.15.18",
+    "@swc/jest": "^0.2.39",
     "@testing-library/react-native": "^13.3.0",
     "@types/jest": "^29.2.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "commander": "^12.1.0",
     "eslint-config-universe": "workspace:^15.2.0",
     "glob": "^13.0.0",
-    "@swc/core": "^1.15.18",
     "jest-expo": "workspace:~56.0.4",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
-    "resolve-workspace-root": "^2.0.0",
-    "ts-jest": "~29.4.7"
+    "resolve-workspace-root": "^2.0.0"
   },
   "devDependencies": {
     "@expo/metro": "~56.0.0",
