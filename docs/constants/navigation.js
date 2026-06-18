@@ -84,6 +84,14 @@ export const home = [
         makePage('agents/claude.mdx'),
         makePage('agents/codex.mdx'),
         makePage('agents/cursor.mdx'),
+      ],
+      {
+        expanded: false,
+      }
+    ),
+    makeGroup(
+      'Agent toolkits',
+      [
         makePage('agents/argent.mdx'),
       ],
       {
