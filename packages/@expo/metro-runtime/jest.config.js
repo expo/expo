@@ -16,6 +16,7 @@ function withDefaults({ watchPlugins, ...config }) {
 }
 
 module.exports = withWatchPlugins({
+  passWithNoTests: true,
   projects: [
     // Create a new project for each platform.
     getWebPreset(),
