@@ -25,12 +25,8 @@ export type DrawerRouterOptions = TabRouterOptions & {
 
 export type DrawerNavigationState<ParamList extends ParamListBase> = Omit<
   TabNavigationState<ParamList>,
-  'type' | 'history'
+  'history'
 > & {
-  /**
-   * Type of the router, in this case, it's drawer.
-   */
-  type: 'drawer';
   /**
    * Default status of the drawer.
    */
@@ -145,8 +141,6 @@ export function DrawerRouter({
   return {
     ...router,
 
-    type: 'drawer',
-
     getInitialState({ routeNames, routeParamList, routeGetIdList }) {
       const state = router.getInitialState({
         routeNames,
@@ -158,7 +152,6 @@ export function DrawerRouter({
         ...state,
         default: defaultStatus,
         stale: false,
-        type: 'drawer',
         key: `drawer-${nanoid()}`,
       };
     },
@@ -183,7 +176,6 @@ export function DrawerRouter({
       return {
         ...state,
         default: defaultStatus,
-        type: 'drawer',
         key: `drawer-${nanoid()}`,
       };
     },

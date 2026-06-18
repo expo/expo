@@ -392,16 +392,10 @@ export function useNavigationBuilder<
     );
   }
 
-  const isStateValid = React.useCallback(
-    (state: NavigationState | PartialState<NavigationState>) =>
-      state.type === undefined || state.type === router.type,
-    [router.type]
-  );
-
   const isStateInitialized = React.useCallback(
     <T extends NavigationState>(state: T | PartialState<T> | undefined): state is T =>
-      state !== undefined && state.stale === false && isStateValid(state),
-    [isStateValid]
+      state !== undefined && state.stale === false,
+    []
   );
 
   const doesStateHaveOnlyInvalidRoutes = React.useCallback(
@@ -450,7 +444,7 @@ export function useNavigationBuilder<
     // If the state was already cleaned up, but we have it stored in ref,
     // It likely got cleaned up due to `<Activity mode="hidden">`
     // We should reuse this state to avoid remounting screens
-    if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
+    if (stateCleanupRef.current && lastStateRef.current) {
       const state: State = isStateInitialized(lastStateRef.current)
         ? lastStateRef.current
         : router.getRehydratedState(lastStateRef.current, {
@@ -490,7 +484,7 @@ export function useNavigationBuilder<
     // Otherwise assume that the state was provided as initial state
     // So we need to rehydrate it to make it usable
     if (
-      (currentState === undefined || !isStateValid(currentState)) &&
+      currentState === undefined &&
       route?.params?.state == null &&
       !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
       !isNestedParamsConsumed
@@ -542,7 +536,7 @@ export function useNavigationBuilder<
     // that some changes to routeConfigs are explicitly ignored, such as changes
     // to initialParams
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentState, router, isStateValid]);
+  }, [currentState, router]);
 
   const previousRouteKeyListRef = React.useRef(routeKeyList);
 

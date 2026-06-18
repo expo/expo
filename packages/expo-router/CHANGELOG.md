@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
+- Remove the `type` field from the navigation state. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 

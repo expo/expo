@@ -52,10 +52,6 @@ export type StackRouterOptions = DefaultRouterOptions;
 
 export type StackNavigationState<ParamList extends ParamListBase> = NavigationState<ParamList> & {
   /**
-   * Type of the router, in this case, it's stack.
-   */
-  type: 'stack';
-  /**
    * List of routes, which are supposed to be preloaded before navigating to.
    */
   preloadedRoutes: NavigationRoute<ParamList, keyof ParamList>[];
@@ -203,8 +199,6 @@ export function StackRouter(options: StackRouterOptions) {
   > = {
     ...BaseRouter,
 
-    type: 'stack',
-
     getInitialState({ routeNames, routeParamList }) {
       const initialRouteName =
         options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
@@ -213,7 +207,6 @@ export function StackRouter(options: StackRouterOptions) {
 
       return {
         stale: false,
-        type: 'stack',
         key: `stack-${nanoid()}`,
         index: 0,
         routeNames,
@@ -280,7 +273,6 @@ export function StackRouter(options: StackRouterOptions) {
 
       return {
         stale: false,
-        type: 'stack',
         key: `stack-${nanoid()}`,
         index: routes.length - 1,
         routeNames,

@@ -46,8 +46,10 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
 export function findDivergentState(
   _actionState: ResultState,
   _navigationState: NavigationState,
-  // If true, look through all tabs to find the target state, rather then just the current tab
-  lookThroughAllTabs: boolean = false
+  // TODO(@ubax): rework the link preview navigation to check state types on native. `type` was
+  // removed from navigation state, so the "look through all tabs" branch (which needed to know a
+  // navigator was a tab) is gone — this param is now a no-op kept for caller compatibility.
+  _lookThroughAllTabs: boolean = false
 ) {
   let actionState: PartialState<NavigationState> | undefined = _actionState;
   let navigationState: NavigationState | undefined = _navigationState;
@@ -56,15 +58,16 @@ export function findDivergentState(
   while (actionState && navigationState) {
     // TODO(@kitten): Review invalid indexed access into undefined
     actionStateRoute = actionState.routes[actionState.routes.length - 1]!;
-    const stateRoute = (() => {
-      if (navigationState.type === 'tab' && lookThroughAllTabs) {
-        return (
-          navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
-          navigationState.routes[navigationState.index ?? 0]!
-        );
-      }
-      return navigationState.routes[navigationState.index ?? 0]!;
-    })();
+    const stateRoute = navigationState.routes[navigationState.index ?? 0]!;
+    // const stateRoute = (() => {
+    //   if (navigationState.type === 'tab' && lookThroughAllTabs) {
+    //     return (
+    //       navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
+    //       navigationState.routes[navigationState.index ?? 0]!
+    //     );
+    //   }
+    //   return navigationState.routes[navigationState.index ?? 0]!;
+    // })();
 
     const childState: PartialState<NavigationState> | undefined = actionStateRoute.state;
     const nextNavigationState = stateRoute.state;
@@ -80,11 +83,11 @@ export function findDivergentState(
           (stateRoute.params as Record<string, any> | undefined)?.[dynamicName.name]);
 
     if (didActionAndCurrentStateDiverge) {
-      // If we are looking through all tabs, we need to add new tab id if this is the last route
-      // Otherwise we wouldn't be able to change the tab
-      if (navigationState.type === 'tab' && lookThroughAllTabs) {
-        navigationRoutes.push(stateRoute);
-      }
+      // // If we are looking through all tabs, we need to add new tab id if this is the last route
+      // // Otherwise we wouldn't be able to change the tab
+      // if (navigationState.type === 'tab' && lookThroughAllTabs) {
+      //   navigationRoutes.push(stateRoute);
+      // }
       break;
     }
 
