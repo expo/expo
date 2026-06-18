@@ -40,7 +40,7 @@ export async function setLocalesAsync(
       `values-b+${lang.replaceAll('-', '+')}`,
       'strings.xml'
     );
-    writeXMLAsync({
+    await writeXMLAsync({
       path: stringsFilePath,
       xml: {
         resources: Object.entries(localizationObj).map(([k, v]) => ({
