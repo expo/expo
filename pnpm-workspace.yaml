@@ -8,6 +8,8 @@ packages:
 
 ignoreWorkspaceCycles: true
 
+shellEmulator: true
+
 ignoredBuiltDependencies:
   - '@parcel/watcher'
   - '@swc/core'
@@ -31,7 +33,6 @@ onlyBuiltDependencies:
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
   '@shopify/react-native-skia@2.6.2': patches/@shopify__react-native-skia@2.6.2.patch
-  react-native-gesture-handler: patches/react-native-gesture-handler.patch
   react-native-reanimated: patches/react-native-reanimated.patch
   react-native-view-shot: patches/react-native-view-shot.patch
   react-native-worklets: patches/react-native-worklets.patch
@@ -44,10 +45,13 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@expo/*'
   - '@react-native/*'
+  - '@turbo/*'
   - 'react-native'
   - multitars
+  - 'react-native-gesture-handler'
   - 'react-native-reanimated'
   - 'react-native-screens'
+  - turbo
   - 'whatwg-url-minimum'
   - 'expo'
   - 'expo-asset'

@@ -4,13 +4,13 @@
   "description": "A native module for age range functionality",
   "sideEffects": false,
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/age-range/",
   "repository": {

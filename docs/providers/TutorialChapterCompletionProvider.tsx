@@ -2,6 +2,7 @@ import { createContext, useContext, PropsWithChildren } from 'react';
 
 import { useLocalStorage } from '~/common/useLocalStorage';
 import {
+  BUILD_WITH_AI_TUTORIAL_CHAPTERS,
   EAS_TUTORIAL_INITIAL_CHAPTERS,
   GET_STARTED_TUTORIAL_CHAPTERS,
   Chapter,
@@ -12,6 +13,8 @@ type ChapterContextType = {
   setChapters: (chapters: Chapter[]) => void;
   getStartedChapters: Chapter[];
   setGetStartedChapters: (chapters: Chapter[]) => void;
+  buildWithAiChapters: Chapter[];
+  setBuildWithAiChapters: (chapters: Chapter[]) => void;
 };
 
 // Provide initial values matching the type
@@ -20,6 +23,8 @@ const defaultValues: ChapterContextType = {
   setChapters: () => {},
   getStartedChapters: [],
   setGetStartedChapters: () => {},
+  buildWithAiChapters: [],
+  setBuildWithAiChapters: () => {},
 };
 
 const TutorialChapterCompletionContext = createContext<ChapterContextType>(defaultValues);
@@ -35,9 +40,21 @@ export const TutorialChapterCompletionProvider = ({ children }: PropsWithChildre
     defaultValue: GET_STARTED_TUTORIAL_CHAPTERS,
   });
 
+  const [buildWithAiChapters, setBuildWithAiChapters] = useLocalStorage<Chapter[]>({
+    name: 'BUILD_WITH_AI',
+    defaultValue: BUILD_WITH_AI_TUTORIAL_CHAPTERS,
+  });
+
   return (
     <TutorialChapterCompletionContext.Provider
-      value={{ chapters, setChapters, getStartedChapters, setGetStartedChapters }}>
+      value={{
+        chapters,
+        setChapters,
+        getStartedChapters,
+        setGetStartedChapters,
+        buildWithAiChapters,
+        setBuildWithAiChapters,
+      }}>
       {children}
     </TutorialChapterCompletionContext.Provider>
   );

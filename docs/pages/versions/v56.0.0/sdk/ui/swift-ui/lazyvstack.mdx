@@ -11,6 +11,8 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 Expo UI LazyVStack matches the official SwiftUI [LazyVStack API](https://developer.apple.com/documentation/swiftui/lazyvstack) and arranges its children vertically, creating items only as needed (when they become visible during scrolling).
 
+> **info** `LazyVStack` is not truly lazy yet: the native side only builds visible items, but React still creates every child up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
+
 ## Installation
 
 <APIInstallSection />

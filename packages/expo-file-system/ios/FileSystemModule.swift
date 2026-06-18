@@ -36,7 +36,7 @@ public final class FileSystemModule: Module {
 
   private func writeToFile(
     _ file: FileSystemFile,
-    content: Either<String, TypedArray>,
+    content: Either<String, NativeArrayBuffer>,
     options: WriteOptions?
   ) throws {
     let append = options?.append ?? false
@@ -49,7 +49,7 @@ public final class FileSystemModule: Module {
       } else {
         try file.write(content, append: append)
       }
-    } else if let content: TypedArray = content.get() {
+    } else if let content: NativeArrayBuffer = content.get() {
       try file.write(content, append: append)
     }
   }
@@ -194,11 +194,11 @@ public final class FileSystemModule: Module {
         return try file.info(options: options ?? InfoOptions())
       }
 
-      AsyncFunction("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+      AsyncFunction("write") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
         try writeToFile(file, content: content, options: options)
       }
 
-      Function("writeSync") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+      Function("writeSync") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
         try writeToFile(file, content: content, options: options)
       }
 

@@ -1,0 +1,115 @@
+---
+title: Create your first app
+description: In this chapter, direct your AI agent to create a new Expo app and see it running on your phone.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+In this chapter, your agent creates a new Expo app, you get it running on your phone, and you make your first change. This is the loop you'll repeat for the rest of the tutorial.
+
+<Step label="1">
+
+## Start your agent in a new folder
+
+Your agent works inside one folder at a time, so create a dedicated folder for this project and start the agent there. In your terminal, run:
+
+<Terminal
+  cmd={['$ mkdir StickerSmash', '', '$ cd StickerSmash']}
+  cmdCopy={['$ mkdir StickerSmash && cd StickerSmash']}
+/>
+
+Then start your agent in that folder: run `claude` or `codex`. If you're using Cursor, create a new folder named **StickerSmash**, open it with **File** > **Open Folder**, and open the agent panel.
+
+</Step>
+
+<Step label="2">
+
+## Create the app
+
+Paste the following prompt into your agent:
+
+```text Prompt|wrap
+Create a new Expo app in this folder (the current directory) by running npx create-expo-app@latest and choosing the SDK 54 template — I will test the app with Expo Go on my phone, which uses SDK 54. After it is created, run the project's reset-project script so we start from a minimal app, and delete the app-example folder that the script leaves behind. Don't start the development server; I will run that myself.
+```
+
+The agent takes a few minutes to download the template and install its dependencies. When it finishes, it should report that the project is ready, with a minimal **app** folder containing a couple of files.
+
+</Step>
+
+<Step label="3">
+
+## Run the app on your phone
+
+This is the one command you'll run yourself throughout the tutorial. It starts the development server that streams your app to your phone. Open a **new terminal window** (leave your agent running in the first one), then run:
+
+<Terminal
+  cmd={['$ cd StickerSmash', '', '$ npx expo start']}
+  cmdCopy={['$ cd StickerSmash && npx expo start']}
+/>
+
+A QR code appears in the terminal. To open the app:
+
+- **Android**: open Expo Go and tap **Scan QR code**.
+- **iOS**: open the default camera app and point it at the QR code.
+
+You should see a mostly empty screen on your phone. That's your app. Keep this terminal window open and your phone nearby for the rest of the tutorial.
+
+<Collapsible summary="Phone can't connect?">
+
+Your phone and computer must be on the same Wi-Fi network. If they are and the app still doesn't load, stop the server with <kbd>Ctrl</kbd> + <kbd>C</kbd> and restart it in tunnel mode, which works across networks:
+
+<Terminal cmd={['$ npx expo start --tunnel']} />
+
+You can also find your project under the **Projects** tab in Expo Go when you're signed in to the same Expo account on your phone and in the terminal.
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+## Make your first change
+
+Now close the loop: ask the agent for a visible change and watch it land on your phone. Paste the following prompt into your agent:
+
+```text Prompt|wrap
+Change the home screen so it shows the text "Home screen" in white, centered on a dark background with the color #25292e.
+```
+
+**What you should see**: within seconds of the agent finishing, the app on your phone reloads to a dark screen with white "Home screen" text in the middle:
+
+<ContentSpotlight
+  alt="App with updated text and background color"
+  src="/static/images/tutorial/02-index-screen-changes.png"
+  className="max-w-[720px]"
+/>
+
+That's the whole workflow — you prompt, the agent builds, your phone shows the result.
+
+</Step>
+
+## When something looks wrong
+
+Sooner or later a result won't match what you asked for. That's normal, and fixing it is part of the workflow:
+
+- **Describe, don't diagnose.** Tell the agent exactly what you see and what you expected: "The text is centered but the background is still white." You don't need to guess why.
+- **Paste errors verbatim.** If your phone shows a red error screen or the terminal prints an error, copy the whole message into the agent. Error messages are written for programmers, and your agent is one.
+- **Ask the agent to check its work.** A prompt like "Something is broken — review the change you just made, find the problem, and fix it" goes a long way.
+- **If the app gets stuck**, shake your phone and tap **Reload** in the menu that appears. If that doesn't help, stop the development server with <kbd>Ctrl</kbd> + <kbd>C</kbd> and run `npx expo start` again.
+
+The next chapters end with a short reminder linking back to this section.
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={1}
+  name="BUILD_WITH_AI"
+  summary="You created an app, ran it on your phone, and changed it with a single prompt."
+  nextChapterDescription="In the next chapter, you'll turn this empty screen into the real thing: navigation tabs, the photo viewer, and an image picker."
+  nextChapterTitle="Build the home screen"
+  nextChapterLink="/tutorial/build-with-ai/build-the-home-screen/"
+/>

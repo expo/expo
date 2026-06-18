@@ -1823,7 +1823,7 @@ module Expo
         end
       end
 
-      # Returns the Hermes version, accounting for Hermes v1 opt-in.
+      # Returns the Hermes version. Hermes v1 is the default; classic Hermes is opt-out.
       # Mirrors the TypeScript resolution logic in tools/src/prebuilds/Utils.ts.
       def hermes_version
         @hermes_version ||= begin

@@ -5,18 +5,22 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
-    ".": "./build/index.js",
+    ".": {
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
     "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "keywords": [
     "react-native",
@@ -47,7 +51,6 @@
     "@expo/plist": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },

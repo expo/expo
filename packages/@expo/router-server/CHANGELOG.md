@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
+- Wrap `getStaticContent` and `getStreamingContent` in `expo-font`'s per-render `withServerContext` scope so concurrent server renders cannot share font registry state. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 

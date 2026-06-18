@@ -1,5 +1,5 @@
+import { getConfig, type ExpoConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
-import { getConfig, type ExpoConfig } from 'expo/config';
 import fs from 'fs';
 import { vol, fs as volFS } from 'memfs';
 import path from 'path';

@@ -15,10 +15,10 @@ export function conflictingExtensionExists(
   if (existingTarget) {
     const buildConfigurations = xcodeProject.pbxXCBuildConfigurationSection();
     const configurationList =
-      xcodeProject.pbxXCConfigurationList()[existingTarget.buildConfigurationList];
-    const buildConfiguration = buildConfigurations[configurationList.buildConfigurations[0].value];
+      xcodeProject.pbxXCConfigurationList()[existingTarget.buildConfigurationList]!;
+    const buildConfiguration = buildConfigurations[configurationList.buildConfigurations[0]!.value];
     const existingBundleIdentifier = unquote(
-      buildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER
+      buildConfiguration?.buildSettings.PRODUCT_BUNDLE_IDENTIFIER!
     );
 
     return existingBundleIdentifier === bundleIdentifier ? 'exists' : 'exists-conflicting';

@@ -60,7 +60,7 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
 
       if (!contextValue) {
         throw new Error(
-          '[expo-observe] markInteractive was called without an active ObserveNavigationContainer. Wrap your tree in <ObserveNavigationContainer>.'
+          '[expo-observe] markInteractive was called without an active React Navigation integration. Wrap your tree in <ObserveNavigationContainer>, or <ObserveNavigationProvider>.'
         );
       }
       const { storage } = contextValue;
@@ -112,16 +112,13 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
       }
 
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
-      const mainSessionId = (await AppMetrics.getMainSession())?.id;
-      if (mainSessionId) {
-        await emitTTI({
-          sessionId: mainSessionId,
-          timestamp,
-          routeName: pathname,
-          value: interactiveTimeSeconds,
-          routeParams,
-        });
-      }
+      await emitTTI({
+        session: AppMetrics.getMainSession(),
+        timestamp,
+        routeName: pathname,
+        value: interactiveTimeSeconds,
+        routeParams,
+      });
     },
     [screenId, navigation, route, contextValue, stateForPath]
   );

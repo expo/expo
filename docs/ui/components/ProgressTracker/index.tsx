@@ -1,5 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { useIntl } from 'react-intl';
 
 import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -13,6 +14,7 @@ type ProgressTrackerProps = {
   currentChapterIndex: number;
   name: string;
   summary: string;
+  chapterTitle?: string;
   nextChapterTitle?: string;
   nextChapterDescription?: string;
   nextChapterLink?: string;
@@ -22,71 +24,37 @@ export function ProgressTracker({
   currentChapterIndex,
   name,
   summary,
+  chapterTitle,
   nextChapterTitle,
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
-  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
-    useTutorialChapterCompletion();
-  const isGetStartedTutorial = name === 'GET_STARTED';
-  const currentChapter = isGetStartedTutorial
-    ? getStartedChapters[currentChapterIndex]
-    : chapters[currentChapterIndex];
+  const intl = useIntl();
+  const {
+    chapters,
+    setChapters,
+    getStartedChapters,
+    setGetStartedChapters,
+    buildWithAiChapters,
+    setBuildWithAiChapters,
+  } = useTutorialChapterCompletion();
 
-  const handleChapterComplete = () => {
-    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setChapters(updatedChapters);
+  const tracks: Record<string, [Chapter[], (chapters: Chapter[]) => void]> = {
+    EAS_TUTORIAL: [chapters, setChapters],
+    GET_STARTED: [getStartedChapters, setGetStartedChapters],
+    BUILD_WITH_AI: [buildWithAiChapters, setBuildWithAiChapters],
   };
-
-  const handleGetStartedChapterComplete = () => {
-    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setGetStartedChapters(updatedChapters);
-  };
-
-  const handleChapterIncomplete = () => {
-    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setChapters(updatedChapters);
-  };
-
-  const handleGetStartedChapterIncomplete = () => {
-    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setGetStartedChapters(updatedChapters);
-  };
+  const [trackChapters, setTrackChapters] = tracks[name] ?? tracks.EAS_TUTORIAL;
+  const currentChapter = trackChapters[currentChapterIndex];
 
   const handleCheckboxChange = () => {
-    if (currentChapter.completed) {
-      handleChapterIncomplete();
-    } else {
-      handleChapterComplete();
-    }
-  };
-
-  const handleCheckboxChangeForGetStarted = () => {
-    if (currentChapter.completed) {
-      handleGetStartedChapterIncomplete();
-    } else {
-      handleGetStartedChapterComplete();
-    }
+    const updatedChapters = trackChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: !currentChapter.completed };
+      }
+      return chapter;
+    });
+    setTrackChapters(updatedChapters);
   };
 
   return (
@@ -102,7 +70,7 @@ export function ProgressTracker({
         <div className="flex flex-col items-center justify-center gap-2">
           <p className="flex items-center text-center heading-lg text-default">
             <BookOpen02Icon className="mr-2 size-6! text-icon-secondary max-md:hidden" />{' '}
-            {currentChapter.title}
+            {chapterTitle ?? currentChapter.title}
           </p>
           <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">{summary}</p>
         </div>
@@ -110,18 +78,25 @@ export function ProgressTracker({
           <Checkbox
             id={`chapter-${currentChapterIndex}`}
             checked={currentChapter.completed}
-            label={
-              currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
-            }
-            onChange={
-              isGetStartedTutorial ? handleCheckboxChangeForGetStarted : handleCheckboxChange
-            }
+            label={intl.formatMessage({
+              id: currentChapter.completed
+                ? 'progressTrackerMarkAsUnread'
+                : 'progressTrackerMarkAsRead',
+            })}
+            onChange={handleCheckboxChange}
           />
         </div>
       </div>
       <>
         <P className="my-4">{nextChapterDescription}</P>
-        <BoxLink href={nextChapterLink} title={`Next: ${nextChapterTitle}`} Icon={BookOpen02Icon} />
+        <BoxLink
+          href={nextChapterLink}
+          title={intl.formatMessage(
+            { id: 'progressTrackerNext' },
+            { title: nextChapterTitle ?? '' }
+          )}
+          Icon={BookOpen02Icon}
+        />
       </>
     </>
   );

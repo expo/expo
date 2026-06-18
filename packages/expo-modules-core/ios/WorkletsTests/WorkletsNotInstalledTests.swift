@@ -30,4 +30,24 @@ struct WorkletsNotInstalledTests {
       _ = try dynamicType.cast(jsValue: jsValue, appContext: appContext)
     }
   }
+
+  @Test
+  func `UI runtime install fails with an error (not a crash) when the worklets adapter is not linked`() throws {
+    // Only meaningful while the adapter is unlinked (the default in this test harness).
+    try #require(WorkletsProviderRegistry.shared == nil)
+
+    // Installs the core-side hook that turns a UI runtime holder into a runtime.
+    WorkletIntegration.register()
+    let factory = try #require(AppContext.uiRuntimeFactory)
+
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    // With no adapter linked the resolver returns NULL for any holder, so the
+    // factory must throw rather than dereference a null runtime pointer.
+    let holder = try runtime.eval("({})")
+
+    #expect(throws: WorkletRuntimePointerExtractionException.self) {
+      _ = try factory(appContext, holder, runtime)
+    }
+  }
 }

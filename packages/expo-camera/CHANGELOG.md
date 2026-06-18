@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Use the selected camera to determine video stabilization support. ([#45896](https://github.com/expo/expo/pull/45896) by [@vivekjm](https://github.com/vivekjm))
+
 ### 💡 Others
 
 ## 56.0.7 — 2026-05-21

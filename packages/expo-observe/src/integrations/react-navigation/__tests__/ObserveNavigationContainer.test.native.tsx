@@ -3,15 +3,22 @@ import { render } from '@testing-library/react-native';
 import { createRef, use } from 'react';
 import { Text } from 'react-native';
 
-import { ObserveReactNavigationIntegrationContext } from '../context';
+import {
+  ObserveReactNavigationIntegrationContext,
+  type ReactNavigationIntegrationContextValue,
+} from '../context';
 import * as initModule from '../init';
 
 jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: {
     markInteractive: jest.fn(),
-    getMainSession: jest.fn(async () => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(),
+    getMainSession: jest.fn(() => ({
+      id: 'session-1',
+      type: 'main',
+      startDate: '2026-01-01T00:00:00.000Z',
+      addMetric: jest.fn(),
+    })),
   },
 }));
 
@@ -46,6 +53,7 @@ jest.mock('@react-navigation/native', () => {
   const mockNavRef = {
     addListener: jest.fn(() => () => {}),
     getRootState: jest.fn(() => undefined),
+    isReady: jest.fn(() => false),
   };
   return {
     __esModule: true,
@@ -69,7 +77,7 @@ const handleStateChangeModule = require('../handleStateChange') as {
 };
 const reactNavigationMock = require('@react-navigation/native') as {
   __navigationContainerFn: jest.Mock;
-  __navigationRef: { addListener: jest.Mock; getRootState: jest.Mock };
+  __navigationRef: { addListener: jest.Mock; getRootState: jest.Mock; isReady: jest.Mock };
 };
 
 const mockIsInitialized = initModule.isInitialized as jest.Mock;
@@ -89,6 +97,8 @@ function ContextProbe({ onRead }: { onRead: (value: unknown) => void }) {
 beforeEach(() => {
   jest.clearAllMocks();
   mockIsInitialized.mockReturnValue(true);
+  fakeNavigationRef.isReady.mockReturnValue(false);
+  fakeNavigationRef.getRootState.mockReturnValue(undefined);
   jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
@@ -112,8 +122,7 @@ describe('ObserveNavigationContainer', () => {
     );
     expect(reads[0]).toBeTruthy();
     expect(
-      (reads[0] as { storage: { interactiveScreensIds: Set<string> } }).storage
-        .interactiveScreensIds
+      (reads[0] as ReactNavigationIntegrationContextValue).storage.interactiveScreensIds
     ).toBeInstanceOf(Set);
   });
 
@@ -153,58 +162,24 @@ describe('ObserveNavigationContainer', () => {
     expect(ref.current).toBe(fakeNavigationRef);
   });
 
-  it('passes its own onStateChange to NavigationContainer and forwards to the user callback too', () => {
+  it('forwards user onStateChange and onReady to NavigationContainer unchanged', () => {
+    // Instrumentation rides the ref's `state` listener (via
+    // ObserveNavigationProvider), so the container must not wrap the user's
+    // callbacks — wrapping would double-drive the metrics handler.
     const userOnStateChange = jest.fn();
-    render(
-      <ObserveNavigationContainer onStateChange={userOnStateChange}>
-        <Text>child</Text>
-      </ObserveNavigationContainer>
-    );
-    const props =
-      mockNavigationContainer.mock.calls[mockNavigationContainer.mock.calls.length - 1][0];
-    expect(typeof props.onStateChange).toBe('function');
-
-    const fakeState = { index: 0, routes: [{ key: 'a', name: 'A' }] };
-    props.onStateChange(fakeState);
-
-    expect(stateChangeHandler).toHaveBeenCalledWith(fakeState);
-    expect(userOnStateChange).toHaveBeenCalledWith(fakeState);
-  });
-
-  it('does not require a user onStateChange', () => {
-    render(
-      <ObserveNavigationContainer>
-        <Text>child</Text>
-      </ObserveNavigationContainer>
-    );
-    const props =
-      mockNavigationContainer.mock.calls[mockNavigationContainer.mock.calls.length - 1][0];
-    expect(() => props.onStateChange({ index: 0, routes: [] })).not.toThrow();
-    expect(stateChangeHandler).toHaveBeenCalled();
-  });
-
-  it('processes the initial navigation state when NavigationContainer fires onReady', () => {
-    const initialState = { index: 0, routes: [{ key: 'a', name: 'A' }] };
-    fakeNavigationRef.getRootState.mockReturnValueOnce(initialState);
     const userOnReady = jest.fn();
     render(
-      <ObserveNavigationContainer onReady={userOnReady}>
+      <ObserveNavigationContainer onStateChange={userOnStateChange} onReady={userOnReady}>
         <Text>child</Text>
       </ObserveNavigationContainer>
     );
-
     const props =
       mockNavigationContainer.mock.calls[mockNavigationContainer.mock.calls.length - 1][0];
-    expect(typeof props.onReady).toBe('function');
-
-    props.onReady();
-
-    expect(stateChangeHandler).toHaveBeenCalledWith(initialState);
-    expect(userOnReady).toHaveBeenCalledTimes(1);
+    expect(props.onStateChange).toBe(userOnStateChange);
+    expect(props.onReady).toBe(userOnReady);
   });
 
-  it('does not invoke the state handler from onReady when there is no root state yet', () => {
-    fakeNavigationRef.getRootState.mockReturnValueOnce(undefined);
+  it('does not inject its own onStateChange or onReady when the user omits them', () => {
     render(
       <ObserveNavigationContainer>
         <Text>child</Text>
@@ -212,10 +187,23 @@ describe('ObserveNavigationContainer', () => {
     );
     const props =
       mockNavigationContainer.mock.calls[mockNavigationContainer.mock.calls.length - 1][0];
+    expect(props.onStateChange).toBeUndefined();
+    expect(props.onReady).toBeUndefined();
+  });
 
-    props.onReady();
+  it('drives the state handler from the `state` ref event', () => {
+    render(
+      <ObserveNavigationContainer>
+        <Text>child</Text>
+      </ObserveNavigationContainer>
+    );
+    const stateCall = fakeNavigationRef.addListener.mock.calls.find(([event]) => event === 'state');
+    expect(stateCall).toBeDefined();
 
-    expect(stateChangeHandler).not.toHaveBeenCalled();
+    const rootState = { index: 0, routes: [{ key: 'a', name: 'A' }] };
+    fakeNavigationRef.getRootState.mockReturnValueOnce(rootState);
+    stateCall![1]();
+    expect(stateChangeHandler).toHaveBeenCalledWith(rootState);
   });
 
   it('passes other NavigationContainer props through (e.g. theme)', () => {

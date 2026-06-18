@@ -10,6 +10,7 @@ import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -30,6 +31,7 @@ data class ModalBottomSheetPropertiesRecord(
 @OptimizedComposeProps
 data class ModalBottomSheetViewProps(
   val skipPartiallyExpanded: Boolean = false,
+  val initialFullyExpanded: Boolean = false,
   val containerColor: Color? = null,
   val contentColor: Color? = null,
   val scrimColor: Color? = null,
@@ -111,5 +113,17 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
     Children(UIComposableScope(), filter = { !isSlotView(it) })
+  }
+
+  LaunchedEffect(Unit) {
+    if (props.initialFullyExpanded && !props.skipPartiallyExpanded) {
+      try {
+        sheetState.expand()
+      } catch (_: CancellationException) {
+        // Dismissal can cancel the expand animation.
+      } catch (_: Exception) {
+        // Expanded anchor may be unreachable; never crash the view.
+      }
+    }
   }
 }

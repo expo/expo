@@ -4,11 +4,13 @@ import { Star01DuotoneIcon } from '@expo/styleguide-icons/duotone/Star01DuotoneI
 import { Menu01Icon } from '@expo/styleguide-icons/outline/Menu01Icon';
 import { Star01Icon } from '@expo/styleguide-icons/outline/Star01Icon';
 import { type ReactNode } from 'react';
+import { useIntl } from 'react-intl';
 
 import { SidebarFooter } from '~/ui/components/Sidebar/SidebarFooter';
 import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
 import { DEMI } from '~/ui/components/Text';
 
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
 
@@ -25,12 +27,14 @@ export const Header = ({
   isMobileMenuVisible,
   setMobileMenuVisible,
 }: HeaderProps) => {
+  const intl = useIntl();
   const isArchive = sidebarActiveGroup === 'archive';
   return (
     <>
       <header className="relative z-10 mx-auto flex h-[60px] items-center justify-between gap-2 border-b border-default bg-default p-0 px-4">
         <div className="flex items-center gap-8">
           <Logo subgroup={isArchive ? 'Archive' : undefined} />
+          <LanguageSwitcher />
         </div>
         <div className="flex items-center gap-3">
           <Button
@@ -38,14 +42,14 @@ export const Header = ({
             theme="quaternary"
             className={mergeClasses('px-2 text-secondary', 'max-sm:hidden')}
             href="https://expo.dev/blog">
-            Blog
+            {intl.formatMessage({ id: 'headerBlog' })}
           </Button>
           <Button
             openInNewTab
             theme="quaternary"
             className={mergeClasses('px-2 text-secondary', 'max-sm:hidden')}
             href="https://expo.dev/changelog">
-            Changelog
+            {intl.formatMessage({ id: 'headerChangelog' })}
           </Button>
           <Button
             openInNewTab
@@ -58,7 +62,7 @@ export const Header = ({
               </>
             }
             href="https://github.com/expo/expo">
-            Star Us on GitHub
+            {intl.formatMessage({ id: 'headerStarOnGitHub' })}
           </Button>
           <Button
             openInNewTab

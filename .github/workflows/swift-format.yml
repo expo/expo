@@ -9,12 +9,16 @@ on:
       - .swift-format
       - scripts/swift-format.sh
       - packages/expo-modules-jsi/**/*.swift
+      - packages/expo-app-metrics/**/*.swift
+      - packages/expo-observe/**/*.swift
   pull_request:
     paths:
       - .github/workflows/swift-format.yml
       - .swift-format
       - scripts/swift-format.sh
       - packages/expo-modules-jsi/**/*.swift
+      - packages/expo-app-metrics/**/*.swift
+      - packages/expo-observe/**/*.swift
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -34,7 +38,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: 🐦 Install Swift ${{ env.SWIFT_VERSION }}
         run: |
           set -euo pipefail
@@ -52,7 +56,7 @@ jobs:
           echo "/opt/swift/usr/bin" >> "$GITHUB_PATH"
       - name: ♻️ Cache swift-format binary
         id: swift-format-cache
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.local/bin/swift-format
           key: swift-format-${{ runner.os }}-${{ env.SWIFT_FORMAT_VERSION }}
@@ -70,3 +74,9 @@ jobs:
       - name: 🧹 Lint expo-modules-jsi
         run: ../../scripts/swift-format.sh --lint
         working-directory: packages/expo-modules-jsi
+      - name: 🧹 Lint expo-app-metrics
+        run: ../../scripts/swift-format.sh --lint
+        working-directory: packages/expo-app-metrics
+      - name: 🧹 Lint expo-observe
+        run: ../../scripts/swift-format.sh --lint
+        working-directory: packages/expo-observe

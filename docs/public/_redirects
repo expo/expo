@@ -371,6 +371,10 @@
 /eas/insights/* /eas-insights/:splat 301
 /eas/insights /eas-insights/introduction 301
 
+# MCP server moved out of the EAS section to the top-level /mcp route
+/eas/ai/mcp /mcp 301
+/eas/ai/mcp/ /mcp/ 301
+
 # After archiving Configure JS engines guide
 /guides/configuring-js-engines/ /archive/configuring-js-engines/ 301
 

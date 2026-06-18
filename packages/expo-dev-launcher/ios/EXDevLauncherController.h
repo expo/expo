@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class EXDevLauncherRecentlyOpenedAppsRegistry;
 @class EXDevLauncherController;
 @class EXDevLauncherErrorManager;
+@class ExpoDevLauncherReactDelegateHandler;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
@@ -45,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) id<EXUpdatesDevLauncherInterface> updatesInterface;
+@property (nonatomic, weak, nullable) ExpoDevLauncherReactDelegateHandler *delegate;
 
 + (instancetype)sharedInstance;
 

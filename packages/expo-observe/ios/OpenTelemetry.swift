@@ -1,5 +1,5 @@
-import Foundation
 import ExpoAppMetrics
+import Foundation
 
 // MARK: -- Open Telemetry data classes
 
@@ -7,11 +7,9 @@ struct OTStringValue: Codable, Sendable {
   let stringValue: String
 }
 
-/**
- Tagged union mirroring the OTLP `AnyValue` shape — encodes as an object with
- exactly one of `stringValue` / `intValue` / `doubleValue` / `boolValue` /
- `arrayValue` / `kvlistValue`, depending on the variant.
- */
+/// Tagged union mirroring the OTLP `AnyValue` shape — encodes as an object with
+/// exactly one of `stringValue` / `intValue` / `doubleValue` / `boolValue` /
+/// `arrayValue` / `kvlistValue`, depending on the variant.
 enum OTAnyValue: Codable, Sendable {
   case string(String)
   case int(Int64)
@@ -68,24 +66,18 @@ enum OTAnyValue: Codable, Sendable {
   }
 }
 
-/**
- Inner `arrayValue` shape per the OTLP spec — wraps `values: [AnyValue]`.
- */
+/// Inner `arrayValue` shape per the OTLP spec — wraps `values: [AnyValue]`.
 struct OTArrayValue: Codable, Sendable {
   let values: [OTAnyValue]
 }
 
-/**
- Inner `kvlistValue` shape per the OTLP spec — wraps `values: [KeyValue]`.
- */
+/// Inner `kvlistValue` shape per the OTLP spec — wraps `values: [KeyValue]`.
 struct OTKeyValueList: Codable, Sendable {
   let values: [OTKeyValue]
 }
 
-/**
- Key/value pair used inside `kvlistValue` (and at the top level for span
- attributes). Same shape as `OTAttribute` but split out for the recursive case.
- */
+/// Key/value pair used inside `kvlistValue` (and at the top level for span
+/// attributes). Same shape as `OTAttribute` but split out for the recursive case.
 struct OTKeyValue: Codable, Sendable {
   let key: String
   let value: OTAnyValue
@@ -165,16 +157,14 @@ struct OTResourceLogs: Codable, Sendable {
 
 // MARK: -- Event extensions for Open Telemetry
 
-/**
- OpenTelemetry Semantic Conventions schema URL referenced by the resource on
- every dispatched payload. Bumping this constant signals that our attribute
- names follow a newer revision of the conventions.
-
- Before bumping, audit the attribute keys we set in `toOTMetadata` and
- `toOTLogRecord` against the SemConv changelog at
- https://github.com/open-telemetry/semantic-conventions/blob/main/CHANGELOG.md
- — a renamed key would silently mismatch the declared schema otherwise.
- */
+/// OpenTelemetry Semantic Conventions schema URL referenced by the resource on
+/// every dispatched payload. Bumping this constant signals that our attribute
+/// names follow a newer revision of the conventions.
+///
+/// Before bumping, audit the attribute keys we set in `toOTMetadata` and
+/// `toOTLogRecord` against the SemConv changelog at
+/// https://github.com/open-telemetry/semantic-conventions/blob/main/CHANGELOG.md
+/// — a renamed key would silently mismatch the declared schema otherwise.
 private let semConvSchemaUrl = "https://opentelemetry.io/schemas/1.27.0"
 
 // This must be kept in sync with the INTERNAL_TO_OTEL map in universe
@@ -207,7 +197,8 @@ nonisolated(unsafe) let formatter = ISO8601DateFormatter()
 
 private func nsFromISOString(_ dateString: String?) -> UInt64 {
   if let dateString,
-     let date = formatter.date(from: dateString) {
+    let date = formatter.date(from: dateString)
+  {
     return UInt64(date.timeIntervalSince1970 * 1_000_000_000)
   }
   return UInt64(Date().timeIntervalSince1970 * 1_000_000_000)
@@ -251,7 +242,7 @@ extension Event.Log {
   func toOTLogRecord() -> OTLogRecord {
     var attributes: [OTAttribute] = [
       OTAttribute(key: "session.id", rawValue: sessionId),
-      OTAttribute(key: "event.name", rawValue: name)
+      OTAttribute(key: "event.name", rawValue: name),
     ]
 
     var encodeTimeDrops = 0
@@ -275,12 +266,10 @@ extension Event.Log {
   }
 }
 
-/**
- Maps a caller-supplied attribute dictionary to typed `OTAttribute`s. Returns the
- mapped attributes plus a count of entries that could not be represented (a
- value type we don't support, or a deeply unrepresentable nested structure) so
- the caller can fold them into the OTel `droppedAttributesCount`.
- */
+/// Maps a caller-supplied attribute dictionary to typed `OTAttribute`s. Returns the
+/// mapped attributes plus a count of entries that could not be represented (a
+/// value type we don't support, or a deeply unrepresentable nested structure) so
+/// the caller can fold them into the OTel `droppedAttributesCount`.
 func otAttributesFromUserDict(_ dict: [String: Any]) -> (attributes: [OTAttribute], droppedCount: Int) {
   var attributes: [OTAttribute] = []
   var droppedCount = 0
@@ -294,14 +283,12 @@ func otAttributesFromUserDict(_ dict: [String: Any]) -> (attributes: [OTAttribut
   return (attributes, droppedCount)
 }
 
-/**
- Converts an arbitrary `Any` value coming from the JS bridge (or the AnyCodable
- storage roundtrip) into an `OTAnyValue`. Returns `nil` for values whose type
- cannot be expressed in OTLP — callers should treat these as dropped attributes.
-
- Booleans must be tested before integers because `Bool` bridges to `NSNumber`
- and would otherwise be matched as `Int` first.
- */
+/// Converts an arbitrary `Any` value coming from the JS bridge (or the AnyCodable
+/// storage roundtrip) into an `OTAnyValue`. Returns `nil` for values whose type
+/// cannot be expressed in OTLP — callers should treat these as dropped attributes.
+///
+/// Booleans must be tested before integers because `Bool` bridges to `NSNumber`
+/// and would otherwise be matched as `Int` first.
 func otAnyValue(from value: Any) -> OTAnyValue? {
   // `as? Bool` succeeds for any NSNumber holding 0 or 1 — including `Int(0)` / `Int(1)` from JS,
   // which would otherwise quietly emit as `boolValue` instead of `intValue`. Distinguish real
@@ -412,7 +399,7 @@ extension Event {
       scopeMetrics: [
         OTScopeMetrics(
           scope: OTScope(name: "expo-observe", version: ObserveVersions.clientVersion),
-          metrics: self.metrics.map{ $0.toOTMetric() }
+          metrics: self.metrics.map { $0.toOTMetric() }
         )
       ],
       schemaUrl: semConvSchemaUrl

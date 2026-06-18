@@ -17,14 +17,21 @@ import { Pressable, Text } from 'react-native';
 import { ObserveNavigationContainer } from '../ObserveNavigationContainer';
 import { useObserveForReactNavigation } from '../useObserveForReactNavigation';
 
-jest.mock('expo-app-metrics', () => ({
-  __esModule: true,
-  default: {
-    markInteractive: jest.fn(),
-    getMainSession: jest.fn(async () => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(async () => {}),
-  },
-}));
+jest.mock('expo-app-metrics', () => {
+  const mainSession = {
+    id: 'session-1',
+    type: 'main',
+    startDate: '2026-01-01T00:00:00.000Z',
+    addMetric: jest.fn(async () => {}),
+  };
+  return {
+    __esModule: true,
+    default: {
+      markInteractive: jest.fn(),
+      getMainSession: jest.fn(() => mainSession),
+    },
+  };
+});
 
 jest.mock('../init', () => ({
   __esModule: true,
@@ -32,7 +39,7 @@ jest.mock('../init', () => ({
   initReactNavigationIntegration: jest.fn(),
 }));
 
-const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
+const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 const mockMarkInteractive = AppMetrics.markInteractive as jest.Mock;
 
 type EmittedMetric = {
@@ -43,7 +50,7 @@ type EmittedMetric = {
 };
 
 function emittedMetrics(name?: string): EmittedMetric[] {
-  const all = mockAddCustomMetric.mock.calls.map((call) => call[0] as EmittedMetric);
+  const all = mockAddMetric.mock.calls.map((call) => call[0] as EmittedMetric);
   return name ? all.filter((metric) => metric.name === name) : all;
 }
 
@@ -123,8 +130,9 @@ async function renderApp(children: React.ReactNode) {
       {children}
     </ObserveNavigationContainer>
   );
-  // The initial cold metric fires from `onReady` and resolves an awaited
-  // `getMainSession()` before emitting — flush microtasks before asserting.
+  // The initial cold metric fires from the provider's `isReady()` catch-up /
+  // `state` ref listener and resolves an awaited `getMainSession()` before
+  // emitting — flush microtasks before asserting.
   await act(async () => {
     await flushAsync();
   });
@@ -160,7 +168,6 @@ describe('react-navigation integration (real navigation tree)', () => {
       const [metric, ...rest] = emittedMetrics('cold_ttr');
       expect(rest).toHaveLength(0);
       expect(metric).toEqual({
-        sessionId: 'session-1',
         timestamp: expect.any(String),
         category: 'navigation',
         name: 'cold_ttr',

@@ -1,6 +1,8 @@
 import { Platform } from 'expo-modules-core';
 
-import { DEFAULT_DEBOUNCE_MS, Directory, File } from '../..';
+import { Directory } from '../Directory';
+import { File } from '../File';
+import { DEFAULT_DEBOUNCE_MS } from '../FileSystemWatcher.types';
 import { FileSystemWatcher } from '../internal/FileSystemWatcher';
 
 jest.mock('../ExpoFileSystem', () => {

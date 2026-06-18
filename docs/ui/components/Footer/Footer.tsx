@@ -3,6 +3,7 @@ import { PrivacyChoicesButton } from '@expo/styleguide-cookie-consent';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
+import { useIntl } from 'react-intl';
 
 import { isEasPath } from '~/common/routes';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -36,6 +37,7 @@ export const Footer = ({
 }: Props) => {
   const { hasVersion, version } = usePageApiVersion();
   const router = useRouter();
+  const intl = useIntl();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
   const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
   const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
@@ -78,7 +80,8 @@ export const Footer = ({
               <ArrowLeftIcon className="shrink-0 text-icon-secondary" />
               <div>
                 <FOOTNOTE theme="secondary">
-                  Previous{previousPage.section ? ` (${previousPage.section})` : ''}
+                  {intl.formatMessage({ id: 'footerPrevious' })}
+                  {previousPage.section ? ` (${previousPage.section})` : ''}
                 </FOOTNOTE>
                 <P weight="medium">{previousPage.sidebarTitle ?? previousPage.name}</P>
               </div>
@@ -95,7 +98,8 @@ export const Footer = ({
               )}>
               <div>
                 <FOOTNOTE theme="secondary">
-                  Next{nextPage?.section ? ` (${nextPage.section})` : ''}
+                  {intl.formatMessage({ id: 'footerNext' })}
+                  {nextPage?.section ? ` (${nextPage.section})` : ''}
                 </FOOTNOTE>
                 <P weight="medium">{nextPage.sidebarTitle ?? nextPage.name}</P>
               </div>
