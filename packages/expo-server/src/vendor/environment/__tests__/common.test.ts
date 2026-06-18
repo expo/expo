@@ -300,7 +300,7 @@ describe('getHtml', () => {
     const input = createMockInput({
       manifest: {
         rendering: { mode: 'ssr', file: '_expo/server/render.js' },
-        assets: { css: ['/style.css'], js: ['/app.js'] },
+        assets: { css: [{ type: 'css', href: '/style.css' }], js: ['/app.js'] },
       },
       modules: { '_expo/server/render.js': mockSSRModule },
     });
@@ -323,7 +323,7 @@ describe('getHtml', () => {
       }),
       expect.objectContaining({
         request,
-        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
+        assets: { css: [{ type: 'css', href: '/style.css' }], js: ['/app.js'] },
       })
     );
     expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
@@ -341,7 +341,7 @@ describe('getHtml', () => {
     const input = createMockInput({
       manifest: {
         rendering: { mode: 'ssr', file: '_expo/server/render.js' },
-        assets: { css: ['/global.css'], js: ['/runtime.js', '/entry.js'] },
+        assets: { css: [{ type: 'css', href: '/global.css' }], js: ['/runtime.js', '/entry.js'] },
       },
       modules: { '_expo/server/render.js': mockSSRModule },
     });
@@ -361,22 +361,20 @@ describe('getHtml', () => {
       expect.any(URL),
       expect.objectContaining({
         assets: {
-          css: ['/global.css'],
-          externalCss: [],
+          css: [{ type: 'css', href: '/global.css' }],
           js: ['/runtime.js', '/entry.js', '/layout-chunk.js', '/index-chunk.js'],
         },
       })
     );
   });
 
-  it('merges top-level and per-route external CSS', async () => {
+  it('merges top-level and per-route external CSS in source order', async () => {
     const mockSSRModule = createMockSSRModule();
     const input = createMockInput({
       manifest: {
         rendering: { mode: 'ssr', file: '_expo/server/render.js' },
         assets: {
-          css: [],
-          externalCss: [{ href: 'https://fonts.googleapis.com/css2?family=Roboto' }],
+          css: [{ type: 'external', href: 'https://fonts.googleapis.com/css2?family=Roboto' }],
           js: [],
         },
       },
@@ -391,9 +389,12 @@ describe('getHtml', () => {
         page: '/index',
         namedRegex: new RegExp('^/(?:/)?$'),
         assets: {
-          css: [],
-          externalCss: [
-            { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
+          css: [
+            {
+              type: 'external',
+              href: 'https://example.com/route.css',
+              media: 'screen and (min-width: 900px)',
+            },
           ],
           js: [],
         },
@@ -404,9 +405,13 @@ describe('getHtml', () => {
       expect.any(URL),
       expect.objectContaining({
         assets: expect.objectContaining({
-          externalCss: [
-            { href: 'https://fonts.googleapis.com/css2?family=Roboto' },
-            { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
+          css: [
+            { type: 'external', href: 'https://fonts.googleapis.com/css2?family=Roboto' },
+            {
+              type: 'external',
+              href: 'https://example.com/route.css',
+              media: 'screen and (min-width: 900px)',
+            },
           ],
         }),
       })

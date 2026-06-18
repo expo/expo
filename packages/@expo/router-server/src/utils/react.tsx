@@ -1,4 +1,5 @@
 import type { ServerFontResourceDescriptor } from 'expo-font';
+import type { CssAsset } from 'expo-server/private';
 import { type ReactNode } from 'react';
 
 import { getHydrationFlagScriptContents, getLoaderDataScriptContents } from './html';
@@ -8,41 +9,42 @@ type CreateNodeResult = {
   bodyNodes?: ReactNode[];
 };
 
-export function createInjectedCssAsNodes(hrefs: string[]): CreateNodeResult {
+/**
+ * Renders the ordered CSS asset list as `<head>` nodes, walking the list in order so the caller
+ * controls the cascade and the bundled/external source-order interleave is preserved. Each entry is
+ * rendered by its `type`:
+ * - `css`: a `<link rel="preload">` + `<link rel="stylesheet">` pair.
+ * - `external`: a `<link rel="stylesheet">` preserving `media`.
+ * - `inline`: a `<style>` tag carrying its HMR id (development only).
+ */
+export function createInjectedCssAsNodes(css: CssAsset[] = []): CreateNodeResult {
   return {
-    headNodes: hrefs.flatMap((href) => [
-      <link key={`css-preload-${href}`} rel="preload" href={href} as="style" />,
-      <link key={`css-stylesheet-${href}`} rel="stylesheet" href={href} />,
-    ]),
-  };
-}
-
-export function createInjectedExternalCssAsNodes(
-  externalCss: { href: string; media?: string }[] = []
-): CreateNodeResult {
-  return {
-    headNodes: externalCss.map(({ href, media }) => (
-      <link
-        key={`css-external-${href}-${media ?? ''}`}
-        rel="stylesheet"
-        href={href}
-        media={media}
-      />
-    )),
-  };
-}
-
-export function createInjectedInlineCssAsNodes(
-  inlineCss: { source: string; hmrId?: string }[] = []
-): CreateNodeResult {
-  return {
-    headNodes: inlineCss.map(({ source, hmrId }, index) => (
-      <style
-        key={hmrId ? `inline-css-${hmrId}` : `inline-css-${index}`}
-        data-expo-css-hmr={hmrId}
-        dangerouslySetInnerHTML={{ __html: source }}
-      />
-    )),
+    headNodes: css.flatMap((asset, index) => {
+      switch (asset.type) {
+        case 'css':
+          return [
+            <link key={`css-preload-${asset.href}`} rel="preload" href={asset.href} as="style" />,
+            <link key={`css-stylesheet-${asset.href}`} rel="stylesheet" href={asset.href} />,
+          ];
+        case 'external':
+          return [
+            <link
+              key={`css-external-${asset.href}-${asset.media ?? ''}`}
+              rel="stylesheet"
+              href={asset.href}
+              media={asset.media}
+            />,
+          ];
+        case 'inline':
+          return [
+            <style
+              key={asset.hmrId ? `inline-css-${asset.hmrId}` : `inline-css-${index}`}
+              data-expo-css-hmr={asset.hmrId}
+              dangerouslySetInnerHTML={{ __html: asset.source }}
+            />,
+          ];
+      }
+    }),
   };
 }
 

@@ -356,17 +356,16 @@ export async function exportFromServerAsync(
       const toAssetUrl = (filename: string) =>
         baseUrl ? `${baseUrl}/${filename}` : `/${filename}`;
 
+      // Bundled and external (`@import url(https://...)`) stylesheets share one ordered list, walked
+      // in source order so the cascade interleave is preserved. External entries are stored
+      // structurally as `{ href, media }`; the renderer rebuilds the `<link>` from them.
       const cssAssets = resources.artifacts
-        .filter((asset) => asset.type === 'css')
-        .map((asset) => toAssetUrl(asset.filename));
-
-      // External stylesheets (`@import url(https://...)`) are extracted out of the bundled CSS.
-      const externalCssAssets = resources.artifacts
-        .filter((asset) => asset.type === 'css-external')
-        .map((asset) => ({
-          href: asset.filename,
-          media: asset.metadata.media,
-        }));
+        .filter((asset) => asset.type === 'css' || asset.type === 'css-external')
+        .map((asset) =>
+          asset.type === 'css-external'
+            ? { type: 'external' as const, href: asset.filename, media: asset.metadata.media }
+            : { type: 'css' as const, href: toAssetUrl(asset.filename) }
+        );
 
       const jsArtifacts = resources.artifacts.filter((asset) => asset.type === 'js');
       const orderedJsAssets = assetsRequiresSort(jsArtifacts);
@@ -412,7 +411,6 @@ export async function exportFromServerAsync(
         callback: (manifest) => {
           manifest.assets = {
             css: cssAssets,
-            externalCss: externalCssAssets,
             js: syncJsAssets,
             favicon: faviconAsset?.href,
           };

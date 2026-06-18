@@ -1,9 +1,7 @@
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import {
-  injectAssetsIntoHtml,
-  type StaticContentAssets,
-} from '@expo/router-server/build/utils/html';
+import { injectAssetsIntoHtml } from '@expo/router-server/build/utils/html';
 import type { RouteNode } from 'expo-router/build/Route';
+import type { AssetInfo } from 'expo-server/private';
 
 const debug = require('debug')('expo:metro:html') as typeof console.log;
 
@@ -71,12 +69,12 @@ export function serialAssetsToStaticContentAssets(
     route?: RouteNode;
     favicon?: string;
   }
-): StaticContentAssets {
+): AssetInfo {
   const css = assets
     .filter((asset) => asset.type === 'css' || asset.type === 'css-external')
     .map((asset) => {
       if (asset.type === 'css-external') {
-        return { type: 'external' as const, source: asset.source };
+        return { type: 'external' as const, href: asset.filename, media: asset.metadata.media };
       }
       return isExporting
         ? { type: 'css' as const, href: combineUrlPath(baseUrl, asset.filename) }
