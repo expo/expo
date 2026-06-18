@@ -47,6 +47,7 @@ const { watchPlugins, prettierPath, ...pluginProject } = require('./plugin/jest.
 projects.push({ ...pluginProject, rootDir: path.join(__dirname, 'plugin') });
 
 const config = withWatchPlugins({
+  ...require('jest-expo/config/maxWorkers'),
   projects,
 });
 

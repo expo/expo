@@ -127,5 +127,7 @@ jestPreset.setupFiles.push(require.resolve('jest-expo/src/preset/setup.js'));
 // Don't fail a package that ships the preset but has no test files yet.
 jestPreset.passWithNoTests = true;
 
+Object.assign(jestPreset, require('jest-expo/config/maxWorkers'));
+
 // Add typescript custom mapping
 module.exports = withTypescriptMapping(jestPreset);

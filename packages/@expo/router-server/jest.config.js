@@ -34,6 +34,7 @@ projects.push({
 });
 
 const config = withWatchPlugins({
+  ...require('jest-expo/config/maxWorkers'),
   projects,
 });
 

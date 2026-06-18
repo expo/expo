@@ -17,6 +17,7 @@ function withDefaults({ watchPlugins, ...config }) {
 
 module.exports = withWatchPlugins({
   passWithNoTests: true,
+  ...require('jest-expo/config/maxWorkers'),
   projects: [
     // Create a new project for each platform.
     getWebPreset(),
