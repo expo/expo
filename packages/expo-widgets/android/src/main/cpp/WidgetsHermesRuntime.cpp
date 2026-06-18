@@ -15,13 +15,6 @@ namespace jni = facebook::jni;
 namespace react = facebook::react;
 
 namespace expo::widgets {
-  std::optional<std::string> jstringToOptionalString(const jni::alias_ref<jstring> &value) {
-    if (!value) {
-      return std::nullopt;
-    }
-    return value->toStdString();
-  }
-
   void throwRuntimeException(const std::string &message) {
     jni::throwNewJavaException("java/lang/RuntimeException", message.c_str());
   }
@@ -61,6 +54,7 @@ namespace expo::widgets {
         makeNativeMethod("initHybrid", WidgetsHermesRuntime::initHybrid),
         makeNativeMethod("nativeEvaluateBundle", WidgetsHermesRuntime::nativeEvaluateBundle),
         makeNativeMethod("nativeRender", WidgetsHermesRuntime::nativeRender),
+        makeNativeMethod("nativeHandlePress", WidgetsHermesRuntime::nativeHandlePress),
       });
     }
 
@@ -85,7 +79,29 @@ namespace expo::widgets {
     ) {
       try {
         std::scoped_lock lock(mutex);
-        return renderWithFunction(
+        return callRender(
+          "__expoWidgetRender",
+          layout->toStdString(),
+          props,
+          environment
+        );
+      } catch (const jsi::JSError &error) {
+        throwRuntimeException(error.getMessage());
+      } catch (const std::exception &error) {
+        throwRuntimeException(error.what());
+      }
+      return nullptr;
+    }
+
+    jni::local_ref<react::ReadableNativeMap::jhybridobject> nativeHandlePress(
+      const jni::alias_ref<jstring> &layout,
+      const jni::alias_ref<react::ReadableNativeMap::javaobject> &props,
+      const jni::alias_ref<react::ReadableNativeMap::javaobject> &environment
+    ) {
+      try {
+        std::scoped_lock lock(mutex);
+        return callRender(
+          "__expoWidgetHandlePress",
           layout->toStdString(),
           props,
           environment
@@ -116,7 +132,8 @@ namespace expo::widgets {
       layoutCache.emplace(layout, std::make_unique<jsi::Value>(*runtime, layoutValue));
     }
 
-    jni::local_ref<react::ReadableNativeMap::jhybridobject> renderWithFunction(
+    jni::local_ref<react::ReadableNativeMap::jhybridobject> callRender(
+      const char *functionName,
       const std::string &layout,
       const jni::alias_ref<react::ReadableNativeMap::javaobject> &propsMap,
       const jni::alias_ref<react::ReadableNativeMap::javaobject> &environmentMap
@@ -130,7 +147,7 @@ namespace expo::widgets {
       auto environment = readableMapToValue(rt, environmentMap);
       jsi::Value args[] = {std::move(props), std::move(environment)};
       const jsi::Value *argsPtr = args;
-      auto render = rt.global().getPropertyAsFunction(rt, "__expoWidgetRender");
+      auto render = rt.global().getPropertyAsFunction(rt, functionName);
       auto result = render.call(rt, argsPtr, static_cast<size_t>(2));
       if (!result.isObject()) {
         throw std::runtime_error("Widget render function must return an object");
