@@ -38,7 +38,6 @@
     "zx": "^8.8.5"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.3",
     "expo-module-scripts": "workspace:*"
   },
   "types": "build/index.d.ts",
