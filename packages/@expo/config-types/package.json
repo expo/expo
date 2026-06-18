@@ -46,6 +46,7 @@
     "build"
   ],
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
