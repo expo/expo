@@ -3,20 +3,22 @@ import * as fs from 'fs';
 
 import { generateTSMockForModule } from '../src/mockgen';
 import {
-  FileTypeInformation,
   getFileTypeInformation,
-  ModuleClassDeclaration,
   serializeTypeInformation,
-  TypeInferenceOption,
   withPreparedSingleFile,
 } from '../src/typeInformation';
+import {
+  GetFileTypeInformationOptions,
+  TypeInferenceOption,
+  ModuleClassDeclaration,
+  FileTypeInformation,
+} from '../src/typeInformation.types';
 import {
   generateFullTsInterface,
   generateConciseTsInterface,
   generateModuleTypesFileContent,
   generateViewTypesFileContent,
 } from '../src/typescriptGeneration';
-import { GetFileTypeInformationOptions } from '../build';
 
 const swiftFile = fs.realpathSync('./__tests__/TestModule.swift');
 const defaultArgs: GetFileTypeInformationOptions = {
