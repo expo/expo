@@ -11,9 +11,9 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-[Argent](https://argent.swmansion.com) is an agentic toolkit from Software Mansion. Where an AI agent like Claude Code or Cursor reads your code and documentation, Argent gives that same agent direct access to your running app: it can **control, debug, and profile** your Expo app on an Android Emulator or iOS Simulator. You set it up once and connect it to your editor through the [Model Context Protocol (MCP)](/mcp/).
+[Argent](https://argent.swmansion.com) is an agentic toolkit from Software Mansion. Where an AI agent like Claude Code or Codex reads your code and documentation, Argent gives that same agent direct access to your running app: it can **control, debug, and profile** your Expo app on an Android Emulator or iOS Simulator. You set it up once and connect it to your editor through the [Model Context Protocol (MCP)](/mcp/).
 
-> **info** Argent is built and maintained by [Software Mansion](https://swmansion.com), not by Expo. It is free to use, with source code under the Apache License 2.0 and proprietary binaries. For the complete list of its capabilities, see the [Argent website](https://argent.swmansion.com).
+> **info** Argent is built and maintained by [Software Mansion](https://swmansion.com). It is free to use, with source code under the Apache License 2.0 and proprietary binaries. For the complete list of its capabilities, see the [Argent website](https://argent.swmansion.com).
 
 <Prerequisites>
   <Requirement title="Node.js 18 or later">
@@ -51,8 +51,6 @@ Your editor launches the Argent MCP server with the `argent` command, so install
     bun: ['$ bun add -g @swmansion/argent'],
   }}
 />
-
-> **info** If your package manager's global bin directory is not on your `PATH` (for example, a Homebrew install of Bun uses **~/.bun/bin**), add it. With Bun, also run `bun pm trust @swmansion/argent` so its postinstall step can finish setting up Argent's device binaries.
 
 </Step>
 
@@ -151,11 +149,10 @@ Argent connects through MCP, so it works alongside Expo's own agent tooling. Pai
   ]}
 />
 
-## Good to know
+## Important notes
 
-- Argent supports Android Emulators and iOS Simulators. It does not target physical devices.
+- Argent supports Android Emulators and iOS Simulators.
 - Let Argent launch or relaunch the app on the device when it can. If you boot the device yourself, Argent may not be able to see system dialogs or native modals.
 - In Expo Go, Argent can control the app, read the React component tree, and run the React profiler. Native profiling needs a development build, because in Expo Go it profiles the Expo Go host app instead of your code.
-- Native profiling uses Instruments on iOS today. Android native profiling is on Argent's roadmap.
 - The React component tree and the React profiler rely on the JavaScript debugging connection, so keep your development server running.
 - For the complete and current list of capabilities, see the [Argent documentation](https://argent.swmansion.com).
