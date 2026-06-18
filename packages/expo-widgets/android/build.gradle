@@ -105,6 +105,9 @@ androidComponents {
 dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'com.facebook.react:hermes-android'
+  implementation expoModule.getExpoDependency("expo-ui")
+  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
+  implementation 'androidx.compose.ui:ui-android:1.10.6'
   api 'androidx.glance:glance:1.2.0-rc01'
   api 'androidx.glance:glance-appwidget:1.2.0-rc01'
 }
