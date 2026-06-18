@@ -36,7 +36,7 @@ function stackState(
     routeNames: [],
     stale: false,
     key: 'test',
-  };
+  } as NavigationStateLike;
 }
 
 function tabState(routes: { key: string; name?: string }[], index: number): NavigationStateLike {
@@ -47,7 +47,7 @@ function tabState(routes: { key: string; name?: string }[], index: number): Navi
     routeNames: [],
     stale: false,
     key: 'test',
-  };
+  } as NavigationStateLike;
 }
 
 function flushAsync() {
@@ -145,7 +145,7 @@ describe('createStateChangeHandler', () => {
       routeNames: [],
       stale: false,
       key: 'root',
-    };
+    } as NavigationStateLike;
     handle(nested);
     await flushAsync();
 

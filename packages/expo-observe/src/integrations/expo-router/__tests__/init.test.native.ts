@@ -37,9 +37,10 @@ function createFakeNavigationEvents(): FakeNavigationEvents {
   const listeners: Record<string, Set<Listener<any>>> = {};
   return {
     addListener(type, cb) {
-      listeners[type] = listeners[type] ?? new Set();
-      listeners[type].add(cb);
-      return () => listeners[type].delete(cb);
+      const set = listeners[type] ?? new Set();
+      listeners[type] = set;
+      set.add(cb);
+      return () => set.delete(cb);
     },
     emit(type, event) {
       listeners[type]?.forEach((cb) => cb(event));

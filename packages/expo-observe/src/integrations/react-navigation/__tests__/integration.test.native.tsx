@@ -8,6 +8,7 @@ import {
   useNavigationBuilder,
   type LinkingOptions,
   type NavigationContainerRef,
+  type NavigatorScreenParams,
 } from '@react-navigation/native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import AppMetrics from 'expo-app-metrics';
@@ -68,8 +69,8 @@ function createTestNavigator(router: typeof StackRouter) {
       children,
       initialRouteName,
     });
-    const focused = state.routes[state.index];
-    return <NavigationContent>{descriptors[focused.key].render()}</NavigationContent>;
+    const focused = state.routes[state.index]!;
+    return <NavigationContent>{descriptors[focused.key]!.render()}</NavigationContent>;
   }
   return createNavigatorFactory(TestNavigator)();
 }
@@ -95,11 +96,27 @@ function InteractiveDetailsScreen() {
   );
 }
 
-type ContainerRef = NavigationContainerRef<Record<string, object | undefined>>;
+type SessionsParamList = {
+  List: undefined;
+  Details: { id: string };
+};
+
+type TabsParamList = {
+  Feed: undefined;
+  Sessions: NavigatorScreenParams<SessionsParamList> | undefined;
+};
+
+type RootParamList = {
+  Home: { from?: string } | undefined;
+  Details: { id: string };
+  Tabs: NavigatorScreenParams<TabsParamList> | undefined;
+};
+
+type ContainerRef = NavigationContainerRef<RootParamList>;
 
 // `enabled: false` keeps NavigationContainer from subscribing to URL handling
 // in jest;
-const linking: LinkingOptions<Record<string, object | undefined>> = {
+const linking: LinkingOptions<RootParamList> = {
   enabled: false,
   prefixes: [],
   config: {
@@ -141,7 +158,10 @@ async function renderApp(children: React.ReactNode) {
 
 async function navigate(ref: React.RefObject<ContainerRef | null>, name: string, params?: object) {
   await act(async () => {
-    ref.current!.navigate(name as never, params as never);
+    // The test navigates by dynamic name/params, so bypass the per-route
+    // navigate() overloads with a loose call signature.
+    const navigate = ref.current!.navigate as (name: string, params?: object) => void;
+    navigate(name, params);
     await flushAsync();
   });
 }
@@ -175,7 +195,7 @@ describe('react-navigation integration (real navigation tree)', () => {
         value: expect.any(Number),
         params: { isAppLaunch: true, routeParams: { from: 'launch' } },
       });
-      expect(metric.routeName).not.toContain('launch');
+      expect(metric!.routeName).not.toContain('launch');
     });
 
     it('does not bake navigate() params into the routeName and reports them as routeParams', async () => {
@@ -290,9 +310,9 @@ describe('react-navigation integration (real navigation tree)', () => {
       expect(mockMarkInteractive).toHaveBeenCalledWith({ routeName: '/Details' });
       const [tti, ...rest] = emittedMetrics('tti');
       expect(rest).toHaveLength(0);
-      expect(tti.routeName).toBe('/Details');
-      expect(tti.routeName).not.toContain('abc');
-      expect(tti.params).toEqual({ routeParams: { id: 'abc' } });
+      expect(tti!.routeName).toBe('/Details');
+      expect(tti!.routeName).not.toContain('abc');
+      expect(tti!.params).toEqual({ routeParams: { id: 'abc' } });
     });
   });
 
