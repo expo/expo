@@ -100,9 +100,13 @@
     "debug": "^4.3.4"
   },
   "devDependencies": {
+    "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.26.0",
+    "@expo/config": "workspace:*",
     "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
+    "@types/babel__code-frame": "^7.0.1",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
     "@types/jest": "^29.2.1",
@@ -111,8 +115,7 @@
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "jest": "^29.2.1",
-    "react-refresh": "^0.14.2",
-    "resolve-from": "^5.0.0"
+    "react-refresh": "^0.14.2"
   },
   "types": "build/index.d.ts"
 }
