@@ -27,6 +27,13 @@ export interface DomWebViewProps extends ViewProps, AndroidProps, IosScrollViewP
      */
     webviewDebuggingEnabled?: boolean;
     /**
+     * Hides the input accessory bar (the gray toolbar shown above the keyboard)
+     * while a text field inside the web content is focused.
+     * @platform ios
+     * @default false
+     */
+    hideKeyboardAccessoryView?: boolean;
+    /**
      * When enabled, the page can call Expo native modules via a
      * `globalThis.expo.modules` proxy, for example:
      *
