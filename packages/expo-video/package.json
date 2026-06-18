@@ -12,7 +12,6 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "typecheck": "tsc -b tsconfig.all.json"
   },

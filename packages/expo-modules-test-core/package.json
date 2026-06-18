@@ -12,7 +12,6 @@
   ],
   "scripts": {
     "build": "expo-build cjs:src",
-    "test": "jest",
     "lint": "expo-module lint",
     "clean": "expo-module clean",
     "typecheck": "tsc -p tsconfig.json"
