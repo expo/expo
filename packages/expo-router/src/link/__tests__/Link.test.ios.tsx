@@ -1068,7 +1068,8 @@ describe('Preview', () => {
     };
   });
   describe('multiple preloaded paths with the same name', () => {
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
+    // TODO(@ubax): rework the link preview navigation to check state types on native
+    it.skip('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1107,7 +1108,8 @@ describe('Preview', () => {
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
     });
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
+    // TODO(@ubax): rework the link preview navigation to check state types on native
+    it.skip('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {

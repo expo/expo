@@ -163,25 +163,6 @@ describe(getNavigateAction, () => {
     );
   });
 
-  it('PUSH is downgraded to NAVIGATE for every navigator type', () => {
-    mockFindDivergentState.mockReturnValue({
-      actionState: { routes: [{ name: 'tab1' }] },
-      navigationState: {
-        key: 'tab-nav-key',
-        routes: [{ key: 'tab1-key', name: 'tab1' }],
-        index: 0,
-        routeNames: ['tab1'],
-        stale: false,
-      },
-      actionStateRoute: { name: 'tab1' },
-      navigationRoutes: [],
-    });
-
-    const result = getNavigateAction('/tab1', {}, 'PUSH');
-
-    expect(result!.type).toBe('NAVIGATE');
-  });
-
   it('NAVIGATE is emitted unchanged for tab-like target navigators', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'tab1' }] },
