@@ -35,7 +35,7 @@ This guide covers integrating PostHog with your Expo project:
 
 <Step label="1">
 
-### Run the connect command
+### Run the `connect` command
 
 Run the following command in your project directory:
 
@@ -261,7 +261,7 @@ Session replay requires a development build since it doesn't work with Expo Go. 
 
 <Collapsible summary="Source maps aren't symbolicating">
 
-Confirm your **metro.config.js** is wrapped with `getPostHogExpoConfig` (see [Source maps](#source-maps)) and that the `POSTHOG_CLI_*` environment variables are set (connect adds them when error tracking is enabled). For over-the-air updates, make sure you ran `posthog-cli hermes upload --directory dist` after `eas update`.
+Confirm your **metro.config.js** is wrapped with `getPostHogExpoConfig` (see [Source maps](#source-maps)) and that the `POSTHOG_CLI_*` environment variables are set (`connect` adds them when error tracking is enabled). For over-the-air updates, make sure you ran `posthog-cli hermes upload --directory dist` after `eas update`.
 
 </Collapsible>
 
