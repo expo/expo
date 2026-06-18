@@ -1,9 +1,17 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
-import type { ActionDispatchedEvent, PageFocusedEvent, PagePreloadedEvent } from 'expo-router';
 
 import { initListeners } from '../init';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
+
+// These are `expo-router`'s event types, but importing them here would pull expo-router's source
+// (and its vendored react-navigation global augmentation of `ReactNavigation.RootParamList`/`Theme`)
+// into the program, which clashes with the real `@react-navigation/core` augmentation loaded by the
+// sibling react-navigation integration tests. They're only used to shape test event payloads, so we
+// alias them to `any` to keep the clash out of this package.
+type ActionDispatchedEvent = any;
+type PageFocusedEvent = any;
+type PagePreloadedEvent = any;
 
 jest.mock('expo-app-metrics', () => {
   const mainSession = {
