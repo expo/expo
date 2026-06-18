@@ -8,7 +8,7 @@
 # When EXPO_USE_PRECOMPILED_MODULES=1 is set, packages with matching XCFrameworks
 # in the centralized build output will be linked as vendored frameworks.
 #
-# Build output:     packages/precompile/.build/<pkg>/output/<flavor>/xcframeworks/<Product>.tar.gz
+# Build output:     packages/precompile/.build/<pkg>/output/<flavor>/xcframeworks/<Product>.tar.xz
 # Custom path:      Set EXPO_PRECOMPILED_MODULES_PATH to override the base directory
 #                   (replaces packages/precompile/.build/), keeping <pkg>/output/... structure
 #
@@ -22,8 +22,8 @@
 #
 # Resulting layout in Pods/<PodName>/:
 #   <Product>.xcframework/                    (extracted by CocoaPods from source tarball)
-#   artifacts/<Product>-debug.tar.gz          (copied by prepare_command)
-#   artifacts/<Product>-release.tar.gz        (copied by prepare_command)
+#   artifacts/<Product>-debug.tar.xz          (copied by prepare_command)
+#   artifacts/<Product>-release.tar.xz        (copied by prepare_command)
 #   artifacts/.last_build_configuration       (written by prepare_command / switch script)
 
 require 'fileutils'
@@ -97,7 +97,7 @@ module Expo
       # Returns custom base path for precompiled module output, if set.
       # When set, replaces the default `packages/precompile/.build/` base directory.
       # The directory structure under this path must match:
-      #   <npm_package>/output/<flavor>/xcframeworks/<Product>.tar.gz
+      #   <npm_package>/output/<flavor>/xcframeworks/<Product>.tar.xz
       def custom_modules_path
         ENV[MODULES_PATH_ENV_VAR]
       end
@@ -773,7 +773,7 @@ module Expo
           # Copy both flavor tarballs
           ['debug', 'release'].each do |flavor|
             src = resolve_prebuilt_tarball(info, product_name, flavor, pod_name)
-            dst = File.join(artifacts_dir, "#{product_name}-#{flavor}.tar.gz")
+            dst = File.join(artifacts_dir, "#{product_name}-#{flavor}.tar.xz")
             FileUtils.cp(src, dst) if File.exist?(src) && !File.exist?(dst)
           end
 
@@ -787,7 +787,7 @@ module Expo
             tarball = resolve_prebuilt_tarball(info, product_name, build_flavor, pod_name)
             if File.exist?(tarball)
               Pod::UI.info "#{'[Expo-precompiled] '.blue}Extracting #{product_name}.xcframework (cache miss)"
-              system("tar", "xzf", tarball, "-C", pod_dir)
+              system("tar", "xf", tarball, "-C", pod_dir)
             end
           end
         end
@@ -1274,10 +1274,10 @@ module Expo
         <<~SH
           # Self-healing: extract xcframework from tarball if CocoaPods cache was stale/empty
           if [ ! -d "#{product_name}.xcframework" ]; then
-            TARBALL="#{build_output_dir}/#{build_flavor}/xcframeworks/#{product_name}.tar.gz"
+            TARBALL="#{build_output_dir}/#{build_flavor}/xcframeworks/#{product_name}.tar.xz"
             if [ -f "$TARBALL" ]; then
               echo "[Expo XCFramework] #{product_name}: Extracting xcframework from build output (cache miss)"
-              tar xzf "$TARBALL"
+              tar xf "$TARBALL"
             fi
           fi
         SH
@@ -1767,7 +1767,7 @@ module Expo
 
           unless has_prebuilt_xcframework?(pod_name)
             product_name = info[:product_name] || pod_name
-            expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+            expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.xz")
             Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: prebuilt xcframework unavailable; building from source".yellow}"
             Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  Expected tarball: #{expected}")}"
             next
@@ -1966,7 +1966,7 @@ module Expo
       end
 
       def resolve_prebuilt_tarball(pod_info, product_name, flavor, pod_name = nil)
-        tarball = File.join(pod_info[:build_output_dir], flavor, 'xcframeworks', "#{product_name}.tar.gz")
+        tarball = File.join(pod_info[:build_output_dir], flavor, 'xcframeworks', "#{product_name}.tar.xz")
         return tarball if File.exist?(tarball)
 
         base_url = external_modules_base_url
@@ -1978,7 +1978,7 @@ module Expo
           (idx ? pod_info[:build_output_dir][idx..] : output_prefix),
           flavor,
           'xcframeworks',
-          "#{product_name}.tar.gz"
+          "#{product_name}.tar.xz"
         ].join('/')
         remote_url = "#{base_url.chomp('/')}/#{relative_path}"
         remote_tarball = File.join(remote_precompiled_artifacts_dir, relative_path)
@@ -2022,7 +2022,7 @@ module Expo
       end
 
       def read_xcframework_info_plists_from_tarball(tarball)
-        entries_output, status = Open3.capture2e('tar', 'tzf', tarball)
+        entries_output, status = Open3.capture2e('tar', 'tf', tarball)
         unless status.success?
           Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{entries_output.strip}"
           return []
@@ -2033,7 +2033,7 @@ module Expo
         Pod::UI.warn "[Expo-precompiled] No XCFramework Info.plist found in #{File.basename(tarball)}" if plist_entries.empty?
 
         plist_entries.filter_map do |entry|
-          plist_data, plist_status = Open3.capture2e('tar', 'xOzf', tarball, entry)
+          plist_data, plist_status = Open3.capture2e('tar', 'xOf', tarball, entry)
           unless plist_status.success?
             Pod::UI.warn "[Expo-precompiled] Failed to extract #{entry} from #{File.basename(tarball)}: #{plist_data.strip}"
             next

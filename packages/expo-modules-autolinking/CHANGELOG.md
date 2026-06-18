@@ -16,6 +16,7 @@
 
 ### 💡 Others
 
+- [iOS] Compress precompiled XCFramework archives with xz (`.tar.xz`) instead of gzip (`.tar.gz`) for smaller downloads.
 - [Android] Make the autolinking Gradle plugin compatible with Android Gradle Plugin 9. ([#46766](https://github.com/expo/expo/pull/46766) by [@lukmccall](https://github.com/lukmccall))
 - Add experimental `tvos` and `macos` resolution ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 

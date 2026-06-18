@@ -1,5 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
@@ -232,7 +233,7 @@ export const Frameworks = {
   ): string => {
     return path.join(
       Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
-      `${productName}.tar.gz`
+      `${productName}.tar.xz`
     );
   },
 
@@ -632,6 +633,93 @@ const copySPMDependencyXCFrameworksAsync = async (
 };
 
 /**
+ * Streams `tar -cf - | xz -9 -T0` to produce a `.tar.xz` at xz preset 9, which roughly halves
+ * the archive compared to the default preset 6 (and is ~60% smaller than gzip). `-T0` spreads
+ * the work across all cores. The standalone `xz` binary is needed only here at build time
+ * (present on CI/dev machines); consumers extract with libarchive's `tar -xf` and need no `xz`.
+ *
+ * tar and xz run as two piped processes; the archive is only considered written once tar exits
+ * 0, xz exits 0, and the output file stream has flushed.
+ */
+const createXzTarballAsync = (tarballPath: string, cwd: string, entries: string[]): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    const tar = spawn('tar', ['-cf', '-', '-C', cwd, ...entries], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    const xz = spawn('xz', ['-9', '-T0', '-c'], { stdio: ['pipe', 'pipe', 'pipe'] });
+    const out = fs.createWriteStream(tarballPath);
+
+    let stderr = '';
+    let tarDone = false;
+    let xzDone = false;
+    let outDone = false;
+    let settled = false;
+
+    const fail = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      tar.kill();
+      xz.kill();
+      reject(error);
+    };
+    const maybeResolve = () => {
+      if (tarDone && xzDone && outDone && !settled) {
+        settled = true;
+        resolve();
+      }
+    };
+
+    tar.stderr.on('data', (d) => (stderr += d));
+    xz.stderr.on('data', (d) => (stderr += d));
+
+    tar.on('error', (e) =>
+      fail(
+        new Error(`Failed to spawn tar while archiving ${path.basename(tarballPath)}: ${e.message}`)
+      )
+    );
+    xz.on('error', (e) =>
+      fail(
+        new Error(
+          `Failed to run xz while compressing ${path.basename(tarballPath)}. The xz binary is ` +
+            `required to build precompiled XCFrameworks; install it (e.g. \`brew install xz\`) and ` +
+            `retry. Underlying error: ${e.message}`
+        )
+      )
+    );
+    out.on('error', fail);
+
+    tar.stdout.pipe(xz.stdin);
+    xz.stdout.pipe(out);
+
+    tar.on('close', (code) => {
+      if (code !== 0) {
+        return fail(
+          new Error(
+            `tar exited with code ${code} while archiving ${path.basename(tarballPath)}:\n${stderr}`
+          )
+        );
+      }
+      tarDone = true;
+      maybeResolve();
+    });
+    xz.on('close', (code) => {
+      if (code !== 0) {
+        return fail(
+          new Error(
+            `xz exited with code ${code} while compressing ${path.basename(tarballPath)}:\n${stderr}`
+          )
+        );
+      }
+      xzDone = true;
+      maybeResolve();
+    });
+    out.on('finish', () => {
+      outDone = true;
+      maybeResolve();
+    });
+  });
+
+/**
  * Creates a tarball containing the product xcframework and any SPM dependency xcframeworks.
  * The tarball is the source of truth for build-time switching between debug/release flavors.
  *
@@ -680,10 +768,7 @@ const createProductTarballAsync = async (
     `📦 Creating tarball for ${chalk.green(product.name)} (${buildType}): ${xcframeworkEntries.join(', ')}`
   );
 
-  // Create tarball: tar -czf <Product>.tar.gz -C <outputDir> <entries...>
-  await spawnAsync('tar', ['-czf', tarballPath, '-C', outputDir, ...xcframeworkEntries], {
-    stdio: 'pipe',
-  });
+  await createXzTarballAsync(tarballPath, outputDir, xcframeworkEntries);
 
   logger.info(
     `✅ Created ${path.basename(tarballPath)} (${xcframeworkEntries.length} framework(s))`
