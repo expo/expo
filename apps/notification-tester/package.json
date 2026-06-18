@@ -8,7 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "jest --watchAll",
+    "test": "jest",
     "lint": "expo lint",
     "prebuild:android": "./scripts/prebuild-android.sh",
     "prebuild:ios": "./scripts/prebuild-ios.sh",

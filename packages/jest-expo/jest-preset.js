@@ -124,5 +124,8 @@ if (!Array.isArray(jestPreset.setupFiles)) {
 }
 jestPreset.setupFiles.push(require.resolve('jest-expo/src/preset/setup.js'));
 
+// Don't fail a package that ships the preset but has no test files yet.
+jestPreset.passWithNoTests = true;
+
 // Add typescript custom mapping
 module.exports = withTypescriptMapping(jestPreset);
