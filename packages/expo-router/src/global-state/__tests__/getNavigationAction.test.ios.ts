@@ -16,7 +16,6 @@ jest.mock('../store', () => ({
           routes: [{ key: 'root-key', name: '__root' }],
           index: 0,
           key: 'root-nav',
-          type: 'stack',
           routeNames: ['__root'],
           stale: false,
         })),
@@ -65,7 +64,6 @@ function setupDefaultMocks() {
     actionState: { routes: [{ name: 'home' }] },
     navigationState: {
       key: 'nav-key',
-      type: 'stack',
       routes: [{ key: 'root-key', name: '__root' }],
       index: 0,
       routeNames: ['__root'],
@@ -165,12 +163,11 @@ describe(getNavigateAction, () => {
     );
   });
 
-  it('PUSH is downgraded to NAVIGATE when target navigator is not a stack', () => {
+  it('PUSH is downgraded to NAVIGATE for every navigator type', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'tab1' }] },
       navigationState: {
         key: 'tab-nav-key',
-        type: 'tab',
         routes: [{ key: 'tab1-key', name: 'tab1' }],
         index: 0,
         routeNames: ['tab1'],
@@ -185,12 +182,11 @@ describe(getNavigateAction, () => {
     expect(result!.type).toBe('NAVIGATE');
   });
 
-  it('type becomes JUMP_TO when target navigator is expo-tab', () => {
+  it('NAVIGATE is emitted unchanged for tab-like target navigators', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'tab1' }] },
       navigationState: {
         key: 'expo-tab-key',
-        type: 'expo-tab',
         routes: [{ key: 'tab1-key', name: 'tab1' }],
         index: 0,
         routeNames: ['tab1'],
@@ -202,15 +198,14 @@ describe(getNavigateAction, () => {
 
     const result = getNavigateAction('/tab1', {});
 
-    expect(result!.type).toBe('JUMP_TO');
+    expect(result!.type).toBe('NAVIGATE');
   });
 
-  it('REPLACE becomes JUMP_TO when target navigator is drawer', () => {
+  it('REPLACE is emitted unchanged regardless of target navigator kind', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'screen1' }] },
       navigationState: {
         key: 'drawer-key',
-        type: 'drawer',
         routes: [{ key: 'screen1-key', name: 'screen1' }],
         index: 0,
         routeNames: ['screen1'],
@@ -222,7 +217,7 @@ describe(getNavigateAction, () => {
 
     const result = getNavigateAction('/screen1', {}, 'REPLACE');
 
-    expect(result!.type).toBe('JUMP_TO');
+    expect(result!.type).toBe('REPLACE');
   });
 
   it('sets target to navigationState.key', () => {
@@ -312,7 +307,6 @@ describe(getNavigateAction, () => {
       actionState: { routes: [] },
       navigationState: {
         key: 'nav-key',
-        type: 'stack',
         routes: [{ key: 'root-key', name: '__root' }],
         index: 0,
         routeNames: ['__root'],

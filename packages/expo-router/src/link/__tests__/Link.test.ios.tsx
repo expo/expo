@@ -391,12 +391,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -438,12 +436,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });
@@ -533,12 +529,10 @@ test('can dynamically route using singular function', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   // Should push /apple and remove all previous instances of /apple
@@ -598,12 +592,10 @@ test('can dynamically route using singular function', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -646,12 +638,10 @@ describe('prefetch', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
@@ -735,12 +725,10 @@ describe('prefetch', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });

@@ -132,7 +132,6 @@ describe('findDivergentState', () => {
       routes: [{ key: 'home-key', name: 'home' }],
       index: 0,
       key: 'nav-0',
-      type: 'stack',
       routeNames: ['home'],
       stale: false,
     };
@@ -165,7 +164,6 @@ describe('findDivergentState', () => {
             routes: [{ key: 'home-key', name: 'home' }],
             index: 0,
             key: 'nav-1',
-            type: 'stack',
             routeNames: ['home'],
             stale: false,
           },
@@ -173,7 +171,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-0',
-      type: 'stack',
       routeNames: ['root'],
       stale: false,
     };
@@ -210,7 +207,6 @@ describe('findDivergentState', () => {
             routes: [{ key: 'home-key', name: 'home' }],
             index: 0,
             key: 'nav-inner',
-            type: 'stack',
             routeNames: ['home'],
             stale: false,
           },
@@ -218,7 +214,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-root',
-      type: 'stack',
       routeNames: ['root'],
       stale: false,
     };
@@ -255,7 +250,6 @@ describe('findDivergentState', () => {
             routes: [{ key: 'details-key', name: 'details' }],
             index: 0,
             key: 'nav-inner',
-            type: 'stack',
             routeNames: ['details'],
             stale: false,
           },
@@ -263,7 +257,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-root',
-      type: 'stack',
       routeNames: ['[id]'],
       stale: false,
     };
@@ -299,7 +292,6 @@ describe('findDivergentState', () => {
             routes: [{ key: 'details-key', name: 'details' }],
             index: 0,
             key: 'nav-inner',
-            type: 'stack',
             routeNames: ['details'],
             stale: false,
           },
@@ -307,7 +299,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-root',
-      type: 'stack',
       routeNames: ['[id]'],
       stale: false,
     };
@@ -353,7 +344,6 @@ describe('findDivergentState', () => {
                   routes: [{ key: 'leaf-key', name: 'leaf' }],
                   index: 0,
                   key: 'nav-leaf',
-                  type: 'stack',
                   routeNames: ['leaf'],
                   stale: false,
                 },
@@ -361,7 +351,6 @@ describe('findDivergentState', () => {
             ],
             index: 0,
             key: 'nav-branch',
-            type: 'stack',
             routeNames: ['branch-b'],
             stale: false,
           },
@@ -369,7 +358,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-root',
-      type: 'stack',
       routeNames: ['root'],
       stale: false,
     };
@@ -409,7 +397,6 @@ describe('findDivergentState', () => {
               routes: [{ key: 'page-key', name: 'page' }],
               index: 0,
               key: 'nav-settings',
-              type: 'stack',
               routeNames: ['page'],
               stale: false,
             },
@@ -417,7 +404,6 @@ describe('findDivergentState', () => {
         ],
         index: 0, // Currently on 'home' tab
         key: 'nav-tabs',
-        type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
       };
@@ -446,7 +432,6 @@ describe('findDivergentState', () => {
         ],
         index: 0,
         key: 'nav-tabs',
-        type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
       };
@@ -473,7 +458,6 @@ describe('findDivergentState', () => {
         ],
         index: 0, // Currently on 'home'
         key: 'nav-tabs',
-        type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
       };
@@ -501,7 +485,6 @@ describe('findDivergentState', () => {
         ],
         index: 0,
         key: 'nav-tabs',
-        type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
       };

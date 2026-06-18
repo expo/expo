@@ -20,7 +20,6 @@ function makeBuilderState(
     index,
     routeNames: routes.map((r) => r.name),
     routes,
-    type: 'tab',
     stale: false,
     preloadedRouteKeys: [],
   } as unknown as NavigationState;
@@ -111,7 +110,6 @@ describe('useStandardState', () => {
         ],
         1
       ),
-      type: 'stack',
       preloadedRoutes: [{ key: 'settings-1', name: 'settings', params: { from: 'preload' } }],
     } as unknown as NavigationState;
 
@@ -137,7 +135,6 @@ describe('useStandardState', () => {
     // is only meaningful for stack states.
     const builderState = {
       ...makeBuilderState([{ key: 'feed-1', name: 'feed' }]),
-      type: 'tab',
       preloadedRoutes: [{ key: 'settings-1', name: 'settings' }],
     } as unknown as NavigationState;
 
@@ -149,7 +146,6 @@ describe('useStandardState', () => {
   it('ignores an empty preloadedRoutes array', () => {
     const builderState = {
       ...makeBuilderState([{ key: 'feed-1', name: 'feed' }]),
-      type: 'stack',
       preloadedRoutes: [],
     } as unknown as NavigationState;
 

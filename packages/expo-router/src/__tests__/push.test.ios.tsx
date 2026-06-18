@@ -106,7 +106,6 @@ it('stacks should always push a new route', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -136,7 +135,6 @@ it('stacks should always push a new route', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -166,7 +164,6 @@ it('stacks should always push a new route', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -204,22 +201,18 @@ it('stacks should always push a new route', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -395,12 +388,10 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'tab',
               },
             },
             {
@@ -411,12 +402,10 @@ it('works in a nested layout Stack->Tab->Stack', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -536,12 +525,10 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
             {
@@ -552,12 +539,10 @@ it('targets the correct Stack when pushing to a nested layout', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -646,17 +631,14 @@ it('push should also add anchor routes', () => {
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -727,12 +709,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -774,12 +754,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
@@ -861,12 +839,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -910,12 +886,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });

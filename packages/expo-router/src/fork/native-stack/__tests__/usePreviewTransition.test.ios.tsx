@@ -23,7 +23,6 @@ function makeState(
 ): StackNavigationState<ParamListBase> {
   return {
     stale: false,
-    type: 'stack',
     key: 'stack-1',
     index: 0,
     routeNames: ['index'],

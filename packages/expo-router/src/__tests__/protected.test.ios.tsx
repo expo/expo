@@ -87,12 +87,10 @@ it('should protect routes during the initial load', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -278,12 +276,10 @@ it('should default to anchor during initial load', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
