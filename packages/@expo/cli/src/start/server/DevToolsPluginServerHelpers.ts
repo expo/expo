@@ -65,9 +65,9 @@ const nearestPackageType = (entryPoint: string, packageRoot: string): 'module' |
  * modules, and jest's transform otherwise routes `import()` through its CommonJS module registry.
  * This stays a native `import()`, which loads both CommonJS and ESM in Node.
  */
-const importEsm = new Function('specifier', 'return import(specifier)') as (
-  specifier: string
-) => Promise<any>;
+const importEsm =
+  // eslint-disable-next-line no-new-func
+  new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<any>;
 
 export const loadServerModuleAsync = async (
   entryPoint: string,
