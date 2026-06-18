@@ -4,18 +4,27 @@ import { wrapModule } from '../js';
 jest.mock('fs');
 
 async function helpWrap(src: string, options: Partial<Parameters<typeof wrapModule>[1]>) {
-  return wrapModule(await parseModule('index.js', src, {}), {
-    computedAsyncModulePaths: null,
-    createModuleId: (m) => m,
-    dev: true,
-    includeAsyncPaths: false,
-    projectRoot,
-    serverRoot: projectRoot,
-    skipWrapping: false,
-    sourceUrl: 'http://localhost:8081/index.bundle?platform=web&dev=true&minify=false',
-    splitChunks: false,
-    ...options,
-  });
+  return wrapModule(
+    await parseModule('index.js', src, {
+      dev: true,
+      minify: false,
+      type: 'module',
+      platform: 'web',
+      unstable_transformProfile: 'default',
+    }),
+    {
+      computedAsyncModulePaths: null,
+      createModuleId: (m) => m,
+      dev: true,
+      includeAsyncPaths: false,
+      projectRoot,
+      serverRoot: projectRoot,
+      skipWrapping: false,
+      sourceUrl: 'http://localhost:8081/index.bundle?platform=web&dev=true&minify=false',
+      splitChunks: false,
+      ...options,
+    }
+  );
 }
 
 describe(wrapModule, () => {

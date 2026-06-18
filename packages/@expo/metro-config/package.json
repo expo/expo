@@ -107,6 +107,7 @@
     "@types/picomatch": "^4.0.2",
     "dedent": "^1.5.3",
     "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0",
     "metro-minify-terser": "^0.84.2",
     "sass": "^1.60.0"
   },
