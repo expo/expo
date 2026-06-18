@@ -39,6 +39,7 @@ test('gets focused route name from nested state', () => {
     })
   ).toBe('Chat');
 
+  // Without an index, focus defaults to the last route.
   expect(
     getFocusedRouteNameFromRoute({
       name: 'Home',
@@ -47,7 +48,7 @@ test('gets focused route name from nested state', () => {
         routes: [{ name: 'Article' }, { name: 'Chat' }],
       },
     })
-  ).toBe('Article');
+  ).toBe('Chat');
 });
 
 test('gets focused route name from nested state with symbol', () => {
@@ -82,6 +83,7 @@ test('gets focused route name from nested state with symbol', () => {
     })
   ).toBe('Chat');
 
+  // Without an index, focus defaults to the last route.
   expect(
     getFocusedRouteNameFromRoute({
       name: 'Home',
@@ -90,7 +92,7 @@ test('gets focused route name from nested state with symbol', () => {
         routes: [{ name: 'Article' }, { name: 'Chat' }],
       },
     })
-  ).toBe('Article');
+  ).toBe('Chat');
 });
 
 test('gets nested screen in params if present', () => {
