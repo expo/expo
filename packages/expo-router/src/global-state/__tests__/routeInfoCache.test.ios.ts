@@ -35,7 +35,6 @@ function makeState(name: string): ReactNavigationState {
     routes: [{ key: `${name}-key`, name }],
     index: 0,
     key: `nav-${name}`,
-    type: 'stack',
     routeNames: [name],
     stale: false,
   } as ReactNavigationState;

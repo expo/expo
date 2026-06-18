@@ -75,7 +75,6 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
       { key: 'bar-5', name: 'bar' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -92,7 +91,6 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
       { key: 'baz-7', name: 'baz' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -111,7 +109,6 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
       { key: 'baz-7', name: 'baz' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   shouldContinue = true;
@@ -127,7 +124,6 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -188,7 +184,6 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
       { key: 'bar-5', name: 'bar' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -205,7 +200,6 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
       { key: 'baz-9', name: 'baz' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -224,7 +218,6 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
       { key: 'baz-9', name: 'baz' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   shouldContinue = true;
@@ -240,7 +233,6 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -294,7 +286,6 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
       { key: 'bar-5', name: 'bar' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -311,7 +302,6 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
       { key: 'baz-7', name: 'baz' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -325,7 +315,6 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('bar'));
@@ -339,7 +328,6 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 
   expect(onPreventRemove).toHaveBeenCalledTimes(0);
@@ -406,7 +394,6 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
       { key: 'bar-5', name: 'bar' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -430,12 +417,10 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-9', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -461,12 +446,10 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-9', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -490,12 +473,10 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-9', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   shouldContinue = true;
@@ -511,7 +492,6 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -582,7 +562,6 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
       { key: 'bar-5', name: 'bar' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -615,17 +594,14 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
                 routeNames: ['lex'],
                 routes: [{ key: 'lex-13', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -660,17 +636,14 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
                 routeNames: ['lex'],
                 routes: [{ key: 'lex-13', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   shouldContinue = true;
@@ -686,7 +659,6 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -790,17 +762,14 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
                 routeNames: ['lex'],
                 routes: [{ key: 'lex-16', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   };
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
@@ -843,7 +812,6 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
     routeNames: ['foo', 'bar', 'baz', 'bax'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -913,12 +881,10 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() =>
@@ -928,7 +894,6 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
       routeNames: ['foo', 'bar', 'baz'],
       routes: [{ key: 'foo-3', name: 'foo' }],
       stale: false,
-      type: 'stack',
     })
   );
 
@@ -951,11 +916,9 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });

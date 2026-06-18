@@ -249,22 +249,18 @@ test('dismissAll nested', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'tab',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   // This should only dismissing the sub-state for /one/two/_layout
@@ -362,22 +358,18 @@ test('dismissAll nested', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'tab',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   // This should only dismissing the sub-state for /one/_layout
@@ -443,17 +435,14 @@ test('dismissAll nested', () => {
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'tab',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   // Cannot dismiss again as we are at the root Tabs layout
@@ -629,12 +618,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Adding a new screen with different params should work
@@ -675,12 +662,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Normally pushing would add a new route, but since we have singular set to true
@@ -722,12 +707,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });

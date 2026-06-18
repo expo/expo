@@ -17,7 +17,6 @@ function createMockState(
   overrides: Partial<StackNavigationState<ParamListBase>> = {}
 ): StackNavigationState<ParamListBase> {
   return {
-    type: 'stack',
     key: 'stack-key',
     index: 0,
     routeNames: ['index'],

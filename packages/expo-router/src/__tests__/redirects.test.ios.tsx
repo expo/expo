@@ -251,12 +251,10 @@ it('can push to a redirect', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -419,11 +417,9 @@ it('not existing nested route redirects correctly', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });

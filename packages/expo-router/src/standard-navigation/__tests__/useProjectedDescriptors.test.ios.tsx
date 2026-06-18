@@ -10,7 +10,6 @@ function makeRoute(key: string) {
 function makeStackState(overrides: Partial<NavigationState> = {}): NavigationState {
   return {
     stale: false,
-    type: 'stack',
     key: 'stack-key',
     index: 0,
     routeNames: ['index'],

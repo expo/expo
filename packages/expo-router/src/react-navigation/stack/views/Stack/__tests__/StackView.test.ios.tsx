@@ -18,7 +18,6 @@ const createNavigationState = (
   options: { index?: number; preloadedRoutes?: Route<string>[] } = {}
 ): StackNavigationState<ParamListBase> => ({
   stale: false,
-  type: 'stack',
   key: 'stack-1',
   index: options.index ?? routes.length - 1,
   routeNames: routes.map((r) => r.name),
