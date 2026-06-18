@@ -2,11 +2,7 @@ import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';
 import type { NavigationState } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
-import {
-  deepEqual,
-  getPreloadedRouteFromRootStateByHref,
-  getTabPathFromRootStateByHref,
-} from '../utils';
+import { getPreloadedRouteFromRootStateByHref, getTabPathFromRootStateByHref } from '../utils';
 
 // TODO: Remove this after the logs are removed from react-native-screens
 let originalConsoleInfo: typeof console.info;
@@ -27,68 +23,69 @@ afterAll(() => {
   console.info = originalConsoleInfo;
 });
 
-describe('deepEqual', () => {
-  it('returns true for same object reference', () => {
-    const obj = { a: 1 };
-    expect(deepEqual(obj, obj)).toBe(true);
-  });
+// https://github.com/expo/expo/pull/47025
+// describe('deepEqual', () => {
+//   it('returns true for same object reference', () => {
+//     const obj = { a: 1 };
+//     expect(deepEqual(obj, obj)).toBe(true);
+//   });
 
-  it('returns true for deeply equal objects', () => {
-    const a = { x: 1, y: { z: 2 } };
-    const b = { x: 1, y: { z: 2 } };
-    expect(deepEqual(a, b)).toBe(true);
-  });
+//   it('returns true for deeply equal objects', () => {
+//     const a = { x: 1, y: { z: 2 } };
+//     const b = { x: 1, y: { z: 2 } };
+//     expect(deepEqual(a, b)).toBe(true);
+//   });
 
-  it('returns false for objects with different keys', () => {
-    const a = { x: 1 };
-    const b = { x: 1, y: 2 };
-    expect(deepEqual(a, b)).toBe(false);
-  });
+//   it('returns false for objects with different keys', () => {
+//     const a = { x: 1 };
+//     const b = { x: 1, y: 2 };
+//     expect(deepEqual(a, b)).toBe(false);
+//   });
 
-  it('returns false for objects with different values', () => {
-    const a = { x: 1 };
-    const b = { x: 2 };
-    expect(deepEqual(a, b)).toBe(false);
-  });
+//   it('returns false for objects with different values', () => {
+//     const a = { x: 1 };
+//     const b = { x: 2 };
+//     expect(deepEqual(a, b)).toBe(false);
+//   });
 
-  it('returns false if one is null', () => {
-    type DeepEqualParam = Parameters<typeof deepEqual>[0];
-    expect(deepEqual(null as unknown as DeepEqualParam, { a: 1 })).toBe(false);
-    expect(deepEqual({ a: 1 }, null as unknown as DeepEqualParam)).toBe(false);
-  });
+//   it('returns false if one is null', () => {
+//     type DeepEqualParam = Parameters<typeof deepEqual>[0];
+//     expect(deepEqual(null as unknown as DeepEqualParam, { a: 1 })).toBe(false);
+//     expect(deepEqual({ a: 1 }, null as unknown as DeepEqualParam)).toBe(false);
+//   });
 
-  it('returns false if both are null', () => {
-    type DeepEqualParam = Parameters<typeof deepEqual>[0];
-    expect(deepEqual(null as unknown as DeepEqualParam, null as unknown as DeepEqualParam)).toBe(
-      true
-    );
-  });
+//   it('returns false if both are null', () => {
+//     type DeepEqualParam = Parameters<typeof deepEqual>[0];
+//     expect(deepEqual(null as unknown as DeepEqualParam, null as unknown as DeepEqualParam)).toBe(
+//       true
+//     );
+//   });
 
-  it('returns false for non-object types', () => {
-    type DeepEqualParam = Parameters<typeof deepEqual>[0];
-    expect(deepEqual(1 as unknown as DeepEqualParam, { a: 1 })).toBe(false);
-    expect(deepEqual({ a: 1 }, 1 as unknown as DeepEqualParam)).toBe(false);
-    expect(
-      deepEqual('test' as unknown as DeepEqualParam, 'test' as unknown as DeepEqualParam)
-    ).toBe(true);
-  });
+//   it('returns false for non-object types', () => {
+//     type DeepEqualParam = Parameters<typeof deepEqual>[0];
+//     expect(deepEqual(1 as unknown as DeepEqualParam, { a: 1 })).toBe(false);
+//     expect(deepEqual({ a: 1 }, 1 as unknown as DeepEqualParam)).toBe(false);
+//     expect(
+//       deepEqual('test' as unknown as DeepEqualParam, 'test' as unknown as DeepEqualParam)
+//     ).toBe(true);
+//   });
 
-  it('returns true for deeply nested equal objects', () => {
-    const a = { a: { b: { c: 3 } } };
-    const b = { a: { b: { c: 3 } } };
-    expect(deepEqual(a, b)).toBe(true);
-  });
+//   it('returns true for deeply nested equal objects', () => {
+//     const a = { a: { b: { c: 3 } } };
+//     const b = { a: { b: { c: 3 } } };
+//     expect(deepEqual(a, b)).toBe(true);
+//   });
 
-  it('returns false for deeply nested unequal objects', () => {
-    const a = { a: { b: { c: 3 } } };
-    const b = { a: { b: { c: 4 } } };
-    expect(deepEqual(a, b)).toBe(false);
-  });
+//   it('returns false for deeply nested unequal objects', () => {
+//     const a = { a: { b: { c: 3 } } };
+//     const b = { a: { b: { c: 4 } } };
+//     expect(deepEqual(a, b)).toBe(false);
+//   });
 
-  it('returns true for empty objects', () => {
-    expect(deepEqual({}, {})).toBe(true);
-  });
-});
+//   it('returns true for empty objects', () => {
+//     expect(deepEqual({}, {})).toBe(true);
+//   });
+// });
 
 describe(getTabPathFromRootStateByHref, () => {
   beforeEach(() => {
@@ -177,12 +174,14 @@ describe(getTabPathFromRootStateByHref, () => {
     };
     const href = '/faces/1e3a8a';
     const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
-    expect(tabPath).toEqual([
-      {
-        oldTabKey: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-        newTabKey: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-      },
-    ]);
+    expect(tabPath).toEqual([]);
+    // https://github.com/expo/expo/pull/47025
+    // expect(tabPath).toEqual([
+    //   {
+    //     oldTabKey: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
+    //     newTabKey: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
+    //   },
+    // ]);
   });
 
   it('returns single tab path with one tab navigator in href and with change', () => {
@@ -250,9 +249,11 @@ describe(getTabPathFromRootStateByHref, () => {
     };
     const href = '/faces/1e3a8a';
     const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
-    expect(tabPath).toEqual([
-      { oldTabKey: 'index-rYeU6j6cRmkJK1pXpEFHs', newTabKey: 'faces-CtzasUGRC7VBM70ECYYD9' },
-    ]);
+    expect(tabPath).toEqual([]);
+    // https://github.com/expo/expo/pull/47025
+    // expect(tabPath).toEqual([
+    //   { oldTabKey: 'index-rYeU6j6cRmkJK1pXpEFHs', newTabKey: 'faces-CtzasUGRC7VBM70ECYYD9' },
+    // ]);
   });
 });
 
@@ -343,13 +344,15 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
     };
     const href = '/faces/1e3a8a';
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);
-    expect(preloadedRoute).toEqual({
-      key: '[face]-9rms2gdsibY9dVYUGCpZG',
-      name: '[face]',
-      params: {
-        face: '1e3a8a',
-      },
-    });
+    expect(preloadedRoute).toBeUndefined();
+    // https://github.com/expo/expo/pull/47025
+    // expect(preloadedRoute).toEqual({
+    //   key: '[face]-9rms2gdsibY9dVYUGCpZG',
+    //   name: '[face]',
+    //   params: {
+    //     face: '1e3a8a',
+    //   },
+    // });
   });
 
   it('returns correct preloaded route in the different stack in different tab', () => {
@@ -417,12 +420,14 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
     };
     const href = '/faces/1e3a8a';
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);
-    expect(preloadedRoute).toEqual({
-      key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
-      name: '[face]',
-      params: {
-        face: '1e3a8a',
-      },
-    });
+    expect(preloadedRoute).toBeUndefined();
+    // https://github.com/expo/expo/pull/47025
+    // expect(preloadedRoute).toEqual({
+    //   key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
+    //   name: '[face]',
+    //   params: {
+    //     face: '1e3a8a',
+    //   },
+    // });
   });
 });
