@@ -4,7 +4,7 @@
     "noEmit": true,
     "rootDir": ".",
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
-    "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS", "source"]
+    "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS", "expo-source"]
   },
   "include": ["src/**/*"],
   "exclude": ["app/**/*", "dist/**/*", "build/**/*"]

@@ -8,10 +8,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/Manifests.ts",
+        "expo-source": "./src/Manifests.ts",
         "default": "./build/Manifests.d.ts"
       },
-      "source": "./src/Manifests.ts",
+      "expo-source": "./src/Manifests.ts",
       "default": "./build/Manifests.js"
     },
     "./package.json": "./package.json"

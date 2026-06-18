@@ -7,58 +7,58 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./providers/facebook": {
       "types": {
-        "source": "./src/providers/Facebook.ts",
+        "expo-source": "./src/providers/Facebook.ts",
         "default": "./build/providers/Facebook.d.ts"
       },
-      "source": "./src/providers/Facebook.ts",
+      "expo-source": "./src/providers/Facebook.ts",
       "default": "./build/providers/Facebook.js"
     },
     "./providers/facebook.js": {
       "types": {
-        "source": "./src/providers/Facebook.ts",
+        "expo-source": "./src/providers/Facebook.ts",
         "default": "./build/providers/Facebook.d.ts"
       },
-      "source": "./src/providers/Facebook.ts",
+      "expo-source": "./src/providers/Facebook.ts",
       "default": "./build/providers/Facebook.js"
     },
     "./providers/google": {
       "types": {
-        "source": "./src/providers/Google.ts",
+        "expo-source": "./src/providers/Google.ts",
         "default": "./build/providers/Google.d.ts"
       },
-      "source": "./src/providers/Google.ts",
+      "expo-source": "./src/providers/Google.ts",
       "default": "./build/providers/Google.js"
     },
     "./providers/google.js": {
       "types": {
-        "source": "./src/providers/Google.ts",
+        "expo-source": "./src/providers/Google.ts",
         "default": "./build/providers/Google.d.ts"
       },
-      "source": "./src/providers/Google.ts",
+      "expo-source": "./src/providers/Google.ts",
       "default": "./build/providers/Google.js"
     },
     "./build/PKCE": {
       "types": {
-        "source": "./src/PKCE.ts",
+        "expo-source": "./src/PKCE.ts",
         "default": "./build/PKCE.d.ts"
       },
-      "source": "./src/PKCE.ts",
+      "expo-source": "./src/PKCE.ts",
       "default": "./build/PKCE.js"
     },
     "./build/PKCE.js": {
       "types": {
-        "source": "./src/PKCE.ts",
+        "expo-source": "./src/PKCE.ts",
         "default": "./build/PKCE.d.ts"
       },
-      "source": "./src/PKCE.ts",
+      "expo-source": "./src/PKCE.ts",
       "default": "./build/PKCE.js"
     },
     "./package.json": "./package.json"

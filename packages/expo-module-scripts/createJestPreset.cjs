@@ -13,8 +13,8 @@ module.exports = function createJestPreset(basePreset) {
 function _createJestPreset(basePreset) {
   const customExportConditions =
     basePreset.testEnvironmentOptions?.customExportConditions?.slice() ?? [];
-  if (!customExportConditions.includes('source')) {
-    customExportConditions.push('source');
+  if (!customExportConditions.includes('expo-source')) {
+    customExportConditions.push('expo-source');
   }
   // Jest does not support chained presets so we flatten this preset before exporting it
   return {

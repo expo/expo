@@ -6,106 +6,106 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/universal/index.ts",
+        "expo-source": "./src/universal/index.ts",
         "default": "./build/universal/index.d.ts"
       },
-      "source": "./src/universal/index.ts",
+      "expo-source": "./src/universal/index.ts",
       "default": "./build/universal/index.js"
     },
     "./swift-ui": {
       "types": {
-        "source": "./src/swift-ui/index.tsx",
+        "expo-source": "./src/swift-ui/index.tsx",
         "default": "./build/swift-ui/index.d.ts"
       },
-      "source": "./src/swift-ui/index.tsx",
+      "expo-source": "./src/swift-ui/index.tsx",
       "default": "./build/swift-ui/index.js"
     },
     "./swift-ui/modifiers": {
       "types": {
-        "source": "./src/swift-ui/modifiers/index.ts",
+        "expo-source": "./src/swift-ui/modifiers/index.ts",
         "default": "./build/swift-ui/modifiers/index.d.ts"
       },
-      "source": "./src/swift-ui/modifiers/index.ts",
+      "expo-source": "./src/swift-ui/modifiers/index.ts",
       "default": "./build/swift-ui/modifiers/index.js"
     },
     "./jetpack-compose": {
       "types": {
-        "source": "./src/jetpack-compose/index.ts",
+        "expo-source": "./src/jetpack-compose/index.ts",
         "default": "./build/jetpack-compose/index.d.ts"
       },
-      "source": "./src/jetpack-compose/index.ts",
+      "expo-source": "./src/jetpack-compose/index.ts",
       "default": "./build/jetpack-compose/index.js"
     },
     "./jetpack-compose/modifiers": {
       "types": {
-        "source": "./src/jetpack-compose/modifiers/index.ts",
+        "expo-source": "./src/jetpack-compose/modifiers/index.ts",
         "default": "./build/jetpack-compose/modifiers/index.d.ts"
       },
-      "source": "./src/jetpack-compose/modifiers/index.ts",
+      "expo-source": "./src/jetpack-compose/modifiers/index.ts",
       "default": "./build/jetpack-compose/modifiers/index.js"
     },
     "./community/datetime-picker": {
       "types": {
-        "source": "./src/community/datetime-picker/index.tsx",
+        "expo-source": "./src/community/datetime-picker/index.tsx",
         "default": "./build/community/datetime-picker/index.d.ts"
       },
-      "source": "./src/community/datetime-picker/index.tsx",
+      "expo-source": "./src/community/datetime-picker/index.tsx",
       "default": "./build/community/datetime-picker/index.js"
     },
     "./community/bottom-sheet": {
       "types": {
-        "source": "./src/community/bottom-sheet/index.tsx",
+        "expo-source": "./src/community/bottom-sheet/index.tsx",
         "default": "./build/community/bottom-sheet/index.d.ts"
       },
-      "source": "./src/community/bottom-sheet/index.tsx",
+      "expo-source": "./src/community/bottom-sheet/index.tsx",
       "default": "./build/community/bottom-sheet/index.js"
     },
     "./community/segmented-control": {
       "types": {
-        "source": "./src/community/segmented-control/index.tsx",
+        "expo-source": "./src/community/segmented-control/index.tsx",
         "default": "./build/community/segmented-control/index.d.ts"
       },
-      "source": "./src/community/segmented-control/index.tsx",
+      "expo-source": "./src/community/segmented-control/index.tsx",
       "default": "./build/community/segmented-control/index.js"
     },
     "./community/picker": {
       "types": {
-        "source": "./src/community/picker/index.tsx",
+        "expo-source": "./src/community/picker/index.tsx",
         "default": "./build/community/picker/index.d.ts"
       },
-      "source": "./src/community/picker/index.tsx",
+      "expo-source": "./src/community/picker/index.tsx",
       "default": "./build/community/picker/index.js"
     },
     "./community/slider": {
       "types": {
-        "source": "./src/community/slider/index.tsx",
+        "expo-source": "./src/community/slider/index.tsx",
         "default": "./build/community/slider/index.d.ts"
       },
-      "source": "./src/community/slider/index.tsx",
+      "expo-source": "./src/community/slider/index.tsx",
       "default": "./build/community/slider/index.js"
     },
     "./community/masked-view": {
       "types": {
-        "source": "./src/community/masked-view/index.tsx",
+        "expo-source": "./src/community/masked-view/index.tsx",
         "default": "./build/community/masked-view/index.d.ts"
       },
-      "source": "./src/community/masked-view/index.tsx",
+      "expo-source": "./src/community/masked-view/index.tsx",
       "default": "./build/community/masked-view/index.js"
     },
     "./community/menu": {
       "types": {
-        "source": "./src/community/menu/index.tsx",
+        "expo-source": "./src/community/menu/index.tsx",
         "default": "./build/community/menu/index.d.ts"
       },
-      "source": "./src/community/menu/index.tsx",
+      "expo-source": "./src/community/menu/index.tsx",
       "default": "./build/community/menu/index.js"
     },
     "./community/pager-view": {
       "types": {
-        "source": "./src/community/pager-view/index.tsx",
+        "expo-source": "./src/community/pager-view/index.tsx",
         "default": "./build/community/pager-view/index.d.ts"
       },
-      "source": "./src/community/pager-view/index.tsx",
+      "expo-source": "./src/community/pager-view/index.tsx",
       "default": "./build/community/pager-view/index.js"
     },
     "./babel-plugin": {

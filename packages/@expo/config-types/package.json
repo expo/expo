@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/ExpoConfig.ts",
+        "expo-source": "./src/ExpoConfig.ts",
         "default": "./build/ExpoConfig.d.ts"
       },
-      "source": "./src/ExpoConfig.ts",
+      "expo-source": "./src/ExpoConfig.ts",
       "default": "./build/ExpoConfig.js"
     },
     "./package.json": "./package.json"

@@ -92,12 +92,12 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   preset.testEnvironmentOptions ??= {};
   if (!preset.testEnvironmentOptions.customExportConditions) {
     preset.testEnvironmentOptions.customExportConditions = isServer
-      ? ['node', 'require', 'source']
+      ? ['node', 'require', 'expo-source']
       : platform === 'web'
-        ? ['browser', 'source']
-        : ['react-native', 'source'];
-  } else if (!preset.testEnvironmentOptions.customExportConditions.includes('source')) {
-    preset.testEnvironmentOptions.customExportConditions.push('source');
+        ? ['browser', 'expo-source']
+        : ['react-native', 'expo-source'];
+  } else if (!preset.testEnvironmentOptions.customExportConditions.includes('expo-source')) {
+    preset.testEnvironmentOptions.customExportConditions.push('expo-source');
   }
   preset.moduleNameMapper = {
     // Source exports can contain TypeScript files that use explicit `.js`
@@ -126,7 +126,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       'node',
       'require',
       'react-server',
-      'source',
+      'expo-source',
       'workerd',
     ];
   }

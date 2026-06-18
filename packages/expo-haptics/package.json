@@ -41,10 +41,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/Haptics.ts",
+        "expo-source": "./src/Haptics.ts",
         "default": "./build/Haptics.d.ts"
       },
-      "source": "./src/Haptics.ts",
+      "expo-source": "./src/Haptics.ts",
       "default": "./build/Haptics.js"
     },
     "./package.json": "./package.json"

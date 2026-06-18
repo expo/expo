@@ -7,50 +7,50 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./build/android": {
       "types": {
-        "source": "./src/android/index.ts",
+        "expo-source": "./src/android/index.ts",
         "default": "./build/android/index.d.ts"
       },
-      "source": "./src/android/index.ts",
+      "expo-source": "./src/android/index.ts",
       "default": "./build/android/index.js"
     },
     "./build/ios": {
       "types": {
-        "source": "./src/ios/index.ts",
+        "expo-source": "./src/ios/index.ts",
         "default": "./build/ios/index.d.ts"
       },
-      "source": "./src/ios/index.ts",
+      "expo-source": "./src/ios/index.ts",
       "default": "./build/ios/index.js"
     },
     "./build": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./build/*.js": {
       "types": {
-        "source": "./src/*.ts",
+        "expo-source": "./src/*.ts",
         "default": "./build/*.d.ts"
       },
-      "source": "./src/*.ts",
+      "expo-source": "./src/*.ts",
       "default": "./build/*.js"
     },
     "./build/*": {
       "types": {
-        "source": "./src/*.ts",
+        "expo-source": "./src/*.ts",
         "default": "./build/*.d.ts"
       },
-      "source": "./src/*.ts",
+      "expo-source": "./src/*.ts",
       "default": "./build/*.js"
     },
     "./package.json": "./package.json"

@@ -8,17 +8,17 @@
     ".": {
       "react-server": {
         "types": {
-          "source": "./src/Linking.server.ts",
+          "expo-source": "./src/Linking.server.ts",
           "default": "./build/Linking.server.js"
         },
-        "source": "./src/Linking.server.ts",
+        "expo-source": "./src/Linking.server.ts",
         "default": "./build/Linking.server.js"
       },
       "types": {
-        "source": "./src/Linking.ts",
+        "expo-source": "./src/Linking.ts",
         "default": "./build/Linking.d.ts"
       },
-      "source": "./src/Linking.ts",
+      "expo-source": "./src/Linking.ts",
       "default": "./build/Linking.js"
     },
     "./package.json": "./package.json"

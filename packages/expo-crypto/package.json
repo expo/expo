@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/Crypto.ts",
+        "expo-source": "./src/Crypto.ts",
         "default": "./build/Crypto.d.ts"
       },
-      "source": "./src/Crypto.ts",
+      "expo-source": "./src/Crypto.ts",
       "default": "./build/Crypto.js"
     },
     "./package.json": "./package.json"

@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/StatusBar.ts",
+        "expo-source": "./src/StatusBar.ts",
         "default": "./build/StatusBar.d.ts"
       },
-      "source": "./src/StatusBar.ts",
+      "expo-source": "./src/StatusBar.ts",
       "default": "./build/StatusBar.js"
     },
     "./plugin": "./plugin/build/index.js",

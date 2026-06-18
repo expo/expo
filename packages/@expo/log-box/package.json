@@ -6,44 +6,44 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.tsx",
+        "expo-source": "./src/index.tsx",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.tsx",
+      "expo-source": "./src/index.tsx",
       "default": "./build/index.js"
     },
     "./lib": {
       "types": {
-        "source": "./src/index.tsx",
+        "expo-source": "./src/index.tsx",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.tsx",
+      "expo-source": "./src/index.tsx",
       "default": "./build/index.js"
     },
     "./LogBox": {
       "types": {
-        "source": "./src/LogBox.ts",
+        "expo-source": "./src/LogBox.ts",
         "default": "./build/LogBox.d.ts"
       },
-      "source": "./src/LogBox.ts",
+      "expo-source": "./src/LogBox.ts",
       "default": "./build/LogBox.js"
     },
     "./swap-rn-logbox.js": "./swap-rn-logbox.js",
     "./swap-rn-logbox-parser.js": "./swap-rn-logbox-parser.js",
     "./logbox-web-polyfill": {
       "types": {
-        "source": "./src/logbox-web-polyfill.tsx",
+        "expo-source": "./src/logbox-web-polyfill.tsx",
         "default": "./build/logbox-web-polyfill.d.ts"
       },
-      "source": "./src/logbox-web-polyfill.tsx",
+      "expo-source": "./src/logbox-web-polyfill.tsx",
       "default": "./build/logbox-web-polyfill.js"
     },
     "./Data/LogBoxLog": {
       "types": {
-        "source": "./src/Data/LogBoxLog.ts",
+        "expo-source": "./src/Data/LogBoxLog.ts",
         "default": "./build/Data/LogBoxLog.d.ts"
       },
-      "source": "./src/Data/LogBoxLog.ts",
+      "expo-source": "./src/Data/LogBoxLog.ts",
       "default": "./build/Data/LogBoxLog.js"
     },
     "./package.json": "./package.json"

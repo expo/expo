@@ -7,19 +7,19 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
     "./exports": {
       "types": {
-        "source": "./src/exports.ts",
+        "expo-source": "./src/exports.ts",
         "default": "./build/exports.d.ts"
       },
-      "source": "./src/exports.ts",
+      "expo-source": "./src/exports.ts",
       "require": "./build/exports.js",
       "default": "./build/exports.js"
     },

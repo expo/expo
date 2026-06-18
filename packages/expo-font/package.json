@@ -9,25 +9,25 @@
     ".": {
       "react-server": {
         "types": {
-          "source": "./src/index.server.ts",
+          "expo-source": "./src/index.server.ts",
           "default": "./build/index.d.ts"
         },
-        "source": "./src/index.server.ts",
+        "expo-source": "./src/index.server.ts",
         "default": "./build/index.server.js"
       },
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./build/server": {
       "types": {
-        "source": "./src/server.ts",
+        "expo-source": "./src/server.ts",
         "default": "./build/server.d.ts"
       },
-      "source": "./src/server.ts",
+      "expo-source": "./src/server.ts",
       "default": "./build/server.js"
     },
     "./app.plugin": "./app.plugin.js",

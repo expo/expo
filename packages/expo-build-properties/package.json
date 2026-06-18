@@ -6,11 +6,11 @@
   "types": "build/withBuildProperties.d.ts",
   "exports": {
     ".": {
-      "source": "./src/withBuildProperties.ts",
+      "expo-source": "./src/withBuildProperties.ts",
       "default": "./build/withBuildProperties.js"
     },
     "./plugin": {
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./app.plugin.js": "./app.plugin.js",

@@ -7,18 +7,18 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./*": {
       "types": {
-        "source": "./src/*.ts",
+        "expo-source": "./src/*.ts",
         "default": "./build/*.d.ts"
       },
-      "source": "./src/*.ts",
+      "expo-source": "./src/*.ts",
       "default": "./build/*.js"
     },
     "./package.json": "./package.json"

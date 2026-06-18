@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/WebBrowser.ts",
+        "expo-source": "./src/WebBrowser.ts",
         "default": "./build/WebBrowser.d.ts"
       },
-      "source": "./src/WebBrowser.ts",
+      "expo-source": "./src/WebBrowser.ts",
       "default": "./build/WebBrowser.js"
     },
     "./package.json": "./package.json"

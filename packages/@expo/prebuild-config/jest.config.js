@@ -13,6 +13,6 @@ module.exports = {
   },
   rootDir: __dirname,
   testEnvironmentOptions: {
-    customExportConditions: ['node', 'require', 'source'],
+    customExportConditions: ['node', 'require', 'expo-source'],
   },
 };

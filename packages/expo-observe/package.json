@@ -9,18 +9,18 @@
     "./package.json": "./package.json",
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./integrations/react-navigation": {
       "types": {
-        "source": "./src/integrations/react-navigation/index.ts",
+        "expo-source": "./src/integrations/react-navigation/index.ts",
         "default": "./build/integrations/react-navigation/index.d.ts"
       },
-      "source": "./src/integrations/react-navigation/index.ts",
+      "expo-source": "./src/integrations/react-navigation/index.ts",
       "default": "./build/integrations/react-navigation/index.js"
     }
   },

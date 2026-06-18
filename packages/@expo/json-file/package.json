@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/JsonFile.ts",
+        "expo-source": "./src/JsonFile.ts",
         "default": "./build/JsonFile.d.ts"
       },
-      "source": "./src/JsonFile.ts",
+      "expo-source": "./src/JsonFile.ts",
       "default": "./build/JsonFile.js"
     },
     "./package.json": "./package.json"

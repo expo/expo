@@ -11,18 +11,18 @@
     "./plugin": "./plugin/build/index.js",
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./legacy": {
       "types": {
-        "source": "./src/legacy/index.ts",
+        "expo-source": "./src/legacy/index.ts",
         "default": "./build/legacy/index.d.ts"
       },
-      "source": "./src/legacy/index.ts",
+      "expo-source": "./src/legacy/index.ts",
       "default": "./build/legacy/index.js"
     }
   },
