@@ -2,15 +2,14 @@ import { act, render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { resolveBack } from '../back';
-import { resolve } from '../behaviors';
+import { __resetRouterRegistryForTests, registerRouter } from '../routerRegistry';
+import { stackRouter, tabsRouter } from '../routers';
 import { dispatchNav, getNavSnapshot, NavigationStateProvider, useNavigationTree } from '../store';
-import { ROOT_NAME } from '../tree';
-import type { BehaviorLookup, GlobalNavState, NavNode } from '../types';
+import type { GlobalNavState, NavNode } from '../types';
 
-// Phase 4 — end-to-end proof of the root store + imperative bridge (RFC D12/D4, Decisions P-3/P-9).
-//
-// Proves: state in a root useReducer drives render; the imperative bridge dispatches from outside
-// render and the committed snapshot mirrors what rendered; `back` resolves and commits.
+// End-to-end proof of the root store + imperative bridge (RFC D12/D4, Decisions R-13): state in a root
+// useReducer drives render; the bridge commits node swaps from outside render; the committed snapshot
+// mirrors what rendered; back resolves via the router registry.
 
 function TreeView({ node }: { node: NavNode }) {
   const focused = node.routes[node.index];
@@ -24,8 +23,7 @@ function TreeView({ node }: { node: NavNode }) {
 }
 
 function Screen() {
-  const tree = useNavigationTree();
-  return <TreeView node={tree.root} />;
+  return <TreeView node={useNavigationTree().root} />;
 }
 
 const initial: GlobalNavState = {
@@ -47,7 +45,10 @@ const initial: GlobalNavState = {
   },
 };
 
-const lookup: BehaviorLookup = { [ROOT_NAME]: 'tabs', home: 'stack', search: 'stack' };
+const focusSearch = () =>
+  dispatchNav({ key: 'root', next: { ...initial.root, index: 1 }, source: 'js' });
+
+afterEach(__resetRouterRegistryForTests);
 
 it('renders the focused path from a root useReducer', () => {
   render(
@@ -59,7 +60,7 @@ it('renders the focused path from a root useReducer', () => {
   expect(screen.getByTestId('focused:home.stack')).toHaveTextContent('index');
 });
 
-it('dispatches from outside render and the committed snapshot mirrors what rendered', () => {
+it('commits a node swap from outside render; the snapshot mirrors what rendered', () => {
   render(
     <NavigationStateProvider initial={initial}>
       <Screen />
@@ -68,60 +69,54 @@ it('dispatches from outside render and the committed snapshot mirrors what rende
   const stackNode = initial.root.routes[0].child!;
 
   act(() => {
-    dispatchNav({
-      ops: resolve(
-        { type: 'push', route: { key: 'details#9', name: 'details' } },
-        stackNode,
-        'stack'
-      ),
-      source: 'js',
-    });
+    const next = stackRouter.getStateForAction(stackNode, {
+      type: 'navigate',
+      target: { key: 'details#9', name: 'details' },
+    })!;
+    dispatchNav({ key: 'home.stack', next, source: 'js' });
   });
 
   expect(screen.getByTestId('focused:home.stack')).toHaveTextContent('details');
-  // Imperative read reflects committed state.
-  const snap = getNavSnapshot()!;
-  expect(snap.root.routes[0].child!.routes.map((r) => r.name)).toEqual(['index', 'details']);
+  expect(getNavSnapshot()!.root.routes[0].child!.routes.map((r) => r.name)).toEqual([
+    'index',
+    'details',
+  ]);
 });
 
-it('back resolves from the snapshot and commits a tab refocus (scenario 6)', () => {
+it('back resolves from the snapshot via the registry and commits a tab refocus (scenario 6)', () => {
+  registerRouter('root', tabsRouter);
+  registerRouter('home.stack', stackRouter);
+  registerRouter('search.stack', stackRouter);
   render(
     <NavigationStateProvider initial={initial}>
       <Screen />
     </NavigationStateProvider>
   );
-  // Focus search first.
-  act(() => {
-    dispatchNav({ ops: [{ type: 'setIndex', target: 'root', index: 1 }], source: 'js' });
-  });
+  act(focusSearch);
   expect(screen.getByTestId('focused:root')).toHaveTextContent('search');
-  expect(getNavSnapshot()!.root.index).toBe(1); // the imperative read sees COMMITTED state
+  expect(getNavSnapshot()!.root.index).toBe(1); // imperative read sees COMMITTED state
 
-  // Back resolves off the committed snapshot, bubbles to tabs, refocuses home.
   act(() => {
-    const result = resolveBack(getNavSnapshot()!, lookup, ['home', 'search']);
-    expect('ops' in result).toBe(true); // back actually resolved, not exit
-    if ('ops' in result) dispatchNav({ ops: result.ops, source: 'js' });
+    const result = resolveBack(getNavSnapshot()!, ['home', 'search']);
+    expect('key' in result).toBe(true); // resolved, not exit
+    if ('key' in result) dispatchNav({ key: result.key, next: result.next, source: 'js' });
   });
   expect(screen.getByTestId('focused:root')).toHaveTextContent('home');
 });
 
 it('re-installs the bridge after a remount', () => {
-  const first = render(
+  render(
     <NavigationStateProvider initial={initial}>
       <Screen />
     </NavigationStateProvider>
-  );
-  first.unmount();
+  ).unmount();
   render(
     <NavigationStateProvider initial={initial}>
       <Screen />
     </NavigationStateProvider>
   );
   expect(getNavSnapshot()).not.toBeNull();
-  act(() => {
-    dispatchNav({ ops: [{ type: 'setIndex', target: 'root', index: 1 }], source: 'js' });
-  });
+  act(focusSearch);
   expect(screen.getByTestId('focused:root')).toHaveTextContent('search');
 });
 
@@ -138,6 +133,8 @@ it('throws when dispatching with no provider mounted', () => {
     </NavigationStateProvider>
   );
   unmount();
-  expect(getNavSnapshot()).toBeNull(); // snapshot torn down
-  expect(() => dispatchNav({ ops: [], source: 'js' })).toThrow('Navigation store is not mounted');
+  expect(getNavSnapshot()).toBeNull();
+  expect(() => dispatchNav({ key: 'root', next: initial.root, source: 'js' })).toThrow(
+    'Navigation store is not mounted'
+  );
 });

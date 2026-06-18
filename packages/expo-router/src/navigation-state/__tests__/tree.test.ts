@@ -1,10 +1,10 @@
-import { focusedChain, ROOT_NAME } from '../tree';
+import { focusedChain } from '../tree';
 import type { NavNode } from '../types';
 
-// The focused-path walk that back-bubbling and (future) action resolution rely on.
+// The focused-path walk back-bubbling relies on (Decisions R-13).
 
 describe('focusedChain', () => {
-  it('walks to the leaf, keying each node by its owning route name (root by ROOT_NAME)', () => {
+  it('walks to the focused leaf, outermost first', () => {
     const leaf: NavNode = { key: 'lvl3', index: 0, routes: [{ key: 'a#k', name: 'a' }] };
     const mid: NavNode = {
       key: 'lvl2',
@@ -16,11 +16,7 @@ describe('focusedChain', () => {
       index: 0,
       routes: [{ key: 'r#k', name: 'r', child: mid }],
     };
-    expect(focusedChain(root)).toEqual([
-      { node: root, name: ROOT_NAME },
-      { node: mid, name: 'r' }, // keyed by owning route, not node.key
-      { node: leaf, name: 'm' },
-    ]);
+    expect(focusedChain(root)).toEqual([root, mid, leaf]);
   });
 
   it('follows index, not array position', () => {
@@ -34,16 +30,13 @@ describe('focusedChain', () => {
         { key: 'b#1', name: 'b', child: childB },
       ],
     };
-    expect(focusedChain(root).map((f) => f.name)).toEqual([ROOT_NAME, 'b']); // descends into focused b
+    expect(focusedChain(root).map((n) => n.key)).toEqual(['root', 'b.child']); // descends into focused b
   });
 
-  it('stops at a leaf node (no child)', () => {
+  it('stops at a leaf, and returns root-only for out-of-range/empty', () => {
     expect(focusedChain({ key: 'r', index: 0, routes: [{ key: 'a#k', name: 'a' }] })).toHaveLength(
       1
     );
-  });
-
-  it('returns root-only when index is out of range or routes are empty', () => {
     expect(focusedChain({ key: 'r', index: 5, routes: [{ key: 'a#k', name: 'a' }] })).toHaveLength(
       1
     );

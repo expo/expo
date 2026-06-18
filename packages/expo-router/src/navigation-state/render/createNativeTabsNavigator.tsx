@@ -30,11 +30,10 @@ import type {
 import { ThemeProvider } from '../../react-navigation/core/theming/ThemeProvider';
 import { DefaultTheme } from '../../react-navigation/native';
 import { getQualifiedRouteComponent } from '../../useScreens';
-import { registerBehavior } from '../behaviorMap';
-import { resolve } from '../behaviors';
 import { createRouteKey } from '../keys';
+import { registerRouter, unregisterRouter } from '../routerRegistry';
+import { tabsRouter } from '../routers';
 import { dispatchNav } from '../store';
-import { ROOT_NAME } from '../tree';
 import type { NavNode, RouteEntry } from '../types';
 
 type DeclaredTab = { name: string; options: NativeTabOptions };
@@ -68,8 +67,11 @@ export function NativeTabs({ children }: { children?: ReactNode }) {
   // (and its in-tab state) across unrelated navigations, instead of remounting every render.
   const defaultNodes = useRef(new Map<string, NavNode>()).current;
 
-  const behaviorName = layoutNode?.route || ROOT_NAME;
-  useEffect(() => registerBehavior(behaviorName, 'tabs'), [behaviorName]);
+  // Register this navigator's router (keyed by node key) for the render-free resolvers (R-13).
+  useEffect(() => {
+    registerRouter(node.key, tabsRouter);
+    return () => unregisterRouter(node.key);
+  }, [node.key]);
 
   const screensByName = useMemo(() => {
     const map = new Map<string, RouteNode>();
@@ -138,12 +140,12 @@ export function NativeTabs({ children }: { children?: ReactNode }) {
       const tab = tabs.find((t) => t.routeKey === selectedKey);
       const screenNode = tab && screensByName.get(tab.name);
       if (!tab || !screenNode) return;
-      const route: RouteEntry = {
-        key: tab.routeKey,
-        name: tab.name,
-        child: getDefaultNode(tab.name, screenNode),
-      };
-      dispatchNav({ ops: resolve({ type: 'focus', route }, node, 'tabs'), source: 'native' });
+      // navigate: set-index if already promoted, else promote with the tab's default content.
+      const next = tabsRouter.getStateForAction(node, {
+        type: 'navigate',
+        target: { key: tab.routeKey, name: tab.name, child: getDefaultNode(tab.name, screenNode) },
+      });
+      if (next) dispatchNav({ key: node.key, next, source: 'native' });
     },
     [tabs, screensByName, node, getDefaultNode]
   );

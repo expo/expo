@@ -1,46 +1,39 @@
-// Phase 3a — render-free back-bubbling resolution (RFC scenario 5/6, C12, Decisions P-8).
+// Render-free back-bubbling (RFC scenario 5/6, Decisions R-13/P-8).
 //
-// Back bubbles from the focused leaf upward; the first node that produces ops handles it, else the
-// app exits. Tabs refocus uses the injected focus-order (the per-node strategy has none).
+// Bubble the focused chain leaf→root: run each node's registered router with `goBack`; the first that
+// returns a new subtree handles it. A node that can't pop directly (a tabs node) is given a
+// `goBackTo` for the previous tab from the injected focus-order — keeping focus-order an orchestration
+// concern, not a router parameter. If nothing handles it, the app exits.
 
-import { resolve } from './behaviors';
+import { getRouter } from './routerRegistry';
 import { focusedChain } from './tree';
-import type { BehaviorLookup, GlobalNavState, NavNode, PrimitiveOp } from './types';
+import type { GlobalNavState, NavNode } from './types';
 
-export type BackResult = { ops: PrimitiveOp[] } | { exit: true };
+export type BackResult = { key: string; next: NavNode } | { exit: true };
 
-/** Set-index ops to refocus the previous tab named by focus-order, or undefined if there is none. */
-function tabsBackOps(node: NavNode, focusOrder?: string[]): PrimitiveOp[] | undefined {
+/** The key of the tab to refocus from focus-order (names, most-recent last), or undefined. */
+function previousTabKey(node: NavNode, focusOrder?: string[]): string | undefined {
   if (!focusOrder || focusOrder.length < 2) return undefined;
   const current = node.routes[node.index]?.name;
   if (current === undefined) return undefined;
   const previous = focusOrder[focusOrder.indexOf(current) - 1];
-  if (previous === undefined) return undefined; // current is first (or absent) → nothing before it
-  const targetIndex = node.routes.findIndex((route) => route.name === previous);
-  return targetIndex < 0 ? undefined : [{ type: 'setIndex', target: node.key, index: targetIndex }];
+  if (previous === undefined) return undefined;
+  return node.routes.find((route) => route.name === previous)?.key;
 }
 
-export function resolveBack(
-  state: GlobalNavState,
-  lookup: BehaviorLookup,
-  focusOrder?: string[]
-): BackResult {
+export function resolveBack(state: GlobalNavState, focusOrder?: string[]): BackResult {
   const chain = focusedChain(state.root);
   for (let i = chain.length - 1; i >= 0; i--) {
-    const { node, name } = chain[i]!;
-    // A node handles back only if it produces ops; empty ops keep bubbling, so a handler can never
-    // silently swallow the press (the Android BackHandler then returns false → app exit).
-    let ops: PrimitiveOp[] | undefined;
-    switch (lookup[name]) {
-      case 'stack':
-        ops = resolve({ type: 'goBack' }, node, 'stack');
-        break;
-      case 'tabs':
-        ops = tabsBackOps(node, focusOrder);
-        break;
-      // unknown behavior (custom navigator): bubble past it
+    const node = chain[i]!;
+    const router = getRouter(node.key);
+    if (!router) continue;
+
+    let next = router.getStateForAction(node, { type: 'goBack' });
+    if (!next) {
+      const prevKey = previousTabKey(node, focusOrder);
+      if (prevKey) next = router.getStateForAction(node, { type: 'goBackTo', routeKey: prevKey });
     }
-    if (ops?.length) return { ops };
+    if (next) return { key: node.key, next };
   }
   return { exit: true };
 }

@@ -6,8 +6,8 @@ import { router } from '../../../imperative-api';
 import { NativeTabs } from '../../../native-tabs/NativeTabs';
 import { NativeTabsView as _NativeTabsView } from '../../../native-tabs/NativeTabsView';
 import { renderRouter, screen } from '../../../testing-library';
-import { __resetBehaviorMapForTests } from '../../behaviorMap';
 import { __resetNewStateModelForTests, enableNewStateModel } from '../../enable';
+import { __resetRouterRegistryForTests } from '../../routerRegistry';
 import { getNavSnapshot } from '../../store';
 
 // R-Phase D — NativeTabs from the new tree (Decisions R-2/P-10/R-12). The view is mocked to render
@@ -31,7 +31,7 @@ const lastProps = () => NativeTabsView.mock.calls.at(-1)![0];
 beforeEach(() => enableNewStateModel());
 afterEach(() => {
   __resetNewStateModelForTests();
-  __resetBehaviorMapForTests();
+  __resetRouterRegistryForTests();
   NativeTabsView.mockClear();
 });
 

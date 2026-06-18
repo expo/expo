@@ -4,8 +4,8 @@ import { Text } from 'react-native';
 import { router } from '../../../imperative-api';
 import { ExperimentalStack } from '../../../layouts/experimental-stack';
 import { renderRouter, screen } from '../../../testing-library';
-import { __resetBehaviorMapForTests } from '../../behaviorMap';
 import { __resetNewStateModelForTests, enableNewStateModel } from '../../enable';
+import { __resetRouterRegistryForTests } from '../../routerRegistry';
 import { getNavSnapshot } from '../../store';
 
 // R-Phase E — ExperimentalStack renders from the new tree via the shared stack factory (Decisions
@@ -14,7 +14,7 @@ import { getNavSnapshot } from '../../store';
 beforeEach(() => enableNewStateModel());
 afterEach(() => {
   __resetNewStateModelForTests();
-  __resetBehaviorMapForTests();
+  __resetRouterRegistryForTests();
 });
 
 it('boots and navigates an ExperimentalStack app from the new model', () => {

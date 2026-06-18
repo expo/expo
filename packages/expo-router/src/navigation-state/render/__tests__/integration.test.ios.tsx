@@ -5,8 +5,8 @@ import { usePathname } from '../../../hooks';
 import { router } from '../../../imperative-api';
 import { Stack } from '../../../layouts/Stack';
 import { renderRouter, screen } from '../../../testing-library';
-import { __resetBehaviorMapForTests } from '../../behaviorMap';
 import { __resetNewStateModelForTests, enableNewStateModel } from '../../enable';
+import { __resetRouterRegistryForTests } from '../../routerRegistry';
 import { getNavSnapshot, useOptionalNavigationTree } from '../../store';
 
 // R-Phase C — end-to-end through the REAL ExpoRoot under the flag: the app boots from the new tree,
@@ -19,7 +19,7 @@ function PathProbe() {
 beforeEach(() => enableNewStateModel());
 afterEach(() => {
   __resetNewStateModelForTests();
-  __resetBehaviorMapForTests();
+  __resetRouterRegistryForTests();
 });
 
 it('boots a Stack app from the new state model and renders the initial screen', () => {

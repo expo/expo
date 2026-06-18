@@ -25,9 +25,9 @@ import { NavigationStateListenerProvider } from '../../react-navigation/core/use
 import { DefaultTheme } from '../../react-navigation/native';
 import { NativeStackView } from '../../react-navigation/native-stack/views/NativeStackView';
 import { getQualifiedRouteComponent } from '../../useScreens';
-import { registerBehavior } from '../behaviorMap';
+import { registerRouter, unregisterRouter } from '../routerRegistry';
+import { stackRouter } from '../routers';
 import { dispatchNav } from '../store';
-import { ROOT_NAME } from '../tree';
 import type { NavNode } from '../types';
 
 type Descriptor = {
@@ -93,10 +93,12 @@ export function createTreeStackNavigator(View: StackViewComponent) {
     const node = useNavNodeSlice();
     const layoutNode = useRouteNode();
 
-    // Register this navigator's behavior so the resolvers (back/navigate) look it up by the name
-    // `focusedChain` uses: the owning route's name, or ROOT_NAME for the app root (route '').
-    const behaviorName = layoutNode?.route || ROOT_NAME;
-    useEffect(() => registerBehavior(behaviorName, 'stack'), [behaviorName]);
+    // Register this navigator's router (keyed by node key) so the render-free resolvers (back /
+    // navigate / hardware back) can run it without this component being in scope (Decisions R-13).
+    useEffect(() => {
+      registerRouter(node.key, stackRouter);
+      return () => unregisterRouter(node.key);
+    }, [node.key]);
 
     const descriptors = useStackDescriptors(node, layoutNode);
     const state = useMemo(() => projectToStackState(node), [node]);

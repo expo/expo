@@ -13,10 +13,10 @@
 import { createContext, startTransition, use, useEffect, type ReactNode } from 'react';
 import { useReducer } from 'react';
 
-import { reduce, type NavAction } from './reducer';
+import { reduce, type NavCommit } from './reducer';
 import type { GlobalNavState } from './types';
 
-let dispatchRef: ((action: NavAction) => void) | null = null;
+let dispatchRef: ((commit: NavCommit) => void) | null = null;
 let snapshotRef: GlobalNavState | null = null;
 
 const StateContext = createContext<GlobalNavState | null>(null);
@@ -62,13 +62,13 @@ export function NavigationStateProvider({
   return <StateContext value={state}>{children}</StateContext>;
 }
 
-/** Dispatch from outside render. Deferred via a transition so it stays cancellable (D4). */
-export function dispatchNav(action: NavAction): void {
+/** Commit a node swap from outside render. Deferred via a transition so it stays cancellable (D4). */
+export function dispatchNav(commit: NavCommit): void {
   const dispatch = dispatchRef;
   if (!dispatch) {
     throw new Error('Navigation store is not mounted — render a NavigationStateProvider first.');
   }
-  startTransition(() => dispatch(action));
+  startTransition(() => dispatch(commit));
 }
 
 /** The last committed state, for reads outside render. Null before mount. */

@@ -1,12 +1,12 @@
 // Core types for the Router v57 global state model (RFC.md, Decisions.md).
 //
 // Nodes are HOMOGENEOUS — no `type: 'stack' | 'tabs'`. How a node renders, and what an action means
-// against it, is decided by a behavior chosen by node name (Decisions P-2/P-4), not stored on the
-// node (RFC D5).
+// against it, is decided by the navigator's ROUTER (declared at render, Decisions R-13), not stored
+// on the node (RFC D5).
 
 /** A single navigator level: a list of routes and the focused one. */
 export type NavNode = {
-  /** Unique across the ENTIRE tree — ops address nodes by key (Decisions P-7, architecture review). */
+  /** Unique across the ENTIRE tree — the reducer and the router registry address nodes by key. */
   key: string;
   routes: RouteEntry[];
   /** The focused route. For multi-visible renderers (split view) it is the focused column; the
@@ -25,35 +25,25 @@ export type RouteEntry = {
 /** The whole-app tree. A URL hydrates only the minimal active path (RFC D1). */
 export type GlobalNavState = { root: NavNode };
 
-/** Where an update came from. The reducer ignores it; it rides along for the render layer (P-6).
- * `'hydration' | 'seed'` are added in Phase 2 when a seeding path produces them. */
+/** Where an update came from. The reducer ignores it; it rides along for the render layer (P-6). */
 export type ActionSource = 'js' | 'native';
 
-/** The dumb reducer's vocabulary. Every op names its node by `target` (a node key). Ops are pure
- * and `remove` is idempotent — removing an absent route key is identity (Decisions P-3/P-7). */
-export type PrimitiveOp =
-  | { type: 'insert'; target: string; route: RouteEntry }
-  | { type: 'remove'; target: string; routeKeys: string[] }
-  | { type: 'setIndex'; target: string; index: number };
+/** The route an action targets at one navigator level. `child` is the hydrated subtree to graft when
+ * the route is being promoted/pushed; `key` is reused when present, else the router mints one (P-7). */
+export type TargetRoute = { key?: string; name: string; params?: object; child?: NavNode };
 
-/** A node-local intent — what was asked of ONE node. The behavior maps it to primitive ops.
- * Path/scope resolution (which node an intent targets) is Phase 3. */
-export type NodeIntent =
-  | { type: 'push'; route: RouteEntry }
+/** The RFC action set (RFC "Actions"). A router maps these to a next local state. `preload` is
+ * navigator-local (D6) and resolves to `null` — it never reaches the reducer. */
+export type NavAction =
+  | { type: 'navigate'; target: TargetRoute }
   | { type: 'goBack' }
-  | { type: 'popTo'; routeKey: string }
-  | { type: 'popToTop' }
-  /** Focus a route by name; promote (insert) or pop-to it if needed — the unmounted-branch case (P-5). */
-  | { type: 'focus'; route: RouteEntry };
+  | { type: 'goBackTo'; routeKey: string }
+  | { type: 'replace'; target: TargetRoute }
+  | { type: 'reset'; state: NavNode }
+  | { type: 'preload'; target: TargetRoute };
 
-/** The two behaviors that ship this session. New behaviors extend the `switch`, not the node shape. */
-export type BehaviorName = 'stack' | 'tabs';
-
-/** Static `node name → behavior` map — the stand-in for RFC D8's merged manifest (Decisions P-4). */
-export type BehaviorLookup = Record<string, BehaviorName>;
-
-/** A behavior decides what an intent means against a node. (`canHandleBack` for bubbled back arrives
- * in Phase 3 with the cross-tree `resolveBack` that consumes it — Decisions P-8.) */
-export type BehaviorStrategy = {
-  resolve: (intent: NodeIntent, node: NavNode) => PrimitiveOp[];
+/** A navigator's router: the single function that computes this level's next subtree from an action,
+ * or `null` if it doesn't handle the action (so back can bubble). Pure and render-free (Decisions R-13). */
+export type NavRouter = {
+  getStateForAction: (node: NavNode, action: NavAction) => NavNode | null;
 };

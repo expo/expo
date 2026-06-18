@@ -1,50 +1,51 @@
-// Phase 3a — forward navigation resolution (RFC scenario 3/4, Decisions P-2/P-5).
+// Forward navigation resolution (RFC scenario 3/4, Decisions R-13).
 //
-// `navigate(path)` is modelled as: hydrate the target path into a minimal tree, then diff it against
-// current state along the target's focused path, emitting ops via the resolution seam. Matching is by
-// route name; a route already present is focused (stack pop-to / tabs set-index), an absent one is
-// promoted (its hydrated subtree carries the deep path), so a cross-tab deep link is one batch.
-//
-// Known limits, deferred to Phase 3/D7 (no consumer yet): the target is absolute (hydrated from
-// root), so relative/navigator scopes must resolve to an absolute path upstream; and routes are
-// matched by NAME only, so navigating to a same-named route with different params focuses the
-// existing one without updating params — that needs the deferred `replace` primitive (Decisions P-12).
+// `navigate(path)` = hydrate the target path, then walk current vs target in lockstep: at each level
+// run that node's registered router with a `navigate` action (focus an existing route, or promote an
+// absent one — grafting the hydrated child subtree). Compose the per-level results into a new root.
+// An absent branch is grafted from the hydrated payload by the nearest mounted ancestor, so the
+// unmounted child's own router is never needed (the C12 hybrid, Decisions R-13).
 
-import { resolve } from './behaviors';
-import { ROOT_NAME } from './tree';
-import type { BehaviorLookup, GlobalNavState, NavNode, PrimitiveOp } from './types';
+import { getRouter } from './routerRegistry';
+import type { GlobalNavState, NavNode } from './types';
 
-function walk(
-  cur: NavNode,
-  tgt: NavNode,
-  name: string,
-  lookup: BehaviorLookup,
-  ops: PrimitiveOp[]
-): void {
-  const behavior = lookup[name];
-  const tgtRoute = tgt.routes[tgt.index];
-  if (!tgtRoute || !behavior) return;
+function walk(cur: NavNode, target: NavNode): NavNode | null {
+  const targetRoute = target.routes[target.index];
+  if (!targetRoute) return null;
+  const router = getRouter(cur.key);
+  if (!router) return null; // unmounted ancestor — not resolvable render-free (documented C12 limit)
 
-  const existing = cur.routes.find((route) => route.name === tgtRoute.name);
-  if (!existing) {
-    // Absent → promote/push the target route; its hydrated subtree carries any deeper path.
-    ops.push(...resolve({ type: 'focus', route: tgtRoute }, cur, behavior));
-    return;
+  const existing = cur.routes.find((route) => route.name === targetRoute.name);
+  const navigated = router.getStateForAction(cur, {
+    type: 'navigate',
+    // Promote (absent) → graft the hydrated child; focus (existing) → router keeps the child, we recurse.
+    target: {
+      key: targetRoute.key,
+      name: targetRoute.name,
+      params: targetRoute.params,
+      child: existing ? undefined : targetRoute.child,
+    },
+  });
+  let node = navigated ?? cur;
+
+  // For an existing route, apply the deeper navigation to its child: recurse if the child navigator
+  // already exists, else graft the hydrated child subtree (the route had no nested navigator yet).
+  if (existing && targetRoute.child) {
+    const focused = node.routes[node.index];
+    if (focused) {
+      const childNext = focused.child ? walk(focused.child, targetRoute.child) : targetRoute.child;
+      if (childNext && childNext !== focused.child) {
+        const routes = [...node.routes];
+        routes[node.index] = { ...focused, child: childNext };
+        node = { ...node, routes };
+      }
+    }
   }
-  // Present → focus it, then continue diffing into the shared child navigator.
-  ops.push(...resolve({ type: 'focus', route: existing }, cur, behavior));
-  if (tgtRoute.child && existing.child) {
-    walk(existing.child, tgtRoute.child, tgtRoute.name, lookup, ops);
-  }
+
+  return node === cur ? null : node;
 }
 
-/** Ops to navigate current state toward a hydrated target (RFC scenario 3/4). */
-export function resolveNavigate(
-  current: GlobalNavState,
-  target: GlobalNavState,
-  lookup: BehaviorLookup
-): PrimitiveOp[] {
-  const ops: PrimitiveOp[] = [];
-  walk(current.root, target.root, ROOT_NAME, lookup, ops);
-  return ops;
+/** The new root after navigating `current` toward a hydrated `target`, or null if nothing changes. */
+export function resolveNavigate(current: GlobalNavState, target: GlobalNavState): NavNode | null {
+  return walk(current.root, target.root);
 }

@@ -21,7 +21,60 @@ Running log of decisions and observations made while planning and implementing t
   `unstable_integrateWithRouter`, but currently adapts react-navigation's builder output rather
   than owning state. No production navigator consumes it yet.
 
-## Render-layer phase (2026-06-17)
+## Per-navigator router refactor (2026-06-17)
+
+### R-13 — Each navigator declares a router; the reducer becomes a node-swapper
+*(maintainer directive; crux resolved by a fresh design agent)*
+
+Replace "behavior-name map → `resolve` to primitive ops → reducer applies ops" with: each navigator
+declares a **router** at render whose single `getStateForAction(node, action): NavNode | null` returns
+the next LOCAL subtree (scoped to its node + children); the **dumb reducer just swaps that subtree in
+by key** (`reduce(state, { key, next, source })`). Mirrors react-navigation's `Router.getStateForAction`
+but over our homogeneous `NavNode`, and lets custom navigators bring their own router.
+
+- **Actions** = the RFC set: `navigate`, `goBack`, `goBackTo`, `replace`, `reset`, `preload`
+  (`preload` → `null`: navigator-local, never reaches the reducer — D6).
+- **Reducer:** delete `PrimitiveOp` / `applyToNode` / `clampIndex`; keep only the spine-rebuild
+  (`replaceNode`). The router guarantees a structurally-valid node (index in bounds), so the reducer
+  no longer clamps.
+- **Registry:** `behaviorMap` (name→behavior) becomes a router registry keyed by **`node.key`**
+  (unique tree-wide — fixes the P-12/R-12 name-uniqueness caveat). Navigators `registerRouter` at mount.
+- **Cross-tree resolution (the C12 crux):** hybrid — run the registered router for *mounted* nodes;
+  a target branch that isn't mounted is **grafted from the hydrated payload** by the nearest mounted
+  ancestor's router (the unmounted child's own router is never needed, because hydration already
+  encodes the nested structure + anchors). **C12 relaxation (explicit):** a *computed* transform
+  (`goBackTo`/`reset` whose semantics depend on the branch's own behavior) against a branch that has
+  never mounted and isn't in state can't run — but today's code never does that either (forward nav
+  only ever grafts hydrated payloads for absent branches), so it's a structural statement of an
+  existing limit, not a regression. The static D8 manifest remains the only full closure (still a TODO).
+- **Within-navigator** (gesture/native/tab-tap): the navigator calls its OWN router directly and
+  dispatches `{ key: node.key, next, source }`. **Imperative navigate:** walk current vs the hydrated
+  target, compose per-level router results into a new root, dispatch one root-level swap. **Back:**
+  bubble `focusedChain` leaf→root via the registry; tabs path translates focus-order → `goBackTo`.
+- Honor `options.event` in `integrate` (push/replace/navigate), closing the R-10 push≡navigate limit.
+
+### R-14 — Per-navigator router refactor review outcomes
+*(4 fresh agents: architecture, coverage, test-quality, minimalism)*
+
+The R-13 refactor landed: `routers.ts` (`stackRouter`/`tabsRouter` `getStateForAction`), node-swap
+`reducer.ts`, `routerRegistry.ts` (key→router), rewritten `actions.ts`/`back.ts`/`integrate.ts`/shim/
+navigators; `behaviors.ts`/`behaviorMap.ts`/`PrimitiveOp` deleted. 258 module tests; full suite green;
+flag-off byte-identical. Fixed (real bugs the agents caught):
+- **`walk` graft gap:** navigating deeper into an already-existing route whose `child` was absent in
+  current state silently dropped the deeper nav (graft only fired on the absent-route branch). Now it
+  grafts the hydrated child when the existing route has no child navigator yet. Pinned by a test.
+- **Registry leak:** `registerRouter` had no cleanup → unbounded growth as new branches mount. Added
+  `unregisterRouter` + effect cleanup in both navigators. (Correctness was safe — keys are unique — but
+  memory wasn't.)
+- Tightened the C12 doc: the graft covers an absent *direct child* of a mounted node, not an unmounted
+  *mid-path* navigator (that case isn't resolved — the documented R-13 relaxation).
+
+Accepted as-is (documented, not bugs): null = "no-change" (navigate) vs "bubble" (back) is
+context-disambiguated; imperative navigate root-swaps but `walk` preserves untouched child identity so
+only the root navigator re-renders (perf follow-up, not a correctness issue); leaf-tab `goBack` via the
+stack shim + focus-order-not-plumbed remain the R-12 known limits.
+
+### Render-layer phase (2026-06-17)
 
 ### R-1 — Render architecture: navigators as pure `NavigatorArgs` render targets (Option B), not container state-substitution (Option A)
 *(decided by a fresh architecture agent + a view-contract audit agent)*

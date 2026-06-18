@@ -2,7 +2,7 @@ import { act, render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { Route, type RouteNode } from '../../../Route';
-import { resolve } from '../../behaviors';
+import { stackRouter } from '../../routers';
 import {
   dispatchNav,
   getNavSnapshot,
@@ -15,8 +15,8 @@ import { createEmitter } from '../emitter';
 import { NavNodeProvider } from '../navNodeContext';
 import { createStackNavigationShim } from '../navigationShim';
 
-// R-Phase B — proves the new tree drives REAL screens through the existing NativeStackView (Decisions
-// R-2), under a live NavigationStateProvider, navigating via dispatchNav. Not via renderRouter (P-1).
+// Proves the new tree drives REAL screens through the existing NativeStackView (Decisions R-2/R-13),
+// under a live NavigationStateProvider, navigating via the router → dispatchNav. Not via renderRouter.
 
 const screenNode = (route: string, label: string): RouteNode => ({
   type: 'route',
@@ -58,14 +58,11 @@ const renderStack = () =>
     </NavigationStateProvider>
   );
 
-const push = (name: string, key: string) =>
-  dispatchNav({
-    ops: resolve({ type: 'push', route: { key, name } }, getNavSnapshot()!.root, 'stack'),
-    source: 'js',
-  });
-
-const back = () =>
-  dispatchNav({ ops: resolve({ type: 'goBack' }, getNavSnapshot()!.root, 'stack'), source: 'js' });
+const commit = (action: Parameters<typeof stackRouter.getStateForAction>[1]) => {
+  const root = getNavSnapshot()!.root;
+  const next = stackRouter.getStateForAction(root, action);
+  if (next) dispatchNav({ key: root.key, next, source: 'js' });
+};
 
 it('renders the focused screen from the tree through NativeStackView', () => {
   renderStack();
@@ -74,8 +71,7 @@ it('renders the focused screen from the tree through NativeStackView', () => {
 
 it('a push commits to the store, moves focus, and mounts the new screen', () => {
   renderStack();
-  act(() => push('details', 'details#1'));
-  // The real proof is the committed state, not just that the screen mounted (both stay mounted).
+  act(() => commit({ type: 'navigate', target: { key: 'details#1', name: 'details' } }));
   const root = getNavSnapshot()!.root;
   expect(root.routes.map((r) => r.name)).toEqual(['index', 'details']);
   expect(root.index).toBe(1);
@@ -84,16 +80,15 @@ it('a push commits to the store, moves focus, and mounts the new screen', () => 
 
 it('a back removes the top route from committed state', () => {
   renderStack();
-  act(() => push('details', 'details#1'));
-  act(() => back());
+  act(() => commit({ type: 'navigate', target: { key: 'details#1', name: 'details' } }));
+  act(() => commit({ type: 'goBack' }));
   const root = getNavSnapshot()!.root;
   expect(root.routes.map((r) => r.name)).toEqual(['index']);
   expect(root.index).toBe(0);
   expect(screen.queryByText('DetailsScreen')).toBeNull();
 });
 
-it('renders a NESTED navigator from a route`s child slice (the recursion seam)', () => {
-  // home.stack focused on `details`, whose child is itself a stack showing `inner`.
+it('renders a NESTED navigator from a route child slice (the recursion seam)', () => {
   const innerLayout: RouteNode = {
     type: 'layout',
     route: 'details',
@@ -158,46 +153,40 @@ describe('navigation shim', () => {
     ],
   };
   const make = () => {
-    const captured: unknown[] = [];
+    const captured: {
+      key: string;
+      next: { routes: { name: string }[]; index: number };
+      source: string;
+    }[] = [];
     const shim = createStackNavigationShim('b#2', {
       node,
-      dispatch: (a) => captured.push(a),
+      dispatch: (c) => captured.push(c as never),
       emitter: createEmitter(),
     });
     return { shim, captured };
   };
 
-  it('goBack routes a remove + index-- into the store', () => {
+  it('goBack commits the popped node (remove top, index--)', () => {
     const { shim, captured } = make();
     shim.goBack();
-    expect(captured).toEqual([
-      {
-        ops: [
-          { type: 'remove', target: 'home.stack', routeKeys: ['b#2'] },
-          { type: 'setIndex', target: 'home.stack', index: 1 },
-        ],
-        source: 'js',
-      },
-    ]);
+    expect(captured).toHaveLength(1);
+    expect(captured[0].key).toBe('home.stack');
+    expect(captured[0].next.routes.map((r) => r.name)).toEqual(['index', 'a']);
+    expect(captured[0].next.index).toBe(1);
+    expect(captured[0].source).toBe('js');
   });
 
-  it('a native-origin dispatch (POP with source) tags the commit as native (P-6)', () => {
+  it('a native-origin POP(2) commits the popped node tagged native (P-6)', () => {
     const { shim, captured } = make();
     shim.dispatch({ type: 'POP', payload: { count: 2 }, source: 'b#2' });
-    expect(captured).toEqual([
-      {
-        ops: [
-          { type: 'remove', target: 'home.stack', routeKeys: ['a#1', 'b#2'] },
-          { type: 'setIndex', target: 'home.stack', index: 0 },
-        ],
-        source: 'native',
-      },
-    ]);
+    expect(captured[0].next.routes.map((r) => r.name)).toEqual(['index']);
+    expect(captured[0].next.index).toBe(0);
+    expect(captured[0].source).toBe('native');
   });
 
   it('isFocused and getState reflect the node', () => {
     const { shim } = make();
-    expect(shim.isFocused()).toBe(true); // b#2 is focused (index 2)
+    expect(shim.isFocused()).toBe(true);
     expect(shim.getState().index).toBe(2);
     expect(shim.getState().routes.map((r) => r.name)).toEqual(['index', 'a', 'b']);
   });

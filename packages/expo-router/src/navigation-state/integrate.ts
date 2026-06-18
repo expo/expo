@@ -1,11 +1,10 @@
-// R-Phase C — the glue the flag seams call (Decisions R-4/R-5). Keeps changes to the shared files
-// (ExpoRoot, routingQueue, useRouteInfo, BackHandler) to a one-line branch each. All resolution is
-// render-free (C12): it reads the committed snapshot + the static linking config + the behavior map,
-// computes ops, and commits through `dispatchNav`.
+// The glue the flag seams call (Decisions R-4/R-13). Keeps changes to the shared files (ExpoRoot,
+// routingQueue, useRouteInfo, BackHandler) to a one-line branch each. All resolution is render-free
+// (C12): it reads the committed snapshot + the static linking config + the per-navigator routers from
+// the registry, computes the next node, and commits it through `dispatchNav`.
 
 import { resolveNavigate } from './actions';
 import { resolveBack } from './back';
-import { getBehaviorLookup } from './behaviorMap';
 import { treeFromNavigationState } from './hydration';
 import { navigationStateFromTree } from './projection';
 import { dispatchNav, getNavSnapshot } from './store';
@@ -40,20 +39,20 @@ export function getInitialAppTree(): GlobalNavState | undefined {
 export function imperativeDispatch(action: NavigationAction | LinkAction): void {
   const snapshot = getNavSnapshot();
   if (!snapshot) return;
-  const lookup = getBehaviorLookup();
 
   if (action.type === 'ROUTER_LINK') {
     // KNOWN LIMIT (R-10): `options.event` (PUSH vs NAVIGATE vs REPLACE) is ignored — everything uses
     // navigate semantics, so `router.push` to an already-present route won't add a duplicate yet.
     const target = hydrateAppTree((action as LinkAction).payload.href);
     if (!target) return;
-    const ops = resolveNavigate(snapshot, target, lookup);
-    if (ops.length) dispatchNav({ ops, source: 'js' });
+    const next = resolveNavigate(snapshot, target);
+    if (next) dispatchNav({ key: snapshot.root.key, next, source: 'js' });
     return;
   }
   if (action.type === 'GO_BACK' || action.type === 'POP' || action.type === 'POP_TO_TOP') {
-    const result = resolveBack(snapshot, lookup);
-    if ('ops' in result) dispatchNav({ ops: result.ops, source: 'js' });
+    const result = resolveBack(snapshot);
+    if ('exit' in result) return;
+    dispatchNav({ key: result.key, next: result.next, source: 'js' });
   }
 }
 
@@ -73,10 +72,8 @@ export function projectRouteInfo(tree: GlobalNavState | null): UrlObject {
 export function handleHardwareBack(): boolean {
   const snapshot = getNavSnapshot();
   if (!snapshot) return false;
-  const result = resolveBack(snapshot, getBehaviorLookup());
-  if ('ops' in result) {
-    dispatchNav({ ops: result.ops, source: 'js' });
-    return true;
-  }
-  return false;
+  const result = resolveBack(snapshot);
+  if ('exit' in result) return false;
+  dispatchNav({ key: result.key, next: result.next, source: 'js' });
+  return true;
 }
