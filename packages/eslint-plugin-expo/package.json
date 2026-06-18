@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.56.12",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^29.2.1",
     "@typescript-eslint/rule-tester": "^8.59.0",
     "eslint-config-universe": "workspace:*",
     "eslint-plugin-eslint-plugin": "^6.2.0",

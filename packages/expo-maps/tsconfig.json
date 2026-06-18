@@ -5,7 +5,7 @@
     "composite": true,
     "rootDir": "./src",
     "noEmit": true,
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": ["./src"],
   "exclude": ["**/__rsc_tests__/*"]

@@ -35,11 +35,12 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
   "dependencies": {
-    "@expo/plist": "workspace:^0.7.0",
     "@expo/config-plugins": "workspace:^56.0.8",
-    "@expo/config-types": "workspace:^56.0.5"
+    "@expo/config-types": "workspace:^56.0.5",
+    "@expo/plist": "workspace:^0.7.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",

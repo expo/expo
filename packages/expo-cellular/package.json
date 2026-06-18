@@ -30,8 +30,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/cellular/",
-  "dependencies": {},
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

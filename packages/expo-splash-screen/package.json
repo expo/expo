@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@expo/plist": "workspace:*",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
     "expo-module-scripts": "workspace:*",

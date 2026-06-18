@@ -5,7 +5,7 @@
     "strict": true,
     "rootDir": "./src",
     "noEmit": true,
-    "types": ["node"],
+    "types": ["node", "jest"],
     "module": "node16",
     "verbatimModuleSyntax": false
   },

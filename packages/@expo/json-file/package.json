@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.27.0",
+    "@types/jest": "^29.2.1",
     "@types/json5": "^2.2.0",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",

@@ -65,6 +65,7 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",

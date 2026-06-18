@@ -4,7 +4,7 @@
     "rootDir": "./src",
     "noEmit": true,
     "sourceMap": true,
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": ["./src"],
   "exclude": ["**/__rsc_tests__/*"]

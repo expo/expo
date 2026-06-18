@@ -41,7 +41,7 @@
     "@react-native/jest-preset": "0.86.0",
     "@testing-library/react-native": "^13.3.0",
     "@types/bun": "^1.3.1",
-    "@types/jest": "29.5.14",
+    "@types/jest": "^29.2.1",
     "@types/react": "~19.2.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~55.0.0",

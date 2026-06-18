@@ -34,6 +34,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-orientation/",
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

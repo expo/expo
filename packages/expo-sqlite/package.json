@@ -66,6 +66,7 @@
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
     "@types/better-sqlite3": "^7.6.6",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "better-sqlite3": "^11.6.0",
