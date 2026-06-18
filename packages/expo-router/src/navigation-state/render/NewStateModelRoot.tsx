@@ -12,6 +12,7 @@ import { createStackNavigationShim } from './navigationShim';
 import { INTERNAL_SLOT_NAME } from '../../constants';
 import { store } from '../../global-state/store';
 import { useImperativeApiEmitter } from '../../imperative-api';
+import { LinkingContext } from '../../react-navigation/native';
 import * as SplashScreen from '../../views/Splash';
 import { handleHardwareBack } from '../integrate';
 import { dispatchNav, NavigationStateProvider, useNavigationTree } from '../store';
@@ -37,9 +38,13 @@ export function NewStateModelRoot({
   if (!initial) return null;
   return (
     <NavigationStateProvider initial={initial}>
-      <Wrapper>
-        <RootRenderer />
-      </Wrapper>
+      {/* App-global linking — the reused native views call useLinkBuilder (buildHref/headerBack);
+          normally provided by the RN container, which we don't render under the flag. */}
+      <LinkingContext.Provider value={{ options: store.linking as never }}>
+        <Wrapper>
+          <RootRenderer />
+        </Wrapper>
+      </LinkingContext.Provider>
     </NavigationStateProvider>
   );
 }
