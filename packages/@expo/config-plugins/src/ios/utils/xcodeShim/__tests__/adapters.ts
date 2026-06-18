@@ -1,6 +1,8 @@
 import xcode from 'xcode';
 import LegacyPbxFile from 'xcode/lib/pbxFile';
 
+import { PbxFile as ShimPbxFile, project as shimProject } from '../index';
+
 /**
  * The project object + matching `pbxFile` constructor a scenario operates on.
  * Scenarios use only this surface so the same sequence runs against the legacy
@@ -23,5 +25,14 @@ export const legacyBackend: Backend = {
     const project = xcode.project(fixturePath);
     project.parseSync();
     return { project, PbxFile: LegacyPbxFile };
+  },
+};
+
+export const shimBackend: Backend = {
+  name: 'shim',
+  load(fixturePath: string): ScenarioContext {
+    const project = shimProject(fixturePath);
+    project.parseSync();
+    return { project, PbxFile: ShimPbxFile };
   },
 };
