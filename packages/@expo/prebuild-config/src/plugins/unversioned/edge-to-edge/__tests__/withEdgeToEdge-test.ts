@@ -182,7 +182,8 @@ describe('applyEdgeToEdge', () => {
     const config: ExpoConfig = {
       name: 'test',
       slug: 'test',
-      android: { edgeToEdgeEnabled: true },
+      // `edgeToEdgeEnabled` is a removed key; setting it asserts the deprecation warning fires.
+      android: { edgeToEdgeEnabled: true } as NonNullable<ExpoConfig['android']>,
     };
     applyEdgeToEdge(config);
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
