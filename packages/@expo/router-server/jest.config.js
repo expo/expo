@@ -19,12 +19,17 @@ const projects = [
   .map(createJestPreset)
   .map(withDefaults);
 
+// Reuse the node preset's transform so TypeScript files in the hand-rolled
+// projects below are transpiled (they would otherwise fail to parse TS syntax).
+const { transform } = createJestPreset(getNodePreset());
+
 projects.push({
   displayName: { name: 'Type Generation', color: 'blue' },
   testMatch: ['<rootDir>/src/typed-routes/__tests__/*.node.ts'],
   rootDir: path.resolve(__dirname),
   roots: ['src'],
   clearMocks: true,
+  transform,
   setupFiles: ['<rootDir>/src/typed-routes/testSetup.ts'],
 });
 
@@ -38,6 +43,7 @@ const tsdProject = {
   testMatch: ['<rootDir>/src/typed-routes/__tests__/*.tsd.ts'],
   rootDir: path.resolve(__dirname),
   roots: ['src'],
+  transform,
   setupFiles: ['<rootDir>/src/typed-routes/testSetup.ts'],
 };
 
