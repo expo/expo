@@ -793,8 +793,8 @@ it('stamps zoom transition screen ID on preloaded route', () => {
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
-    throw new Error('Expected a stack navigator');
+  if (!(innerState && 'preloadedRoutes' in innerState)) {
+    throw new Error('Expected a navigator with preloadedRoutes');
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   const preloadedRoute = (innerState as StackNavigationState<{}>).preloadedRoutes[0]!;
@@ -819,8 +819,8 @@ it('does not stamp zoom transition screen ID without zoom source param', () => {
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
-    throw new Error('Expected a stack navigator');
+  if (!(innerState && 'preloadedRoutes' in innerState)) {
+    throw new Error('Expected a navigator with preloadedRoutes');
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   const preloadedRoute = (innerState as StackNavigationState<{}>).preloadedRoutes[0]!;
@@ -859,8 +859,8 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
-    throw new Error('Expected a stack navigator');
+  if (!(innerState && 'preloadedRoutes' in innerState)) {
+    throw new Error('Expected a navigator with preloadedRoutes');
   }
   const navigatedRoute = innerState.routes[innerState.routes.length - 1]!;
 
