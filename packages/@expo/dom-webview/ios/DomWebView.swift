@@ -4,10 +4,20 @@ internal import React
 import ExpoModulesCore
 import WebKit
 
+// `WKWebView` subclass that can hide the keyboard input accessory bar.
+// https://stackoverflow.com/a/58001395/7070640
+final class DomWKWebView: WKWebView {
+  var hidesInputAccessoryView = false
+
+  override var inputAccessoryView: UIView? {
+    hidesInputAccessoryView ? nil : super.inputAccessoryView
+  }
+}
+
 internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, RCTAutoInsetsProtocol {
   // Created on first prop sync — `WKWebViewConfiguration` is copied at init,
   // so init-only props need to land before `WKWebView()` is called.
-  private(set) var webView: WKWebView?
+  private(set) var webView: DomWKWebView?
   // swiftlint:disable:next implicitly_unwrapped_optional
   private(set) var id: WebViewId!
 
@@ -73,6 +83,14 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       scrollView.contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior
       scrollView.contentOffset = contentOffset
     }
+  }
+
+  // MARK: - Keyboard props
+
+  // Hides the input accessory bar shown above the keyboard while a web text
+  // field is focused. Mirrors `react-native-webview`'s `hideKeyboardAccessoryView`.
+  var hideKeyboardAccessoryView: Bool = false {
+    didSet { webView?.hidesInputAccessoryView = hideKeyboardAccessoryView }
   }
 
   // MARK: - RCTAutoInsetsProtocol storage
@@ -283,7 +301,8 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     config.allowsAirPlayForMediaPlayback = allowsAirPlayForMediaPlayback
     config.mediaTypesRequiringUserActionForPlayback = mediaPlaybackRequiresUserAction ? .all : []
 
-    let webView = WKWebView(frame: bounds, configuration: config)
+    let webView = DomWKWebView(frame: bounds, configuration: config)
+    webView.hidesInputAccessoryView = hideKeyboardAccessoryView
     webView.uiDelegate = self
     webView.navigationDelegate = self
 
