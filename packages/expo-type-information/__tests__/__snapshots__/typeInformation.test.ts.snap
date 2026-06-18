@@ -8,7 +8,6 @@ import { ViewProps } from 'react-native';
 import { NativeModule } from 'expo';
 
 // These types haven't been defined in provided file(s).
-export type URL = unknown;
 export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
 
@@ -62,7 +61,7 @@ export type TestModuleEvents = {
 };
 
 export interface ExpoWebViewProps extends ViewProps {
-  url: URL;
+  url: string;
   testRecord: TestRecord;
   testRecord2: TestRecord2;
   testRecordClass: TestRecordClass;
@@ -79,6 +78,12 @@ export declare class TestModuleNativeModuleType extends NativeModule<TestModuleE
   TestUntypedFunction(): string;
   TestUnicodeCharacters(): unknown /*The type couldn't be resolved automatically.*/;
   TestUntypedFunction2(): TestEnum;
+  TestObject(): object;
+  TestAnyValue(): any;
+  TestJsFunction(): (...args: any[]) => any;
+  TestUIColor(): ColorValue;
+  TestCGColor(): ColorValue;
+  TestData(): Uint8Array;
   TestUntypedFunction3(): TestRecord2;
   TestArrays(a: number[]): string[][];
   TestDictionaries(
@@ -104,7 +109,7 @@ export declare class TestModuleNativeModuleType extends NativeModule<TestModuleE
   TestFunctionReturningEnum(): TestEnum;
   TestSimpleAsyncFunction(a: string, b: string): Promise<string>;
   TestUnderscore(
-    url: URL,
+    url: string,
     _4: BarcodeType[]
   ): Promise<unknown /*The type couldn't be resolved automatically.*/>;
   TestClassWithConstructor: typeof TestClassWithConstructor;
@@ -120,7 +125,6 @@ exports[`Same generated concise ts interface 2`] = `
 import {
   TestEnum,
   TestRecord2,
-  URL,
   BarcodeType,
   SomeParametrizedType,
   TestRecord,
@@ -153,6 +157,24 @@ export function TestUnicodeCharacters() {
 }
 export function TestUntypedFunction2() {
   return TestModule.TestUntypedFunction2();
+}
+export function TestObject() {
+  return TestModule.TestObject();
+}
+export function TestAnyValue() {
+  return TestModule.TestAnyValue();
+}
+export function TestJsFunction() {
+  return TestModule.TestJsFunction();
+}
+export function TestUIColor() {
+  return TestModule.TestUIColor();
+}
+export function TestCGColor() {
+  return TestModule.TestCGColor();
+}
+export function TestData() {
+  return TestModule.TestData();
 }
 export function TestUntypedFunction3() {
   return TestModule.TestUntypedFunction3();
@@ -190,7 +212,7 @@ export function TestFunctionReturningEnum() {
 export async function TestSimpleAsyncFunction(a: string, b: string) {
   return TestModule.TestSimpleAsyncFunction(a, b);
 }
-export async function TestUnderscore(url: URL, _5: BarcodeType[]) {
+export async function TestUnderscore(url: string, _5: BarcodeType[]) {
   return TestModule.TestUnderscore(url, _5);
 }
 
@@ -226,7 +248,6 @@ import {
   TestClassWithConstructor,
   TestBasicClass,
   TestEmptyClass,
-  URL,
   BarcodeType,
   SomeParametrizedType,
   TestModuleEvents
@@ -240,6 +261,12 @@ export declare class TestModule extends NativeModule<TestModuleEvents> {
   TestUntypedFunction(): string;
   TestUnicodeCharacters(): unknown /*The type couldn't be resolved automatically.*/;
   TestUntypedFunction2(): TestEnum;
+  TestObject(): object;
+  TestAnyValue(): any;
+  TestJsFunction(): (...args: any[]) => any;
+  TestUIColor(): ColorValue;
+  TestCGColor(): ColorValue;
+  TestData(): Uint8Array;
   TestUntypedFunction3(): TestRecord2;
   TestArrays(a: number[]): string[][];
   TestDictionaries(
@@ -265,7 +292,7 @@ export declare class TestModule extends NativeModule<TestModuleEvents> {
   TestFunctionReturningEnum(): TestEnum;
   TestSimpleAsyncFunction(a: string, b: string): Promise<string>;
   TestUnderscore(
-    url: URL,
+    url: string,
     _6: BarcodeType[]
   ): Promise<unknown /*The type couldn't be resolved automatically.*/>;
   TestClassWithConstructor: typeof TestClassWithConstructor;
@@ -286,7 +313,6 @@ import { ViewProps } from 'react-native';
 import { NativeModule } from 'expo';
 
 // These types haven't been defined in provided file(s).
-export type URL = unknown;
 export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
 
@@ -340,7 +366,7 @@ export type TestModuleEvents = {
 };
 
 export interface ExpoWebViewProps extends ViewProps {
-  url: URL;
+  url: string;
   testRecord: TestRecord;
   testRecord2: TestRecord2;
   testRecordClass: TestRecordClass;
@@ -380,7 +406,6 @@ exports[`Same generated mock file 1`] = `
  *  */
 
 
-export type URL = unknown;
 export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
 
@@ -420,6 +445,12 @@ export function SimpleFunction(a: number, b: number): number { return 0; }
 export function TestUntypedFunction(): string { return ""; }
 export function TestUnicodeCharacters(): unknown /*The type couldn't be resolved automatically.*/ { return; }
 export function TestUntypedFunction2(): TestEnum { return TestEnum.simpleCase; }
+export function TestObject(): object { return {}; }
+export function TestAnyValue(): any { }
+export function TestJsFunction(): (...args: any[]) => any { return () => { }; }
+export function TestUIColor(): ColorValue { return "red"; }
+export function TestCGColor(): ColorValue { return "red"; }
+export function TestData(): Uint8Array { return []; }
 export function TestUntypedFunction3(): TestRecord2 { return { field1: 0, field2: "" }; }
 export function TestArrays(a: number[]): string[][] { return []; }
 export function TestDictionaries(a: {
@@ -438,7 +469,7 @@ export function TestFunctionReturningEnum(): TestEnum { return TestEnum.simpleCa
 
 
 export async function TestSimpleAsyncFunction(a: string, b: string): Promise<string> { return ""; }
-export async function TestUnderscore(url: URL, _2: BarcodeType[]): Promise<unknown /*The type couldn't be resolved automatically.*/> { return; }
+export async function TestUnderscore(url: string, _2: BarcodeType[]): Promise<unknown /*The type couldn't be resolved automatically.*/> { return; }
 
 
 export class TestClassWithConstructor {
@@ -453,7 +484,7 @@ export class TestEmptyClass {
 
 
 export interface ExpoWebViewProps extends ViewProps {
-    url: URL;
+    url: string;
     testRecord: TestRecord;
     testRecord2: TestRecord2;
     testRecordClass: TestRecordClass;
@@ -486,6 +517,12 @@ export function SimpleFunction(a, b) { return 0; }
 export function TestUntypedFunction() { return ""; }
 export function TestUnicodeCharacters() { return; }
 export function TestUntypedFunction2() { return TestEnum.simpleCase; }
+export function TestObject() { return {}; }
+export function TestAnyValue() { }
+export function TestJsFunction() { return () => { }; }
+export function TestUIColor() { return "red"; }
+export function TestCGColor() { return "red"; }
+export function TestData() { return []; }
 export function TestUntypedFunction3() { return { field1: 0, field2: "" }; }
 export function TestArrays(a) { return []; }
 export function TestDictionaries(a, b) { }
@@ -514,7 +551,6 @@ exports[`Same generated module file 1`] = `
 import { NativeModule } from 'expo';
 
 // These types haven't been defined in provided file(s).
-export type URL = unknown;
 export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
 
@@ -575,6 +611,12 @@ export declare class TestModuleNativeModuleType extends NativeModule<TestModuleE
   TestUntypedFunction(): string;
   TestUnicodeCharacters(): unknown /*The type couldn't be resolved automatically.*/;
   TestUntypedFunction2(): TestEnum;
+  TestObject(): object;
+  TestAnyValue(): any;
+  TestJsFunction(): (...args: any[]) => any;
+  TestUIColor(): ColorValue;
+  TestCGColor(): ColorValue;
+  TestData(): Uint8Array;
   TestUntypedFunction3(): TestRecord2;
   TestArrays(a: number[]): string[][];
   TestDictionaries(
@@ -600,7 +642,7 @@ export declare class TestModuleNativeModuleType extends NativeModule<TestModuleE
   TestFunctionReturningEnum(): TestEnum;
   TestSimpleAsyncFunction(a: string, b: string): Promise<string>;
   TestUnderscore(
-    url: URL,
+    url: string,
     _1: BarcodeType[]
   ): Promise<unknown /*The type couldn't be resolved automatically.*/>;
   TestClassWithConstructor: typeof TestClassWithConstructor;
@@ -619,12 +661,11 @@ exports[`Same generated view file 1`] = `
 import { ViewProps } from 'react-native';
 
 // These types haven't been defined in provided file(s).
-export type URL = unknown;
 export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
 
 interface ExpoWebViewProps extends ViewProps {
-  url: URL;
+  url: string;
   testRecord: TestRecord;
   testRecord2: TestRecord2;
   testRecordClass: TestRecordClass;
@@ -696,7 +737,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 2481,
+          "definitionOffset": 2843,
           "name": "TestSimpleAsyncFunction",
           "parameters": [],
           "returnType": {
@@ -709,27 +750,27 @@ exports[`Same type information 1`] = `
             {
               "name": "url",
               "type": {
-                "kind": 1,
-                "type": "URL",
+                "kind": 0,
+                "type": 1,
               },
             },
             {
               "name": undefined,
               "type": {
-                "kind": 5,
+                "kind": 6,
                 "type": {
-                  "kind": 1,
+                  "kind": 2,
                   "type": "BarcodeType",
                 },
               },
             },
           ],
-          "definitionOffset": 2672,
+          "definitionOffset": 3034,
           "name": "TestUnderscore",
           "parameters": [],
           "returnType": {
             "kind": 0,
-            "type": 6,
+            "type": 8,
           },
         },
       ],
@@ -746,9 +787,9 @@ exports[`Same type information 1`] = `
                 },
               },
             ],
-            "definitionOffset": 2798,
+            "definitionOffset": 3160,
           },
-          "definitionOffset": 2752,
+          "definitionOffset": 3114,
           "methods": [],
           "name": "TestClassWithConstructor",
           "properties": [],
@@ -765,7 +806,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3340,
+              "definitionOffset": 3702,
               "name": "TestAsyncFunction",
               "parameters": [],
               "returnType": {
@@ -793,7 +834,7 @@ exports[`Same type information 1`] = `
               {
                 "name": "c",
                 "type": {
-                  "kind": 2,
+                  "kind": 3,
                   "type": {
                     "name": "Either",
                     "types": [
@@ -802,7 +843,7 @@ exports[`Same type information 1`] = `
                         "type": 1,
                       },
                       {
-                        "kind": 1,
+                        "kind": 2,
                         "type": "TestRecord",
                       },
                     ],
@@ -810,14 +851,14 @@ exports[`Same type information 1`] = `
                 },
               },
             ],
-            "definitionOffset": 2900,
+            "definitionOffset": 3262,
           },
-          "definitionOffset": 2864,
+          "definitionOffset": 3226,
           "methods": [],
           "name": "TestBasicClass",
           "properties": [
             {
-              "definitionOffset": 3004,
+              "definitionOffset": 3366,
               "name": "TestIntProperty",
               "type": {
                 "kind": 0,
@@ -825,10 +866,10 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 3072,
+              "definitionOffset": 3434,
               "name": "TestEitherProperty",
               "type": {
-                "kind": 2,
+                "kind": 3,
                 "type": {
                   "name": "Either",
                   "types": [
@@ -845,18 +886,18 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 3159,
+              "definitionOffset": 3521,
               "name": "TestEnumProperty",
               "type": {
-                "kind": 1,
+                "kind": 2,
                 "type": "TestEnum",
               },
             },
             {
-              "definitionOffset": 3243,
+              "definitionOffset": 3605,
               "name": "TestRecordProperty",
               "type": {
-                "kind": 1,
+                "kind": 2,
                 "type": "TestRecord2",
               },
             },
@@ -865,7 +906,7 @@ exports[`Same type information 1`] = `
         {
           "asyncMethods": [],
           "constructor": null,
-          "definitionOffset": 3442,
+          "definitionOffset": 3804,
           "methods": [],
           "name": "TestEmptyClass",
           "properties": [],
@@ -893,7 +934,7 @@ exports[`Same type information 1`] = `
           "name": "UntypedConstant",
           "type": {
             "kind": 0,
-            "type": 6,
+            "type": 8,
           },
         },
       ],
@@ -947,7 +988,7 @@ exports[`Same type information 1`] = `
           "parameters": [],
           "returnType": {
             "kind": 0,
-            "type": 6,
+            "type": 8,
           },
         },
         {
@@ -956,17 +997,77 @@ exports[`Same type information 1`] = `
           "name": "TestUntypedFunction2",
           "parameters": [],
           "returnType": {
-            "kind": 1,
+            "kind": 2,
             "type": "TestEnum",
           },
         },
         {
           "arguments": [],
           "definitionOffset": 1172,
-          "name": "TestUntypedFunction3",
+          "name": "TestObject",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 7,
+          },
+        },
+        {
+          "arguments": [],
+          "definitionOffset": 1235,
+          "name": "TestAnyValue",
+          "parameters": [],
+          "returnType": {
+            "kind": 0,
+            "type": 0,
+          },
+        },
+        {
+          "arguments": [],
+          "definitionOffset": 1299,
+          "name": "TestJsFunction",
           "parameters": [],
           "returnType": {
             "kind": 1,
+            "type": 6,
+          },
+        },
+        {
+          "arguments": [],
+          "definitionOffset": 1367,
+          "name": "TestUIColor",
+          "parameters": [],
+          "returnType": {
+            "kind": 1,
+            "type": 0,
+          },
+        },
+        {
+          "arguments": [],
+          "definitionOffset": 1422,
+          "name": "TestCGColor",
+          "parameters": [],
+          "returnType": {
+            "kind": 1,
+            "type": 0,
+          },
+        },
+        {
+          "arguments": [],
+          "definitionOffset": 1477,
+          "name": "TestData",
+          "parameters": [],
+          "returnType": {
+            "kind": 1,
+            "type": 1,
+          },
+        },
+        {
+          "arguments": [],
+          "definitionOffset": 1526,
+          "name": "TestUntypedFunction3",
+          "parameters": [],
+          "returnType": {
+            "kind": 2,
             "type": "TestRecord2",
           },
         },
@@ -975,7 +1076,7 @@ exports[`Same type information 1`] = `
             {
               "name": "a",
               "type": {
-                "kind": 5,
+                "kind": 6,
                 "type": {
                   "kind": 0,
                   "type": 2,
@@ -983,13 +1084,13 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1338,
+          "definitionOffset": 1696,
           "name": "TestArrays",
           "parameters": [],
           "returnType": {
-            "kind": 5,
+            "kind": 6,
             "type": {
-              "kind": 5,
+              "kind": 6,
               "type": {
                 "kind": 0,
                 "type": 1,
@@ -1002,7 +1103,7 @@ exports[`Same type information 1`] = `
             {
               "name": "a",
               "type": {
-                "kind": 6,
+                "kind": 7,
                 "type": {
                   "key": {
                     "kind": 0,
@@ -1018,14 +1119,14 @@ exports[`Same type information 1`] = `
             {
               "name": "b",
               "type": {
-                "kind": 6,
+                "kind": 7,
                 "type": {
                   "key": {
                     "kind": 0,
                     "type": 2,
                   },
                   "value": {
-                    "kind": 6,
+                    "kind": 7,
                     "type": {
                       "key": {
                         "kind": 0,
@@ -1041,7 +1142,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1497,
+          "definitionOffset": 1859,
           "name": "TestDictionaries",
           "parameters": [],
           "returnType": {
@@ -1054,12 +1155,12 @@ exports[`Same type information 1`] = `
             {
               "name": "a",
               "type": {
-                "kind": 3,
+                "kind": 4,
                 "type": {
                   "name": "SomeParametrizedType",
                   "types": [
                     {
-                      "kind": 2,
+                      "kind": 3,
                       "type": {
                         "name": "Either",
                         "types": [
@@ -1075,12 +1176,12 @@ exports[`Same type information 1`] = `
                       },
                     },
                     {
-                      "kind": 3,
+                      "kind": 4,
                       "type": {
                         "name": "Map",
                         "types": [
                           {
-                            "kind": 3,
+                            "kind": 4,
                             "type": {
                               "name": "Set",
                               "types": [
@@ -1092,12 +1193,12 @@ exports[`Same type information 1`] = `
                             },
                           },
                           {
-                            "kind": 2,
+                            "kind": 3,
                             "type": {
                               "name": "Either",
                               "types": [
                                 {
-                                  "kind": 3,
+                                  "kind": 4,
                                   "type": {
                                     "name": "Set",
                                     "types": [
@@ -1109,7 +1210,7 @@ exports[`Same type information 1`] = `
                                   },
                                 },
                                 {
-                                  "kind": 3,
+                                  "kind": 4,
                                   "type": {
                                     "name": "Set",
                                     "types": [
@@ -1131,7 +1232,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1694,
+          "definitionOffset": 2056,
           "name": "TestParametrizedTypes",
           "parameters": [],
           "returnType": {
@@ -1144,11 +1245,11 @@ exports[`Same type information 1`] = `
             {
               "name": "a",
               "type": {
-                "kind": 5,
+                "kind": 6,
                 "type": {
-                  "kind": 5,
+                  "kind": 6,
                   "type": {
-                    "kind": 5,
+                    "kind": 6,
                     "type": {
                       "kind": 0,
                       "type": 2,
@@ -1158,15 +1259,15 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1938,
+          "definitionOffset": 2300,
           "name": "TestTypeCombinations",
           "parameters": [],
           "returnType": {
-            "kind": 5,
+            "kind": 6,
             "type": {
-              "kind": 5,
+              "kind": 6,
               "type": {
-                "kind": 2,
+                "kind": 3,
                 "type": {
                   "name": "Either",
                   "types": [
@@ -1175,7 +1276,7 @@ exports[`Same type information 1`] = `
                       "type": 1,
                     },
                     {
-                      "kind": 6,
+                      "kind": 7,
                       "type": {
                         "key": {
                           "kind": 0,
@@ -1195,21 +1296,21 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 2139,
+          "definitionOffset": 2501,
           "name": "TestFunctionReturningRecord",
           "parameters": [],
           "returnType": {
-            "kind": 1,
+            "kind": 2,
             "type": "TestRecord",
           },
         },
         {
           "arguments": [],
-          "definitionOffset": 2304,
+          "definitionOffset": 2666,
           "name": "TestFunctionReturningEnum",
           "parameters": [],
           "returnType": {
-            "kind": 1,
+            "kind": 2,
             "type": "TestEnum",
           },
         },
@@ -1223,7 +1324,7 @@ exports[`Same type information 1`] = `
           "classes": [],
           "constants": [],
           "constructor": null,
-          "definitionOffset": 3505,
+          "definitionOffset": 3867,
           "events": [
             "onEvent1",
             "onEvent2",
@@ -1238,18 +1339,18 @@ exports[`Same type information 1`] = `
                   "name": "view",
                   "type": {
                     "kind": 0,
-                    "type": 6,
+                    "type": 8,
                   },
                 },
                 {
                   "name": "url",
                   "type": {
-                    "kind": 1,
-                    "type": "URL",
+                    "kind": 0,
+                    "type": 1,
                   },
                 },
               ],
-              "definitionOffset": 3551,
+              "definitionOffset": 3913,
               "name": "url",
             },
             {
@@ -1258,18 +1359,18 @@ exports[`Same type information 1`] = `
                   "name": "view",
                   "type": {
                     "kind": 0,
-                    "type": 6,
+                    "type": 8,
                   },
                 },
                 {
                   "name": "testRecord",
                   "type": {
-                    "kind": 1,
+                    "kind": 2,
                     "type": "TestRecord",
                   },
                 },
               ],
-              "definitionOffset": 3735,
+              "definitionOffset": 4097,
               "name": "testRecord",
             },
             {
@@ -1278,18 +1379,18 @@ exports[`Same type information 1`] = `
                   "name": "view",
                   "type": {
                     "kind": 0,
-                    "type": 6,
+                    "type": 8,
                   },
                 },
                 {
                   "name": "testRecord2",
                   "type": {
-                    "kind": 1,
+                    "kind": 2,
                     "type": "TestRecord2",
                   },
                 },
               ],
-              "definitionOffset": 3806,
+              "definitionOffset": 4168,
               "name": "testRecord2",
             },
             {
@@ -1298,18 +1399,18 @@ exports[`Same type information 1`] = `
                   "name": "view",
                   "type": {
                     "kind": 0,
-                    "type": 6,
+                    "type": 8,
                   },
                 },
                 {
                   "name": "testRecordClass",
                   "type": {
-                    "kind": 1,
+                    "kind": 2,
                     "type": "TestRecordClass",
                   },
                 },
               ],
-              "definitionOffset": 3880,
+              "definitionOffset": 4242,
               "name": "testRecordClass",
             },
             {
@@ -1318,18 +1419,18 @@ exports[`Same type information 1`] = `
                   "name": "view",
                   "type": {
                     "kind": 0,
-                    "type": 6,
+                    "type": 8,
                   },
                 },
                 {
                   "name": "testEnum",
                   "type": {
-                    "kind": 1,
+                    "kind": 2,
                     "type": "TestEnum",
                   },
                 },
               ],
-              "definitionOffset": 3966,
+              "definitionOffset": 4328,
               "name": "testEnum",
             },
           ],
@@ -1379,28 +1480,28 @@ exports[`Same type information 1`] = `
         {
           "name": "enumInferred",
           "type": {
-            "kind": 1,
+            "kind": 2,
             "type": "TestEnum",
           },
         },
         {
           "name": "complexEnumInferred",
           "type": {
-            "kind": 1,
+            "kind": 2,
             "type": "TestEnum",
           },
         },
         {
           "name": "recordInferred",
           "type": {
-            "kind": 1,
+            "kind": 2,
             "type": "TestRecord2",
           },
         },
         {
           "name": "optionalInt",
           "type": {
-            "kind": 4,
+            "kind": 5,
             "type": {
               "kind": 0,
               "type": 2,
@@ -1470,7 +1571,7 @@ exports[`Same type information 1`] = `
           ],
           "name": "TestEnum",
         },
-        "kind": 1,
+        "kind": 0,
       },
     ],
     [
@@ -1516,28 +1617,28 @@ exports[`Same type information 1`] = `
             {
               "name": "enumInferred",
               "type": {
-                "kind": 1,
+                "kind": 2,
                 "type": "TestEnum",
               },
             },
             {
               "name": "complexEnumInferred",
               "type": {
-                "kind": 1,
+                "kind": 2,
                 "type": "TestEnum",
               },
             },
             {
               "name": "recordInferred",
               "type": {
-                "kind": 1,
+                "kind": 2,
                 "type": "TestRecord2",
               },
             },
             {
               "name": "optionalInt",
               "type": {
-                "kind": 4,
+                "kind": 5,
                 "type": {
                   "kind": 0,
                   "type": 2,
@@ -1554,7 +1655,7 @@ exports[`Same type information 1`] = `
           ],
           "name": "TestRecord",
         },
-        "kind": 2,
+        "kind": 1,
       },
     ],
     [
@@ -1579,7 +1680,7 @@ exports[`Same type information 1`] = `
           ],
           "name": "TestRecord2",
         },
-        "kind": 2,
+        "kind": 1,
       },
     ],
     [
@@ -1604,7 +1705,7 @@ exports[`Same type information 1`] = `
           ],
           "name": "TestRecordClass",
         },
-        "kind": 2,
+        "kind": 1,
       },
     ],
   ],
@@ -1617,7 +1718,6 @@ exports[`Same type information 1`] = `
     "TestRecord",
     "TestRecord2",
     "TestRecordClass",
-    "URL",
   ],
 }
 `;
