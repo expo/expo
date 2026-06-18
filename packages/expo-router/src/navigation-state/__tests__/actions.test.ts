@@ -43,7 +43,7 @@ it('promotes another tab, grafting its hydrated subtree (cross-tab, the C12 hybr
   const next = resolveNavigate(current, target)!;
   expect(next.routes.map((r) => r.name)).toEqual(['home', 'search']); // home retained
   expect(next.index).toBe(1);
-  expect(next.routes[1].child).toBe(searchChild); // grafted from the hydrated payload
+  expect(next.routes[1]!.child).toBe(searchChild); // grafted from the hydrated payload
 });
 
 it('descends into an existing tab and navigates its child stack', () => {
@@ -52,7 +52,7 @@ it('descends into an existing tab and navigates its child stack', () => {
   const current = tabs(['home'], 0, { home: stack('home.stack', ['index']) });
   const target = tabs(['home'], 0, { home: stack('home.stack', ['index', 'details']) });
   const next = resolveNavigate(current, target)!;
-  expect(next.routes[0].child!.routes.map((r) => r.name)).toEqual(['index', 'details']);
+  expect(next.routes[0]!.child!.routes.map((r) => r.name)).toEqual(['index', 'details']);
   expect(next.index).toBe(0); // home stays focused
 });
 
@@ -67,7 +67,7 @@ it('grafts the hydrated child when navigating deeper into an existing childless 
     root: { key: 'root', index: 0, routes: [{ key: 'home#k', name: 'home', child: homeChild }] },
   };
   const next = resolveNavigate(current, target)!;
-  expect(next.routes[0].child).toBe(homeChild); // grafted, not dropped
+  expect(next.routes[0]!.child).toBe(homeChild); // grafted, not dropped
 });
 
 it('returns null when nothing changes', () => {

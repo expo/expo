@@ -23,7 +23,7 @@ describe('projectToStackState', () => {
     expect(state.index).toBe(1);
     expect(state.routes.map((r) => r.key)).toEqual(['index#0', 'details#1']); // keys preserved
     expect(state.routes.map((r) => r.name)).toEqual(['index', 'details']);
-    expect(state.routes[1].params).toEqual({ id: '42' });
+    expect(state.routes[1]!.params).toEqual({ id: '42' });
   });
 
   it('produces a well-formed inert stack state (type/stale/key/routeNames, empty preload)', () => {
@@ -42,7 +42,7 @@ describe('projectToStackState', () => {
   });
 
   it('leaves params undefined when a route has none (not defaulted to {})', () => {
-    expect(projectToStackState(node).routes[0].params).toBeUndefined();
+    expect(projectToStackState(node).routes[0]!.params).toBeUndefined();
   });
 
   it('handles an empty node (index 0, no routes)', () => {

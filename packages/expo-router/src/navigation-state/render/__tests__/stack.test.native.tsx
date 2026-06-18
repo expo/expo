@@ -43,7 +43,7 @@ const initial: GlobalNavState = {
 function Root() {
   const tree = useNavigationTree();
   return (
-    <Route node={layoutNode}>
+    <Route node={layoutNode} params={undefined}>
       <NavNodeProvider node={tree.root}>
         <Stack />
       </NavNodeProvider>
@@ -101,7 +101,7 @@ it('renders a NESTED navigator from a route child slice (the recursion seam)', (
     ...screenNode('details', 'Details'),
     loadRoute: () => ({
       default: () => (
-        <Route node={innerLayout}>
+        <Route node={innerLayout} params={undefined}>
           <Stack />
         </Route>
       ),
@@ -127,7 +127,7 @@ it('renders a NESTED navigator from a route child slice (the recursion seam)', (
   function NestedRoot() {
     const tree = useNavigationTree();
     return (
-      <Route node={layout}>
+      <Route node={layout} params={undefined}>
         <NavNodeProvider node={tree.root}>
           <Stack />
         </NavNodeProvider>
@@ -170,18 +170,18 @@ describe('navigation shim', () => {
     const { shim, captured } = make();
     shim.goBack();
     expect(captured).toHaveLength(1);
-    expect(captured[0].key).toBe('home.stack');
-    expect(captured[0].next.routes.map((r) => r.name)).toEqual(['index', 'a']);
-    expect(captured[0].next.index).toBe(1);
-    expect(captured[0].source).toBe('js');
+    expect(captured[0]!.key).toBe('home.stack');
+    expect(captured[0]!.next.routes.map((r) => r.name)).toEqual(['index', 'a']);
+    expect(captured[0]!.next.index).toBe(1);
+    expect(captured[0]!.source).toBe('js');
   });
 
   it('a native-origin POP(2) commits the popped node tagged native (P-6)', () => {
     const { shim, captured } = make();
     shim.dispatch({ type: 'POP', payload: { count: 2 }, source: 'b#2' });
-    expect(captured[0].next.routes.map((r) => r.name)).toEqual(['index']);
-    expect(captured[0].next.index).toBe(0);
-    expect(captured[0].source).toBe('native');
+    expect(captured[0]!.next.routes.map((r) => r.name)).toEqual(['index']);
+    expect(captured[0]!.next.index).toBe(0);
+    expect(captured[0]!.source).toBe('native');
   });
 
   it('isFocused and getState reflect the node', () => {

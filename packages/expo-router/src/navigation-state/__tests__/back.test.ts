@@ -34,7 +34,7 @@ it('scenario 5 — the focused stack pops (remove + index--)', () => {
   const result = resolveBack(state);
   expect('key' in result && result.key).toBe('home.stack');
   const after = reduce(state, { ...(result as { key: string; next: NavNode }), source: 'js' });
-  expect(after.root.routes[0].child!.routes.map((r) => r.name)).toEqual(['index', 'list']);
+  expect(after.root.routes[0]!.child!.routes.map((r) => r.name)).toEqual(['index', 'list']);
 });
 
 it('scenario 6 — bubbles past a root-level stack to tabs, which refocuses via focus-order', () => {

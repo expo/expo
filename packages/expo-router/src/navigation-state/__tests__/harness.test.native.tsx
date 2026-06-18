@@ -55,7 +55,7 @@ it('renders the focused path from the tree', () => {
 
 it('a stack push (router → commit) re-renders the new top', () => {
   render(<Harness initial={initial} />);
-  const stackNode = initial.root.routes[0].child!;
+  const stackNode = initial.root.routes[0]!.child!;
 
   act(() => {
     const next = stackRouter.getStateForAction(stackNode, {

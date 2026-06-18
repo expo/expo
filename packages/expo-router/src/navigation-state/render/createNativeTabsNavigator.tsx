@@ -30,6 +30,7 @@ import type {
 import { NavigationProvider } from '../../react-navigation/core/NavigationProvider';
 import { ThemeProvider } from '../../react-navigation/core/theming/ThemeProvider';
 import { DefaultTheme } from '../../react-navigation/native';
+import { sortRoutesWithInitial } from '../../sortRoutes';
 import { getQualifiedRouteComponent } from '../../useScreens';
 import { createRouteKey } from '../keys';
 import { registerRouter, unregisterRouter } from '../routerRegistry';
@@ -52,9 +53,14 @@ function declaredTabs(children: ReactNode): DeclaredTab[] {
   return tabs;
 }
 
-/** A default content node for a tab not yet promoted/navigated to (its initial route). */
+/** A default content node for a tab not yet promoted/navigated to (its initial route). The initial
+ * route is the navigator's anchor, falling back to the first child in route-sorted order (index/
+ * static before dynamic) — the same selection `useScreens` makes, not the raw `children[0]`, which
+ * could be a param-less dynamic route. */
 function defaultTabNode(screenNode: RouteNode): NavNode {
-  const initial = screenNode.initialRouteName ?? screenNode.children[0]?.route;
+  const initial =
+    screenNode.initialRouteName ??
+    [...screenNode.children].sort(sortRoutesWithInitial(screenNode.initialRouteName))[0]?.route;
   const routes: RouteEntry[] = initial ? [{ key: createRouteKey(initial), name: initial }] : [];
   return { key: createRouteKey(`${screenNode.route}.nav`), index: 0, routes };
 }

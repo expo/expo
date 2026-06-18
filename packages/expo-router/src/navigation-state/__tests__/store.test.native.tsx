@@ -66,7 +66,7 @@ it('commits a node swap from outside render; the snapshot mirrors what rendered'
       <Screen />
     </NavigationStateProvider>
   );
-  const stackNode = initial.root.routes[0].child!;
+  const stackNode = initial.root.routes[0]!.child!;
 
   act(() => {
     const next = stackRouter.getStateForAction(stackNode, {
@@ -77,7 +77,7 @@ it('commits a node swap from outside render; the snapshot mirrors what rendered'
   });
 
   expect(screen.getByTestId('focused:home.stack')).toHaveTextContent('details');
-  expect(getNavSnapshot()!.root.routes[0].child!.routes.map((r) => r.name)).toEqual([
+  expect(getNavSnapshot()!.root.routes[0]!.child!.routes.map((r) => r.name)).toEqual([
     'index',
     'details',
   ]);

@@ -17,9 +17,9 @@ describe('treeFromNavigationState (pure converter)', () => {
     const tree = treeFromNavigationState({
       routes: [{ name: 'home', state: { routes: [{ name: 'index' }] } }],
     });
-    expect(tree.root.routes[0].name).toBe('home');
+    expect(tree.root.routes[0]!.name).toBe('home');
     expect(tree.root.index).toBe(0);
-    const homeChild = tree.root.routes[0].child!;
+    const homeChild = tree.root.routes[0]!.child!;
     expect(homeChild.routes.map((r) => r.name)).toEqual(['index']);
     expect(homeChild.index).toBe(0);
   });
@@ -36,10 +36,10 @@ describe('treeFromNavigationState (pure converter)', () => {
         },
       ],
     });
-    const stack = tree.root.routes[0].child!;
+    const stack = tree.root.routes[0]!.child!;
     expect(stack.routes.map((r) => r.name)).toEqual(['index', 'details']);
     expect(stack.index).toBe(1);
-    expect(stack.routes[1].params).toEqual({ id: '42' });
+    expect(stack.routes[1]!.params).toEqual({ id: '42' });
   });
 
   it('keeps every sibling and its child, honoring a non-default index (multi-route node)', () => {
@@ -54,8 +54,8 @@ describe('treeFromNavigationState (pure converter)', () => {
     });
     expect(tree.root.routes.map((r) => r.name)).toEqual(['home', 'search']);
     expect(tree.root.index).toBe(0);
-    expect(tree.root.routes[1].child!.routes.map((r) => r.name)).toEqual(['index', 'results']);
-    expect(tree.root.routes[1].child!.index).toBe(1);
+    expect(tree.root.routes[1]!.child!.routes.map((r) => r.name)).toEqual(['index', 'results']);
+    expect(tree.root.routes[1]!.child!.index).toBe(1);
   });
 
   it('mints tree-globally-unique keys even when a route name repeats across branches', () => {
@@ -90,15 +90,15 @@ describe('hydrate (integration with the real getStateFromPath — independent or
   it('hydrates a minimal active path: only the matched branch exists (scenario 1)', () => {
     const tree = hydrate('/home', options)!;
     expect(tree.root.routes.map((r) => r.name)).toEqual(['home']); // search is NOT in state
-    expect(tree.root.routes[0].child!.routes.map((r) => r.name)).toEqual(['index']);
+    expect(tree.root.routes[0]!.child!.routes.map((r) => r.name)).toEqual(['index']);
   });
 
   it('hydrates a deep link with the anchor seeded underneath, params parsed (scenario 1b)', () => {
     const tree = hydrate('/home/details/42', options)!;
-    const stack = tree.root.routes[0].child!;
+    const stack = tree.root.routes[0]!.child!;
     expect(stack.routes.map((r) => r.name)).toEqual(['index', 'details']);
     expect(stack.index).toBe(1);
-    expect(stack.routes[1].params).toMatchObject({ id: '42' }); // param parsed by the real matcher
+    expect(stack.routes[1]!.params).toMatchObject({ id: '42' }); // param parsed by the real matcher
   });
 
   it('returns undefined when no screen matches the path', () => {

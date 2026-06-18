@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../../../imperative-api';
+import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/NativeTabs';
 import { NativeTabsView as _NativeTabsView } from '../../../native-tabs/NativeTabsView';
 import { renderRouter, screen } from '../../../testing-library';
@@ -92,6 +93,32 @@ it('a prevented tap (disabled tab) does NOT navigate', () => {
     })
   );
   expect(getNavSnapshot()!.root.routes.map((r) => r.name)).toEqual(['home']); // unchanged
+});
+
+it("an unfocused tab whose layout has a dynamic route defaults to the navigator's initial (index) route, not children[0]", () => {
+  // Repro: `gallery` is a nested Stack whose children include a dynamic `[item]` route. Native tabs
+  // mount every tab (mount ≠ promotion), so the unfocused `gallery` tab renders its default content.
+  // That default must be the navigator's initial route (`index`), not the raw first child (`[item]`),
+  // which would otherwise mount a param-less dynamic screen and crash.
+  renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="home" />
+          <NativeTabs.Trigger name="gallery" />
+        </NativeTabs>
+      ),
+      home: () => <Text>HomeScreen</Text>,
+      'gallery/_layout': () => <Stack />,
+      // `[item]` declared before `index` so children order is `["[item]","index"]` (as in the real app);
+      // the fix must still pick `index` via route sorting, not the raw first child.
+      'gallery/[item]': () => <Text>GalleryItem</Text>,
+      'gallery/index': () => <Text>GalleryIndex</Text>,
+    },
+    { initialUrl: '/home' }
+  );
+  expect(screen.getByText('GalleryIndex')).toBeVisible();
+  expect(screen.queryByText('GalleryItem')).toBeNull();
 });
 
 describe('flag off', () => {

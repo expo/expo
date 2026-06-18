@@ -30,7 +30,7 @@ it('replaces the targeted node, rebuilding the spine above it', () => {
     ],
   };
   const after = reduce(before, { key: 'home.stack', next, source: 'js' });
-  expect(after.root.routes[0].child).toBe(next); // swapped in
+  expect(after.root.routes[0]!.child).toBe(next); // swapped in
   expect(after.root).not.toBe(before.root); // spine rebuilt
 });
 

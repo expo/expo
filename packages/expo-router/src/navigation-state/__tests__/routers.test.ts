@@ -18,7 +18,7 @@ describe('stackRouter', () => {
     })!;
     expect(next.routes.map((r) => r.name)).toEqual(['index', 'details']);
     expect(next.index).toBe(1);
-    expect(next.routes[1].params).toEqual({ id: '1' });
+    expect(next.routes[1]!.params).toEqual({ id: '1' });
   });
 
   it('navigate to an existing route pops back to it (truncates above)', () => {
@@ -127,7 +127,7 @@ describe('tabsRouter', () => {
     })!;
     expect(next.routes.map((r) => r.name)).toEqual(['home', 'search']);
     expect(next.index).toBe(1);
-    expect(next.routes[1].child).toBe(child); // grafted as-is
+    expect(next.routes[1]!.child).toBe(child); // grafted as-is
   });
 
   it('goBack bubbles (null); goBackTo refocuses a tab without removing routes', () => {

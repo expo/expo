@@ -564,3 +564,25 @@ different layers and compatible by design ([D3](./RFC.md#L424)): a navigator wil
 its `NavNode` slice into the standard shape. So `NavNode`/`RouteEntry` are genuinely new types (not
 a redeclaration of standard-navigation's flat type); the projection is render-integration (out of
 scope). Noted so the two shapes aren't accidentally merged or duplicated.
+
+## Device QA fix — NativeTabs default content of a nested-navigator tab (2026-06-18)
+
+- **Bug (iOS sim, native-navigation e2e):** navigating to a tabs layout crashed with
+  `Cannot read property 'color' of undefined` from `tabs/faces/[face].tsx`. Native tabs mount
+  every declared tab (mount ≠ promotion, [P-10]), so the unfocused `faces` tab rendered its
+  *default content node*. `defaultTabNode` picked the initial route as
+  `screenNode.initialRouteName ?? screenNode.children[0]?.route` — and for `faces`
+  (`initialRouteName` undefined, raw children `["[face]","index"]`) that selected the **dynamic**
+  `[face]` route, mounting it with **no `face` param** → `colors[NaN]` → crash.
+- **Fix:** pick the default initial route via expo-router's own `sortRoutesWithInitial`
+  (`index`/static before dynamic) — the same ordering `useScreens` uses to build a navigator's
+  screens and that the vendored routers fall back to (`routeNames[0]`). So the default tab content
+  now matches the navigator's real initial route. One-line change in `defaultTabNode`
+  (`render/createNativeTabsNavigator.tsx`); flag-off path untouched. Regression test added to
+  `render/__tests__/native-tabs.test.ios.tsx` (dynamic-first children must still default to `index`).
+- **Also (pre-existing, fixed in passing):** `test:types` was red across `navigation-state` test
+  files (strict `noUncheckedIndexedAccess` — missing `!` on `routes[i]`, and `<Route>` needs an
+  explicit `params`). Mechanical fixes; suite + types now green.
+- **Known limitations still open (not this crash, larger render-layer work):** the new `Stack`
+  ignores `screenOptions`/`<Stack.Screen options>` (e.g. `headerShown:false`, `title`), and an
+  incoming Linking deep-link URL doesn't drive navigation under the flag.
