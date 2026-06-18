@@ -12,6 +12,7 @@
 - Expose shared directory for images. ([#46339](https://github.com/expo/expo/pull/46339) by [@jakex7](https://github.com/jakex7))
 - Add a initial layout registry for widgets. ([#46501](https://github.com/expo/expo/pull/46501) by [@jakex7](https://github.com/jakex7))
 - Add `initialProps` to widgets layout registry. ([#46527](https://github.com/expo/expo/pull/46527) by [@jakex7](https://github.com/jakex7))
+- [Android] Add Hermes runtime. ([#46684](https://github.com/expo/expo/pull/46684) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

@@ -1,18 +1,10 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-buildscript {
-  repositories {
-    google()
-    mavenCentral()
-  }
-  dependencies {
-    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
-  }
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+  id 'org.jetbrains.kotlin.plugin.compose' version "$kotlinVersion"
 }
-
-apply plugin: 'com.android.library'
-apply plugin: 'expo-module-gradle-plugin'
-apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'expo.modules.widgets'
 version = '56.0.15'
@@ -34,16 +26,46 @@ expoModule {
   canBePublished false
 }
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
   namespace "expo.modules.widgets"
   defaultConfig {
     versionCode 1
     versionName '56.0.15'
+
+    externalNativeBuild {
+      cmake {
+        def cppArguments = [
+          "-DANDROID_STL=c++_shared",
+          "-DREACT_NATIVE_DIR=${expoModule.reactNativeDir}",
+        ]
+
+        abiFilters(*reactNativeArchitectures())
+        arguments(*cppArguments)
+      }
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
   }
 
   buildFeatures {
     prefab true
     compose true
+  }
+
+  packagingOptions {
+    excludes += [
+      "**/libc++_shared.so",
+      "**/libhermesvm.so",
+    ]
   }
 }
 
@@ -81,6 +103,8 @@ androidComponents {
 }
 
 dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.facebook.react:hermes-android'
   api 'androidx.glance:glance:1.2.0-rc01'
   api 'androidx.glance:glance-appwidget:1.2.0-rc01'
 }
