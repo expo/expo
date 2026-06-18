@@ -8,7 +8,7 @@
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {

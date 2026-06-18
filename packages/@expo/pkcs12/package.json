@@ -16,7 +16,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
+    "test": "jest",
     "typecheck": "tsc -p tsconfig.json"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/%40expo/pkcs12#readme",

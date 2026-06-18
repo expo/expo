@@ -120,7 +120,7 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "typecheck": "tsc -b tsconfig.all.json"
@@ -157,9 +157,6 @@
     "expo-module-scripts": "workspace:*",
     "react-native-reanimated": "4.4.1",
     "react-native-worklets": "0.9.2"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   },
   "peerDependencies": {
     "@babel/core": "*",

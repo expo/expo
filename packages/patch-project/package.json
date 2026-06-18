@@ -9,9 +9,9 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
+    "test": "jest",
     "pretest:e2e": "pnpm run build",
-    "test:e2e": "expo-module test --config e2e/jest.config.js",
+    "test:e2e": "jest --config e2e/jest.config.js",
     "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {

@@ -29,7 +29,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {

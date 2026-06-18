@@ -14,7 +14,7 @@
     "lint": "expo-module lint",
     "generate": "node ./scripts/generate.js",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
+    "test": "jest",
     "typecheck": "tsc -p tsconfig.json"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schema-utils#readme",

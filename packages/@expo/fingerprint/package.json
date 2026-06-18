@@ -10,11 +10,11 @@
     "build:cli": "expo-build --base cli cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "pretest:e2e": "expo-module prepublishOnly",
-    "test:e2e": "expo-module test --config e2e/jest.config.js",
+    "test:e2e": "jest --config e2e/jest.config.js",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "bin": {

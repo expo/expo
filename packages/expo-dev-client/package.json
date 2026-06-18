@@ -10,7 +10,7 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "e2e": "expo-test-runner run-test -t e2e",
     "latest-e2e": "expo-test-runner run-test -t latest-e2e",
@@ -46,8 +46,5 @@
   },
   "peerDependencies": {
     "expo": "*"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }

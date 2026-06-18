@@ -32,6 +32,10 @@
       "import": "./createJestPreset.cjs",
       "require": "./createJestPreset.cjs"
     },
+    "./createCompositeJestPreset": {
+      "import": "./createCompositeJestPreset.cjs",
+      "require": "./createCompositeJestPreset.cjs"
+    },
     "./jest-preset.js": {
       "import": "./jest-preset.cjs",
       "require": "./jest-preset.cjs"

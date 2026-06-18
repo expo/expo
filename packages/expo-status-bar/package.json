@@ -23,7 +23,7 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "typecheck": "tsc -b tsconfig.all.json"
   },
@@ -57,15 +57,5 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios"
-      },
-      {
-        "preset": "jest-expo/android"
-      }
-    ]
   }
 }

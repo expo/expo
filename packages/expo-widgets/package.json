@@ -11,7 +11,7 @@
     "build:bundle": "node ./scripts/build-bundle.mjs",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "typecheck": "tsc -b tsconfig.all.json"
   },

@@ -11,7 +11,7 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "typecheck": "tsc -b tsconfig.all.json"
   },
@@ -36,9 +36,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/localization/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {
     "rtl-detect": "^1.0.2"
   },

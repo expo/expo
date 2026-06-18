@@ -49,7 +49,7 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "test:rsc": "jest --config jest-rsc.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",

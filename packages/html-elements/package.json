@@ -10,7 +10,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "pnpm test:babel && pnpm test:src",
-    "test:src": "expo-module test",
+    "test:src": "jest",
     "test:babel": "jest --config babel/jest.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "typecheck": "tsc -p tsconfig.json"

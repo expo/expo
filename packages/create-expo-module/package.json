@@ -36,8 +36,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "expo-module test",
-    "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
+    "test": "jest",
+    "test:e2e": "jest --config e2e/jest.config.js --runInBand",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {

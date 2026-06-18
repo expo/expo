@@ -9,7 +9,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
+    "test": "jest",
     "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {

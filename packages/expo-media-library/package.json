@@ -41,7 +41,7 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "typecheck": "tsc -b tsconfig.all.json"
   },
@@ -65,9 +65,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/media-library/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "devDependencies": {
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
